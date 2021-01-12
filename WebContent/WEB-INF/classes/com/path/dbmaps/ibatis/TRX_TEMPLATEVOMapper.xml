@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRX_TEMPLATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRX_TEMPLATEVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="WIN_REF" property="WIN_REF" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, BRANCH_CODE, CODE, COMP_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, 
+    LONG_NAME_ARAB, WIN_REF, DATE_UPDATED
+  </sql>
+  <select id="selectTRX_TEMPLATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRX_TEMPLATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRX_TEMPLATE
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTRX_TEMPLATE" parameterType="com.path.dbmaps.vo.TRX_TEMPLATEVOKey" >
+    delete from TRX_TEMPLATE
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTRX_TEMPLATE" parameterType="com.path.dbmaps.vo.TRX_TEMPLATEVO" >
+    insert into TRX_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="WIN_REF != null" >
+        WIN_REF,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="WIN_REF != null" >
+        #{WIN_REF},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRX_TEMPLATE" >
+    update TRX_TEMPLATE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="WIN_REF != null" >
+        WIN_REF = #{WIN_REF},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTRX_TEMPLATE" parameterType="com.path.dbmaps.vo.TRX_TEMPLATEVO" >
+    <include refid="sql_updateTRX_TEMPLATE" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

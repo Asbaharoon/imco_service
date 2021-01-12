@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="recordLogsMapper">
+	<select id="returnUserMailList" resultMap="returnUserMailListMap"
+		parameterType="recordLogsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllUserMailList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnUserMailListCount" resultType="int"
+		parameterType="recordLogsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllUserMailList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnUserMailListMap" type="recordUserMailListCO">
+		<result property="USER_ID" column="USER_ID" />
+		<result property="USER_NAME" column="USER_NAME" />
+		<result property="EMAIL_ID" column="EMAIL_ID" />
+		<result property="EMAIL_SERVER" column="EMAIL_SERVER" />
+		<result property="MAIL_TO" column="MAIL_TO" />
+		<result property="MAIL_RESULT" column="MAIL_RESULT" />
+		<result property="REPLY" column="REPLY" />
+	</resultMap>
+
+	<sql id="returnAllUserMailList">
+		SELECT
+		USR.USER_ID USER_ID,
+		USR.FIRST_NAME || ' ' ||
+		USR.LAST_NAME USER_NAME,
+		USR.EMAIL_ID EMAIL_ID,
+		USR.EMAIL_SERVER
+		EMAIL_SERVER,
+		'N' MAIL_TO,
+		'NONE' MAIL_RESULT,
+		'N' REPLY
+		FROM USR
+		WHERE
+		USR.EMAIL_ID IS NOT NULL
+		AND USR.PATH_STS > '1'
+		AND (USR.USER_VALID_DT
+		IS NULL
+		OR USR.USER_VALID_DT >= #{runningDate})
+		AND (USR.DATE_AUTHORIZED
+		IS NOT NULL
+		OR USR.DATE_AUTHORIZED IS NOT NULL)
+		AND USR.USER_ID != CASE
+		WHEN #{userId} IS NULL THEN '' ELSE #{userId} END
+	</sql>
+
+	<select id="returnAttachment" resultType="String" parameterType="recordLogsSC">
+		SELECT CASE WHEN ATTACHMENT_DETAILS_EXT IS NULL THEN ATTACHMENT_DETAILS ELSE ATTACHMENT_DETAILS_EXT END
+		FROM RIFATTACHMENT
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE = (SELECT CASE WHEN OPT.PARENT_REF IS NOT NULL AND
+								OPT.PARENT_REF != 'ROOT' THEN OPT.PARENT_REF ELSE OPT.PROG_REF END FROM
+								OPT WHERE OPT.PROG_REF = #{pageRef} AND APP_NAME = #{appName})
+		AND TRX_NBR = #{trxNbr}
+		AND ATTACH_TYPE = #{recordsType}
+	</select>
+
+	<select id="countAttachments" resultType="int" parameterType="recordLogsSC">
+		SELECT COUNT(1)
+		FROM RIFATTACHMENT
+		WHERE APP_NAME = #{appName}
+		AND
+		PROG_REFERENCE = #{pageRef}
+		AND TRX_NBR = #{trxNbr}
+		AND ATTACH_TYPE
+		= #{recordsType}
+	</select>
+
+	<insert id="updateAttachment" parameterType="recordLogsSC">
+       <selectKey resultType="java.math.BigDecimal" keyProperty="lineNo" order="BEFORE" >
+		 SELECT CASE WHEN MAX(LINE_NO) IS NULL
+				      THEN 0
+				      ELSE MAX(LINE_NO)+1
+				  END     
+		   FROM RIFATTACHMENT_DET
+       </selectKey>
+	   <if test="isOracle == 1">
+	   BEGIN
+	   </if>
+		UPDATE RIFATTACHMENT
+		<set>
+			ATTACHMENT_DETAILS_EXT = #{theRecord},
+      	</set>
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE = #{pageRef}
+		AND TRX_NBR
+		= #{trxNbr}
+		AND ATTACH_TYPE
+		= #{recordsType}
+	   <if test="isOracle == 1">
+	    ;
+	   </if> 
+	   <if test="attachmentDetails !=null">
+	     	INSERT INTO RIFATTACHMENT_DET(APP_NAME
+			,PROG_REFERENCE
+			,TRX_NBR
+			,ATTACH_TYPE
+			,LINE_NO
+			,ATTACHMENT_DETAILS
+			,SERVER_DATE
+			,SYSTEM_DATE
+			,USER_ID)
+			VALUES(
+			 #{appName}
+			,#{pageRef}
+			,#{trxNbr}
+			,#{recordsType}
+		    ,#{lineNo}
+			,#{attachmentDetails}
+			<choose>
+			   <when test="isSybase == 1">
+			     ,getDate()
+			   </when>
+			   <otherwise>
+			     ,sysdate
+			   </otherwise>
+			</choose>
+			,#{runningDate}
+			,#{userId}
+			)
+	     <if test="isOracle == 1">
+	     ;
+	     </if> 
+	   </if>
+	   <if test="isOracle == 1">	
+	   END;
+	   </if>
+	</insert>
+	<insert id="insertAttachment" parameterType="recordLogsSC">
+        <selectKey resultType="java.math.BigDecimal" keyProperty="lineNo" order="BEFORE" >
+		  SELECT CASE WHEN MAX(LINE_NO) IS NULL
+				      THEN 0
+				      ELSE MAX(LINE_NO)+1
+				  END     
+			FROM RIFATTACHMENT_DET
+        </selectKey>
+	<if test="isOracle == 1">
+	BEGIN
+	</if>
+		insert into RIFATTACHMENT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="appName != null">
+				APP_NAME,
+      </if>
+			<if test="pageRef != null">
+				PROG_REFERENCE,
+      </if>
+			<if test="trxNbr != null">
+				TRX_NBR,
+      </if>
+			<if test="theRecord != null">
+				ATTACHMENT_DETAILS_EXT,
+      </if>
+			<if test="recordsType != null">
+				ATTACH_TYPE,
+      </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="appName != null">
+				#{appName},
+      </if>
+			<if test="pageRef != null">
+				#{pageRef},
+      </if>
+			<if test="trxNbr != null">
+				#{trxNbr},
+      </if>
+			<if test="theRecord != null">
+				#{theRecord},
+      </if>
+			<if test="recordsType != null">
+				#{recordsType},
+      </if>
+		</trim>
+	     <if test="isOracle == 1">
+	     ;
+	     </if> 
+	  <if test="attachmentDetails !=null">
+	     	INSERT INTO RIFATTACHMENT_DET(APP_NAME
+			,PROG_REFERENCE
+			,TRX_NBR
+			,ATTACH_TYPE
+			,LINE_NO
+			,ATTACHMENT_DETAILS
+			,SERVER_DATE
+			,SYSTEM_DATE
+			,USER_ID)
+			VALUES(
+			 #{appName}
+			,#{pageRef}
+			,#{trxNbr}
+			,#{recordsType}
+		    ,#{lineNo}
+			,#{attachmentDetails}
+			<choose>
+			   <when test="isSybase == 1">
+			     ,getDate()
+			   </when>
+			   <otherwise>
+			     ,sysdate
+			   </otherwise>
+			</choose>
+			,#{runningDate}
+			,#{userId}
+			)
+	     <if test="isOracle == 1">
+	     ;
+	     </if> 
+	  </if>
+	<if test="isOracle == 1">	
+	END;
+	</if>
+	</insert>
+
+	<!-- getParentRef -->
+	<sql id="getParentRef">
+	<![CDATA[
+		SELECT CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF<>'ROOT' THEN
+		OPT.PARENT_REF ELSE OPT.PROG_REF END
+		FROM OPT 
+		WHERE OPT.PROG_REF=#{pageRef} 
+		AND APP_NAME = #{appName}
+		]]>
+	</sql>
+	<select id="returnParentRef" resultType="String" parameterType="recordLogsSC">
+		<include refid="getParentRef" />
+	</select>
+</mapper>

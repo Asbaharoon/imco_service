@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTELLERLIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTELLERLIMITVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CY_CODE" property="CY_CODE" />
+    <id column="LIMIT_TYPE" property="LIMIT_TYPE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="WITHD_LIMIT_FC" property="WITHD_LIMIT_FC" />
+    <result column="DEP_LIMIT_FC" property="DEP_LIMIT_FC" />
+    <result column="PERCENTAGE_OVERRIDE" property="PERCENTAGE_OVERRIDE" />
+    <result column="WARN_LIMIT_EXCEED" property="WARN_LIMIT_EXCEED" />
+    <result column="PROCEED_LIMIT_EXCEED" property="PROCEED_LIMIT_EXCEED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, CY_CODE, LIMIT_TYPE, TRX_TYPE, WITHD_LIMIT_FC, DEP_LIMIT_FC, 
+    PERCENTAGE_OVERRIDE, WARN_LIMIT_EXCEED, PROCEED_LIMIT_EXCEED
+  </sql>
+  <select id="selectCTSTELLERLIMIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTELLERLIMITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTELLERLIMIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LIMIT_TYPE = #{LIMIT_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteCTSTELLERLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERLIMITVOKey" >
+    delete from CTSTELLERLIMIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LIMIT_TYPE = #{LIMIT_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertCTSTELLERLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERLIMITVO" >
+    insert into CTSTELLERLIMIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="LIMIT_TYPE != null" >
+        LIMIT_TYPE,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="WITHD_LIMIT_FC != null and WITHD_LIMIT_FC != emptyBigDecimalValue" >
+        WITHD_LIMIT_FC,
+      </if>
+      <if test="DEP_LIMIT_FC != null and DEP_LIMIT_FC != emptyBigDecimalValue" >
+        DEP_LIMIT_FC,
+      </if>
+      <if test="PERCENTAGE_OVERRIDE != null and PERCENTAGE_OVERRIDE != emptyBigDecimalValue" >
+        PERCENTAGE_OVERRIDE,
+      </if>
+      <if test="WARN_LIMIT_EXCEED != null" >
+        WARN_LIMIT_EXCEED,
+      </if>
+      <if test="PROCEED_LIMIT_EXCEED != null" >
+        PROCEED_LIMIT_EXCEED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="LIMIT_TYPE != null" >
+        #{LIMIT_TYPE},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="WITHD_LIMIT_FC != null and WITHD_LIMIT_FC != emptyBigDecimalValue" >
+        #{WITHD_LIMIT_FC},
+      </if>
+      <if test="DEP_LIMIT_FC != null and DEP_LIMIT_FC != emptyBigDecimalValue" >
+        #{DEP_LIMIT_FC},
+      </if>
+      <if test="PERCENTAGE_OVERRIDE != null and PERCENTAGE_OVERRIDE != emptyBigDecimalValue" >
+        #{PERCENTAGE_OVERRIDE},
+      </if>
+      <if test="WARN_LIMIT_EXCEED != null" >
+        #{WARN_LIMIT_EXCEED},
+      </if>
+      <if test="PROCEED_LIMIT_EXCEED != null" >
+        #{PROCEED_LIMIT_EXCEED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTELLERLIMIT" >
+    update CTSTELLERLIMIT
+    <set >
+      <if test="WITHD_LIMIT_FC != null" >
+        <choose >
+          <when test="WITHD_LIMIT_FC == emptyBigDecimalValue" >
+            WITHD_LIMIT_FC = NULL ,
+          </when>
+          <otherwise >
+            WITHD_LIMIT_FC = #{WITHD_LIMIT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEP_LIMIT_FC != null" >
+        <choose >
+          <when test="DEP_LIMIT_FC == emptyBigDecimalValue" >
+            DEP_LIMIT_FC = NULL ,
+          </when>
+          <otherwise >
+            DEP_LIMIT_FC = #{DEP_LIMIT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERCENTAGE_OVERRIDE != null" >
+        <choose >
+          <when test="PERCENTAGE_OVERRIDE == emptyBigDecimalValue" >
+            PERCENTAGE_OVERRIDE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE_OVERRIDE = #{PERCENTAGE_OVERRIDE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WARN_LIMIT_EXCEED != null" >
+        WARN_LIMIT_EXCEED = #{WARN_LIMIT_EXCEED},
+      </if>
+      <if test="PROCEED_LIMIT_EXCEED != null" >
+        PROCEED_LIMIT_EXCEED = #{PROCEED_LIMIT_EXCEED},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LIMIT_TYPE = #{LIMIT_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateCTSTELLERLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERLIMITVO" >
+    <include refid="sql_updateCTSTELLERLIMIT" />
+  </update>
+</mapper>

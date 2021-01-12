@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_TRS_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_TRS_LOGVO" >
+    <id column="DW_NAME" property="DW_NAME" />
+    <result column="COUNTER" property="COUNTER" />
+    <result column="TRX_COUNT" property="TRX_COUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DW_NAME, COUNTER, TRX_COUNT
+  </sql>
+  <select id="selectSWIFT_TRS_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_TRS_LOGVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_TRS_LOG
+    where DW_NAME = #{DW_NAME}
+  </select>
+  <delete id="deleteSWIFT_TRS_LOG" parameterType="com.path.dbmaps.vo.SWIFT_TRS_LOGVO" >
+    delete from SWIFT_TRS_LOG
+    where DW_NAME = #{DW_NAME}
+  </delete>
+  <insert id="insertSWIFT_TRS_LOG" parameterType="com.path.dbmaps.vo.SWIFT_TRS_LOGVO" >
+    insert into SWIFT_TRS_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="DW_NAME != null" >
+        DW_NAME,
+      </if>
+      <if test="COUNTER != null and COUNTER != emptyBigDecimalValue" >
+        COUNTER,
+      </if>
+      <if test="TRX_COUNT != null and TRX_COUNT != emptyBigDecimalValue" >
+        TRX_COUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="DW_NAME != null" >
+        #{DW_NAME},
+      </if>
+      <if test="COUNTER != null and COUNTER != emptyBigDecimalValue" >
+        #{COUNTER},
+      </if>
+      <if test="TRX_COUNT != null and TRX_COUNT != emptyBigDecimalValue" >
+        #{TRX_COUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_TRS_LOG" >
+    update SWIFT_TRS_LOG
+    <set >
+      <if test="COUNTER != null" >
+        <choose >
+          <when test="COUNTER == emptyBigDecimalValue" >
+            COUNTER = NULL ,
+          </when>
+          <otherwise >
+            COUNTER = #{COUNTER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_COUNT != null" >
+        <choose >
+          <when test="TRX_COUNT == emptyBigDecimalValue" >
+            TRX_COUNT = NULL ,
+          </when>
+          <otherwise >
+            TRX_COUNT = #{TRX_COUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where DW_NAME = #{DW_NAME}
+  </sql>
+  <update id="updateSWIFT_TRS_LOG" parameterType="com.path.dbmaps.vo.SWIFT_TRS_LOGVO" >
+    <include refid="sql_updateSWIFT_TRS_LOG" />
+  </update>
+</mapper>

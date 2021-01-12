@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="custSegmentationMapper">
+	
+	<resultMap id="resCustSegmentationListMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="ctsSegmentVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+		<result property="ctsSegmentVO.SEGMENT_DESC" column="SEGMENT_DESC"/>
+		<result property="ctsSegmentVO.PRIORITY" column="PRIORITY"/>
+		<result property="ctsSegmentVO.STATUS" column="STATUS"/>
+		<result property="statusdesc" column="statusdesc"/>
+		<result property="ctsSegmentVO.CREATED_BY" column="CREATED_BY"/>
+		<result property="ctsSegmentVO.DATE_CREATED" column="DATE_CREATED"/>
+		<result property="ctsSegmentVO.MODIFIED_BY" column="MODIFIED_BY"/>
+		<result property="ctsSegmentVO.DATE_MODIFIED" column="DATE_MODIFIED"/>
+		<result property="ctsSegmentVO.DATE_UPDATED" column="DATE_UPDATED"/>
+		<result property="ctsSegmentVO.APPROVED_BY" column="APPROVED_BY"/>
+		<result property="ctsSegmentVO.DATE_APPROVED" column="DATE_APPROVED"/>
+		<result property="ctsSegmentVO.REJECTED_BY" column="REJECTED_BY"/>
+		<result property="ctsSegmentVO.DATE_REJECTED" column="DATE_REJECTED"/>
+		<result property="ctsSegmentVO.OLD_STATUS" column="OLD_STATUS"/>
+		<result property="oldstatusdesc" column="oldstatusdesc"/>
+		<result property="ctsSegmentVO.AMENDED_PRIORITY" column="AMENDED_PRIORITY"/>
+		<result property="ctsSegmentVO.MAIN_SCORE_YN" column="MAIN_SCORE_YN"/>
+		<result property="ctsSegmentVO.AUTOMATIC_APPROVE_YN" column="AUTOMATIC_APPROVE_YN"/>		
+	</resultMap>
+	
+	<resultMap id="returnReasonRefMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+	<result property="reasonNameRef"  column="BRIEF_NAME_ENG" />
+
+	</resultMap>
+	
+	<select id="returnCustSegmentationList" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="resCustSegmentationListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCustSegmentationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnCustSegmentationListCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCustSegmentationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+	
+	<sql id="queryCustSegmentationSQL">
+		SELECT COMP_CODE,
+		       BRANCH_CODE,
+		       SEGMENT_CODE,
+		       SEGMENT_DESC,
+		       PRIORITY,
+		       STATUS,
+		        (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SEGMENT.STATUS
+                 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+                 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusdesc,
+		       CREATED_BY,
+		       DATE_CREATED,
+		       MODIFIED_BY,
+		       DATE_MODIFIED,
+		       DATE_UPDATED,
+		       APPROVED_BY,
+		       DATE_APPROVED,
+		       REJECTED_BY,
+		       OLD_STATUS,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SEGMENT.OLD_STATUS
+                 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+                 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) oldstatusdesc,
+                 AMENDED_PRIORITY,
+                 MAIN_SCORE_YN,
+                 AUTOMATIC_APPROVE_YN
+		  FROM CTS_SEGMENT
+		  WHERE	
+		   <if test='ivCrud != "R" or isSegmentationScore == "S" '>					 					 
+		  	CTS_SEGMENT.STATUS IN ( SELECT LOVOPT.VALUE_CODE
+									           FROM SYS_PARAM_LOV_LK_OPT LOVOPT
+									          WHERE LOVOPT.LOV_TYPE_ID = #{lovTypeId} 
+									            AND LOVOPT.PROG_REF = #{sectionKey}
+									            AND LOVOPT.APP_NAME = #{currAppName})
+									            
+									            
+			</if>		
+			<if test='ivCrud != "R" or isSegmentationScore == "S" '>
+			 	AND
+			 </if>
+			
+			<if test='isSegmentationScore != "BR"'>
+				CTS_SEGMENT.COMP_CODE =  #{compCode} 
+				
+				<if test='isSegmentationScore == "S"'>
+				AND  CTS_SEGMENT.SEGMENT_TYPE = 'S'
+				</if>
+				<if test='isSegmentationScore == "SC"'>
+				 AND CTS_SEGMENT.SEGMENT_TYPE = 'SC'
+				</if>
+			</if>
+			 
+			<!--Added By Ali for TP#864398-->
+			<if test='isSegmentationScore == "BR"'>
+			 AND CTS_SEGMENT.SEGMENT_TYPE = 'BR'
+			</if>
+	</sql>
+	
+	<select id="returnCustSegmentationForm" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="resCustSegmentationForm">
+		<include refid="queryCustSegmentationForm"/>
+	</select>
+	
+	<sql id="queryCustSegmentationForm">
+          SELECT
+           COMP_CODE,
+           BRANCH_CODE,
+           SEGMENT_CODE,
+           SEGMENT_DESC,
+           PRIORITY,
+           STATUS,
+                (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SEGMENT.STATUS
+                 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+                 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusdesc,
+           CREATED_BY,
+           DATE_CREATED,
+           MODIFIED_BY,
+           DATE_MODIFIED,
+           DATE_UPDATED,
+           APPROVED_BY,
+           DATE_APPROVED,
+           REJECTED_BY,
+           DATE_REJECTED,
+           OLD_STATUS,
+           GROUP_CODE,
+           AUTOMATIC_APPROVE_YN, 
+           <!--Added By Ali for TP#864398-->
+           APP_NAME,START_DATE,END_DATE,LONG_DESC_ENG,
+           (SELECT DESCRIPTION FROM CTS_SEGMENT_GROUPING WHERE CTS_SEGMENT_GROUPING.COMP_CODE = CTS_SEGMENT.COMP_CODE AND CTS_SEGMENT_GROUPING.GROUP_CODE = CTS_SEGMENT.GROUP_CODE) groupDesc,
+           <!--Added By nour for TP#864398-->
+           <if test='isSegmentationScore == "BR"'>
+           	SUSPEND_REASON_CODE,
+			(SELECT BRIEF_NAME_ENG FROM CTSREASONS WHERE CTSREASONS.COMP_CODE = CTS_SEGMENT.COMP_CODE AND CTSREASONS.CODE = CTS_SEGMENT.SUSPEND_REASON_CODE) reasonName,
+			SUSPEND_REASON_REF,	
+           </if>
+           PERIODICITY,
+           DAY,
+           SEGMENT_TYPE,
+           MAIN_SCORE_YN
+      FROM CTS_SEGMENT
+     where SEGMENT_CODE = #{segment_code}
+       <if test='isSegmentationScore != "BR"'>
+       	AND COMP_CODE =   #{compCode} 
+       </if>	
+       AND SEGMENT_TYPE = #{isSegmentationScore}
+	</sql>
+	
+<!--Added By Ali for TP#864398-->
+	<select id="getSegmentCodeMax"  resultType="int" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		SELECT	CASE WHEN MAX(SEGMENT_CODE)is null THEN 0 ELSE MAX(SEGMENT_CODE) END MAX_CODE
+      FROM CTS_SEGMENT
+     where SEGMENT_TYPE = #{isSegmentationScore}
+       <if test='isSegmentationScore != "BR"'>
+       	AND COMP_CODE =   #{compCode}
+       </if> 
+	</select>
+	
+	<resultMap id="resCustSegmentationForm" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="ctsSegmentVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+		<result property="ctsSegmentVO.SEGMENT_DESC" column="SEGMENT_DESC"/>
+		<result property="ctsSegmentVO.PRIORITY" column="PRIORITY"/>
+		<result property="ctsSegmentVO.STATUS" column="STATUS"/>
+		<result property="statusdesc" column="statusdesc"/>
+		<result property="ctsSegmentVO.CREATED_BY" column="CREATED_BY"/>
+		<result property="ctsSegmentVO.DATE_CREATED" column="DATE_CREATED"/>
+		<result property="ctsSegmentVO.MODIFIED_BY" column="MODIFIED_BY"/>
+		<result property="ctsSegmentVO.DATE_MODIFIED" column="DATE_MODIFIED"/>
+		<result property="ctsSegmentVO.DATE_UPDATED" column="DATE_UPDATED"/>
+		<result property="ctsSegmentVO.APPROVED_BY" column="APPROVED_BY"/>
+		<result property="ctsSegmentVO.DATE_APPROVED" column="DATE_APPROVED"/>
+		<result property="ctsSegmentVO.REJECTED_BY" column="REJECTED_BY"/>
+		<result property="ctsSegmentVO.DATE_REJECTED" column="DATE_REJECTED"/>
+		<result property="ctsSegmentVO.OLD_STATUS" column="OLD_STATUS"/>
+		<result property="ctsSegmentVO.GROUP_CODE" column="GROUP_CODE"/>
+		<result property="ctsSegmentVO.AUTOMATIC_APPROVE_YN" column="AUTOMATIC_APPROVE_YN"/>		
+			<!--Added By Ali for TP#864398-->	
+	   <result column="APP_NAME" property="ctsSegmentVO.APP_NAME" />
+	    <result column="START_DATE" property="ctsSegmentVO.START_DATE" />
+	    <result column="END_DATE" property="ctsSegmentVO.END_DATE" />
+	    <result column="LONG_DESC_ENG" property="ctsSegmentVO.LONG_DESC_ENG" />
+		<result property="groupDesc" column="groupDesc"/>
+		<!-- Added by nour for tp#864398 -->		
+		<result column="SUSPEND_REASON_CODE" property="ctsSegmentVO.SUSPEND_REASON_CODE" />
+		<result property="reasonName" column="reasonName"/>
+		<result column="PERIODICITY" property="ctsSegmentVO.PERIODICITY" />
+	    <result column="DAY" property="ctsSegmentVO.DAY" />
+	    <result property="ctsSegmentVO.SEGMENT_TYPE" column="SEGMENT_TYPE"/>
+	    <result property="ctsSegmentVO.MAIN_SCORE_YN" column="MAIN_SCORE_YN"/>
+	    <!-- ADDED BY NOUR FOR REQUEST 974623 -->
+	    <result column="SUSPEND_REASON_REF" property="ctsSegmentVO.SUSPEND_REASON_REF" />
+	</resultMap>
+	
+	<select id="dependencyBySegmentCode" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+          select   COUNT(1)
+		     FROM CTS_SEGMENT
+ 			WHERE SEGMENT_CODE = #{segment_code}
+ 			<if test='isSegmentationScore != "BR"'>
+   				AND COMP_CODE =   #{compCode} 
+   			</if>
+   			AND SEGMENT_TYPE = #{isSegmentationScore}
+	 </select>
+	 
+	 
+	 <select id="returnSegCriteriaDetailsCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+            select   COUNT(1)
+		     FROM CTS_SEGMENT_DET
+ 			WHERE SEGMENT_CODE = #{segment_code}
+   			<if test='isSegmentationScore != "BR"'>
+   				AND COMP_CODE =   #{compCode} 
+   			</if>
+   			AND SEGMENT_TYPE = #{isSegmentationScore}
+	 </select>
+	
+	
+	
+	
+	<resultMap id="resCustomerSegmentationDetailListMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentDetVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentDetVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="ctsSegmentDetVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+		<result property="ctsSegmentDetVO.LINE_NO" column="LINE_NO"/>
+		<result property="ctsSegmentDetVO.CRITERIA_CODE" column="CRITERIA_CODE"/>
+		<result property="criteriaDesc" column="criteriaDesc"/>
+		<result property="ctsSegmentDetVO.LEFT_OPERATOR" column="LEFT_OPERATOR"/>
+		<result property="ctsSegmentDetVO.LOGICAL_OPERATOR" column="LOGICAL_OPERATOR"/>
+		<result property="ctsSegmentDetVO.RIGHT_OPERATOR" column="RIGHT_OPERATOR"/>
+		<result property="ctsSegmentDetVO.LABEL_PERC" column="LABEL_PERC"/>
+		<result property="ctsSegmentDetVO.LABEL_CODE" column="LABEL_CODE"/>
+		<result property="ctsSegmentDetVO.IGNORE_OTHER_CALC_FIELDS_YN" column="IGNORE_OTHER_CALC_FIELDS_YN"/>
+		<result property="ctsSegmentDetVO.LABEL_DESCRIPTION" column="LABEL_DESCRIPTION"/>
+	</resultMap>
+	
+	
+	<select id="returnCustSegmentationDetailListCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCustSegmentationDetailListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryCustSegmentationDetailListSQL">
+		    SELECT COMP_CODE,
+               BRANCH_CODE,
+               SEGMENT_CODE,
+               LINE_NO,
+               CRITERIA_CODE,
+               (SELECT CRITERIA_DESC
+                  FROM CTS_CRITERIA
+                 where CTS_CRITERIA.CRITERIA_CODE =
+                       CTS_SEGMENT_DET.CRITERIA_CODE
+                   and CTS_CRITERIA.COMP_CODE = #{compCode}) criteriaDesc,
+               LEFT_OPERATOR,
+               LOGICAL_OPERATOR,
+               RIGHT_OPERATOR,
+               LABEL_PERC,
+               LABEL_CODE,
+               IGNORE_OTHER_CALC_FIELDS_YN,
+               LABEL_DESCRIPTION
+          FROM CTS_SEGMENT_DET
+         WHERE SEGMENT_CODE = #{segment_code}
+           <if test='isSegmentationScore != "BR"'>
+           	AND COMP_CODE = #{compCode}
+           </if>           
+           AND SEGMENT_TYPE = #{isSegmentationScore}
+
+	</sql>
+	
+	<select id="returnCustSegmentationDetailList" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="resCustomerSegmentationDetailListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCustSegmentationDetailListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	
+	<select id="dependencyByCriteriaCode" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		SELECT COUNT(1)
+		FROM CTS_CRITERIA
+		WHERE COMP_CODE = #{compCode}
+		AND CRITERIA_CODE = #{criteria_code} 
+		<if test="isSegmentationScore != null and isSegmentationScore != ''">
+	   	AND CRITERIA_USAGE = #{isSegmentationScore}
+	   </if>
+	</select>
+	
+	<select id="returnCriteriaDesc" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="String">
+		SELECT CRITERIA_DESC
+		  FROM CTS_CRITERIA
+		 WHERE COMP_CODE = #{compCode}
+		   AND CRITERIA_CODE = #{criteria_code} 
+	</select>
+	
+	
+	
+	
+	
+	<resultMap id="resExcludeCIFsDetailListMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentCifExcludeVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentCifExcludeVO.CIF_NO" column="CIF_NO"/>
+		<result property="ctsSegmentCifExcludeVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+	</resultMap>
+	
+		<select id="returnExcludeCIFsDetailListCount" parameterType="com.path.vo.core.segmentation.ExcludeCIFSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryExcludeCIFsDetailListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryExcludeCIFsDetailListSQL">
+		SELECT COMP_CODE,
+		         CIF_NO,
+		         SEGMENT_CODE
+		   FROM CTS_SEGMENT_CIF_EXCLUDE
+		     WHERE COMP_CODE = #{compCode}
+		      AND SEGMENT_CODE  = #{segment_code}
+		      AND SEGMENT_TYPE = #{segmentType}
+	</sql>
+	
+	<select id="returnExcludeCIFsDetailList" parameterType="com.path.vo.core.segmentation.ExcludeCIFSC" resultMap="resExcludeCIFsDetailListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryExcludeCIFsDetailListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+		<select id="checkDateUpdated" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+	       select  COUNT(1)
+		     FROM CTS_SEGMENT
+ 			WHERE SEGMENT_CODE = #{segment_code}
+   			<if test='isSegmentationScore != "BR"'>
+   				AND COMP_CODE =  #{compCode}
+   			</if>
+   			AND SEGMENT_TYPE = #{isSegmentationScore}
+   			and DATE_UPDATED = #{dateUpdated}
+	 </select>
+	 
+	 <update id="updateSegmentStatus" parameterType="com.path.vo.core.segmentation.CustSegmentationCO" >
+	UPDATE CTS_SEGMENT
+	<set>
+		STATUS = #{ctsSegmentVO.STATUS}
+		<if test="ctsSegmentVO.MAIN_SCORE_YN != null">
+		,MAIN_SCORE_YN = #{ctsSegmentVO.MAIN_SCORE_YN}
+		</if>
+		<if test="ctsSegmentVO.MODIFIED_BY != null">
+			,MODIFIED_BY = #{ctsSegmentVO.MODIFIED_BY}
+		</if>
+		<if test="ctsSegmentVO.DATE_MODIFIED != null">
+			,DATE_MODIFIED = #{ctsSegmentVO.DATE_MODIFIED}
+		</if>
+		<if test="ctsSegmentVO.APPROVED_BY != null">
+			,APPROVED_BY = #{ctsSegmentVO.APPROVED_BY}
+		</if>
+		<if test="ctsSegmentVO.DATE_APPROVED != null">
+			,DATE_APPROVED = #{ctsSegmentVO.DATE_APPROVED}
+		</if>
+		<if test="ctsSegmentVO.REJECTED_BY != null">
+			,REJECTED_BY = #{ctsSegmentVO.REJECTED_BY}
+		</if>
+		<if test="ctsSegmentVO.DATE_REJECTED != null">
+			,DATE_REJECTED = #{ctsSegmentVO.DATE_REJECTED}
+		</if>
+		<if test="ctsSegmentVO.OLD_STATUS != null">
+			,OLD_STATUS = #{ctsSegmentVO.OLD_STATUS}
+		</if>
+		<if test="ctsSegmentVO.DATE_UPDATED != null">
+			,DATE_UPDATED = #{ctsSegmentVO.DATE_UPDATED}
+		</if>
+	</set>
+	where SEGMENT_CODE= #{ctsSegmentVO.SEGMENT_CODE}
+	<if test='isSegmentationScore != "BR"'>
+		AND COMP_CODE = #{ctsSegmentVO.COMP_CODE}
+	</if>
+	AND SEGMENT_TYPE = #{isSegmentationScore}
+</update>
+
+<delete id="deleteCtsCifSegmentExclude" parameterType="com.path.vo.core.segmentation.ExcludeCIFSC" >
+	delete from CTS_SEGMENT_CIF_EXCLUDE
+	 where COMP_CODE = #{compCode}
+	AND SEGMENT_CODE = #{segment_code}
+	AND SEGMENT_TYPE = #{segmentType}
+</delete>
+
+	<resultMap id="segmentationParamResultMap" type="com.path.vo.core.segmentation.CustSegmentationParamCO">
+		<result property="ctsSegmentParamVO.PARAM_NAME" column="PARAM_NAME" />
+		<result property="ctsSegmentParamVO.PARAM_ORDER" column="PARAM_ORDER" />
+		<result property="ctsSegmentParamVO.PARAM_VALUE" column="PARAM_VALUE" />
+		<result property="ctsSegmentParamVO.PARAM_TYPE" column="PARAM_TYPE" />
+		<result property="ctsSegmentParamVO.PARAM_CLASS" column="PARAM_CLASS" />
+		<result property="ctsSegmentParamVO.SESSION_ATTR_NAME" column="SESSION_ATTR_NAME" />
+		<result property="ctsSegmentParamVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="ctsSegmentParamVO.PARAM_QUERY_ID" column="PARAM_QUERY_ID" />
+		<result property="ctsSegmentParamVO.ENTITY_ID" column="ENTITY_ID" />
+		<result property="ctsSegmentParamVO.SEGMENT_CODE" column="SEGMENT_CODE" />
+		<result property="ctsSegmentParamVO.COMP_CODE" column="COMP_CODE" />
+		
+	</resultMap>
+
+	<sql id="select_segmentationParam_query">
+		<choose>
+			<when test="isSybase == 1">
+				SELECT col.name  AS PARAM_NAME,
+				       col.colid AS PARAM_ORDER,
+				       ty.name   AS PARAM_TYPE,
+				       
+				       CTS_SEGMENT_PARAM.BRANCH_CODE,
+				       CTS_SEGMENT_PARAM.ENTITY_TYPE,
+				       
+				       CTS_SEGMENT_PARAM.PARAM_VALUE,
+				       CTS_SEGMENT_PARAM.SESSION_ATTR_NAME,
+				       CTS_SEGMENT_PARAM.PARAM_CLASS,
+				       CTS_SEGMENT_PARAM.PARAM_QUERY_ID,
+				       CTS_SEGMENT_PARAM.ENTITY_ID
+				  FROM sysobjects t, systypes ty, syscolumns col
+				  LEFT OUTER JOIN CTS_SEGMENT_PARAM ON (CTS_SEGMENT_PARAM.PARAM_ORDER = col.colid
+				                                       <!-- AND CTS_SEGMENT_PARAM.PARAM_TYPE = ty.name  --> 
+				                                       AND CTS_SEGMENT_PARAM.PARAM_NAME = col.name
+				                                       <if test='isSegmentationScore != "BR"'>
+				                                       	AND CTS_SEGMENT_PARAM.COMP_CODE = #{compCode}
+													   </if>
+				                                       AND CTS_SEGMENT_PARAM.SEGMENT_CODE = #{segment_code}
+				                                       AND CTS_SEGMENT_PARAM.SEGMENT_TYPE = #{isSegmentationScore}
+				                                       AND CTS_SEGMENT_PARAM.SEG_LINE_NO = #{lineNo}
+				                                       AND CTS_SEGMENT_PARAM.ENTITY_TYPE = #{ENTITY_TYPE}
+				                                       AND CTS_SEGMENT_PARAM.ENTITY_ID = #{ENTITY_ID} )
+				 where t.id = col.id
+				   and ty.usertype = col.usertype
+				   AND t.name = #{entityName}
+				   AND col.status2 = 1
+				 ORDER BY PARAM_ORDER ASC  
+				
+			</when>
+			<otherwise>
+				SELECT USER_ARGUMENTS.ARGUMENT_NAME AS PARAM_NAME,
+				       USER_ARGUMENTS.POSITION      AS PARAM_ORDER,
+				       USER_ARGUMENTS.DATA_TYPE     AS PARAM_TYPE,
+				       
+				       CTS_SEGMENT_PARAM.BRANCH_CODE,
+				       CTS_SEGMENT_PARAM.ENTITY_TYPE,
+				       
+				       CTS_SEGMENT_PARAM.PARAM_VALUE,
+				       CTS_SEGMENT_PARAM.SESSION_ATTR_NAME,
+				       CTS_SEGMENT_PARAM.PARAM_CLASS,
+				       CTS_SEGMENT_PARAM.PARAM_QUERY_ID,
+				       CTS_SEGMENT_PARAM.ENTITY_ID
+				  FROM USER_ARGUMENTS
+				  LEFT OUTER JOIN CTS_SEGMENT_PARAM ON (CTS_SEGMENT_PARAM.PARAM_ORDER = USER_ARGUMENTS.POSITION
+				                                        AND CTS_SEGMENT_PARAM.PARAM_TYPE = USER_ARGUMENTS.DATA_TYPE
+				                                        AND CTS_SEGMENT_PARAM.PARAM_NAME = USER_ARGUMENTS.ARGUMENT_NAME
+				                                        <if test='isSegmentationScore != "BR"'>
+				                                        	AND CTS_SEGMENT_PARAM.COMP_CODE = #{compCode}
+				                                        </if>
+				                                        AND CTS_SEGMENT_PARAM.SEGMENT_CODE = #{segment_code}
+				                                        AND CTS_SEGMENT_PARAM.SEGMENT_TYPE = #{isSegmentationScore}
+				                                        AND CTS_SEGMENT_PARAM.SEG_LINE_NO = #{lineNo}
+				                                        AND CTS_SEGMENT_PARAM.ENTITY_TYPE = #{ENTITY_TYPE}
+				                                        AND CTS_SEGMENT_PARAM.ENTITY_ID = #{ENTITY_ID})
+				 WHERE USER_ARGUMENTS.OBJECT_NAME = #{entityName}
+				   AND IN_OUT = 'IN'
+				 ORDER BY PARAM_ORDER ASC
+				
+			</otherwise>
+		</choose>
+	</sql>
+
+	<select id="returnSegmentationParamListCount" resultType="int" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_segmentationParam_query" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnSegmentationParamList" resultMap="segmentationParamResultMap" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_segmentationParam_query" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+    
+    <select id="checkSegProcQueryParamExists" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+    	SELECT COUNT(1)
+    	FROM CTS_SEGMENT_PARAM
+       WHERE SEGMENT_CODE = #{segment_code,jdbcType=NUMERIC} 
+       <if test='isSegmentationScore != "BR"'>
+        	AND COMP_CODE = #{compCode}
+        </if>
+        AND SEG_LINE_NO = #{lineNo,jdbcType=NUMERIC}
+        AND ENTITY_TYPE = #{ENTITY_TYPE}
+        AND SEGMENT_TYPE = #{isSegmentationScore}
+    </select>
+    
+    <select id="returnArgumentDetailsResult" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="segmentationParamResultMap">
+    	select 	   COMP_CODE,
+    			   BRANCH_CODE,
+			       ENTITY_TYPE,   
+			       PARAM_VALUE, 
+			       SESSION_ATTR_NAME,
+			       PARAM_CLASS,
+			       PARAM_QUERY_ID,
+			       ENTITY_ID,
+			       SEGMENT_CODE
+    	 from CTS_SEGMENT_PARAM
+    	 where SEGMENT_CODE= #{segment_code} AND
+    	 	   <if test='isSegmentationScore != "BR"'>
+    	 	   		COMP_CODE =  #{compCode} AND
+    	 	   </if>
+               SEG_LINE_NO = #{lineNo} AND
+               ENTITY_TYPE = #{ENTITY_TYPE} AND 
+               PARAM_NAME = #{paramName} AND SEGMENT_TYPE = #{isSegmentationScore}
+               <choose>
+				<when test='"M".equals(ENTITY_TYPE)'>
+					AND PARAM_QUERY_ID = #{ENTITY_ID}
+				</when>
+				<otherwise>
+					AND ENTITY_ID= #{ENTITY_ID}
+				</otherwise>
+				</choose>
+    </select>
+    
+    <delete id="deleteSegmentationParam" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	DELETE FROM CTS_SEGMENT_PARAM 
+    	 where SEGMENT_CODE= #{segment_code}
+    	 	<if test='isSegmentationScore != "BR"'>
+    	 		AND COMP_CODE =  #{compCode}
+    	 	</if>
+    	   AND SEG_LINE_NO = #{lineNo}
+    	   AND SEGMENT_TYPE = #{isSegmentationScore}
+    </delete>
+
+    
+    <select id="returnArgumentParamsDetails" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="segmentationParamResultMap">
+    	select CTS_SEGMENT_PARAM.COMP_CODE,
+    		   CTS_SEGMENT_PARAM.BRANCH_CODE,
+			   CTS_SEGMENT_PARAM.ENTITY_TYPE,   
+			   CTS_SEGMENT_PARAM.PARAM_VALUE, 
+			   CTS_SEGMENT_PARAM.SESSION_ATTR_NAME,
+			   CTS_SEGMENT_PARAM.PARAM_CLASS,
+			   CTS_SEGMENT_PARAM.PARAM_TYPE,
+			   CTS_SEGMENT_PARAM.PARAM_ORDER,
+			   CTS_SEGMENT_PARAM.PARAM_NAME,
+			   CTS_SEGMENT_PARAM.PARAM_QUERY_ID
+    	 from CTS_SEGMENT_PARAM
+    	 where CTS_SEGMENT_PARAM.SEGMENT_CODE= #{segment_code} 
+    	 	<if test='isSegmentationScore != "BR"'>
+    	 		AND CTS_SEGMENT_PARAM.COMP_CODE =  #{compCode}
+    	 	</if>
+           AND CTS_SEGMENT_PARAM.SEGMENT_TYPE = #{isSegmentationScore}
+           AND CTS_SEGMENT_PARAM.SEG_LINE_NO = #{lineNo}
+           AND CTS_SEGMENT_PARAM.ENTITY_TYPE = #{ENTITY_TYPE} 
+           AND CTS_SEGMENT_PARAM.ENTITY_ID = #{ENTITY_ID}
+           ORDER BY CTS_SEGMENT_PARAM.PARAM_ORDER ASC
+    	
+    </select>
+    
+    <select id="returnOutArgs" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="java.lang.String" >
+    	 <choose>
+			<when test="isSybase == 1">
+				SELECT ty.name AS PARAM_TYPE
+				  FROM sysobjects t, systypes ty, syscolumns col
+				 where t.id = col.id
+				   and ty.usertype = col.usertype
+				   AND t.name = #{entityName}
+				   AND col.status2 = 2
+			</when>
+			<otherwise>
+				SELECT DATA_TYPE
+		    	FROM USER_ARGUMENTS
+		    	WHERE USER_ARGUMENTS.OBJECT_NAME = #{entityName}
+		    	 AND IN_OUT = 'OUT' 
+			</otherwise>
+		</choose>
+    </select>
+	
+	
+	<resultMap id="resCustSegmentProcessMap" type="com.path.vo.core.segmentation.CustSegmentationProcessCO">
+		<result property="ctsSegmentCifExResVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="branchCode" column="branchCode"/>
+		<result property="ctsSegmentCifExResVO.CIF_NO" column="CIF_NO"/>
+		<result property="ctsSegmentCifExResVO.RECOMMENED_SEGMENT" column="RECOMMENED_SEGMENT"/>
+		<result property="recomendedPriority" column="recomendedPriority"/>
+		<result property="currentSegment" column="currentSegment"/>
+		<result property="currentPriority" column="currentPriority"/>
+		<result property="ctsSegmentCifExResVO.CREATED_DATE" column="CREATED_DATE"/>
+		<result property="ctsSegmentCifExResVO.STATUS" column="STATUS"/>
+		<result property="recommendedDate" column="recommendedDate"/>
+	</resultMap>
+	
+	<select id="returnCustSegmentationProcessList" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="resCustSegmentProcessMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCustSegmentProcessFinal"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnCustSegmentationProcessListCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCustSegmentProcessFinal"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryCustSegmentProcessFinal">
+		SELECT COMP_CODE,
+				(SELECT BRANCH_CODE FROM CIF
+				WHERE COMP_CODE = CSC.COMP_CODE
+				  AND CIF_NO = CSC.CIF_NO) branchCode,
+				CIF_NO,
+				RECOMMENED_SEGMENT,
+				(SELECT PRIORITY FROM CTS_SEGMENT
+				WHERE SEGMENT_CODE = CSC.RECOMMENED_SEGMENT 
+					<if test='isSegmentationScore != "BR"'>
+						AND COMP_CODE = CSC.COMP_CODE
+					</if>
+				  AND SEGMENT_TYPE = CSC.SEGMENT_TYPE) recomendedPriority,
+				(SELECT GROUP_CODE FROM CTS_SEGMENT
+				WHERE COMP_CODE = CSC.COMP_CODE
+				  AND SEGMENT_CODE = CSC.RECOMMENED_SEGMENT
+				  AND SEGMENT_TYPE = CSC.SEGMENT_TYPE) recommendedGroupCode,				  				  
+				(SELECT SEGMENT_CODE FROM CIF_EXTENDED
+				WHERE COMP_CODE = CSC.COMP_CODE
+				  AND CIF_NO = CSC.CIF_NO) currentSegment,
+				(SELECT PRIORITY FROM CTS_SEGMENT
+				WHERE SEGMENT_TYPE= CSC.SEGMENT_TYPE
+				AND  SEGMENT_CODE = (SELECT SEGMENT_CODE FROM CIF_EXTENDED
+										WHERE COMP_CODE = CSC.COMP_CODE
+										  AND CIF_NO = CSC.CIF_NO) 
+				<if test='isSegmentationScore != "BR"'>
+					AND COMP_CODE = CSC.COMP_CODE
+				</if>
+				) currentPriority,
+				
+				(SELECT GROUP_CODE FROM CTS_SEGMENT
+				WHERE COMP_CODE = CSC.COMP_CODE
+				  AND SEGMENT_TYPE= CSC.SEGMENT_TYPE
+				  AND SEGMENT_CODE = (SELECT SEGMENT_CODE FROM CIF_EXTENDED
+										WHERE COMP_CODE = CSC.COMP_CODE
+										  AND CIF_NO = CSC.CIF_NO)) currentGroupCode,
+										  
+               (SELECT CREATED_DATE
+                  FROM CTS_CIF_SEGMENT_HISTORY
+                 WHERE COMP_CODE = CSC.COMP_CODE
+                   AND OLD_SEGMENT = (SELECT SEGMENT_CODE
+                  						FROM CIF_EXTENDED
+                 						WHERE COMP_CODE = CSC.COMP_CODE
+                  						 AND CIF_NO = CSC.CIF_NO)
+                   AND NEW_SEGMENT = CSC.RECOMMENED_SEGMENT
+                   AND CIF_NO = CSC.CIF_NO
+                   AND LAST_RUN = '9') recommendedDate,					  
+				CRITERIA,				
+				CREATED_DATE,
+				STATUS
+		FROM 
+		<if test="processType == 'FP'"> <!-- Final Process -->
+		 	CTS_SEG_CIF_EXEC_RESULT CSC
+		</if>
+		<if test="processType == 'TP'"> <!-- Trial Process -->
+		 	CTS_SEG_CIF_EXEC_RESULT_TEMP CSC
+		</if>
+		WHERE COMP_CODE = #{compCode}
+		AND STATUS = #{status}
+		  <if test='"R".equals(ivCrud)'>
+		  	AND CREATED_BY = #{userId}
+		  </if>
+		  
+		 <if test="(fromBranch != null and fromBranch != emptyBigDecimalValue) and (toBranch != null and toBranch != emptyBigDecimalValue) and (fromCif != null and fromCif != emptyBigDecimalValue) and (toCif != null and toCif != emptyBigDecimalValue)">
+				AND CIF_NO between #{fromCif  , jdbcType=NUMERIC} and #{toCif , jdbcType=NUMERIC}
+		</if>
+		  		  
+   </sql>
+   
+   <insert id="insertSegProcessResult" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		INSERT INTO
+		<if test="processType == 'FP'"> <!-- Final Process -->
+		 CTS_SEG_CIF_EXEC_RESULT 
+		</if>
+		<if test="processType == 'TP'"> <!-- Trial Process -->
+		 CTS_SEG_CIF_EXEC_RESULT_TEMP
+		</if>
+			(COMP_CODE, CIF_NO, RECOMMENED_SEGMENT, SEGMENT_TYPE, CRITERIA, STATUS,  CREATED_BY, CREATED_DATE)
+		
+			SELECT #{compCode}, #{cifNo}, CTS_SEGMENT.SEGMENT_CODE, #{isSegmentationScore}, CSFT.CRITERIA_CODE, 'A', #{userId}, <include refid="commonLibMapper.systemDate" />
+			
+			
+			FROM CTS_SEGMENT, CTS_CIF_SEG_FINAL_TMP CSFT, CIF
+     		 WHERE CTS_SEGMENT.SEGMENT_CODE = CSFT.SEGMENT_CODE
+			AND CTS_SEGMENT.SEGMENT_TYPE = CSFT.SEGMENT_TYPE
+			AND CTS_SEGMENT.COMP_CODE = CSFT.COMP_CODE
+     		AND CTS_SEGMENT.COMP_CODE = #{compCode} AND CTS_SEGMENT.SEGMENT_TYPE = #{isSegmentationScore} AND CTS_SEGMENT.STATUS = 'P'
+     		AND CSFT.COMP_CODE=  CIF.COMP_CODE 
+     		AND CSFT.CIF = CIF.CIF_NO
+     		AND CSFT.CREATED_BY = #{userId}
+       		AND PRIORITY IN
+           (SELECT MIN(PRIORITY) FROM CTS_SEGMENT
+             WHERE GROUP_CODE IN (SELECT GROUP_CODE FROM CTS_SEGMENT_GROUPING S
+                                 WHERE COMP_CODE = #{compCode} AND PRIORITY IN (SELECT MIN(PRIORITY) FROM CTS_SEGMENT_GROUPING
+                                                                     WHERE COMP_CODE = #{compCode}
+                                                                     AND GROUP_CODE IN 
+                                                                     (SELECT GROUP_CODE FROM CTS_SEGMENT
+                                                                       WHERE COMP_CODE = #{compCode} AND SEGMENT_TYPE = #{isSegmentationScore}  AND STATUS = 'P'
+                                                                         AND SEGMENT_CODE IN
+                                                                             (SELECT SEGMENT_CODE
+                                                                                FROM CTS_CIF_SEG_FINAL_TMP
+                                                                               WHERE CREATED_BY = #{userId}
+                                                                                 AND COMP_CODE = #{compCode}
+                                                                                 AND CIF = #{cifNo}))))
+                           AND COMP_CODE = #{compCode}
+                           AND SEGMENT_TYPE = #{isSegmentationScore}
+                           AND STATUS = 'P'
+                           AND SEGMENT_CODE IN (SELECT SEGMENT_CODE
+                                                  FROM CTS_CIF_SEG_FINAL_TMP
+                                                 WHERE CREATED_BY = #{userId}
+                                                   AND COMP_CODE = #{compCode}
+                                                   AND CIF = #{cifNo})
+							AND NOT EXISTS (
+					          SELECT 1 FROM CTS_SEGMENT_CIF_EXCLUDE
+					          WHERE CTS_SEGMENT_CIF_EXCLUDE.COMP_CODE = CTS_SEGMENT.COMP_CODE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_CODE = CTS_SEGMENT.SEGMENT_CODE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_TYPE = CTS_SEGMENT.SEGMENT_TYPE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.CIF_NO = #{cifNo}))                              		
+			AND CIF.CIF_NO = #{cifNo}
+			AND	CIF.COMP_CODE = #{compCode}
+				                                              
+            <if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+				AND  CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+			</if>
+			
+			<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+				AND  CIF.CIF_NO between #{fromCif} and #{toCif}
+			</if>          
+			ORDER BY CSFT.CIF
+                                                   
+			<!-- FROM 
+				( SELECT COMP_CODE ,CIF , MIN(MIN_PRIORITY_GP) MIN_PRIORITY_GROUP FROM
+				
+				(SELECT CTS_SEGMENT.COMP_CODE COMP_CODE, 
+        		CTS_CIF_SEG_FINAL_TMP.CIF CIF, 
+        		G.GROUP_CODE              GP,
+        		COALESCE(MIN(CTS_SEGMENT.PRIORITY),0) MIN_PRIORITY,
+        		COALESCE(MIN(G.PRIORITY),0) MIN_PRIORITY_GP
+  				FROM CTS_CIF_SEG_FINAL_TMP, CTS_SEGMENT, CTS_SEGMENT_GROUPING G
+  				WHERE CTS_SEGMENT.COMP_CODE = #{compCode}
+				AND  CTS_SEGMENT.SEGMENT_CODE = CTS_CIF_SEG_FINAL_TMP.SEGMENT_CODE
+				AND  CTS_SEGMENT.SEGMENT_TYPE = CTS_CIF_SEG_FINAL_TMP.SEGMENT_TYPE
+				AND CTS_SEGMENT.COMP_CODE = G.COMP_CODE
+           		AND CTS_SEGMENT.GROUP_CODE = G.GROUP_CODE
+				<![CDATA[
+				AND	 EXISTS(SELECT 1 
+							FROM CIF_EXTENDED LEFT JOIN CTS_CIF_SEG_FINAL_TMP t1 on t1.CIF = CIF_EXTENDED.CIF_NO 
+							WHERE CIF_EXTENDED.COMP_CODE = CTS_SEGMENT.COMP_CODE
+							AND COALESCE(CIF_EXTENDED.SEGMENT_CODE, 0) <> CTS_SEGMENT.SEGMENT_CODE)
+							AND CTS_SEGMENT.SEGMENT_TYPE = CTS_CIF_SEG_FINAL_TMP.SEGMENT_TYPE]]>
+				GROUP BY CTS_SEGMENT.COMP_CODE, CTS_CIF_SEG_FINAL_TMP.CIF, G.GROUP_CODE )
+				GROUP BY COMP_CODE, CIF
+  				) TBL,
+  				
+			CTS_CIF_SEG_FINAL_TMP CSFT, CTS_SEGMENT, CIF, CTS_SEGMENT_GROUPING
+			
+			WHERE	TBL.COMP_CODE = CTS_SEGMENT.COMP_CODE
+			AND 	CSFT.CIF = TBL.CIF
+			AND     CSFT.CREATED_BY = #{userId}
+			AND		CTS_SEGMENT.SEGMENT_CODE = CSFT.SEGMENT_CODE
+			AND		CTS_SEGMENT.SEGMENT_TYPE = CSFT.SEGMENT_TYPE			
+			
+			AND TBL.CIF > 0		
+							
+			AND CTS_SEGMENT.PRIORITY IN
+			   (SELECT MIN(CS.PRIORITY) MIN_PRIORTY 
+            FROM CTS_SEGMENT CS 
+             WHERE CS.COMP_CODE = #{compCode}
+             AND CS.SEGMENT_TYPE ='S'
+             AND CS.SEGMENT_CODE IN SEGMENT_CODE
+             AND CS.GROUP_CODE = CTS_SEGMENT.GROUP_CODE
+           GROUP BY GROUP_CODE)
+
+
+			AND CTS_SEGMENT.GROUP_CODE = CTS_SEGMENT_GROUPING.GROUP_CODE
+    		AND CTS_SEGMENT.COMP_CODE = CTS_SEGMENT_GROUPING.COMP_CODE
+    		AND CTS_SEGMENT_GROUPING.PRIORITY = TBL.MIN_PRIORITY_GROUP
+			
+			AND NOT EXISTS (
+					          SELECT 1 FROM CTS_SEGMENT_CIF_EXCLUDE
+					          WHERE CTS_SEGMENT_CIF_EXCLUDE.COMP_CODE = CTS_SEGMENT.COMP_CODE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_CODE = CTS_SEGMENT.SEGMENT_CODE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_TYPE = CTS_SEGMENT.SEGMENT_TYPE
+					          AND CTS_SEGMENT_CIF_EXCLUDE.CIF_NO = #{cifNo})
+			AND 	CIF.CIF_NO = TBL.CIF
+			AND		CIF.COMP_CODE = TBL.COMP_CODE
+				
+			<if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+				AND  CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+			</if>
+			
+			<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+				AND  CIF.CIF_NO between #{fromCif} and #{toCif}
+			</if>          
+			ORDER BY CSFT.CIF -->
+	</insert>
+   
+<!-- 
+	<select id="insertSegProcessResult" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULT_TEMPVO">
+		
+			SELECT 
+			TBL.COMP_CODE COMP_CODE , 
+			TBL.CIF CIF_NO, 
+			CSFT.SEGMENT_CODE RECOMMENED_SEGMENT , 
+			CSFT.CRITERIA_CODE CRITERIA , 
+			'A' STATUS, 
+			#{userId} CREATED_BY, 
+			<include refid="commonLibMapper.systemDate" /> CREATED_DATE
+			
+			FROM 
+				(SELECT CTS_SEGMENT.COMP_CODE COMP_CODE, 
+        		CTS_CIF_SEG_FINAL_TMP.CIF CIF, 
+        		COALESCE(MIN(CTS_SEGMENT.PRIORITY),0) MIN_PRIORITY
+  				FROM CTS_CIF_SEG_FINAL_TMP, CTS_SEGMENT
+  				WHERE CTS_SEGMENT.COMP_CODE = #{compCode}
+				AND  CTS_SEGMENT.SEGMENT_CODE = CTS_CIF_SEG_FINAL_TMP.SEGMENT_CODE
+				GROUP BY CTS_SEGMENT.COMP_CODE, CTS_CIF_SEG_FINAL_TMP.CIF
+  				) TBL,
+  				
+			CTS_CIF_SEG_FINAL_TMP CSFT, CTS_SEGMENT, CIF
+			
+			WHERE	TBL.COMP_CODE = CTS_SEGMENT.COMP_CODE
+			AND 	CSFT.CIF = TBL.CIF
+			AND		CTS_SEGMENT.SEGMENT_CODE = CSFT.SEGMENT_CODE
+			AND		COALESCE (CTS_SEGMENT.PRIORITY,0) = TBL.MIN_PRIORITY
+				
+			<if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+				AND  CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+			</if>
+			
+			<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+				AND  CIF.CIF_NO between #{fromCif} and #{toCif}
+			</if>
+			
+			
+			
+			ORDER BY CSFT.CIF
+	</select>
+	-->
+	<delete id="deleteFromCTS_SEG_CIF_EXEC_RESULT_TEMP" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+	<!-- 	
+		<if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+			DELETE FROM CTS_SEG_CIF_EXEC_RESULT_TEMP 
+			WHERE COMP_CODE = #{compCode} 
+			AND EXISTS
+					(
+						SELECT 1 FROM CIF
+						WHERE CIF.COMP_CODE = #{compCode} 
+						AND CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+						AND CIF.CIF_NO = CTS_SEG_CIF_EXEC_RESULT_TEMP.CIF_NO
+					)
+		</if>
+		
+		<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+			DELETE	FROM CTS_SEG_CIF_EXEC_RESULT_TEMP
+			WHERE	COMP_CODE = #{compCode}
+			AND 	CIF_NO between #{fromCif} and #{toCif}
+		
+		</if>
+		-->
+		DELETE FROM CTS_SEG_CIF_EXEC_RESULT_TEMP 
+			WHERE COMP_CODE = #{compCode} 
+			<if test="(fromBranch != null and fromBranch != emptyBigDecimalValue) and (toBranch != null and toBranch != emptyBigDecimalValue)">
+			AND EXISTS
+					(
+						SELECT 1 FROM CIF
+						WHERE CIF.COMP_CODE = #{compCode} 
+						AND CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+						AND CIF.CIF_NO = CTS_SEG_CIF_EXEC_RESULT_TEMP.CIF_NO
+					)
+			</if>
+			<if test="(fromBranch != null and fromBranch != emptyBigDecimalValue) and (toBranch != null and toBranch != emptyBigDecimalValue) and (fromCif != null and fromCif != emptyBigDecimalValue) and (toCif != null and toCif != emptyBigDecimalValue)">
+				OR CIF_NO between #{fromCif  , jdbcType=NUMERIC} and #{toCif , jdbcType=NUMERIC}
+			</if>
+			<if test="(fromBranch == null or fromBranch == emptyBigDecimalValue) and (toBranch == null or toBranch == emptyBigDecimalValue) and (fromCif != null and fromCif != emptyBigDecimalValue) and (toCif != null and toCif != emptyBigDecimalValue)">
+				AND CIF_NO between #{fromCif , jdbcType=NUMERIC} and #{toCif , jdbcType=NUMERIC}
+			</if>		
+	</delete>	
+	
+	<delete id="deleteFromCTS_SEG_CIF_EXEC_RESULT" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<!-- 
+		<if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+			DELETE FROM CTS_SEG_CIF_EXEC_RESULT 
+			WHERE COMP_CODE = #{compCode} 
+			AND EXISTS
+					(
+						SELECT 1 FROM CIF
+						WHERE CIF.COMP_CODE = #{compCode} 
+						AND CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+						AND CIF.CIF_NO = CTS_SEG_CIF_EXEC_RESULT.CIF_NO
+					)
+		</if>
+		
+		<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+			DELETE	FROM CTS_SEG_CIF_EXEC_RESULT
+			WHERE	COMP_CODE = #{compCode}
+			AND 	CIF_NO between #{fromCif} and #{toCif}
+		
+		</if>
+		-->
+		
+		DELETE FROM CTS_SEG_CIF_EXEC_RESULT 
+			WHERE COMP_CODE = #{compCode} 
+			<if test="(fromBranch != null and fromBranch != emptyBigDecimalValue) and (toBranch != null and toBranch != emptyBigDecimalValue)">
+			AND EXISTS
+					(
+						SELECT 1 FROM CIF
+						WHERE CIF.COMP_CODE = #{compCode} 
+						AND CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+						AND CIF.CIF_NO = CTS_SEG_CIF_EXEC_RESULT.CIF_NO
+					)
+			</if>
+			<if test="(fromBranch != null or fromBranch != emptyBigDecimalValue) and (toBranch != null or toBranch != emptyBigDecimalValue) and (fromCif != null or fromCif != emptyBigDecimalValue) and (toCif != null or toCif != emptyBigDecimalValue)">
+				OR CIF_NO between #{fromCif} and #{toCif}
+			</if>
+			<if test="(fromBranch == null or fromBranch == emptyBigDecimalValue) and (toBranch == null or toBranch == emptyBigDecimalValue) and (fromCif != null or fromCif != emptyBigDecimalValue) and (toCif != null or toCif != emptyBigDecimalValue)">
+				AND CIF_NO between #{fromCif} and #{toCif}
+			</if>	
+	</delete>
+	
+    <update id="updateCustSegProcessStatus" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" >
+		UPDATE CTS_SEG_CIF_EXEC_RESULT
+			SET STATUS = 'P'
+		WHERE COMP_CODE = #{compCode}
+		AND CIF_NO = #{cifNo}
+	</update>
+	
+	<update id="updateCustSegCifExt" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" >
+		UPDATE CIF_EXTENDED
+			SET SEGMENT_CODE = #{segment_code}
+		WHERE COMP_CODE = #{compCode}
+		AND CIF_NO = #{cifNo}
+	</update>
+	
+	<delete id="rejectCustSegProcess" parameterType="com.path.vo.core.segmentation.ExcludeCIFSC" >
+		DELETE FROM CTS_SEG_CIF_EXEC_RESULT
+		 WHERE COMP_CODE = #{compCode}
+		AND CIF_NO = #{cifNo}
+	</delete>
+	
+	
+	<select id="getCifOfTrialSegmentationProcessListCount" resultType="int" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+ 		<include refid="getCifOfTrialSegmentationProcess"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+		<select id="getCifOfTrialSegmentationProcessList" resultType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULT_TEMPVO" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="getCifOfTrialSegmentationProcess"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<sql id="getCifOfTrialSegmentationProcess">
+    	SELECT CIF_NO, 
+    		   CRITERIA
+    	FROM CTS_SEG_CIF_EXEC_RESULT_TEMP
+		WHERE RECOMMENED_SEGMENT = #{segment_code}
+		AND CREATED_BY = #{userId}
+		AND SEGMENT_TYPE = #{isSegmentationScore}
+    </sql>
+    
+   
+   <resultMap id="resSegmentationListMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+		<result property="ctsSegmentVO.SEGMENT_DESC" column="SEGMENT_DESC"/>
+	</resultMap>
+	 
+    <select id="returnSegmentationListCount" resultType="int" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+ 		<include refid="getSegmentationList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="returnSegmentationList" resultType="com.path.dbmaps.vo.CTS_SEGMENTVO" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="getSegmentationList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<sql id="getSegmentationList">
+    	SELECT SEGMENT_CODE, 
+    		   SEGMENT_DESC
+    	FROM CTS_SEGMENT
+		WHERE COMP_CODE = #{compCode}
+		AND SEGMENT_TYPE = #{isSegmentationScore}
+		AND STATUS = 'P'
+    </sql>
+	
+	<resultMap id="returnMainSegmentCodeMap" type="com.path.vo.core.segmentation.CustSegmentationSC">
+		<result property="segmentCode" column="SEGMENT_CODE"/>
+		<result property="segmentDesc" column="SEGMENT_DESC"/>
+		<result property="groupCode" column="GROUP_CODE"/>
+		<result property="groupDesc" column="groupDesc"/>
+	</resultMap>
+	
+    <select id="returnMainSegmentCode" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="returnMainSegmentCodeMap" >
+    	SELECT SEGMENT_CODE, SEGMENT_DESC, GROUP_CODE,
+    	(SELECT DESCRIPTION FROM CTS_SEGMENT_GROUPING WHERE CTS_SEGMENT_GROUPING.COMP_CODE = CTS_SEGMENT.COMP_CODE AND CTS_SEGMENT_GROUPING.GROUP_CODE = CTS_SEGMENT.GROUP_CODE) groupDesc   	
+    	FROM CTS_SEGMENT
+		WHERE COMP_CODE = #{compCode}
+		AND SEGMENT_TYPE = #{isSegmentationScore}
+		AND STATUS = 'P'
+		AND SEGMENT_CODE = #{segmentCode}
+    </select>
+    
+    <resultMap id="returnCustSegmentationDetailsMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="ctsSegmentDetVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentDetVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="ctsSegmentDetVO.SEGMENT_CODE" column="SEGMENT_CODE"/>
+		<result property="ctsSegmentDetVO.LINE_NO" column="LINE_NO"/>
+		<result property="ctsSegmentDetVO.CRITERIA_CODE" column="CRITERIA_CODE"/>
+		<result property="ctsSegmentDetVO.LEFT_OPERATOR" column="LEFT_OPERATOR"/>
+		<result property="ctsSegmentDetVO.LOGICAL_OPERATOR" column="LOGICAL_OPERATOR"/>
+		<result property="ctsSegmentDetVO.RIGHT_OPERATOR" column="RIGHT_OPERATOR"/>
+		<result property="ctsSegmentDetVO.LABEL_PERC" column="LABEL_PERC"/>
+		<result property="ctsSegmentDetVO.LABEL_CODE" column="LABEL_CODE"/>
+		<result property="ctsSegmentDetVO.IGNORE_OTHER_CALC_FIELDS_YN" column="IGNORE_OTHER_CALC_FIELDS_YN"/>
+		<result property="ctsSegmentDetVO.LABEL_DESCRIPTION" column="LABEL_DESCRIPTION"/>	
+	</resultMap>
+	
+    <select id="returnCustSegmentationDetails" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="returnCustSegmentationDetailsMap">
+    	<include refid="queryCustSegmentationDetailListSQL"/>
+    </select>
+    
+    <insert id="insertAmlCifScoreResult" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	INSERT INTO AML_CIF_SCORE_RESULT(COMP_CODE, BRANCH_CODE, SEGMENT_CODE, LINE_NO, CIF_NO, SCORE_VALUE, RUN_TYPE, CREATED_DATE, CREATED_BY)
+      	VALUES(#{compCode}, #{branchCode}, #{segmentCode}, ((SELECT CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE MAX(LINE_NO) END FROM	AML_CIF_SCORE_RESULT WHERE COMP_CODE = #{compCode}) + 1),
+      	#{cifNo}, #{score,jdbcType=NUMERIC}, 'M', #{runningDate}, #{userId})
+    </insert>
+    
+    
+    <resultMap id="returnSegmentGroupCodeMap" type="com.path.vo.core.segmentation.CustSegmentationSC">
+		<result property="groupCode" column="GROUP_CODE"/>
+		<result property="groupDesc" column="DESCRIPTION"/>
+	</resultMap>
+	
+    <select id="returnSegmentGroupCode" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="returnSegmentGroupCodeMap" >
+    	SELECT GROUP_CODE, DESCRIPTION
+    	FROM CTS_SEGMENT_GROUPING
+		WHERE COMP_CODE = #{compCode}
+		AND STATUS = 'P'
+		AND GROUP_CODE = #{groupCode}
+    </select>
+    
+    <select id="returnCifCountBySegment" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+	  SELECT COUNT(1)
+	  FROM CTS_CIF_SEGMENT_HISTORY
+	  WHERE COMP_CODE = #{compCode}
+	    AND NEW_SEGMENT = #{segmentCode} AND LAST_RUN = '1'
+	 </select>
+	 
+	<delete id="deleteSegmentationDetails" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	DELETE FROM CTS_SEGMENT_DET 
+    	 where SEGMENT_CODE= #{segment_code} 
+    	 	<if test='isSegmentationScore != "BR"'>
+    	 		AND COMP_CODE =  #{compCode}
+    	 	</if>
+    	   AND SEGMENT_TYPE = #{isSegmentationScore}
+    </delete>
+    
+    <delete id="deleteSegmentationParamForAllLines" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	DELETE FROM CTS_SEGMENT_PARAM 
+    	 where SEGMENT_CODE= #{segment_code}
+    	   <if test='isSegmentationScore != "BR"'>
+    	 	AND COMP_CODE =  #{compCode}
+    	    </if>
+    	   AND SEGMENT_TYPE = #{isSegmentationScore}
+    	   AND ENTITY_TYPE != 'M' <!-- by Bilal for TP#750884 -->
+    </delete>
+	
+	 <!-- By Bilal For TP#750884  -->
+    <resultMap id="multiSelectResultMap"
+		type="com.path.dbmaps.vo.AML_PARAM_MAPPINGVO">
+		<result property="PARAM_VALUE" column="PARAM_VALUE" />
+	</resultMap>
+	
+	<select id="returnMaxLineNo" parameterType="com.path.vo.core.segmentation.CustSegmentationSC"
+	resultType="int">
+		<include refid="returnMaxLineNoMapping" />
+	</select>
+	
+	<sql id="returnMaxLineNoMapping">
+		SELECT MAX(LINE_NO)
+		FROM AML_PARAM_MAPPING
+	</sql>
+	
+	<select id="loadMultiSelectListGrid" resultMap="multiSelectResultMap"
+		parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="loadMultiselect_values" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+<!-- 	AND CRITERIA_CODE = #{CRITERIA_CODE,jdbcType=NUMERIC} -->
+	 <sql id="loadMultiselect_values">
+		SELECT DISTINCT PARAM_VALUE
+		FROM AML_PARAM_MAPPING
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		AND CRITERIA_CODE = #{criteria_code,jdbcType=NUMERIC}
+		AND QUERY_PARAM_ID = #{queryId,jdbcType=NUMERIC}
+		AND PARAM_ENTITY_TYPE = #{ENTITY_TYPE,jdbcType=VARCHAR}
+		AND PARAM_NAME = #{paramName,jdbcType=VARCHAR}
+		<choose>
+		<when test="segment_code != null">
+			AND BUSINESS_RULE_CODE = #{segment_code,jdbcType=NUMERIC}
+		</when>
+		<otherwise>	
+			AND BUSINESS_RULE_CODE = 0
+		</otherwise>
+		</choose>
+	</sql>
+
+<!-- AND CRITERIA_CODE= #{ctsCriteriaVO.CRITERIA_CODE} -->
+	<delete id="deleteOldListSelected" parameterType="com.path.vo.core.segmentation.CustSegmentationCO">
+		DELETE FROM AML_PARAM_MAPPING
+		WHERE COMP_CODE = #{loginCompCode}
+		AND BRANCH_CODE = #{loginBraCode,jdbcType=NUMERIC}
+		AND CRITERIA_CODE= #{criteriaCode,jdbcType=NUMERIC}
+<!-- 		AND QUERY_PARAM_ID = #{queryParamId,jdbcType=NUMERIC} -->
+		AND PARAM_ENTITY_TYPE = #{entityTypeParam,jdbcType=VARCHAR}
+		AND BUSINESS_RULE_CODE = #{ctsSegmentVO.SEGMENT_CODE,jdbcType=NUMERIC}
+  </delete>
+  
+   <select id="returnReplaceArgumentSelect" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="segmentationParamResultMap" >
+    		SELECT  CTS_SEGMENT_PARAM.COMP_CODE,
+    			   CTS_SEGMENT_PARAM.BRANCH_CODE,
+			       CTS_SEGMENT_PARAM.ENTITY_TYPE,
+			       CTS_SEGMENT_PARAM.PARAM_VALUE,
+			       CTS_SEGMENT_PARAM.SESSION_ATTR_NAME,
+			       CTS_SEGMENT_PARAM.PARAM_CLASS,
+			       CTS_SEGMENT_PARAM.PARAM_NAME,
+			       CTS_SEGMENT_PARAM.PARAM_QUERY_ID
+        FROM CTS_SEGMENT_PARAM
+    		WHERE SEGMENT_CODE= #{segment_code,jdbcType=NUMERIC} AND 
+    				<if test='isSegmentationScore != "BR"'>
+    					CTS_SEGMENT_PARAM.COMP_CODE =  #{compCode,jdbcType=NUMERIC} AND
+    					CTS_SEGMENT_PARAM.BRANCH_CODE =  #{branchCode,jdbcType=NUMERIC} AND
+    				</if>
+	                CTS_SEGMENT_PARAM.ENTITY_TYPE= #{ENTITY_TYPE,jdbcType=VARCHAR} AND
+	                CTS_SEGMENT_PARAM.ENTITY_ID= #{criteriaEntityId,jdbcType=NUMERIC} AND
+	                CTS_SEGMENT_PARAM.PARAM_QUERY_ID= #{queryId,jdbcType=NUMERIC}
+	    
+    </select>
+  
+  <select id="returnMaxGaArgId" parameterType="com.path.vo.core.segmentation.CustSegmentationSC"
+	resultType="int">
+		<include refid="returnMaxGaArgIdValue" />
+	</select>
+	
+  <sql id="returnMaxGaArgIdValue">
+		SELECT MAX(GA_ARG_ID)
+		FROM CTS_SEGMENT_PARAM
+	</sql>
+  
+    <delete id="deleteSegmentationSelectParam" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	DELETE FROM CTS_SEGMENT_PARAM 
+    	 where SEGMENT_CODE= #{segment_code,jdbcType=NUMERIC}
+    	 	<if test='SEGMENT_TYPE != "BR"'>
+	    	 	AND COMP_CODE =  #{compCode,jdbcType=NUMERIC}
+	    	   AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+    	   </if>
+    	   AND SEGMENT_TYPE = #{SEGMENT_TYPE,jdbcType=VARCHAR}
+    	   AND ENTITY_ID = #{ENTITY_ID,jdbcType=NUMERIC}
+    	   AND ENTITY_TYPE = #{ENTITY_TYPE,jdbcType=VARCHAR}
+    	   AND PARAM_CLASS = #{PARAM_CLASS,jdbcType=VARCHAR}
+    	   AND PARAM_QUERY_ID = #{queryId,jdbcType=NUMERIC}
+    	   AND SEG_LINE_NO = #{SEG_LINE_NO,jdbcType=NUMERIC}
+    </delete>
+  
+  <!-- added by nour -->
+    <select id="dependencyByReasonCode" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		SELECT COUNT(1)
+		FROM CTSREASONS
+		WHERE COMP_CODE = #{compCode}
+		AND CODE = #{reasonCode} 
+		AND REASON_TYPE = '33' 
+		
+	</select>
+	
+	<select id="returnReasonDesc" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="String">
+		SELECT BRIEF_NAME_ENG
+		  FROM CTSREASONS
+		 WHERE COMP_CODE = #{compCode}
+		   AND CODE = #{reasonCode} 
+		   AND REASON_TYPE = '33' 
+	</select>
+	
+	
+	 <select id="dependencyByReasonRef" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		SELECT COUNT(1)
+		FROM AML_REASON
+		WHERE REASON_REF = #{reasonRef} 
+		AND REASON_TYPE = '33' 
+		
+	</select>
+	
+	<select id="returnReasonRefDesc" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="String">
+		SELECT BRIEF_NAME_ENG
+		  FROM AML_REASON
+		 WHERE REASON_REF = #{reasonRef} 
+		 AND REASON_TYPE = '33' 
+	</select>
+  
+  <select id="returnMainScoreCount" parameterType="com.path.vo.core.segmentation.CustSegmentationCO" resultType="int">
+	  SELECT COUNT(1)
+	  FROM CTS_SEGMENT
+	  WHERE COMP_CODE = #{ctsSegmentVO.COMP_CODE}
+	    AND MAIN_SCORE_YN = '1'
+	    AND SEGMENT_TYPE = 'SC'
+	    AND STATUS = 'P'
+	    <![CDATA[ AND SEGMENT_CODE <> #{ctsSegmentVO.SEGMENT_CODE}]]>
+	 </select>
+	 	<select id="returnMainScore" parameterType="com.path.vo.core.segmentation.CustSegmentationCO" resultType="int">
+		SELECT COUNT(1)
+		FROM CTS_SEGMENT
+		WHERE COMP_CODE = #{ctsSegmentVO.COMP_CODE,jdbcType=NUMERIC}
+		AND SEGMENT_TYPE = 'SC'
+		AND MAIN_SCORE_YN='1'
+		<![CDATA[ AND STATUS <>'D']]>
+		<![CDATA[ AND SEGMENT_CODE <> #{ctsSegmentVO.SEGMENT_CODE}]]>
+		
+	</select>
+	<update id="updateSegmentHistory" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" >
+	    UPDATE CTS_CIF_SEGMENT_HISTORY
+	    SET LAST_RUN = '0'
+	    WHERE COMP_CODE = #{compCode}
+		AND CIF_NO = #{cifNo}
+		AND LAST_RUN = '1'
+    </update>
+    
+<!--     <insert id="insertSegmentHistory" parameterType="com.path.vo.core.segmentation.CustSegmentationSC"> -->
+<!--     	INSERT INTO CTS_CIF_SEGMENT_HISTORY -->
+<!--     	(COMP_CODE, CIF_NO, LINE_NO, NEW_SEGMENT, MANUAL_MODIFIED_YN, CREATED_BY, CREATED_DATE, LAST_RUN, OLD_SEGMENT)		 -->
+
+		
+<!-- 			SELECT TBL.COMP_CODE, #{cifNo}, (SELECT (CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE  MAX(LINE_NO) END) + 1 FROM CTS_CIF_SEGMENT_HISTORY WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo}) lineNumber, CSFT.RECOMMENED_SEGMENT, '0', #{userId}, -->
+<!-- 					<include refid="commonLibMapper.systemDate" />, '1', 0 -->
+<!-- 			FROM  -->
+<!-- 				( SELECT COMP_CODE ,CIF , MIN(MIN_PRIORITY_GP) MIN_PRIORITY_GROUP FROM -->
+				
+<!-- 				(SELECT CTS_SEGMENT.COMP_CODE COMP_CODE,  -->
+<!--         		CTS_SEG_CIF_EXEC_RESULT.CIF_NO CIF,  -->
+<!--         		G.GROUP_CODE              GP, -->
+<!--         		COALESCE(MIN(CTS_SEGMENT.PRIORITY),0) MIN_PRIORITY, -->
+<!--         		COALESCE(MIN(G.PRIORITY),0) MIN_PRIORITY_GP -->
+<!--   				FROM CTS_SEG_CIF_EXEC_RESULT, CTS_SEGMENT, CTS_SEGMENT_GROUPING G -->
+<!--   				WHERE CTS_SEGMENT.COMP_CODE = #{compCode} -->
+<!-- 				AND  CTS_SEGMENT.SEGMENT_CODE = CTS_SEG_CIF_EXEC_RESULT.RECOMMENED_SEGMENT -->
+<!-- 				AND  CTS_SEGMENT.SEGMENT_TYPE = CTS_SEG_CIF_EXEC_RESULT.SEGMENT_TYPE	 -->
+<!-- 				AND CTS_SEGMENT.COMP_CODE = G.COMP_CODE -->
+<!--            		AND CTS_SEGMENT.GROUP_CODE = G.GROUP_CODE -->
+           					
+<!-- 				GROUP BY CTS_SEGMENT.COMP_CODE, CTS_SEG_CIF_EXEC_RESULT.CIF_NO, G.GROUP_CODE) 	 -->
+<!--   				GROUP BY COMP_CODE, CIF -->
+<!--   				) TBL, -->
+  				
+<!-- 			CTS_SEG_CIF_EXEC_RESULT CSFT, CTS_SEGMENT S, CTS_SEGMENT_GROUPING -->
+			
+<!-- 			WHERE	TBL.COMP_CODE = S.COMP_CODE -->
+<!-- 			AND 	CSFT.CIF_NO = TBL.CIF -->
+<!-- 			AND     CSFT.CREATED_BY = #{userId} -->
+<!-- 			AND		S.SEGMENT_CODE = CSFT.RECOMMENED_SEGMENT -->
+<!-- 			AND		S.SEGMENT_TYPE = CSFT.SEGMENT_TYPE -->
+			
+<!-- 			AND TBL.CIF > 0		 -->
+							
+<!-- 			AND S.PRIORITY IN -->
+<!-- 			   (SELECT MIN(PRIORITY) MIN_PRIORTY -->
+<!-- 				  FROM CTS_SEGMENT CS -->
+<!-- 				 WHERE CS.COMP_CODE = #{compCode} -->
+<!-- 				   AND CS.SEGMENT_TYPE = 'S' -->
+<!-- 				   AND CS.GROUP_CODE = S.GROUP_CODE -->
+<!-- 				 GROUP BY GROUP_CODE) -->
+				 
+<!-- 			AND S.GROUP_CODE = CTS_SEGMENT_GROUPING.GROUP_CODE -->
+<!--     		AND S.COMP_CODE = CTS_SEGMENT_GROUPING.COMP_CODE -->
+<!--     		AND CTS_SEGMENT_GROUPING.PRIORITY = TBL.MIN_PRIORITY_GROUP -->
+
+<!-- 			AND NOT EXISTS ( -->
+<!-- 					          SELECT 1 FROM CTS_SEGMENT_CIF_EXCLUDE -->
+<!-- 					          WHERE CTS_SEGMENT_CIF_EXCLUDE.COMP_CODE = S.COMP_CODE -->
+<!-- 					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_CODE = S.SEGMENT_COD E -->
+<!-- 					          AND CTS_SEGMENT_CIF_EXCLUDE.SEGMENT_TYPE = S.SEGMENT_TYPE -->
+<!-- 					          AND CTS_SEGMENT_CIF_EXCLUDE.CIF_NO = #{cifNo})  -->
+<!-- 			AND TBL.CIF = #{cifNo} -->
+					          
+<!-- 			ORDER BY CSFT.CIF_NO -->
+<!--     </insert> -->
+
+	<insert id="insertSegmentHistory" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+    	INSERT INTO CTS_CIF_SEGMENT_HISTORY
+    	(COMP_CODE, CIF_NO, LINE_NO, NEW_SEGMENT, MANUAL_MODIFIED_YN, CREATED_BY, CREATED_DATE, LAST_RUN, OLD_SEGMENT)				
+			SELECT #{compCode}, #{cifNo}, (SELECT (CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE  MAX(LINE_NO) END) + 1 FROM CTS_CIF_SEGMENT_HISTORY WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo}) lineNumber, #{segment_code}, '0', #{userId},
+					<include refid="commonLibMapper.systemDate" />, '1', (SELECT CASE WHEN SEGMENT_CODE IS NULL THEN 0 ELSE SEGMENT_CODE END FROM CIF C LEFT OUTER JOIN CIF_EXTENDED E 
+					ON C.COMP_CODE = E.COMP_CODE AND C.CIF_NO = E.CIF_NO WHERE C.COMP_CODE = #{compCode} AND C.CIF_NO = #{cifNo}) OLD_SEGMENT
+			FROM DUAL
+	</insert>
+    
+    
+    
+	 <resultMap id="resCifListForProcessMap" type="com.path.vo.core.segmentation.CustSegmentationCO">
+		<result property="cifNo" column="CIF_NO"/>
+	</resultMap>
+	
+	<select id="returnCifListForProcess" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultMap="resCifListForProcessMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCifListForProcessSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnCifListForProcessCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCifListForProcessSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryCifListForProcessSQL">
+		SELECT CIF_NO 
+		FROM CIF
+		WHERE COMP_CODE = #{compCode}
+		AND STATUS = 'A'
+		
+		<if test="fromCif != null and fromCif != emptyBigDecimalValue and toCif != null and toCif != emptyBigDecimalValue">
+			AND  CIF.CIF_NO between #{fromCif} and #{toCif}
+		</if>
+		
+		<if test="fromBranch != null and fromBranch != emptyBigDecimalValue and toBranch != null and toBranch != emptyBigDecimalValue">
+			AND  CIF.BRANCH_CODE between #{fromBranch} and #{toBranch}
+		</if>
+	</sql>
+	
+	<select id="returnUsrAccessBySegmentProcess" resultType="ctsTellerVO" parameterType="com.path.vo.core.segmentation.CustSegmentationSC">
+		SELECT CTSTELLER.USER_ID
+		FROM CTSTELLER
+		WHERE CTSTELLER.COMP_CODE = #{compCode}
+		  AND CTSTELLER.STATUS = 'A'
+		  AND EXISTS (SELECT 1
+		         FROM S_AXS
+		        WHERE S_AXS.COMP_CODE = CTSTELLER.COMP_CODE
+		          AND S_AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		          AND S_AXS.USER_ID = CTSTELLER.USER_ID
+		          AND S_AXS.APP_NAME = #{appName}
+		          AND S_AXS.PROG_REF = #{progRef})
+	</select>
+	
+	 <select id="returnSegmentCodeForDependency" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="com.path.dbmaps.vo.CTS_SEGMENTVO" >
+    	SELECT SEGMENT_CODE, SEGMENT_DESC
+    	FROM CTS_SEGMENT
+		WHERE COMP_CODE = #{compCode}
+		AND SEGMENT_TYPE = #{isSegmentationScore}
+		AND STATUS = 'P'
+		AND SEGMENT_CODE = #{segment_code}
+    </select>
+  
+ <select id="checkAutoApprove" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="com.path.dbmaps.vo.CTS_SEGMENTVO" >
+    	SELECT AUTOMATIC_APPROVE_YN, SEGMENT_CODE
+    	FROM CTS_SEGMENT
+		WHERE COMP_CODE = #{compCode}
+		AND SEGMENT_TYPE = #{isSegmentationScore}
+		AND SEGMENT_CODE IN (SELECT RECOMMENED_SEGMENT FROM CTS_SEG_CIF_EXEC_RESULT WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo} and CREATED_BY = #{userId})
+		AND STATUS = 'P'
+    </select>
+    
+    
+    
+    <select id="checkHistoryRecordExists" parameterType="com.path.vo.core.segmentation.CustSegmentationProcessCO" resultType="int">
+		SELECT COUNT(1)
+		FROM CTS_CIF_SEGMENT_HISTORY
+		WHERE COMP_CODE = #{ctsSegmentCifExResVO.COMP_CODE}
+		AND OLD_SEGMENT = #{currentSegment}
+		AND NEW_SEGMENT = #{ctsSegmentCifExResVO.RECOMMENED_SEGMENT}
+		AND CIF_NO = #{ctsSegmentCifExResVO.CIF_NO}		
+		AND LAST_RUN = '9'		
+	</select>
+	
+	
+		<insert id="insertRecommendedDateHistory" parameterType="com.path.vo.core.segmentation.CustSegmentationProcessCO">
+    	INSERT INTO CTS_CIF_SEGMENT_HISTORY
+    	(COMP_CODE, CIF_NO, LINE_NO, NEW_SEGMENT, MANUAL_MODIFIED_YN, CREATED_BY, CREATED_DATE, LAST_RUN, OLD_SEGMENT)				
+			SELECT #{ctsSegmentCifExResVO.COMP_CODE}, #{ctsSegmentCifExResVO.CIF_NO}, (SELECT (CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE  MAX(LINE_NO) END) + 1 FROM CTS_CIF_SEGMENT_HISTORY WHERE COMP_CODE = #{ctsSegmentCifExResVO.COMP_CODE} AND CIF_NO = #{ctsSegmentCifExResVO.CIF_NO}) lineNumber, #{ctsSegmentCifExResVO.RECOMMENED_SEGMENT}, '0', #{loginUserId},
+					#{ctsSegmentCifExResVO.CREATED_DATE}, '9',  #{currentSegment} 
+			FROM DUAL
+	</insert>  
+  
+  	  <select id="returnUserAccessSegmentCount" parameterType="com.path.vo.core.segmentation.CustSegmentationSC" resultType="int">
+		SELECT COUNT(1)
+		FROM CTSTELLERSEGMENTDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH_CODE =  #{branchCode}
+		AND CODE = #{tellerCode}
+		AND SEGMENT_CODE = #{segmentCode}				
+	</select>
+	
+  
+  
+</mapper>

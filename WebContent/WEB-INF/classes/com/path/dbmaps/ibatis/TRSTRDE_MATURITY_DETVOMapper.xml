@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSTRDE_MATURITY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSTRDE_MATURITY_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="REF_NO" property="REF_NO" />
+    <result column="GRACE_PERIOD" property="GRACE_PERIOD" />
+    <result column="GRACE_PERIODICITY" property="GRACE_PERIODICITY" />
+    <result column="FIRST_PAY_DATE" property="FIRST_PAY_DATE" />
+    <result column="NO_OF_PAYMENTS" property="NO_OF_PAYMENTS" />
+    <result column="PAYM_PERIODICITY" property="PAYM_PERIODICITY" />
+    <result column="PAYM_PERIOD_NBR" property="PAYM_PERIOD_NBR" />
+    <result column="PAYM_PERIOD_POS" property="PAYM_PERIOD_POS" />
+    <result column="GRACE_PERIOD_OPTION" property="GRACE_PERIOD_OPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, REF_NO, GRACE_PERIOD, GRACE_PERIODICITY, FIRST_PAY_DATE, 
+    NO_OF_PAYMENTS, PAYM_PERIODICITY, PAYM_PERIOD_NBR, PAYM_PERIOD_POS, GRACE_PERIOD_OPTION
+  </sql>
+  <select id="selectTRSTRDE_MATURITY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSTRDE_MATURITY_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSTRDE_MATURITY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NO = #{REF_NO}
+  </select>
+  <delete id="deleteTRSTRDE_MATURITY_DET" parameterType="com.path.dbmaps.vo.TRSTRDE_MATURITY_DETVOKey" >
+    delete from TRSTRDE_MATURITY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NO = #{REF_NO}
+  </delete>
+  <insert id="insertTRSTRDE_MATURITY_DET" parameterType="com.path.dbmaps.vo.TRSTRDE_MATURITY_DETVO" >
+    insert into TRSTRDE_MATURITY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REF_NO != null and REF_NO != emptyBigDecimalValue" >
+        REF_NO,
+      </if>
+      <if test="GRACE_PERIOD != null and GRACE_PERIOD != emptyBigDecimalValue" >
+        GRACE_PERIOD,
+      </if>
+      <if test="GRACE_PERIODICITY != null" >
+        GRACE_PERIODICITY,
+      </if>
+      <if test="FIRST_PAY_DATE != null" >
+        FIRST_PAY_DATE,
+      </if>
+      <if test="NO_OF_PAYMENTS != null and NO_OF_PAYMENTS != emptyBigDecimalValue" >
+        NO_OF_PAYMENTS,
+      </if>
+      <if test="PAYM_PERIODICITY != null" >
+        PAYM_PERIODICITY,
+      </if>
+      <if test="PAYM_PERIOD_NBR != null and PAYM_PERIOD_NBR != emptyBigDecimalValue" >
+        PAYM_PERIOD_NBR,
+      </if>
+      <if test="PAYM_PERIOD_POS != null" >
+        PAYM_PERIOD_POS,
+      </if>
+      <if test="GRACE_PERIOD_OPTION != null and GRACE_PERIOD_OPTION != emptyBigDecimalValue" >
+        GRACE_PERIOD_OPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REF_NO != null and REF_NO != emptyBigDecimalValue" >
+        #{REF_NO},
+      </if>
+      <if test="GRACE_PERIOD != null and GRACE_PERIOD != emptyBigDecimalValue" >
+        #{GRACE_PERIOD},
+      </if>
+      <if test="GRACE_PERIODICITY != null" >
+        #{GRACE_PERIODICITY},
+      </if>
+      <if test="FIRST_PAY_DATE != null" >
+        #{FIRST_PAY_DATE},
+      </if>
+      <if test="NO_OF_PAYMENTS != null and NO_OF_PAYMENTS != emptyBigDecimalValue" >
+        #{NO_OF_PAYMENTS},
+      </if>
+      <if test="PAYM_PERIODICITY != null" >
+        #{PAYM_PERIODICITY},
+      </if>
+      <if test="PAYM_PERIOD_NBR != null and PAYM_PERIOD_NBR != emptyBigDecimalValue" >
+        #{PAYM_PERIOD_NBR},
+      </if>
+      <if test="PAYM_PERIOD_POS != null" >
+        #{PAYM_PERIOD_POS},
+      </if>
+      <if test="GRACE_PERIOD_OPTION != null and GRACE_PERIOD_OPTION != emptyBigDecimalValue" >
+        #{GRACE_PERIOD_OPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSTRDE_MATURITY_DET" >
+    update TRSTRDE_MATURITY_DET
+    <set >
+      <if test="GRACE_PERIOD != null" >
+        <choose >
+          <when test="GRACE_PERIOD == emptyBigDecimalValue" >
+            GRACE_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            GRACE_PERIOD = #{GRACE_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GRACE_PERIODICITY != null" >
+        GRACE_PERIODICITY = #{GRACE_PERIODICITY},
+      </if>
+      <if test="FIRST_PAY_DATE != null" >
+        FIRST_PAY_DATE = #{FIRST_PAY_DATE},
+      </if>
+      <if test="NO_OF_PAYMENTS != null" >
+        <choose >
+          <when test="NO_OF_PAYMENTS == emptyBigDecimalValue" >
+            NO_OF_PAYMENTS = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_PAYMENTS = #{NO_OF_PAYMENTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYM_PERIODICITY != null" >
+        PAYM_PERIODICITY = #{PAYM_PERIODICITY},
+      </if>
+      <if test="PAYM_PERIOD_NBR != null" >
+        <choose >
+          <when test="PAYM_PERIOD_NBR == emptyBigDecimalValue" >
+            PAYM_PERIOD_NBR = NULL ,
+          </when>
+          <otherwise >
+            PAYM_PERIOD_NBR = #{PAYM_PERIOD_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYM_PERIOD_POS != null" >
+        PAYM_PERIOD_POS = #{PAYM_PERIOD_POS},
+      </if>
+      <if test="GRACE_PERIOD_OPTION != null" >
+        <choose >
+          <when test="GRACE_PERIOD_OPTION == emptyBigDecimalValue" >
+            GRACE_PERIOD_OPTION = NULL ,
+          </when>
+          <otherwise >
+            GRACE_PERIOD_OPTION = #{GRACE_PERIOD_OPTION},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NO = #{REF_NO}
+  </sql>
+  <update id="updateTRSTRDE_MATURITY_DET" parameterType="com.path.dbmaps.vo.TRSTRDE_MATURITY_DETVO" >
+    <include refid="sql_updateTRSTRDE_MATURITY_DET" />
+  </update>
+</mapper>

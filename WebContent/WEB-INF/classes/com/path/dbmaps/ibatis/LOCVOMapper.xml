@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="LOC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.LOCVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="DIVISION_CODE" property="DIVISION_CODE" />
+    <result column="DEPT_CODE" property="DEPT_CODE" />
+    <result column="USER_LOC_STS" property="USER_LOC_STS" />
+    <result column="MACHINE_ID" property="MACHINE_ID" />
+    <result column="MACHINE_ID_WEB" property="MACHINE_ID_WEB" />
+    <result column="USER_LOC_STS_WEB" property="USER_LOC_STS_WEB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, USER_ID, DIVISION_CODE, DEPT_CODE, USER_LOC_STS, MACHINE_ID, 
+    MACHINE_ID_WEB, USER_LOC_STS_WEB
+  </sql>
+  <select id="selectLOC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.LOCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from LOC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteLOC" parameterType="com.path.dbmaps.vo.LOCVOKey" >
+    delete from LOC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertLOC" parameterType="com.path.dbmaps.vo.LOCVO" >
+    insert into LOC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        DIVISION_CODE,
+      </if>
+      <if test="DEPT_CODE != null and DEPT_CODE != emptyBigDecimalValue" >
+        DEPT_CODE,
+      </if>
+      <if test="USER_LOC_STS != null" >
+        USER_LOC_STS,
+      </if>
+      <if test="MACHINE_ID != null and !&quot;&quot;.equals(MACHINE_ID)" >
+        MACHINE_ID,
+      </if>
+      <if test="MACHINE_ID_WEB != null and !&quot;&quot;.equals(MACHINE_ID_WEB)" >
+        MACHINE_ID_WEB,
+      </if>
+      <if test="USER_LOC_STS_WEB != null and !&quot;&quot;.equals(USER_LOC_STS_WEB)" >
+        USER_LOC_STS_WEB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        #{DIVISION_CODE},
+      </if>
+      <if test="DEPT_CODE != null and DEPT_CODE != emptyBigDecimalValue" >
+        #{DEPT_CODE},
+      </if>
+      <if test="USER_LOC_STS != null" >
+        #{USER_LOC_STS},
+      </if>
+      <if test="MACHINE_ID != null and !&quot;&quot;.equals(MACHINE_ID)" >
+        #{MACHINE_ID},
+      </if>
+      <if test="MACHINE_ID_WEB != null and !&quot;&quot;.equals(MACHINE_ID_WEB)" >
+        #{MACHINE_ID_WEB},
+      </if>
+      <if test="USER_LOC_STS_WEB != null and !&quot;&quot;.equals(USER_LOC_STS_WEB)" >
+        #{USER_LOC_STS_WEB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateLOC" >
+    update LOC
+    <set >
+      <if test="DIVISION_CODE != null" >
+        <choose >
+          <when test="DIVISION_CODE == emptyBigDecimalValue" >
+            DIVISION_CODE = NULL ,
+          </when>
+          <otherwise >
+            DIVISION_CODE = #{DIVISION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEPT_CODE != null" >
+        <choose >
+          <when test="DEPT_CODE == emptyBigDecimalValue" >
+            DEPT_CODE = NULL ,
+          </when>
+          <otherwise >
+            DEPT_CODE = #{DEPT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_LOC_STS != null" >
+        USER_LOC_STS = #{USER_LOC_STS},
+      </if>
+      <if test="MACHINE_ID != null" >
+        <choose >
+          <when test="MACHINE_ID.equals(&quot;&quot;)" >
+            MACHINE_ID = NULL ,
+          </when>
+          <otherwise >
+            MACHINE_ID = #{MACHINE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MACHINE_ID_WEB != null" >
+        <choose >
+          <when test="MACHINE_ID_WEB.equals(&quot;&quot;)" >
+            MACHINE_ID_WEB = NULL ,
+          </when>
+          <otherwise >
+            MACHINE_ID_WEB = #{MACHINE_ID_WEB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_LOC_STS_WEB != null" >
+        <choose >
+          <when test="USER_LOC_STS_WEB.equals(&quot;&quot;)" >
+            USER_LOC_STS_WEB = NULL ,
+          </when>
+          <otherwise >
+            USER_LOC_STS_WEB = #{USER_LOC_STS_WEB},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateLOC" parameterType="com.path.dbmaps.vo.LOCVO" >
+    <include refid="sql_updateLOC" />
+  </update>
+</mapper>

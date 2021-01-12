@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_BILL_TYPE_REF_PREFIX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_BILL_TYPE_REF_PREFIXVO" >
+    <id column="BILL_TYPE" property="BILL_TYPE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="START_WITH" property="START_WITH" />
+    <result column="PROVIDER_LINE_NO" property="PROVIDER_LINE_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BILL_TYPE, COMP_CODE, LINE_NO, START_WITH, PROVIDER_LINE_NO
+  </sql>
+  <select id="selectCTS_BILL_TYPE_REF_PREFIX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_REF_PREFIXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_BILL_TYPE_REF_PREFIX
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_BILL_TYPE_REF_PREFIX" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_REF_PREFIXVOKey" >
+    delete from CTS_BILL_TYPE_REF_PREFIX
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_BILL_TYPE_REF_PREFIX" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_REF_PREFIXVO" >
+    insert into CTS_BILL_TYPE_REF_PREFIX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BILL_TYPE != null and BILL_TYPE != emptyBigDecimalValue" >
+        BILL_TYPE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="START_WITH != null" >
+        START_WITH,
+      </if>
+      <if test="PROVIDER_LINE_NO != null and PROVIDER_LINE_NO != emptyBigDecimalValue" >
+        PROVIDER_LINE_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BILL_TYPE != null and BILL_TYPE != emptyBigDecimalValue" >
+        #{BILL_TYPE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="START_WITH != null" >
+        #{START_WITH},
+      </if>
+      <if test="PROVIDER_LINE_NO != null and PROVIDER_LINE_NO != emptyBigDecimalValue" >
+        #{PROVIDER_LINE_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_BILL_TYPE_REF_PREFIX" >
+    update CTS_BILL_TYPE_REF_PREFIX
+    <set >
+      <if test="START_WITH != null" >
+        START_WITH = #{START_WITH},
+      </if>
+      <if test="PROVIDER_LINE_NO != null" >
+        <choose >
+          <when test="PROVIDER_LINE_NO == emptyBigDecimalValue" >
+            PROVIDER_LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            PROVIDER_LINE_NO = #{PROVIDER_LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_BILL_TYPE_REF_PREFIX" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_REF_PREFIXVO" >
+    <include refid="sql_updateCTS_BILL_TYPE_REF_PREFIX" />
+  </update>
+</mapper>

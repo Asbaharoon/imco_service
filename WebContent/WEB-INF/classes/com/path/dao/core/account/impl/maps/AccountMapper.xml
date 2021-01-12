@@ -1,0 +1,2000 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="accountMapper">
+	<sql id="accountSearchFilter">
+		<if test="searchFilter != null and searchFilter != ''">
+			WHERE upper( SL_NO ) LIKE upper('%'|| #searchFilter#
+			||'%')
+	    </if>
+	</sql>  
+	<!--sql id="accountListQuery">
+  SELECT CIF.LONG_NAME_ENG LONG_NAME_ENG,
+		 CIF.ID_NO ID_NO, 
+  		 AMF.CURRENCY_CODE CURRENCY_CODE,   
+         AMF.GL_CODE GL_CODE,   
+         AMF.CIF_SUB_NO CIF_SUB_NO,    
+         AMF.SL_NO SL_NO,
+		 AMF.DIV DIV,
+ 		 AMF.DEPT DEPT,   
+         AMF.ACC_BC ACC_BC,   
+         AMF.BRIEF_NAME_ENG BRIEF_NAME_ENG,   
+         AMF.LONG_NAME_ENG AMF_LONG_NAME_ENG,   
+         AMF.STATUS STATUS,
+         AMF.AC_SIGN AC_SIGN,
+		 AMF.ADDITIONAL_REFERENCE ADDITIONAL_REFERENCE,  
+		 AMF.IBAN_ACC_NO IBAN_ACC_NO,  
+		 AMF.BRANCH_CODE BRANCH_CODE,
+		 AMF.GMI_FLAG GMI_FLAG,
+		 AMF.AC_SRL AC_SRL,
+		 AMF.COMP_CODE COMP_CODE,
+		 AMF.FROM_ACCOUNT FROM_ACCOUNT,
+		 AMF.ACCOUNT_NUMBER ACCOUNT_NUMBER,
+		 CIF.SHORT_NAME_ENG,   
+	     CIF.SHORT_NAME_ARAB,   
+		 CIF.LONG_NAME_ARAB,   
+	 	 CIF.TEL,    
+		 CIF.ECO_SECTOR,   
+		 CIF.RELATION_CODE,   
+		 CIF.COUNTRY,   
+		 CIF.ID_NO2,   
+		 CIF.CIF_TYPE,   
+		 CIF.ONE_OBLIGOR,   
+		 CIF.STATUS CIF_STATUS,   
+		 CIF.EMAIL_ID,   
+		 CIF.ADDITIONAL_REFERENCE CIF_ADDITIONAL_REFERENCE,   
+		 CIF.SEXE,
+		 CIF.CARD_NAME,
+		 CIF.NICK_NAME 
+		 
+   FROM AMF
+      LEFT OUTER JOIN CIF
+   ON  AMF.COMP_CODE= CIF.COMP_CODE
+   AND AMF.CIF_SUB_NO = CIF.CIF_NO
+		<where>
+		  <if test="branchCode!=null">
+				AND AMF.BRANCH_CODE = #{branchCode}
+          </if>
+		  <if test="currencyCode!=null">
+				AND AMF.CURRENCY_CODE = #{currencyCode}
+          </if>
+		  <if test="glCode!=null">
+				AND AMF.GL_CODE =#{glCode}
+          </if>
+		  <if test="cifCode!=null">
+				AND AMF.CIF_SUB_NO = #{cifCode}
+          </if>
+		  <if test="slNbr!=null">
+				AND AMF.SL_NO =#{slNbr}
+          </if>
+		  <if test="compCode!=null">
+				AND AMF.COMP_CODE = #{compCode} 
+          </if>
+		  <if test="status != null" >
+				AND AMF.STATUS  IN (${status})
+		  </if>
+		  <if test="ACC_BC != null" >
+				AND AMF.ACC_BC = #{ACC_BC} 
+          </if>
+		</where>
+		
+	</sql-->
+	
+	
+	<!-- w_lookup_amf_dyn, w_lookup_amf_trxtype -->
+	<sql id="AMFLkpSelection">
+	  SELECT <!-- distinct -->  
+ 			 <!--CIF.LONG_NAME_ENG CIF_LONG_NAME_ENG, commented by bahaa for BUG# 1054340-->
+			 CIF.ID_NO, 
+	  		 AMF.CURRENCY_CODE,   
+	         AMF.GL_CODE,   
+	         AMF.CIF_SUB_NO,    
+	         AMF.SL_NO,
+			 AMF.DIV,
+	 		 AMF.DEPT,   
+	         AMF.ACC_BC,   
+	         AMF.BRIEF_NAME_ENG,   
+	         AMF.LONG_NAME_ENG AMF_LONG_NAME_ENG,
+	         AMF.BRIEF_NAME_ARAB,
+	         AMF.LONG_NAME_ARAB AMF_LONG_NAME_ARAB,
+	         (SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  		AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+			FULL_NAME_ENG,
+	         (SELECT
+			VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+			WHERE LOV_TYPE_ID = #{lovType}
+			AND
+			LANG_CODE = #{langCode,jdbcType=VARCHAR}
+			AND VALUE_CODE = AMF.STATUS)
+			as STATUS ,
+	         AMF.AC_SIGN,
+			 AMF.ADDITIONAL_REFERENCE,  
+			 AMF.IBAN_ACC_NO,  
+			 AMF.BRANCH_CODE,
+			 AMF.GMI_FLAG,
+			 AMF.AC_SRL,
+			 AMF.COMP_CODE,
+			 AMF.FROM_ACCOUNT,
+			 AMF.ACCOUNT_NUMBER,
+			 CIF.LONG_NAME_ENG AS CIF_LONG_NAME_ENG,
+			 CIF.SHORT_NAME_ENG AS SHORT_NAME_ENG,
+			 CIF.SHORT_NAME_ARAB AS SHORT_NAME_ARAB,
+			 CIF.LONG_NAME_ARAB AS LONG_NAME_ARAB,
+		 	 CIF.TEL,
+			 CIF.ECO_SECTOR,
+			 CIF.RELATION_CODE,
+			 CIF.COUNTRY,
+			 CIF.ID_NO2,
+			 CIF.CIF_TYPE,
+			 CIF.ONE_OBLIGOR,
+			 CIF.STATUS CIF_STATUS,
+			 CIF.EMAIL_ID,
+			 CIF.ADDITIONAL_REFERENCE CIF_ADDITIONAL_REFERENCE,
+			 CIF.SEXE,
+			 CIF.CARD_NAME,
+			 CIF.NICK_NAME,
+			(SELECT CASE WHEN AMF_EXTENDED.SUBSIDIARY_REFER_CIF_NO_YN='0' AND AMF.GMI_FLAG='I' THEN AMF_EXTENDED.CIF_SUB_NO ELSE NULL END
+						FROM AMF_EXTENDED 
+						WHERE AMF.COMP_CODE   = AMF_EXTENDED.COMP_CODE 
+						AND AMF.CIF_SUB_NO    = AMF_EXTENDED.CIF_SUB_NO  
+						AND AMF.BRANCH_CODE   = AMF_EXTENDED.BRANCH_CODE  
+	  		 			AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE 
+	  		 			AND AMF.GL_CODE       = AMF_EXTENDED.GL_CODE 
+	  		 			AND AMF.SL_NO 		  = AMF_EXTENDED.SL_NO )  subsidiary,
+	  		 <if test='"3".equals(affectPassChq) or glCategory != null or "AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+			 	GEN_LEDGER.BRIEF_DESC_ENG GL_DESC
+			 </if> 
+	</sql>
+	
+	<!-- w_lookup_amf_dyn -> wf_retrieve_dynamic -->
+	<sql id="dynAccountListQuery">
+	    <!-- BS_CONTRA 	 is the variable iv_stracc.s_category in pdb -->
+	    <!-- AFFECT_CARD is the variable iv_stracc.s_card in pdb -->
+   		
+   		<choose>
+		       <when test='"AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+		           	FROM AMF LEFT OUTER JOIN CIF ON  AMF.COMP_CODE= CIF.COMP_CODE AND AMF.CIF_SUB_NO = CIF.CIF_NO
+		           	LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO		           	
+		        </when>
+		        <otherwise>
+		        	FROM CIF
+		        	LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		        </otherwise>
+	    </choose>
+	    	
+   		
+        <if test="trxType != null and trxType != emptyBigDecimalValue">
+        	,CTSTRXTYPE_ACC
+		</if>
+        <if test=' !"CHEQUEBOOK_QUERY".equals(fromScreen) and (!"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or "BENEF".equals(flag)) '>
+        	,RIFATT
+		</if>
+        <if test='"3".equals(affectPassChq) or glCategory != null or "AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+        	,GEN_LEDGER
+		</if>
+   		
+   		WHERE 1 = 1
+   		<choose>
+	        <when test='"AMF".equals(flag) or "MULTI_ACC".equals(flag) or  "BENEF".equals(flag)  or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+	        	 <!-- add if condition by abbas for TP#627397 -->
+	        	 <if test='compCode != null and compCode != emptyBigDecimalValue'>
+	        	    AND AMF.COMP_CODE =  #{compCode}
+	        	 </if>
+				 <if test="AMFStatus != null" >
+				 	AND AMF.STATUS IN (${AMFStatus})
+				 </if>
+	  			<if test='"DUES".equals(fromScreen)'>
+	  			AND EXISTS
+				   (SELECT 1
+				      FROM CTS_DUES,SYS_PARAM_LOV_LK_OPT LOVLKOPT
+				          WHERE CTS_DUES.COMP_CODE = AMF.COMP_CODE
+				          AND	CTS_DUES.DR_AC_BR =	AMF.BRANCH_CODE
+				          AND	CTS_DUES.DR_AC_CY =	AMF.CURRENCY_CODE
+				          AND	CTS_DUES.DR_AC_GL =	AMF.GL_CODE
+				          AND	CTS_DUES.DR_AC_CIF = AMF.CIF_SUB_NO
+				          AND	CTS_DUES.DR_AC_SL =	AMF.SL_NO
+				          <if test='!"R".equals(crudMode) and !"DQ".equals(crudMode)'>
+				              AND CTS_DUES.STATUS = LOVLKOPT.VALUE_CODE
+				              AND LOVLKOPT.LOV_TYPE_ID = #{lovType}
+				              AND LOVLKOPT.PROG_REF = #{screenRef}
+				              AND LOVLKOPT.APP_NAME = #{appName}
+				         </if>
+				     )
+	  			</if>
+  			</when>
+	        <otherwise>
+	        	 AND CIF.COMP_CODE =  #{compCode}
+  			</otherwise>
+  		</choose>
+  		
+  		
+  		
+  		
+  			   		
+
+	  	<if test=' !"CHEQUEBOOK_QUERY".equals(fromScreen) and (!"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or "BENEF".equals(flag) ) '>
+			AND AMF.COMP_CODE	= RIFATT.COMP_CODE
+			AND AMF.GL_CODE     = RIFATT.TYPE_CODE
+        </if>
+		<if test='"1".equals(AFFECT_CARD)'>
+			AND RIFATT.AFFECT_CARD = #{AFFECT_CARD}
+		</if>
+		<if test=' !"CHEQUEBOOK_QUERY".equals(fromScreen) and ("0".equals(affectPassChq) or "1".equals(affectPassChq) or "2".equals(affectPassChq) )'>
+			AND RIFATT.AFFECTION = #{affectPassChq}
+		</if>   
+		<if test='"1".equals(affectPassChq) or "2".equals(affectPassChq)'>
+    		AND CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'
+		</if>
+		<if test='doNotfilterByUpdatePassBook == null'>   
+			<if test='"1".equals(affectPassChq) or "2".equals(affectPassChq)'>
+	    		AND CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'
+			</if>
+		</if>	
+   
+		<if test='"3".equals(affectPassChq) or glCategory != null or "AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+			AND AMF.COMP_CODE   = GEN_LEDGER.COMP_CODE
+			AND AMF.GL_CODE     = GEN_LEDGER.GL_CODE
+		</if>
+		<if test='"3".equals(affectPassChq)'>
+		    AND ((RIFATT.AFFECTION = '2' AND CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1') 
+		      	OR (GEN_LEDGER.AFFECT_FLAG 	= '2' AND CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) 
+   		</if>
+   		<if test="glCategory != null">
+   			AND GEN_LEDGER.GL_CATEGORY = #{glCategory}
+   		</if>
+   		
+   		<if test='glCategoryIncludes != null and !"".equals(glCategoryIncludes)'>
+			AND GEN_LEDGER.GL_CATEGORY IN (${glCategoryIncludes})
+		</if>
+   		
+		<if test="CIFStatus != null">	 
+		<choose>
+			<when test='"I".equals(CIFStatus)'>
+				AND CIF.STATUS In ('I', 'A') <!-- ACTIVE_ACCOUNT, INACTIVE_ACCOUNT -->
+			</when>
+			<otherwise>
+				AND CIF.STATUS IN (${CIFStatus})
+			</otherwise>
+		</choose>
+		</if>
+   			
+    	<if test='"AMF".equals(flag) or "MULTI_ACC".equals(flag)'> 
+   		<choose>
+			<when test='"AMF".equals(flag)'>
+			  	<if test='branchCode != null and branchCode != emptyBigDecimalValue'>
+					AND AMF.BRANCH_CODE = #{branchCode}
+	          	</if>
+			  	<if test='currencyCode != null and currencyCode != emptyBigDecimalValue'>
+					AND AMF.CURRENCY_CODE = #{currencyCode}
+	          	</if>
+			  	<if test='glCode != null and glCode != emptyBigDecimalValue'>
+					AND AMF.GL_CODE = #{glCode}
+	         	</if>
+			  	<if test='cifCode != null and cifCode != emptyBigDecimalValue' >
+					AND AMF.CIF_SUB_NO = #{cifCode}
+	          	</if>
+			  	<if test='slNbr != null and slNbr != emptyBigDecimalValue'>
+					AND AMF.SL_NO = #{slNbr}
+	          	</if>
+		        <if test='addRef != null and !"".equals(addRef)'>
+				  AND 	AMF.ADDITIONAL_REFERENCE = #{addRef}
+				</if>
+				<if test='"".equals(addRef)'>
+				  AND  AMF.ADDITIONAL_REFERENCE IS NULL 
+				</if>
+   			</when>
+			<when test='"MULTI_ACC".equals(flag)'>
+				AND (<foreach collection="lstTrsAccount" item="AMFVO" separator="OR">
+					  ( 	AMF.BRANCH_CODE 	= #{AMFVO.BRANCH_CODE}
+						AND AMF.CURRENCY_CODE 	= #{AMFVO.CURRENCY_CODE}
+						AND AMF.GL_CODE 		= #{AMFVO.GL_CODE}
+						AND AMF.CIF_SUB_NO 		= #{AMFVO.CIF_SUB_NO}
+						AND AMF.SL_NO 			= #{AMFVO.SL_NO})
+					 </foreach>)
+			</when>
+			</choose>
+			
+			
+			<if test='!"X".equals(GMI_FLAG)'>
+		   		<choose>
+			        <when test='"N".equals(GMI_FLAG)'>
+			        	AND AMF.GMI_FLAG IN ('G','F')
+	   				</when>
+			        <otherwise>
+			        	AND AMF.GMI_FLAG = #{GMI_FLAG}
+	   				</otherwise>
+	   			</choose>
+          	</if>
+          	
+			 <if test="gmiExcludes != null">
+			 	AND AMF.GMI_FLAG NOT IN (${gmiExcludes})
+			 </if>
+			 <if test="gmiIncludes != null">
+			 	AND AMF.GMI_FLAG IN (${gmiIncludes})
+			 </if>
+	 
+	   		<choose>
+		        <when test='!"X".equals(ACC_BC)'>
+         				AND AMF.ACC_BC = #{ACC_BC}
+				</when>
+		        <when test='"AMF".equals(flag)'>
+		        	AND AMF.ACC_BC <![CDATA[ <> ]]> 'S'
+		        </when>
+			</choose>
+   		
+   		</if>
+   		
+   		<if test='"IncidentReport".equals(fromScreen)'>
+   		   AND NOT EXISTS (SELECT 1 FROM CTS_TRSFR_ACC  WHERE
+           CTS_TRSFR_ACC.COMP_CODE =AMF.COMP_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_BR = AMF.BRANCH_CODE    
+           AND CTS_TRSFR_ACC.FROM_ACC_CY = AMF.CURRENCY_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_GL = AMF.GL_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_CIF = AMF.CIF_SUB_NO
+           AND CTS_TRSFR_ACC.FROM_ACC_SL = AMF.SL_NO
+           AND AMF.STATUS = 'C' 
+           UNION ALL
+           SELECT 1 FROM CTS_TRSFR_ACC  WHERE
+           CTS_TRSFR_ACC.COMP_CODE =AMF.COMP_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_BR = AMF.BRANCH_CODE    
+           AND CTS_TRSFR_ACC.TO_ACC_CY = AMF.CURRENCY_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_GL = AMF.GL_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_CIF = AMF.CIF_SUB_NO
+           AND CTS_TRSFR_ACC.TO_ACC_SL = AMF.SL_NO
+           AND AMF.STATUS = 'C'
+           
+           )
+   		</if>
+
+		<if test='!"X".equals(BS_CONTRA)'>
+   			AND EXISTS ( SELECT 1 FROM RIFCTT WHERE 
+			  			CIF.COMP_CODE   = 	RIFCTT.COMP_CODE
+   						AND CIF.CIF_TYPE    = 	RIFCTT.TYPE_CODE      
+   			<if test='"C".equals(BS_CONTRA)'>
+		   				AND RIFCTT.CLIENT = 'Y'
+   			</if>
+   			<if test='"B".equals(BS_CONTRA)'>
+		   				   AND RIFCTT.BANK    = 'Y'
+   			</if>
+						)
+   		</if>
+   		
+   			<if test='bankCifInd != null and !"X".equals(bankCifInd)'>
+   			AND EXISTS ( SELECT 1 FROM RIFCTT WHERE 
+			  			CIF.COMP_CODE   = 	RIFCTT.COMP_CODE
+   						AND CIF.CIF_TYPE    = 	RIFCTT.TYPE_CODE      
+   			<if test='"T".equals(bankCifInd)'>
+		   				AND RIFCTT.VT_IND = 'T'
+   			</if>
+   			<if test='"V".equals(bankCifInd)'>
+		   				   AND RIFCTT.VT_IND    = 'V'
+   			</if>
+						)
+   		</if>
+
+        <if test="trxType != null and trxType != emptyBigDecimalValue">
+		   AND AMF.GL_CODE 		= CTSTRXTYPE_ACC.ACC_GL
+		   AND AMF.CIF_SUB_NO 	= CTSTRXTYPE_ACC.ACC_CIF
+		   AND AMF.SL_NO 		= CTSTRXTYPE_ACC.ACC_SL
+		   AND AMF.COMP_CODE 	= CTSTRXTYPE_ACC.COMP_CODE
+
+		 <!--  AND (CTSTRXTYPE_ACC.ACC_BR IS NULL OR (AMF.BRANCH_CODE   = CTSTRXTYPE_ACC.ACC_BR))
+		   AND (CTSTRXTYPE_ACC.ACC_CY IS NULL OR (AMF.CURRENCY_CODE = CTSTRXTYPE_ACC.ACC_CY))-->
+		   
+		   AND AMF.BRANCH_CODE   =  CASE WHEN CASE WHEN CTSTRXTYPE_ACC.ACC_BR IS NULL THEN 0 ELSE CTSTRXTYPE_ACC.ACC_BR END = 0 THEN AMF.BRANCH_CODE 	ELSE CTSTRXTYPE_ACC.ACC_BR END
+		   AND AMF.CURRENCY_CODE =  CASE WHEN CASE WHEN CTSTRXTYPE_ACC.ACC_CY IS NULL THEN 0 ELSE CTSTRXTYPE_ACC.ACC_CY END = 0 THEN AMF.CURRENCY_CODE  ELSE CTSTRXTYPE_ACC.ACC_CY END  
+
+
+		   AND CTSTRXTYPE_ACC.CODE 		 = #{trxType, jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_ACC.DR_CR_TYPE = #{CR_DR_FOREX, jdbcType=VARCHAR}
+		</if>
+		
+		 <if test='"BENEF".equals(flag)'>
+		 	AND RIFATT.ALLOW_BENEF_REGISTR_YN = '1'
+		 </if>
+		 	 
+		 <if test='(GMI_FLAG.equals("I") or GMI_FLAG.equals("X")) and (true.equals(subsidiarySearch) or (cifCode != null and cifCode != emptyBigDecimalValue))  and (!"IIS".equals(appName)) and (!"PMSP".equals(appName)) and (!"PMS".equals(appName)) '> 
+		 AND (coalesce((SELECT SUBSIDIARY_REFER_CIF_NO_YN
+                  FROM AMF_EXTENDED
+                 WHERE AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE
+                   AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO
+                   AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE
+                   AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE
+                   AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE
+                   AND AMF.SL_NO = AMF_EXTENDED.SL_NO),'0')) = (CASE WHEN  AMF.GMI_FLAG='I' THEN  '1'  ELSE '0' END)
+		 </if>
+		
+		 <!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+		 <!-- 
+		 <if test='"AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)'>
+		  -->
+		 <if test='("AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)) and !"TFA".equals(appName)'>
+			<include refid="accountMapper.accRestriction"/>
+		</if> 
+   </sql>
+   
+   
+	<resultMap id="accountListMap" type="accountCO">
+		<result property="cifVO.LONG_NAME_ENG"        column="CIF_LONG_NAME_ENG" />
+		<result property="cifVO.ID_NO"           	  column="ID_NO" />
+		<result property="amfVO.BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="amfVO.CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="amfVO.COMP_CODE"            column="COMP_CODE" />
+		<result property="amfVO.CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE"              column="GL_CODE" />
+		<result property="amfVO.SL_NO"                column="SL_NO" />
+		<result property="amfVO.DIV"                  column="DIV" />
+ 		<result property="amfVO.DEPT"                 column="DEPT" />   
+        <result property="amfVO.ACC_BC"               column="ACC_BC" />   
+        <result property="amfVO.BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" />   
+        <result property="amfVO.LONG_NAME_ENG"        column="AMF_LONG_NAME_ENG" />   
+        <result property="amfVO.STATUS"               column="STATUS" />
+        <result property="amfVO.AC_SIGN"              column="AC_SIGN" />
+		<result property="amfVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />  
+		<result property="amfVO.IBAN_ACC_NO"          column="IBAN_ACC_NO" />  
+		<result property="amfVO.GMI_FLAG"             column="GMI_FLAG" />
+		<result property="amfVO.AC_SRL"               column="AC_SRL" />
+		<result property="amfVO.FROM_ACCOUNT"         column="FROM_ACCOUNT" />
+		<result property="amfVO.ACCOUNT_NUMBER"       column="ACCOUNT_NUMBER" />
+	 	<result property="amfVO.MATURITY_DTE"         column="MATURITY_DTE" />
+		<result property="amfVO.BRIEF_NAME_ARAB"      column="BRIEF_NAME_ARAB" />
+	 	<result property="amfVO.LONG_NAME_ARAB"       column="AMF_LONG_NAME_ARAB" />
+	 	<result property="amfVO.FULL_NAME_ENG"       column="FULL_NAME_ENG" />
+		<result property="amfVO.FULL_NAME_ARAB"       column="FULL_NAME_ARAB" />	
+	 	
+		<result property="cifVO.SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+		<result property="cifVO.SHORT_NAME_ARAB" column="SHORT_NAME_ARAB" />
+		<result property="cifVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		<result property="cifVO.TEL" column="TEL" />
+		<result property="cifVO.ECO_SECTOR" column="ECO_SECTOR" />
+		<result property="cifVO.RELATION_CODE" column="RELATION_CODE" />
+		<result property="cifVO.COUNTRY" column="COUNTRY" />
+		<result property="cifVO.ID_NO2" column="ID_NO2" />
+		<result property="cifVO.CIF_TYPE" column="CIF_TYPE" />
+		<result property="cifVO.ONE_OBLIGOR" column="ONE_OBLIGOR" />
+		<result property="cifVO.STATUS" column="CIF_STATUS" />
+		<result property="cifVO.EMAIL_ID" column="EMAIL_ID" />
+		<result property="cifVO.ADDITIONAL_REFERENCE" column="CIF_ADDITIONAL_REFERENCE" />
+		<result property="cifVO.SEXE" column="SEXE" />
+		<result property="cifVO.CARD_NAME" column="CARD_NAME" />
+		<result property="cifVO.NICK_NAME" column="NICK_NAME" />
+		<result property="glVO.BRIEF_DESC_ENG" column="GL_DESC" />				
+		<result property="subsidiary" 	   column="subsidiary" />
+		
+		<result property="accCount" column="accCount" />
+	</resultMap>
+	<select id="accountList" resultMap="accountListMap"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="AMFLkpSelection"/>
+		<include refid="dynAccountListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="accountSearchFilter" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="accountListCount" resultType="int"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="AMFLkpSelection"/>
+		<include refid="dynAccountListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="accountSearchFilter" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<resultMap id="accValidationMap" type="accountVO" >
+		<result property="BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="COMP_CODE"            column="COMP_CODE" />
+		<result property="CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="GL_CODE"              column="GL_CODE" />
+		<result property="SL_NO"                column="SL_NO" />
+		<result property="BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" />
+		<result property="LONG_NAME_ENG"        	column="LONG_NAME_ENG" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="IBAN_ACC_NO"			column="IBAN_ACC_NO" />
+		<result property="ACC_NO"				column="ACC_NO" />
+		<result property="cifDesc"              column="cifDesc" />
+		<result property="accountType"          column="accountType" />	
+		<result property="currrencyDesc"        column="currencyDesc" />
+		<result property="STATUS"        		column="STATUS" />
+		<result property="FULL_NAME_ENG"        column="FULL_NAME_ENG" />
+		<result property="BLOCKED_CV"			column="BLOCKED_CV" />
+		<result property="BLOCKED_FC"        	column="BLOCKED_FC" />
+		<result property="CV_AVAIL_BAL"			column="CV_AVAIL_BAL" />
+		<result property="FC_AVAIL_BAL"        	column="FC_AVAIL_BAL" />
+		<result property="statusDesc"		    column="statusDesc"/>
+	</resultMap>
+	<select id="checkAccountValidation" parameterType="accountSC" resultMap="accValidationMap">
+		select 
+			BRANCH_CODE
+			,COMP_CODE
+			,CURRENCY_CODE
+			,GL_CODE
+			,CIF_SUB_NO
+			,SL_NO
+			,BRIEF_NAME_ENG
+			,LONG_NAME_ENG
+			,IBAN_ACC_NO
+			,ADDITIONAL_REFERENCE
+			,ACC_NO
+			,STATUS
+			,BLOCKED_CV
+			,BLOCKED_FC
+			,CV_AVAIL_BAL
+			,FC_AVAIL_BAL	
+		    ,(
+				   SELECT 
+						 CASE 
+							WHEN #{preferredLanguage} = 'L'
+							THEN CIF.SHORT_NAME_ENG
+							ELSE CIF.SHORT_NAME_ARAB
+						 END    
+				     FROM CIF 
+				    WHERE COMP_CODE =  AMF.COMP_CODE
+				      AND CIF_NO    =  AMF.CIF_SUB_NO	      
+		     ) cifDesc
+		    ,(
+				SELECT 
+				     CASE 
+						WHEN #{preferredLanguage} = 'L'
+						THEN RIFATT.BRIEF_DESC_ENG 
+						ELSE RIFATT.BRIEF_DESC_ARAB 
+					 END 
+				  FROM RIFATT 
+				 WHERE COMP_CODE = AMF.COMP_CODE
+				   AND TYPE_CODE = AMF.GL_CODE		      
+		        ) accountType
+		      ,(
+			      SELECT
+					 CASE 
+						WHEN #{preferredLanguage} = 'L'
+						THEN CURRENCIES.BRIEF_DESC_ENG
+						ELSE CURRENCIES.BRIEF_DESC_ARAB
+					 END
+			        FROM CURRENCIES 
+			       WHERE COMP_CODE = AMF.COMP_CODE 
+			         AND CURRENCY_CODE = AMF.CURRENCY_CODE
+		      ) currencyDesc,
+		      (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{lovType, jdbcType=NUMERIC} AND LANG_CODE = #{langCode, jdbcType=VARCHAR} AND VALUE_CODE = CASE WHEN AMF.STATUS IS NULL THEN 'A' ELSE AMF.STATUS END) statusDesc
+		  from AMF 
+		 where BRANCH_CODE   = #{branchCode, jdbcType=NUMERIC}
+		   and COMP_CODE     = #{compCode, jdbcType=NUMERIC}
+		   and CURRENCY_CODE = #{currencyCode, jdbcType=NUMERIC}
+		   and GL_CODE       = #{glCode, jdbcType=NUMERIC}
+		   and CIF_SUB_NO    = #{cifCode, jdbcType=NUMERIC}
+		   and SL_NO         = #{slNbr, jdbcType=NUMERIC}	
+	</select>
+	<sql id="additionalFields">
+	      ,
+	      (
+		   SELECT 
+				 CASE 
+					WHEN #{preferredLanguage} = 'L'
+					THEN CIF.SHORT_NAME_ENG
+					ELSE CIF.SHORT_NAME_ARAB
+				 END    
+		     FROM CIF 
+		    WHERE COMP_CODE =  AMF.COMP_CODE
+		      AND CIF_NO    =  AMF.CIF_SUB_NO	      
+	       ) cifDesc,
+	      (
+			SELECT 
+			     CASE 
+					WHEN #{preferredLanguage} = 'L'
+					THEN RIFATT.BRIEF_DESC_ENG 
+					ELSE RIFATT.BRIEF_DESC_ARAB 
+				 END 
+			  FROM RIFATT 
+			 WHERE COMP_CODE = AMF.COMP_CODE
+			   AND TYPE_CODE = AMF.GL_CODE		      
+	       ) accountType,
+	      (
+	      SELECT
+			 CASE 
+				WHEN #{preferredLanguage} = 'L'
+				THEN CURRENCIES.BRIEF_DESC_ENG
+				ELSE CURRENCIES.BRIEF_DESC_ARAB
+			 END
+	        FROM CURRENCIES 
+	       WHERE COMP_CODE = AMF.COMP_CODE 
+	         AND CURRENCY_CODE = AMF.CURRENCY_CODE
+	      ) currencyDesc,
+	      (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode} AND VALUE_CODE = CASE WHEN AMF.STATUS IS NULL THEN 'A' ELSE AMF.STATUS END) statusDesc	
+	</sql>
+
+	<select id="returnAccountByReference" parameterType="accountSC" resultMap="accValidationMap">
+		<include refid="AMFLkpSelection"/>
+		<include refid="additionalFields"/>
+		<include refid="dynAccountListQuery" />
+		<if test='addRef != null and !"".equals(addRef)'>
+		  AND 	AMF.ADDITIONAL_REFERENCE = #{addRef}
+		</if>
+		<if test='"".equals(addRef)'>
+		  AND 	AMF.ADDITIONAL_REFERENCE IS NULL 
+		</if>
+	</select>
+	
+	<select id="returnAMFBySLNo" parameterType="accountSC" resultMap="accValidationMap">
+		<include refid="AMFLkpSelection"/>
+		<include refid="additionalFields"/>
+		<include refid="dynAccountListQuery" />
+		   and AMF.SL_NO = #{slNbr} 	
+	</select>
+	
+	<resultMap id="AMFDetailsMap" type="accountCO">
+		<result property="amfVO.BRANCH_CODE"          	column="BRANCH_CODE"/>
+		<result property="amfVO.SL_NO"          		column="SL_NO"/>
+		<result property="amfVO.ADDITIONAL_REFERENCE"   column="ADDITIONAL_REFERENCE"/>
+		<result property="amfVO.BRIEF_NAME_ENG"         column="BRIEF_NAME_ENG"/>
+		<result property="amfVO.STATUS"          		column="STATUS"/>
+		<result property="amfVO.UPDATE_PASSBOOK"        column="UPDATE_PASSBOOK"/>
+		<result property="amfVO.AUTH_SIGN"          	column="AUTH_SIGN"/>
+		<result property="currency.CURRENCY_CODE"       column="CURRENCY_CODE"/>
+		<result property="currency.BRIEF_DESC_ENG"      column="CURRENCY_DESC"/>
+		<result property="glVO.GL_CODE"          		column="GL_CODE"/>
+		<result property="glVO.BRIEF_DESC_ENG"          column="GL_DESC"/>
+		<result property="glVO.GL_TYPE"          		column="GL_TYPE"/>
+		<result property="cifVO.CIF_NO"          		column="CIF_SUB_NO"/>
+		<result property="cifVO.LONG_NAME_ENG"          column="CIF_DESC"/> 
+		<result property="BRIEF_NAME" 					column="BRIEF_NAME" />
+		<result property="amfVO.GMI_FLAG" 				column="GMI_FLAG" />
+	</resultMap>
+	
+	<select id="returnAMFDetails" parameterType="accountSC" resultMap="AMFDetailsMap">
+		SELECT 	AMF.BRANCH_CODE,
+				AMF.CURRENCY_CODE,
+				(SELECT CASE WHEN #{langCode,jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END
+				   FROM CURRENCIES 
+				  WHERE CURRENCIES.COMP_CODE 	 = AMF.COMP_CODE 
+				    AND CURRENCIES.CURRENCY_CODE = AMF.CURRENCY_CODE) CURRENCY_DESC,
+		       	AMF.GL_CODE,
+		       	(SELECT CASE WHEN #{langCode,jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END 
+				   FROM GEN_LEDGER 
+				  WHERE	GEN_LEDGER.COMP_CODE  = AMF.COMP_CODE
+					AND	GEN_LEDGER.GL_CODE    = AMF.GL_CODE) GL_DESC,
+		       	(SELECT GL_TYPE
+				   FROM GEN_LEDGER 
+				  WHERE	GEN_LEDGER.COMP_CODE  = AMF.COMP_CODE
+					AND	GEN_LEDGER.GL_CODE    = AMF.GL_CODE) GL_TYPE,
+		       	AMF.CIF_SUB_NO,
+		       	(SELECT CASE WHEN #{langCode,jdbcType=VARCHAR} = 'A' THEN LONG_NAME_ARAB ELSE LONG_NAME_ENG END 
+				   FROM CIF
+				  WHERE CIF_NO = AMF.CIF_SUB_NO
+				    AND COMP_CODE = AMF.COMP_CODE) CIF_DESC,
+		       	AMF.SL_NO,
+		       	AMF.ADDITIONAL_REFERENCE,
+		        AMF.BRIEF_NAME_ENG,
+		        (CASE WHEN #{langCode,jdbcType=VARCHAR} = 'L' THEN AMF.BRIEF_NAME_ENG ELSE  AMF.BRIEF_NAME_ARAB END ) BRIEF_NAME,
+		        AMF.STATUS,
+		        AMF.AUTH_SIGN,
+		        AMF.GMI_FLAG
+	     FROM   AMF
+		where 	AMF.COMP_CODE 			 = #{compCode, jdbcType=NUMERIC}
+		<if test='branchCode != null and branchCode != emptyBigDecimalValue'>
+		  AND 	AMF.BRANCH_CODE   		 = #{branchCode, jdbcType=NUMERIC}
+		</if>
+		<if test='currencyCode != null and currencyCode != emptyBigDecimalValue'>
+		  AND 	AMF.CURRENCY_CODE 		 = #{currencyCode, jdbcType=NUMERIC}
+		</if>
+		<if test='glCode != null and glCode != emptyBigDecimalValue'>
+		  AND 	AMF.GL_CODE       		 = #{glCode, jdbcType=NUMERIC}
+		</if>
+		<if test='cifCode != null and cifCode != emptyBigDecimalValue'>
+		  AND 	AMF.CIF_SUB_NO    		 = #{cifCode, jdbcType=NUMERIC}
+		</if>
+		<if test='slNbr != null and slNbr != emptyBigDecimalValue'>
+		  AND 	AMF.SL_NO         		 = #{slNbr, jdbcType=NUMERIC}
+		</if>
+		<if test='addRef != null and !"".equals(addRef)'>
+		  AND 	AMF.ADDITIONAL_REFERENCE = #{addRef}
+		</if>
+		<if test='"".equals(addRef)'>
+		  AND 	AMF.ADDITIONAL_REFERENCE IS NULL 
+		</if>
+		<if test='("AMF".equals(flag) or "MULTI_ACC".equals(flag) or "BENEF".equals(flag) or !"-1".equals(affectPassChq) or "1".equals(AFFECT_CARD) or !"X".equals(GMI_FLAG) or !"X".equals(ACC_BC)) and !"TFA".equals(appName)'>
+			<include refid="accountMapper.accRestriction"/>
+		</if>
+	</select>
+	<resultMap id="retrieveAMFInfoMap" type="AccountCO">
+		<result property="updateStatusToOldStatus" 	column="STATUS" />
+		<result property="amfVO.CURRENCY_CODE" 	  	column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE" 	  		column="GL_CODE" />
+		<result property="amfVO.CIF_SUB_NO" 		column="CIF_SUB_NO" />
+		<result property="amfVO.SL_NO" 				column="SL_NO" />
+	</resultMap>
+	<select id="retrieveAMFInfo" parameterType="AccountCO" resultMap="retrieveAMFInfoMap">
+		SELECT STATUS,
+		CURRENCY_CODE,
+		GL_CODE,
+		CIF_SUB_NO,
+		SL_NO
+		FROM AMF
+		WHERE AMF.COMP_CODE 	= #{amfVO.COMP_CODE}
+		AND AMF.BRANCH_CODE		= #{amfVO.BRANCH_CODE}
+		AND AMF.ACCOUNT_NUMBER  = #{amfVO.ACCOUNT_NUMBER}
+	</select>
+	
+	<sql id="cifRelatedAccountListQuery">
+		<![CDATA[
+		SELECT DISTINCT
+				 AMF.BRANCH_CODE,
+				 AMF.CURRENCY_CODE,
+				 AMF.GL_CODE,
+				 AMF.CIF_SUB_NO,
+				 AMF.SL_NO,
+				 AMF.ACC_BC,
+				 AMF.BRIEF_NAME_ENG,
+				 AMF.LONG_NAME_ENG,
+				 AMF.GMI_FLAG,
+				 AMF.ACCOUNT_NUMBER,
+				 CASE WHEN AMF.FC_AVAIL_BAL IS NULL THEN 0 ELSE AMF.FC_AVAIL_BAL END FC_AVAIL_BAL,
+				 CASE WHEN AMF.CV_AVAIL_BAL IS NULL THEN 0 ELSE AMF.CV_AVAIL_BAL END CV_AVAIL_BAL,
+				 CASE WHEN AMF.BLOCKED_FC   IS NULL THEN 0 ELSE AMF.BLOCKED_FC   END BLOCKED_FC,
+				 CASE WHEN AMF.BLOCKED_CV   IS NULL THEN 0 ELSE AMF.BLOCKED_CV   END BLOCKED_CV,
+				 CURRENCIES.DECIMAL_POINTS,
+				 AMF.ADDITIONAL_REFERENCE,
+				 (SELECT VALUE_DESC 
+			                FROM SYS_PARAM_LOV_TRANS 
+			                WHERE LOV_TYPE_ID = #{lovType}
+			                AND LANG_CODE = #{langCode,jdbcType=VARCHAR}
+			                AND VALUE_CODE = AMF.STATUS) STATUS  
+		FROM  	 AMF		,
+		 	  	 CURRENCIES ,
+		 	  	 USR
+		WHERE	 CURRENCIES.COMP_CODE  		= AMF.COMP_CODE
+	 	AND		 CURRENCIES.CURRENCY_CODE   = AMF.CURRENCY_CODE
+	 	AND		 AMF.COMP_CODE   			= #{compCode}
+	 	AND		 AMF.CIF_SUB_NO  			= #{cifCode}
+		AND		 ( (#{lsArg}  = 'F'	AND AMF.GMI_FLAG  = 'F'  ) OR	
+				   (#{lsArg}  = 'G'  AND	AMF.GMI_FLAG  = 'G'  ) OR	
+				   (#{lsArg}  = 'B'	AND	AMF.GMI_FLAG  <> 'I' )
+				 ) 
+
+     	AND   	((#{dormantFlag} = '0' AND  AMF.STATUS IN ( 'I'  , 'A'   , 'P'  , 'S'  , 'C'  , 'M'  )) or  (#{dormantFlag} = 'T' AND  AMF.STATUS IN ( 'I'  , 'A'  , 'T'  , 'P'  , 'S'  , 'C'  , 'M'  )))
+    	AND		(USR.USER_ID  = #{userId}	  )
+
+		]]>	 
+		 <include refid="accountMapper.accRestriction"/> 
+    	
+<!-- 		
+		Commented By Habib Baalbaki for new account restriction
+		AND NOT EXISTS ( 
+	       SELECT 1 FROM 
+				ACC_RESTRICTED AccRest 
+	            WHERE  
+		           AMF.COMP_CODE = AccRest.COMP_CODE  
+	          	 AND   AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+				 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+				 AND  AMF.GL_CODE = AccRest.GL_CODE 
+				 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+				 AND  AMF.SL_NO = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{screenRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )  	-->		
+	</sql>
+	<select id="cifRelatedAccountList" resultMap="cardRelatedAccountsListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="cifRelatedAccountListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="cifRelatedAccountListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="cifRelatedAccountListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<sql id="accountNumberListQuery">
+		<![CDATA[
+		SELECT DISTINCT 
+			AMF.ACC_NO			
+		FROM  AMF  
+		WHERE LTRIM(ACC_NO) IS NOT NULL
+		]]>	 
+	</sql>
+	<select id="accountNumberList" resultMap="AMF.BaseResultMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accountNumberListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="accountNumberListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accountNumberListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- query to return the account number count -->
+	<select id="checkAccountNumberCount" parameterType="accountSC"
+		resultType="int">
+  		<![CDATA[
+		 SELECT COUNT(1)
+		  FROM AMF 
+		 WHERE ACC_NO = #{accNo}
+		]]>
+
+	</select>
+	
+	<resultMap id="checkAccAMFMAP" type="accountVO">
+		<result property="BRIEF_NAME_ENG" 		column="BRIEF_NAME_ENG"/>
+		<result property="LONG_NAME_ENG" 		column="LONG_NAME_ENG"/>
+		<result property="STATUS" 	  			column="STATUS"/>
+		<result property="GMI_FLAG" 			column="GMI_FLAG"/>
+		<result property="AC_SIGN" 				column="AC_SIGN"/>
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+		<result property="BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="GL_CODE"              column="GL_CODE" />
+		<result property="CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="SL_NO"                column="SL_NO" />
+		<result property="DESCRIPTION"          column="cifDesc" />	
+		<result property="ACC_BC"          		column="ACC_BC" />	
+		<result property="ACC_NO"				column="ACC_NO" />
+		<result property="DATE_OPND"          	column="DATE_OPND" />	
+		<result property="ACC_NO"          		column="ACC_NO"/>
+		<result property="IBAN_ACC_NO"          column="IBAN_ACC_NO" />	
+	</resultMap>
+	
+	<select id="checkAccountInAMF" parameterType="accountSC"	resultMap="checkAccAMFMAP">
+		 SELECT AMF.BRIEF_NAME_ENG,
+		        AMF.BRIEF_NAME_ARAB ,
+		        AMF.LONG_NAME_ENG,
+		        AMF.STATUS, 
+		 		AMF.GMI_FLAG,
+				AMF.AC_SIGN,
+				AMF.IBAN_ACC_NO,
+				AMF.ADDITIONAL_REFERENCE,
+				AMF.BRANCH_CODE,
+				AMF.CURRENCY_CODE,
+				AMF.GL_CODE,
+				AMF.CIF_SUB_NO,
+				AMF.SL_NO,
+				AMF.UPDATE_PASSBOOK,
+				AMF.DATE_OPND,
+				AMF.ACC_NO,
+				<!-- TP#211654;Sreejith;25/08/2014 Added ACC_BC  -->
+				AMF.ACC_BC,
+				AMF.ACC_NO,
+			    (
+				   SELECT 
+						 CASE 
+							WHEN #{preferredLanguage} = 'L'
+							THEN CIF.SHORT_NAME_ENG
+							ELSE CIF.SHORT_NAME_ARAB
+						 END    
+				     FROM CIF 
+				    WHERE COMP_CODE =  AMF.COMP_CODE
+				      AND CIF_NO    =  AMF.CIF_SUB_NO	      
+		         ) cifDesc
+		   FROM AMF
+		  WHERE	AMF.COMP_CODE  		= #{compCode}
+		  
+			<if test='branchCode != null and branchCode != emptyBigDecimalValue'>
+			  AND 	AMF.BRANCH_CODE   		 = #{branchCode, jdbcType=NUMERIC}
+			</if>
+			<if test='currencyCode != null and currencyCode != emptyBigDecimalValue'>
+			  AND 	AMF.CURRENCY_CODE 		 = #{currencyCode, jdbcType=NUMERIC}
+			</if>
+			<if test='glCode != null and glCode != emptyBigDecimalValue'>
+			  AND 	AMF.GL_CODE       		 = #{glCode, jdbcType=NUMERIC}
+			</if>
+			<if test='cifCode != null and cifCode != emptyBigDecimalValue'>
+			  AND 	AMF.CIF_SUB_NO    		 = #{cifCode, jdbcType=NUMERIC}
+			</if>
+			<if test='slNbr != null and slNbr != emptyBigDecimalValue'>
+			  AND 	AMF.SL_NO         		 = #{slNbr, jdbcType=NUMERIC}
+			</if>
+			<if test='addRef != null and !"".equals(addRef)'>
+			  AND 	AMF.ADDITIONAL_REFERENCE = #{addRef}
+			</if>
+			<if test='"".equals(addRef)'>
+			  AND  AMF.ADDITIONAL_REFERENCE IS NULL 
+			</if>
+			<if test='ibanNo != null and !"".equals(ibanNo)'>
+			  AND 	AMF.IBAN_ACC_NO = #{ibanNo}
+
+			</if>
+			<if test='ACC_BC != null'>
+			  AND	(#{ACC_BC} = 'X' OR ACC_BC = #{ACC_BC})
+			</if>
+			<if test='BS_CONTRA != null'>
+			  AND (#{BS_CONTRA} = 'X'
+					OR	(#{BS_CONTRA}  = 'N'  AND	AMF.GMI_FLAG  IN ( 'F'  , 'G'  )) 
+					OR	(#{BS_CONTRA}  = AMF.GMI_FLAG) 
+					OR	(#{BS_CONTRA}  = 'S'   AND 	AMF.GMI_FLAG  IN ( 'G', 'I'))) 
+			</if>
+			<if test='status != null'>
+			  AND AMF.STATUS IN (${status})
+			</if>
+			<if test='notInStatus != null'>
+			  AND AMF.STATUS NOT IN (${notInStatus})
+			</if>
+			<if test="gmiExcludes != null">
+			 	AND AMF.GMI_FLAG NOT IN (${gmiExcludes})
+			 </if>
+			 <if test="gmiIncludes != null">
+			 	AND AMF.GMI_FLAG IN (${gmiIncludes})
+			 </if>
+ 
+          <if test='"IncidentReport".equals(fromScreen)'>
+   		   AND NOT EXISTS (SELECT 1 FROM CTS_TRSFR_ACC  WHERE
+           CTS_TRSFR_ACC.COMP_CODE =AMF.COMP_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_BR = AMF.BRANCH_CODE    
+           AND CTS_TRSFR_ACC.FROM_ACC_CY = AMF.CURRENCY_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_GL = AMF.GL_CODE
+           AND CTS_TRSFR_ACC.FROM_ACC_CIF = AMF.CIF_SUB_NO
+           AND CTS_TRSFR_ACC.FROM_ACC_SL = AMF.SL_NO
+           AND AMF.STATUS = 'C' 
+           UNION ALL
+           SELECT 1 FROM CTS_TRSFR_ACC  WHERE
+           CTS_TRSFR_ACC.COMP_CODE =AMF.COMP_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_BR = AMF.BRANCH_CODE    
+           AND CTS_TRSFR_ACC.TO_ACC_CY = AMF.CURRENCY_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_GL = AMF.GL_CODE
+           AND CTS_TRSFR_ACC.TO_ACC_CIF = AMF.CIF_SUB_NO
+           AND CTS_TRSFR_ACC.TO_ACC_SL = AMF.SL_NO
+           AND AMF.STATUS = 'C'
+           
+           )
+   		</if>			 
+					 
+<!-- 			// Habib Baalbaki accocunt restriction 372747 -->
+			
+			<if test='skipAccountRestriction == null or "N".equals(skipAccountRestriction)'>
+			<include refid="accountMapper.accRestriction"/> 
+			</if>		
+	</select>
+	
+<!-- *************************Query to populate the Accounts list (Data Window : w_lookup_amf_ret_nonint)-************************************** -->
+	<sql id="getAccountsListQuery">
+		  SELECT distinct
+			AMF.BRANCH_CODE,
+			AMF.CURRENCY_CODE,   
+			AMF.GL_CODE,   
+			AMF.CIF_SUB_NO,   
+			AMF.SL_NO,   
+			AMF.ACC_BC,   
+			AMF.BRIEF_NAME_ENG,   
+			AMF.LONG_NAME_ENG,  
+			(SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  		AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+			FULL_NAME_ENG,
+			AMF.STATUS ,
+			AMF.ADDITIONAL_REFERENCE,  
+			AMF.IBAN_ACC_NO,  
+			AMF.GMI_FLAG,
+			AMF.AC_SRL,
+			AMF.ADD_STRING5,
+			AMF.DATE_OPND,
+			AMF.MATURITY_DTE,
+			<if test='allowInternAcc == null or "".equals(allowInternAcc) or "0".equals(allowInternAcc)' >
+				RIFATT.CATEGORY,
+			</if>
+			<!-- TP#201176;Roshin;14/07/2014 Added STATUSDESC -->
+			(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode} AND VALUE_CODE = CASE WHEN AMF.STATUS IS NULL THEN 'A' ELSE AMF.STATUS END) STATUSDESC,
+			(SELECT CASE WHEN AMF_EXTENDED.SUBSIDIARY_REFER_CIF_NO_YN='0' AND AMF.GMI_FLAG='I' THEN AMF_EXTENDED.CIF_SUB_NO ELSE NULL END
+						FROM AMF_EXTENDED 
+						WHERE AMF.COMP_CODE   = AMF_EXTENDED.COMP_CODE 
+						AND AMF.CIF_SUB_NO    = AMF_EXTENDED.CIF_SUB_NO  
+						AND AMF.BRANCH_CODE   = AMF_EXTENDED.BRANCH_CODE  
+	  		 			AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE 
+	  		 			AND AMF.GL_CODE       = AMF_EXTENDED.GL_CODE 
+	  		 			AND AMF.SL_NO 		  = AMF_EXTENDED.SL_NO )  subsidiary 
+         	 <if test='allowInternAcc == null or "".equals(allowInternAcc) or "0".equals(allowInternAcc)' >
+			FROM AMF AMF  , RIFATT , RIFCTT, CIF , GEN_LEDGER, AMF AMF1 
+			WHERE 	( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE		) AND
+					( AMF.GL_CODE		= GEN_LEDGER.GL_CODE		) AND
+					( AMF.COMP_CODE     = RIFATT.COMP_CODE 			) AND
+					( AMF.GL_CODE       = RIFATT.TYPE_CODE 			) AND
+					( AMF.COMP_CODE     = CIF.COMP_CODE 			) AND
+					( AMF.CIF_SUB_NO	= CIF.CIF_NO 	  			) AND
+					( CIF.COMP_CODE	  	= RIFCTT.COMP_CODE 			) AND
+					( CIF.CIF_TYPE		= RIFCTT.TYPE_CODE 			) AND
+					( AMF.COMP_CODE     = #{compCode}				) AND  		
+			     	( AMF.ACC_BC = CASE WHEN #{BS_CONTRA} = 'X' THEN AMF.ACC_BC ELSE #{BS_CONTRA} END  ) AND  
+					(  ( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'X') OR
+		 			  	( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'N' AND AMF.GMI_FLAG IN ('G','F')) OR
+						( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END IN ('I','F','G') AND AMF.GMI_FLAG = #{GMI_FLAG} )) AND
+					
+					<if test='status != null and !"".equals(status)' >
+			 		   ( AMF.STATUS IN (${status}) ) AND
+					</if>
+					<if test='status == null or "".equals(status)' >
+						( AMF.STATUS IN ( 'A', 'I','T', 'P' )) AND
+					</if>
+					( AMF.ACC_BC 		 <![CDATA[ <>]]> 'S' ) AND
+					( 	(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' ) OR 
+						(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+						(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+						(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+														 (GEN_LEDGER.AFFECT_FLAG = '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+						)
+						)
+					) AND
+					(  (CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X'												) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'C' AND RIFCTT.CLIENT = 'Y'     	) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+					) AND
+					(	( #{AFFECT_CARD} <![CDATA[<>]]> '1' ) Or
+						( #{AFFECT_CARD} = '1' and RIFATT.AFFECT_CARD = '1' )
+					)
+		   AND AMF.COMP_CODE		 = AMF1.COMP_CODE 
+		   AND AMF.BRANCH_CODE 	 	 = AMF1.BRANCH_CODE 
+		   AND AMF.CURRENCY_CODE 	 = AMF1.CURRENCY_CODE 
+		   AND AMF.GL_CODE 			 = AMF1.GL_CODE 
+		   AND AMF.CIF_SUB_NO 		 = AMF1.CIF_SUB_NO 
+		   AND AMF.SL_NO 			 = AMF1.SL_NO
+		</if>
+		<if test='"1".equals(allowInternAcc)' >
+			FROM AMF AMF , GEN_LEDGER
+			WHERE 	( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE		) AND
+					( AMF.GL_CODE		= GEN_LEDGER.GL_CODE		) AND
+					
+					( AMF.COMP_CODE     = #{compCode}				) AND  		
+			     	( AMF.ACC_BC = CASE WHEN #{BS_CONTRA} = 'X' THEN AMF.ACC_BC ELSE #{BS_CONTRA} END  ) AND  
+					(  ( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'X') OR
+		 			  	( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'N' AND AMF.GMI_FLAG IN ('G','F')) OR
+						( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END IN ('I','F','G') AND AMF.GMI_FLAG = #{GMI_FLAG} )) AND
+					
+					<if test='status != null and !"".equals(status)' >
+			 		   ( AMF.STATUS IN (${status}) ) AND
+					</if>
+					<if test='status == null or "".equals(status)' >
+						( AMF.STATUS IN ( 'A', 'I','T', 'P' )) AND
+					</if>
+					
+					( AMF.ACC_BC 		 <![CDATA[ <>]]> 'S' ) 		   
+		</if>
+		
+	    <include refid="accRestriction"/> 
+	</sql>
+	<sql id="getAccountsListWhereQuery">
+		<if test="branchCode != null and branchCode != 0">		
+		AND ( AMF.BRANCH_CODE     = #{branchCode})
+		</if>
+		<if test="currencyCode != null and currencyCode != 0">		
+		AND  ( AMF.CURRENCY_CODE     = #{currencyCode})
+		</if>
+		<if test="glCode != null and glCode != 0">		
+		AND  ( AMF.GL_CODE     = #{glCode})
+		</if>
+		<if test="cifCode != null and cifCode != -1">		
+		AND  ( AMF.CIF_SUB_NO     = #{cifCode})
+		</if>	
+		<if test='(GMI_FLAG.equals("I") or GMI_FLAG.equals("X")) and (true.equals(subsidiarySearch) or (cifCode != null and cifCode != emptyBigDecimalValue)) and (!"PMS".equals(appName))  '> 
+		 AND (coalesce((SELECT SUBSIDIARY_REFER_CIF_NO_YN
+                  FROM AMF_EXTENDED
+                 WHERE AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE
+                   AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO
+                   AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE
+                   AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE
+                   AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE
+                   AND AMF.SL_NO = AMF_EXTENDED.SL_NO),'0')) = (CASE WHEN  AMF.GMI_FLAG='I' THEN  '1'  ELSE '0' END)
+		</if>
+	</sql>
+	<resultMap id="getAccountsListMap" type="accountCO">
+		<result property="amfVO.BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="amfVO.CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE"              column="GL_CODE" />
+		<result property="amfVO.CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="amfVO.SL_NO"                column="SL_NO" />
+		<result property="amfVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />		
+		<result property="amfVO.IBAN_ACC_NO"          column="IBAN_ACC_NO" />    
+		<result property="amfVO.AC_SRL"          	  column="AC_SRL" />
+		<result property="amfVO.BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" />   
+        <result property="amfVO.LONG_NAME_ENG"        column="LONG_NAME_ENG" />   
+        <result property="amfVO.FULL_NAME_ENG"        column="FULL_NAME_ENG" />   
+        <result property="amfVO.STATUS"               column="STATUS" />
+		<result property="amfVO.ADD_STRING5"          column="ADD_STRING5" />
+		<result property="amfVO.DATE_OPND"            column="DATE_OPND" />
+ 		<result property="amfVO.MATURITY_DTE"         column="MATURITY_DTE" />   
+        <result property="rifattVO.CATEGORY"          column="CATEGORY" /> 
+        <result property="STATUSDESC"          		  column="STATUSDESC" />   
+        <result property="subsidiary"          		  column="subsidiary" />   
+     </resultMap>
+
+	<select id="selectAccountsList" resultMap="getAccountsListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="getAccountsListQuery" />
+		<include refid="getAccountsListWhereQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="selectAccountsListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="getAccountsListQuery" />
+		<include refid="getAccountsListWhereQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="validateSLNoQuery">
+		<![CDATA[
+		  SELECT distinct
+			AMF.BRIEF_NAME_ENG,
+			AMF.ADDITIONAL_REFERENCE
+			FROM AMF AMF  , RIFATT , RIFCTT, CIF , GEN_LEDGER, AMF AMF1 
+			WHERE 	( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE		) AND
+					( AMF.GL_CODE		= GEN_LEDGER.GL_CODE		) AND
+					( AMF.COMP_CODE     = RIFATT.COMP_CODE 			) AND
+					( AMF.GL_CODE       = RIFATT.TYPE_CODE 			) AND
+					( AMF.COMP_CODE     = CIF.COMP_CODE 			) AND
+					( AMF.CIF_SUB_NO	= CIF.CIF_NO 	  			) AND
+					( CIF.COMP_CODE	  	= RIFCTT.COMP_CODE 			) AND
+					( CIF.CIF_TYPE		= RIFCTT.TYPE_CODE 			) AND
+					( AMF.COMP_CODE     = #{compCode}				) AND  		
+					( ( #{branchCode} IS NULL OR #{branchCode} = 0  )  OR
+					  ( #{branchCode} IS NOT NULL AND #{branchCode} <> 0 AND #{branchCode} = AMF.BRANCH_CODE )  
+					)	AND
+					( ( #{currencyCode} IS NULL OR #{currencyCode} = 0  )  OR
+					  ( #{currencyCode} IS NOT NULL AND #{currencyCode} <> 0 AND #{currencyCode} = AMF.CURRENCY_CODE )  
+					)	AND
+					( ( #{glCode} IS NULL OR #{glCode} = 0  )  OR
+					  ( #{glCode} IS NOT NULL AND #{glCode} <> 0 AND #{glCode} = AMF.GL_CODE )  
+					)	AND
+					( ( #{cifCode} IS NULL OR #{cifCode} = -1 )  OR
+					  ( #{cifCode} IS NOT NULL AND #{cifCode} <> -1 AND #{cifCode} = AMF.CIF_SUB_NO )  
+					)	AND
+			     	( AMF.ACC_BC = CASE WHEN #{BS_CONTRA} = 'X' THEN AMF.ACC_BC ELSE #{BS_CONTRA} END  ) AND  
+					(  ( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'X') OR
+		 			  	( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'N' AND AMF.GMI_FLAG IN ('G','F')) OR
+						( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END IN ('I','F','G') AND AMF.GMI_FLAG = #{GMI_FLAG} )) AND 
+					( AMF.STATUS 		  IN ( 'A', 'I','T', 'P' )) AND
+					( AMF.ACC_BC 		  <> 'S' ) AND
+					( 	(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' ) OR 
+						(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+						(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+						(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+														 (GEN_LEDGER.AFFECT_FLAG = '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+						)
+						)
+					) AND
+					(  (CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X'												) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'C' AND RIFCTT.CLIENT = 'Y'     	) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+					) AND
+					(	( #{AFFECT_CARD} <> '1' ) Or
+						( #{AFFECT_CARD} = '1' and RIFATT.AFFECT_CARD = '1' )
+					)
+		   AND AMF.COMP_CODE		 = AMF1.COMP_CODE 
+		   AND AMF.BRANCH_CODE 	 	 = AMF1.BRANCH_CODE 
+		   AND AMF.CURRENCY_CODE 	 = AMF1.CURRENCY_CODE 
+		   AND AMF.GL_CODE 			 = AMF1.GL_CODE 
+		   AND AMF.CIF_SUB_NO 		 = AMF1.CIF_SUB_NO 
+		   AND AMF.SL_NO 			 = AMF1.SL_NO
+		   
+		   AND AMF.BRANCH_CODE 	 	 = #{branchCode}
+		   AND AMF.CURRENCY_CODE 	 = #{currencyCode}
+		   AND AMF.GL_CODE 			 = #{glCode}
+		   AND AMF.CIF_SUB_NO 		 = #{cifCode}
+		   AND AMF.SL_NO 			 = #{slNbr}
+		   
+		  ]]>
+	</sql>
+	<select id="selectValidateSLNo" resultType="amfVO" parameterType="accountSC">
+		<include refid="validateSLNoQuery" />
+	</select>
+	
+	<resultMap id="AMFByCIFSUBNOMap" type="accountVO">   
+        <result property="STATUS"               column="STATUS"/>
+        <result property="AC_SIGN"              column="AC_SIGN"/>
+        <result property="ACC_BC"               column="ACC_BC"/>  
+		<result property="CURRENCY_CODE"        column="CURRENCY_CODE"/>
+		<result property="GL_CODE"              column="GL_CODE"/>
+		<result property="CIF_SUB_NO"           column="CIF_SUB_NO"/>
+		<result property="SL_NO"                column="SL_NO"/>
+	</resultMap>
+	
+	<select id="returnAMFByCIFSUBNO" resultMap="AMFByCIFSUBNOMap" parameterType="accountSC">
+		SELECT AMF.STATUS,
+		       AMF.AC_SIGN,
+		       AMF.ACC_BC,
+		       AMF.CURRENCY_CODE,
+		       AMF.GL_CODE,
+		       AMF.CIF_SUB_NO,
+		       AMF.SL_NO
+		  FROM AMF
+		 WHERE AMF.COMP_CODE  = #{compCode}
+		   AND AMF.CIF_SUB_NO = #{cifCode}
+		   AND AMF.STATUS 	  = #{status}
+	</select>
+	
+	<!-- NABIL FEGHALI - IIAB110182 - IIAB100424 - Conditional Automation -->
+	<select id="countAMFByCIFSUBNO" resultType="java.math.BigDecimal" parameterType="accountSC">
+		SELECT COUNT(1)
+		  FROM AMF
+		 WHERE AMF.COMP_CODE  = #{compCode}
+		   AND AMF.CIF_SUB_NO = #{cifCode}
+		   AND AMF.STATUS 	  = #{status}
+		   <if test='gmiExcludes != null and gmiExcludes.equals("I")'>
+		   AND GMI_FLAG <![CDATA[<>]]> 'I'
+		   </if>
+	</select>
+	
+	
+	<resultMap id="AMFByAddRefMap" type="accountVO">   
+        <result property="BRANCH_CODE"          column="BRANCH_CODE"/>  
+		<result property="CURRENCY_CODE"        column="CURRENCY_CODE"/>
+		<result property="GL_CODE"              column="GL_CODE"/>
+		<result property="CIF_SUB_NO"           column="CIF_SUB_NO"/>
+		<result property="SL_NO"                column="SL_NO"/>
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+		<result property="DESCRIPTION"          column="DESCRIPTION"/>
+		<result property="GMI_FLAG"          	column="GMI_FLAG"/>
+		<result property="MATURITY_DTE"         column="MATURITY_DTE"/>
+	</resultMap>
+	
+	<sql id="selectAMFAccount">
+		SELECT AMF.BRANCH_CODE,
+				 AMF.CURRENCY_CODE,   
+				 AMF.GL_CODE ,
+				 AMF.CIF_SUB_NO,   
+				 AMF.SL_NO  ,
+				 AMF.ADDITIONAL_REFERENCE,
+				 <choose>
+					 <when test='preferredLanguage !=null and preferredLanguage.equals("A")'>
+					 	AMF.BRIEF_NAME_ARAB 
+					 </when>
+					 <otherwise>
+					 	AMF.BRIEF_NAME_ENG 
+					 </otherwise>
+				 </choose> AS DESCRIPTION 
+				 ,GMI_FLAG
+				 ,MATURITY_DTE
+			FROM AMF
+	</sql>
+
+	<select id="returnAMFByAddRef" resultMap="AMFByAddRefMap" parameterType="accountSC">
+		  <include refid="selectAMFAccount" />
+		   WHERE AMF.COMP_CODE  = #{compCode}
+		    AND AMF.ADDITIONAL_REFERENCE = #{addRef, jdbcType=VARCHAR}
+		    <!-- the below is commented by Guitta 25/08/2014 in order to copy BB fix of issue 72881 -->
+		    <!-- if test=" sectionKey == null"> 
+		    AND AMF.STATUS  IN ('A', 'I')
+		    </if-->
+		    
+		    <!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+			<include refid="accountMapper.accRestriction"/> 
+	</select>
+	
+	<select id="returnAMFByAccountType" resultMap="AMFByAddRefMap" parameterType="accountSC">
+		  <include refid="selectAMFAccount" />
+		  WHERE AMF.COMP_CODE 					= :il_company_code	AND  
+			(	( #accountType = '1' AND AMF.ADDITIONAL_REFERENCE	= #{addRef} 	) Or
+				(#accountType = '2' AND AMF.AC_SRL		-				= #{slNbr} ) Or
+				(#accountType = '3' AND AMF.ACCOUNT_NUMBER			= #{accNo} )
+	</select>
+	
+<!-- *************************Query to populate the Accounts list (Data Window : w_lookup_amf_ret_nonint)-************************************** -->
+
+	<resultMap id="returnTellerAccountByCyResultMap" type="accountCO">
+		<result property="amfVO.BRANCH_CODE"          column="ACC_BR" />
+		<result property="amfVO.CURRENCY_CODE"        column="ACC_CY" />
+		<result property="amfVO.GL_CODE"              column="ACC_GL" />
+		<result property="amfVO.CIF_SUB_NO"           column="ACC_CIF" />
+		<result property="amfVO.SL_NO"         		  column="ACC_SL" />
+		<result property="amfVO.BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" />
+		<result property="amfVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="amfVO.YTD_FC_BAL" column="YTD_FC_BAL" />
+		<result property="amfVO.YTD_CV_BAL" column="YTD_CV_BAL" />
+		<result property="ctsTellerAccDet.MIN_BALANCE" column="MIN_BALANCE" />
+		<result property="ctsTellerAccDet.MAX_BALANCE" column="MAX_BALANCE" />
+		<result property="ctsTellerAccDet.ALLOW_OVERPASS_LIMIT" column="ALLOW_OVERPASS_LIMIT" />
+	</resultMap>
+	
+	<select id="returnTellerAccountByCy" parameterType="accountSC" resultMap="returnTellerAccountByCyResultMap" >
+		SELECT CTSTELLERACCDET.ACC_BR,
+			   CTSTELLERACCDET.ACC_CY,
+			   CTSTELLERACCDET.ACC_GL,
+			   CTSTELLERACCDET.ACC_CIF,
+			   CTSTELLERACCDET.ACC_SL,	 
+			   (CASE WHEN #{preferredLanguage} = 'L' THEN AMF.BRIEF_NAME_ENG ELSE AMF.BRIEF_NAME_ARAB END) BRIEF_NAME_ENG,
+			   AMF.ADDITIONAL_REFERENCE,
+			   AMF.YTD_FC_BAL,
+			   AMF.YTD_CV_BAL,
+			   CTSTELLERACCDET.MIN_BALANCE,
+			   CTSTELLERACCDET.MAX_BALANCE,
+			   CTSTELLERACCDET.ALLOW_OVERPASS_LIMIT
+		  FROM CTSTELLERACCDET, AMF 
+		 WHERE CTSTELLERACCDET.COMP_CODE = AMF.COMP_CODE
+		   AND CTSTELLERACCDET.ACC_BR = AMF.BRANCH_CODE
+		   AND CTSTELLERACCDET.ACC_CY = AMF.CURRENCY_CODE
+		   AND CTSTELLERACCDET.ACC_GL = AMF.GL_CODE
+		   AND CTSTELLERACCDET.ACC_CIF = AMF.CIF_SUB_NO
+		   AND CTSTELLERACCDET.ACC_SL = AMF.SL_NO
+		   AND CTSTELLERACCDET.COMP_CODE = #{compCode}
+		   AND CTSTELLERACCDET.BRANCH_CODE = #{branchCode}
+		   AND CTSTELLERACCDET.CODE  = #{tellerCode}
+		   AND CTSTELLERACCDET.CY_CODE = #{currencyCode, jdbcType=NUMERIC}
+		   AND CTSTELLERACCDET.TRX_TYPE = #{trxType, jdbcType=NUMERIC}
+		   <if test='notCheckOnStatus == null or "".equals(notCheckOnStatus)'>
+           		AND AMF.STATUS IN ('A', 'I')
+		   </if>
+	</select>
+
+<!-- *************************Q
+uery to populate the Accounts list (Data Window : w_lookup_amf_ret)-************************************** -->    	
+<sql id="getAccountsQueryByBrCyGlCif">
+
+		SELECT distinct
+			AMF.BRANCH_CODE,
+			AMF.CURRENCY_CODE,   
+			AMF.GL_CODE,   
+			AMF.CIF_SUB_NO,   
+			AMF.SL_NO,   
+			AMF.ACC_BC,   
+			AMF.BRIEF_NAME_ENG,   
+			AMF.LONG_NAME_ENG,  
+			(SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  		AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+			FULL_NAME_ENG,
+			AMF.STATUS ,
+			(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode} AND VALUE_CODE = CASE WHEN AMF.STATUS IS NULL THEN 'A' ELSE AMF.STATUS END) STATUSDESC,
+			AMF.ADDITIONAL_REFERENCE,  
+			AMF.IBAN_ACC_NO,  
+			AMF.GMI_FLAG,
+			AMF.AC_SRL,
+			AMF.ADD_STRING5,
+			AMF.DATE_OPND,
+			AMF.MATURITY_DTE,
+			RIFATT.CATEGORY
+    	FROM GEN_LEDGER,AMF,CIF,RIFCTT,RIFATT
+    	WHERE
+    		( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE	) AND
+			( AMF.GL_CODE		= GEN_LEDGER.GL_CODE	) AND
+			( AMF.COMP_CODE  	= RIFATT.COMP_CODE 		) AND
+			( AMF.GL_CODE    	= RIFATT.TYPE_CODE 		) AND 
+			( AMF.COMP_CODE  	= CIF.COMP_CODE    		) AND
+			( AMF.CIF_SUB_NO 	= CIF.CIF_NO			) AND
+			( CIF.COMP_CODE  	= RIFCTT.COMP_CODE 		) AND
+		    ( CIF.CIF_TYPE	 	= RIFCTT.TYPE_CODE 		) AND
+			( AMF.COMP_CODE     = #{compCode}			) AND  
+		    ( AMF.BRANCH_CODE   = CASE WHEN #{branchCode} 	+ 0 =  0  THEN AMF.BRANCH_CODE 		ELSE #{branchCode} 	 + 0  END	) AND  
+            ( AMF.CURRENCY_CODE = CASE WHEN #{currencyCode} + 0 =  0  THEN AMF.CURRENCY_CODE	ELSE #{currencyCode} + 0  END	) AND  
+            ( AMF.GL_CODE       = CASE WHEN #{glCode}		+ 0 =  0  THEN AMF.GL_CODE	 		ELSE #{glCode} 		 + 0  END   ) AND  
+            ( AMF.CIF_SUB_NO    = CASE WHEN #{cifCode} 		+ 0 = -1  THEN AMF.CIF_SUB_NO		ELSE #{cifCode} 	 + 0  END   ) AND  
+            ( AMF.ACC_BC 		= CASE WHEN #{BS_CONTRA} 		= 'X' THEN AMF.ACC_BC 			ELSE #{BS_CONTRA} 		  END  ) AND  
+			(   
+				( #{GMI_FLAG}   = 'X' 							  ) OR
+ 			  	( #{GMI_FLAG}   = 'N' AND AMF.GMI_FLAG IN ('G','F')) OR
+				( #{GMI_FLAG}   IN ('I','F','G') 	AND AMF.GMI_FLAG = #{GMI_FLAG} )
+			) AND 
+			( AMF.STATUS 		IN ( 'A', 'I','T', 'P' )) AND
+			( AMF.ACC_BC 	<![CDATA[	<> ]]>	'S' ) AND
+			( 	
+				(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' ) OR 
+				(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+				(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) OR
+				(#{affectPassChq} = '3' AND 
+					(
+						(RIFATT.AFFECTION 		= '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) OR
+						(GEN_LEDGER.AFFECT_FLAG = '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+					)
+				)
+			) AND
+			(  
+				(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X' 	) OR 
+				(#{cifType} = 'C' AND RIFCTT.CLIENT = 'Y'     						) OR 
+				(#{cifType} = 'B' AND RIFCTT.BANK 	= 'Y'     						) 
+			)
+			<if test="slNbr != null and slNbr != 0">		
+			AND AMF.SL_NO 			 = #{slNbr}
+			</if>
+			
+			<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+			<include refid="accountMapper.accRestriction"/> 
+	</sql>		
+			
+	<select id="accountListByBrCyGlCif" resultMap="getAccountsListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="getAccountsQueryByBrCyGlCif" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="accountListCountByBrCyGlCif" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="getAccountsQueryByBrCyGlCif" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>		
+			
+	<select id="returnGlDetailsByBrCyGlCifSlForValidation" resultMap="getAccountsListMap" parameterType="accountSC">
+		<include refid="getAccountsQueryByBrCyGlCif" />
+	</select>		
+		   
+	<select id="retrieveAMFFlagandStatus" parameterType="AccountCO" resultMap="retrieveAMFInfoMap">
+		SELECT GMI_FLAG, STATUS		
+		FROM AMF
+		WHERE COMP_CODE     		= #{amfVO.COMP_CODE}
+		AND   BRANCH_CODE   		= #{amfVO.BRANCH_CODE}
+		AND	CURRENCY_CODE 			= #{amfVO.CURRENCY_CODE}
+		AND	GL_CODE		  			= #{amfVO.GL_CODE}
+		AND	CIF_SUB_NO	  			= #{amfVO.CIF_SUB_NO}
+		AND	SL_NO			  		= #{amfVO.SL_NO}
+	</select>	  
+
+	<select id="returnAccountsDataForCardsManagementValidation" resultMap="accountListMap" parameterType="accountSC">
+		<include refid="accountsDataForCardsManagementValidationQuery" />
+	</select>
+	<sql id="accountsDataForCardsManagementValidationQuery">		
+		SELECT 	COUNT(1) accCount, 
+				STATUS , 
+				GMI_FLAG , 
+				MATURITY_DTE, 
+				COMP_CODE, 
+				BRANCH_CODE, 
+				CURRENCY_CODE, 
+				GL_CODE, 
+				CIF_SUB_NO, 
+				SL_NO
+		FROM 	AMF
+		WHERE 	AMF.COMP_CODE 			    = #{compCode} 
+		AND		AMF.ADDITIONAL_REFERENCE  	= #{lienAcc}
+		AND		AMF.GMI_FLAG				<![CDATA[ <> ]]>'I'
+		AND   	AMF.STATUS 		  			IN ( 'A', 'I')  	
+		AND 	(
+					#{cat_code} = 0 
+					OR #{cat_code} <![CDATA[ <> ]]> 0 AND #{includeExclude} ='1'AND (	AMF.GL_CODE IN 
+																						(	SELECT  GL_CODE
+																							FROM   	CTSCARDS_LIEN_CAT
+																							WHERE  	COMP_CODE 	= #{compCode}
+																							AND 	CAT_CODE 	= #{cat_code} 
+																						)
+																						OR EXISTS
+																						(	SELECT  1
+																						 	FROM   	CTSCARDS_LIEN_CAT
+																						 	WHERE  	COMP_CODE 	= #{compCode}
+																						 	AND 	CAT_CODE 	= #{cat_code} 
+																						 	AND 	GL_CODE 	= 0
+																						)
+																					)
+			   		OR #{cat_code} <![CDATA[ <> ]]> 0 AND #{includeExclude} ='0'AND 	AMF.GL_CODE NOT IN 
+				   																		(	SELECT 	GL_CODE
+																							FROM   	CTSCARDS_LIEN_CAT
+																							WHERE  	COMP_CODE 	= #{compCode}
+																							AND 	CAT_CODE 	= #{cat_code}
+																							AND 	LINE_NO 	<![CDATA[ >= ]]> 1
+																						)
+				)			
+		AND 	NOT EXISTS (SELECT 1 FROM RIFATT T WHERE T.COMP_CODE = AMF.COMP_CODE AND T.AUTO_SWEEP_GL = AMF.GL_CODE)
+		GROUP BY STATUS , GMI_FLAG , MATURITY_DTE, COMP_CODE, BRANCH_CODE, CURRENCY_CODE, GL_CODE, CIF_SUB_NO, SL_NO
+	</sql>	  
+				
+	<select id="retrieveAMFNameandStatus" parameterType="accountSC" resultType="accountVO">
+		SELECT  
+				CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+				STATUS
+		FROM 	AMF
+		WHERE 	COMP_CODE     	= #{compCode}
+		AND   	BRANCH_CODE   	= #{branchCode}
+		AND		CURRENCY_CODE 	= #{currencyCode}
+		AND		GL_CODE		  	= #{glCode}
+		AND		CIF_SUB_NO	  	= #{cifCode}
+		AND		SL_NO			= #{slNbr}
+	</select>	  
+	
+	<!-- *************************Query for  verifying the CIF is allowed to debt or credit ********-->
+	
+	<select id="selectCifAllowedForCrDr" parameterType="accountSC" resultType="String">
+		<include refid="getCifAllowedForCrDr"/>					
+	</select>
+	
+	<sql id="getCifAllowedForCrDr">
+		SELECT FORBID_TRX FROM CIF WHERE CIF.COMP_CODE = #{compCode} AND CIF.CIF_NO = #{cifCode} 
+	</sql>
+	
+	
+	<select id="checkBranchExistsInAMF" resultType="int" parameterType="accountSC">
+		<!--
+		IF EXISTS 
+		(
+			SELECT * FROM AMF WHERE 
+			AMF.COMP_CODE = #{compCode} 
+			AND ( AMF.BRANCH_CODE = CASE WHEN #{branchCode} = 0 THEN AMF.BRANCH_CODE ELSE #{branchCode} END ) 
+			AND ( 
+					#{BS_CONTRA} = 'X'
+					OR ( #{BS_CONTRA} = 'N' AND AMF.GMI_FLAG IN ( 'F' , 'G' ) ) 
+					OR ( #{BS_CONTRA} = AMF.GMI_FLAG ) 
+					OR ( #{BS_CONTRA} ='S' AND AMF.GMI_FLAG IN ( 'G' , 'I' ) ) 
+				) 
+		)
+		SELECT 1 ELSE SELECT 0-->
+		
+		SELECT CASE (SELECT COUNT(1)
+			           FROM AMF
+			          WHERE AMF.COMP_CODE = #{compCode} 
+			            AND (AMF.BRANCH_CODE = CASE WHEN #{branchCode} = 0 THEN AMF.BRANCH_CODE ELSE #{branchCode} END)
+			            AND (#{BS_CONTRA} = 'X' OR 
+			            	(#{BS_CONTRA} = 'N' AND AMF.GMI_FLAG IN ('F', 'G')) OR
+			                (#{BS_CONTRA} = AMF.GMI_FLAG) OR
+			                (#{BS_CONTRA} = 'S' AND AMF.GMI_FLAG IN ('G', 'I'))))
+			         WHEN 0 THEN
+			          0
+			         ELSE
+			          1
+			    END
+		<if test="isSybase != 1">FROM DUAL</if>
+	  	
+		
+	</select>
+	
+	<!-- ************************* Query for  w_cif_accounts1  ********-->
+	<sql id="accountsDataFromW_cif_accounts1_Query">	
+	  SELECT DISTINCT
+			 AMF.BRANCH_CODE,
+			 AMF.CURRENCY_CODE,
+			 AMF.GL_CODE,
+			 AMF.CIF_SUB_NO,
+			 AMF.SL_NO,
+			 AMF.ACC_BC,
+			 AMF.BRIEF_NAME_ENG,
+			 AMF.GMI_FLAG,
+			 AMF.ACCOUNT_NUMBER,
+			 CASE WHEN AMF.FC_AVAIL_BAL IS NULL THEN 0 ELSE AMF.FC_AVAIL_BAL END FC_AVAIL_BAL,
+			 CASE WHEN AMF.CV_AVAIL_BAL IS NULL THEN 0 ELSE AMF.CV_AVAIL_BAL END CV_AVAIL_BAL,
+			 COMPANIES.BASE_CURRENCY,
+			 CURRENCIES.DECIMAL_POINTS,
+			 AMF.ADDITIONAL_REFERENCE , 
+          	 CASE WHEN AMF.BLOCKED_CV IS NULL THEN 0 ELSE AMF.BLOCKED_CV END BLOCKED_CV,
+          	 CASE WHEN AMF.BLOCKED_FC IS NULL THEN 0 ELSE AMF.BLOCKED_FC END BLOCKED_FC,
+          	 AMF.YTD_FC_BAL,   
+          	 AMF.YTD_CV_BAL,
+          	 (SELECT VALUE_DESC 
+	                FROM SYS_PARAM_LOV_TRANS 
+	                WHERE LOV_TYPE_ID = #{lovType}
+	                AND LANG_CODE = #{langCode}
+	                AND VALUE_CODE = AMF.STATUS) STATUS  
+          	
+          	FROM  AMF,
+		 	COMPANIES,
+		 	CURRENCIES ,
+		 	USR,
+		 	CIF
+	WHERE	COMPANIES.COMP_CODE  		= AMF.COMP_CODE
+	 AND	CURRENCIES.COMP_CODE  		= AMF.COMP_CODE
+	 AND	CURRENCIES.CURRENCY_CODE  	= AMF.CURRENCY_CODE
+	 AND	AMF.COMP_CODE   			= #{compCode}
+	 AND	AMF.CIF_SUB_NO  			= #{cifCode}
+	
+	 AND	( (#{lsArg}  = 'F'	 AND AMF.GMI_FLAG  = 'F'   ) OR	
+			  (#{lsArg}  = 'G'  AND	AMF.GMI_FLAG  = 'G'  ) OR	
+			  (#{lsArg}  = 'B'	 AND	AMF.GMI_FLAG  <![CDATA[ <> ]]> 'I' )
+			) 
+	 AND  ( CIF.COMP_CODE 	= AMF.COMP_CODE     	    ) 
+	 AND  ( CIF.CIF_NO		= AMF.CIF_SUB_NO    		) 
+		
+    AND	(USR.USER_ID  = #{userId}	  )
+	 AND NOT EXISTS (
+	        SELECT 1 FROM 
+				ACC_RESTRICTED AccRest 
+	            WHERE  <!--  AMF.COMP_CODE = CTSCHEQUEBOOK.COMP_CODE
+		           AND AMF.BRANCH_CODE =CTSCHEQUEBOOK.ACC_BR
+		           AND AMF.CURRENCY_CODE =CTSCHEQUEBOOK.ACC_CY
+		           AND AMF.GL_CODE = CTSCHEQUEBOOK.ACC_GL
+		           AND AMF.SL_NO = CTSCHEQUEBOOK.ACC_SL
+		           AND AMF.CIF_SUB_NO = CTSCHEQUEBOOK.ACC_CIF
+		           AND  -->
+		           AMF.COMP_CODE = AccRest.COMP_CODE  
+	          	 AND   AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+				 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+				 AND  AMF.GL_CODE = AccRest.GL_CODE 
+				 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+				 AND  AMF.SL_NO = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{screenRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )
+	</sql>			
+			
+				
+	<select id="accountsDataFromW_cif_accounts1_List" resultMap="cardRelatedAccountsListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accountsDataFromW_cif_accounts1_Query"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="accountsDataFromW_cif_accounts1_ListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accountsDataFromW_cif_accounts1_Query"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<resultMap id="cardRelatedAccountsListMap" type="accountCO">
+		<result property="amfVO.BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="amfVO.CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE"              column="GL_CODE" />
+		<result property="amfVO.CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="amfVO.SL_NO"                column="SL_NO" />
+		<result property="amfVO.ACC_BC"               column="ACC_BC" />
+		<result property="amfVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />	
+		<result property="amfVO.BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" /> 
+		<result property="amfVO.LONG_NAME_ENG"        column="LONG_NAME_ENG" />
+		<result property="amfVO.GMI_FLAG"       	  column="GMI_FLAG" /> 
+		<result property="amfVO.ACCOUNT_NUMBER"       column="ACCOUNT_NUMBER" />   	
+		<result property="amfVO.FC_AVAIL_BAL"         column="FC_AVAIL_BAL" />    
+		<result property="amfVO.CV_AVAIL_BAL"         column="CV_AVAIL_BAL" />
+		<result property="amfVO.BLOCKED_CV"        	  column="BLOCKED_CV" />   
+        <result property="amfVO.BLOCKED_FC"        	  column="BLOCKED_FC" />   
+        <result property="amfVO.YTD_FC_BAL"        	  column="YTD_FC_BAL" />   
+        <result property="amfVO.YTD_CV_BAL"        	  column="YTD_CV_BAL" />   
+        <result property="currency.DECIMAL_POINTS"    column="DECIMAL_POINTS" />  
+        <result property="baseCurrencyCode"           column="BASE_CURRENCY" />   
+        <result property="amfVO.STATUS"               column="STATUS" />
+    </resultMap>
+	
+	<!-- ************************* Query for  w_lookup_bdc  ********-->
+	<select id="accountsDataBDCList" resultMap="AMF.BaseResultMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accountsDataw_lookup_bdc"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="accountsDataBDCListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accountsDataw_lookup_bdc"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<sql id="accountsDataw_lookup_bdc">	
+			SELECT AMF.BRANCH_CODE,
+              AMF.CURRENCY_CODE,
+			 AMF.GL_CODE,
+			 AMF.CIF_SUB_NO,
+			 AMF.SL_NO,
+			 AMF.BRIEF_NAME_ENG,
+			 (SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  		AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+			FULL_NAME_ENG,
+			 AMF.STATUS,
+			AMF.SEQ_NO,
+			AMF.SERIAL_NO,
+             AMF.OPEN_DEP_TRX_TYPE 
+	FROM  AMF 
+	 WHERE AMF.COMP_CODE  = #{compCode}
+     AND  AMF.CURRENCY_CODE = #{currencyCode}
+	 AND	AMF.STATUS  IN ( 'A'  , 'I' )
+     AND  AMF.SEQ_NO IS NOT NULL
+		
+	
+	</sql>			
+	
+	<select id="accountsDataBDC" parameterType="accountSC" resultType="accountVO">
+		SELECT AMF.BRANCH_CODE,
+              AMF.CURRENCY_CODE,
+			 AMF.GL_CODE,
+			 AMF.CIF_SUB_NO,
+			 AMF.SL_NO,
+			 AMF.BRIEF_NAME_ENG,
+			 AMF.STATUS,
+			AMF.SEQ_NO,
+			AMF.SERIAL_NO,
+             AMF.OPEN_DEP_TRX_TYPE 
+	FROM  AMF 
+	 WHERE AMF.STATUS  IN ( 'A'  , 'I' )
+     AND  AMF.SEQ_NO IS NOT NULL
+		AND 	COMP_CODE     	= #{compCode}
+		AND   	BRANCH_CODE   	= #{branchCode}
+		AND		CURRENCY_CODE 	= #{currencyCode}
+		AND		GL_CODE		  	= #{glCode}
+		AND		CIF_SUB_NO	  	= #{cifCode}
+		AND		SL_NO			= #{slNbr}
+	</select>	 
+			
+    
+	<sql id="deductFromAccLkpSelection">
+		<foreach collection="amfList" item="AMFVO" separator="UNION">
+			<include refid="AMFLkpSelection"/>
+				FROM  AMF LEFT OUTER JOIN CIF ON AMF.COMP_CODE= CIF.COMP_CODE AND AMF.CIF_SUB_NO = CIF.CIF_NO
+				where AMF.COMP_CODE = #{compCode}
+			  	<if test='AMFVO.BRANCH_CODE != null and AMFVO.BRANCH_CODE != emptyBigDecimalValue'>
+					AND AMF.BRANCH_CODE = #{AMFVO.BRANCH_CODE}
+	          	</if>
+			  	<if test='AMFVO.CURRENCY_CODE != null and AMFVO.CURRENCY_CODE != emptyBigDecimalValue'>
+					AND AMF.CURRENCY_CODE = #{AMFVO.CURRENCY_CODE}
+	          	</if>
+			  	<if test='AMFVO.GL_CODE != null and AMFVO.GL_CODE != emptyBigDecimalValue'>
+					AND AMF.GL_CODE = #{AMFVO.GL_CODE}
+	         	</if>
+			  	<if test='AMFVO.CIF_SUB_NO != null and AMFVO.CIF_SUB_NO != emptyBigDecimalValue'>
+					AND AMF.CIF_SUB_NO = #{AMFVO.CIF_SUB_NO}
+	          	</if>
+			  	<if test='AMFVO.SL_NO != null and AMFVO.SL_NO != emptyBigDecimalValue'>
+					AND AMF.SL_NO = #{AMFVO.SL_NO}
+	          	</if>
+		        <if test='AMFVO.ADDITIONAL_REFERENCE != null and !"".equals(AMFVO.ADDITIONAL_REFERENCE)'>
+				    AND AMF.ADDITIONAL_REFERENCE = #{AMFVO.addRef}
+				</if>
+				<if test='"".equals(AMFVO.ADDITIONAL_REFERENCE)'>
+				    AND AMF.ADDITIONAL_REFERENCE IS NULL 
+				</if>
+		</foreach>
+	</sql>
+    
+	<select id="deductFromAccountList" resultMap="accountListMap"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="deductFromAccLkpSelection"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="deductFromAccountCount" resultType="int"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="deductFromAccLkpSelection"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>     
+	
+	<select id="getAMFReportCompBranchLkpListCount" resultType="int"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="getAccountCompBranchLkp_sql"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>     
+	<select id="getAMFReportCompBranchLkpList" resultMap="accountListMap"	parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="getAccountCompBranchLkp_sql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+
+<sql id="getAccountCompBranchLkp_sql">
+SELECT AMF.CURRENCY_CODE,
+       AMF.GL_CODE,
+       AMF.CIF_SUB_NO,
+       AMF.SL_NO,
+       AMF.DIV,
+       AMF.DEPT,
+       AMF.ACC_BC,
+       AMF.BRIEF_NAME_ENG,
+       AMF.LONG_NAME_ENG AMF_LONG_NAME_ENG,
+       (SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  	AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+		FULL_NAME_ENG,
+       BRIEF_NAME_ARAB,
+       LONG_NAME_ARAB,
+       (SELECT FULL_NAME_ARAB FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  	AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+		FULL_NAME_ARAB,
+       AMF.ADDITIONAL_REFERENCE,
+       AMF.COMP_CODE,
+       AMF.BRANCH_CODE,
+       AMF.IBAN_ACC_NO,
+       AMF.STATUS statusId,
+       (Select VALUE_DESC
+          from SYS_PARAM_LOV_TRANS splt
+         WHERE splt.LOV_TYPE_ID = #{ACCOUNT_STATUS_LOV_TYPE}
+           and splt.LANG_CODE = #{langCode}
+           and splt.VALUE_CODE = AMF.STATUS) STATUS,
+	  (SELECT CASE WHEN AMF_EXTENDED.SUBSIDIARY_REFER_CIF_NO_YN='0' AND AMF.GMI_FLAG='I' THEN AMF_EXTENDED.CIF_SUB_NO ELSE NULL END
+	     FROM AMF_EXTENDED 
+	    WHERE AMF.COMP_CODE   = AMF_EXTENDED.COMP_CODE 
+	      AND AMF.CIF_SUB_NO    = AMF_EXTENDED.CIF_SUB_NO  
+	      AND AMF.BRANCH_CODE   = AMF_EXTENDED.BRANCH_CODE  
+ 		  AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE 
+ 		  AND AMF.GL_CODE       = AMF_EXTENDED.GL_CODE 
+ 		  AND AMF.SL_NO 		  = AMF_EXTENDED.SL_NO ) subsidiary
+  FROM AMF
+ WHERE AMF.COMP_CODE = #{compCode}
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( branchCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.BRANCH_CODE =  #{branchCode}
+	</if>
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( currencyCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.CURRENCY_CODE = #{currencyCode} 
+	</if>
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( glCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.GL_CODE = #{glCode} 
+	</if>
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( cifCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.CIF_SUB_NO = #{cifCode} 
+	</if>
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( slNbr , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.SL_NO = #{slNbr} 
+	</if>
+        
+   AND (AMF.ACC_BC = CASE WHEN #{ACC_BC} = 'Z' THEN AMF.ACC_BC ELSE #{ACC_BC} END)
+   
+   AND ((#{GMI_FLAG} = 'A') OR (#{GMI_FLAG} = 'I' AND AMF.GMI_FLAG = 'I') OR
+       (#{GMI_FLAG} = 'G' AND AMF.GMI_FLAG = 'G') OR
+       (#{GMI_FLAG} = 'F' AND AMF.GMI_FLAG = 'F') OR
+       (#{GMI_FLAG} = 'N' AND AMF.GMI_FLAG IN ('F', 'G')))
+       
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( accDiv , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.DIV =  #{accDiv}
+	</if>
+	<if test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( accDept , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0">
+   AND AMF.DEPT =  #{accDept}
+	</if>
+
+   AND AMF.ACC_BC <![CDATA[<>]]> 'S'
+   
+   <if test="status != null" >
+	AND AMF.STATUS  IN (${status})
+   </if>
+	
+	<if test='addRef != null and !"".equals(addRef)'>
+	  AND 	AMF.ADDITIONAL_REFERENCE = #{addRef}
+	</if>
+	
+	<if test='( "I".equals(GMI_FLAG) or "X".equals(GMI_FLAG) or "A".equals(GMI_FLAG) ) and (true.equals(subsidiarySearch) or (cifCode != null and cifCode != emptyBigDecimalValue)) and (!"PMS".equals(appName))  '> 
+		 AND (coalesce((SELECT SUBSIDIARY_REFER_CIF_NO_YN
+                  FROM AMF_EXTENDED
+                 WHERE AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE
+                   AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO
+                   AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE
+                   AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE
+                   AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE
+                   AND AMF.SL_NO = AMF_EXTENDED.SL_NO),'0')) = (CASE WHEN  AMF.GMI_FLAG='I' THEN  '1'  ELSE '0' END)
+	</if>
+	
+</sql>
+
+<!-- w_lookup_nostro_productclass --> 
+
+<sql id="accountByProductClassQuery">
+	 
+	SELECT
+			 AMF.CURRENCY_CODE,
+			 AMF.GL_CODE,
+			 AMF.CIF_SUB_NO,
+			 AMF.SL_NO,
+			 AMF.ACC_BC,
+			 AMF.BRIEF_NAME_ENG,
+			 AMF.LONG_NAME_ENG,
+			 (SELECT
+				VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+				WHERE LOV_TYPE_ID = #{lovType}
+				AND
+				LANG_CODE = #{langCode}
+				AND VALUE_CODE = AMF.STATUS)
+			as STATUS ,
+			 AMF.ACC_NO,
+			 AMF.ADDITIONAL_REFERENCE,
+			 AMF.BRANCH_CODE     
+	FROM  AMF ,TRSCLASS_NOSTRO_ACCOUNTS
+		WHERE	(TRSCLASS_NOSTRO_ACCOUNTS.COMP_CODE = 	#{compCode} ) 
+		AND  	(TRSCLASS_NOSTRO_ACCOUNTS.CLASS_CODE = 	#{productClass}) 
+		AND 	(TRSCLASS_NOSTRO_ACCOUNTS.ACC_CURRENCY = #{currencyCode} ) 
+		AND		(TRSCLASS_NOSTRO_ACCOUNTS.ACCOUNT_TYPE = 'N' ) 
+		AND	TRSCLASS_NOSTRO_ACCOUNTS.COMP_CODE = AMF.COMP_CODE 
+		AND	TRSCLASS_NOSTRO_ACCOUNTS.ACC_BRANCH = AMF.BRANCH_CODE  
+		AND	TRSCLASS_NOSTRO_ACCOUNTS.ACC_CURRENCY = AMF.CURRENCY_CODE  
+        AND	TRSCLASS_NOSTRO_ACCOUNTS.ACC_GL_CODE = AMF.GL_CODE   
+        AND	TRSCLASS_NOSTRO_ACCOUNTS.ACC_CIF_SUB_NO=AMF.CIF_SUB_NO   
+        AND	TRSCLASS_NOSTRO_ACCOUNTS.ACC_SL_NO =AMF.SL_NO 
+	 	AND	(AMF.STATUS  IN ( 'A'  , 'I'  , 'T'  , 'P'  ))
+	  	<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+		<include refid="accountMapper.accRestriction"/> 
+	
+   </sql>
+   
+	<select id="accountByProductClassList" resultMap="accountListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="accountByProductClassQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="accountListByProductClassCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="accountByProductClassQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+      <select id="getCoveringAccountsList" resultMap="getAccountsListMap" parameterType="accountSC">
+            <include refid="servicesCommon.commonGridWrpBefFlip" />
+            <include refid="getCoveringAccountsListQuery" />
+            <include refid="servicesCommon.commonGridWrpAftFlip" />
+            <include refid="servicesCommon.commmonGridWrpFlipClose" />
+      </select>
+      <sql id="getCoveringAccountsListQuery">
+      SELECT 
+    AMF.CURRENCY_CODE,
+    AMF.GL_CODE,
+    AMF.CIF_SUB_NO,
+    AMF.SL_NO,
+    AMF.ACC_BC,
+    AMF.BRIEF_NAME_ENG,
+    AMF.LONG_NAME_ENG,
+    (SELECT FULL_NAME_ENG FROM AMF_EXTENDED WHERE  AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	 AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO )  
+	FULL_NAME_ENG,
+    AMF.STATUS,
+    AMF.ACC_NO,
+    AMF.ADDITIONAL_REFERENCE,
+    AMF.BRANCH_CODE     
+ FROM  AMF 
+ WHERE  (AMF.COMP_CODE  = #{compCode})
+  AND (AMF.ACC_BC  = 
+   CASE 
+    WHEN #{BS_CONTRA} = 'B' THEN 'B' 
+    WHEN #{BS_CONTRA} = 'C' THEN 'C' 
+    ELSE AMF.ACC_BC 
+   END)
+   <if test="branchCode != null and branchCode != 0"> 
+  AND (AMF.BRANCH_CODE  = 
+   CASE 
+    WHEN CASE WHEN #{branchCode} + 0 IS NULL THEN  0 ELSE #{branchCode} + 0 END  = 0 THEN AMF.BRANCH_CODE
+    ELSE #{branchCode} + 0
+   END)
+   </if>
+   <if test="currencyCode != null and currencyCode != 0">
+  AND (AMF.CURRENCY_CODE  = 
+   CASE 
+            WHEN CASE WHEN #{currencyCode} + 0 IS NULL THEN  0 ELSE #{currencyCode} + 0 END  = 0 THEN AMF.CURRENCY_CODE
+    ELSE #{currencyCode} + 0
+   END)
+   </if>
+    <if test="glCode != null and glCode != 0">
+  AND (AMF.GL_CODE  =
+   CASE
+            WHEN CASE WHEN #{glCode} + 0  IS NULL THEN  0 ELSE #{glCode} + 0 END  = 0 THEN AMF.GL_CODE
+    ELSE #{glCode} + 0
+   END)
+   </if>
+    <if test="cifCode != null and cifCode != 0">
+AND (AMF.CIF_SUB_NO  =
+   CASE
+            WHEN CASE WHEN #{cifCode} + 0 IS NULL THEN  -1 ELSE #{cifCode} + 0 END  = -1 THEN AMF.CIF_SUB_NO
+    ELSE #{cifCode}  + 0
+   END)
+   </if>
+  AND (AMF.STATUS  IN ( 'A'  , 'I'  , 'T'  , 'P'  ))
+  AND ((#{GMI_FLAG}  = 'N'
+  AND CASE WHEN AMF.GMI_FLAG IS NULL THEN '' ELSE AMF.GMI_FLAG END IN ( 'G'  , 'F'  ))
+  OR (CASE WHEN #{GMI_FLAG} IS NULL THEN  'A' ELSE #{GMI_FLAG} END   NOT IN ( 'N'  , 'G'  ))
+  OR (#{GMI_FLAG}  = 'G'
+  AND CASE WHEN AMF.GMI_FLAG IS NULL THEN '' ELSE AMF.GMI_FLAG END = 'G'))
+      </sql>
+      
+      <select id="selectCoveringAccountsListCount" resultType="int" parameterType="accountSC">
+            <include refid="servicesCommon.commonGridWrpBefCnt" />
+            <include refid="getCoveringAccountsListQuery" />
+            <include refid="servicesCommon.commonGridWrpAftCnt" />
+            <include refid="servicesCommon.commonGridCountWrpClose" />
+      </select>
+
+
+<select id="returnCardAccount" parameterType="accountSC" resultType="accountVO" >
+SELECT AMF.BRANCH_CODE,
+       AMF.CURRENCY_CODE,
+       AMF.GL_CODE,
+       AMF.CIF_SUB_NO,
+       AMF.SL_NO
+  FROM CTSCARDS_MGT, CTSCARDS_ACC, AMF
+ WHERE CTSCARDS_MGT.COMP_CODE = CTSCARDS_ACC.COMP_CODE
+   AND CTSCARDS_MGT.BRANCH_CODE = CTSCARDS_ACC.BRANCH_CODE
+   AND CTSCARDS_MGT.APPLICATION_ID = CTSCARDS_ACC.APPLICATION_ID
+   AND CTSCARDS_MGT.CARD_NO = #{cardNo}
+   AND CTSCARDS_ACC.PK_SEC_FLAG = '1'
+   AND CTSCARDS_ACC.COMP_CODE = AMF.COMP_CODE
+   AND CTSCARDS_ACC.ACC_BR = AMF.BRANCH_CODE
+   AND CTSCARDS_ACC.ACC_CY = AMF.CURRENCY_CODE
+   AND CTSCARDS_ACC.ACC_GL = AMF.GL_CODE
+   AND CTSCARDS_ACC.ACC_CIF = AMF.CIF_SUB_NO
+   AND CTSCARDS_ACC.ACC_SL = AMF.SL_NO
+</select>
+	
+	
+	<sql id="accRestriction">
+ 		 AND NOT EXISTS (
+			   SELECT 1 FROM 
+			   <choose>
+			   		<when test="isOracle == 1">  ACC_RESTRICTION_TEMP tmpTbl   </when>
+			   		<otherwise> #ACC_RESTRICTION_TEMP tmpTbl</otherwise>
+			   </choose>
+			   WHERE tmpTbl.COMP_CODE  		= AMF.COMP_CODE  
+				AND tmpTbl.BRANCH_CODE  	= AMF.BRANCH_CODE 
+				AND tmpTbl.CURRENCY_CODE  	= AMF.CURRENCY_CODE  
+				AND tmpTbl.GL_CODE 			= AMF.GL_CODE     
+				AND tmpTbl.CIF_SUB_NO 		= AMF.CIF_SUB_NO   
+				AND tmpTbl.SL_NO  			= AMF.SL_NO          
+				AND tmpTbl.USER_ID 			= #{userId,jdbcType=VARCHAR}
+				AND tmpTbl.PROG_REF 		= #{pageRef,jdbcType=VARCHAR}
+				AND tmpTbl.APP_NAME 		= #{currAppName,jdbcType=VARCHAR}
+				)	
+	</sql>
+	
+</mapper>

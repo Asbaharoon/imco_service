@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_DYN_INTERMEDIATE_BANK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_DYN_INTERMEDIATE_BANKVO" >
+    <id column="CODE" property="CODE" />
+    <result column="CURRENCY_ISO_CODE" property="CURRENCY_ISO_CODE" />
+    <result column="BENEF_BIC" property="BENEF_BIC" />
+    <result column="INTER_BIC" property="INTER_BIC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, CURRENCY_ISO_CODE, BENEF_BIC, INTER_BIC
+  </sql>
+  <select id="selectCTS_DYN_INTERMEDIATE_BANK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_DYN_INTERMEDIATE_BANKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_DYN_INTERMEDIATE_BANK
+    where CODE = #{CODE}
+  </select>
+  <delete id="deleteCTS_DYN_INTERMEDIATE_BANK" parameterType="com.path.dbmaps.vo.CTS_DYN_INTERMEDIATE_BANKVOKey" >
+    delete from CTS_DYN_INTERMEDIATE_BANK
+    where CODE = #{CODE}
+  </delete>
+  <insert id="insertCTS_DYN_INTERMEDIATE_BANK" parameterType="com.path.dbmaps.vo.CTS_DYN_INTERMEDIATE_BANKVO" >
+    insert into CTS_DYN_INTERMEDIATE_BANK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="CURRENCY_ISO_CODE != null" >
+        CURRENCY_ISO_CODE,
+      </if>
+      <if test="BENEF_BIC != null" >
+        BENEF_BIC,
+      </if>
+      <if test="INTER_BIC != null" >
+        INTER_BIC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="CURRENCY_ISO_CODE != null" >
+        #{CURRENCY_ISO_CODE},
+      </if>
+      <if test="BENEF_BIC != null" >
+        #{BENEF_BIC},
+      </if>
+      <if test="INTER_BIC != null" >
+        #{INTER_BIC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_DYN_INTERMEDIATE_BANK" >
+    update CTS_DYN_INTERMEDIATE_BANK
+    <set >
+      <if test="CURRENCY_ISO_CODE != null" >
+        CURRENCY_ISO_CODE = #{CURRENCY_ISO_CODE},
+      </if>
+      <if test="BENEF_BIC != null" >
+        BENEF_BIC = #{BENEF_BIC},
+      </if>
+      <if test="INTER_BIC != null" >
+        INTER_BIC = #{INTER_BIC},
+      </if>
+    </set>
+    where CODE = #{CODE}
+  </sql>
+  <update id="updateCTS_DYN_INTERMEDIATE_BANK" parameterType="com.path.dbmaps.vo.CTS_DYN_INTERMEDIATE_BANKVO" >
+    <include refid="sql_updateCTS_DYN_INTERMEDIATE_BANK" />
+  </update>
+</mapper>

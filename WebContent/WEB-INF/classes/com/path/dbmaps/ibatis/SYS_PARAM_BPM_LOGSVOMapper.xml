@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_BPM_LOGS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_BPM_LOGSVO" >
+    <id column="LOG_ID" property="LOG_ID" />
+    <result column="ENTITY_ID" property="ENTITY_ID" />
+    <result column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+    <result column="ACTION_COMMENT" property="ACTION_COMMENT" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LOG_ID, ENTITY_ID, ENTITY_TYPE, ACTION_TYPE, ACTION_COMMENT, CREATED_BY, CREATED_DATE, 
+    MODIFIED_BY, MODIFIED_DATE
+  </sql>
+  <select id="selectSYS_PARAM_BPM_LOGS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_LOGSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_BPM_LOGS
+    where LOG_ID = #{LOG_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_BPM_LOGS" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_LOGSVOKey" >
+    delete from SYS_PARAM_BPM_LOGS
+    where LOG_ID = #{LOG_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_BPM_LOGS" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_LOGSVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="LOG_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(LOG_ID),0)+1</when><otherwise>NVL(MAX(LOG_ID),0)+1</otherwise></choose> FROM SYS_PARAM_BPM_LOGS
+    </selectKey>
+    insert into SYS_PARAM_BPM_LOGS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      LOG_ID,
+      <if test="ENTITY_ID != null" >
+        ENTITY_ID,
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="ACTION_COMMENT != null" >
+        ACTION_COMMENT,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{LOG_ID},
+      <if test="ENTITY_ID != null" >
+        #{ENTITY_ID},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="ACTION_COMMENT != null" >
+        #{ACTION_COMMENT},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_BPM_LOGS" >
+    update SYS_PARAM_BPM_LOGS
+    <set >
+      <if test="ENTITY_ID != null" >
+        ENTITY_ID = #{ENTITY_ID},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE = #{ENTITY_TYPE},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE = #{ACTION_TYPE},
+      </if>
+      <if test="ACTION_COMMENT != null" >
+        ACTION_COMMENT = #{ACTION_COMMENT},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+    </set>
+    where LOG_ID = #{LOG_ID}
+  </sql>
+  <update id="updateSYS_PARAM_BPM_LOGS" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_LOGSVO" >
+    <include refid="sql_updateSYS_PARAM_BPM_LOGS" />
+  </update>
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USER_PORTLETS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USER_PORTLETSVO" >
+    <id column="LAYOUT" property="LAYOUT" />
+    <id column="PORTLET_CODE" property="PORTLET_CODE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="COLUMN_INDEX" property="COLUMN_INDEX" />
+    <result column="PORTLET_INDEX" property="PORTLET_INDEX" />
+    <result column="PORTLET_MODE" property="PORTLET_MODE" />
+    <result column="PORTLET_HEIGHT" property="PORTLET_HEIGHT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LAYOUT, PORTLET_CODE, USER_ID, COLUMN_INDEX, PORTLET_INDEX, PORTLET_MODE, PORTLET_HEIGHT
+  </sql>
+  <select id="selectUSER_PORTLETS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USER_PORTLETSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from USER_PORTLETS
+    where LAYOUT = #{LAYOUT}
+      and PORTLET_CODE = #{PORTLET_CODE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteUSER_PORTLETS" parameterType="com.path.dbmaps.vo.USER_PORTLETSVOKey" >
+    delete from USER_PORTLETS
+    where LAYOUT = #{LAYOUT}
+      and PORTLET_CODE = #{PORTLET_CODE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertUSER_PORTLETS" parameterType="com.path.dbmaps.vo.USER_PORTLETSVO" >
+    insert into USER_PORTLETS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LAYOUT != null" >
+        LAYOUT,
+      </if>
+      <if test="PORTLET_CODE != null" >
+        PORTLET_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="COLUMN_INDEX != null and COLUMN_INDEX != emptyBigDecimalValue" >
+        COLUMN_INDEX,
+      </if>
+      <if test="PORTLET_INDEX != null and PORTLET_INDEX != emptyBigDecimalValue" >
+        PORTLET_INDEX,
+      </if>
+      <if test="PORTLET_MODE != null and PORTLET_MODE != emptyBigDecimalValue" >
+        PORTLET_MODE,
+      </if>
+      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+        PORTLET_HEIGHT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LAYOUT != null" >
+        #{LAYOUT},
+      </if>
+      <if test="PORTLET_CODE != null" >
+        #{PORTLET_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="COLUMN_INDEX != null and COLUMN_INDEX != emptyBigDecimalValue" >
+        #{COLUMN_INDEX},
+      </if>
+      <if test="PORTLET_INDEX != null and PORTLET_INDEX != emptyBigDecimalValue" >
+        #{PORTLET_INDEX},
+      </if>
+      <if test="PORTLET_MODE != null and PORTLET_MODE != emptyBigDecimalValue" >
+        #{PORTLET_MODE},
+      </if>
+      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+        #{PORTLET_HEIGHT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSER_PORTLETS" >
+    update USER_PORTLETS
+    <set >
+      <if test="COLUMN_INDEX != null" >
+        <choose >
+          <when test="COLUMN_INDEX == emptyBigDecimalValue" >
+            COLUMN_INDEX = NULL ,
+          </when>
+          <otherwise >
+            COLUMN_INDEX = #{COLUMN_INDEX},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PORTLET_INDEX != null" >
+        <choose >
+          <when test="PORTLET_INDEX == emptyBigDecimalValue" >
+            PORTLET_INDEX = NULL ,
+          </when>
+          <otherwise >
+            PORTLET_INDEX = #{PORTLET_INDEX},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PORTLET_MODE != null" >
+        <choose >
+          <when test="PORTLET_MODE == emptyBigDecimalValue" >
+            PORTLET_MODE = NULL ,
+          </when>
+          <otherwise >
+            PORTLET_MODE = #{PORTLET_MODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PORTLET_HEIGHT != null" >
+        <choose >
+          <when test="PORTLET_HEIGHT == emptyBigDecimalValue" >
+            PORTLET_HEIGHT = NULL ,
+          </when>
+          <otherwise >
+            PORTLET_HEIGHT = #{PORTLET_HEIGHT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where LAYOUT = #{LAYOUT}
+      and PORTLET_CODE = #{PORTLET_CODE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateUSER_PORTLETS" parameterType="com.path.dbmaps.vo.USER_PORTLETSVO" >
+    <include refid="sql_updateUSER_PORTLETS" />
+  </update>
+</mapper>

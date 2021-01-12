@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_DEAL_CLASSI_MAX_PROCESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_DEAL_CLASSI_MAX_PROCESSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROCESS_CODE" property="PROCESS_CODE" />
+    <id column="PROCESS_DATE" property="PROCESS_DATE" />
+    <id column="PRODUCT_TYPE" property="PRODUCT_TYPE" />
+    <result column="OVERRIDE_CLASSI_AMENDED_CATEG" property="OVERRIDE_CLASSI_AMENDED_CATEG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PROCESS_CODE, PROCESS_DATE, PRODUCT_TYPE, OVERRIDE_CLASSI_AMENDED_CATEG
+  </sql>
+  <select id="selectTRS_DEAL_CLASSI_MAX_PROCESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_DEAL_CLASSI_MAX_PROCESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_DEAL_CLASSI_MAX_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+  </select>
+  <delete id="deleteTRS_DEAL_CLASSI_MAX_PROCESS" parameterType="com.path.dbmaps.vo.TRS_DEAL_CLASSI_MAX_PROCESSVOKey" >
+    delete from TRS_DEAL_CLASSI_MAX_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+  </delete>
+  <insert id="insertTRS_DEAL_CLASSI_MAX_PROCESS" parameterType="com.path.dbmaps.vo.TRS_DEAL_CLASSI_MAX_PROCESSVO" >
+    insert into TRS_DEAL_CLASSI_MAX_PROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        PROCESS_CODE,
+      </if>
+      <if test="PROCESS_DATE != null" >
+        PROCESS_DATE,
+      </if>
+      <if test="PRODUCT_TYPE != null and !&quot;&quot;.equals(PRODUCT_TYPE)" >
+        PRODUCT_TYPE,
+      </if>
+      <if test="OVERRIDE_CLASSI_AMENDED_CATEG != null and !&quot;&quot;.equals(OVERRIDE_CLASSI_AMENDED_CATEG)" >
+        OVERRIDE_CLASSI_AMENDED_CATEG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="PROCESS_DATE != null" >
+        #{PROCESS_DATE},
+      </if>
+      <if test="PRODUCT_TYPE != null and !&quot;&quot;.equals(PRODUCT_TYPE)" >
+        #{PRODUCT_TYPE},
+      </if>
+      <if test="OVERRIDE_CLASSI_AMENDED_CATEG != null and !&quot;&quot;.equals(OVERRIDE_CLASSI_AMENDED_CATEG)" >
+        #{OVERRIDE_CLASSI_AMENDED_CATEG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_DEAL_CLASSI_MAX_PROCESS" >
+    update TRS_DEAL_CLASSI_MAX_PROCESS
+    <set >
+      <if test="OVERRIDE_CLASSI_AMENDED_CATEG != null" >
+        <choose >
+          <when test="OVERRIDE_CLASSI_AMENDED_CATEG.equals(&quot;&quot;)" >
+            OVERRIDE_CLASSI_AMENDED_CATEG = NULL ,
+          </when>
+          <otherwise >
+            OVERRIDE_CLASSI_AMENDED_CATEG = #{OVERRIDE_CLASSI_AMENDED_CATEG},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+  </sql>
+  <update id="updateTRS_DEAL_CLASSI_MAX_PROCESS" parameterType="com.path.dbmaps.vo.TRS_DEAL_CLASSI_MAX_PROCESSVO" >
+    <include refid="sql_updateTRS_DEAL_CLASSI_MAX_PROCESS" />
+  </update>
+</mapper>

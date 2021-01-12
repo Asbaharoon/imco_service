@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_BLACKLISTED_COUNTRIES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_BLACKLISTED_COUNTRIESVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <result column="REASON" property="REASON" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, COUNTRY_CODE, REASON
+  </sql>
+  <select id="selectTFS_BLACKLISTED_COUNTRIES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_BLACKLISTED_COUNTRIESVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_BLACKLISTED_COUNTRIES
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </select>
+  <delete id="deleteTFS_BLACKLISTED_COUNTRIES" parameterType="com.path.dbmaps.vo.TFS_BLACKLISTED_COUNTRIESVO" >
+    delete from TFS_BLACKLISTED_COUNTRIES
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </delete>
+  <insert id="insertTFS_BLACKLISTED_COUNTRIES" parameterType="com.path.dbmaps.vo.TFS_BLACKLISTED_COUNTRIESVO" >
+    insert into TFS_BLACKLISTED_COUNTRIES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="REASON != null" >
+        REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="REASON != null" >
+        #{REASON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_BLACKLISTED_COUNTRIES" >
+    update TFS_BLACKLISTED_COUNTRIES
+    <set >
+      <if test="REASON != null" >
+        REASON = #{REASON},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </sql>
+  <update id="updateTFS_BLACKLISTED_COUNTRIES" parameterType="com.path.dbmaps.vo.TFS_BLACKLISTED_COUNTRIESVO" >
+    <include refid="sql_updateTFS_BLACKLISTED_COUNTRIES" />
+  </update>
+</mapper>

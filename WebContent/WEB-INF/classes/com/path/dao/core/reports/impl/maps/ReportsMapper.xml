@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="reportsMapper">
+
+
+
+<select id="accountRangeValidity" parameterType="reportsCO" resultType="java.lang.Integer" >
+	SELECT count(1)
+    FROM AMF
+	<include refid="accountRangeValidity_sql"/>
+</select>
+
+<sql id="accountRangeValidity_sql">
+   WHERE (AMF.COMP_CODE = #{companiesVO.COMP_CODE})
+     AND (AMF.BRANCH_CODE BETWEEN #{amfVOFrom.BRANCH_CODE} AND #{amfVOTo.BRANCH_CODE})
+     AND (AMF.CURRENCY_CODE BETWEEN #{amfVOFrom.CURRENCY_CODE} AND #{amfVOTo.CURRENCY_CODE})
+     AND (AMF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE} AND #{amfVOTo.GL_CODE})
+     AND (AMF.CIF_SUB_NO BETWEEN #{amfVOFrom.CIF_SUB_NO} AND #{amfVOTo.CIF_SUB_NO})
+     AND (AMF.SL_NO BETWEEN #{amfVOFrom.SL_NO} AND #{amfVOTo.SL_NO})
+     AND (AMF.STATUS NOT IN ('O', 'R', 'D'))
+     AND (AMF.ACC_BC <![CDATA[<>]]> 'S')
+</sql>
+
+
+<select id="getOpenedDateBranch" resultType="java.lang.String" parameterType="yrtSC" >
+<choose>
+	<when test="isOracle == 1">
+	SELECT MAX(LTRIM(RTRIM(TO_CHAR(YRT.YEAR, '0000'))) || LTRIM(RTRIM(TO_CHAR(YRT.MONTH, '00'))))
+	  FROM YRT
+	 WHERE YRT.COMP_CODE = #{compCode}
+	   AND YRT.BRANCH_CODE = #{branchCode}
+	   AND YRT.STATUS = 'C'
+	   AND YRT.MONTH <![CDATA[<>]]> 0
+	   AND LTRIM(RTRIM(TO_CHAR(YRT.YEAR, '0000'))) ||
+	       LTRIM(RTRIM(TO_CHAR(YRT.MONTH, '00'))) <![CDATA[<]]> LTRIM(RTRIM( #{yrMonth}))
+	</when>
+	<otherwise>
+	SELECT MAX(REPLICATE('0', 4 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.YEAR)))) +
+	           RTRIM(CONVERT(VARCHAR, YRT.YEAR)) + REPLICATE('0', 2 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.MONTH)))) +
+	           RTRIM(CONVERT(VARCHAR, YRT.MONTH)))
+	  FROM YRT
+	 WHERE YRT.COMP_CODE = #{compCode}
+	   AND YRT.BRANCH_CODE = #{branchCode}
+	   AND YRT.STATUS = 'C'
+	   AND YRT.MONTH <![CDATA[<>]]> 0
+	   AND REPLICATE('0', 4 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.YEAR)))) +
+	       RTRIM(CONVERT(VARCHAR, YRT.YEAR)) +
+	       REPLICATE('0', 2 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.MONTH)))) +
+	       RTRIM(CONVERT(VARCHAR, YRT.MONTH)) <![CDATA[<]]> LTRIM(RTRIM(#{yrMonth}))
+	</otherwise>
+</choose>
+</select>
+
+
+<resultMap type="reportsCO" id="processStmtInitData_map">
+	<result property="amfVOFrom.GL_CODE" column="fromCode" />
+	<result property="amfVOTo.GL_CODE" column="glCodeRangeTo" />
+	<result property="amfVOFrom.CIF_SUB_NO" column="fromCode" />
+	<result property="amfVOTo.CIF_SUB_NO" column="cifCodeRangeTo" />
+</resultMap>
+
+<sql id="maxCifNo_sql">
+SELECT MAX(CIF.CIF_NO) 
+            FROM CIF, RIFCTT
+           WHERE (CIF.COMP_CODE = #{loginCompCode})
+             AND (CIF.BRANCH_CODE = #{loginBraCode})
+             AND (CIF.COMP_CODE = RIFCTT.COMP_CODE)
+             AND (CIF.CIF_TYPE = RIFCTT.TYPE_CODE)
+             AND ((RIFCTT.CLIENT = 'Y' AND 'C' = 'C') OR
+                 (RIFCTT.BANK = 'Y' AND 'C' = 'B') OR ('C' = 'X'))
+</sql>
+
+<sql id="maxGlCode_sql">
+SELECT MAX(GL_CODE) 
+            FROM GEN_LEDGER
+           WHERE (GEN_LEDGER.COMP_CODE = #{loginCompCode})
+</sql>
+
+<select id="getProcessStmtInitData" parameterType="reportsCO" resultMap="processStmtInitData_map" >
+  SELECT (<include refid="maxCifNo_sql"/>) cifCodeRangeTo,
+         (<include refid="maxGlCode_sql"/>) glCodeRangeTo,
+            1 fromCode 
+	<if test="isOracle == 1"> from dual</if>
+</select>
+
+
+<select id="getMaxCifNo"  parameterType="reportsCO" resultType="java.math.BigDecimal" >
+	<include refid="maxCifNo_sql"/>
+</select>
+<select id="getMaxGlCode"  parameterType="reportsCO" resultType="java.math.BigDecimal" >
+	<include refid="maxGlCode_sql"/>
+</select>
+
+
+<sql id="getProcessingStmtData_sql">
+SELECT 1
+  FROM CIF
+  LEFT OUTER JOIN CIVIL_CODES ON CIF.COMP_CODE = CIVIL_CODES.COMP_CODE
+                             AND CIF.CIVIL_CODE = CIVIL_CODES.CIVIL_CODE, AMF,
+ RIFCTT, CURRENCIES, DOF, GEN_LEDGER, USR
+ WHERE (AMF.COMP_CODE = GEN_LEDGER.COMP_CODE)
+   AND (AMF.GL_CODE = GEN_LEDGER.GL_CODE)
+   AND (AMF.COMP_CODE = CIF.COMP_CODE)
+   AND (AMF.CIF_SUB_NO = CIF.CIF_NO)
+   AND (CIF.COMP_CODE = RIFCTT.COMP_CODE)
+   AND (CIF.CIF_TYPE = RIFCTT.TYPE_CODE)
+	AND (AMF.COMP_CODE = CURRENCIES.COMP_CODE)
+   AND (AMF.CURRENCY_CODE = CURRENCIES.CURRENCY_CODE)
+   AND (AMF.COMP_CODE = DOF.COMP_CODE)
+   AND (AMF.BRANCH_CODE = DOF.BRANCH_CODE)
+   AND (AMF.CURRENCY_CODE = DOF.CURRENCY_CODE)
+   AND (AMF.GL_CODE = DOF.GL_CODE)
+   AND (AMF.CIF_SUB_NO = DOF.CIF_SUB_NO)
+   AND (AMF.SL_NO = DOF.SL_NO)
+   
+   AND (RIFCTT.CLIENT = 'Y')
+   AND (AMF.COMP_CODE = #{loginCompCode})
+   AND (AMF.BRANCH_CODE = #{loginBraCode})
+   <if test='@com.path.bo.core.reports.StatementOfAccountConstant@REPORT_BY_VALUE_DATE.equals(_type)'>
+   		<choose >
+        	<when test="isSybase == 1" >
+			   AND DOF.VALUE_DATE between CONVERT(VARCHAR, #{from_date}, 102) AND  CONVERT(VARCHAR, #{to_date}, 102)
+	   		</when>
+	   		<otherwise>
+		   		AND DOF.VALUE_DATE between to_date(#{from_date_str}, 'dd/MM/yyyy') AND to_date(#{to_date_str}, 'dd/MM/yyyy')
+	   		</otherwise>
+	   </choose>
+   AND ((#{excludeDeletedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'D') OR #{excludeDeletedAccounts} = '0')
+   AND ((#{excludeSuspendedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'S') OR #{excludeSuspendedAccounts} = '0')
+   AND (AMF.ACC_BC = CASE WHEN #{bs_contra} = 'C' THEN 'C' WHEN
+        #{bs_contra} = 'B' THEN 'B' ELSE AMF.ACC_BC END)
+   </if>
+	<if test='@com.path.bo.core.reports.StatementOfAccountConstant@REPORT_BY_TRADE_DATE.equals(_type)'>
+   		<choose >
+        	<when test="isSybase == 1" >
+			   AND DOF.TRANS_DATE between CONVERT(VARCHAR, #{from_date}, 102) AND CONVERT(VARCHAR, #{to_date}, 102)
+	   		</when>
+	   		<otherwise>
+		   		AND DOF.TRANS_DATE between to_date(#{from_date_str}, 'dd/MM/yyyy') AND to_date(#{to_date_str}, 'dd/MM/yyyy')
+	   		</otherwise>
+	   </choose>
+   AND ((#{excludeDeletedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'D') OR (#{excludeDeletedAccounts} = '0'))
+   AND ((#{excludeSuspendedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'S') OR (#{excludeSuspendedAccounts} = '0'))
+   AND (AMF.ACC_BC = CASE WHEN #{bs_contra} = 'B' THEN 'B' WHEN
+        #{bs_contra} = 'C' THEN 'C' ELSE AMF.ACC_BC END)
+	</if>
+   
+      AND (AMF.GMI_FLAG IN ('F', 'G'))
+   AND ((#{stmtPeriodicity} = 'O') OR
+       (#{stmtPeriodicity} <![CDATA[<>]]> 'O' AND AMF.MAIL_STMT IN ('Y', 'H')))
+   AND (AMF.STATUS NOT IN ('O', 'R'))
+   
+
+   AND (CASE WHEN AMF.STMT_PERIOD IS NULL THEN 'O' ELSE AMF.STMT_PERIOD
+        END = CASE WHEN #{stmtPeriodicity} = 'O' THEN CASE WHEN
+        AMF.STMT_PERIOD IS NULL THEN 'O' ELSE AMF.STMT_PERIOD END ELSE
+        #{stmtPeriodicity} END)
+
+	
+   AND (AMF.CIF_SUB_NO BETWEEN #{amfVOFrom.CIF_SUB_NO} AND #{amfVOTo.CIF_SUB_NO})
+   AND (AMF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE} AND #{amfVOTo.GL_CODE})
+
+   AND (DOF.OP_STATUS = 'A')
+      
+   AND (USR.USER_ID = #{loginUserId})
+   AND (((EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND ((CTSRESTRICTIONS.CURRENCY_CODE = AMF.CURRENCY_CODE AND
+                         CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE AND
+                         CTSRESTRICTIONS.CIF_SUB_NO = AMF.CIF_SUB_NO AND
+                         CTSRESTRICTIONS.SL_NO = AMF.SL_NO AND
+                         CTSRESTRICTIONS.CODE_TYPE = 3) OR
+                         (CTSRESTRICTIONS.CODE_TYPE = 4 AND
+                         AMF.CIF_SUB_NO BETWEEN CTSRESTRICTIONS.FROM_CIF AND
+                         CTSRESTRICTIONS.TO_CIF))
+                  
+                  )) OR
+       (EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND CTSRESTRICTIONS.CODE_TYPE = 2
+                     AND CTSRESTRICTIONS.ACC_STATUS = AMF.STATUS)) OR
+       (EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND CTSRESTRICTIONS.CODE_TYPE = 1
+                     AND (CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE OR
+                         CTSRESTRICTIONS.GL_CODE = 0)
+                     AND (CTSRESTRICTIONS.CIF_TYPE = CIF.CIF_TYPE OR
+                         CTSRESTRICTIONS.CIF_TYPE = 0)
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND CIF.CIF_NO = AMF.CIF_SUB_NO
+                  
+                  )
+       
+       )) OR (AMF.GMI_FLAG = 'I') OR (USR.CIF_NO = AMF.CIF_SUB_NO) OR
+       (NOT EXISTS
+        (
+          
+          SELECT DISTINCT CODE
+            FROM CTSRESTRICTIONS, CIF
+           WHERE CIF.COMP_CODE = AMF.COMP_CODE
+             AND CIF.CIF_NO = AMF.CIF_SUB_NO
+             AND CTSRESTRICTIONS.APP_NAME = 'RET'
+             AND CTSRESTRICTIONS.STATUS = 'P'
+             AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                 CTSRESTRICTIONS.COMP_CODE = 0)
+             AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                 CTSRESTRICTIONS.BRANCH_CODE = 0)
+             AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                 CTSRESTRICTIONS.PROG_REF = '000' OR
+                 CTSRESTRICTIONS.PROG_REF = 'R000')
+             AND ((CTSRESTRICTIONS.CODE_TYPE = 3 AND
+                 CTSRESTRICTIONS.CURRENCY_CODE = AMF.CURRENCY_CODE AND
+                 CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE AND
+                 CTSRESTRICTIONS.CIF_SUB_NO = AMF.CIF_SUB_NO AND
+                 CTSRESTRICTIONS.SL_NO = AMF.SL_NO
+                 
+                 ) OR (CTSRESTRICTIONS.CODE_TYPE = 2 AND
+                 CTSRESTRICTIONS.ACC_STATUS = AMF.STATUS) OR
+                 (CTSRESTRICTIONS.CODE_TYPE = 4 AND
+                 AMF.CIF_SUB_NO BETWEEN CTSRESTRICTIONS.FROM_CIF AND
+                 CTSRESTRICTIONS.TO_CIF) OR
+                 (CTSRESTRICTIONS.CODE_TYPE = 1 AND
+                 (CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE OR
+                 CTSRESTRICTIONS.GL_CODE = 0) AND
+                 (CTSRESTRICTIONS.CIF_TYPE = CIF.CIF_TYPE OR
+                 CTSRESTRICTIONS.CIF_TYPE = 0))))))
+
+UNION ALL
+SELECT 1
+  FROM CIF
+  LEFT OUTER JOIN CIVIL_CODES ON CIF.COMP_CODE = CIVIL_CODES.COMP_CODE
+                             AND CIF.CIVIL_CODE = CIVIL_CODES.CIVIL_CODE, AMF,
+ RIFCTT, CURRENCIES, HST, GEN_LEDGER, USR
+ WHERE (AMF.COMP_CODE = GEN_LEDGER.COMP_CODE)
+   AND (AMF.GL_CODE = GEN_LEDGER.GL_CODE)
+   AND (AMF.COMP_CODE = CIF.COMP_CODE)
+   AND (AMF.CIF_SUB_NO = CIF.CIF_NO)
+   AND (CIF.COMP_CODE = RIFCTT.COMP_CODE)
+   AND (CIF.CIF_TYPE = RIFCTT.TYPE_CODE)
+   AND (RIFCTT.CLIENT = 'Y')
+   AND (AMF.COMP_CODE = CURRENCIES.COMP_CODE)
+   AND (AMF.CURRENCY_CODE = CURRENCIES.CURRENCY_CODE)
+   AND (AMF.COMP_CODE = HST.COMP_CODE)
+   AND (AMF.BRANCH_CODE = HST.BRANCH_CODE)
+   AND (AMF.CURRENCY_CODE = HST.CURRENCY_CODE)
+   AND (AMF.GL_CODE = HST.GL_CODE)
+   AND (AMF.CIF_SUB_NO = HST.CIF_SUB_NO)
+   AND (AMF.SL_NO = HST.SL_NO)
+
+   AND (AMF.GMI_FLAG IN ('F', 'G'))
+   AND ((#{stmtPeriodicity} = 'O') OR
+       (#{stmtPeriodicity} <![CDATA[<>]]> 'O' AND AMF.MAIL_STMT IN ('Y', 'H')))
+   AND (AMF.STATUS NOT IN ('O', 'R'))
+   AND (AMF.COMP_CODE = #{loginCompCode})
+   AND (AMF.BRANCH_CODE = #{loginBraCode})
+   AND (CASE WHEN AMF.STMT_PERIOD IS NULL THEN 'O' ELSE AMF.STMT_PERIOD
+        END = CASE WHEN #{stmtPeriodicity} = 'O' THEN CASE WHEN
+        AMF.STMT_PERIOD IS NULL THEN 'O' ELSE AMF.STMT_PERIOD END ELSE
+        #{stmtPeriodicity} END)
+
+
+   <if test='@com.path.bo.core.reports.StatementOfAccountConstant@REPORT_BY_VALUE_DATE.equals(_type)'>
+   		<choose >
+        	<when test="isSybase == 1" >
+			   AND HST.VALUE_DATE between CONVERT(VARCHAR, #{from_date}, 102) AND CONVERT(VARCHAR, #{to_date}, 102)
+	   		</when>
+	   		<otherwise>
+		   		AND HST.VALUE_DATE between to_date(#{from_date_str}, 'dd/MM/yyyy') AND to_date(#{to_date_str}, 'dd/MM/yyyy')
+	   		</otherwise>
+	   </choose>
+   AND ((#{excludeDeletedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'D') OR #{excludeDeletedAccounts} = '0')
+   AND ((#{excludeSuspendedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'S') OR #{excludeSuspendedAccounts} = '0')
+   AND (AMF.ACC_BC = CASE WHEN #{bs_contra} = 'C' THEN 'C' WHEN
+        #{bs_contra} = 'B' THEN 'B' ELSE AMF.ACC_BC END)
+   AND (CASE WHEN HST.OP_STATUS IS NULL THEN 'A' ELSE HST.OP_STATUS
+        END = 'A')
+   
+   </if>
+	<if test='@com.path.bo.core.reports.StatementOfAccountConstant@REPORT_BY_TRADE_DATE.equals(_type)'>
+   		<choose >
+        	<when test="isSybase == 1" >
+			   AND HST.TRANS_DATE between CONVERT(VARCHAR, #{from_date}, 102) AND CONVERT(VARCHAR, #{to_date}, 102)
+	   		</when>
+	   		<otherwise>
+		   		AND HST.TRANS_DATE between to_date(#{from_date_str}, 'dd/MM/yyyy') AND to_date(#{to_date_str}, 'dd/MM/yyyy') 
+	   		</otherwise>
+	   </choose>
+   AND ((#{excludeDeletedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'D') OR (#{excludeDeletedAccounts} = '0'))
+   AND ((#{excludeSuspendedAccounts} = '1' AND AMF.STATUS <![CDATA[<>]]> 'S') OR (#{excludeSuspendedAccounts} = '0'))
+   AND (AMF.ACC_BC = CASE WHEN #{bs_contra} = 'B' THEN 'B' WHEN
+        #{bs_contra} = 'C' THEN 'C' ELSE AMF.ACC_BC END)
+   AND (HST.OP_STATUS = 'A')
+	</if>
+
+</sql>
+
+
+<select id="getProcessingStmtData" parameterType="reportsCO" resultType="java.lang.Integer" >
+	select count(1) from(
+	<include refid="getProcessingStmtData_sql"/>
+	) out_table
+</select>
+
+
+<select id="returnAMFbasedOnFieldId" parameterType="reportsSC" resultType="amfVO" >
+		SELECT AMF.BRANCH_CODE,
+		       AMF.CURRENCY_CODE,
+		       AMF.GL_CODE,
+		       AMF.CIF_SUB_NO,
+		       AMF.SL_NO,
+		       AMF.ADDITIONAL_REFERENCE,
+   		<choose>
+        	<when test="isSybase == 1" >
+			   RIGHT(AMF.IBAN_ACC_NO,8)
+	   		</when>
+	   		<otherwise>
+		   		SUBSTR(AMF.IBAN_ACC_NO, LENGTH(AMF.IBAN_ACC_NO) - 7, LENGTH(AMF.IBAN_ACC_NO))
+	   		</otherwise>
+	   	</choose> IBAN_ACC_NO
+		  FROM AMF
+		 WHERE AMF.COMP_CODE = #{company_code}
+		 
+	<if test=" branch_code != emptyBigDecimalValue and branch_code != null">
+		AND  AMF.BRANCH_CODE = #{branch_code}
+	</if>
+	<if test=" acc_cy_code != emptyBigDecimalValue and acc_cy_code != null">
+		AND  AMF.CURRENCY_CODE = #{acc_cy_code}
+	</if>
+	<if test=" acc_gl_code != emptyBigDecimalValue and acc_gl_code != null">
+		AND  AMF.GL_CODE = #{acc_gl_code}
+	</if>
+	<if test=" acc_cif_code != emptyBigDecimalValue and acc_cif_code != null">
+		AND  AMF.CIF_SUB_NO = #{acc_cif_code}
+	</if>
+	<if test=" acc_sl_code != emptyBigDecimalValue and acc_sl_code != null">
+		AND  AMF.SL_NO = #{acc_sl_code}
+	</if>
+	<if test=" ibanCode != null ">
+	<choose>
+		<when test="isOracle == 1">
+		   AND (AMF.IBAN_ACC_NO = #{ibanCode} OR
+		       SUBSTR(AMF.IBAN_ACC_NO, LENGTH(AMF.IBAN_ACC_NO) - 7, LENGTH(AMF.IBAN_ACC_NO)) = #{ibanCode})
+		</when>
+		<otherwise>
+		   AND (AMF.IBAN_ACC_NO = #{ibanCode} OR RIGHT(AMF.IBAN_ACC_NO, 8) = #{ibanCode})
+		</otherwise>
+	</choose>
+	</if>
+	<if test=" referenceCode != null ">
+		and AMF.ADDITIONAL_REFERENCE = #{referenceCode} 
+	</if>
+
+</select>
+
+
+<update id="updateTMPReports" parameterType="com.path.dbmaps.vo.TMP_REPORTSVOWithBLOBs">
+		UPDATE TMP_REPORTS
+		SET REP_OBJECT  = #{REP_OBJECT}
+		WHERE COMP_CODE = #{COMP_CODE}
+		AND BRANCH_CODE = #{BRANCH_CODE}
+		AND REP_ID = #{REP_ID}
+</update>
+	
+<select id="countTMPReports" resultType="int" parameterType="com.path.dbmaps.vo.TMP_REPORTSVOWithBLOBs">
+		SELECT COUNT(1)
+		FROM TMP_REPORTS 
+		WHERE COMP_CODE = #{COMP_CODE}
+		AND BRANCH_CODE = #{BRANCH_CODE}
+		AND REP_ID = #{REP_ID}
+</select>
+
+<select id="checkAccountRestriction" resultType="java.math.BigDecimal" parameterType="com.path.vo.core.reports.ReportsCO">
+	SELECT count(1)
+    FROM AMF, USR
+    <include refid="accountRangeValidity_sql"/>
+	AND (USR.USER_ID = #{loginUserId})
+   AND (((EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND ((CTSRESTRICTIONS.CURRENCY_CODE = AMF.CURRENCY_CODE AND
+                         CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE AND
+                         CTSRESTRICTIONS.CIF_SUB_NO = AMF.CIF_SUB_NO AND
+                         CTSRESTRICTIONS.SL_NO = AMF.SL_NO AND
+                         CTSRESTRICTIONS.CODE_TYPE = 3) OR
+                         (CTSRESTRICTIONS.CODE_TYPE = 4 AND
+                         AMF.CIF_SUB_NO BETWEEN CTSRESTRICTIONS.FROM_CIF AND
+                         CTSRESTRICTIONS.TO_CIF))
+                  
+                  )) OR
+       (EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND CTSRESTRICTIONS.CODE_TYPE = 2
+                     AND CTSRESTRICTIONS.ACC_STATUS = AMF.STATUS)) OR
+       (EXISTS (SELECT DISTINCT CTSRESTRICTIONS.*
+                    FROM USR_REST_AXS, CTSRESTRICTIONS, CIF
+                   WHERE USR_REST_AXS.USER_ID = #{loginUserId}
+                     AND USR_REST_AXS.CODE = CTSRESTRICTIONS.CODE
+                     AND USR_REST_AXS.CODE_TYPE = CTSRESTRICTIONS.CODE_TYPE
+                     AND CTSRESTRICTIONS.APP_NAME = 'RET'
+                     AND CTSRESTRICTIONS.CODE_TYPE = 1
+                     AND (CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE OR
+                         CTSRESTRICTIONS.GL_CODE = 0)
+                     AND (CTSRESTRICTIONS.CIF_TYPE = CIF.CIF_TYPE OR
+                         CTSRESTRICTIONS.CIF_TYPE = 0)
+                     AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                         CTSRESTRICTIONS.COMP_CODE = 0)
+                     AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                         CTSRESTRICTIONS.BRANCH_CODE = 0)
+                     AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                         CTSRESTRICTIONS.PROG_REF = '000' OR
+                         CTSRESTRICTIONS.PROG_REF = 'R000')
+                     AND CIF.CIF_NO = AMF.CIF_SUB_NO
+                  
+                  )
+       
+       )) OR (AMF.GMI_FLAG = 'I') OR (USR.CIF_NO = AMF.CIF_SUB_NO) OR
+       (NOT EXISTS
+        (
+          
+          SELECT DISTINCT CODE
+            FROM CTSRESTRICTIONS, CIF
+           WHERE CIF.COMP_CODE = AMF.COMP_CODE
+             AND CIF.CIF_NO = AMF.CIF_SUB_NO
+             AND CTSRESTRICTIONS.APP_NAME = 'RET'
+             AND CTSRESTRICTIONS.STATUS = 'P'
+             AND (CTSRESTRICTIONS.COMP_CODE = AMF.COMP_CODE OR
+                 CTSRESTRICTIONS.COMP_CODE = 0)
+             AND (CTSRESTRICTIONS.BRANCH_CODE = AMF.BRANCH_CODE OR
+                 CTSRESTRICTIONS.BRANCH_CODE = 0)
+             AND (CTSRESTRICTIONS.PROG_REF = #{opt} OR
+                 CTSRESTRICTIONS.PROG_REF = '000' OR
+                 CTSRESTRICTIONS.PROG_REF = 'R000')
+             AND ((CTSRESTRICTIONS.CODE_TYPE = 3 AND
+                 CTSRESTRICTIONS.CURRENCY_CODE = AMF.CURRENCY_CODE AND
+                 CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE AND
+                 CTSRESTRICTIONS.CIF_SUB_NO = AMF.CIF_SUB_NO AND
+                 CTSRESTRICTIONS.SL_NO = AMF.SL_NO
+                 
+                 ) OR (CTSRESTRICTIONS.CODE_TYPE = 2 AND
+                 CTSRESTRICTIONS.ACC_STATUS = AMF.STATUS) OR
+                 (CTSRESTRICTIONS.CODE_TYPE = 4 AND
+                 AMF.CIF_SUB_NO BETWEEN CTSRESTRICTIONS.FROM_CIF AND
+                 CTSRESTRICTIONS.TO_CIF) OR
+                 (CTSRESTRICTIONS.CODE_TYPE = 1 AND
+                 (CTSRESTRICTIONS.GL_CODE = AMF.GL_CODE OR
+                 CTSRESTRICTIONS.GL_CODE = 0) AND
+                 (CTSRESTRICTIONS.CIF_TYPE = CIF.CIF_TYPE OR
+                 CTSRESTRICTIONS.CIF_TYPE = 0))))))
+</select>
+
+
+
+</mapper>

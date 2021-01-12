@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="authSignatoriesMapper">
+	
+	<sql id="authSignatoriesLookupQuery">
+		SELECT CIF_AUTH_SIGNATORY.COMP_CODE,
+		       CIF_AUTH_SIGNATORY.AUTH_CIF_NO,
+		       CIF_AUTH_SIGNATORY.AUTH_NAME,
+		       CIF_AUTH_SIGNATORY.ID_NO,
+		       CASE
+		         WHEN CIF_AUTH_SIGNATORY.ID_TYPE IS NOT NULL THEN
+		          (SELECT ID_TYPES.DESC_ENG
+		             FROM ID_TYPES
+		            WHERE COMP_CODE = #{compCode}
+		              AND CODE = CIF_AUTH_SIGNATORY.ID_TYPE)
+		         ELSE
+		          ''
+		       END MANAGER_DESIGNATION,
+		       CASE
+		         WHEN CIF_AUTH_SIGNATORY.NATIONALITY_CODE IS NOT NULL THEN
+		          (SELECT NATIONALITY.LONG_DESC_ENG
+		             FROM NATIONALITY
+		            WHERE NATIONALITY.COMP_CODE = #{compCode}
+		              AND NATIONALITY.CODE = CIF_AUTH_SIGNATORY.NATIONALITY_CODE)
+		         ELSE
+		          ''
+		       END STATUARY_MANAGER,
+		       CIF_AUTH_SIGNATORY.ADDRESS,
+		      (SELECT COUNTRIES.LONG_DESC_ENG
+		          FROM COUNTRIES
+		         WHERE COUNTRIES.COMP_CODE = CIF_AUTH_SIGNATORY.COMP_CODE
+		           AND COUNTRIES.COUNTRY_CODE = CIF_AUTH_SIGNATORY.COUNTRY) authSignCountryDesc,
+		       (SELECT COUNTRIES.LONG_DESC_ENG
+		          FROM COUNTRIES
+		         WHERE COUNTRIES.COMP_CODE = CIF_AUTH_SIGNATORY.COMP_CODE
+		           AND COUNTRIES.COUNTRY_CODE =
+		               CIF_AUTH_SIGNATORY.COUNTRY_OF_ADDRESS) authSignCountryOfAddressDesc
+		  FROM CIF_AUTH_SIGNATORY
+		 WHERE CIF_AUTH_SIGNATORY.COMP_CODE = #{compCode}
+		   AND CIF_AUTH_SIGNATORY.CIF_NO = #{cifNo}
+		   AND CIF_AUTH_SIGNATORY.DETAILS_TYPE = 'S' 
+		   <if test="authCifNo !=null and authCifNo != emptyBigDecimalValue">
+		    AND CIF_AUTH_SIGNATORY.AUTH_CIF_NO = #{authCifNo}
+		   </if>
+	 UNION
+		SELECT CIF.COMP_CODE,
+		       CIF.CIF_NO,
+		       CIF.SHORT_NAME_ENG,
+		       CIF.ID_NO,
+		       CASE
+		         WHEN CIF.ID_TYPE IS NOT NULL THEN
+		          (SELECT ID_TYPES.DESC_ENG
+		             FROM ID_TYPES
+		            WHERE COMP_CODE = #{compCode}
+		              AND CODE = CIF.ID_TYPE)
+		         ELSE
+		          ''
+		       END MANAGER_DESIGNATION,
+		       CASE
+		         WHEN CIF.NATION_CODE IS NOT NULL THEN
+		          (SELECT NATIONALITY.LONG_DESC_ENG
+		             FROM NATIONALITY
+		            WHERE NATIONALITY.COMP_CODE = #{compCode}
+		              AND NATIONALITY.CODE = CIF.NATION_CODE)
+		         ELSE
+		          ''
+		       END STATUARY_MANAGER,
+		       CIF_ADDRESS.ADDRESS1_ENG ADDRESS,
+		        (SELECT COUNTRIES.LONG_DESC_ENG
+		          FROM COUNTRIES
+		         WHERE COUNTRIES.COMP_CODE = CIF.COMP_CODE
+		           AND COUNTRIES.COUNTRY_CODE = CIF.COUNTRY) authSignCountryDesc,
+		       (SELECT COUNTRIES.LONG_DESC_ENG
+		          FROM COUNTRIES
+		         WHERE COUNTRIES.COMP_CODE = CIF.COMP_CODE
+		           AND COUNTRIES.COUNTRY_CODE = CIF_ADDRESS.COUNTRY) authSignCountryOfAddressDesc 
+		  FROM CIF
+		  LEFT OUTER JOIN CIF_ADDRESS ON CIF.COMP_CODE = CIF_ADDRESS.COMP_CODE
+		                             AND CIF.CIF_NO = CIF_ADDRESS.CIF_NO
+		                             AND CIF_ADDRESS.LINE_NO = 0
+		 WHERE CIF.COMP_CODE = #{compCode}
+		   AND CIF.CIF_NO = #{cifNo} 
+		   AND CIF.STATUS IN ('A') 
+  		 <if test="authCifNo !=null and authCifNo != emptyBigDecimalValue">
+		    AND CIF.CIF_NO = #{authCifNo}
+		   </if> 
+	
+</sql>
+
+
+	<resultMap id="authSignatoriesListMap" type="com.path.vo.core.authsignatories.AuthSignatoriesCO">
+		<result property="cifAuthSignatoryVO.CIF_NO" column="CIF_NO" />
+		<result property="cifAuthSignatoryVO.AUTH_CIF_NO" column="AUTH_CIF_NO" />
+		<result property="cifAuthSignatoryVO.LINE_NO" column="LINE_NO" />
+		<result property="cifAuthSignatoryVO.AUTH_NAME" column="AUTH_NAME" />
+		<result property="cifAuthSignatoryVO.ID_TYPE" column="ID_TYPE" />
+		<result property="cifAuthSignatoryVO.ID_NO" column="ID_NO" />
+		<result property="cifAuthSignatoryVO.DETAILS_TYPE" column="DETAILS_TYPE" />
+		<result property="cifAuthSignatoryVO.MANAGER_DESIGNATION" column="MANAGER_DESIGNATION" />
+		<result property="cifAuthSignatoryVO.STATUARY_MANAGER" column="STATUARY_MANAGER" />
+		<result property="cifAuthSignatoryVO.NATIONALITY_CODE" column="NATIONALITY_CODE" />
+		<result property="cifAuthSignatoryVO.ADDRESS" column="ADDRESS" />
+		<result property="cifAuthSignatoryVO.COUNTRY_OF_ISSUANCE" column="COUNTRY_OF_ISSUANCE" />
+		<result property="authSignCountryOfIssDesc" column="authSignCountryOfIssDesc" />
+		<result property="cifAuthSignatoryVO.COUNTRY" column="COUNTRY" />
+		<result property="cifAuthSignatoryVO.COUNTRY_OF_ADDRESS" column="COUNTRY_OF_ADDRESS" />
+		<result property="authSignCountryDesc" column="authSignCountryDesc" />
+		<result property="authSignCountryOfAddressDesc" column="authSignCountryOfAddressDesc" />
+	</resultMap>
+	
+	<select id="authSignatoriesList" resultMap="authSignatoriesListMap" parameterType="com.path.vo.core.authsignatories.AuthSignatoriesSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="authSignatoriesLookupQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	 </select>
+
+	<select id="authSignatoriesListCount" resultType="int" parameterType="com.path.vo.core.authsignatories.AuthSignatoriesSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="authSignatoriesLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>	
+	
+	
+	<select id="checkAuthorizedCIFNo" resultMap="authSignatoriesListMap" parameterType="com.path.vo.core.authsignatories.AuthSignatoriesSC">
+		<include refid="authSignatoriesLookupQuery"/>
+	</select>
+
+	
+	
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="NATIONALITY_VALID" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.NATIONALITY_VALIDVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ID_TYPE" property="ID_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, ID_TYPE
+  </sql>
+  <select id="selectNATIONALITY_VALID" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.NATIONALITY_VALIDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from NATIONALITY_VALID
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteNATIONALITY_VALID" parameterType="com.path.dbmaps.vo.NATIONALITY_VALIDVOKey" >
+    delete from NATIONALITY_VALID
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertNATIONALITY_VALID" parameterType="com.path.dbmaps.vo.NATIONALITY_VALIDVO" >
+    insert into NATIONALITY_VALID
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        ID_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        #{ID_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateNATIONALITY_VALID" >
+    update NATIONALITY_VALID
+    <set >
+      <if test="ID_TYPE != null" >
+        <choose >
+          <when test="ID_TYPE == emptyBigDecimalValue" >
+            ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ID_TYPE = #{ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateNATIONALITY_VALID" parameterType="com.path.dbmaps.vo.NATIONALITY_VALIDVO" >
+    <include refid="sql_updateNATIONALITY_VALID" />
+  </update>
+</mapper>

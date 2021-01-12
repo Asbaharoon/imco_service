@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_COL_PRPTY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_COL_PRPTY_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL_CODE" property="COLLATERAL_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="NAME" property="NAME" />
+    <result column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <result column="STATE_CODE" property="STATE_CODE" />
+    <result column="CITY" property="CITY" />
+    <result column="POSTCODE" property="POSTCODE" />
+    <result column="ADDRESS_1" property="ADDRESS_1" />
+    <result column="ADDRESS_2" property="ADDRESS_2" />
+    <result column="PHONE_NBR" property="PHONE_NBR" />
+    <result column="REMARKS" property="REMARKS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COLLATERAL_CODE, COMP_CODE, LINE_NBR, NAME, COUNTRY_CODE, STATE_CODE, 
+    CITY, POSTCODE, ADDRESS_1, ADDRESS_2, PHONE_NBR, REMARKS
+  </sql>
+  <select id="selectFMS_COL_PRPTY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_COL_PRPTY_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_COL_PRPTY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMS_COL_PRPTY_DET" parameterType="com.path.dbmaps.vo.FMS_COL_PRPTY_DETVOKey" >
+    delete from FMS_COL_PRPTY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMS_COL_PRPTY_DET" parameterType="com.path.dbmaps.vo.FMS_COL_PRPTY_DETVO" >
+    insert into FMS_COL_PRPTY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        COLLATERAL_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="NAME != null and !&quot;&quot;.equals(NAME)" >
+        NAME,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="STATE_CODE != null and STATE_CODE != emptyBigDecimalValue" >
+        STATE_CODE,
+      </if>
+      <if test="CITY != null and !&quot;&quot;.equals(CITY)" >
+        CITY,
+      </if>
+      <if test="POSTCODE != null and !&quot;&quot;.equals(POSTCODE)" >
+        POSTCODE,
+      </if>
+      <if test="ADDRESS_1 != null and !&quot;&quot;.equals(ADDRESS_1)" >
+        ADDRESS_1,
+      </if>
+      <if test="ADDRESS_2 != null and !&quot;&quot;.equals(ADDRESS_2)" >
+        ADDRESS_2,
+      </if>
+      <if test="PHONE_NBR != null and !&quot;&quot;.equals(PHONE_NBR)" >
+        PHONE_NBR,
+      </if>
+      <if test="REMARKS != null and !&quot;&quot;.equals(REMARKS)" >
+        REMARKS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        #{COLLATERAL_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="NAME != null and !&quot;&quot;.equals(NAME)" >
+        #{NAME},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="STATE_CODE != null and STATE_CODE != emptyBigDecimalValue" >
+        #{STATE_CODE},
+      </if>
+      <if test="CITY != null and !&quot;&quot;.equals(CITY)" >
+        #{CITY},
+      </if>
+      <if test="POSTCODE != null and !&quot;&quot;.equals(POSTCODE)" >
+        #{POSTCODE},
+      </if>
+      <if test="ADDRESS_1 != null and !&quot;&quot;.equals(ADDRESS_1)" >
+        #{ADDRESS_1},
+      </if>
+      <if test="ADDRESS_2 != null and !&quot;&quot;.equals(ADDRESS_2)" >
+        #{ADDRESS_2},
+      </if>
+      <if test="PHONE_NBR != null and !&quot;&quot;.equals(PHONE_NBR)" >
+        #{PHONE_NBR},
+      </if>
+      <if test="REMARKS != null and !&quot;&quot;.equals(REMARKS)" >
+        #{REMARKS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_COL_PRPTY_DET" >
+    update FMS_COL_PRPTY_DET
+    <set >
+      <if test="NAME != null" >
+        <choose >
+          <when test="NAME.equals(&quot;&quot;)" >
+            NAME = NULL ,
+          </when>
+          <otherwise >
+            NAME = #{NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COUNTRY_CODE != null" >
+        <choose >
+          <when test="COUNTRY_CODE == emptyBigDecimalValue" >
+            COUNTRY_CODE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_CODE = #{COUNTRY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATE_CODE != null" >
+        <choose >
+          <when test="STATE_CODE == emptyBigDecimalValue" >
+            STATE_CODE = NULL ,
+          </when>
+          <otherwise >
+            STATE_CODE = #{STATE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CITY != null" >
+        <choose >
+          <when test="CITY.equals(&quot;&quot;)" >
+            CITY = NULL ,
+          </when>
+          <otherwise >
+            CITY = #{CITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSTCODE != null" >
+        <choose >
+          <when test="POSTCODE.equals(&quot;&quot;)" >
+            POSTCODE = NULL ,
+          </when>
+          <otherwise >
+            POSTCODE = #{POSTCODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS_1 != null" >
+        <choose >
+          <when test="ADDRESS_1.equals(&quot;&quot;)" >
+            ADDRESS_1 = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS_1 = #{ADDRESS_1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS_2 != null" >
+        <choose >
+          <when test="ADDRESS_2.equals(&quot;&quot;)" >
+            ADDRESS_2 = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS_2 = #{ADDRESS_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PHONE_NBR != null" >
+        <choose >
+          <when test="PHONE_NBR.equals(&quot;&quot;)" >
+            PHONE_NBR = NULL ,
+          </when>
+          <otherwise >
+            PHONE_NBR = #{PHONE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REMARKS != null" >
+        <choose >
+          <when test="REMARKS.equals(&quot;&quot;)" >
+            REMARKS = NULL ,
+          </when>
+          <otherwise >
+            REMARKS = #{REMARKS},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMS_COL_PRPTY_DET" parameterType="com.path.dbmaps.vo.FMS_COL_PRPTY_DETVO" >
+    <include refid="sql_updateFMS_COL_PRPTY_DET" />
+  </update>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_PRODUCT_DOM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_PRODUCT_DOMVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <id column="REQUEST_NBR" property="REQUEST_NBR" />
+    <result column="DOC_ACCEPTED" property="DOC_ACCEPTED" />
+    <result column="DOC_COMMENT" property="DOC_COMMENT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DOC_CODE, REQUEST_NBR, DOC_ACCEPTED, DOC_COMMENT
+  </sql>
+  <select id="selectTFS_PRODUCT_DOM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_DOMVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_PRODUCT_DOM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and REQUEST_NBR = #{REQUEST_NBR}
+  </select>
+  <delete id="deleteTFS_PRODUCT_DOM" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_DOMVO" >
+    delete from TFS_PRODUCT_DOM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and REQUEST_NBR = #{REQUEST_NBR}
+  </delete>
+  <insert id="insertTFS_PRODUCT_DOM" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_DOMVO" >
+    insert into TFS_PRODUCT_DOM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        DOC_CODE,
+      </if>
+      <if test="REQUEST_NBR != null and REQUEST_NBR != emptyBigDecimalValue" >
+        REQUEST_NBR,
+      </if>
+      <if test="DOC_ACCEPTED != null" >
+        DOC_ACCEPTED,
+      </if>
+      <if test="DOC_COMMENT != null" >
+        DOC_COMMENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        #{DOC_CODE},
+      </if>
+      <if test="REQUEST_NBR != null and REQUEST_NBR != emptyBigDecimalValue" >
+        #{REQUEST_NBR},
+      </if>
+      <if test="DOC_ACCEPTED != null" >
+        #{DOC_ACCEPTED},
+      </if>
+      <if test="DOC_COMMENT != null" >
+        #{DOC_COMMENT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_PRODUCT_DOM" >
+    update TFS_PRODUCT_DOM
+    <set >
+      <if test="DOC_ACCEPTED != null" >
+        DOC_ACCEPTED = #{DOC_ACCEPTED},
+      </if>
+      <if test="DOC_COMMENT != null" >
+        DOC_COMMENT = #{DOC_COMMENT},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and REQUEST_NBR = #{REQUEST_NBR}
+  </sql>
+  <update id="updateTFS_PRODUCT_DOM" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_DOMVO" >
+    <include refid="sql_updateTFS_PRODUCT_DOM" />
+  </update>
+</mapper>

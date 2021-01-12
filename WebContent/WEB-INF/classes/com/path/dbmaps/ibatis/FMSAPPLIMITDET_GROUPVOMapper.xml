@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLIMITDET_GROUP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLIMITDET_GROUPVO" >
+    <id column="APPL_CODE" property="APPL_CODE" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="GROUP_ID" property="GROUP_ID" />
+    <result column="GROUP_NAME" property="GROUP_NAME" />
+    <result column="GROUP_LIMIT" property="GROUP_LIMIT" />
+    <result column="GROUP_LIMIT_CY" property="GROUP_LIMIT_CY" />
+    <result column="GROUP_NAME_BKGRD" property="GROUP_NAME_BKGRD" />
+    <result column="GROUP_LIMIT_BKGRD" property="GROUP_LIMIT_BKGRD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPL_CODE, BRANCH_CODE, COMP_CODE, GROUP_ID, GROUP_NAME, GROUP_LIMIT, GROUP_LIMIT_CY, 
+    GROUP_NAME_BKGRD, GROUP_LIMIT_BKGRD
+  </sql>
+  <select id="selectFMSAPPLIMITDET_GROUP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLIMITDET_GROUPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLIMITDET_GROUP
+    where APPL_CODE = #{APPL_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </select>
+  <delete id="deleteFMSAPPLIMITDET_GROUP" parameterType="com.path.dbmaps.vo.FMSAPPLIMITDET_GROUPVOKey" >
+    delete from FMSAPPLIMITDET_GROUP
+    where APPL_CODE = #{APPL_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </delete>
+  <insert id="insertFMSAPPLIMITDET_GROUP" parameterType="com.path.dbmaps.vo.FMSAPPLIMITDET_GROUPVO" >
+    insert into FMSAPPLIMITDET_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APPL_CODE != null and APPL_CODE != emptyBigDecimalValue" >
+        APPL_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        GROUP_ID,
+      </if>
+      <if test="GROUP_NAME != null and !&quot;&quot;.equals(GROUP_NAME)" >
+        GROUP_NAME,
+      </if>
+      <if test="GROUP_LIMIT != null and GROUP_LIMIT != emptyBigDecimalValue" >
+        GROUP_LIMIT,
+      </if>
+      <if test="GROUP_LIMIT_CY != null and GROUP_LIMIT_CY != emptyBigDecimalValue" >
+        GROUP_LIMIT_CY,
+      </if>
+      <if test="GROUP_NAME_BKGRD != null and GROUP_NAME_BKGRD != emptyBigDecimalValue" >
+        GROUP_NAME_BKGRD,
+      </if>
+      <if test="GROUP_LIMIT_BKGRD != null and GROUP_LIMIT_BKGRD != emptyBigDecimalValue" >
+        GROUP_LIMIT_BKGRD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APPL_CODE != null and APPL_CODE != emptyBigDecimalValue" >
+        #{APPL_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        #{GROUP_ID},
+      </if>
+      <if test="GROUP_NAME != null and !&quot;&quot;.equals(GROUP_NAME)" >
+        #{GROUP_NAME},
+      </if>
+      <if test="GROUP_LIMIT != null and GROUP_LIMIT != emptyBigDecimalValue" >
+        #{GROUP_LIMIT},
+      </if>
+      <if test="GROUP_LIMIT_CY != null and GROUP_LIMIT_CY != emptyBigDecimalValue" >
+        #{GROUP_LIMIT_CY},
+      </if>
+      <if test="GROUP_NAME_BKGRD != null and GROUP_NAME_BKGRD != emptyBigDecimalValue" >
+        #{GROUP_NAME_BKGRD},
+      </if>
+      <if test="GROUP_LIMIT_BKGRD != null and GROUP_LIMIT_BKGRD != emptyBigDecimalValue" >
+        #{GROUP_LIMIT_BKGRD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLIMITDET_GROUP" >
+    update FMSAPPLIMITDET_GROUP
+    <set >
+      <if test="GROUP_NAME != null" >
+        <choose >
+          <when test="GROUP_NAME.equals(&quot;&quot;)" >
+            GROUP_NAME = NULL ,
+          </when>
+          <otherwise >
+            GROUP_NAME = #{GROUP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_LIMIT != null" >
+        <choose >
+          <when test="GROUP_LIMIT == emptyBigDecimalValue" >
+            GROUP_LIMIT = NULL ,
+          </when>
+          <otherwise >
+            GROUP_LIMIT = #{GROUP_LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_LIMIT_CY != null" >
+        <choose >
+          <when test="GROUP_LIMIT_CY == emptyBigDecimalValue" >
+            GROUP_LIMIT_CY = NULL ,
+          </when>
+          <otherwise >
+            GROUP_LIMIT_CY = #{GROUP_LIMIT_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_NAME_BKGRD != null" >
+        <choose >
+          <when test="GROUP_NAME_BKGRD == emptyBigDecimalValue" >
+            GROUP_NAME_BKGRD = NULL ,
+          </when>
+          <otherwise >
+            GROUP_NAME_BKGRD = #{GROUP_NAME_BKGRD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_LIMIT_BKGRD != null" >
+        <choose >
+          <when test="GROUP_LIMIT_BKGRD == emptyBigDecimalValue" >
+            GROUP_LIMIT_BKGRD = NULL ,
+          </when>
+          <otherwise >
+            GROUP_LIMIT_BKGRD = #{GROUP_LIMIT_BKGRD},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APPL_CODE = #{APPL_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </sql>
+  <update id="updateFMSAPPLIMITDET_GROUP" parameterType="com.path.dbmaps.vo.FMSAPPLIMITDET_GROUPVO" >
+    <include refid="sql_updateFMSAPPLIMITDET_GROUP" />
+  </update>
+</mapper>

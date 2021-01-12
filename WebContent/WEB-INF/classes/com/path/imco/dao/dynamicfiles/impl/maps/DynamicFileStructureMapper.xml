@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dynamicFileStructureMapper">
+
+	<resultMap id="reDynamicFileStructureListMap" type="dynamicFileStructureCO">
+		<result property="dyn_FILE_STRUCTUREVO.FILE_STRUCTURE_ID" 	column="FILE_STRUCTURE_ID"/>
+		<result property="dyn_FILE_STRUCTUREVO.REFERENCE"			column="REFERENCE"/>
+		<result property="dyn_FILE_STRUCTUREVO.FILE_TYPE" 			column="FILE_TYPE"/>
+		<result property="dyn_FILE_STRUCTUREVO.FILE_SAMPLE" 		column="FILE_SAMPLE"/>
+		<result property="dyn_FILE_STRUCTUREVO.JOB_ID" 				column="JOB_ID"/>
+		<result property="dyn_FILE_STRUCTUREVO.STATUS" 				column="STATUS"/>
+		<result property="dyn_FILE_STRUCTUREVO.EXTRACTION_CRITERIA" column="EXTRACTION_CRITERIA"/>
+		<result property="dyn_FILE_STRUCTUREVO.DELIMITER" 			column="DELIMITER"/>
+		<result property="dyn_FILE_STRUCTUREVO.DESCRIPTION" 		column="DESCRIPTION"/>
+		<result property="fullText" 								column="fullText"/>
+		<result property="statusDesc" 								column="STATUS_DESC"/>
+		<!-- Messaage Fields -->
+		<result property="dyn_FILE_MESSAGEVO.MESSAGE_ID" 	 		column="MESSAGE_ID"/>
+		<result property="dyn_FILE_MESSAGEVO.JOB_ID" 		 		column="JOB_ID"/>
+		<result property="dyn_FILE_MESSAGEVO.JOB_TYPE" 		 		column="JOB_TYPE"/>
+		<result property="dyn_FILE_MESSAGEVO.INDEX_NO" 				column="INDEX_NO"/>
+		<result property="dyn_FILE_MESSAGEVO.START_POS" 	 		column="START_POS"/>
+		<result property="dyn_FILE_MESSAGEVO.IDENTIFIER" 	 		column="IDENTIFIER"/>
+		<result property="dyn_FILE_MESSAGEVO.DESCRIPTION" 	 		column="DESCRIPTION"/>
+		<result property="dyn_FILE_MESSAGEVO.MESSAGE_SAMPLE" 		column="MESSAGE_SAMPLE"/>
+		<result property="dyn_FILE_MESSAGEVO.STATUS" 		 		column="MSG_STATUS"/>
+		<result property="TAG_NAME" 								column="IDENTIFIER" />
+    	<result property="MSG_DESC" 								column="DESCRIPTION"/>
+    	<result property="MESSAGE_SAMPLE" 							column="MESSAGE_SAMPLE" />
+
+  		<!-- Text Editor Required Columns -->    	
+		<result property="dyn_FILE_MESSAGEVO.DELIMITER" 			column="messageDelimiter"/>
+		<result property="dyn_FILE_MESSAGEVO.IDENTIFIER_COLOR" 		column="IDENTIFIER_COLOR"/>
+		<result property="dyn_FILE_MESSAGEVO.MESSAGE_TYPE"     		column="MESSAGE_TYPE"  />	
+	</resultMap>
+	
+	<resultMap id="reDynamicFileStructureTagListMap" type="dynamicFileStructureCO">
+		<result property="dyn_FILE_TAGVO.TAGS_ID" 			column="TAGS_ID"/>
+		<result property="dyn_FILE_TAGVO.JOB_ID" 			column="JOB_ID"/>
+		<result property="dyn_FILE_TAGVO.JOB_TYPE" 			column="JOB_TYPE"/>
+		<result property="dyn_FILE_TAGVO.INDEX_NO" 			column="INDEX_NO"/>
+		<result property="dyn_FILE_TAGVO.START_POS" 		column="START_POS"/>
+		<result property="dyn_FILE_TAGVO.TAG_NAME" 			column="TAG_NAME"/>
+		<result property="dyn_FILE_TAGVO.TAG_LENGTH" 		column="TAG_LENGTH"/>
+		<result property="dyn_FILE_TAGVO.TAG_VALUE" 		column="TAG_VALUE"/>
+		<result property="dyn_FILE_TAGVO.PARENT_PATH" 		column="PARENT_PATH"/>
+		<result property="dyn_FILE_TAGVO.IS_MULTIPLE_YN" 	column="IS_MULTIPLE_YN"/>
+		<result property="dyn_FILE_TAGVO.TAG_COLOR" 		column="TAG_COLOR"/>
+		<result property="dyn_FILE_TAGVO.IS_ATTR_YN" 		column="IS_ATTR_YN" />
+		<result property="dyn_FILE_TAGVO.EXPRESSION" 		column="EXPRESSION"/>
+		<result property="dyn_FILE_TAGVO.DATA_TYPE" 		column="DATA_TYPE"/>
+		<result property="dyn_FILE_TAGVO.DESCRIPTION" 		column="DESCRIPTION"/>
+		<result property="dyn_FILE_TAGVO.STATUS" 			column="STATUS"/>
+		<result property="dyn_FILE_MESSAGEVO.MESSAGE_ID" 	column="MESSAGE_ID"/>
+	</resultMap>
+	
+	<select id="returnDynamicFileStructureList" parameterType="dynamicFileStructureSC" resultMap="reDynamicFileStructureListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryDynamicFileStructureSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnDynamicFileStructureListCount" parameterType="dynamicFileStructureSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryDynamicFileStructureSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="returnDynamicFileStructureMessageList" parameterType="dynamicFileStructureSC" resultMap="reDynamicFileStructureListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryDynamicFileStructureMessageSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnDynamicFileStructureMessageListCount" parameterType="dynamicFileStructureSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryDynamicFileStructureMessageSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="returnDynamicFileStructureTagsList" parameterType="dynamicFileStructureSC" resultMap="reDynamicFileStructureTagListMap">
+		<include refid="queryDynamicFileStructureTagsSQL"/>
+	</select>
+	
+	<select id="returnDynamicFileStructureDetails" parameterType="dynamicFileStructureSC" resultMap="reDynamicFileStructureListMap">
+		<include refid="queryDynamicFileStructureSQL"/>
+		<include refid="queryDynamicFileStructureIdSQL"/>
+	</select>
+	
+	<select id="returnFileCountByFileRef" parameterType="dynamicFileStructureSC" resultType="int">
+		<include refid="retFileCountByFileRefSQL"/>
+	</select>
+	
+	<sql id="queryDynamicFileStructureSQL">
+		SELECT DFS.FILE_STRUCTURE_ID, DFS.REFERENCE, DFS.FILE_TYPE, DFS.FILE_SAMPLE, DFS.EXTRACTION_CRITERIA, 
+			  DFS.DELIMITER, DFS.FILE_SAMPLE AS fullText, DFS.DESCRIPTION
+			  from IMCO_DYN_FILE_STRUCTURE DFS where DFS.STATUS = #{status}
+	</sql>
+	
+	<sql id="queryDynamicFileStructureMessageSQL">
+		SELECT 
+			  MESSAGE_ID, JOB_ID, JOB_TYPE, INDEX_NO, START_POS, IDENTIFIER, MES.DESCRIPTION,
+			  <if test='fileType != null and "txt".equals(fileType)'>
+        			EXTRACTION_CRITERIA,MES.DELIMITER as messageDelimiter, IDENTIFIER_COLOR , MESSAGE_TYPE , 
+        	  </if>
+			    MESSAGE_SAMPLE, MES.STATUS AS MSG_STATUS
+              from IMCO_DYN_FILE_MESSAGE MES
+               <if test='fileType != null and "txt".equals(fileType)'>
+               		 left outer join IMCO_DYN_FILE_STRUCTURE DSTRUC on DSTRUC.FILE_STRUCTURE_ID = MES.FILE_STRUCTURE_ID
+               </if> 
+               where MES.FILE_STRUCTURE_ID = #{dynamicStructureFileId} AND MES.STATUS = #{status}
+	</sql>
+	
+	<sql id="queryDynamicFileStructureTagsSQL">
+		SELECT <include refid="IMCO_DYN_FILE_TAG.Base_Column_List"/>
+		from IMCO_DYN_FILE_TAG TAGS
+        where TAGS.MESSAGE_ID = #{messageId} 
+        <if test='parentTag != null and !"".equals(parentTag)'>
+        	AND TAGS.PARENT_PATH = #{parentTag}
+        </if>
+	</sql>
+	
+	<sql id="queryDynamicFileStructureIdSQL">
+		 and DFS.FILE_STRUCTURE_ID = #{dynamicStructureFileId}
+	</sql>
+	
+	<sql id="retFileCountByFileRefSQL">
+		SELECT COUNT(1)
+		FROM IMCO_DYN_FILE_STRUCTURE DFS 
+		WHERE DFS.REFERENCE = #{fileReference,jdbcType=VARCHAR} AND DFS.STATUS = #{status}
+	</sql>
+		
+	<!--  query delete  -->
+	<delete id="deleteDynamicFileStructureTagsSQL" parameterType="dynamicFileStructureSC" >
+	    delete from IMCO_DYN_FILE_TAG where MESSAGE_ID = #{messageId}
+  	</delete>
+  	
+  	<insert id="insertFileStructure" parameterType="dynamicFileStructureVO">
+		<selectKey resultType="java.math.BigDecimal" keyProperty="FILE_STRUCTURE_ID" order="BEFORE" >
+			<if test="isOracle == 1">
+				SELECT IMCO_DYN_FILE_STRUCTURE_SEQ.NEXTVAL FROM dual
+			</if>
+			<if test="isSybase == 1 and isSQLServer != 1 " >
+				SELECT next_identity('IMCO_DYN_FILE_STRUCTURE')
+			</if>
+			<if test="isSQLServer == 1 " >
+				SELECT IDENT_CURRENT ('IMCO_DYN_FILE_STRUCTURE') + 1
+			</if>
+		</selectKey>
+		
+		insert into IMCO_DYN_FILE_STRUCTURE
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="isOracle == 1">
+	      	FILE_STRUCTURE_ID,
+	      </if>
+	      <if test="REFERENCE != null" >
+	        REFERENCE,
+	      </if>
+	      <if test="FILE_TYPE != null" >
+	        FILE_TYPE,
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        DESCRIPTION,
+	      </if>
+	      <if test="EXTRACTION_CRITERIA != null" >
+	        EXTRACTION_CRITERIA,
+	      </if>
+	      <if test="DELIMITER != null" >
+	        DELIMITER,
+	      </if>
+	      <if test="STATUS != null" >
+	        STATUS,
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        CREATED_BY,
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        CREATED_DATE,
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        MODIFIED_BY,
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        MODIFIED_DATE,
+	      </if>
+	      <if test="DELETED_BY != null" >
+	        DELETED_BY,
+	      </if>
+	      <if test="DELETED_DATE != null" >
+	        DELETED_DATE,
+	      </if>
+	      <if test="FILE_SAMPLE != null" >
+	        FILE_SAMPLE,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="isOracle == 1">
+	      	#{FILE_STRUCTURE_ID},
+	      </if>
+	      <if test="REFERENCE != null" >
+	        #{REFERENCE},
+	      </if>
+	      <if test="FILE_TYPE != null" >
+	        #{FILE_TYPE},
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        #{DESCRIPTION},
+	      </if>
+	      <if test="EXTRACTION_CRITERIA != null" >
+	        #{EXTRACTION_CRITERIA},
+	      </if>
+	      <if test="DELIMITER != null" >
+	        #{DELIMITER},
+	      </if>
+	      <if test="STATUS != null" >
+	        #{STATUS},
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        #{CREATED_BY},
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        #{CREATED_DATE},
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        #{MODIFIED_BY},
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        #{MODIFIED_DATE},
+	      </if>
+	      <if test="DELETED_BY != null" >
+	        #{DELETED_BY},
+	      </if>
+	      <if test="DELETED_DATE != null" >
+	        #{DELETED_DATE},
+	      </if>
+	      <if test="FILE_SAMPLE != null" >
+	        #{FILE_SAMPLE},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<insert id="insertFileMessage" parameterType="dynamicFileMessageVO">
+		<selectKey resultType="java.math.BigDecimal" keyProperty="MESSAGE_ID" order="BEFORE" >
+			<if test="isOracle == 1">
+				SELECT IMCO_DYN_FILE_MESSAGE_SEQ.NEXTVAL FROM dual
+			</if>
+			<if test="isSybase == 1 and isSQLServer != 1 " >
+				SELECT next_identity('IMCO_DYN_FILE_MESSAGE')
+			</if>
+			<if test="isSQLServer == 1 " >
+				SELECT IDENT_CURRENT ('IMCO_DYN_FILE_MESSAGE') + 1
+			</if>
+		</selectKey>
+		
+	    insert into IMCO_DYN_FILE_MESSAGE
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="isOracle == 1">
+	        MESSAGE_ID,
+	      </if>
+	      <if test="FILE_STRUCTURE_ID != null and FILE_STRUCTURE_ID != emptyBigDecimalValue" >
+	        FILE_STRUCTURE_ID,
+	      </if>
+	      <if test="JOB_ID != null and JOB_ID != emptyBigDecimalValue" >
+	        JOB_ID,
+	      </if>
+	      <if test="JOB_TYPE != null" >
+	        JOB_TYPE,
+	      </if>
+	      <if test="INDEX_NO != null and INDEX_NO != emptyBigDecimalValue" >
+	        INDEX_NO,
+	      </if>
+	      <if test="START_POS != null and START_POS != emptyBigDecimalValue" >
+	        START_POS,
+	      </if>
+	      <if test="IDENTIFIER != null" >
+	        IDENTIFIER,
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        DESCRIPTION,
+	      </if>
+	      <if test="DELIMITER != null" >
+	        DELIMITER,
+	      </if>
+	      <if test="IDENTIFIER_COLOR != null" >
+	        IDENTIFIER_COLOR,
+	      </if>
+	      <if test="STATUS != null" >
+	        STATUS,
+	      </if>
+	      <if test="MESSAGE_TYPE != null" >
+	        MESSAGE_TYPE,
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        CREATED_BY,
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        CREATED_DATE,
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        MODIFIED_BY,
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        MODIFIED_DATE,
+	      </if>
+	      <if test="DELETED_BY != null" >
+	        DELETED_BY,
+	      </if>
+	      <if test="DELETED_DATE != null" >
+	        DELETED_DATE,
+	      </if>
+	      <if test="MESSAGE_SAMPLE != null" >
+	        MESSAGE_SAMPLE,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="isOracle == 1">
+	        #{MESSAGE_ID},
+	      </if>
+	      <if test="FILE_STRUCTURE_ID != null and FILE_STRUCTURE_ID != emptyBigDecimalValue" >
+	        #{FILE_STRUCTURE_ID},
+	      </if>
+	      <if test="JOB_ID != null and JOB_ID != emptyBigDecimalValue" >
+	        #{JOB_ID},
+	      </if>
+	      <if test="JOB_TYPE != null" >
+	        #{JOB_TYPE},
+	      </if>
+	      <if test="INDEX_NO != null and INDEX_NO != emptyBigDecimalValue" >
+	        #{INDEX_NO},
+	      </if>
+	      <if test="START_POS != null and START_POS != emptyBigDecimalValue" >
+	        #{START_POS},
+	      </if>
+	      <if test="IDENTIFIER != null" >
+	        #{IDENTIFIER},
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        #{DESCRIPTION},
+	      </if>
+	      <if test="DELIMITER != null" >
+	        #{DELIMITER},
+	      </if>
+	      <if test="IDENTIFIER_COLOR != null" >
+	        #{IDENTIFIER_COLOR},
+	      </if>
+	      <if test="STATUS != null" >
+	        #{STATUS},
+	      </if>
+	      <if test="MESSAGE_TYPE != null" >
+	        #{MESSAGE_TYPE},
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        #{CREATED_BY},
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        #{CREATED_DATE},
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        #{MODIFIED_BY},
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        #{MODIFIED_DATE},
+	      </if>
+	      <if test="DELETED_BY != null" >
+	        #{DELETED_BY},
+	      </if>
+	      <if test="DELETED_DATE != null" >
+	        #{DELETED_DATE},
+	      </if>
+	      <if test="MESSAGE_SAMPLE != null" >
+	        #{MESSAGE_SAMPLE},
+	      </if>
+	    </trim>
+	</insert>
+</mapper>

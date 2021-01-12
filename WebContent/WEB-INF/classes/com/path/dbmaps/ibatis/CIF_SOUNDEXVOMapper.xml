@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_SOUNDEX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_SOUNDEXVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SOUNDEX_NAME" property="SOUNDEX_NAME" />
+    <result column="WORDS_NO" property="WORDS_NO" />
+    <result column="SOUNDEX_NAME_AR" property="SOUNDEX_NAME_AR" />
+    <result column="WORDS_NO_AR" property="WORDS_NO_AR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, SOUNDEX_NAME, WORDS_NO, SOUNDEX_NAME_AR, WORDS_NO_AR
+  </sql>
+  <select id="selectCIF_SOUNDEX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_SOUNDEXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_SOUNDEX
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_SOUNDEX" parameterType="com.path.dbmaps.vo.CIF_SOUNDEXVOKey" >
+    delete from CIF_SOUNDEX
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_SOUNDEX" parameterType="com.path.dbmaps.vo.CIF_SOUNDEXVO" >
+    insert into CIF_SOUNDEX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SOUNDEX_NAME != null" >
+        SOUNDEX_NAME,
+      </if>
+      <if test="WORDS_NO != null and WORDS_NO != emptyBigDecimalValue" >
+        WORDS_NO,
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        SOUNDEX_NAME_AR,
+      </if>
+      <if test="WORDS_NO_AR != null and WORDS_NO_AR != emptyBigDecimalValue" >
+        WORDS_NO_AR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SOUNDEX_NAME != null" >
+        #{SOUNDEX_NAME},
+      </if>
+      <if test="WORDS_NO != null and WORDS_NO != emptyBigDecimalValue" >
+        #{WORDS_NO},
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        #{SOUNDEX_NAME_AR},
+      </if>
+      <if test="WORDS_NO_AR != null and WORDS_NO_AR != emptyBigDecimalValue" >
+        #{WORDS_NO_AR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_SOUNDEX" >
+    update CIF_SOUNDEX
+    <set >
+      <if test="SOUNDEX_NAME != null" >
+        SOUNDEX_NAME = #{SOUNDEX_NAME},
+      </if>
+      <if test="WORDS_NO != null" >
+        <choose >
+          <when test="WORDS_NO == emptyBigDecimalValue" >
+            WORDS_NO = NULL ,
+          </when>
+          <otherwise >
+            WORDS_NO = #{WORDS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        SOUNDEX_NAME_AR = #{SOUNDEX_NAME_AR},
+      </if>
+      <if test="WORDS_NO_AR != null" >
+        <choose >
+          <when test="WORDS_NO_AR == emptyBigDecimalValue" >
+            WORDS_NO_AR = NULL ,
+          </when>
+          <otherwise >
+            WORDS_NO_AR = #{WORDS_NO_AR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_SOUNDEX" parameterType="com.path.dbmaps.vo.CIF_SOUNDEXVO" >
+    <include refid="sql_updateCIF_SOUNDEX" />
+  </update>
+</mapper>

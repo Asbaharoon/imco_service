@@ -1,0 +1,1192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dynamicScreenMapper">
+<resultMap id="elemPropertyDetailsResultMap" type="com.path.vo.common.dynamicscreen.DynamicScreenCO">
+	   <result property="propertyValue"      column="PROPERTY_VALUE"/>
+	   <result property="propertyExprValue" column="PROPERTY_EXPRESSION_VALUE"/>
+	</resultMap>
+	<select id="returnelemPropertyDetails" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" resultMap="elemPropertyDetailsResultMap">
+		SELECT PROPERTY_EXPRESSION_VALUE,PROPERTY_VALUE
+		  FROM SYS_DYN_SCREEN_ELEMENTS_DET
+		 WHERE ELEMENT_ID = #{elementId}
+   		 <if test="propertyCode == null">
+		 		AND PROPERTY_CODE = 'query'
+		 </if>
+		 <if test="propertyCode != null">
+		 		AND PROPERTY_CODE = #{propertyCode}
+		 </if>		   
+
+	</select>
+	<select id="returnLookupQryCount"  resultType="int" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" > 
+			<include refid="servicesCommon.commonGridWrpBefCnt"/>
+			${querySynthax}
+			<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<select id="returnLookupQryResult" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" resultType ="java.util.LinkedHashMap">
+			<include refid="servicesCommon.commonGridWrpBefFlip"/>
+			${querySynthax}
+			<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<resultMap id="elemExpressionsResultMap" type="com.path.vo.common.dynamicscreen.DynamicScreenCO">
+	   <result property="elementId"         column="THEID"/>
+	   <result property="elementType"       column="elementType"/>
+	   <result property="propertyCode"      column="PROPERTY_CODE"/>
+	   <result property="propertyExprValue" column="PROPERTY_EXPRESSION_VALUE"/>
+	   <result property="element_mode"      column="element_mode"/>
+	</resultMap>
+	<select id="returnDynScreenElemExpressions" parameterType="commonLibSC" resultMap="elemExpressionsResultMap">
+	SELECT 
+	       (SELECT ED.PROPERTY_VALUE
+	          FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+	         WHERE ED.ELEMENT_ID    = E.ELEMENT_ID
+	           AND ED.PROPERTY_CODE = 'id') as THEID 
+	      ,(SELECT SE.ELEMENT_TYPE_CODE
+	          FROM SYS_DYN_SCREEN_ELEMENTS SE 
+	         WHERE SE.ELEMENT_ID = E.ELEMENT_ID) AS elementType
+	      ,E.PROPERTY_CODE
+	      ,E.PROPERTY_EXPRESSION_VALUE 
+	      ,(
+	         CASE WHEN 
+                      SE.ELEMENT_TYPE_CODE = '4'
+	              THEN
+	                  '3'
+	              WHEN
+	               (SELECT ED.PROPERTY_VALUE
+	                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+	                 WHERE ED.ELEMENT_ID    = E.ELEMENT_ID
+	                   AND ED.PROPERTY_CODE = 'mode') IS NOT NULL
+	              THEN
+	               (SELECT ED.PROPERTY_VALUE
+	                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+	                 WHERE ED.ELEMENT_ID    = E.ELEMENT_ID
+	                   AND ED.PROPERTY_CODE = 'mode')
+	              ELSE
+	              '1'
+	          END
+	       ) as element_mode  
+	  FROM SYS_DYN_SCREEN_ELEMENTS_DET E,SYS_DYN_SCREEN_ELEMENTS SE
+	 WHERE E.ELEMENT_ID = SE.ELEMENT_ID
+	  <choose>
+	     <when test='"1" == onLoadExp'>
+	        AND SE.ELEMENT_ID = #{currElementId}
+	        AND E.PROPERTY_EXPRESSION_VALUE IS NOT NULL 
+	     </when>
+	     <otherwise>
+	        AND (E.PROPERTY_EXPRESSION_VALUE LIKE '%'||#{elementId}||'%' OR E.PROPERTY_VALUE in
+	        <foreach collection="elemIds" item="String" index="index" open="(" separator="," close=")" >
+	   		#{String}
+	   </foreach>
+	   )
+	     </otherwise>
+	  </choose> 
+	   AND (E.PROPERTY_CODE <![CDATA[<>]]> 'query' AND E.PROPERTY_CODE <![CDATA[<>]]> 'options' AND E.PROPERTY_CODE <![CDATA[<>]]> 'source')
+	   AND DYN_SCREEN_ID = #{screenId}
+	</select>
+    <sql id="dynScreenLkpQuery">
+     SELECT DYN_SCREEN_ID
+           ,DYN_SCREEN_DESC 
+           <if test="globalActivityId != null">
+           ,OP_ID
+           </if>
+       FROM SYS_DYN_SCREEN_DEF       
+       <if test="globalActivityId != null">
+       		, SYS_PARAM_BTN_CUST_ACTIONS  
+       WHERE DYN_SCREEN_ID = API_CODE AND BTN_ID = #{globalActivityId,jdbcType=NUMERIC}
+            AND DYN_SCREEN_ID IN ( SELECT API_CODE
+         		FROM SYS_PARAM_BTN_CUST_ACTIONS
+        		WHERE API_TYPE = '3' AND OP_TYPE = 'A'
+          		AND BTN_ID = #{globalActivityId,jdbcType=NUMERIC} )
+        </if>  		
+    </sql>
+
+    <resultMap id="dynScreensLkpMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+     <result property="sysDynScreenDefVO.DYN_SCREEN_ID"   column="DYN_SCREEN_ID"/>
+     <result property="REPORT_PROG_REF"   column="DYN_SCREEN_ID"/>
+     <result property="sysDynScreenDefVO.DYN_SCREEN_DESC" column="DYN_SCREEN_DESC"/>
+     <result property="operationId" 					  column="OP_ID"/>
+    </resultMap>
+	<select id="dynScreensLkpRecords" resultMap="dynScreensLkpMap" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dynamicScreenMapper.dynScreenLkpQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	</select>
+	<select id="dynScreensLkpCount"  resultType="int" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dynamicScreenMapper.dynScreenLkpQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+
+	<!-- dynamic parameter mapping -->
+	
+	<resultMap id="returnDynScreenParamMappingResultMap" type="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapCO">
+	   <result property="sysParamElmDynScrnMap.ELEMENT_MAP_ID"         		column="ELEMENT_MAP_ID"/>
+	   <result property="sysParamElmDynScrnMap.MAP_ELEMENT_TYPE"         	column="MAP_ELEMENT_TYPE"/>
+	   <result property="sysParamElmDynScrnMap.APP_NAME"         			column="APP_NAME"/>
+	   <result property="sysParamElmDynScrnMap.COMP_CODE"         			column="COMP_CODE"/>
+	   <result property="sysParamElmDynScrnMap.PROG_REF"         			column="PROG_REF"/>
+	   <result property="sysParamElmDynScrnMap.ELEMENT_IDENTIFIER"         	column="ELEMENT_IDENTIFIER"/>
+	   <result property="sysParamElmDynScrnMap.ELEMENT_OP_ID"         		column="ELEMENT_OP_ID"/>
+	   <result property="sysParamElmDynScrnMapDet.ELEMENT_MAP_ID"      		column="ELEMENT_MAP_ID"/>
+	   <result property="sysParamElmDynScrnMapDet.FLD_MAP_ID"      			column="FLD_MAP_ID"/>
+	   <result property="sysParamElmDynScrnMapDet.MAP_TYPE"      			column="MAP_TYPE"/>
+	   <result property="mapTypeDesc"  							 			column="MAP_TYPE_DESC"/>
+	   
+	   <result property="sysParamElmDynScrnMapDet.MAP_VALUE"      			column="MAP_VALUE"/>
+	   <result property="mapValueConstant"					      			column="MAP_VALUE_CONSTANT"/>
+	   <result property="mapValueDesc"					      				column="MAP_VALUE_DESC"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_APP_NAME"      	column="FROM_FLD_APP_NAME"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_PROG_REF"      	column="FROM_FLD_PROG_REF"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_IDENTIFIER"      column="FROM_FLD_IDENTIFIER"/>
+	   <result property="sysParamElmDynScrnMapDet.TO_ELEMENT_ID"      		column="TO_ELEMENT_ID"/>
+	   
+	   <result property="sysDynScreenDef.DYN_SCREEN_ID"      				column="DYN_SCREEN_ID"/>
+	   <result property="sysDynScreenDef.DYN_SCREEN_DESC"      				column="DYN_SCREEN_DESC"/>
+	   
+	   <result property="elementHtmlId"      								column="TO_ELEMENT_DESC"/>
+	   
+	   <result property="sysParamElmDynScrnMapDet.DYN_PARAM_TYPE"      		column="DYN_PARAM_TYPE"/>
+	   <result property="dynParamTypeDesc"      							column="DYN_PARAM_TYPE_DESC"/>
+	   <result property="sysParamElmDynScrnMapDet.SELECTION_TYPE"      				column="SELECTION_TYPE"/>
+	   <result property="sysParamElmDynScrnMapDet.DELIMITER"      				column="DELIMITER"/>
+	   <result property="fromSource"      				column="FROM_SOURCE"/>
+	</resultMap>
+	
+	<sql id="returnDynScreenParamMapQuery">
+		SELECT M.ELEMENT_MAP_ID,
+	       M.MAP_ELEMENT_TYPE,
+	       M.APP_NAME,
+	       M.COMP_CODE,
+	       M.PROG_REF,
+	       M.ELEMENT_IDENTIFIER,
+	       M.ELEMENT_OP_ID,
+	       D.FLD_MAP_ID,
+	       D.MAP_TYPE,
+	       D.SELECTION_TYPE,
+	       D.DELIMITER,
+	       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = D.MAP_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) MAP_TYPE_DESC,
+	       D.MAP_VALUE,
+	       (CASE WHEN D.MAP_TYPE = '3' THEN D.MAP_VALUE ELSE NULL END) MAP_VALUE_CONSTANT,
+	       (CASE WHEN D.MAP_TYPE = '1' THEN (
+	       									CASE 
+		       									WHEN M.MAP_ELEMENT_TYPE = '4' OR M.MAP_ELEMENT_TYPE = '5' THEN
+		       										 (
+		       										 	SELECT S.PROPERTY_VALUE FROM SYS_DYN_SCREEN_ELEMENTS_DET S
+		       										 	WHERE S.ELEMENT_ID = D.FROM_FLD_IDENTIFIER AND S.PROPERTY_CODE = 'id' 
+		       										 )
+		       									ELSE (
+			       									SELECT E.FIELD_KEY_LABEL_CODE
+									                 FROM SYS_PARAM_SCREEN_ELEMENTS E
+									                WHERE E.APP_NAME = D.FROM_FLD_APP_NAME
+									                  
+									                  <choose>
+														 	<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+														 		AND E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR}
+														 	</when>
+														 	<otherwise>
+																AND E.PROG_REF = D.FROM_FLD_PROG_REF
+														 	</otherwise>
+													  </choose>
+									                  
+									                  AND E.FLD_IDENTIFIER = D.FROM_FLD_IDENTIFIER 
+								                  ) 
+							                  END
+							                  ) ELSE '' END) MAP_VALUE_DESC,
+		(SELECT FROM_SOURCE
+		               FROM SYS_PARAM_SCREEN_ELEMENTS E
+		                 WHERE E.APP_NAME = D.FROM_FLD_APP_NAME
+		              AND E.FLD_IDENTIFIER = D.FROM_FLD_IDENTIFIER
+		              
+			                   	        <choose>
+										 	<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+										 		AND (E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR} OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+										 	</when>
+										 	<otherwise>
+										 		AND (E.PROG_REF = D.FROM_FLD_PROG_REF OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = D.FROM_FLD_PROG_REF AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+										 	</otherwise>
+										</choose>
+			           ) FROM_SOURCE,		                  
+	       D.FROM_FLD_APP_NAME,
+	       D.FROM_FLD_PROG_REF,
+	       D.FROM_FLD_IDENTIFIER,
+	       D.TO_ELEMENT_ID,
+	       CASE WHEN M.MAP_ELEMENT_TYPE = '1' OR M.MAP_ELEMENT_TYPE = '5' THEN
+	       		(SELECT DYN_SCREEN_ID
+     			 FROM SYS_DYN_SCREEN_DEF
+    			 WHERE DYN_SCREEN_ID = (SELECT API_CODE
+                             FROM SYS_PARAM_BTN_CUST_ACTIONS
+                            WHERE BTN_ID = CASE WHEN M.MAP_ELEMENT_TYPE = '1' THEN #{elementIdentifier,jdbcType=NUMERIC} ELSE #{globalActivityId,jdbcType=NUMERIC} END
+                              AND OP_ID = M.ELEMENT_OP_ID
+                              AND API_TYPE = '3'))	
+                WHEN M.MAP_ELEMENT_TYPE = '3' THEN
+                (SELECT DYN_SCREEN_ID
+     			 FROM SYS_DYN_SCREEN_DEF
+    			 WHERE DYN_SCREEN_ID = (SELECT API_CODE
+                             FROM SYS_PARAM_BTN_CUST_ACTIONS
+                            WHERE BTN_ID = (SELECT S.ACTIVITY_ID FROM SYS_PARAM_SCREEN_DISPLAY S 
+                                            WHERE S.APP_NAME = M.APP_NAME
+                                            AND S.PROG_REF = M.PROG_REF
+                                            AND S.COMP_CODE = M.COMP_CODE
+                                            AND S.FLD_IDENTIFIER = M.ELEMENT_IDENTIFIER)
+                              AND OP_ID = M.ELEMENT_OP_ID
+                              AND API_TYPE = '3'))              
+	       		ELSE M.ELEMENT_OP_ID
+	       END DYN_SCREEN_ID,
+	       CASE WHEN M.MAP_ELEMENT_TYPE = '1' OR M.MAP_ELEMENT_TYPE = '5' THEN
+	       		(SELECT DYN_SCREEN_DESC
+     			 FROM SYS_DYN_SCREEN_DEF
+    			 WHERE DYN_SCREEN_ID = (SELECT API_CODE
+                             FROM SYS_PARAM_BTN_CUST_ACTIONS
+                            WHERE BTN_ID = CASE WHEN M.MAP_ELEMENT_TYPE = '1' THEN #{elementIdentifier,jdbcType=NUMERIC} ELSE #{globalActivityId,jdbcType=NUMERIC} END
+                              AND OP_ID = M.ELEMENT_OP_ID
+                              AND API_TYPE = '3'))
+                WHEN M.MAP_ELEMENT_TYPE = '3' THEN
+                (SELECT DYN_SCREEN_DESC
+                     FROM SYS_DYN_SCREEN_DEF
+                    WHERE DYN_SCREEN_ID =
+                          (SELECT API_CODE
+                             FROM SYS_PARAM_BTN_CUST_ACTIONS
+                            WHERE BTN_ID = (SELECT S.ACTIVITY_ID FROM SYS_PARAM_SCREEN_DISPLAY S 
+                                            WHERE S.APP_NAME = M.APP_NAME
+                                            AND S.PROG_REF = M.PROG_REF
+                                            AND S.COMP_CODE = M.COMP_CODE
+                                            AND S.FLD_IDENTIFIER = M.ELEMENT_IDENTIFIER)
+                              AND OP_ID = M.ELEMENT_OP_ID
+                              AND API_TYPE = '3'))              
+	       		ELSE (SELECT DYN_SCREEN_DESC
+		     			 FROM SYS_DYN_SCREEN_DEF
+		    			 WHERE DYN_SCREEN_ID = M.ELEMENT_OP_ID)
+	       END DYN_SCREEN_DESC,
+	       (SELECT T.PROPERTY_VALUE 
+	        FROM SYS_DYN_SCREEN_ELEMENTS_DET T
+	        WHERE T.ELEMENT_ID = D.TO_ELEMENT_ID AND T.PROPERTY_CODE = 'id') TO_ELEMENT_DESC,
+	        D.DYN_PARAM_TYPE,
+	        (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		       FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = D.DYN_PARAM_TYPE
+		      	AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovDynParamType,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) DYN_PARAM_TYPE_DESC
+	  FROM SYS_PARAM_ELM_DYN_SCRN_MAP M, SYS_PARAM_ELM_DYN_SCRN_MAP_DET D 
+	  WHERE M.ELEMENT_MAP_ID = D.ELEMENT_MAP_ID
+	  		AND M.MAP_ELEMENT_TYPE = #{mapElementType,jdbcType=VARCHAR}
+	   		AND M.ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC}
+	   		<if test=' "2".equals(mapElementType) or "3".equals(mapElementType) '>
+			  AND APP_NAME = #{currAppName,jdbcType=VARCHAR} 
+	 		  AND COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+	 		  AND PROG_REF = #{progRef,jdbcType=VARCHAR}
+		 	</if>
+	   		<if test="elementOpId != null">
+	   			AND M.ELEMENT_OP_ID = #{elementOpId,jdbcType=NUMERIC}
+	   		</if>
+	</sql>
+	
+	
+	<select id="returnDynScreenParamMap" resultMap="returnDynScreenParamMappingResultMap" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dynamicScreenMapper.returnDynScreenParamMapQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	</select>
+	<select id="returnDynScreenParamMapCount"  resultType="int" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dynamicScreenMapper.returnDynScreenParamMapQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<!-- dynamic screen elements lookup -->
+	
+	<resultMap id="returnDynScreenElementsMap" type="com.path.vo.common.dynamicscreen.DynamicScreenCO">
+	   <result property="elementIdValue"   	column="ELEMENT_ID"/>
+	   <result property="elementId"      	column="ELEMENT_HTML_ID"/>
+	   <result property="elementType"      	column="ELEMENT_HTML_TYPE"/>
+	   <result property="elementTypeCode"      	column="ELEMENT_TYPE_CODE"/>
+	</resultMap>
+	
+	<sql id="returnDynScreenElementsQuery">
+		   
+	   	SELECT E.ELEMENT_ID,
+	          D.PROPERTY_VALUE ELEMENT_HTML_ID,
+	          (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+	             FROM SYS_PARAM_LOV_TRANS
+	            WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = E.ELEMENT_TYPE_CODE
+	              AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	              AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ELEMENT_HTML_TYPE , 
+	              E.ELEMENT_TYPE_CODE
+	     FROM SYS_DYN_SCREEN_ELEMENTS E LEFT JOIN SYS_DYN_SCREEN_ELEMENTS_DET D ON E.ELEMENT_ID = D.ELEMENT_ID
+	                                            								AND D.PROPERTY_CODE = 'id'
+	     WHERE E.DYN_SCREEN_ID = #{screenId,jdbcType=NUMERIC}
+	     
+	    <if test="elementId != null">
+	   			AND E.ELEMENT_ID = #{elementId,jdbcType=NUMERIC}
+	   	</if>
+	   	<if test="dynParamType == 2">
+	   	       AND EXISTS (SELECT 1
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET D1,
+                   SYS_DYN_SCREEN_TABLE        T,
+                   SYS_DYN_TABLE_DET           TD
+             WHERE E.ELEMENT_ID = D1.ELEMENT_ID
+               AND E.DYN_SCREEN_ID = T.DYN_SCREEN_ID
+               AND T.TABLE_ID = TD.TABLE_ID
+               AND D1.PROPERTY_CODE = 'name'
+               AND D1.PROPERTY_VALUE = TD.COL_TECH_NAME
+			   AND TD.PRIMARY_KEY = 1)
+		</if>
+	</sql>
+		
+	<select id="returnDynScreenElements" resultMap="returnDynScreenElementsMap" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dynamicScreenMapper.returnDynScreenElementsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	</select>
+	<select id="returnDynScreenElementsCount"  resultType="int" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dynamicScreenMapper.returnDynScreenElementsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+		
+
+	<delete id="deleteIdleSysDynScreenDef" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DECLARE @COUNT_REC NUMERIC(6)
+					SELECT @COUNT_REC = COUNT(1) FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC}
+					IF @COUNT_REC = 0
+					BEGIN
+						DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC}
+					END
+				END
+		 </when>
+		 <otherwise>
+		 		DECLARE 
+		 			COUNT_REC NUMBER(6);
+		 		BEGIN
+		   			SELECT COUNT(1) INTO COUNT_REC FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC};
+		   			IF COUNT_REC = 0 THEN 
+		   				DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC};
+		   			END IF;
+		   		END;
+		 </otherwise>
+	   </choose>
+  	</delete> 
+		
+	<select id="checkExistingElementMapId" resultType="java.math.BigDecimal" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" > 
+		SELECT ELEMENT_MAP_ID
+  		FROM SYS_PARAM_ELM_DYN_SCRN_MAP
+ 		<choose>
+		 	<when test=' "1".equals(mapElementType) or "4".equals(mapElementType) or "5".equals(mapElementType)'>
+		 		WHERE ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC} AND ELEMENT_OP_ID = #{elementOpId,jdbcType=NUMERIC}
+		 	</when>
+		 	<when test=' "2".equals(mapElementType) or "3".equals(mapElementType) '>
+		 		WHERE ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC} 
+		 		 AND APP_NAME = #{currAppName,jdbcType=VARCHAR} 
+		 		 AND COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+		 		 AND PROG_REF = #{progRef,jdbcType=VARCHAR}
+		 		 AND ELEMENT_OP_ID = #{elementOpId,jdbcType=NUMERIC}
+		 	</when>
+		</choose>
+ 	</select> 
+ 	
+ 	<resultMap id="returnDynScreenMappedParamMap" type="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapCO">
+	   <result property="sysParamElmDynScrnMapDet.ELEMENT_MAP_ID"      	column="ELEMENT_MAP_ID"/>
+	   <result property="sysParamElmDynScrnMapDet.FLD_MAP_ID"      		column="FLD_MAP_ID"/>
+	   <result property="sysParamElmDynScrnMapDet.MAP_TYPE"      		column="MAP_TYPE"/>
+	   <result property="sysParamElmDynScrnMapDet.MAP_VALUE"      		column="MAP_VALUE"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_APP_NAME"    column="FROM_FLD_APP_NAME"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_PROG_REF"    column="FROM_FLD_PROG_REF"/>
+	   <result property="sysParamElmDynScrnMapDet.FROM_FLD_IDENTIFIER"  column="FROM_FLD_IDENTIFIER"/>
+	   <result property="sysParamElmDynScrnMapDet.TO_ELEMENT_ID"      	column="TO_ELEMENT_ID"/>
+	   <result property="elementHtmlId"      							column="FIELD_ID"/>
+	   <result property="sysParamElmDynScrnMap.MAP_ELEMENT_TYPE"      	column="MAP_ELEMENT_TYPE"/>
+	   <result property="sysParamElmDynScrnMapDet.DYN_PARAM_TYPE"      	column="DYN_PARAM_TYPE"/>
+	   <result property="sysParamElmDynScrnMapDet.DELIMITER"  column="DELIMITER" />
+       <result  property="sysParamElmDynScrnMapDet.SELECTION_TYPE" column="SELECTION_TYPE" />
+       <result  property="fromSource" column="FROM_SOURCE" />
+	</resultMap>
+ 	
+ 	<select id="returnDynScreenMappedParameters" resultMap="returnDynScreenMappedParamMap" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" > 
+		SELECT D.ELEMENT_MAP_ID,
+		       D.FLD_MAP_ID,
+		       D.MAP_TYPE,
+		       D.MAP_VALUE,
+		       D.DELIMITER,
+		       D.SELECTION_TYPE,
+		       D.FROM_FLD_APP_NAME,
+		       D.FROM_FLD_PROG_REF,
+		       D.FROM_FLD_IDENTIFIER,
+		       D.TO_ELEMENT_ID,
+	           ( 
+	            CASE WHEN D.MAP_TYPE = '1' THEN 
+	                 (
+	                 	CASE WHEN #{mapElementType,jdbcType=VARCHAR} = '4' OR #{mapElementType,jdbcType=VARCHAR} = '5' THEN
+	                 		 (
+	                 		 	SELECT S.PROPERTY_VALUE FROM SYS_DYN_SCREEN_ELEMENTS_DET S
+								WHERE S.ELEMENT_ID = D.FROM_FLD_IDENTIFIER AND S.PROPERTY_CODE = 'id' 
+	                 		 )
+	                 	ELSE (
+	                      	SELECT FIELD_ID
+	    	                FROM SYS_PARAM_SCREEN_ELEMENTS E
+		                    WHERE E.APP_NAME = D.FROM_FLD_APP_NAME
+	                   	        AND E.FLD_IDENTIFIER = D.FROM_FLD_IDENTIFIER
+	                   	        
+	                   	        <choose>
+								 	<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+								 		AND (E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR} OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+								 	</when>
+								 	<otherwise>
+								 		AND (E.PROG_REF = D.FROM_FLD_PROG_REF OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = D.FROM_FLD_PROG_REF AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+								 	</otherwise>
+								</choose>
+								)
+						END		
+	                 )
+	            ELSE NULL
+	            END 
+	           ) FIELD_ID,
+	           (SELECT FROM_SOURCE
+               FROM SYS_PARAM_SCREEN_ELEMENTS E
+                 WHERE E.APP_NAME = D.FROM_FLD_APP_NAME
+              AND E.FLD_IDENTIFIER = D.FROM_FLD_IDENTIFIER
+              
+	                   	        <choose>
+								 	<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+								 		AND (E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR} OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+								 	</when>
+								 	<otherwise>
+								 		AND (E.PROG_REF = D.FROM_FLD_PROG_REF OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = D.FROM_FLD_PROG_REF AND APP_NAME =  D.FROM_FLD_APP_NAME AND PARENT_REF IS NOT NULL))
+								 	</otherwise>
+								</choose>
+	           ) FROM_SOURCE,
+	           #{mapElementType,jdbcType=VARCHAR} MAP_ELEMENT_TYPE,
+	           D.DYN_PARAM_TYPE
+		FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET D     
+		WHERE D.ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC}
+		<if test="mapType != null and !mapType.isEmpty()">
+			AND D.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+		</if>
+ 	</select>
+ 	<resultMap id="returnParamsDataTypeMap" type="com.path.vo.common.dynamicscreen.DynamicScreenCO">
+ 	  <result property="elementIdValue" column="ELEMENT_ID"/>
+ 	  <result property="theId"          column="THEID"/>
+ 	  <result property="elementType"    column="ELEMENT_TYPE_CODE"/>
+ 	  <result property="element_mode"   column="ELEMENT_MODE"/>
+ 	</resultMap>
+ 	<select id="returnParamsDataType" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" resultMap="returnParamsDataTypeMap">
+		SELECT 
+	           SE.ELEMENT_ID
+		      ,(SELECT ED.PROPERTY_VALUE
+		          FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+		         WHERE ED.ELEMENT_ID    = SE.ELEMENT_ID
+		           AND ED.PROPERTY_CODE = 'id') as THEID      
+		      ,SE.ELEMENT_TYPE_CODE
+		      ,
+		      (
+		         CASE WHEN 
+	                      SE.ELEMENT_TYPE_CODE = '4'
+		              THEN
+		                  '3'
+		              WHEN
+		               (SELECT ED.PROPERTY_VALUE
+		                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+		                 WHERE ED.ELEMENT_ID    = SE.ELEMENT_ID
+		                   AND ED.PROPERTY_CODE = 'mode') IS NOT NULL
+		              THEN
+		               (SELECT ED.PROPERTY_VALUE
+		                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED 
+		                 WHERE ED.ELEMENT_ID    = SE.ELEMENT_ID
+		                   AND ED.PROPERTY_CODE = 'mode')
+		              ELSE
+		              '1'
+		          END
+		       ) as ELEMENT_MODE  
+		  FROM SYS_DYN_SCREEN_ELEMENTS SE
+		 WHERE SE.ELEMENT_TYPE_CODE <![CDATA[<>]]> '2'
+		   AND SE.ELEMENT_TYPE_CODE <![CDATA[<>]]> '8'  
+		   AND SE.DYN_SCREEN_ID = #{screenId}
+ 	</select>	
+ 	
+ 	
+ 	<select id="returnOldDynScreenMapping" resultType="java.math.BigDecimal" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" >
+		<choose>
+		 	<when test=' "1".equals(mapElementType) '>
+			 SELECT ELEMENT_MAP_ID
+			  FROM SYS_PARAM_ELM_DYN_SCRN_MAP
+			 WHERE ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC}
+			   AND MAP_ELEMENT_TYPE = '1'
+			   AND ELEMENT_OP_ID NOT IN
+			       (SELECT OP_ID
+			          FROM SYS_PARAM_BTN_CUST_ACTIONS
+			         WHERE BTN_ID = #{elementIdentifier,jdbcType=NUMERIC}
+			           AND API_TYPE = '3')
+		 	</when>
+		 	<when test=' "2".equals(mapElementType) or "3".equals(mapElementType) '>
+		 		SELECT ELEMENT_MAP_ID
+			  	FROM SYS_PARAM_ELM_DYN_SCRN_MAP
+			 	WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				  	  AND APP_NAME = #{currAppName,jdbcType=VARCHAR}
+				   	  AND PROG_REF = #{progRef,jdbcType=VARCHAR}
+				      AND ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC}
+			 	      AND MAP_ELEMENT_TYPE <![CDATA[<>]]> #{mapElementType,jdbcType=VARCHAR}
+		 	</when>
+		 	<when test=' "4".equals(mapElementType) or "5".equals(mapElementType) '>
+		 		SELECT ELEMENT_MAP_ID
+			  	FROM SYS_PARAM_ELM_DYN_SCRN_MAP
+			 	WHERE ELEMENT_IDENTIFIER = #{elementIdentifier,jdbcType=NUMERIC}
+			 		  AND MAP_ELEMENT_TYPE <![CDATA[<>]]> #{mapElementType,jdbcType=VARCHAR}
+		 	</when>
+		</choose>
+  	</select> 	
+ 		
+ 	<delete id="deleteOldSysDynScreenDef" parameterType="com.path.vo.common.dynamicscreen.DynamicScreenParamsMapSC" >
+		<choose>
+		 <when test="isSybase == 1">
+				BEGIN
+					DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC}
+				END
+		 </when>
+		 <otherwise>
+		 		BEGIN
+		   			DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC};
+		   			DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE ELEMENT_MAP_ID = #{elementMapId,jdbcType=NUMERIC};
+		   		END;
+		 </otherwise>
+	   </choose>
+  	</delete>
+  	<sql id="linkDynScreenQuery">
+  	SELECT tbl.*
+	      ,(SELECT 
+	               CASE WHEN #{langCode} = 'AR' 
+	                    THEN C.CATEG_DESC_AR 
+	                    WHEN #{langCode} = 'FR'
+	                    THEN C.CATEG_DESC_FR
+	                    ELSE C.CATEG_DESC_ENG
+	                END     
+	          FROM OPT_CATEGORY C 
+	         WHERE C.CATEG_ID = tbl.categId
+	      ) AS categDesc
+	      ,(SELECT 
+	               CASE WHEN #{langCode} = 'AR' 
+	                    THEN OPT.MENU_TITLE_ARAB 
+	                    WHEN #{langCode} = 'FR'
+	                    THEN OPT.MENU_TITLE_FR
+	                    ELSE OPT.MENU_TITLE_ENG
+	                END     
+	          FROM OPT 
+	         WHERE OPT.PROG_REF = tbl.parentRef
+	           AND OPT.APP_NAME = tbl.APP_NAME) AS screenParentName
+  	FROM
+  	(
+		SELECT OE.DYN_SCREEN_ID
+		      ,(SELECT SD.DYN_SCREEN_DESC
+		          FROM SYS_DYN_SCREEN_DEF SD
+		         WHERE SD.DYN_SCREEN_ID = OE.DYN_SCREEN_ID) AS SCREEN_DESC
+		      ,OE.PROG_REF
+		      ,OE.APP_NAME
+		      ,CASE WHEN #{langCode} = 'AR'  AND O.MENU_TITLE_ARAB IS NOT NULL
+		                    THEN O.MENU_TITLE_ARAB 
+		                    WHEN #{langCode} = 'FR'  AND O.MENU_TITLE_FR IS NOT NULL
+		                    THEN O.MENU_TITLE_FR
+		                    WHEN #{langCode} = 'EN'  AND O.MENU_TITLE_ENG IS NOT NULL
+		                    THEN O.MENU_TITLE_ENG
+		                    ELSE O.PROG_DESC
+		       END AS MENU_TITLE
+		      ,O.PARENT_REF as parentRef
+		      ,O.CATEG_ID as categId
+		  FROM OPT_EXTENDED OE LEFT JOIN OPT O ON O.PROG_REF = OE.PROG_REF
+		           							   AND O.APP_NAME = OE.APP_NAME
+		 WHERE OE.DYN_SCREEN_ID IS NOT NULL
+		 <if test="currAppName != null">
+		   AND OE.APP_NAME = #{currAppName}
+		 </if>
+		 <if test="progRef != null">
+		   AND OE.PROG_REF = #{progRef}
+		 </if>
+		)tbl 
+  	</sql>
+ 	<resultMap id="linkDynScreenListMap" type="com.path.vo.common.dynamicscreen.LinkDynamicScreenCO">
+ 	  <result property="DYN_SCREEN_ID" column="DYN_SCREEN_ID"/>
+ 	  <result property="SCREEN_DESC"   column="SCREEN_DESC"/>
+ 	  <result property="PROG_REF"      column="PROG_REF"/>
+ 	  <result property="MENU_TITLE"    column="MENU_TITLE"/>
+ 	  <result property="categId"      column="categId"/>
+ 	  <result property="categDesc"      column="categDesc"/>
+ 	</resultMap>
+    <select id="linkDynScreenListRecords"
+	        resultMap="linkDynScreenListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dynamicScreenMapper.linkDynScreenQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="linkDynScreenListCount" 
+	        resultType="int" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dynamicScreenMapper.linkDynScreenQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<select id="returnLinkDynScreenData" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType="com.path.vo.common.dynamicscreen.LinkDynamicScreenCO">
+	   <include refid="dynamicScreenMapper.linkDynScreenQuery"/>
+	</select>
+	<insert id="linkDynScreenAccessRight" parameterType="com.path.vo.common.dynamicscreen.LinkDynamicScreenCO">
+	 INSERT INTO AXS(USER_ID,COMP_CODE,BRANCH_CODE,APP_NAME,PROG_REF,CREATED_BY,AUTHORIZED_BY,STATUS,DATE_CREATED,DATE_AUTHORIZED)
+	 VALUES(#{userId},#{companyCode},#{branchCode},#{APP_NAME},#{PROG_REF},#{userId},#{userId},'P'
+	 ,<include refid="commonLibMapper.systemDate"/>,<include refid="commonLibMapper.systemDate"/>)
+	</insert>
+	<sql id="linkDynScrTabQuery">
+		SELECT DynScrLink.OBJECT_CODE
+		      ,DynScrLink.OBJECT_TYPE
+		      ,DynScrLink.SUB_OBJECT_ID
+		      ,DynScrLink.SUB_OBJECT_DESC
+		      ,DynScrLink.DYN_SCREEN_ID
+		      ,(SELECT SD.DYN_SCREEN_DESC
+		          FROM SYS_DYN_SCREEN_DEF SD 
+		         WHERE SD.DYN_SCREEN_ID = DynScrLink.DYN_SCREEN_ID) AS SCREEN_DESC
+		  FROM SYS_PARAM_OBJ_DYN_SCREEN_LINK DynScrLink
+		 WHERE DynScrLink.PROG_REF = #{progRef}
+		   AND DynScrLink.OBJECT_CODE = #{objectCode}
+		   AND DynScrLink.APP_NAME = #{currAppName}
+	</sql>
+	<resultMap id="linkDynScrTabListMap" type="com.path.vo.common.dynamicscreen.LinkDynScrTabCO">
+       <result property="OBJECT_CODE"     column="OBJECT_CODE"/>
+	   <result property="OBJECT_TYPE"     column="OBJECT_TYPE"/>
+	   <result property="SUB_OBJECT_DESC" column="SUB_OBJECT_DESC"/>
+	   <result property="SUB_OBJECT_ID"   column="SUB_OBJECT_ID"/>
+	   <result property="DYN_SCREEN_ID"   column="DYN_SCREEN_ID"/>
+	   <result property="SCREEN_DESC"     column="SCREEN_DESC"/>	 
+	</resultMap>
+    <select id="linkDynScrTabListRecords"
+	        resultMap="linkDynScrTabListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dynamicScreenMapper.linkDynScrTabQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="linkDynScrTabListCount" 
+	        resultType="int" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dynamicScreenMapper.linkDynScrTabQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<select id="returnMaxSubObjId" resultType="int">
+		SELECT CASE WHEN COUNT(1)=0 THEN 0 ELSE MAX(SUB_OBJECT_ID) END FROM SYS_PARAM_OBJ_DYN_SCREEN_LINK	
+	</select>
+	<insert id="linkDynScrTabSubmitMgnt" parameterType="com.path.vo.common.dynamicscreen.LinkDynScrTabCO">
+	INSERT INTO SYS_PARAM_OBJ_DYN_SCREEN_LINK(
+	 OBJECT_CODE
+	,OBJECT_TYPE
+	,PROG_REF
+	,APP_NAME
+	,SUB_OBJECT_DESC
+	,SUB_OBJECT_ID
+	,DYN_SCREEN_ID
+	,CREATED_BY
+	,CREATED_DATE
+	)
+	VALUES
+	(#{OBJECT_CODE},#{OBJECT_TYPE},#{PROG_REF},#{APP_NAME},#{SUB_OBJECT_DESC},#{SUB_OBJECT_ID},#{DYN_SCREEN_ID},#{USER_ID},<choose><when test="isSybase == 1">GETDATE()</when><otherwise>SYSDATE</otherwise></choose>)	
+	</insert>
+	<select id="returnAdditionalObjElements" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="linkDynScrTabListMap">
+	   <include refid="dynamicScreenMapper.linkDynScrTabQuery"/>
+	</select>
+	<select id="returnLinkDynScrTabData" parameterType="com.path.vo.common.dynamicscreen.LinkDynScrTabCO" resultMap="linkDynScrTabListMap">
+	SELECT DynScrLink.OBJECT_CODE
+	      ,DynScrLink.OBJECT_TYPE
+	      ,DynScrLink.SUB_OBJECT_ID
+	      ,DynScrLink.SUB_OBJECT_DESC
+	      ,DynScrLink.DYN_SCREEN_ID
+	      ,(SELECT SD.DYN_SCREEN_DESC
+	          FROM SYS_DYN_SCREEN_DEF SD 
+	         WHERE SD.DYN_SCREEN_ID = DynScrLink.DYN_SCREEN_ID) AS SCREEN_DESC
+	  FROM SYS_PARAM_OBJ_DYN_SCREEN_LINK DynScrLink
+	 WHERE DynScrLink.PROG_REF      = #{progRef}
+	   AND DynScrLink.OBJECT_CODE   = #{objectCode}
+	   AND DynScrLink.APP_NAME      = #{currAppName}
+	   AND DynScrLink.SUB_OBJECT_ID = #{subObjectId}	
+	</select>
+	<delete id="linkDynScrTabDeleteMgnt" parameterType="com.path.vo.common.dynamicscreen.LinkDynScrTabCO">
+	DELETE 
+	  FROM SYS_PARAM_OBJ_DYN_SCREEN_LINK 
+	 WHERE SUB_OBJECT_ID = #{SUB_OBJECT_ID}
+	   AND OBJECT_CODE   = #{OBJECT_CODE}
+	   AND DYN_SCREEN_ID = #{DYN_SCREEN_ID}
+	</delete>
+	<resultMap id="retrnElemsValAndExpMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+	 <result property="sysDynScreenDefVO.DYN_SCREEN_ID" column="DYN_SCREEN_ID"/>
+	 <result property="elementId"     column="ELEMENT_ID"/>
+	 <result property="elementType"   column="ELEMENT_TYPE_CODE"/>
+	 <result property="elementMode"   column="ELEMENT_MODE"/>
+	 <result property="elemId"        column="elemId"/>
+	 <result property="elemName"      column="elemName"/>
+	 <result property="elemValue"     column="elemValue"/>
+	 <result property="elemValExp"    column="elemValExp"/>
+	 <result property="requiredExp"   column="requiredExp"/>
+	 <result property="readOnlyExp"   column="readOnlyExp"/>
+	 <result property="visibilityExp" column="visibilityExp"/>
+	</resultMap>
+    <select id="retrnElemsValAndExp"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="retrnElemsValAndExpMap">
+            SELECT SD.DYN_SCREEN_ID
+                  ,SE.ELEMENT_ID
+                  ,SE.ELEMENT_TYPE_CODE
+                  ,(SELECT ED1.PROPERTY_VALUE
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'id') as elemId 
+                  ,(SELECT ED1.PROPERTY_VALUE
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'name') as elemName 
+                  ,(SELECT ED1.PROPERTY_VALUE
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'value') as elemValue
+                ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>
+                         ED1.PROPERTY_EXPRESSION_VALUE
+                         <if test="isSybase == 1">)</if>
+                    FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                   WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                     AND ED1.PROPERTY_CODE = 'options') as elemValExp                    
+                  ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>
+                         ED1.PROPERTY_EXPRESSION_VALUE
+                         <if test="isSybase == 1">)</if>
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'required') as requiredExp
+                  ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>
+                         ED1.PROPERTY_EXPRESSION_VALUE
+                         <if test="isSybase == 1">)</if>
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'readOnly') as readOnlyExp
+                  ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>
+                         ED1.PROPERTY_EXPRESSION_VALUE
+                         <if test="isSybase == 1">)</if>
+                      FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                     WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID 
+                       AND ED1.PROPERTY_CODE = 'visible') as visibilityExp
+                  ,(CASE WHEN SE.ELEMENT_TYPE_CODE = '4'
+                         THEN '3'
+                         WHEN (SELECT ED1.PROPERTY_VALUE
+                                 FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                                WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID
+                                  AND ED1.PROPERTY_CODE = 'mode') IS NOT NULL
+                         THEN (SELECT ED1.PROPERTY_VALUE
+                                 FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1 
+                                WHERE ED1.ELEMENT_ID    = SE.ELEMENT_ID
+                                  AND ED1.PROPERTY_CODE = 'mode')
+                         ELSE '1'
+                     END
+                   ) as ELEMENT_MODE  
+              FROM SYS_DYN_SCREEN_DEF SD,SYS_DYN_SCREEN_ELEMENTS SE
+            WHERE SD.DYN_SCREEN_ID = SE.DYN_SCREEN_ID
+               AND SD.DYN_SCREEN_ID = #{screenId}  
+             ORDER BY SE.ELEMENT_ID ASC   
+    </select>   
+	<update id="updateLiveSearchDesc" parameterType="commonLibSC" >
+	   UPDATE SYS_DYN_SCREEN_ELEMENTS_DET SET PROPERTY_VALUE = #{onLoadExp}
+	   WHERE ELEMENT_ID = (
+	   SELECT SDSE.ELEMENT_ID
+	   FROM SYS_DYN_SCREEN_ELEMENTS SDSE, SYS_DYN_SCREEN_ELEMENTS_DET SDSED
+	   WHERE SDSE.ELEMENT_ID = SDSED.ELEMENT_ID
+	   AND SDSE.DYN_SCREEN_ID = #{screenId}
+	   AND SDSED.PROPERTY_CODE = 'lookupDesc'
+	   AND SDSED.PROPERTY_VALUE = #{elementId})
+	   AND PROPERTY_CODE = 'lookupDesc'
+	</update>
+	
+	<resultMap id="retrieveDynamicTableInfoMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+	 <result property="sysDynTableDetVO.DYN_SCREEN_ID" column="DYN_SCREEN_ID"/>
+	 <result property="sysDynTableDetVO.COL_ID"     column="COL_ID"/>
+	 <result property="sysDynTableDetVO.COL_TECH_NAME"     column="COL_TECH_NAME"/>
+	 <result property="sysDynTableDetVO.PRIMARY_KEY"     column="PRIMARY_KEY"/>
+	 <result property="sysDynTableDetVO.COL_TYPE"     column="COL_TYPE"/>
+	 <result property="sysDynTableDetVO.VISIBLE_YN"     column="VISIBLE_YN"/>
+	 <result property="scrTableTechName"     column="TABLE_TECH_NAME"/>
+	 <result property="property_code"     column="PROPERTY_CODE"/>
+	 <result property="property_value"     column="PROPERTY_VALUE"/>
+	 <result property="elementId"     column="ELEMENT_ID"/>
+	</resultMap>
+	
+    <select id="retrieveDynamicTableInfo"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="retrieveDynamicTableInfoMap">
+	   SELECT S2.COL_ID, 
+		      S2.COL_TECH_NAME, 
+		      S2.PRIMARY_KEY, 
+		      S2.COL_TYPE,
+		      S2.VISIBLE_YN,
+		      S3.TABLE_TECH_NAME
+		 FROM SYS_DYN_SCREEN_TABLE S1
+		 JOIN SYS_DYN_TABLE_DET S2 ON S1.TABLE_ID = S2.TABLE_ID
+		 JOIN SYS_DYN_TABLE S3 ON S2.TABLE_ID = S3.TABLE_ID
+		WHERE S1.DYN_SCREEN_ID = #{screenId}
+    </select>   
+    
+    <select id="retrieveTableInfoById"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="retrieveDynamicTableInfoMap">
+	   SELECT S1.COL_ID, 
+		      S1.COL_TECH_NAME, 
+		      S1.PRIMARY_KEY, 
+		      S1.COL_TYPE,
+		      S1.VISIBLE_YN,
+		      S2.TABLE_TECH_NAME
+		 FROM SYS_DYN_TABLE_DET S1, SYS_DYN_TABLE S2 
+			WHERE S1.TABLE_ID = S2.TABLE_ID
+		 	<if test="tableId != null"> 
+			AND S1.TABLE_ID = #{tableId}
+			</if>
+			<if test="tableName != null"> 
+			AND TABLE_TECH_NAME = #{tableName}
+			</if>
+    </select>   
+ 
+    
+       <select id="retrieveDynTableScreenColsInfo"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="retrieveDynamicTableInfoMap">
+	   SELECT S2.COL_ID, 
+		      S2.COL_TECH_NAME, 
+		      S2.PRIMARY_KEY, 
+		      S2.COL_TYPE,
+		      S2.VISIBLE_YN,
+		      S3.TABLE_TECH_NAME,
+		      ED.PROPERTY_CODE,
+          	  ED.PROPERTY_VALUE,
+          	  ED.ELEMENT_ID
+			 FROM SYS_DYN_SCREEN_TABLE S1
+		 	 JOIN SYS_DYN_TABLE_DET S2 ON S1.TABLE_ID = S2.TABLE_ID
+		 	 JOIN SYS_DYN_TABLE S3 ON S2.TABLE_ID = S3.TABLE_ID
+     		 JOIN SYS_DYN_SCREEN_ELEMENTS SE ON S1.DYN_SCREEN_ID = SE.DYN_SCREEN_ID
+     		 JOIN SYS_DYN_SCREEN_ELEMENTS_DET ED ON SE.ELEMENT_ID = ED.ELEMENT_ID
+			WHERE S1.DYN_SCREEN_ID = #{screenId}
+			  AND ED.PROPERTY_CODE='name'
+			  AND ED.PROPERTY_VALUE = S2.COL_TECH_NAME
+    </select>   
+    
+    
+	<select id="checkDynamicTablePK"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType="int">
+		SELECT COUNT(1) FROM ${tableName} WHERE
+		<foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+		${index} = #{item}
+		</foreach>
+    </select>
+
+	<insert id="insertDynamicScreenForm" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		<if test="isOracle == 1">begin</if>
+		insert into ${tableName} (
+		<foreach collection="colValHm" index="index" item="item"  separator=",">	 
+		${index}
+		</foreach>
+		,DATE_UPDATED ) VALUES (
+		<foreach collection="colValHm" index="index" item="item"  separator=",">	 
+		#{item}
+		</foreach>
+		<if test="isOracle == 1">,SYSDATE);end;</if>
+		<if test="isSybase == 1">,CONVERT(DATETIME, GETDATE(), 103))</if>
+	</insert>
+	<update id="updateDynamicScreenForm" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		<if test="isOracle == 1">begin</if>
+		update ${tableName} set 
+		<foreach collection="colValHm" index="index" item="item"  separator=",">	 
+		${index} = #{item}
+		</foreach>
+		<if test="isOracle == 1">, DATE_UPDATED = SYSDATE</if>
+		<if test="isSybase == 1">, DATE_UPDATED = CONVERT(DATETIME, GETDATE(), 103)</if>
+		where
+		<foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+		${index} = #{item}
+		</foreach>
+		<if test="isOracle == 1">;end;</if>
+		
+	</update>
+	
+		<select id="returnDynGridListCount"  resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+			<include refid="servicesCommon.commonGridWrpBefCnt"/>
+			${queryData}
+			<if test="pkColValHm != null"> 
+			<foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+			 ${index} = #{item}
+			</foreach>
+			</if>
+			<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<select id="returnDynGridListRecords" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType ="java.util.LinkedHashMap">
+			<include refid="servicesCommon.commonGridWrpBefFlip"/>
+			${queryData}
+			<if test="pkColValHm != null"> 
+			<foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+			 ${index} = #{item}
+			</foreach>
+			</if>
+			<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnComboBoxOptions" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType ="java.util.LinkedHashMap">
+		${queryData}
+	</select>
+	
+	<delete id="deleteDynamicScreenForm" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" >
+		 <if test="isOracle == 1">begin</if>
+		 DELETE FROM ${tableName} WHERE
+		 <foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+		 ${index} = #{item}
+		</foreach>
+		<if test="isOracle == 1">;end;</if>
+  	</delete>
+  	<update id="updateDynamicScreenBlobItems" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" >
+		<if test="isOracle == 1">begin</if>
+		<foreach collection="dsFileHm" index="index" item="item">	 
+		UPDATE ${item.tableName}
+		SET ${item.columnName} = #{item.byteArrUpload, jdbcType=BLOB}
+		where
+		<foreach collection="pkColValHm" index="index" item="item"  separator=" AND ">	 
+		${index} = #{item}
+		</foreach>
+		<if test="isOracle == 1">;</if>
+		</foreach>
+		<if test="isOracle == 1">end;</if>
+	</update>
+	
+	<resultMap id="selectDynamicScreenBlobMap" type="com.path.vo.common.screengenerator.DynamicScreenFileCO">
+    <result column="DS_FILE" property="byteArrUpload" />
+    <result column="DS_FILE_NAME" property="uploadFileFileName" />
+  	</resultMap>
+  
+	<select id="selectDynamicScreenBlob" resultMap="selectDynamicScreenBlobMap" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" >
+		${queryData} 
+		WHERE 
+		<foreach collection="colValHm" index="index" item="item"  separator=" AND ">	 
+		${index} = #{item}
+		</foreach>
+	</select>
+	
+	<select id="retrieveDynamicFileRelatedCols" resultMap="retrieveDynamicFileRelatedColsMap" >
+		SELECT  S2.COL_TECH_NAME COL_TECH_NAME,
+		       (SELECT PROPERTY_VALUE
+		          FROM SYS_DYN_SCREEN_ELEMENTS_DET SD1
+		         WHERE SD1.ELEMENT_ID = SD.ELEMENT_ID
+		           AND SD1.PROPERTY_CODE = 'name') COL_FILE_NAME
+		  FROM SYS_DYN_SCREEN_ELEMENTS     SE,
+		       SYS_DYN_SCREEN_ELEMENTS_DET SD,
+		       SYS_DYN_SCREEN_TABLE        S1,
+		       SYS_DYN_TABLE_DET           S2,
+		       SYS_DYN_TABLE               S3
+		 WHERE SE.DYN_SCREEN_ID = #{screenId}
+		   AND SE.ELEMENT_ID = SD.ELEMENT_ID
+		   AND S1.TABLE_ID = S2.TABLE_ID
+		   AND S2.TABLE_ID = S3.TABLE_ID
+		   AND SD.PROPERTY_CODE = 'fileName'
+		   AND SD.PROPERTY_VALUE = S2.COL_TECH_NAME
+	</select>
+
+	<resultMap id="retrieveDynamicFileRelatedColsMap" type="com.path.vo.common.dynamicscreen.DynamicScreenCO">
+		<result property="propertyValue" column="COL_TECH_NAME" />
+		<result property="propertyCode" column="COL_FILE_NAME" />
+	</resultMap>
+
+    <update id="updateGridWidgetRecords" parameterType="java.util.List" >
+    	    <if test="list[0].isOracle == 1">begin</if>
+	      	<foreach collection="list" item="element" index="index1" >
+		      	UPDATE ${element.tableName} SET
+			  			<foreach collection="element.colValHm" index="index" item="item" separator=",">	 
+				  			<if test="element.colTypeHm.get(index) == 5 and element.isOracle == 1 and item != null and ''.equals(item)">
+				  			${index} = TO_DATE(#{item},'dd/MM/yyyy hh:mi:ss AM')
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 2 and element.isOracle == 1 and item != null and !''.equals(item)">
+				  			${index} = TO_DATE(#{item},'dd/MM/yyyy')
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5) and element.isSybase == 1 and item != null and ''.equals(item)">
+				  			${index} = CONVERT(DATETIME,#{item},103)
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5 or element.colTypeHm.get(index) == 3) and (item == null or ''.equals(item))">
+				  			${index} = NULL
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 3 and item != null and !''.equals(item)">
+				  			${index} = #{item,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathStringBigDecimalHandler}
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 1">
+				  			${index} =  #{item}
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 4 and item != null and !''.equals(item)">
+				  				<if test="'true'.equalsIgnoreCase(item)">
+				  					${index} = 1
+				  				</if>
+				  				<if test="'false'.equalsIgnoreCase(item)">
+				  					${index} = 0
+				  				</if>
+				  			</if>
+						</foreach>
+				WHERE
+					  	<foreach collection="element.pkColValHm" index="index" item="item"  separator=" AND ">	 
+				  			<if test="element.colTypeHm.get(index) == 5 and element.isOracle == 1 and item != null and !''.equals(item)">
+				  			${index} = TO_DATE(#{item},'dd/MM/yyyy hh:mi:ss AM')
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 2 and element.isOracle == 1 and item != null and !''.equals(item)">
+				  			${index} = TO_DATE(#{item},'dd/MM/yyyy')
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5) and element.isSybase == 1">
+				  			${index} = CONVERT(DATETIME,#{item},103)
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5 or element.colTypeHm.get(index) == 3) and (item == null or ''.equals(item))">
+				  			${index} IS NULL
+				  			</if>
+							<if test="element.colTypeHm.get(index) == 3 and item != null and !''.equals(item)">
+				  			${index} = #{item,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathStringBigDecimalHandler}
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 1">
+				  			${index} =  #{item}
+				  			</if>
+						</foreach>
+				<if test="element.isOracle == 1">;</if>
+			</foreach>
+			<if test="list[0].isOracle == 1">end;</if>
+	</update>
+	
+	<insert id="insertGridWidgetRecords" parameterType="java.util.List">
+		<if test="list[0].isOracle == 1">begin</if>
+	      	<foreach collection="list" item="element" index="index1" >
+		      	insert into  ${element.tableName} (
+			  			<foreach collection="element.colValHm" index="index" item="item" separator=",">	 
+				  			${index}
+						</foreach>
+						,
+						DATE_UPDATED
+						) VALUES (
+						<foreach collection="element.colValHm" index="index" item="item" separator=",">	 
+				  			<if test="element.colTypeHm.get(index) == 5 and element.isOracle == 1 and item != null and !''.equals(item)">
+				  			TO_DATE(#{item},'dd/MM/yyyy hh:mi:ss AM')
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 2 and element.isOracle == 1 and item != null and !''.equals(item)">
+				  			TO_DATE(#{item},'dd/MM/yyyy')
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5) and element.isSybase == 1 and item != null and !''.equals(item)">
+				  			CONVERT(DATETIME,#{item},103)
+				  			</if>
+				  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5 or element.colTypeHm.get(index) == 3) and (item == null or ''.equals(item))">
+				  			NULL
+				  			</if>
+							<if test="element.colTypeHm.get(index) == 3 and item != null and !''.equals(item)">
+				  			#{item,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathStringBigDecimalHandler}
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 1">
+				  			#{item}
+				  			</if>
+				  			<if test="element.colTypeHm.get(index) == 4 and item != null and !''.equals(item)">
+				  				<if test="'true'.equalsIgnoreCase(item)">
+				  					1
+				  				</if>
+				  				<if test="'false'.equalsIgnoreCase(item)">
+				  					0
+				  				</if>
+				  			</if>
+						</foreach>
+						<if test="element.isSybase == 1">
+				  		,CONVERT(DATETIME, GETDATE(), 103)
+				  		</if>
+				  		<if test="element.isOracle == 1">
+				  		,SYSDATE
+				  		</if>
+						)
+				<if test="element.isOracle == 1">;</if>
+			</foreach>
+			<if test="list[0].isOracle == 1">end;</if>
+	</insert>
+	
+	<delete id="deleteGridWidgetRecords" parameterType="java.util.List" >
+		 <if test="list[0].isOracle == 1">begin</if>
+	     <foreach collection="list" item="element" index="index1" >
+		 DELETE FROM ${element.tableName} WHERE
+		 <foreach collection="element.pkColValHm" index="index" item="item"  separator=" AND ">	 
+		 <if test="element.colTypeHm.get(index) == 5 and element.isOracle == 1 and item != null and !''.equals(item)">
+  			${index} = TO_DATE(#{item},'dd/MM/yyyy hh:mi:ss AM')
+  			</if>
+  			<if test="element.colTypeHm.get(index) == 2 and element.isOracle == 1 and item != null and !''.equals(item)">
+  			${index} = TO_DATE(#{item},'dd/MM/yyyy')
+  			</if>
+  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5) and element.isSybase == 1">
+  			${index} = CONVERT(DATETIME,#{item},103)
+  			</if>
+			<if test="element.colTypeHm.get(index) == 3 and item != null and !''.equals(item)">
+  			${index} = #{item,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathStringBigDecimalHandler}
+  			</if>
+  			<if test="(element.colTypeHm.get(index) == 2 or element.colTypeHm.get(index) == 5 or element.colTypeHm.get(index) == 3) and (item == null or ''.equals(item))">
+			${index} IS NULL
+			</if>
+  			<if test="element.colTypeHm.get(index) == 1">
+  			${index} = #{item}
+  			</if>
+		</foreach>
+		<if test="element.isOracle == 1">;</if>
+		</foreach>
+		<if test="list[0].isOracle == 1">end;</if>
+  	</delete>
+  	
+  	<select id="returnGridWidgetLookup" parameterType="com.path.vo.common.dynlookup.DynCommonLookupSC" resultType="string">
+		SELECT PROPERTY_EXPRESSION_VALUE
+		  FROM SYS_DYN_SCREEN_ELEMENTS_DET
+		 WHERE ELEMENT_ID = #{elementId}
+		   AND PROPERTY_CODE = 'colProps'
+	</select>
+	
+	<select id="returnDynRestGridListRecords" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType ="java.util.LinkedHashMap">
+			<include refid="servicesCommon.commonGridWrpBefFlip"/>
+			${queryData}
+			<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	 
+	
+	<select id="returnColProps" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType="string">
+		SELECT 	PROPERTY_EXPRESSION_VALUE
+		FROM 	SYS_DYN_SCREEN_ELEMENTS_DET 
+		JOIN    SYS_DYN_SCREEN_ELEMENTS
+    	ON      SYS_DYN_SCREEN_ELEMENTS_DET.ELEMENT_ID          =    SYS_DYN_SCREEN_ELEMENTS.ELEMENT_ID
+		WHERE 	EXISTS(	SELECT 	1 
+						FROM 	SYS_DYN_SCREEN_ELEMENTS_DET D
+						WHERE 	D.ELEMENT_ID 	= 	SYS_DYN_SCREEN_ELEMENTS_DET.ELEMENT_ID
+						AND		PROPERTY_CODE 	= 	'id' 
+						AND 	PROPERTY_VALUE 	= 	#{formatFieldId}
+					  )
+		AND 	SYS_DYN_SCREEN_ELEMENTS_DET.PROPERTY_CODE	= 'colProps'
+		AND  	SYS_DYN_SCREEN_ELEMENTS.DYN_SCREEN_ID = #{screenId}
+		
+	</select>
+	<resultMap type="hashmap" id="gridDynamicTableMap">
+	    <result property="tableName"       column="tableName"  javaType="string"/>
+   		
+ 	</resultMap>
+	<select id="returnGridTableNameList" resultMap="gridDynamicTableMap" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		
+		SELECT 
+                 (SELECT ED1.PROPERTY_VALUE
+                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+                 WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID
+                   AND ED1.PROPERTY_CODE = 'id') as ID,
+                   (SELECT ED1.PROPERTY_VALUE
+                  FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+                 WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID
+                   AND ED1.PROPERTY_CODE = 'tableName') as tableName
+                   FROM  SYS_DYN_SCREEN_ELEMENTS SE,
+         SYS_DYN_SCREEN_ELEMENTS_DET ED
+         WHERE SE.ELEMENT_ID = ED.ELEMENT_ID
+           AND SE.DYN_SCREEN_ID = #{screenId}
+           AND ED.PROPERTY_CODE = 'id'
+           AND SE.ELEMENT_TYPE_CODE = '12'<!-- 12 means grid element -->
+          
+	</select>
+</mapper>

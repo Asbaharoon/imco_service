@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="residenceTypesMapper">
+
+ <sql id="residenceTypesListCommon" >
+	<![CDATA[
+		SELECT RESIDENCE_TYPES.COMP_CODE,   
+         	RESIDENCE_TYPES.CODE,   
+         	RESIDENCE_TYPES.BRIEF_DESC_ENG,   
+         	RESIDENCE_TYPES.BRIEF_DESC_ARAB,   
+         	RESIDENCE_TYPES.LONG_DESC_ENG,   
+         	RESIDENCE_TYPES.LONG_DESC_ARAB,   
+         	RESIDENCE_TYPES.ADDITIONAL_REFERENCE  
+        FROM RESIDENCE_TYPES   
+	    WHERE (RESIDENCE_TYPES.COMP_CODE  = #{compCode})
+	]]>	 
+ </sql>
+ 
+ <resultMap id="residenceTypesListMap" type="residenceTypesVO">
+	<id property="CODE" column="CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="residenceTypesList" resultMap="residenceTypesListMap" parameterType="residenceTypesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="residenceTypesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="residenceTypesListCount" resultType="int" parameterType="residenceTypesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="residenceTypesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnDependencyByCode" parameterType="residenceTypesSC" resultType="residenceTypesVO">
+ 	<![CDATA[
+		SELECT 	 CODE,   
+         		 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+        FROM 	 RESIDENCE_TYPES   
+	    WHERE 	 RESIDENCE_TYPES.COMP_CODE  = #{compCode}
+	    AND 	 RESIDENCE_TYPES.CODE  = #{code}
+	]]>	 
+</select>
+
+</mapper>

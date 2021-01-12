@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSCHEQUEBOOK_LEAVESMapper">
+
+
+<!-- LEAVES List --> 
+ <sql id="chequeBookLeavesListCommon" >
+	 <![CDATA[
+		SELECT 	CTSCHEQUEBOOK_LEAVES.COMP_CODE,
+        		CTSCHEQUEBOOK_LEAVES.CODE,
+        		CTSCHEQUEBOOK_LEAVES.DESC_ENG,
+        		CTSCHEQUEBOOK_LEAVES.DESC_ARAB,
+        		CTSCHEQUEBOOK_LEAVES.NO_LEAVES
+		  FROM 	CTSCHEQUEBOOK_LEAVES
+		]]>	
+</sql>
+
+<sql id="chequeBookLeavesDestination">
+	WHERE CTSCHEQUEBOOK_LEAVES.COMP_CODE = #{compCode}
+	<if test="leavesCode != null">
+		AND CTSCHEQUEBOOK_LEAVES.CODE = #{leavesCode}
+	</if>
+	
+</sql>
+<sql id="chequeBookLeavesDestinationOrder">
+	ORDER BY CODE
+</sql>
+
+
+<resultMap id="getLeavesList_ResMap" type="chequeBookLeaveCO" >
+    <result column="COMP_CODE" 			property="COMP_CODE" />
+    <result column="CODE" 				property="CODE" />
+    <result column="DESC_ENG" 			property="DESC_ENG" />
+    <result column="DESC_ARAB" 			property="DESC_ARAB" />
+    <result column="NO_LEAVES" 			property="NO_LEAVES" />
+</resultMap>
+
+<select id="getLeavesList"  resultMap="getLeavesList_ResMap" parameterType="chequeBookLeaveSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chequeBookLeavesListCommon"/>
+	<include refid="chequeBookLeavesDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getLeavesCount"  resultType="int" parameterType="chequeBookLeaveSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chequeBookLeavesListCommon"/>
+	<include refid="chequeBookLeavesDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+
+</mapper>

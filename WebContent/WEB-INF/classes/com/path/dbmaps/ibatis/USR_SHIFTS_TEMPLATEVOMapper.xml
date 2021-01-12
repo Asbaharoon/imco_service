@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USR_SHIFTS_TEMPLATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USR_SHIFTS_TEMPLATEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="DAY_OF_WEEK" property="DAY_OF_WEEK" />
+    <result column="FROM_TIME" property="FROM_TIME" />
+    <result column="TO_TIME" property="TO_TIME" />
+    <result column="GROUP_FLAG" property="GROUP_FLAG" />
+    <result column="USER_FLAG" property="USER_FLAG" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, LINE_NBR, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ENG, LONG_NAME_ARAB, USER_ID, 
+    DAY_OF_WEEK, FROM_TIME, TO_TIME, GROUP_FLAG, USER_FLAG, COMP_CODE, BRANCH_CODE ,DATE_UPDATED
+  </sql>
+  <select id="selectUSR_SHIFTS_TEMPLATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USR_SHIFTS_TEMPLATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from USR_SHIFTS_TEMPLATE
+    where CODE = #{CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteUSR_SHIFTS_TEMPLATE" parameterType="com.path.dbmaps.vo.USR_SHIFTS_TEMPLATEVOKey" >
+    delete from USR_SHIFTS_TEMPLATE
+    where CODE = #{CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertUSR_SHIFTS_TEMPLATE" parameterType="com.path.dbmaps.vo.USR_SHIFTS_TEMPLATEVO" >
+    insert into USR_SHIFTS_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DAY_OF_WEEK != null and DAY_OF_WEEK != emptyBigDecimalValue" >
+        DAY_OF_WEEK,
+      </if>
+      <if test="FROM_TIME != null" >
+        FROM_TIME,
+      </if>
+      <if test="TO_TIME != null" >
+        TO_TIME,
+      </if>
+      <if test="GROUP_FLAG != null" >
+        GROUP_FLAG,
+      </if>
+      <if test="USER_FLAG != null" >
+        USER_FLAG,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DAY_OF_WEEK != null and DAY_OF_WEEK != emptyBigDecimalValue" >
+        #{DAY_OF_WEEK},
+      </if>
+      <if test="FROM_TIME != null" >
+        #{FROM_TIME},
+      </if>
+      <if test="TO_TIME != null" >
+        #{TO_TIME},
+      </if>
+      <if test="GROUP_FLAG != null" >
+        #{GROUP_FLAG},
+      </if>
+      <if test="USER_FLAG != null" >
+        #{USER_FLAG},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSR_SHIFTS_TEMPLATE" >
+    update USR_SHIFTS_TEMPLATE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="DAY_OF_WEEK != null" >
+        <choose >
+          <when test="DAY_OF_WEEK == emptyBigDecimalValue" >
+            DAY_OF_WEEK = NULL ,
+          </when>
+          <otherwise >
+            DAY_OF_WEEK = #{DAY_OF_WEEK},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FROM_TIME != null" >
+        FROM_TIME = #{FROM_TIME},
+      </if>
+      <if test="TO_TIME != null" >
+        TO_TIME = #{TO_TIME},
+      </if>
+      <if test="GROUP_FLAG != null" >
+        GROUP_FLAG = #{GROUP_FLAG},
+      </if>
+      <if test="USER_FLAG != null" >
+        USER_FLAG = #{USER_FLAG},
+      </if>
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE, </when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where CODE = #{CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateUSR_SHIFTS_TEMPLATE" parameterType="com.path.dbmaps.vo.USR_SHIFTS_TEMPLATEVO" >
+    <include refid="sql_updateUSR_SHIFTS_TEMPLATE" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+  </update>
+</mapper>

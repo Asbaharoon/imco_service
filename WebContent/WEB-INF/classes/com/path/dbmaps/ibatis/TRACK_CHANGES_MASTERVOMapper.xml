@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRACK_CHANGES_MASTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO" >
+    <id column="ACTION_DATE" property="ACTION_DATE" />
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="MACHINE_ID" property="MACHINE_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACTION_DATE, APP_NAME, PROG_REF, TRX_NBR, ACTION_TYPE, USER_ID, MACHINE_ID
+  </sql>
+  <select id="selectTRACK_CHANGES_MASTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRACK_CHANGES_MASTER
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </select>
+  <delete id="deleteTRACK_CHANGES_MASTER" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVOKey" >
+    delete from TRACK_CHANGES_MASTER
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </delete>
+  <insert id="insertTRACK_CHANGES_MASTER" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO" >
+    insert into TRACK_CHANGES_MASTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRACK_CHANGES_MASTER" >
+    update TRACK_CHANGES_MASTER
+    <set >
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE = #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID = #{MACHINE_ID},
+      </if>
+    </set>
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </sql>
+  <update id="updateTRACK_CHANGES_MASTER" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO" >
+    <include refid="sql_updateTRACK_CHANGES_MASTER" />
+  </update>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GTW_PWS_TEST_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.GTW_PWS_TEST_DETAILSVO" >
+    <id column="CONFIG_ID" property="CONFIG_ID" />
+    <id column="FIELD_ROW_ID" property="FIELD_ROW_ID" />
+    <result column="VALUE" property="VALUE" />
+    <result column="FIELD_TYPE" property="FIELD_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONFIG_ID, FIELD_ROW_ID, VALUE, FIELD_TYPE
+  </sql>
+  <select id="selectGTW_PWS_TEST_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.GTW_PWS_TEST_DETAILSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from GTW_PWS_TEST_DETAILS
+    where CONFIG_ID = #{CONFIG_ID}
+      and FIELD_ROW_ID = #{FIELD_ROW_ID}
+  </select>
+  <delete id="deleteGTW_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.GTW_PWS_TEST_DETAILSVO" >
+    delete from GTW_PWS_TEST_DETAILS
+    where CONFIG_ID = #{CONFIG_ID}
+      and FIELD_ROW_ID = #{FIELD_ROW_ID}
+  </delete>
+  <insert id="insertGTW_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.GTW_PWS_TEST_DETAILSVO" >
+    insert into GTW_PWS_TEST_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null and CONFIG_ID != emptyBigDecimalValue" >
+        CONFIG_ID,
+      </if>
+      <if test="FIELD_ROW_ID != null and !&quot;&quot;.equals(FIELD_ROW_ID)" >
+        FIELD_ROW_ID,
+      </if>
+      <if test="VALUE != null and !&quot;&quot;.equals(VALUE)" >
+        VALUE,
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        FIELD_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null and CONFIG_ID != emptyBigDecimalValue" >
+        #{CONFIG_ID},
+      </if>
+      <if test="FIELD_ROW_ID != null and !&quot;&quot;.equals(FIELD_ROW_ID)" >
+        #{FIELD_ROW_ID},
+      </if>
+      <if test="VALUE != null and !&quot;&quot;.equals(VALUE)" >
+        #{VALUE},
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        #{FIELD_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateGTW_PWS_TEST_DETAILS" >
+    update GTW_PWS_TEST_DETAILS
+    <set >
+      <if test="VALUE != null" >
+        <choose >
+          <when test="VALUE.equals(&quot;&quot;)" >
+            VALUE = NULL ,
+          </when>
+          <otherwise >
+            VALUE = #{VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_TYPE != null" >
+        <choose >
+          <when test="FIELD_TYPE.equals(&quot;&quot;)" >
+            FIELD_TYPE = NULL ,
+          </when>
+          <otherwise >
+            FIELD_TYPE = #{FIELD_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CONFIG_ID = #{CONFIG_ID}
+      and FIELD_ROW_ID = #{FIELD_ROW_ID}
+  </sql>
+  <update id="updateGTW_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.GTW_PWS_TEST_DETAILSVO" >
+    <include refid="sql_updateGTW_PWS_TEST_DETAILS" />
+  </update>
+</mapper>

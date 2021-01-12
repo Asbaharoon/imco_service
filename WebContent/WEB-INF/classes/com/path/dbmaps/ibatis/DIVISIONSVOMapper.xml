@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DIVISIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DIVISIONSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DIVISION_CODE" property="DIVISION_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="TP_UPDATE" property="TP_UPDATE" />
+    <result column="TP_UPDATE_ALLOC" property="TP_UPDATE_ALLOC" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DIVISION_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    ADDITIONAL_REFERENCE, TP_UPDATE, TP_UPDATE_ALLOC,DATE_UPDATED
+  </sql>
+  <select id="selectDIVISIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DIVISIONSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DIVISIONS
+    where COMP_CODE = #{COMP_CODE}
+      and DIVISION_CODE = #{DIVISION_CODE}
+  </select>
+  <delete id="deleteDIVISIONS" parameterType="com.path.dbmaps.vo.DIVISIONSVOKey" >
+    delete from DIVISIONS
+    where COMP_CODE = #{COMP_CODE}
+      and DIVISION_CODE = #{DIVISION_CODE}
+  </delete>
+  <insert id="insertDIVISIONS" parameterType="com.path.dbmaps.vo.DIVISIONSVO" >
+    insert into DIVISIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        DIVISION_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="TP_UPDATE != null" >
+        TP_UPDATE,
+      </if>
+      <if test="TP_UPDATE_ALLOC != null" >
+        TP_UPDATE_ALLOC,
+      </if>
+      DATE_UPDATED
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        #{DIVISION_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TP_UPDATE != null" >
+        #{TP_UPDATE},
+      </if>
+      <if test="TP_UPDATE_ALLOC != null" >
+        #{TP_UPDATE_ALLOC},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateDIVISIONS" >
+    update DIVISIONS
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TP_UPDATE != null" >
+        TP_UPDATE = #{TP_UPDATE},
+      </if>
+      <if test="TP_UPDATE_ALLOC != null" >
+        TP_UPDATE_ALLOC = #{TP_UPDATE_ALLOC},
+      </if>
+       DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DIVISION_CODE = #{DIVISION_CODE}
+  </sql>
+  <update id="updateDIVISIONS" parameterType="com.path.dbmaps.vo.DIVISIONSVO" >
+    <include refid="sql_updateDIVISIONS" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+  </update>
+</mapper>

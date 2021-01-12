@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="swiftInwardMapper">
+ 
+    <resultMap id="selectSwiftLogInMap" type="swiftLogINVO">		
+		<result column="COMP_CODE" property="COMP_CODE" />		
+		<result column="SEVERITY" property="SEVERITY" />
+		<result column="LOG_DATE" property="LOG_DATE" />
+		<result column="MSG" property="MSG" />
+	</resultMap>
+   <sql id="selectSwiftLogInList">
+   <choose>
+		<when test="isSybase == 1" >
+		SELECT
+		  	SWIFT_LOG_IN.LOG_DATE ,
+            SWIFT_LOG_IN.COMP_CODE ,
+            SWIFT_LOG_IN.SEVERITY ,
+            SWIFT_LOG_IN.MSG     
+        FROM SWIFT_LOG_IN  
+		
+		WHERE CONVERT(DATE,LOG_DATE,103)=CONVERT(DATE,#{engineInDateString},103)
+		</when>
+		<otherwise>
+		SELECT
+		  	SWIFT_LOG_IN.LOG_DATE ,
+            SWIFT_LOG_IN.COMP_CODE ,
+            SWIFT_LOG_IN.SEVERITY ,
+            SWIFT_LOG_IN.MSG     
+        FROM SWIFT_LOG_IN  
+		
+		WHERE TO_CHAR(LOG_DATE,'dd/mm/yyyy') = TO_CHAR(TO_DATE(#{engineInDateString}, 'dd/mm/yyyy'),'dd/mm/yyyy')
+		</otherwise>
+	</choose>  		
+	</sql>
+    <select id="selectSwiftLogIn" resultMap="selectSwiftLogInMap" parameterType="swiftInwardSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="selectSwiftLogInList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+    </select>
+  
+  <select id="selectSwiftInLogCount" resultType="Integer" parameterType="swiftInwardSC">
+   	    <include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="selectSwiftLogInList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+  </select>
+	<select id="returnCountManualMsg" parameterType="swiftManualProcessVO" resultType="java.math.BigDecimal">
+		SELECT COUNT(1) FROM SWIFT_MANUAL_PROCESS
+		WHERE COMP_CODE = #{COMP_CODE}
+		AND MSG_CODE = #{MSG_CODE}
+	</select>
+	
+		<!-- Mohamad Hojeij 27/05/2018 BMOUPI180305 -->
+	<select id="returnIsActiveThreads" parameterType="swftManagInVO" resultType="java.math.BigDecimal">
+		SELECT COUNT(1) FROM SWFT_SCHED_MANAGER_IN
+		WHERE THREAD_STATUS = 'A' AND   THREAD_ID = #{THREAD_ID} 
+	</select>
+	
+	<!-- Mohamad Hojeij 27/05/2018 BMOUPI180305 -->
+	<select id="returnCountActiveThreads" parameterType="swftManagInVO" resultType="java.math.BigDecimal">
+		SELECT COUNT(1) FROM SWFT_SCHED_MANAGER_IN
+		WHERE THREAD_STATUS = 'A' AND  (#{THREAD_ID} = 0 or  <![CDATA[  THREAD_ID <> #{THREAD_ID}]]> )
+	</select>
+	
+	<!-- Mohamad Hojeij 27/05/2018 BMOUPI180305 -->
+	<select id="returnThreadWithMinDate" parameterType="swftManagInVO" resultType="java.lang.Long">
+		SELECT THREAD_ID FROM SWFT_SCHED_MANAGER_IN
+		WHERE THREAD_DATE = (Select MIN(THREAD_DATE) FROM SWFT_SCHED_MANAGER_IN )
+	</select>
+	
+	
+	
+	
+	<select id="selectMaxTrsNoAccHst" resultType="java.math.BigDecimal">
+		SELECT (case when Max(TRS_NO) is null then 0 else Max(TRS_NO) end ) +1
+		FROM SWIFT_HISTORY
+		WHERE MSG_IN_OUT = 'I'
+		and MODULE = 'SWFT' 
+		and TRX_TYPE = 'SWFT'
+	</select>
+  
+ 	<select id="returnMaxSeq" parameterType="swiftMsgHdrInVo" resultType="java.math.BigDecimal">
+		SELECT MAX(SEQ) FROM SWIFT_MSGHDR_IN
+		WHERE MSG_CODE = #{MSG_CODE}
+		AND ACK = CASE WHEN #{ACK} > 0 THEN 1 ELSE #{ACK} END
+	</select>
+	
+		
+	<select id="selectSwiftSpOut" parameterType="swiftInwardSC" resultMap="returnSwiftMsghdrInMap">
+	<choose>
+		<when test='storedProcedure != null and storedProcedure != ""'>
+			<choose>
+			<when test='isSybase != 1'>
+				SELECT	USER_ARGUMENTS.POSITION ALLOC_LINE_NBR,
+						USER_ARGUMENTS.ARGUMENT_NAME INPUT_PARAM,
+						DATA_TYPE ARG_TYPE
+					
+				FROM USER_ARGUMENTS
+				WHERE USER_ARGUMENTS.OBJECT_NAME = #{storedProcedure}
+				AND   USER_ARGUMENTS.IN_OUT = CASE WHEN #{inOutParam} = 1 THEN 'IN' ELSE 'OUT' END
+			</when>
+			<otherwise>
+				SELECT	colid ALLOC_LINE_NBR,
+						substring(name,2,len(name)) INPUT_PARAM,
+						'' ARG_TYPE
+				  from syscolumns
+				  where id = (select id
+				               from sysobjects
+				              where sysobjects.type = 'P'
+				                and name = #{storedProcedure} )
+				  and status2 =  #{inOutParam} 		                
+			</otherwise>
+			</choose>
+		</when>
+	</choose>
+	</select>
+	
+	
+	<resultMap id="returnSwiftMsghdrInMap" type="swiftInwardProcessCO">
+		<result column="MSG_CODE"		property="swiftMsghdrInVO.MSG_CODE"/>
+		<result column="SEQ"			property="swiftMsghdrInVO.SEQ"/>
+		<result column="ALLOC_LINE_NBR"	property="swiftMsgdetInVO.ALLOC_LINE_NBR"/>
+		<result column="INPUT_PARAM"	property="swiftMsgdetInVO.INPUT_PARAM"/>
+		<result column="TAG"			property="swiftMsgdetInVO.TAG"/>
+		<result column="TAG_LINE"		property="swiftMsgdetInVO.TAG_LINE"/>
+		<result column="VALUE_EXP"		property="swiftMsgdetInVO.VALUE_EXP"/>
+		<result column="DEFAULT_VALUE"	property="swiftMsgdetInVO.DEFAULT_VALUE"/>
+		<result column="ARG_TYPE"		property="swiftMsgdetInVO.ARG_TYPE"/>
+		<result column="PROC_NAME"		property="swiftMsghdrInVO.PROC_NAME"/>
+		<result column="OCCURENCE"		property="swiftMsgdetInVO.OCCURENCE"/>
+		<result column="STATUS"			property="swiftMsgdetInVO.STATUS"/>
+		<result column="REPTAG_COND"	property="swiftMsghdrInVO.REPTAG_COND"/>
+		<result column="GROUP_NBR"		property="swiftMsgdetInVO.GROUP_NBR"/>
+		<result column="HDR_DET"		property="swiftMsgdetInVO.HDR_DET"/>
+		<result column="ARG_VAR"		property="swiftMsgdetInVO.ARG_VAR"/>
+	</resultMap>
+	
+	<sql id="returnSwiftMsghdrInList">
+	  SELECT SWIFT_MSGDET_IN.MSG_CODE,     
+         	 SWIFT_MSGDET_IN.SEQ,   
+			 SWIFT_MSGDET_IN.ALLOC_LINE_NBR,			             
+         	 SWIFT_MSGDET_IN.INPUT_PARAM,   
+         	 SWIFT_MSGDET_IN.TAG,   
+			 SWIFT_MSGDET_IN.TAG_LINE,
+			 SWIFT_MSGDET_IN.VALUE_EXP,
+			 SWIFT_MSGDET_IN.DEFAULT_VALUE,
+			 SWIFT_MSGDET_IN.ARG_TYPE,
+			 SWIFT_MSGHDR_IN.PROC_NAME,
+			 SWIFT_MSGDET_IN.OCCURENCE,
+			 SWIFT_MSGDET_IN.STATUS, 		
+			 SWIFT_MSGHDR_IN.REPTAG_COND,
+			 SWIFT_MSGDET_IN.GROUP_NBR,
+			 SWIFT_MSGDET_IN.HDR_DET,
+			 SWIFT_MSGDET_IN.ARG_VAR
+    FROM SWIFT_MSGDET_IN,   
+         SWIFT_MSGHDR_IN  
+	WHERE SWIFT_MSGDET_IN.MSG_CODE   = SWIFT_MSGHDR_IN.MSG_CODE
+	AND SWIFT_MSGDET_IN.SEQ          = SWIFT_MSGHDR_IN.SEQ
+	AND SWIFT_MSGDET_IN.ACK          = SWIFT_MSGHDR_IN.ACK
+	AND SWIFT_MSGDET_IN.MSG_CODE     = #{MSG_CODE}
+	AND SWIFT_MSGDET_IN.SEQ          = #{SEQ}
+	AND SWIFT_MSGDET_IN.ACK          = #{ACK}
+	</sql>
+	<select id="returnSwiftMsghdrIn" parameterType="swiftInwardSC" resultMap="returnSwiftMsghdrInMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="returnSwiftMsghdrInList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+		ORDER BY ALLOC_LINE_NBR <!-- HGhazal - order issue #488484  -->
+    </select>
+  
+  <select id="returnSwiftMsghdrInCount" resultType="Integer" parameterType="swiftInwardSC">
+   	    <include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="returnSwiftMsghdrInList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+  </select>
+  
+	
+ 	<select id="returnProcName" parameterType="swiftMsgHdrInVo" resultType="java.lang.String">
+		SELECT PROC_NAME FROM SWIFT_MSGHDR_IN
+		WHERE MSG_CODE = #{MSG_CODE}
+		AND SEQ =#{SEQ}
+		AND ACK = CASE WHEN #{ACK} > 0 THEN 1 ELSE #{ACK} END
+	</select>
+	
+	<select id="returnTag" parameterType="swiftMsgRefVO" resultType="java.lang.String">
+		Select  TAG
+		FROM SWIFT_MSG_REF
+		WHERE COMP_CODE = #{COMP_CODE}
+		AND MSG_CODE = #{MSG_CODE} 
+		AND IN_OUT = 'I'
+	</select>
+	
+	<select id="getDoNotArchFlag"  resultType="java.lang.String">
+		Select  DO_NOT_ARCHIVE_INWARD_ERROR_YN
+		FROM SWIFT_CONTROL
+		
+	</select>
+	
+	
+	
+	<select id="returnCountMsgdetIn" parameterType="swiftMsgDetInVo" resultType="java.math.BigDecimal">
+		select count(*)
+		FROM SWIFT_MSGDET_IN 
+		WHERE MSG_CODE = #{MSG_CODE}   
+  		AND SEQ = #{SEQ} 
+  		AND TAG = #{TAG}
+  		AND TAG_LINE = #{TAG_LINE}
+  	</select>
+  	
+  	<select id="returnMsgdetIn" parameterType="swiftMsgDetInVo" resultType="swiftMsgDetInVo">
+  	<choose >
+       <when test="isSybase == 1" >
+  		select TOP 1 ALLOC_LINE_NBR,
+       		CASE WHEN GROUP_NBR IS NULL THEN 0 ELSE GROUP_NBR END ,
+	   		TAG_LINE,
+			HDR_DET
+		FROM SWIFT_MSGDET_IN 
+		WHERE MSG_CODE = #{MSG_CODE}   
+  		AND SEQ = #{SEQ} 
+  		AND TAG = #{TAG}
+  		AND TAG_LINE = #{TAG_LINE}
+  	</when>
+     <otherwise > 		
+  		select  ALLOC_LINE_NBR,
+       		CASE WHEN GROUP_NBR IS NULL THEN 0 ELSE GROUP_NBR END ,
+	   		TAG_LINE,
+			HDR_DET
+		FROM SWIFT_MSGDET_IN 
+		WHERE MSG_CODE = #{MSG_CODE}   
+  		AND SEQ = #{SEQ} 
+  		AND TAG = #{TAG}
+  		AND TAG_LINE = #{TAG_LINE}	
+  		AND ROWNUM = 1	
+  	</otherwise>
+   </choose>
+  	
+	</select>
+	<update id="updateEasServiceStatusIn" parameterType="swiftInwardSC">
+		UPDATE EAS_SERVICES
+		SET STATUS = #{serviceStatus}
+		WHERE EAS_SERVICES.SERVICE_NAME = #{serviceName}
+  </update>
+  <delete id="deleteSwiftLogInward">
+		DELETE FROM SWIFT_LOG_IN
+  </delete>
+  
+    <!-- LBedrane - BMO180040 - TP#692469 - 26/07/2018   -->
+  <select id ="returnValueOfEnableQueueYn" resultType="int">
+	  SELECT     
+		  SWIFT_CONTROL.QUEUE_INT_YN
+        FROM SWIFT_CONTROL  		
+</select>
+  
+  
+</mapper>

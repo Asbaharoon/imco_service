@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_BLCKLIST_NAME_MATCH" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_BLCKLIST_NAME_MATCHVO" >
+    <id column="BLCKLIST_LOG_LINE_NO" property="BLCKLIST_LOG_LINE_NO" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CRITERIA_TYPE" property="CRITERIA_TYPE" />
+    <result column="CRITERIA_VALUE" property="CRITERIA_VALUE" />
+    <result column="BLACKLIST_VALUE" property="BLACKLIST_VALUE" />
+    <result column="PERCENTAGE_VALUE" property="PERCENTAGE_VALUE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BLCKLIST_LOG_LINE_NO, BRANCH_CODE, COMP_CODE, LINE_NO, CRITERIA_TYPE, CRITERIA_VALUE, 
+    BLACKLIST_VALUE, PERCENTAGE_VALUE
+  </sql>
+  <select id="selectCTS_BLCKLIST_NAME_MATCH" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_BLCKLIST_NAME_MATCHVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_BLCKLIST_NAME_MATCH
+    where BLCKLIST_LOG_LINE_NO = #{BLCKLIST_LOG_LINE_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_BLCKLIST_NAME_MATCH" parameterType="com.path.dbmaps.vo.CTS_BLCKLIST_NAME_MATCHVOKey" >
+    delete from CTS_BLCKLIST_NAME_MATCH
+    where BLCKLIST_LOG_LINE_NO = #{BLCKLIST_LOG_LINE_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_BLCKLIST_NAME_MATCH" parameterType="com.path.dbmaps.vo.CTS_BLCKLIST_NAME_MATCHVO" >
+    insert into CTS_BLCKLIST_NAME_MATCH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BLCKLIST_LOG_LINE_NO != null and BLCKLIST_LOG_LINE_NO != emptyBigDecimalValue" >
+        BLCKLIST_LOG_LINE_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CRITERIA_TYPE != null and !&quot;&quot;.equals(CRITERIA_TYPE)" >
+        CRITERIA_TYPE,
+      </if>
+      <if test="CRITERIA_VALUE != null and !&quot;&quot;.equals(CRITERIA_VALUE)" >
+        CRITERIA_VALUE,
+      </if>
+      <if test="BLACKLIST_VALUE != null and !&quot;&quot;.equals(BLACKLIST_VALUE)" >
+        BLACKLIST_VALUE,
+      </if>
+      <if test="PERCENTAGE_VALUE != null and PERCENTAGE_VALUE != emptyBigDecimalValue" >
+        PERCENTAGE_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BLCKLIST_LOG_LINE_NO != null and BLCKLIST_LOG_LINE_NO != emptyBigDecimalValue" >
+        #{BLCKLIST_LOG_LINE_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CRITERIA_TYPE != null and !&quot;&quot;.equals(CRITERIA_TYPE)" >
+        #{CRITERIA_TYPE},
+      </if>
+      <if test="CRITERIA_VALUE != null and !&quot;&quot;.equals(CRITERIA_VALUE)" >
+        #{CRITERIA_VALUE},
+      </if>
+      <if test="BLACKLIST_VALUE != null and !&quot;&quot;.equals(BLACKLIST_VALUE)" >
+        #{BLACKLIST_VALUE},
+      </if>
+      <if test="PERCENTAGE_VALUE != null and PERCENTAGE_VALUE != emptyBigDecimalValue" >
+        #{PERCENTAGE_VALUE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_BLCKLIST_NAME_MATCH" >
+    update CTS_BLCKLIST_NAME_MATCH
+    <set >
+      <if test="CRITERIA_TYPE != null" >
+        <choose >
+          <when test="CRITERIA_TYPE.equals(&quot;&quot;)" >
+            CRITERIA_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CRITERIA_TYPE = #{CRITERIA_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA_VALUE != null" >
+        <choose >
+          <when test="CRITERIA_VALUE.equals(&quot;&quot;)" >
+            CRITERIA_VALUE = NULL ,
+          </when>
+          <otherwise >
+            CRITERIA_VALUE = #{CRITERIA_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BLACKLIST_VALUE != null" >
+        <choose >
+          <when test="BLACKLIST_VALUE.equals(&quot;&quot;)" >
+            BLACKLIST_VALUE = NULL ,
+          </when>
+          <otherwise >
+            BLACKLIST_VALUE = #{BLACKLIST_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERCENTAGE_VALUE != null" >
+        <choose >
+          <when test="PERCENTAGE_VALUE == emptyBigDecimalValue" >
+            PERCENTAGE_VALUE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE_VALUE = #{PERCENTAGE_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BLCKLIST_LOG_LINE_NO = #{BLCKLIST_LOG_LINE_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_BLCKLIST_NAME_MATCH" parameterType="com.path.dbmaps.vo.CTS_BLCKLIST_NAME_MATCHVO" >
+    <include refid="sql_updateCTS_BLCKLIST_NAME_MATCH" />
+  </update>
+</mapper>

@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ATM_ENG_RESPONSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ATM_ENG_RESPONSEVO" >
+    <id column="ATM_ENG_RESPONSE_ID" property="ATM_ENG_RESPONSE_ID" />
+    <result column="MESSAGE_ID" property="MESSAGE_ID" />
+    <result column="INTERFACE_ID" property="INTERFACE_ID" />
+    <result column="MTI_CODE_REQUEST" property="MTI_CODE_REQUEST" />
+    <result column="ISO_REQUEST" property="ISO_REQUEST" />
+    <result column="MTI_CODE_RESPONSE" property="MTI_CODE_RESPONSE" />
+    <result column="ISO_RESPONSE" property="ISO_RESPONSE" />
+    <result column="RESPONSE_MAP" property="RESPONSE_MAP" />
+    <result column="REQUEST_MAP" property="REQUEST_MAP" />
+    <result column="START_TIME" property="START_TIME" />
+    <result column="END_TIME" property="END_TIME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="ACQUIRER_CODE" property="ACQUIRER_CODE" />
+    <result column="TELLER_CODE" property="TELLER_CODE" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="TERMINAL_ID" property="TERMINAL_ID" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="CHARGE_TRX_TYPE" property="CHARGE_TRX_TYPE" />
+    <result column="AUTH_CODE" property="AUTH_CODE" />
+    <result column="ERROR_MESSAGE" property="ERROR_MESSAGE" />
+    <result column="PROCESS_CODE" property="PROCESS_CODE" />
+    <result column="RESPONSE_CODE" property="RESPONSE_CODE" />
+    <result column="RETRIEVAL_REF_NB" property="RETRIEVAL_REF_NB" />
+    <result column="TRS_NO" property="TRS_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATM_ENG_RESPONSE_ID, MESSAGE_ID, INTERFACE_ID, MTI_CODE_REQUEST, ISO_REQUEST, MTI_CODE_RESPONSE, 
+    ISO_RESPONSE, RESPONSE_MAP, REQUEST_MAP, START_TIME, END_TIME, STATUS, ACQUIRER_CODE, 
+    TELLER_CODE, COMP_CODE, BRANCH_CODE, TERMINAL_ID, TRX_TYPE, CHARGE_TRX_TYPE, AUTH_CODE, 
+    ERROR_MESSAGE, PROCESS_CODE, RESPONSE_CODE, RETRIEVAL_REF_NB, TRS_NO
+  </sql>
+  <select id="selectATM_ENG_RESPONSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ATM_ENG_RESPONSEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from ATM_ENG_RESPONSE
+    where ATM_ENG_RESPONSE_ID = #{ATM_ENG_RESPONSE_ID}
+  </select>
+  <delete id="deleteATM_ENG_RESPONSE" parameterType="com.path.dbmaps.vo.ATM_ENG_RESPONSEVO" >
+    delete from ATM_ENG_RESPONSE
+    where ATM_ENG_RESPONSE_ID = #{ATM_ENG_RESPONSE_ID}
+  </delete>
+  <insert id="insertATM_ENG_RESPONSE" parameterType="com.path.dbmaps.vo.ATM_ENG_RESPONSEVO" >
+  	<selectKey resultType="java.math.BigDecimal" keyProperty="ATM_ENG_RESPONSE_ID" order="BEFORE" >
+		<if test="isOracle == 1">
+			SELECT ATM_ENG_RESPONSE_SEQ.NEXTVAL FROM dual
+		</if>
+		<if test="isSybase == 1 and isSQLServer != 1 " >
+			SELECT next_identity('ATM_ENG_RESPONSE')
+		</if>
+		<if test="isSQLServer == 1 " >
+			SELECT IDENT_CURRENT ('ATM_ENG_RESPONSE') + 1
+		</if>
+	</selectKey>
+    insert into ATM_ENG_RESPONSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isOracle == 1">
+      	ATM_ENG_RESPONSE_ID,
+      </if>
+      <if test="MESSAGE_ID != null and MESSAGE_ID != emptyBigDecimalValue" >
+        MESSAGE_ID,
+      </if>
+      <if test="INTERFACE_ID != null and INTERFACE_ID != emptyBigDecimalValue" >
+        INTERFACE_ID,
+      </if>
+      <if test="MTI_CODE_REQUEST != null and !&quot;&quot;.equals(MTI_CODE_REQUEST)" >
+        MTI_CODE_REQUEST,
+      </if>
+      <if test="ISO_REQUEST != null and !&quot;&quot;.equals(ISO_REQUEST)" >
+        ISO_REQUEST,
+      </if>
+      <if test="MTI_CODE_RESPONSE != null and !&quot;&quot;.equals(MTI_CODE_RESPONSE)" >
+        MTI_CODE_RESPONSE,
+      </if>
+      <if test="ISO_RESPONSE != null and !&quot;&quot;.equals(ISO_RESPONSE)" >
+        ISO_RESPONSE,
+      </if>
+      <if test="RESPONSE_MAP != null and !&quot;&quot;.equals(RESPONSE_MAP)" >
+        RESPONSE_MAP,
+      </if>
+      <if test="REQUEST_MAP != null and !&quot;&quot;.equals(REQUEST_MAP)" >
+        REQUEST_MAP,
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME,
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="ACQUIRER_CODE != null and ACQUIRER_CODE != emptyBigDecimalValue" >
+        ACQUIRER_CODE,
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        TELLER_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="TERMINAL_ID != null and !&quot;&quot;.equals(TERMINAL_ID)" >
+        TERMINAL_ID,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="CHARGE_TRX_TYPE != null and CHARGE_TRX_TYPE != emptyBigDecimalValue" >
+        CHARGE_TRX_TYPE,
+      </if>
+      <if test="AUTH_CODE != null and !&quot;&quot;.equals(AUTH_CODE)" >
+        AUTH_CODE,
+      </if>
+      <if test="ERROR_MESSAGE != null and !&quot;&quot;.equals(ERROR_MESSAGE)" >
+        ERROR_MESSAGE,
+      </if>
+      <if test="PROCESS_CODE != null and !&quot;&quot;.equals(PROCESS_CODE)" >
+        PROCESS_CODE,
+      </if>
+      <if test="RESPONSE_CODE != null and !&quot;&quot;.equals(RESPONSE_CODE)" >
+        RESPONSE_CODE,
+      </if>
+      <if test="RETRIEVAL_REF_NB != null and !&quot;&quot;.equals(RETRIEVAL_REF_NB)" >
+        RETRIEVAL_REF_NB,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="isOracle == 1">
+      	#{ATM_ENG_RESPONSE_ID},
+      </if>
+      <if test="MESSAGE_ID != null and MESSAGE_ID != emptyBigDecimalValue" >
+        #{MESSAGE_ID},
+      </if>
+      <if test="INTERFACE_ID != null and INTERFACE_ID != emptyBigDecimalValue" >
+        #{INTERFACE_ID},
+      </if>
+      <if test="MTI_CODE_REQUEST != null and !&quot;&quot;.equals(MTI_CODE_REQUEST)" >
+        #{MTI_CODE_REQUEST},
+      </if>
+      <if test="ISO_REQUEST != null and !&quot;&quot;.equals(ISO_REQUEST)" >
+        #{ISO_REQUEST},
+      </if>
+      <if test="MTI_CODE_RESPONSE != null and !&quot;&quot;.equals(MTI_CODE_RESPONSE)" >
+        #{MTI_CODE_RESPONSE},
+      </if>
+      <if test="ISO_RESPONSE != null and !&quot;&quot;.equals(ISO_RESPONSE)" >
+        #{ISO_RESPONSE},
+      </if>
+      <if test="RESPONSE_MAP != null and !&quot;&quot;.equals(RESPONSE_MAP)" >
+        #{RESPONSE_MAP},
+      </if>
+      <if test="REQUEST_MAP != null and !&quot;&quot;.equals(REQUEST_MAP)" >
+        #{REQUEST_MAP},
+      </if>
+      <if test="START_TIME != null" >
+        #{START_TIME},
+      </if>
+      <if test="END_TIME != null" >
+        #{END_TIME},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="ACQUIRER_CODE != null and ACQUIRER_CODE != emptyBigDecimalValue" >
+        #{ACQUIRER_CODE},
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        #{TELLER_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="TERMINAL_ID != null and !&quot;&quot;.equals(TERMINAL_ID)" >
+        #{TERMINAL_ID},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="CHARGE_TRX_TYPE != null and CHARGE_TRX_TYPE != emptyBigDecimalValue" >
+        #{CHARGE_TRX_TYPE},
+      </if>
+      <if test="AUTH_CODE != null and !&quot;&quot;.equals(AUTH_CODE)" >
+        #{AUTH_CODE},
+      </if>
+      <if test="ERROR_MESSAGE != null and !&quot;&quot;.equals(ERROR_MESSAGE)" >
+        #{ERROR_MESSAGE},
+      </if>
+      <if test="PROCESS_CODE != null and !&quot;&quot;.equals(PROCESS_CODE)" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="RESPONSE_CODE != null and !&quot;&quot;.equals(RESPONSE_CODE)" >
+        #{RESPONSE_CODE},
+      </if>
+      <if test="RETRIEVAL_REF_NB != null and !&quot;&quot;.equals(RETRIEVAL_REF_NB)" >
+        #{RETRIEVAL_REF_NB},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateATM_ENG_RESPONSE" >
+    update ATM_ENG_RESPONSE
+    <set >
+      <if test="MESSAGE_ID != null" >
+        <choose >
+          <when test="MESSAGE_ID == emptyBigDecimalValue" >
+            MESSAGE_ID = NULL ,
+          </when>
+          <otherwise >
+            MESSAGE_ID = #{MESSAGE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INTERFACE_ID != null" >
+        <choose >
+          <when test="INTERFACE_ID == emptyBigDecimalValue" >
+            INTERFACE_ID = NULL ,
+          </when>
+          <otherwise >
+            INTERFACE_ID = #{INTERFACE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MTI_CODE_REQUEST != null" >
+        <choose >
+          <when test="MTI_CODE_REQUEST.equals(&quot;&quot;)" >
+            MTI_CODE_REQUEST = NULL ,
+          </when>
+          <otherwise >
+            MTI_CODE_REQUEST = #{MTI_CODE_REQUEST},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISO_REQUEST != null" >
+        <choose >
+          <when test="ISO_REQUEST.equals(&quot;&quot;)" >
+            ISO_REQUEST = NULL ,
+          </when>
+          <otherwise >
+            ISO_REQUEST = #{ISO_REQUEST},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MTI_CODE_RESPONSE != null" >
+        <choose >
+          <when test="MTI_CODE_RESPONSE.equals(&quot;&quot;)" >
+            MTI_CODE_RESPONSE = NULL ,
+          </when>
+          <otherwise >
+            MTI_CODE_RESPONSE = #{MTI_CODE_RESPONSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISO_RESPONSE != null" >
+        <choose >
+          <when test="ISO_RESPONSE.equals(&quot;&quot;)" >
+            ISO_RESPONSE = NULL ,
+          </when>
+          <otherwise >
+            ISO_RESPONSE = #{ISO_RESPONSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESPONSE_MAP != null" >
+        <choose >
+          <when test="RESPONSE_MAP.equals(&quot;&quot;)" >
+            RESPONSE_MAP = NULL ,
+          </when>
+          <otherwise >
+            RESPONSE_MAP = #{RESPONSE_MAP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REQUEST_MAP != null" >
+        <choose >
+          <when test="REQUEST_MAP.equals(&quot;&quot;)" >
+            REQUEST_MAP = NULL ,
+          </when>
+          <otherwise >
+            REQUEST_MAP = #{REQUEST_MAP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME = #{START_TIME},
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME = #{END_TIME},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACQUIRER_CODE != null" >
+        <choose >
+          <when test="ACQUIRER_CODE == emptyBigDecimalValue" >
+            ACQUIRER_CODE = NULL ,
+          </when>
+          <otherwise >
+            ACQUIRER_CODE = #{ACQUIRER_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TELLER_CODE != null" >
+        <choose >
+          <when test="TELLER_CODE == emptyBigDecimalValue" >
+            TELLER_CODE = NULL ,
+          </when>
+          <otherwise >
+            TELLER_CODE = #{TELLER_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TERMINAL_ID != null" >
+        <choose >
+          <when test="TERMINAL_ID.equals(&quot;&quot;)" >
+            TERMINAL_ID = NULL ,
+          </when>
+          <otherwise >
+            TERMINAL_ID = #{TERMINAL_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_TRX_TYPE != null" >
+        <choose >
+          <when test="CHARGE_TRX_TYPE == emptyBigDecimalValue" >
+            CHARGE_TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_TRX_TYPE = #{CHARGE_TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AUTH_CODE != null" >
+        <choose >
+          <when test="AUTH_CODE.equals(&quot;&quot;)" >
+            AUTH_CODE = NULL ,
+          </when>
+          <otherwise >
+            AUTH_CODE = #{AUTH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        <choose >
+          <when test="ERROR_MESSAGE.equals(&quot;&quot;)" >
+            ERROR_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            ERROR_MESSAGE = #{ERROR_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROCESS_CODE != null" >
+        <choose >
+          <when test="PROCESS_CODE.equals(&quot;&quot;)" >
+            PROCESS_CODE = NULL ,
+          </when>
+          <otherwise >
+            PROCESS_CODE = #{PROCESS_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESPONSE_CODE != null" >
+        <choose >
+          <when test="RESPONSE_CODE.equals(&quot;&quot;)" >
+            RESPONSE_CODE = NULL ,
+          </when>
+          <otherwise >
+            RESPONSE_CODE = #{RESPONSE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RETRIEVAL_REF_NB != null" >
+        <choose >
+          <when test="RETRIEVAL_REF_NB.equals(&quot;&quot;)" >
+            RETRIEVAL_REF_NB = NULL ,
+          </when>
+          <otherwise >
+            RETRIEVAL_REF_NB = #{RETRIEVAL_REF_NB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ATM_ENG_RESPONSE_ID = #{ATM_ENG_RESPONSE_ID}
+  </sql>
+  <update id="updateATM_ENG_RESPONSE" parameterType="com.path.dbmaps.vo.ATM_ENG_RESPONSEVO" >
+    <include refid="sql_updateATM_ENG_RESPONSE" />
+  </update>
+</mapper>

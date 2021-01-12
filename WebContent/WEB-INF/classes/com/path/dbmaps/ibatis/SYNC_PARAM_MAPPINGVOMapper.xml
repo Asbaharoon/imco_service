@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_PARAM_MAPPING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_PARAM_MAPPINGVO" >
+    <id column="CODE" property="CODE" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="EXTERNAL_CODE" property="EXTERNAL_CODE" />
+    <result column="EXTERNAL_DESCRIPTION" property="EXTERNAL_DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, DESCRIPTION, EXTERNAL_CODE, EXTERNAL_DESCRIPTION
+  </sql>
+  <select id="selectSYNC_PARAM_MAPPING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_PARAM_MAPPINGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_PARAM_MAPPING
+    where CODE = #{CODE}
+  </select>
+  <delete id="deleteSYNC_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_PARAM_MAPPINGVOKey" >
+    delete from SYNC_PARAM_MAPPING
+    where CODE = #{CODE}
+  </delete>
+  <insert id="insertSYNC_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_PARAM_MAPPINGVO" >
+    insert into SYNC_PARAM_MAPPING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="EXTERNAL_CODE != null" >
+        EXTERNAL_CODE,
+      </if>
+      <if test="EXTERNAL_DESCRIPTION != null" >
+        EXTERNAL_DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="EXTERNAL_CODE != null" >
+        #{EXTERNAL_CODE},
+      </if>
+      <if test="EXTERNAL_DESCRIPTION != null" >
+        #{EXTERNAL_DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_PARAM_MAPPING" >
+    update SYNC_PARAM_MAPPING
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="EXTERNAL_CODE != null" >
+        EXTERNAL_CODE = #{EXTERNAL_CODE},
+      </if>
+      <if test="EXTERNAL_DESCRIPTION != null" >
+        EXTERNAL_DESCRIPTION = #{EXTERNAL_DESCRIPTION},
+      </if>
+    </set>
+    where CODE = #{CODE}
+  </sql>
+  <update id="updateSYNC_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_PARAM_MAPPINGVO" >
+    <include refid="sql_updateSYNC_PARAM_MAPPING" />
+  </update>
+</mapper>

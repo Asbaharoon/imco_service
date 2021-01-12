@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BCOM_DYN_PROD_TEMPLATE_NODE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATE_NODEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DYN_TEMP_ID" property="DYN_TEMP_ID" />
+    <id column="NODE_ID" property="NODE_ID" />
+    <result column="PARENT_NODE_ID" property="PARENT_NODE_ID" />
+    <result column="NODE_TYPE" property="NODE_TYPE" />
+    <result column="NODE_DESC" property="NODE_DESC" />
+    <result column="NODE_ORDER" property="NODE_ORDER" />
+    <result column="SCREEN_ID" property="SCREEN_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DYN_TEMP_ID, NODE_ID, PARENT_NODE_ID, NODE_TYPE, NODE_DESC, NODE_ORDER, 
+    SCREEN_ID
+  </sql>
+  <select id="selectBCOM_DYN_PROD_TEMPLATE_NODE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATE_NODEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from BCOM_DYN_PROD_TEMPLATE_NODE
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+  </select>
+  <delete id="deleteBCOM_DYN_PROD_TEMPLATE_NODE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATE_NODEVOKey" >
+    delete from BCOM_DYN_PROD_TEMPLATE_NODE
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+  </delete>
+  <insert id="insertBCOM_DYN_PROD_TEMPLATE_NODE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATE_NODEVO" >
+    insert into BCOM_DYN_PROD_TEMPLATE_NODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="DYN_TEMP_ID != null" >
+        DYN_TEMP_ID,
+      </if>
+      <if test="NODE_ID != null and !&quot;&quot;.equals(NODE_ID)" >
+        NODE_ID,
+      </if>
+      <if test="PARENT_NODE_ID != null and !&quot;&quot;.equals(PARENT_NODE_ID)" >
+        PARENT_NODE_ID,
+      </if>
+      <if test="NODE_TYPE != null and !&quot;&quot;.equals(NODE_TYPE)" >
+        NODE_TYPE,
+      </if>
+      <if test="NODE_DESC != null and !&quot;&quot;.equals(NODE_DESC)" >
+        NODE_DESC,
+      </if>
+      <if test="NODE_ORDER != null" >
+        NODE_ORDER,
+      </if>
+      <if test="SCREEN_ID != null" >
+        SCREEN_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="DYN_TEMP_ID != null" >
+        #{DYN_TEMP_ID},
+      </if>
+      <if test="NODE_ID != null and !&quot;&quot;.equals(NODE_ID)" >
+        #{NODE_ID},
+      </if>
+      <if test="PARENT_NODE_ID != null and !&quot;&quot;.equals(PARENT_NODE_ID)" >
+        #{PARENT_NODE_ID},
+      </if>
+      <if test="NODE_TYPE != null and !&quot;&quot;.equals(NODE_TYPE)" >
+        #{NODE_TYPE},
+      </if>
+      <if test="NODE_DESC != null and !&quot;&quot;.equals(NODE_DESC)" >
+        #{NODE_DESC},
+      </if>
+      <if test="NODE_ORDER != null" >
+        #{NODE_ORDER},
+      </if>
+      <if test="SCREEN_ID != null" >
+        #{SCREEN_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateBCOM_DYN_PROD_TEMPLATE_NODE" >
+    update BCOM_DYN_PROD_TEMPLATE_NODE
+    <set >
+      <if test="PARENT_NODE_ID != null" >
+        <choose >
+          <when test="PARENT_NODE_ID.equals(&quot;&quot;)" >
+            PARENT_NODE_ID = NULL ,
+          </when>
+          <otherwise >
+            PARENT_NODE_ID = #{PARENT_NODE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NODE_TYPE != null" >
+        <choose >
+          <when test="NODE_TYPE.equals(&quot;&quot;)" >
+            NODE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            NODE_TYPE = #{NODE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NODE_DESC != null" >
+        <choose >
+          <when test="NODE_DESC.equals(&quot;&quot;)" >
+            NODE_DESC = NULL ,
+          </when>
+          <otherwise >
+            NODE_DESC = #{NODE_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NODE_ORDER != null" >
+        NODE_ORDER = #{NODE_ORDER},
+      </if>
+      <if test="SCREEN_ID != null" >
+        SCREEN_ID = #{SCREEN_ID},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+  </sql>
+  <update id="updateBCOM_DYN_PROD_TEMPLATE_NODE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATE_NODEVO" >
+    <include refid="sql_updateBCOM_DYN_PROD_TEMPLATE_NODE" />
+  </update>
+</mapper>

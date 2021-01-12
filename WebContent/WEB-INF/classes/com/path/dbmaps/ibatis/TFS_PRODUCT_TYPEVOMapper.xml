@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_PRODUCT_TYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_PRODUCT_TYPEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="REJECTED_DATE" property="REJECTED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ENG, LONG_NAME_ARAB, 
+    DATE_UPDATED, STATUS, CREATED_BY, CREATED_DATE, APPROVED_BY, APPROVED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE, REJECTED_BY, REJECTED_DATE
+  </sql>
+  <select id="selectTFS_PRODUCT_TYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_TYPEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_PRODUCT_TYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTFS_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_TYPEVO" >
+    delete from TFS_PRODUCT_TYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTFS_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_TYPEVO" >
+    insert into TFS_PRODUCT_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      DATE_UPDATED,
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        REJECTED_BY,
+      </if>
+      <if test="REJECTED_DATE != null" >
+        REJECTED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        #{REJECTED_BY},
+      </if>
+      <if test="REJECTED_DATE != null" >
+        #{REJECTED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_PRODUCT_TYPE" >
+    update TFS_PRODUCT_TYPE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="REJECTED_BY != null" >
+        <choose >
+          <when test="REJECTED_BY.equals(&quot;&quot;)" >
+            REJECTED_BY = NULL ,
+          </when>
+          <otherwise >
+            REJECTED_BY = #{REJECTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REJECTED_DATE != null" >
+        REJECTED_DATE = #{REJECTED_DATE},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTFS_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TFS_PRODUCT_TYPEVO" >
+    <include refid="sql_updateTFS_PRODUCT_TYPE" />
+  </update>
+</mapper>

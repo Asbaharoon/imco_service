@@ -1,0 +1,923 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="coreCommonChargesMapper">
+
+	<select id="returnChargeSchema" resultType="int" parameterType="trxMgntChargesSC">
+		SELECT CASE WHEN A.CHARGE_CODE IS NULL THEN	
+				CASE WHEN B.CHARGE_CODE IS NULL THEN	
+					CASE WHEN C.CHARGE_CODE IS NULL THEN		
+						CASE WHEN D.CHARGE_CODE IS NULL THEN					
+							CASE WHEN E.CHARGE_CODE IS NULL THEN					
+								CASE WHEN F.CHARGE_CODE IS NULL THEN	
+									CASE WHEN G.CHARGE_CODE IS NULL THEN	
+										CASE WHEN H.CHARGE_CODE IS NULL THEN 0 
+										ELSE H.CHARGE_CODE END									
+									ELSE G.CHARGE_CODE  END								
+								ELSE F.CHARGE_CODE END
+			 				Else E.CHARGE_CODE END
+			 			Else D.CHARGE_CODE END
+			 		Else C.CHARGE_CODE END
+			 	Else B.CHARGE_CODE END
+			 Else A.CHARGE_CODE END
+		FROM
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE CTSTRXTYPE_CHARGES.COMP_CODE 			 	= #{compCode}
+			AND  	CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_CODE 		 	= #{cifNo} 		
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_TYPE 		 	= 'C' 				 
+			AND 	CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= #{chargesPolicy}  	
+			AND 	CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}  ) A ,
+			
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE  CTSTRXTYPE_CHARGES.COMP_CODE 			= #{compCode} 	 
+			AND  	 CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_CODE 		= #{cifNo} 				 		
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_TYPE 		= 'C' 				 
+			AND 	 CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= 'ALL'					 
+			AND 	 CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}   ) B,
+			
+		
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE 	
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE CTSTRXTYPE_CHARGES.COMP_CODE 			 	= #{compCode} 	 
+			AND  	CTSTRXTYPE_CHARGES.TRXTYPE_CODE 	 	= #{trxType} 			 
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_CODE 		 	= #{cifType}
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_TYPE 		 	= 'T' 				 
+			AND 	CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= #{chargesPolicy}  	
+			AND 	CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}  ) C ,
+			
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE  
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE  CTSTRXTYPE_CHARGES.COMP_CODE 			= #{compCode} 	 
+			AND  	 CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_CODE 		= #{cifType} 				 		
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_TYPE 		= 'T' 				 
+			AND 	 CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= 'ALL'					 
+			AND 	 CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}   ) D,
+		
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE 	
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE CTSTRXTYPE_CHARGES.COMP_CODE 			 	= #{compCode} 	 
+			AND  	CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_CODE 		 	= 0
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_TYPE 		 	= 'C' 				 
+			AND 	CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= #{chargesPolicy}  	
+			AND 	CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}  ) E,
+			
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE 	
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE  CTSTRXTYPE_CHARGES.COMP_CODE 			= #{compCode} 	 
+			AND  	 CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_CODE 		= 0 				 		
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_TYPE 		= 'C' 				 
+			AND 	 CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= 'ALL'					 
+			AND 	 CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}   ) F,
+		
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE 	
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE CTSTRXTYPE_CHARGES.COMP_CODE 			 	= #{compCode} 	 
+			AND  	CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_CODE 		 	= 0
+			AND  	CTSTRXTYPE_CHARGES.ENTITY_TYPE 		 	= 'T' 				 
+			AND 	CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= #{chargesPolicy}  	
+			AND 	CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}  ) G ,
+			
+		(	SELECT COUNT(1) , MIN(CHARGE_CODE) CHARGE_CODE 	
+			FROM   CTSTRXTYPE_CHARGES  
+			WHERE  CTSTRXTYPE_CHARGES.COMP_CODE 			= #{compCode} 	 
+			AND  	 CTSTRXTYPE_CHARGES.TRXTYPE_CODE 		= #{trxType} 			 
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_CODE 		= 0				 		
+			AND  	 CTSTRXTYPE_CHARGES.ENTITY_TYPE 		= 'T' 				 
+			AND 	 CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY 	= 'ALL'					 
+			AND 	 CTSTRXTYPE_CHARGES.CASH_ACCOUNT 		= #{cashAccount}   ) H 
+	
+	</select>
+
+	<select id="retrieveSeparateChargesSchema" resultType="BigDecimal" parameterType="trxMgntChargesSC" >
+		SELECT 	CTSCHARGES_SCHEMA.CHARGE_CODE  
+		FROM 	CTSCHARGES_SCHEMA
+		WHERE  	CTSCHARGES_SCHEMA.COMP_CODE = #{compCode} 
+		AND		CTSCHARGES_SCHEMA.CODE 	IN (SELECT CHARGE_CODE 
+										FROM CTSTRXTYPE_CHARGES
+										WHERE COMP_CODE = CTSCHARGES_SCHEMA.COMP_CODE
+										AND TRXTYPE_CODE = #{trxType})
+		AND	 	CTSCHARGES_SCHEMA.LINE_NO <![CDATA[ > ]]> 0
+		AND  	EXISTS (SELECT 1
+					FROM CTSCHARGES
+					WHERE CTSCHARGES.COMP_CODE = CTSCHARGES_SCHEMA.COMP_CODE
+					AND CTSCHARGES.CODE = CTSCHARGES_SCHEMA.CHARGE_CODE
+					AND CTSCHARGES.PASS_SEPARATELY = '1'
+					AND CTSCHARGES.DR_CRITERIA IS NOT NULL
+					AND CTSCHARGES.DR_CRITERIA != ''
+					AND CTSCHARGES.DR_CRITERIA != '1')	
+					
+	</select>
+	
+	
+	<resultMap id="ctsChargesUnifiedMap" type="ctsChargesUnifiedVO">		
+		<result property="CHARGE_CODE" 			column="CHARGE_CODE" />
+		<result property="AMOUNT" 				column="AMOUNT" />
+		<result property="AMOUNT_NEW" 			column="AMOUNT_NEW" />
+		<result property="AMOUNT_FC_NEW" 		column="AMOUNT_FC_NEW" />
+		<result property="ORIGINAL_AMOUNT"  	column="ORIGINAL_AMOUNT"	/>
+		<result property="CREDIT_ACC_BR" 		column="CREDIT_ACC_BR" />
+		<result property="CREDIT_ACC_CY" 		column="CREDIT_ACC_CY" />
+		<result property="CREDIT_ACC_GL" 		column="CREDIT_ACC_GL" />
+		<result property="CREDIT_ACC_CIF" 		column="CREDIT_ACC_CIF" />
+		<result property="CREDIT_ACC_SL" 		column="CREDIT_ACC_SL" />
+		<result property="DEBIT_ACC_BR" 		column="DEBIT_ACC_BR" />
+		<result property="DEBIT_ACC_CY" 		column="DEBIT_ACC_CY" />
+		<result property="DEBIT_ACC_GL" 		column="DEBIT_ACC_GL" />
+		<result property="DEBIT_ACC_CIF" 		column="DEBIT_ACC_CIF" />
+		<result property="DEBIT_ACC_SL" 		column="DEBIT_ACC_SL" />
+		<result property="LINE_NO" 				column="LINE_NO" />
+		<result property="PASS_SEPARATELY" 		column="PASS_SEPARATELY" />
+		<result property="DR_CRITERIA" 			column="DR_CRITERIA" />
+		<result property="BRIEF_NAME_ENG" 		column="BRIEF_NAME_ENG" />
+		<result property="BRIEF_NAME_ARAB" 		column="BRIEF_NAME_ARAB" />
+		<result property="APPLY_TVA" 			column="APPLY_TVA" />
+		<result property="VAT_CODE" 			column="VAT_CODE" />
+		<result property="DUES_COLLECTION_TYPE" column="DUES_COLLECTION_TYPE" />
+		<result property="DUES_MODE_PAY" 		column="DUES_MODE_PAY" />
+		<result property="PRODUCT_NAME" 		column="PRODUCT_NAME" />
+		<result property="DR_ACC_GL" 			column="DR_ACC_GL" />
+		<result property="DR_ACC_CIF" 			column="DR_ACC_CIF" />
+		<result property="DR_ACC_SL" 			column="DR_ACC_SL" />
+		<result property="CONSIDER_ONCE" 		column="CONSIDER_ONCE" />
+		<result property="USER_ID" 				column="USER_ID" />
+		<result property="EXCH_RATE" 			column="EXCH_RATE" />
+		<result property="ACTION_TYPE" 			column="ACTION_TYPE" />
+		<result property="TYPE_IND" 			column="TYPE_IND" />
+		<result property="SCHEMA_CODE" 			column="SCHEMA_CODE" />
+		<result property="CHRG_ON_EXCEED"  		column="CHRG_ON_EXCEED"	/>
+		<result property="ORIGINAL_AMOUNT"  	column="ORIGINAL_AMOUNT"	/>
+				
+	</resultMap>
+	<select id="retrieveCtsChargesUnifiedList" resultMap="ctsChargesUnifiedMap" parameterType="trxMgntSC" >
+		SELECT  CHARGE_CODE,
+				AMOUNT,
+				AMOUNT_NEW,
+				AMOUNT_FC_NEW,
+				ORIGINAL_AMOUNT,
+				CREDIT_ACC_BR,
+				CREDIT_ACC_CY,
+				CREDIT_ACC_GL,
+				CREDIT_ACC_CIF,
+				CREDIT_ACC_SL,
+				DEBIT_ACC_BR,
+				DEBIT_ACC_CY,
+				DEBIT_ACC_GL,
+				DEBIT_ACC_CIF,
+				DEBIT_ACC_SL,
+				LINE_NO,
+				PASS_SEPARATELY,
+				DR_CRITERIA,
+				BRIEF_DESC_ENG,
+				BRIEF_DESC_ARAB,
+				APPLY_TVA,
+				VAT_CODE,
+				DUES_COLLECTION_TYPE,
+				DUES_MODE_PAY,
+				PRODUCT_NAME,
+				DR_ACC_GL,
+				DR_ACC_CIF,
+				DR_ACC_SL,
+				CONSIDER_ONCE,
+				USER_ID,
+				EXCH_RATE,
+				ACTION_TYPE,
+				TYPE_IND,
+				SCHEMA_CODE,
+				CHRG_ON_EXCEED,				
+				ORIGINAL_AMOUNT
+	<choose>
+	 	<when test="isSybase == 1">
+		 FROM  #CTS_CHARGES_UNIFIED	
+	    </when>
+		<otherwise>
+		 FROM  CTS_CHARGES_UNIFIED
+		</otherwise>
+	</choose>
+         WHERE ((LINE_NO <![CDATA[ > ]]> 0 AND #{lineNo,jdbcType=NUMERIC} IS NULL)
+         		OR (LINE_NO = #{lineNo,jdbcType=NUMERIC} AND #{lineNo,jdbcType=NUMERIC} IS NOT NULL))
+           AND DB_SESSION_ID 	= #{sessionID,jdbcType=NUMERIC}
+           AND PRODUCT_NAME		= #{type,jdbcType=VARCHAR}
+           AND ((#{batchNo,jdbcType=NUMERIC} <![CDATA[ > ]]> 0 
+				  AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				  AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+				  AND BATCH_NO = #{batchNo,jdbcType=NUMERIC}) 
+			    OR (BATCH_NO = 0))
+           ORDER BY LINE_NO,SCHEMA_CODE
+	</select>
+	
+	<delete id="deleteCtsChargesUnified" parameterType="trxMgntChargesSC" >
+	 <choose>
+	 	<when test="isSybase == 1">
+		DELETE FROM #CTS_CHARGES_UNIFIED
+	    </when>
+		<otherwise>
+		DELETE FROM CTS_CHARGES_UNIFIED
+		</otherwise>
+	</choose>
+	    WHERE DB_SESSION_ID  = #{sessionID,jdbcType=NUMERIC}
+		
+		<if test="lineNo != null">
+			AND LINE_NO = #{lineNo,jdbcType=NUMERIC}
+		</if>
+		<if test="actionType != null">
+			AND ACTION_TYPE  = #{actionType,jdbcType=NUMERIC}
+			AND LINE_NO <![CDATA[ > ]]> 0
+		</if>
+		
+		AND BATCH_NO = 0
+    </delete>
+    
+    <delete id="deleteBatchCtsChargesUnified" parameterType="trxMgntChargesSC" >
+		<choose>
+	 	<when test="isSybase == 1">
+		DELETE FROM #CTS_CHARGES_UNIFIED
+	    </when>
+		<otherwise>
+		DELETE FROM CTS_CHARGES_UNIFIED
+		</otherwise>
+		</choose>
+	    WHERE DB_SESSION_ID  = #{sessionID,jdbcType=NUMERIC}
+		
+		<if test="lineNo != null">
+			AND LINE_NO = #{lineNo,jdbcType=NUMERIC}
+		</if>
+		<if test="actionType != null">
+			AND ACTION_TYPE  = #{actionType,jdbcType=NUMERIC}
+			AND LINE_NO <![CDATA[ > ]]> 0
+		</if>
+		
+		AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		AND BATCH_NO = #{batchNo,jdbcType=NUMERIC} 
+				
+    </delete>
+    
+    
+    <resultMap id="retrieveChargeAccountsMap" type="ctsChargesVO">		
+		<result property="ACC_BR" 			column="trsAcBr" />
+		<result property="ACC_CY" 			column="trsAcCy" />
+		<result property="ACC_GL" 			column="trsAcGl" />
+		<result property="ACC_CIF" 			column="trsAcCif" />
+		<result property="ACC_SL" 			column="trsAcSl" />
+		<result property="CHRG_BR" 			column="chargeBranch" />				
+	</resultMap>
+	
+    <select id="retrieveChargeAccounts" resultMap="retrieveChargeAccountsMap" parameterType="trxMgntSC" >
+	    SELECT  C.ACC_BR trsAcBr,
+	    		C.ACC_CY trsAcCy,
+	    		C.ACC_GL trsAcGl,
+	    		C.ACC_CIF trsAcCif,
+	    		C.ACC_SL trsAcSl,
+	    		C.CHRG_BR chargeBranch
+		FROM CTSCHARGES C, CTSCHARGES_SCHEMA S
+		WHERE S.COMP_CODE = #{compCode}
+		AND S.CODE 	= #{chargeSchema}
+		<if test='lineNo != null and lineNo != 0 '>
+			AND S.LINE_NO = #{lineNo}
+		</if>
+		AND C.CODE = S.CHARGE_CODE
+		AND C.COMP_CODE = S.COMP_CODE
+	</select>
+	
+	
+	<resultMap id="retrieveBatchChargeAccountsMap" type="ctstrsACCDETVO">		
+		<result property="AC_BR" 			column="ACC_BR" />
+		<result property="AC_CY" 			column="ACC_CY" />
+		<result property="AC_GL" 			column="ACC_GL" />
+		<result property="AC_CIF" 			column="ACC_CIF" />
+		<result property="AC_SL" 			column="ACC_SL" />
+		<result property="FC_AMOUNT" 		column="AMOUNT" />
+		<result property="CV_AMOUNT" 		column="CV_AMOUNT" />								
+	</resultMap>
+	
+	<select id="retrieveBatchChargeAccounts" resultMap="retrieveBatchChargeAccountsMap" parameterType="trxMgntSC" >
+	    SELECT  CASE WHEN T.CR_DR_FOREX = 'C' THEN R.DR_AC_BR ELSE R.CR_AC_BR END ACC_BR,
+				CASE WHEN T.CR_DR_FOREX = 'C' THEN R.DR_AC_CY ELSE R.CR_AC_CY END ACC_CY,
+				CASE WHEN T.CR_DR_FOREX = 'C' THEN R.DR_AC_GL ELSE R.CR_AC_GL END ACC_GL,
+				CASE WHEN T.CR_DR_FOREX = 'C' THEN R.DR_AC_CIF ELSE R.CR_AC_CIF END ACC_CIF,
+				CASE WHEN T.CR_DR_FOREX = 'C' THEN R.DR_AC_SL ELSE R.CR_AC_SL END ACC_SL,
+				R.AMOUNT AMOUNT,
+				R.TRS_CV_AMOUNT CV_AMOUNT
+		FROM  CTSTRS_UPLOAD_TMP R, CTSTRXTYPE T
+		WHERE R.BATCH_NO = #{batchNo}
+		AND R.COMP_CODE = #{compCode}
+		AND R.USER_ID =  #{userId}
+		AND R.TRX_TYPE = (SELECT CTS_UPLOAD_FILE_TYPE.DEFAULT_TRXTYPE
+						FROM  CTS_UPLOAD_FILE_TYPE, CTSUPLOAD_HEADER
+						WHERE CTS_UPLOAD_FILE_TYPE.COMP_CODE  = R.COMP_CODE
+						AND   CTS_UPLOAD_FILE_TYPE.BATCH_TYPE = CTSUPLOAD_HEADER.BATCH_TYPE
+						AND   CTSUPLOAD_HEADER.COMP_CODE = R.COMP_CODE
+						AND   CTSUPLOAD_HEADER.BATCH_NO = R.BATCH_NO
+						AND   CTS_UPLOAD_FILE_TYPE.FILE_TYPE = #{fileType})
+		AND T.COMP_CODE = R.COMP_CODE
+		AND T.CODE = R.TRX_TYPE
+								
+	</select>
+	
+	<select id="retrievePMSCifNo" resultType="BigDecimal" parameterType="trxMgntChargesSC" >
+		SELECT CIF
+		FROM PMSTRADEDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH = #{branchCode}
+		AND TRADE_SERIAL_NBR = #{ticketNo}
+	</select>
+	
+	<insert id="insertHashCtsChargesUnified" parameterType="com.path.dbmaps.vo.CTS_CHARGES_UNIFIEDVO" >
+    insert into #CTS_CHARGES_UNIFIED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DB_SESSION_ID != null and DB_SESSION_ID != emptyBigDecimalValue" >
+        DB_SESSION_ID,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        ENTITY_CODE,
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      <if test="TYPE_IND != null" >
+        TYPE_IND,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="AMOUNT_NEW != null and AMOUNT_NEW != emptyBigDecimalValue" >
+        AMOUNT_NEW,
+      </if>
+      <if test="AMOUNT_FC_NEW != null and AMOUNT_FC_NEW != emptyBigDecimalValue" >
+        AMOUNT_FC_NEW,
+      </if>
+      <if test="ORIGINAL_AMOUNT != null and ORIGINAL_AMOUNT != emptyBigDecimalValue" >
+        ORIGINAL_AMOUNT,
+      </if>
+      <if test="OPT_TYPE != null" >
+        OPT_TYPE,
+      </if>
+      <if test="CREDIT_ACC_BR != null and CREDIT_ACC_BR != emptyBigDecimalValue" >
+        CREDIT_ACC_BR,
+      </if>
+      <if test="CREDIT_ACC_CY != null and CREDIT_ACC_CY != emptyBigDecimalValue" >
+        CREDIT_ACC_CY,
+      </if>
+      <if test="CREDIT_ACC_GL != null and CREDIT_ACC_GL != emptyBigDecimalValue" >
+        CREDIT_ACC_GL,
+      </if>
+      <if test="CREDIT_ACC_CIF != null and CREDIT_ACC_CIF != emptyBigDecimalValue" >
+        CREDIT_ACC_CIF,
+      </if>
+      <if test="CREDIT_ACC_SL != null and CREDIT_ACC_SL != emptyBigDecimalValue" >
+        CREDIT_ACC_SL,
+      </if>
+      <if test="APPLY_TVA != null" >
+        APPLY_TVA,
+      </if>
+      <if test="CHARGE_PERC != null and CHARGE_PERC != emptyBigDecimalValue" >
+        CHARGE_PERC,
+      </if>
+      <if test="DEBIT_ACC_BR != null and DEBIT_ACC_BR != emptyBigDecimalValue" >
+        DEBIT_ACC_BR,
+      </if>
+      <if test="DEBIT_ACC_CY != null and DEBIT_ACC_CY != emptyBigDecimalValue" >
+        DEBIT_ACC_CY,
+      </if>
+      <if test="DEBIT_ACC_GL != null and DEBIT_ACC_GL != emptyBigDecimalValue" >
+        DEBIT_ACC_GL,
+      </if>
+      <if test="DEBIT_ACC_CIF != null and DEBIT_ACC_CIF != emptyBigDecimalValue" >
+        DEBIT_ACC_CIF,
+      </if>
+      <if test="DEBIT_ACC_SL != null and DEBIT_ACC_SL != emptyBigDecimalValue" >
+        DEBIT_ACC_SL,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        DR_ACC_GL,
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        DR_ACC_CIF,
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        DR_ACC_SL,
+      </if>
+      <if test="DR_CRITERIA != null" >
+        DR_CRITERIA,
+      </if>
+      <if test="PASS_SEPARATELY != null" >
+        PASS_SEPARATELY,
+      </if>
+      <if test="SCHEMA_CODE != null and SCHEMA_CODE != emptyBigDecimalValue" >
+        SCHEMA_CODE,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="AMOUNT_ORIGINAL != null and AMOUNT_ORIGINAL != emptyBigDecimalValue" >
+        AMOUNT_ORIGINAL,
+      </if>
+      <if test="AMOUNT_ORIGINAL_FC != null and AMOUNT_ORIGINAL_FC != emptyBigDecimalValue" >
+        AMOUNT_ORIGINAL_FC,
+      </if>
+      <if test="CONSIDER_ONCE != null" >
+        CONSIDER_ONCE,
+      </if>
+      <if test="DUES_COLLECTION_TYPE != null" >
+        DUES_COLLECTION_TYPE,
+      </if>
+      <if test="DUES_MODE_PAY != null" >
+        DUES_MODE_PAY,
+      </if>
+      <if test="PARTIAL_CHARGE_CV != null and PARTIAL_CHARGE_CV != emptyBigDecimalValue" >
+        PARTIAL_CHARGE_CV,
+      </if>
+      <if test="PARTIAL_CHARGE_FC != null and PARTIAL_CHARGE_FC != emptyBigDecimalValue" >
+        PARTIAL_CHARGE_FC,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND,
+      </if>
+      <if test="TRS_SIGN != null" >
+        TRS_SIGN,
+      </if>
+      <if test="EXCH_RATE != null and EXCH_RATE != emptyBigDecimalValue" >
+        EXCH_RATE,
+      </if>
+      <if test="UNIT != null and UNIT != emptyBigDecimalValue" >
+        UNIT,
+      </if>
+      <if test="SYSTEM_GEN != null" >
+        SYSTEM_GEN,
+      </if>
+      <if test="BS_CONTRA != null" >
+        BS_CONTRA,
+      </if>
+      <if test="FLAG != null" >
+        FLAG,
+      </if>
+      <if test="TRS_DATE != null" >
+        TRS_DATE,
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="DESCRIPTION1 != null" >
+        DESCRIPTION1,
+      </if>
+      <if test="DESCRIPTION1_ARAB != null" >
+        DESCRIPTION1_ARAB,
+      </if>
+      <if test="DESCRIPTION2 != null" >
+        DESCRIPTION2,
+      </if>
+      <if test="DESCRIPTION2_ARAB != null" >
+        DESCRIPTION2_ARAB,
+      </if>
+      <if test="DESCRIPTION_ARAB != null" >
+        DESCRIPTION_ARAB,
+      </if>
+      <if test="JV_REFERENCE != null" >
+        JV_REFERENCE,
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        JV_TYPE,
+      </if>
+      <if test="CHARGE_ACC_BR != null and CHARGE_ACC_BR != emptyBigDecimalValue" >
+        CHARGE_ACC_BR,
+      </if>
+      <if test="CHARGE_ACC_CY != null and CHARGE_ACC_CY != emptyBigDecimalValue" >
+        CHARGE_ACC_CY,
+      </if>
+      <if test="CHARGE_ACC_GL != null and CHARGE_ACC_GL != emptyBigDecimalValue" >
+        CHARGE_ACC_GL,
+      </if>
+      <if test="CHARGE_ACC_CIF != null and CHARGE_ACC_CIF != emptyBigDecimalValue" >
+        CHARGE_ACC_CIF,
+      </if>
+      <if test="CHARGE_ACC_SL != null and CHARGE_ACC_SL != emptyBigDecimalValue" >
+        CHARGE_ACC_SL,
+      </if>
+      <if test="BRANCH_SO != null and BRANCH_SO != emptyBigDecimalValue" >
+        BRANCH_SO,
+      </if>
+      <if test="TRS_NO_SO != null and TRS_NO_SO != emptyBigDecimalValue" >
+        TRS_NO_SO,
+      </if>
+      <if test="PRODUCT_NAME != null" >
+        PRODUCT_NAME,
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        TELLER_CODE,
+      </if>
+      <if test="ENTITY_TYPE_CODE != null and ENTITY_TYPE_CODE != emptyBigDecimalValue" >
+        ENTITY_TYPE_CODE,
+      </if>
+      <if test="DEDUCT != null" >
+        DEDUCT,
+      </if>
+      <if test="CRUD != null" >
+        CRUD,
+      </if>
+      <if test="CHQ_ISSUE_TYPE != null" >
+        CHQ_ISSUE_TYPE,
+      </if>
+      <if test="LEAVES != null and LEAVES != emptyBigDecimalValue" >
+        LEAVES,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="TRS_CY != null and TRS_CY != emptyBigDecimalValue" >
+        TRS_CY,
+      </if>
+      <if test="CV_AMOUNT != null and CV_AMOUNT != emptyBigDecimalValue" >
+        CV_AMOUNT,
+      </if>
+      <if test="TRSFR_METHOD != null" >
+        TRSFR_METHOD,
+      </if>
+      <if test="CTRL_CY != null and CTRL_CY != emptyBigDecimalValue" >
+        CTRL_CY,
+      </if>
+      <if test="CTRL_GL != null and CTRL_GL != emptyBigDecimalValue" >
+        CTRL_GL,
+      </if>
+      <if test="CTRL_CIF != null and CTRL_CIF != emptyBigDecimalValue" >
+        CTRL_CIF,
+      </if>
+      <if test="CTRL_SL != null and CTRL_SL != emptyBigDecimalValue" >
+        CTRL_SL,
+      </if>
+      <if test="ALLOW_MODIFY != null" >
+        ALLOW_MODIFY,
+      </if>
+      <if test="ALLOW_CLEARING != null" >
+        ALLOW_CLEARING,
+      </if>
+      <if test="DEDUCT_FROM_TRX != null" >
+        DEDUCT_FROM_TRX,
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        TRX_TYPE_CODE,
+      </if>
+      <if test="ENTRY_DEDUCT != null" >
+        ENTRY_DEDUCT,
+      </if>
+       <if test="CHRG_ON_EXCEED != null" >
+        CHRG_ON_EXCEED,
+      </if>
+       <if test="CHARGE_TYPE != null" >
+        CHARGE_TYPE,
+      </if>
+      <if test="ENTRY_DEDUCT_BR != null and ENTRY_DEDUCT_BR != emptyBigDecimalValue" >
+        ENTRY_DEDUCT_BR,
+      </if>
+       <if test="ENTRY_DEDUCT_CY != null and ENTRY_DEDUCT_CY != emptyBigDecimalValue" >
+        ENTRY_DEDUCT_CY,
+      </if>
+       <if test="ENTRY_DEDUCT_GL != null and ENTRY_DEDUCT_GL != emptyBigDecimalValue" >
+        ENTRY_DEDUCT_GL,
+      </if>
+       <if test="ENTRY_DEDUCT_CIF != null and ENTRY_DEDUCT_CIF != emptyBigDecimalValue" >
+        ENTRY_DEDUCT_CIF,
+      </if>
+       <if test="ENTRY_DEDUCT_SL != null and ENTRY_DEDUCT_SL != emptyBigDecimalValue" >
+        ENTRY_DEDUCT_SL,
+      </if>
+      <if test="AVAIL_BAL_FC != null and AVAIL_BAL_FC != emptyBigDecimalValue" >
+        AVAIL_BAL_FC,
+       </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DB_SESSION_ID != null and DB_SESSION_ID != emptyBigDecimalValue" >
+        #{DB_SESSION_ID},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      <if test="TYPE_IND != null" >
+        #{TYPE_IND},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="AMOUNT_NEW != null and AMOUNT_NEW != emptyBigDecimalValue" >
+        #{AMOUNT_NEW},
+      </if>
+      <if test="AMOUNT_FC_NEW != null and AMOUNT_FC_NEW != emptyBigDecimalValue" >
+        #{AMOUNT_FC_NEW},
+      </if>
+      <if test="ORIGINAL_AMOUNT != null and ORIGINAL_AMOUNT != emptyBigDecimalValue" >
+        #{ORIGINAL_AMOUNT},
+      </if>
+      <if test="OPT_TYPE != null" >
+        #{OPT_TYPE},
+      </if>
+      <if test="CREDIT_ACC_BR != null and CREDIT_ACC_BR != emptyBigDecimalValue" >
+        #{CREDIT_ACC_BR},
+      </if>
+      <if test="CREDIT_ACC_CY != null and CREDIT_ACC_CY != emptyBigDecimalValue" >
+        #{CREDIT_ACC_CY},
+      </if>
+      <if test="CREDIT_ACC_GL != null and CREDIT_ACC_GL != emptyBigDecimalValue" >
+        #{CREDIT_ACC_GL},
+      </if>
+      <if test="CREDIT_ACC_CIF != null and CREDIT_ACC_CIF != emptyBigDecimalValue" >
+        #{CREDIT_ACC_CIF},
+      </if>
+      <if test="CREDIT_ACC_SL != null and CREDIT_ACC_SL != emptyBigDecimalValue" >
+        #{CREDIT_ACC_SL},
+      </if>
+      <if test="APPLY_TVA != null" >
+        #{APPLY_TVA},
+      </if>
+      <if test="CHARGE_PERC != null and CHARGE_PERC != emptyBigDecimalValue" >
+        #{CHARGE_PERC},
+      </if>
+      <if test="DEBIT_ACC_BR != null and DEBIT_ACC_BR != emptyBigDecimalValue" >
+        #{DEBIT_ACC_BR},
+      </if>
+      <if test="DEBIT_ACC_CY != null and DEBIT_ACC_CY != emptyBigDecimalValue" >
+        #{DEBIT_ACC_CY},
+      </if>
+      <if test="DEBIT_ACC_GL != null and DEBIT_ACC_GL != emptyBigDecimalValue" >
+        #{DEBIT_ACC_GL},
+      </if>
+      <if test="DEBIT_ACC_CIF != null and DEBIT_ACC_CIF != emptyBigDecimalValue" >
+        #{DEBIT_ACC_CIF},
+      </if>
+      <if test="DEBIT_ACC_SL != null and DEBIT_ACC_SL != emptyBigDecimalValue" >
+        #{DEBIT_ACC_SL},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        #{DR_ACC_GL},
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        #{DR_ACC_CIF},
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        #{DR_ACC_SL},
+      </if>
+      <if test="DR_CRITERIA != null" >
+        #{DR_CRITERIA},
+      </if>
+      <if test="PASS_SEPARATELY != null" >
+        #{PASS_SEPARATELY},
+      </if>
+      <if test="SCHEMA_CODE != null and SCHEMA_CODE != emptyBigDecimalValue" >
+        #{SCHEMA_CODE},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="AMOUNT_ORIGINAL != null and AMOUNT_ORIGINAL != emptyBigDecimalValue" >
+        #{AMOUNT_ORIGINAL},
+      </if>
+      <if test="AMOUNT_ORIGINAL_FC != null and AMOUNT_ORIGINAL_FC != emptyBigDecimalValue" >
+        #{AMOUNT_ORIGINAL_FC},
+      </if>
+      <if test="CONSIDER_ONCE != null" >
+        #{CONSIDER_ONCE},
+      </if>
+      <if test="DUES_COLLECTION_TYPE != null" >
+        #{DUES_COLLECTION_TYPE},
+      </if>
+      <if test="DUES_MODE_PAY != null" >
+        #{DUES_MODE_PAY},
+      </if>
+      <if test="PARTIAL_CHARGE_CV != null and PARTIAL_CHARGE_CV != emptyBigDecimalValue" >
+        #{PARTIAL_CHARGE_CV},
+      </if>
+      <if test="PARTIAL_CHARGE_FC != null and PARTIAL_CHARGE_FC != emptyBigDecimalValue" >
+        #{PARTIAL_CHARGE_FC},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="CB_IND != null" >
+        #{CB_IND},
+      </if>
+      <if test="TRS_SIGN != null" >
+        #{TRS_SIGN},
+      </if>
+      <if test="EXCH_RATE != null and EXCH_RATE != emptyBigDecimalValue" >
+        #{EXCH_RATE},
+      </if>
+      <if test="UNIT != null and UNIT != emptyBigDecimalValue" >
+        #{UNIT},
+      </if>
+      <if test="SYSTEM_GEN != null" >
+        #{SYSTEM_GEN},
+      </if>
+      <if test="BS_CONTRA != null" >
+        #{BS_CONTRA},
+      </if>
+      <if test="FLAG != null" >
+        #{FLAG},
+      </if>
+      <if test="TRS_DATE != null" >
+        #{TRS_DATE},
+      </if>
+      <if test="VALUE_DATE != null" >
+        #{VALUE_DATE},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="DESCRIPTION1 != null" >
+        #{DESCRIPTION1},
+      </if>
+      <if test="DESCRIPTION1_ARAB != null" >
+        #{DESCRIPTION1_ARAB},
+      </if>
+      <if test="DESCRIPTION2 != null" >
+        #{DESCRIPTION2},
+      </if>
+      <if test="DESCRIPTION2_ARAB != null" >
+        #{DESCRIPTION2_ARAB},
+      </if>
+      <if test="DESCRIPTION_ARAB != null" >
+        #{DESCRIPTION_ARAB},
+      </if>
+      <if test="JV_REFERENCE != null" >
+        #{JV_REFERENCE},
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        #{JV_TYPE},
+      </if>
+      <if test="CHARGE_ACC_BR != null and CHARGE_ACC_BR != emptyBigDecimalValue" >
+        #{CHARGE_ACC_BR},
+      </if>
+      <if test="CHARGE_ACC_CY != null and CHARGE_ACC_CY != emptyBigDecimalValue" >
+        #{CHARGE_ACC_CY},
+      </if>
+      <if test="CHARGE_ACC_GL != null and CHARGE_ACC_GL != emptyBigDecimalValue" >
+        #{CHARGE_ACC_GL},
+      </if>
+      <if test="CHARGE_ACC_CIF != null and CHARGE_ACC_CIF != emptyBigDecimalValue" >
+        #{CHARGE_ACC_CIF},
+      </if>
+      <if test="CHARGE_ACC_SL != null and CHARGE_ACC_SL != emptyBigDecimalValue" >
+        #{CHARGE_ACC_SL},
+      </if>
+      <if test="BRANCH_SO != null and BRANCH_SO != emptyBigDecimalValue" >
+        #{BRANCH_SO},
+      </if>
+      <if test="TRS_NO_SO != null and TRS_NO_SO != emptyBigDecimalValue" >
+        #{TRS_NO_SO},
+      </if>
+      <if test="PRODUCT_NAME != null" >
+        #{PRODUCT_NAME},
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        #{TELLER_CODE},
+      </if>
+      <if test="ENTITY_TYPE_CODE != null and ENTITY_TYPE_CODE != emptyBigDecimalValue" >
+        #{ENTITY_TYPE_CODE},
+      </if>
+      <if test="DEDUCT != null" >
+        #{DEDUCT},
+      </if>
+      <if test="CRUD != null" >
+        #{CRUD},
+      </if>
+      <if test="CHQ_ISSUE_TYPE != null" >
+        #{CHQ_ISSUE_TYPE},
+      </if>
+      <if test="LEAVES != null and LEAVES != emptyBigDecimalValue" >
+        #{LEAVES},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="TRS_CY != null and TRS_CY != emptyBigDecimalValue" >
+        #{TRS_CY},
+      </if>
+      <if test="CV_AMOUNT != null and CV_AMOUNT != emptyBigDecimalValue" >
+        #{CV_AMOUNT},
+      </if>
+      <if test="TRSFR_METHOD != null" >
+        #{TRSFR_METHOD},
+      </if>
+      <if test="CTRL_CY != null and CTRL_CY != emptyBigDecimalValue" >
+        #{CTRL_CY},
+      </if>
+      <if test="CTRL_GL != null and CTRL_GL != emptyBigDecimalValue" >
+        #{CTRL_GL},
+      </if>
+      <if test="CTRL_CIF != null and CTRL_CIF != emptyBigDecimalValue" >
+        #{CTRL_CIF},
+      </if>
+      <if test="CTRL_SL != null and CTRL_SL != emptyBigDecimalValue" >
+        #{CTRL_SL},
+      </if>
+      <if test="ALLOW_MODIFY != null" >
+        #{ALLOW_MODIFY},
+      </if>
+      <if test="ALLOW_CLEARING != null" >
+        #{ALLOW_CLEARING},
+      </if>
+      <if test="DEDUCT_FROM_TRX != null" >
+        #{DEDUCT_FROM_TRX},
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        #{TRX_TYPE_CODE},
+      </if>
+      <if test="ENTRY_DEDUCT != null" >
+        #{ENTRY_DEDUCT},
+      </if>
+      <if test="CHRG_ON_EXCEED != null" >
+        #{CHRG_ON_EXCEED},
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        #{CHARGE_TYPE},
+      </if>
+      <if test="ENTRY_DEDUCT_BR != null and ENTRY_DEDUCT_BR != emptyBigDecimalValue" >
+        #{ENTRY_DEDUCT_BR},
+      </if>
+      <if test="ENTRY_DEDUCT_CY != null and ENTRY_DEDUCT_CY != emptyBigDecimalValue" >
+        #{ENTRY_DEDUCT_CY},
+      </if>
+      <if test="ENTRY_DEDUCT_GL != null and ENTRY_DEDUCT_GL != emptyBigDecimalValue" >
+        #{ENTRY_DEDUCT_GL},
+      </if>
+      <if test="ENTRY_DEDUCT_CIF != null and ENTRY_DEDUCT_CIF != emptyBigDecimalValue" >
+        #{ENTRY_DEDUCT_CIF},
+      </if>
+       <if test="ENTRY_DEDUCT_SL != null and ENTRY_DEDUCT_SL != emptyBigDecimalValue" >
+        #{ENTRY_DEDUCT_SL},
+      </if>
+       <if test="AVAIL_BAL_FC != null and AVAIL_BAL_FC != emptyBigDecimalValue" >
+        #{AVAIL_BAL_FC},
+      </if>
+    </trim>
+  </insert>
+</mapper>

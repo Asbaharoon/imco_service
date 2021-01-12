@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashInvestmentsMapper">
+	<sql id="investmentsQuery">
+	 SELECT
+	 firstTbl.*,
+	   (CASE WHEN
+	              EXISTS(SELECT 1 
+	                          FROM SYS_PARAM_LOV_TRANS 
+	                         WHERE LOV_TYPE_ID = #{lovType}
+	                           AND LANG_CODE = #{langCode}
+	                           AND VALUE_CODE = firstTbl.PMSPAC_STATUS)
+	             THEN (SELECT VALUE_DESC
+	                     FROM SYS_PARAM_LOV_TRANS 
+	                    WHERE LOV_TYPE_ID = #{lovType}
+	                      AND LANG_CODE = #{langCode}
+	                      AND VALUE_CODE = firstTbl.PMSPAC_STATUS)
+	             ELSE firstTbl.PMSPAC_STATUS
+     END) as STATUS	 
+	 FROM
+	 (
+	 
+		SELECT PMS_PF_SELECTION.BRANCH BRANCH
+		      ,PMS_PF_SELECTION.PORTFOLIO_CIF CIF
+		      ,PMS_PF_SELECTION.PORTFOLIO_SEQ SEQ
+		      ,MIN(PMSPAC.BRIEF_NAME_ENG) PF_NAME
+		      ,MIN(PMSPAC.LONG_NAME_ENG) LONG_NAME
+		      ,MIN(CURRENCIES.BRIEF_DESC_ENG) BASE_CY
+		      ,MIN(CASE
+		             WHEN PMSPAC.PORTFOLIO_TYPE = 'Y' THEN
+		              'Company'
+		             ELSE
+		              'Client'
+		           END) PORTFOLIO_TYPE
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_PORTFOLIO) PORTFOLIO_VALUE_BASE_CY
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_CV *CASE WHEN TMP_CYEXRATE.MULT_DIV_IND = 'M' THEN TMP_CYEXRATE.UNIT/TMP_CYEXRATE.EXCH_RATE ELSE TMP_CYEXRATE.EXCH_RATE / TMP_CYEXRATE.UNIT END) PORTFOLIO_VALUE_CONS_CY <!-- modified by abbas for Bug#470633 -->
+		      ,MIN(TMP_CYEXRATE.DEC_POINT) CONSOL_DEC_POINTS <!-- added by abbas for Bug#470633 -->
+		      ,MIN(PMSPAC.DATE_OPENED) DATE_OPENED
+		      ,MIN(PMSPAC.STATUS) PMSPAC_STATUS
+		      ,SUM(CASE
+		             WHEN PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 
+		             THEN
+		                  CASE WHEN PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO IS NULL 
+		                       THEN 0
+		                       ELSE PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO
+		                  END 
+		             ELSE 
+		                  CASE WHEN PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO IS NULL 
+		                  THEN 0
+		                  ELSE PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO
+		             END 
+		           END) PORTFOLIO_MARKET_BASE_CY
+		      <!-- modified by abbas for Bug#470633 -->
+		      ,SUM(CASE
+		             WHEN PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 
+		             THEN
+		                PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_CV *CASE WHEN TMP_CYEXRATE.MULT_DIV_IND = 'M' THEN TMP_CYEXRATE.UNIT/TMP_CYEXRATE.EXCH_RATE ELSE TMP_CYEXRATE.EXCH_RATE / TMP_CYEXRATE.UNIT END
+		             ELSE
+		                PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_CV *CASE WHEN TMP_CYEXRATE.MULT_DIV_IND = 'M' THEN TMP_CYEXRATE.UNIT/TMP_CYEXRATE.EXCH_RATE ELSE TMP_CYEXRATE.EXCH_RATE / TMP_CYEXRATE.UNIT END
+		           END) PORTFOLIO_MARKET_CONS_CY
+		       <!-- end abbas --> 
+		      ,CURRENCIES.DECIMAL_POINTS,
+		      SUM(PMSPAC.INITIAL_INVESTMENT) INITIAL_INVESTMENT  <!-- added by abbas for Bug#470633  -->  
+		  FROM PMS_PF_SELECTION
+		  LEFT OUTER JOIN PMSPORTFOLIO_POSITION_TEMP ON PMS_PF_SELECTION.COMP_CODE     = PMSPORTFOLIO_POSITION_TEMP.COMP_CODE
+		                                            AND PMS_PF_SELECTION.BRANCH        = PMSPORTFOLIO_POSITION_TEMP.BRANCH
+		                                            AND PMS_PF_SELECTION.USER_ID       = PMSPORTFOLIO_POSITION_TEMP.USER_ID
+		                                            AND PMS_PF_SELECTION.PORTFOLIO_CIF = PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF
+		                                            AND PMS_PF_SELECTION.PORTFOLIO_SEQ = PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ
+		                                            AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER IN (1, 2)
+		                                            AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{runningDate,jdbcType=VARCHAR}
+		                                            <if test="loginTypeByBr == 1">
+														AND PMSPORTFOLIO_POSITION_TEMP.BRANCH =  #{branchCode,jdbcType=NUMERIC}
+												    </if>	
+												    AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+               			
+		      ,PMSPAC, CURRENCIES,TMP_CYEXRATE
+		 WHERE PMS_PF_SELECTION.COMP_CODE     = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+			   AND PMS_PF_SELECTION.BRANCH    = #{branchCode,jdbcType=NUMERIC}
+			</if>
+		   AND PMS_PF_SELECTION.USER_ID       = #{userId,jdbcType=VARCHAR}
+		   AND PMS_PF_SELECTION.COMP_CODE     = PMSPAC.COMP_CODE
+		   AND PMS_PF_SELECTION.PORTFOLIO_CIF = PMSPAC.CIF
+		   AND PMS_PF_SELECTION.PORTFOLIO_SEQ = PMSPAC.SEQ
+		   AND PMSPAC.COMP_CODE               = CURRENCIES.COMP_CODE
+			<if test="loginTypeByBr == 1">
+			   AND PMSPAC.BRANCH     		  = #{branchCode,jdbcType=NUMERIC}
+		    </if>
+		   AND PMSPAC.BASE_CURRENCY           = CURRENCIES.CURRENCY_CODE
+		   AND PMSPAC.STATUS				  = 'A'
+		   AND PMS_PF_SELECTION.APP_NAME      = #{appName,jdbcType=VARCHAR}
+		   AND PMS_PF_SELECTION.REP_REF       = #{progRef,jdbcType=VARCHAR}
+		   <!-- added by abbas for Bug#470633 -->
+		   AND TMP_CYEXRATE.COMP_CODE         = PMS_PF_SELECTION.COMP_CODE
+		   AND TMP_CYEXRATE.CURRENCY_CODE     = #{consolCy,jdbcType=NUMERIC}
+		   AND TMP_CYEXRATE.USER_ID           = #{userId,jdbcType=VARCHAR}
+		   <!-- end abbas -->
+		  	   
+		  
+		 GROUP BY PMS_PF_SELECTION.PORTFOLIO_CIF,PMS_PF_SELECTION.BRANCH, PMS_PF_SELECTION.PORTFOLIO_SEQ,CURRENCIES.DECIMAL_POINTS
+     )firstTbl
+	</sql>
+	
+	<resultMap id="investmentsListMap" type="dashInvestmentsCO">
+		<result property="pmsPortfolioTmpVO.BRANCH"						column="BRANCH"/>
+		<result property="pmsPortfolioTmpVO.PORTFOLIO_CIF"				column="CIF"/>
+		<result property="pmsPortfolioTmpVO.PORTFOLIO_SEQ"				column="SEQ"/>
+		<result property="pmsPortfolioTmpVO.PORTFOLIO_NAME"				column="PF_NAME"/>
+		<result property="pmspacVO.LONG_NAME_ENG"						column="LONG_NAME"/>
+		<result property="pmsPortfolioTmpVO.BASE_CY_NAME"				column="BASE_CY"/>
+		<result property="pmspacVO.PORTFOLIO_TYPE"						column="PORTFOLIO_TYPE"/>
+		<result property="pmsPortfolioTmpVO.AMOUNT_PORTFOLIO"			column="PORTFOLIO_VALUE_BASE_CY"/>
+		<result property="pmsPortfolioTmpVO.AMOUNT_CV"					column="PORTFOLIO_VALUE_CONS_CY"/>
+		<result property="pmsPortfolioTmpVO.DATE_OPENED"				column="DATE_OPENED"/>
+		<result property="pmspacVO.STATUS"								column="STATUS"/>
+		<result property="pmsPortfolioTmpVO.VDATE_AMOUNT_PORTFOLIO"		column="PORTFOLIO_MARKET_BASE_CY"/>
+		<result property="pmsPortfolioTmpVO.VDATE_AMOUNT_CV"			column="PORTFOLIO_MARKET_CONS_CY"/>
+		<result property="decimalPoints"    							column="DECIMAL_POINTS"/>
+		<result property="pmspacVO.INITIAL_INVESTMENT"					column="INITIAL_INVESTMENT"/><!-- added by abbas for Bug#470633  -->
+		<result property="consolDecimalPoints"					        column="CONSOL_DEC_POINTS"/><!-- added by abbas for Bug#470633  -->
+	</resultMap>
+	
+	<select id="investmentsList" parameterType="dashboardSC" resultMap="investmentsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="investmentsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="investmentsListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="investmentsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="bookValueQuery">
+		SELECT PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_NAME GRAPH_NAME,
+       		ABS(SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_CV)) GRAPH_VALUE      
+		FROM PMSPORTFOLIO_POSITION_TEMP
+		WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND PMSPORTFOLIO_POSITION_TEMP.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+			AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER IN (1,2)
+			AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{runningDate,jdbcType=DATE}
+			 AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+			
+		GROUP BY PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_NAME
+	</sql>
+	
+	<select id="bookValueList" parameterType="dashboardSC" resultMap="amountsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bookValueQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="bookValueListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bookValueQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="marketValueQuery">
+		SELECT PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_NAME GRAPH_NAME, 
+       		ABS(SUM(CASE WHEN PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 
+       				THEN PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_CV
+       			ELSE PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_CV END)) GRAPH_VALUE     
+		FROM PMSPORTFOLIO_POSITION_TEMP
+		WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND PMSPORTFOLIO_POSITION_TEMP.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+			AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER IN (1,2)
+			AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{runningDate,jdbcType=DATE}
+			 AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+		GROUP BY PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_NAME
+	</sql>
+	
+	<select id="marketValueList" parameterType="dashboardSC" resultMap="amountsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="marketValueQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="marketValueListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="marketValueQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<resultMap id="amountsListMap" type="dashboardGraphCO">
+		<result property="name"			column="GRAPH_NAME"/>
+		<result property="value"		column="GRAPH_VALUE"/>
+		<result property="trsDate"		column="TRADE_DATE"/>
+		<result property="market"		column="GRAPH_MARKET"/>
+	</resultMap>
+	
+	<sql id="cashPositionQuery">
+		SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SECTOR_NAME) account_type
+		      ,MIN(PMSPORTFOLIO_POSITION_TEMP.ACC_CY_NAME) currency
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL) value_trade_cy
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO) value_base_cy
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+			       AND C.COMP_CODE     = PMSPORTFOLIO_POSITION_TEMP.COMP_CODE) as decimal_points
+              ,PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE acc_gl
+              ,PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY acc_cy
+		  FROM PMSPORTFOLIO_POSITION_TEMP
+		 WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = #{compCode}
+		   <if test="loginTypeByBr == 1">
+			   AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+		   </if>
+		   AND PMSPORTFOLIO_POSITION_TEMP.USER_ID       = #{userId}
+		   AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER    = 2
+		   AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE    = #{asOfDate}
+		   AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no}
+		   AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq}
+		    AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+		 GROUP BY PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE
+		         ,PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY
+		         ,PMSPORTFOLIO_POSITION_TEMP.COMP_CODE	  
+	</sql>
+	<resultMap id="cashPositionListMap" type="dashPrtfCashPosHoldPosCO">
+		<result property="account_type"	  column="account_type"/>
+		<result property="currency"		  column="currency"/>
+		<result property="value_trade_cy" column="value_trade_cy"/>
+		<result property="value_base_cy"  column="value_base_cy"/>
+		<result property="decimal_points" column="decimal_points"/>
+		<result property="acc_gl"         column="acc_gl"/>
+		<result property="acc_cy"         column="acc_cy"/>
+	</resultMap>
+	<select id="cashPositionList" parameterType="dashboardSC" resultMap="cashPositionListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="cashPositionQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	<select id="cashPositionListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="cashPositionQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="holdingPositionQuery">
+		SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE_NAME) security_type
+		      ,MIN(PMSPORTFOLIO_POSITION_TEMP.TRADE_CY_NAME) cyDesc
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT)        book_value
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT)  market_value
+		      ,SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) market_value_base_cy
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+			       AND C.COMP_CODE     = PMSPORTFOLIO_POSITION_TEMP.COMP_CODE) as decimal_points
+			  ,PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE secType
+			  ,PMSPORTFOLIO_POSITION_TEMP.TRADE_CY tradeCy
+		  FROM PMSPORTFOLIO_POSITION_TEMP
+		 WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = #{compCode}
+		 <if test="loginTypeByBr == 1">
+		   AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+		 </if>
+		   AND PMSPORTFOLIO_POSITION_TEMP.USER_ID       = #{userId}
+		   AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER    = 1
+		   AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE    = #{asOfDate}
+		   AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no}
+		   AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq}
+		 GROUP BY PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE
+		         ,PMSPORTFOLIO_POSITION_TEMP.TRADE_CY
+		         ,PMSPORTFOLIO_POSITION_TEMP.COMP_CODE	  
+	</sql>
+	<resultMap id="holdingPositionListMap" type="dashPrtfCashPosHoldPosCO">
+		<result property="security_type"	    column="security_type"/>
+		<result property="cyDesc"		        column="cyDesc"/>
+		<result property="book_value"           column="book_value"/>
+		<result property="market_value"         column="market_value"/>
+		<result property="market_value_base_cy" column="market_value_base_cy"/>
+		<result property="decimal_points"       column="decimal_points"/>
+		<result property="secType"              column="secType"/>
+		<result property="tradeCy"              column="tradeCy"/>
+	</resultMap>
+	<select id="holdingPositionList" parameterType="dashboardSC" resultMap="holdingPositionListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="holdingPositionQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="holdingPositionListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="holdingPositionQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	<resultMap id="portfolioCashHoldingDataMap" type="dashPrtfCashPosHoldPosCO">
+	   <result property="portfolioNo"             column="portfolioNo"/>
+	   <result property="portfolioName"           column="PORTFOLIO_NAME"/>
+	   <result property="totalUnrealizedGainLoss" column="TOTAL_UNREAL_GAIN_LOSS"/>
+	   <result property="totalRealizedGainLoss"   column="TOTAL_REALIZED_GAIN_LOSS"/>
+	   <result property="unrealizedCyGainLoss"    column="UNREALIZED_CY_GAIN_LOSS"/>
+	   <result property="totalAssets"             column="TOTAL_ASSETS"/>
+	</resultMap>
+	<select id="returnPortfolioCashHoldingData" parameterType="dashboardSC" resultMap="portfolioCashHoldingDataMap">
+			SELECT 
+		       <choose>
+		         <when test="isSybase == 1">
+                       CONVERT(VARCHAR,PMSPAC.CIF)+'-'+CONVERT(VARCHAR,PMSPAC.SEQ) as portfolioNo
+		         </when>
+		         <otherwise>
+                      PMSPAC.CIF||'-'||PMSPAC.SEQ as portfolioNo 
+		         </otherwise>
+		       </choose>
+		      
+		      ,MIN(CASE
+		             WHEN #{langCode} = 'EN' THEN
+		              PMSPAC.BRIEF_NAME_ENG
+		             ELSE
+		              PMSPAC.BRIEF_NAME_ARAB
+		           END) PORTFOLIO_NAME
+		      
+		      
+		      ,MIN(PMSPORTFOLIO_POSITION_TEMP.BASE_CY_NAME)   BASE_CY_NAME
+		      ,MIN(CIF.SHORT_NAME_ENG)                        CIF_NAME
+              ,SUM(CASE WHEN SORT_ORDER = 1 THEN (PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO - PMSPORTFOLIO_POSITION_TEMP.AMOUNT_PORTFOLIO)
+		                ELSE 0 
+		            END) TOTAL_UNREAL_GAIN_LOSS
+		      ,SUM(CASE WHEN SORT_ORDER = 1 THEN PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO ELSE 0 END) TOTAL_REALIZED_GAIN_LOSS
+		      ,SUM(CASE WHEN SORT_ORDER = 1 THEN (PMSPORTFOLIO_POSITION_TEMP.CASH_HOLDINGS - PMSPORTFOLIO_POSITION_TEMP.AMOUNT_PORTFOLIO) 
+		                ELSE (PMSPORTFOLIO_POSITION_TEMP.CASH_HOLDINGS - PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO) 
+		           END) UNREALIZED_CY_GAIN_LOSS
+		      ,SUM(CASE WHEN SORT_ORDER = 1 THEN PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO 
+		                ELSE PMSPORTFOLIO_POSITION_TEMP.REALIZED_GL_PORTFOLIO END) TOTAL_ASSETS		      
+		  FROM PMSPAC 
+	      LEFT JOIN PMSPORTFOLIO_POSITION_TEMP 
+	      ON
+	           PMSPAC.CIF = PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF
+	           AND PMSPAC.SEQ = PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ
+	           AND PMSPAC.COMP_CODE = PMSPORTFOLIO_POSITION_TEMP.COMP_CODE
+	           AND PMSPAC.BRANCH = PMSPORTFOLIO_POSITION_TEMP.BRANCH           
+	           AND PMSPORTFOLIO_POSITION_TEMP.USER_ID       = #{userId}
+	           AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER IN (1,2)
+	           AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE    = #{asOfDate}
+	            AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+	           ,CIF
+		   WHERE PMSPAC.COMP_CODE     = CIF.COMP_CODE
+			   AND PMSPAC.CIF = CIF.CIF_NO
+	       AND PMSPAC.COMP_CODE 	= #{compCode}
+	       <if test="loginTypeByBr == 1">
+			   AND PMSPAC.BRANCH 		= #{branchCode}
+	       </if>
+	       AND PMSPAC.CIF = #{cif_no}
+	       AND PMSPAC.SEQ = #{portfolioSeq}
+	       
+	     GROUP BY PMSPAC.CIF
+	             ,PMSPAC.SEQ
+	</select>
+
+	<select id="allSecuritiesChart" resultMap="amountsListMap" parameterType="dashboardSC">
+		SELECT PMSHST.TRADE_DATE,
+	    	SUM((CASE WHEN PMSHST.MARKET_PRICE_CV IS NULL THEN 0 ELSE PMSHST.MARKET_PRICE_CV END )) GRAPH_MARKET,
+	     	SUM(CASE WHEN PMSHST.VALUE_CV IS NULL THEN 0 ELSE PMSHST.VALUE_CV END ) GRAPH_VALUE
+		FROM PMSHST
+		WHERE PMSHST.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND	PMSHST.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND	PMSHST.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+			AND	PMSHST.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+			<if test="securityCode1 != null and securityCode1 != 0">
+				AND	PMSHST.SECURITY_CODE1 = #{securityCode1,jdbcType=NUMERIC}
+			</if>
+			<if test="securityCode2 != null and securityCode2 != 0">
+				AND	PMSHST.SECURITY_CODE2 = #{securityCode2,jdbcType=NUMERIC}
+			</if>
+			AND	PMSHST.TRADE_DATE BETWEEN #{fromDate,jdbcType=DATE} AND #{asOfDate,jdbcType=DATE}
+			AND	PMSHST.APP_ORIGIN = 'R'
+		GROUP BY PMSHST.TRADE_DATE
+		ORDER BY PMSHST.TRADE_DATE
+	</select>
+
+	<select id="prtflPosSummaryChart" resultMap="amountsListMap" parameterType="dashboardSC">
+		<choose>
+			<when test='"1".equals(prtflPosSummaryOption)'>
+				SELECT CASE WHEN SORT_ORDER = 1 THEN 'Holding' ELSE 'Cash' END GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_CV) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				    <if test="loginTypeByBr == 1">
+					    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				    </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER IN (1, 2)
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND	PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND	PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+					 AND ( (PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2  AND NOT EXISTS (
+		                                                                   SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                                        WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                                        AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                                        AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                                        AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                                        AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         						))
+													OR PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1 )
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER
+			</when>
+			<when test='"2".equals(prtflPosSummaryOption)'>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SECURITY_NAME) GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				    <if test="loginTypeByBr == 1">
+					    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				    </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND	PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND	PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.SECURITY_CODE1,
+					PMSPORTFOLIO_POSITION_TEMP.SECURITY_CODE2
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.SECURITY_CODE1,
+					PMSPORTFOLIO_POSITION_TEMP.SECURITY_CODE2
+			</when>
+			<when test='"3".equals(prtflPosSummaryOption)'>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.TRADE_CY_NAME) GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				   <if test="loginTypeByBr == 1">
+					    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				   </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.TRADE_CY
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.TRADE_CY
+			</when>
+			<when test='"4".equals(prtflPosSummaryOption)'>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE_NAME) GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+					<if test="loginTypeByBr == 1">
+					    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				    </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.SEC_TYPE
+			</when>
+			<when test='"5".equals(prtflPosSummaryOption)'>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SECTOR_NAME) GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				    <if test="loginTypeByBr == 1">
+					    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				    </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 1
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND	PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.SECTOR
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.SECTOR
+			</when>
+			<when test='"6".equals(prtflPosSummaryOption)'>
+				SELECT
+				<!--	 bug 473472			-->
+					<choose>
+			         <when test="isSybase == 1">
+	                        CONVERT(VARCHAR,PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH)+'-'+
+							CONVERT(VARCHAR,PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY)+'-'+
+							CONVERT(VARCHAR,PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE)+'-'+
+							CONVERT(VARCHAR,PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO) +'-'+
+							CONVERT(VARCHAR,PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO) GRAPH_NAME,
+			         </when>
+			         <otherwise>
+	                    PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH||'-'||
+						PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY||'-'||
+						PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE||'-'||
+						PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO ||'-'||
+						PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO GRAPH_NAME, 
+			         </otherwise>
+			       </choose>
+			<!--					SUM(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO) GRAPH_VALUE-->
+					SUM(CASE WHEN AMF.AC_SIGN='C' THEN 
+				               ABS(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO)
+				           ELSE
+				               PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO
+				           END )GRAPH_VALUE
+				  <!--	 bug 473472			-->
+<!-- 					SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_CV) GRAPH_VALUE -->
+				FROM PMSPORTFOLIO_POSITION_TEMP,AMF <!--	 bug 473472			-->
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				  <if test="loginTypeByBr == 1">
+				    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				  </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+					<!--	 bug 473472			-->
+					AND PMSPORTFOLIO_POSITION_TEMP.COMP_CODE =  AMF.COMP_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH=AMF.BRANCH_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY=AMF.CURRENCY_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE=AMF.GL_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO=AMF.CIF_SUB_NO
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO=AMF.SL_NO
+			        AND (NOT EXISTS ( SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                           WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                           AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                           AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                           AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                           AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         	))
+			        <!--	 bug 473472			-->
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO,
+					   PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO
+		   	</when>
+			<when test='"7".equals(prtflPosSummaryOption)'>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.ACC_CY_NAME) GRAPH_NAME,
+<!-- 					SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_CV) GRAPH_VALUE -->
+					<!--	 bug 473472			-->
+					   SUM(CASE WHEN AMF.AC_SIGN='C' THEN 
+				               ABS(PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO)
+				           ELSE
+				               PMSPORTFOLIO_POSITION_TEMP.VDATE_AMOUNT_PORTFOLIO
+				           END )GRAPH_VALUE
+				           <!--	 bug 473472			-->
+				FROM PMSPORTFOLIO_POSITION_TEMP,AMF <!--	 bug 473472			-->
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				   <if test="loginTypeByBr == 1">
+				    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				   </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+					<!--	 bug 473472			-->
+					AND PMSPORTFOLIO_POSITION_TEMP.COMP_CODE =  AMF.COMP_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_BRANCH=AMF.BRANCH_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY=AMF.CURRENCY_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE=AMF.GL_CODE
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO=AMF.CIF_SUB_NO
+			        AND PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO=AMF.SL_NO
+			        AND (NOT EXISTS ( SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                           WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                           AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                           AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                           AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                           AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         	))
+			        <!--	 bug 473472			-->
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY
+			</when>
+			<otherwise>
+				SELECT MIN(PMSPORTFOLIO_POSITION_TEMP.SECTOR_NAME) GRAPH_NAME,
+					SUM(PMSPORTFOLIO_POSITION_TEMP.AMOUNT_CV) GRAPH_VALUE
+				FROM PMSPORTFOLIO_POSITION_TEMP
+				WHERE PMSPORTFOLIO_POSITION_TEMP.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				 <if test="loginTypeByBr == 1">
+				    AND PMSPORTFOLIO_POSITION_TEMP.BRANCH 		= #{branchCode}
+				 </if>
+					AND PMSPORTFOLIO_POSITION_TEMP.USER_ID = #{userId,jdbcType=VARCHAR}
+					AND PMSPORTFOLIO_POSITION_TEMP.SORT_ORDER = 2
+					AND PMSPORTFOLIO_POSITION_TEMP.TRADE_DATE = #{asOfDate,jdbcType=DATE}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+					AND PMSPORTFOLIO_POSITION_TEMP.PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+					AND (NOT EXISTS ( SELECT 1 FROM ACC_RESTRICTED AccRest 
+			                           WHERE  PMSPORTFOLIO_POSITION_TEMP.COMP_CODE     = AccRest.COMP_CODE  
+			                           AND  PMSPORTFOLIO_POSITION_TEMP. ACC_BRANCH    = AccRest.BRANCH_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CURRENCY   = AccRest.CURRENCY_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE    = AccRest.GL_CODE 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			                           AND  PMSPORTFOLIO_POSITION_TEMP.ACC_SL_NO      = AccRest.SL_NO 
+			                           AND  AccRest.USER_ID                           = #{userId,jdbcType=VARCHAR}
+			                           AND  AccRest.PROG_REF                          = #{progRef,jdbcType=VARCHAR}
+			                           AND  AccRest.APP_NAME                          = #{appName,jdbcType=VARCHAR}
+		                         	))
+				GROUP BY PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE
+				ORDER BY PMSPORTFOLIO_POSITION_TEMP.ACC_GL_CODE
+		   	</otherwise>
+		</choose>
+	</select>
+	
+	<resultMap id="returnSecuritiesLookupListMap" type="pmsPortfolioPostitionTmpVO">
+	   <result property="SECURITY_CODE1"	column="SECURITY_CODE1"/>
+	   <result property="SECURITY_CODE2"	column="SECURITY_CODE2"/>
+	   <result property="SECURITY_NAME" 	column="SECURITY_NAME"/>
+	</resultMap>
+	
+	<sql id="returnSecuritiesLookupQuery">
+		SELECT 0 SECURITY_CODE1, 0 SECURITY_CODE2, 'All_Securities_key' SECURITY_NAME
+		FROM PTH_CTRL
+		UNION
+		SELECT DISTINCT SECURITY_CODE1, SECURITY_CODE2, SECURITY_NAME
+		FROM PMSPORTFOLIO_POSITION_TEMP
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		  <if test="loginTypeByBr == 1">
+		    AND BRANCH 	= #{branchCode,jdbcType=NUMERIC}
+		  </if>
+			AND USER_ID = #{userId,jdbcType=VARCHAR}
+			AND SORT_ORDER = 1
+			AND TRADE_DATE = #{runningDate,jdbcType=DATE}
+			AND	PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+			AND	PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+	</sql>
+	
+	<select id="returnSecuritiesLookupList" parameterType="dashboardSC" resultMap="returnSecuritiesLookupListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="returnSecuritiesLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="returnSecuritiesLookupListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="returnSecuritiesLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<select id="dashInvestmentDependencyBySecurity" resultMap="returnSecuritiesLookupListMap" parameterType="dashboardSC">
+		SELECT DISTINCT SECURITY_CODE1, SECURITY_CODE2, SECURITY_NAME
+		FROM PMSPORTFOLIO_POSITION_TEMP
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND USER_ID = #{userId,jdbcType=VARCHAR}
+			AND SORT_ORDER = 1
+			AND TRADE_DATE = #{runningDate,jdbcType=DATE}
+			AND	PORTFOLIO_CIF = #{cif_no,jdbcType=NUMERIC}
+			AND	PORTFOLIO_SEQ = #{portfolioSeq,jdbcType=NUMERIC}
+			AND SECURITY_NAME = #{securityName,jdbcType=VARCHAR}
+	</select>
+</mapper>

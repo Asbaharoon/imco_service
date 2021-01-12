@@ -1,0 +1,1772 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="dashboardMapper">
+    <resultMap id="dahboardCifByIdMap" type="dashboardCO">
+      <result property="cifVO.CIF_NO" 		  column="CIF_NO"/>
+      <result property="cifVO.BRANCH_CODE" 	  column="BRANCH_CODE"/>
+	  <result property="cifVO.LONG_NAME_ENG"  column="LONG_NAME_ENG"/>	
+	  <result property="cifVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB"/>
+      <result property="cifVO.STATUS" 		  column="STATUS"/>
+      <result property="cifVO.BLACK_LISTED"   column="BLACK_LISTED"/>
+      <result property="cif_status"           column="cifStatusDesc"/>
+      <result property="cifBranchDesc"        column="cifBranchDesc"/>
+      <result property="creditRating"         column="creditRating"/>
+      <result property="cif_classification"   column="cif_classification"/>
+      <result property="obligorDesc"          column="oneObligor"/>
+      <result column="KYC_COMPLETED" property="cifVO.KYC_COMPLETED" />
+      <result property="priorityDesc" column="PRIORITY_DESC"   />
+      <result column="ATTORNEY_OUTSIDE_COUNTRY_YN" property="ATTORNEY_OUTSIDE_COUNTRY_YN" />
+      <result property="scoreRiskDescription" column="scoreRiskDescription"/>
+      <result property="scoreRiskValue"       column="SCORE_RISK_VALUE"/>
+      
+      
+    </resultMap>
+	<select id="dahboardDependCifById"  resultMap="dahboardCifByIdMap" parameterType="dashboardSC">
+	  SELECT CIF.CIF_NO
+	        ,CIF.BRANCH_CODE
+	      ,CIF.LONG_NAME_ENG
+	      ,CIF.LONG_NAME_ARAB
+	      ,CIF.STATUS
+	      ,CIF.BLACK_LISTED
+		  ,(CASE WHEN
+		              EXISTS(SELECT 1 
+	                           FROM SYS_PARAM_LOV_TRANS 
+	                          WHERE LOV_TYPE_ID = #{lovType}
+	                            AND LANG_CODE = #{langCode}
+	                            AND VALUE_CODE = CIF.STATUS)
+	              THEN (SELECT VALUE_DESC
+	                      FROM SYS_PARAM_LOV_TRANS 
+	                     WHERE LOV_TYPE_ID = #{lovType}
+	                       AND LANG_CODE = #{langCode}
+	                       AND VALUE_CODE = CIF.STATUS)
+	              ELSE STATUS
+	       END) as cifStatusDesc
+	     ,(
+	         SELECT
+				    <choose>
+				       <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+				         CREDIT_RATING.BRIEF_NAME_ARAB 
+				       </when>
+				       <otherwise>
+				         CREDIT_RATING.BRIEF_NAME_ENG
+				       </otherwise>
+				    </choose> 
+	           FROM CREDIT_RATING 
+	          WHERE CREDIT_RATING.COMP_CODE = CIF.COMP_CODE 
+	            AND CREDIT_RATING.CODE = CIF.CREDIT_RATING
+	      ) as creditRating
+	     ,(
+			SELECT BRIEF_NAME_ENG
+			  FROM TRS_PROVISION_CATEGORY,
+			      (
+			        SELECT MAX(DEAL_PROVISION_CATEGORY_USER) DEAL_PROVISION_CATEGORY_USER 
+			          FROM TRSDEAL
+			         WHERE TRSDEAL.COMP_CODE =  #{compCode}
+			           AND TRSDEAL.CIF_NO    =  #{cif_no}
+			           AND TRSDEAL.STATUS    =  'P'
+			           AND EXISTS (
+			                SELECT 1
+			                  FROM TRS_PROVISION_GROUP
+			                 WHERE TRS_PROVISION_GROUP.COMP_CODE = #{compCode}
+			                   AND TRS_PROVISION_GROUP.FISCAL_IMPLICATION ='Y'
+			               		AND CASE WHEN OVERALL_BY_COMPANY_YN IS NULL
+			                            THEN 'C'
+			                            ELSE OVERALL_BY_COMPANY_YN
+			                        END = 'Y')
+			           AND CASE WHEN TRSDEAL.DEAL_CLASSIFY_STATUS IS NULL
+			                    THEN 'N'
+			                    ELSE DEAL_CLASSIFY_STATUS
+			                END <![CDATA[<>]]> 'C'
+			      ) T1,
+			      ( 
+			       SELECT MAX(DEAL_PROVISION_CATEGORY_USER) DEAL_PROVISION_CATEGORY_USER
+			         FROM TRSDEAL
+			        WHERE TRSDEAL.COMP_CODE   = #{compCode}
+			        <if test="branchCode!=null">
+			          AND TRSDEAL.BRANCH_CODE = #{branchCode}
+			        </if>  
+			          AND TRSDEAL.CIF_NO      = #{cif_no}
+			          AND TRSDEAL.STATUS      = 'P'
+			          AND NOT EXISTS (
+			                SELECT 1
+			                  FROM TRS_PROVISION_GROUP
+			                 WHERE TRS_PROVISION_GROUP.COMP_CODE          = #{compCode}
+			                   AND TRS_PROVISION_GROUP.FISCAL_IMPLICATION ='Y'
+			              		AND CASE WHEN OVERALL_BY_COMPANY_YN IS NULL
+			                            THEN 'C'
+			                            ELSE OVERALL_BY_COMPANY_YN
+			                        END = 'Y')
+			         AND CASE WHEN TRSDEAL.DEAL_CLASSIFY_STATUS IS NULL
+			                  THEN 'N'
+			                  ELSE DEAL_CLASSIFY_STATUS
+			              END <![CDATA[<>]]> 'C'
+			      ) T2              
+			WHERE TRS_PROVISION_CATEGORY.CODE = T1.DEAL_PROVISION_CATEGORY_USER
+			or TRS_PROVISION_CATEGORY.CODE    = T2.DEAL_PROVISION_CATEGORY_USER
+	       ) as cif_classification
+	     ,(SELECT
+			    <choose>
+			       <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+			         RIFOBT.LONG_DESC_ARAB 
+			       </when>
+			       <otherwise>
+			         RIFOBT.LONG_DESC_ENG
+			       </otherwise>
+			    </choose> 
+	         FROM RIFOBT 
+	        WHERE RIFOBT.COMP_CODE = CIF.COMP_CODE 
+	          AND RIFOBT.OBLIGOR_CODE = CIF.ONE_OBLIGOR) oneObligor
+	     ,(SELECT
+	              <choose>
+	                 <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+	                   BRANCHES.BRIEF_DESC_ARAB 
+	                 </when>
+	                 <otherwise>
+	                   BRANCHES.BRIEF_DESC_ENG
+	                 </otherwise>
+	              </choose> 
+	         FROM BRANCHES 
+	        WHERE COMP_CODE = CIF.COMP_CODE  
+	          AND BRANCH_CODE = CIF.BRANCH_CODE) as cifBranchDesc,
+	         CIF.KYC_COMPLETED,
+	          (SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' 
+	          THEN RIFPCT.BRIEF_DESC_ARAB ELSE RIFPCT.BRIEF_DESC_ENG END FROM  RIFPCT WHERE RIFPCT.COMP_CODE 
+	           = CIF.COMP_CODE AND RIFPCT.PRIORITY_CODE = CIF.PRIORITY_CODE )     PRIORITY_DESC,
+	         CIF_KYC.ATTORNEY_OUTSIDE_COUNTRY_YN,
+	          CIF_EXTENDED.SCORE_RISK_VALUE,
+	          (SELECT RISK_LEVEL FROM CIFCONTROL_DEFINE_SCORE_RANGE WHERE CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE = CIF_EXTENDED.COMP_CODE 
+	          			  AND CIF_EXTENDED.SCORE_RISK_VALUE BETWEEN CIFCONTROL_DEFINE_SCORE_RANGE.FROM_SCORE AND CIFCONTROL_DEFINE_SCORE_RANGE.TO_SCORE) scoreRiskDescription
+       FROM CIF,CIF_EXTENDED,CIF_KYC     
+	   WHERE CIF.CIF_NO    = #{cif_no}
+	     AND CIF.COMP_CODE = #{compCode}
+	   <if test="branchCode!=null">
+	     AND CIF.BRANCH_CODE = #{branchCode}
+	   </if>
+	   AND CIF.COMP_CODE = CIF_EXTENDED.COMP_CODE 
+	   AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO	     
+	   AND CIF_KYC.COMP_CODE = CIF.COMP_CODE
+	   AND CIF_KYC.CIF_NO = CIF.CIF_NO
+	</select>
+
+
+	<sql id="dashAccDtlQuery">
+		SELECT  
+		       <choose>
+			     <when test="isSybase == 1">
+			        ((REPLICATE('0',4 - DATALENGTH(CONVERT(VARCHAR(4),AMF.BRANCH_CODE))) + CONVERT(VARCHAR(4),AMF.BRANCH_CODE)) +'-'+ 
+			         (REPLICATE('0',3 - DATALENGTH(CONVERT(VARCHAR(3),AMF.CURRENCY_CODE))) + CONVERT(VARCHAR(3),AMF.CURRENCY_CODE)) +'-'+ 
+			         (REPLICATE('0',6 - DATALENGTH(CONVERT(VARCHAR(6),AMF.GL_CODE))) + CONVERT(VARCHAR(6),AMF.GL_CODE))+'-'+ 
+			         (REPLICATE('0',8 - DATALENGTH(CONVERT(VARCHAR(8),AMF.CIF_SUB_NO))) + CONVERT(VARCHAR(8),AMF.CIF_SUB_NO)) +'-'+ 
+			         (REPLICATE('0',3 - DATALENGTH(CONVERT(VARCHAR(3),AMF.SL_NO))) + CONVERT(VARCHAR(3),AMF.SL_NO))  ) AS acc_num_format
+		        </when>
+		        <otherwise>
+		       (AMF.BRANCH_CODE ||'-'|| AMF.CURRENCY_CODE||'-'|| AMF.GL_CODE ||'-'|| AMF.CIF_SUB_NO ||'-'|| AMF.SL_NO) as acc_num_format
+		       </otherwise>
+		       </choose>
+		       ,AMF.ACCOUNT_NUMBER  acc_num
+		      ,AMF.BRANCH_CODE
+		      ,AMF.CURRENCY_CODE
+		      ,AMF.GL_CODE
+		      ,AMF.CIF_SUB_NO
+		      ,AMF.SL_NO
+		      ,AMF.COMP_CODE
+		      ,AMF.ADDITIONAL_REFERENCE acc_add_ref
+		      ,(COALESCE(CASE WHEN (AMF.CURRENCY_CODE = #{baseCurrencyCode}) THEN AMF.YTD_CV_BAL ELSE AMF.YTD_FC_BAL END,0)) ytdBalance
+		      ,((CASE WHEN AMF.AC_SIGN = 'C' THEN 1 ELSE -1 END)*COALESCE(CASE WHEN (AMF.CURRENCY_CODE = #{baseCurrencyCode}) THEN AMF.BLOCKED_CV ELSE AMF.BLOCKED_FC END,0)) blockedAmount
+		      ,((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = #{baseCurrencyCode}) THEN AMF.CV_AVAIL_BAL ELSE AMF.FC_AVAIL_BAL END,0)) +
+		       ((CASE WHEN AMF.AC_SIGN = 'C' THEN 1 ELSE -1 END)*COALESCE(CASE WHEN (AMF.CURRENCY_CODE = #{baseCurrencyCode}) THEN AMF.BLOCKED_CV ELSE AMF.BLOCKED_FC END,0))) availableBalance
+			  ,<![CDATA[(CASE WHEN ((AMF.AC_SIGN = 'D' 
+								AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL 
+													ELSE AMF.FC_AVAIL_BAL END, 0)) > 0)
+							OR (AMF.AC_SIGN = 'C' 
+								AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL 
+													ELSE AMF.FC_AVAIL_BAL END, 0)) <= 0))
+						THEN OVERDRAFT_LIMIT
+						
+						
+						WHEN ((AMF.AC_SIGN = 'D' 
+								AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) <= 0 
+								AND ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL 
+													ELSE AMF.FC_AVAIL_BAL END, 0))
+													- (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.BLOCKED_CV
+																	ELSE AMF.BLOCKED_FC END, 0)) 
+													+ OVERDRAFT_LIMIT) <= 0)
+							OR (AMF.AC_SIGN = 'C' 
+								AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) > 0 
+								AND ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL 
+													ELSE AMF.FC_AVAIL_BAL END, 0))
+													+ (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.BLOCKED_CV
+																	ELSE AMF.BLOCKED_FC END, 0)) 
+													- OVERDRAFT_LIMIT) >= 0))
+						THEN 0
+							
+					
+						WHEN (AMF.AC_SIGN = 'D' AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) <= 0
+											   AND ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0))
+													- (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.BLOCKED_CV
+																	ELSE AMF.BLOCKED_FC END, 0)) 
+													+ OVERDRAFT_LIMIT) > 0 )
+						THEN ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0))
+								-(COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0))
+								+ OVERDRAFT_LIMIT)
+						
+						WHEN (AMF.AC_SIGN = 'C' AND (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) > 0 
+												AND ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) + 
+													(COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.BLOCKED_CV
+																	ELSE AMF.BLOCKED_FC END, 0))  - OVERDRAFT_LIMIT) < 0) 
+						THEN ((COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.CV_AVAIL_BAL
+													ELSE AMF.FC_AVAIL_BAL END, 0)) 
+							   + (COALESCE(CASE WHEN (AMF.CURRENCY_CODE = 586) THEN AMF.BLOCKED_CV
+																	ELSE AMF.BLOCKED_FC END, 0))
+							   - OVERDRAFT_LIMIT)
+							
+								END) ]]> overdraftAvailLimit		       
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = AMF.CURRENCY_CODE 
+			       AND C.COMP_CODE = AMF.COMP_CODE) as DECIMAL_PROINTS
+			  ,(CASE WHEN
+						  EXISTS(SELECT 1 
+								   FROM SYS_PARAM_LOV_TRANS 
+								  WHERE LOV_TYPE_ID = #{lovType}
+									AND LANG_CODE   = #{language}
+									AND VALUE_CODE  = AMF.STATUS)
+					  THEN (SELECT VALUE_DESC
+							  FROM SYS_PARAM_LOV_TRANS 
+							 WHERE LOV_TYPE_ID = #{lovType}
+							   AND LANG_CODE   = #{language}
+							   AND VALUE_CODE  = AMF.STATUS)
+					  ELSE AMF.STATUS
+				END) as status
+		      ,(
+		        SELECT sum(FMSDRWDWN.ORIGINAL_AMOUNT) 
+		          FROM AMF_DRAWDOWNS, FMSDRWDWN
+		         WHERE AMF_DRAWDOWNS.COMP_CODE   = AMF.COMP_CODE 
+		           AND AMF_DRAWDOWNS.BRANCH_CODE = AMF.BRANCH_CODE 
+		           AND AMF_DRAWDOWNS.GL_CODE     = AMF.GL_CODE
+		           AND AMF_DRAWDOWNS.CIF_SUB_NO  = AMF.CIF_SUB_NO
+		           AND AMF_DRAWDOWNS.SL_NO       = AMF.SL_NO
+		           AND AMF_DRAWDOWNS.DD_NO       = FMSDRWDWN.CODE
+		           AND FMSDRWDWN.COMP_CODE       = GEN_LEDGER.COMP_CODE
+		           AND FMSDRWDWN.BRANCH          = AMF.BRANCH_CODE
+		       ) approvedLine
+		      ,'' dues
+		      ,(SELECT CURRENCIES.BRIEF_DESC_ENG 
+		          FROM CURRENCIES 
+		         WHERE CURRENCIES.CURRENCY_CODE = AMF.CURRENCY_CODE 
+		           AND CURRENCIES.COMP_CODE = AMF.COMP_CODE) currency
+		      ,
+		       (
+				SELECT CASE WHEN (PARTICIPATION * PFTAMFMTHPAR.NO_OF_DAYS) = 0 THEN 0 ELSE (PROFIT_CV /(PARTICIPATION * PFTAMFMTHPAR.NO_OF_DAYS)) END * 
+				       <choose>
+				         <when test="isSybase == 1">
+				          (337 + CONVERT(NUMERIC,CONVERT(VARCHAR,DAY(DATEADD(DD, -DAY(DATEADD(MM, 1, CONVERT(DATETIME, '01/02/'+CONVERT(VARCHAR,2010),103) )),DATEADD(MM, 1, CONVERT(DATETIME, '01/02/'+CONVERT(VARCHAR,2010),103) ))))))
+				         </when>
+				         <otherwise>				         
+				          (337 + TO_NUMBER(TO_CHAR(Last_day(TO_DATE('01/02/'||TO_CHAR(PFTLOG.FROM_YEAR) ,'DD/MM/YYYY' )),'DD')))
+				         </otherwise>
+				       </choose>
+				  FROM PFTAMFMTHPAR , PFTLOG 
+				 WHERE PFTAMFMTHPAR.COMP_CODE  = PFTLOG.COMP_CODE 
+				   AND PFTAMFMTHPAR.LOG_NUMBER = PFTLOG.LOG_NUMBER
+				   AND PFTLOG.TRIAL_FINAL = 'F'
+				   AND PFTAMFMTHPAR.COMP_CODE      = AMF.COMP_CODE
+				   AND PFTAMFMTHPAR.BRANCH_CODE    = AMF.BRANCH_CODE
+				   AND PFTAMFMTHPAR.CURRENCY_CODE  = AMF.CURRENCY_CODE
+				   AND PFTAMFMTHPAR.GL_CODE        = AMF.GL_CODE
+				   AND PFTAMFMTHPAR.CIF_SUB_NO     = AMF.CIF_SUB_NO
+				   AND PFTAMFMTHPAR.SL_NO          = AMF.SL_NO 
+				   AND PFTLOG.LOG_NUMBER = ( SELECT MAX(P.LOG_NUMBER)  
+				                               FROM PFTAMFMTHPAR P, PFTLOG C
+				                              WHERE P.COMP_CODE     = PFTAMFMTHPAR.COMP_CODE           
+				                                AND P.BRANCH_CODE   = PFTAMFMTHPAR.BRANCH_CODE   
+				                                AND P.CURRENCY_CODE = PFTAMFMTHPAR.CURRENCY_CODE 
+				                                AND P.GL_CODE       = PFTAMFMTHPAR.GL_CODE       
+				                                AND P.CIF_SUB_NO    = PFTAMFMTHPAR.CIF_SUB_NO    
+				                                AND P.SL_NO         = PFTAMFMTHPAR.SL_NO 
+				                                AND P.COMP_CODE     = C.COMP_CODE 
+				                                AND P.LOG_NUMBER    = C.LOG_NUMBER  
+				                                AND C.TRIAL_FINAL   = 'F')           
+		      ) rateOfReturn
+		      ,(CASE WHEN #{language} = 'AR' THEN BRIEF_NAME_ARAB ELSE AMF.BRIEF_NAME_ENG END ) as accountName,
+		      AMF.GMI_FLAG
+		FROM AMF,GEN_LEDGER,RIFATT
+		WHERE AMF.COMP_CODE        = GEN_LEDGER.COMP_CODE
+		AND AMF.GL_CODE            = GEN_LEDGER.GL_CODE
+		AND AMF.COMP_CODE = RIFATT.COMP_CODE
+        AND AMF.GL_CODE = RIFATT.TYPE_CODE
+        AND GEN_LEDGER.COMP_CODE = RIFATT.COMP_CODE
+        AND GEN_LEDGER.GL_CODE = RIFATT.TYPE_CODE
+		AND GEN_LEDGER.GL_CATEGORY = #{assestsOrLiab}
+		AND GEN_LEDGER.COMP_CODE   = #{compCode}
+		<if test="branchCode!=null">
+		AND AMF.BRANCH_CODE        = #{branchCode}
+		</if>
+        AND AMF.CIF_SUB_NO         = #{cif_no}
+        AND NOT EXISTS (
+                        SELECT 1 FROM CTSTELLER_ACC_HIDDEN_STATUSES WHERE
+                        CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+                       AND AMF.STATUS=CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+                       AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+                       AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE               
+                       )
+                       
+         AND NOT EXISTS (
+        SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF.SL_NO = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )   
+		AND NOT EXISTS 
+			          (SELECT 1 FROM AMF_EXTENDED AE WHERE
+			AE.COMP_CODE = AMF.COMP_CODE
+			AND AE.BRANCH_CODE = AMF.BRANCH_CODE
+			AND AE.CURRENCY_CODE = AMF.CURRENCY_CODE
+			AND AE.GL_CODE = AMF.GL_CODE
+			AND AE.CIF_SUB_NO = AMF.CIF_SUB_NO
+			AND AE.SL_NO = AMF.SL_NO
+			AND AE.SUBSIDIARY_REFER_CIF_NO_YN = '0'
+			AND AMF.GMI_FLAG = 'I')                        
+	</sql>
+
+
+    <resultMap id="accountDetailsListMap" type="dashAccountDetailsCO">
+		<result property="acc_num"          column="acc_num"/>
+		<result property="acc_num_format"   column="acc_num_format"/>
+		<result property="loginCompCode"    column="COMP_CODE"/>
+		<result property="branchCode"       column="BRANCH_CODE"/>
+		<result property="currencyCode"     column="CURRENCY_CODE"/>
+		<result property="glCode"           column="GL_CODE"/>
+		<result property="cifCode"           column="CIF_SUB_NO"/>
+		<result property="slNo"             column="SL_NO"/>
+		<result property="acc_add_ref"      column="acc_add_ref"/>
+		<result property="status"           column="status"/>
+		<result property="accountName"      column="accountName"/>
+		<result property="ytdBalance"       column="ytdBalance"/>
+		<result property="availableBalance" column="availableBalance"/>
+		<result property="blockedAmount"    column="blockedAmount"/>
+		<result property="approvedLine"     column="approvedLine"/>
+		<result property="dues"             column="dues"/>
+		<result property="currency"         column="currency"/>
+		<result property="rateOfReturn"     column="rateOfReturn"/>
+		<result property="decimalPoints"    column="DECIMAL_PROINTS"/>
+		<result property="gmiFlag"   	 	column="GMI_FLAG"/>
+    </resultMap>
+
+	<select id="accountDetailsList" parameterType="dashboardSC" resultMap="accountDetailsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dashAccDtlQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="accountDetailsListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dashAccDtlQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<resultMap id="returnAccountDataMap" type="dashAccountDetailsCO">
+	  <result property="acc_num"      column="ACCOUNT_NUMBER"/>
+	  <result property="accountName"  column="BRIEF_NAME_ENG"/>
+	  <result property="branchCode"   column="BRANCH_CODE"/>
+	  <result property="currencyCode" column="CURRENCY_CODE"/>
+	  <result property="glCode"       column="GL_CODE"/>
+	  <result property="slNo"         column="SL_NO"/>
+	</resultMap>
+	<select id="returnAccountData" parameterType="dashboardSC" resultMap="returnAccountDataMap">
+      SELECT AMF.ACCOUNT_NUMBER
+            ,AMF.BRIEF_NAME_ENG
+            ,AMF.BRANCH_CODE
+            ,AMF.CURRENCY_CODE
+            ,AMF.GL_CODE
+            ,AMF.SL_NO
+        FROM AMF 
+       WHERE AMF.ACCOUNT_NUMBER = #{accNum}
+         AND AMF.COMP_CODE      = #{compCode}
+         <if test="branchCode!=null">
+         AND AMF.BRANCH_CODE    = #{branchCode}
+         </if>
+	</select>
+	<sql id="accDtlJvsListQuery">
+       SELECT DOF.COMP_CODE
+       		 ,DOF.BRANCH_CODE
+			 ,DOF.OP_NO
+			 ,'D' SRL_NO
+			 ,DOF.POST_DATE
+			 ,DOF.JV_TYPE
+			 ,DOF.JV_REF
+			 ,DOF.VALUE_DATE
+			 ,DOF.TRANS_DATE
+			 <!-- ,(CASE
+			      WHEN
+			           AMF.AC_SIGN = 'D'
+			      THEN 
+			          -DOF.CV_AMOUNT
+			      ELSE
+			          DOF.CV_AMOUNT  
+			  END) AS CV_AMOUNT   Stopped since if the amount is < 0 then CR else DR (THE DISPLAY SIGN IN THE GRID)-->
+			 ,DOF.CV_AMOUNT AS CV_AMOUNT  
+			 ,DOF.DESCRIPTION
+			 ,(CASE WHEN
+						  EXISTS(SELECT 1 
+								   FROM SYS_PARAM_LOV_TRANS 
+								  WHERE LOV_TYPE_ID = #{lovType}
+									AND LANG_CODE   = #{language}
+									AND VALUE_CODE  = DOF.OP_STATUS)
+					THEN (SELECT VALUE_DESC
+							  FROM SYS_PARAM_LOV_TRANS 
+							 WHERE LOV_TYPE_ID = #{lovType}
+							   AND LANG_CODE   = #{language}
+							   AND VALUE_CODE  = DOF.OP_STATUS)
+					ELSE DOF.OP_STATUS
+				END) OP_STATUS
+				,(SELECT JV_TYPE.BRIEF_DESC_ENG  
+   				   FROM JV_TYPE 
+  				   WHERE DOF.COMP_CODE = JV_TYPE.COMP_CODE 
+   				   AND DOF.JV_TYPE = JV_TYPE.TYPE_CODE)BRIEF_DESC_ENG
+			   ,CURRENCIES.DECIMAL_POINTS
+		FROM CURRENCIES
+		    ,AMF
+		    ,DOF
+	   WHERE (DOF.COMP_CODE     = #{compCode})
+		 AND (DOF.BRANCH_CODE   = #{branchCode})
+		 AND (DOF.CURRENCY_CODE = #{currencyCode})
+		 AND (DOF.GL_CODE       = #{glCode})
+		 AND (DOF.CIF_SUB_NO    = #{cif_no})
+		 AND (DOF.SL_NO         = #{slNo})
+		 AND (DOF.LINE_NO  >= 1)
+	 	 AND CURRENCIES.COMP_CODE 	  = DOF.COMP_CODE
+		 AND CURRENCIES.CURRENCY_CODE = DOF.CURRENCY_CODE
+         AND DOF.BRANCH_CODE   = AMF.BRANCH_CODE
+	     AND DOF.CURRENCY_CODE = AMF.CURRENCY_CODE 
+         AND DOF.GL_CODE       = AMF.GL_CODE
+         AND DOF.CIF_SUB_NO    = AMF.CIF_SUB_NO
+         AND DOF.SL_NO         = AMF.SL_NO		 
+		UNION ALL
+	  SELECT HST.COMP_CODE
+	  		,HST.BRANCH_CODE
+			,HST.OP_NO
+			,'H' SRL_NO
+			,HST.POST_DATE
+			,HST.JV_TYPE
+			,HST.JV_REF
+			,HST.VALUE_DATE
+			,HST.TRANS_DATE
+			<!-- ,(CASE
+			      WHEN
+			          AMF.AC_SIGN = 'D'
+			      THEN 
+			          -HST.CV_AMOUNT
+			      ELSE
+			          HST.CV_AMOUNT  
+			  END) AS CV_AMOUNT Stopped since if the amount is < 0 then CR else DR (THE DISPLAY SIGN IN THE GRID) -->
+			,HST.CV_AMOUNT
+			,HST.DESCRIPTION
+		    ,(CASE WHEN
+					  EXISTS(SELECT 1 
+							   FROM SYS_PARAM_LOV_TRANS 
+							  WHERE LOV_TYPE_ID = #{lovType}
+								AND LANG_CODE   = #{language}
+								AND VALUE_CODE  = HST.OP_STATUS)
+				THEN (SELECT VALUE_DESC
+						  FROM SYS_PARAM_LOV_TRANS 
+						 WHERE LOV_TYPE_ID = #{lovType}
+						   AND LANG_CODE   = #{language}
+						   AND VALUE_CODE  = HST.OP_STATUS)
+				ELSE HST.OP_STATUS
+			 END) OP_STATUS
+			 ,(SELECT JV_TYPE.BRIEF_DESC_ENG
+  			    FROM JV_TYPE
+  			    WHERE HST.COMP_CODE = JV_TYPE.COMP_CODE
+   			    AND HST.JV_TYPE = JV_TYPE.TYPE_CODE) BRIEF_DESC_ENG
+			,CURRENCIES.DECIMAL_POINTS
+	   FROM CURRENCIES
+	       ,AMF 
+		   ,HST  
+	  WHERE	(HST.COMP_CODE    = #{compCode})
+	    <if test="branchCode!=null">
+		AND	(HST.BRANCH_CODE   = #{branchCode})
+		</if>
+		AND	(HST.CURRENCY_CODE = #{currencyCode})
+		AND	(HST.GL_CODE       = #{glCode})
+		AND	(HST.CIF_SUB_NO    = #{cif_no})
+		AND	(HST.SL_NO         = #{slNo})
+		AND	(HST.LINE_NO  >= 1)
+		AND CURRENCIES.COMP_CODE 	 = HST.COMP_CODE
+		AND CURRENCIES.CURRENCY_CODE = HST.CURRENCY_CODE
+        AND HST.BRANCH_CODE   = AMF.BRANCH_CODE
+        AND HST.CURRENCY_CODE = AMF.CURRENCY_CODE
+        AND HST.GL_CODE       = AMF.GL_CODE
+        AND HST.CIF_SUB_NO    = AMF.CIF_SUB_NO
+        AND HST.SL_NO         = AMF.SL_NO
+
+	</sql>
+	<resultMap id="accDtlJvsListMap" type="dashAccDtlJvsCO">
+      <result property="compCode"       column="COMP_CODE"/>
+      <result property="branchCode"     column="BRANCH_CODE"/>	
+	  <result property="op_no"          column="OP_NO"/>
+	  <result property="srlNo" 			column="SRL_NO"/>
+	  <result property="jv_type"        column="JV_TYPE"/>
+	  <result property="jv_ref"         column="JV_REF"/>
+	  <result property="value_date"     column="VALUE_DATE"/>
+	  <result property="trx_date"       column="TRANS_DATE"/>
+	  <result property="amount"         column="CV_AMOUNT"/>
+	  <result property="description"    column="DESCRIPTION"/>
+	  <result property="op_status"      column="OP_STATUS"/>
+	  <result property="ac_sign"        column="AC_SIGN"/>
+	  <result property="amount_FORMAT"  column="DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="accDtlJvsList" parameterType="dashboardSC" resultMap="accDtlJvsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accDtlJvsListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="accDtlJvsListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accDtlJvsListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>	
+	<sql id="accDtlTrxListQuery">
+		  SELECT CTSTRS.COMP_CODE
+        ,CTSTRS.TRS_TYPE
+        ,CTSTRS.TRX_TYPE
+        ,CTSTRS.CB_IND 
+        ,CTSTRS.BRANCH_CODE
+          ,CTSTRS.TRS_NO
+          ,(CASE WHEN
+                EXISTS(SELECT 1 
+                       FROM SYS_PARAM_LOV_TRANS 
+                      WHERE LOV_TYPE_ID = #{lovType}
+                        AND LANG_CODE     = #{langCode}
+                        AND VALUE_CODE    = CTSTRS.STATUS)
+              THEN (SELECT VALUE_DESC
+                    FROM SYS_PARAM_LOV_TRANS 
+                   WHERE LOV_TYPE_ID = #{lovType}
+                     AND LANG_CODE   = #{langCode}
+                     AND VALUE_CODE  = CTSTRS.STATUS)
+              ELSE CTSTRS.STATUS
+          END) as STATUS
+            ,CTSTRXTYPE.SHORT_DESC_ENG
+            ,CTSTRS.TRS_DATE
+            ,CTSTRS.VALUE_DATE
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'C' 
+                THEN
+                    -CTSTRS.TRS_AC_AMOUNT
+                ELSE
+                    CTSTRS.TRS_AC_AMOUNT 
+             END) AS AMOUNT
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'C' 
+                THEN
+                    -CTSTRS.CV_AMOUNT
+                ELSE
+                    CTSTRS.CV_AMOUNT  
+             END) AS CV_AMOUNT
+            ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+                FROM CTSREASONS
+               WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+                 <choose>
+                     <when test="isSybase == 1">
+                        AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+                     </when>
+                     <otherwise>
+                        AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+                     </otherwise>   
+                 </choose>
+                 AND CTSTRS.STATUS = 'V') AS voidReason
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = CTSTRS.TRS_CY
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as DECIMAL_POINTS
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as CV_DECIMAL_POINTS
+      FROM CTSTRS, CTSTRXTYPE
+     WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+       AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+       AND CTSTRS.COMP_CODE   = #{compCode}
+       <if test="branchCode!=null">
+       AND CTSTRS.BRANCH_CODE = #{branchCode}
+       </if>
+       AND CTSTRS.TRS_TYPE    = 'R'
+       AND CTSTRS.CB_IND      = 'C'
+       AND (CTSTRS.TRS_AC_BR  =    #{accBr}
+             AND CTSTRS.TRS_AC_CY  = #{currencyCode}
+             AND CTSTRS.TRS_AC_GL  = #{glCode}
+             AND CTSTRS.TRS_AC_CIF = #{cif_no}
+             AND CTSTRS.TRS_AC_SL  = #{slNo}
+            )
+         
+            
+       UNION ALL
+            
+         SELECT CTSTRS.COMP_CODE
+        ,CTSTRS.TRS_TYPE
+        ,CTSTRS.TRX_TYPE
+        ,CTSTRS.CB_IND 
+        ,CTSTRS.BRANCH_CODE
+          ,CTSTRS.TRS_NO
+          ,(CASE WHEN
+                EXISTS(SELECT 1 
+                       FROM SYS_PARAM_LOV_TRANS 
+                      WHERE LOV_TYPE_ID = #{lovType}
+                        AND LANG_CODE     = #{langCode}
+                        AND VALUE_CODE    = CTSTRS.STATUS)
+              THEN (SELECT VALUE_DESC
+                    FROM SYS_PARAM_LOV_TRANS 
+                   WHERE LOV_TYPE_ID = #{lovType}
+                     AND LANG_CODE   = #{langCode}
+                     AND VALUE_CODE  = CTSTRS.STATUS)
+              ELSE CTSTRS.STATUS
+          END) as STATUS
+            ,CTSTRXTYPE.SHORT_DESC_ENG
+            ,CTSTRS.TRS_DATE
+            ,CTSTRS.VALUE_DATE
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'D' 
+                THEN
+                    -CTSTRS.TRS_AC_AMOUNT
+                ELSE
+                    CTSTRS.TRS_AC_AMOUNT  
+             END) AS AMOUNT
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'D' 
+                THEN
+                    -CTSTRS.CV_AMOUNT
+                ELSE
+                    CTSTRS.CV_AMOUNT  
+             END) AS CV_AMOUNT
+            ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+                FROM CTSREASONS
+               WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+                 <choose>
+                     <when test="isSybase == 1">
+                        AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+                     </when>
+                     <otherwise>
+                        AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+                     </otherwise>   
+                 </choose>
+                 AND CTSTRS.STATUS = 'V') AS voidReason
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = CTSTRS.TRS_CY
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as DECIMAL_POINTS
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as CV_DECIMAL_POINTS
+      FROM CTSTRS, CTSTRXTYPE
+     WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+       AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+       AND CTSTRS.COMP_CODE   = #{compCode}
+       <if test="branchCode!=null">
+       AND CTSTRS.BRANCH_CODE = #{branchCode}
+       </if>
+       AND CTSTRS.TRS_TYPE    = 'R'
+       AND CTSTRS.CB_IND      = 'C'
+      AND (CTSTRS.TO_TRS_AC_BR      = #{accBr}
+             AND CTSTRS.TO_TRS_AC_CY  = #{currencyCode}
+             AND CTSTRS.TO_TRS_AC_GL  = #{glCode}
+             AND CTSTRS.TO_TRS_AC_CIF = #{cif_no}
+             AND CTSTRS.TO_TRS_AC_SL  = #{slNo}
+            )
+            
+      UNION ALL
+         
+         SELECT CTSTRS.COMP_CODE
+        ,CTSTRS.TRS_TYPE
+        ,CTSTRS.TRX_TYPE
+        ,CTSTRS.CB_IND 
+        ,CTSTRS.BRANCH_CODE
+          ,CTSTRS.TRS_NO
+          ,(CASE WHEN
+                EXISTS(SELECT 1 
+                       FROM SYS_PARAM_LOV_TRANS 
+                      WHERE LOV_TYPE_ID = #{lovType}
+                        AND LANG_CODE     = #{langCode}
+                        AND VALUE_CODE    = CTSTRS.STATUS)
+              THEN (SELECT VALUE_DESC
+                    FROM SYS_PARAM_LOV_TRANS 
+                   WHERE LOV_TYPE_ID = #{lovType}
+                     AND LANG_CODE   = #{langCode}
+                     AND VALUE_CODE  = CTSTRS.STATUS)
+              ELSE CTSTRS.STATUS
+          END) as STATUS
+            ,CTSTRXTYPE.SHORT_DESC_ENG
+            ,CTSTRS.TRS_DATE
+            ,CTSTRS.VALUE_DATE
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'C' 
+                THEN
+                    -CTSTRS.TRS_AC_AMOUNT
+                ELSE
+                    CTSTRS.TRS_AC_AMOUNT  
+             END) AS AMOUNT
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'C' 
+                THEN
+                    -CTSTRS.CV_AMOUNT
+                ELSE
+                    CTSTRS.CV_AMOUNT  
+             END) AS CV_AMOUNT
+            ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+                FROM CTSREASONS
+               WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+                 <choose>
+                     <when test="isSybase == 1">
+                        AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+                     </when>
+                     <otherwise>
+                        AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+                     </otherwise>   
+                 </choose>
+                 AND CTSTRS.STATUS = 'V') AS voidReason
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = CTSTRS.TRS_CY
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as DECIMAL_POINTS
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as CV_DECIMAL_POINTS
+      FROM CTSTRS, CTSTRXTYPE
+     WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+       AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+       AND CTSTRS.COMP_CODE   = #{compCode}
+       <if test="branchCode!=null">
+       AND CTSTRS.BRANCH_CODE = #{branchCode}
+       </if>
+       AND CTSTRS.TRS_TYPE    = 'R'
+       AND CTSTRS.CB_IND      = 'C'   
+       AND (    CTSTRS.BRANCH_CODE = #{accBr}
+             AND CTSTRS.CTRL_CY     = #{currencyCode}
+             AND CTSTRS.CTRL_GL     = #{glCode}
+             AND CTSTRS.CTRL_CIF    = #{cif_no}
+             AND CTSTRS.CTRL_SL     = #{slNo}
+            )      
+    
+    UNION ALL
+    
+    SELECT CTSTRS.COMP_CODE
+        ,CTSTRS.TRS_TYPE
+        ,CTSTRS.TRX_TYPE
+        ,CTSTRS.CB_IND
+        ,CTSTRS.BRANCH_CODE
+          ,CTSTRS.TRS_NO
+          ,(CASE WHEN
+                  EXISTS(SELECT 1 
+                           FROM SYS_PARAM_LOV_TRANS 
+                          WHERE LOV_TYPE_ID = #{lovType}
+                            AND LANG_CODE   = #{langCode}
+                            AND VALUE_CODE  = CTSTRS.STATUS)
+               THEN (SELECT VALUE_DESC
+                       FROM SYS_PARAM_LOV_TRANS 
+                      WHERE LOV_TYPE_ID = #{lovType}
+                        AND LANG_CODE   = #{langCode}
+                        AND VALUE_CODE  = CTSTRS.STATUS)
+                 ELSE CTSTRS.STATUS
+            END) as STATUS
+            ,CTSTRXTYPE.SHORT_DESC_ENG
+            ,CTSTRS.TRS_DATE
+            ,CTSTRS.VALUE_DATE
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'D' 
+                THEN
+                    CTSTRS_ACC_DET.FC_AMOUNT
+                ELSE
+                    -CTSTRS_ACC_DET.FC_AMOUNT  
+             END) AS AMOUNT
+          ,(CASE 
+                WHEN
+                    CTSTRXTYPE.CR_DR_FOREX = 'D' 
+                THEN
+                    CTSTRS_ACC_DET.CV_AMOUNT
+                ELSE
+                    -CTSTRS_ACC_DET.CV_AMOUNT  
+             END) AS CV_AMOUNT
+            ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+                FROM CTSREASONS
+               WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+                 <choose>
+                     <when test="isSybase == 1">
+                        AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+                     </when>
+                     <otherwise>
+                        AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+                     </otherwise>   
+                 </choose>
+                 AND CTSTRS.STATUS = 'V') AS voidReason
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = CTSTRS.TRS_CY
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as DECIMAL_POINTS
+         ,(SELECT C.DECIMAL_POINTS 
+             FROM CURRENCIES C 
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE     = CTSTRS.COMP_CODE) as CV_DECIMAL_POINTS
+      FROM CTSTRS INNER JOIN CTSTRS_ACC_DET on
+      CTSTRS_ACC_DET.COMP_CODE   = CTSTRS.COMP_CODE
+                      AND CTSTRS_ACC_DET.BRANCH_CODE = CTSTRS.BRANCH_CODE
+                      AND CTSTRS_ACC_DET.TRS_NO      = CTSTRS.TRS_NO, CTSTRXTYPE 
+      
+                      
+     WHERE CTSTRS.COMP_CODE         = CTSTRXTYPE.COMP_CODE
+       AND CTSTRS.TRX_TYPE          = CTSTRXTYPE.CODE
+       AND CTSTRS.COMP_CODE         = #{compCode}
+       <if test="branchCode!=null">
+       AND CTSTRS.BRANCH_CODE       = #{branchCode}                               
+       </if>
+       AND CTSTRS.TRS_TYPE          = 'R'
+       AND CTSTRS.CB_IND            = 'C'
+       AND EXISTS (SELECT 1
+                     FROM CTSTRS_ACC_DET
+                    WHERE CTSTRS_ACC_DET.COMP_CODE   = CTSTRS.COMP_CODE
+                      AND CTSTRS_ACC_DET.BRANCH_CODE = CTSTRS.BRANCH_CODE
+                      AND CTSTRS_ACC_DET.TRS_NO      = CTSTRS.TRS_NO
+                      AND CTSTRS_ACC_DET.TRS_TYPE = CTSTRS.TRS_TYPE
+                      AND CTSTRS_ACC_DET.CB_IND = CTSTRS.CB_IND
+                      AND CTSTRS_ACC_DET.AC_BR       = #{accBr}                
+                      AND CTSTRS_ACC_DET.AC_CY       = #{currencyCode}
+                      AND CTSTRS_ACC_DET.AC_GL       = #{glCode}
+                      AND CTSTRS_ACC_DET.AC_CIF      = #{cif_no}
+                      AND CTSTRS_ACC_DET.AC_SL       = #{slNo}
+                     )  
+	</sql>
+	<resultMap id="accDtlTrxListMap" type="dashAccDtlTrxCO">
+	  <result property="ctstrsVO.COMP_CODE" column="COMP_CODE"/>
+	  <result property="ctstrsVO.CB_IND"    column="CB_IND"/>
+	  <result property="ctstrsVO.TRX_TYPE"	column="TRX_TYPE"/>
+	  <result property="ctstrsVO.TRS_TYPE"	column="TRS_TYPE"/>
+	  <result property="trx_branch"         column="BRANCH_CODE"/>
+	  <result property="trx_no"             column="TRS_NO"/>
+	  <result property="trx_status"         column="STATUS"/>
+	  <result property="trx_desc"           column="SHORT_DESC_ENG"/>
+	  <result property="trade_date"         column="TRS_DATE"/>
+	  <result property="value_date"         column="VALUE_DATE"/>
+	  <result property="amount"             column="AMOUNT"/>
+	  <result property="cvAmount"           column="CV_AMOUNT"/>
+	  <result property="voidReason"         column="voidReason"/>
+	  <result property="decimal_points"     column="DECIMAL_POINTS"/>
+	  <result property="cv_decimal_points"  column="CV_DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="accDtlTrxList" parameterType="dashboardSC" resultMap="accDtlTrxListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accDtlTrxListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="accDtlTrxListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accDtlTrxListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="passbooksListQuery">
+		SELECT CTS_PASSBOOK.BRANCH_CODE
+		      ,CTS_PASSBOOK.CODE
+			  ,(CASE WHEN
+						  EXISTS(SELECT 1 
+								   FROM SYS_PARAM_LOV_TRANS 
+								  WHERE LOV_TYPE_ID = #{lovType}
+									AND LANG_CODE   = #{language}
+									AND VALUE_CODE  = CTS_PASSBOOK.STATUS)
+					  THEN (SELECT VALUE_DESC
+							  FROM SYS_PARAM_LOV_TRANS 
+							 WHERE LOV_TYPE_ID = #{lovType}
+							   AND LANG_CODE   = #{language}
+							   AND VALUE_CODE  = CTS_PASSBOOK.STATUS)
+					  ELSE CTS_PASSBOOK.STATUS
+				END) as STATUS
+		      ,CTS_PASSBOOK.DATE_CREATED
+		      ,CASE WHEN #{preferredLanguage} = 'A' 
+		            THEN CTSPASSBOOK_TYPE.BRIEF_NAME_ARAB 
+		            ELSE CTSPASSBOOK_TYPE.BRIEF_NAME_ENG
+		        END AS passbooksTypeDesc
+		      ,CTS_PASSBOOK.MAX_NUM_PAGE
+		      ,CTS_PASSBOOK.ACC_BR
+		      ,CTS_PASSBOOK.ACC_CY
+		      ,CTS_PASSBOOK.ACC_GL
+		      ,CTS_PASSBOOK.ACC_CIF
+		      ,CTS_PASSBOOK.ACC_SL
+		      ,CTS_PASSBOOK.CHR_AC_ADD_REF
+		      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTS_PASSBOOK.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTS_PASSBOOK.ACC_BR
+         		 AND AMF.CURRENCY_CODE = CTS_PASSBOOK.ACC_CY
+        		 AND AMF.GL_CODE       = CTS_PASSBOOK.ACC_GL
+         		 AND AMF.CIF_SUB_NO    = CTS_PASSBOOK.ACC_CIF
+                 AND AMF.SL_NO         = CTS_PASSBOOK.ACC_SL )ACC_LONG_NAME_ENG
+		  FROM CTS_PASSBOOK,CTSPASSBOOK_TYPE
+		 WHERE CTSPASSBOOK_TYPE.COMP_CODE = #{compCode}
+		   <if test="branchCode!=null">
+		   AND CTS_PASSBOOK.BRANCH_CODE   = #{branchCode}
+		   </if>
+		   AND CTS_PASSBOOK.ACC_CIF       = #{cif_no}
+		   AND CTSPASSBOOK_TYPE.CODE 	  = CTS_PASSBOOK.PASSBK_TYPE
+		   AND CTS_PASSBOOK.STATUS 		  <![CDATA[<>]]> 'D'
+		   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+			   AND NOT EXISTS
+	   		  (SELECT 1
+		          FROM AMF, CTSTELLER_ACC_HIDDEN_STATUSES 
+		         WHERE AMF.COMP_CODE = CTS_PASSBOOK.COMP_CODE
+		           AND AMF.BRANCH_CODE =CTS_PASSBOOK.ACC_BR
+		           AND AMF.CURRENCY_CODE =CTS_PASSBOOK.ACC_CY
+		           AND AMF.GL_CODE = CTS_PASSBOOK.ACC_GL
+		           AND AMF.SL_NO = CTS_PASSBOOK.ACC_SL
+		           AND AMF.CIF_SUB_NO = CTS_PASSBOOK.ACC_CIF
+		           AND AMF.STATUS=CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+		           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+		           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+		           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	 		   )
+ 		   </if>
+ 		   
+ 		   
+		   AND NOT EXISTS (
+            SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  CTS_PASSBOOK.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  CTS_PASSBOOK.ACC_BR = AccRest.BRANCH_CODE 
+			 AND  CTS_PASSBOOK.ACC_CY = AccRest.CURRENCY_CODE 
+			 AND  CTS_PASSBOOK.ACC_GL = AccRest.GL_CODE 
+			 AND  CTS_PASSBOOK.ACC_CIF = AccRest.CIF_SUB_NO 
+			 AND  CTS_PASSBOOK.ACC_SL = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+			 
+	</sql>	
+	<resultMap id="passbooksListMap" type="dashPassbookCO">
+	  <result property="branch_code"   						column="BRANCH_CODE"/>
+	  <result property="passbook_no"   						column="CODE"/>
+	  <result property="status"       						column="STATUS"/>
+	  <result property="date_created"  						column="DATE_CREATED"/>
+	  <result property="passbook_type" 						column="passbooksTypeDesc"/>
+	  <result property="current_page"  						column="MAX_NUM_PAGE"/>
+	  <result property="acc_br"        						column="ACC_BR"/>
+	  <result property="acc_cy"        						column="ACC_CY"/>
+	  <result property="acc_gl"        						column="ACC_GL"/>
+	  <result property="acc_cif"       						column="ACC_CIF"/>
+	  <result property="acc_sl"        						column="ACC_SL"/>
+	  <result property="ctsPassBookVO.CHR_AC_ADD_REF"       column="CHR_AC_ADD_REF"/>
+	  <result property="amfVO.LONG_NAME_ENG"       			column="ACC_LONG_NAME_ENG"/>
+	</resultMap>
+	<select id="passbooksList" parameterType="dashboardSC" resultMap="passbooksListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="passbooksListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="passbooksListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="passbooksListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<resultMap id="returnMainDataMap" type="dashboardCO">
+		  <result property="safeBoxNbr"             column="SAFEBOX_CNT"/>
+		  <result property="cardsNbr"               column="CARDS_NBR"/>
+		  <result property="chequeBooksNbr"         column="CHEQUEBOOK_NBR"/>
+		  <result property="smsSubscriptionNbr"         column="SMS_SUBSCRIPTION_NBR"/>  
+		  <result property="passBooksNbr"           column="PASSBOOK_NBR"/>
+		  <result property="lostDocsNbr"            column="LOSTDOC_NBR"/>
+		  <result property="bankersChqNbr"          column="BANKERS_CHEQUE_NBR"/>
+		  <result property="voidedChqsNbr"          column="VOIDED_CHEQUE_NBR"/>
+		  <result property="chequesForCollNbr"      column="COLLECTION_CHEQUE_NBR"/>
+		  <result property="postDatedChqDpNbr"      column="PDC_CHEQUE_DEP_NBR"/>
+		  <result property="postDatedChqWdrawalNbr" column="PDC_CHEQUE_WITH_NBR"/>
+		  <result property="specialConditionsNbr"   column="SPEC_COND_NBR"/>
+		  <result property="standingOrdersNbr"      column="SO_NBR"/>
+		  <result property="remittancesNbr"         column="REMITTANCE_NBR"/>
+		  <result property="memosNbr"               column="MEMO_NBR"/>
+		  <result property="authSignatoriesNbr"     column="SIGNATORIES_NBR"/>
+		  <result property="linksNbr"               column="LINKS_NBR"/>
+		  <result property="amfAssetNbr"            column="AMF_ASSET_NBR"/>
+		  <result property="amfLiabNbr"             column="AMF_LIAB_NBR"/>
+		  <result property="curBalAssetAmt"         column="CUR_BAL_ASSET_AMT"/>
+		  <result property="curBalLiabAmt"          column="CUR_BAL_LIAB_AMT"/>
+		  <result property="availBalAssetAmt"       column="AVAIL_BAL_ASSET_AMT"/>
+		  <result property="availBalLiabAmt"        column="AVAIL_BAL_LIAB_AMT"/>
+		  <result property="blockedBalAssetAmt"     column="BLOCKED_BAL_ASSET_AMT"/>
+		  <result property="blockedBalLiabAmt"      column="BLOCKED_BAL_LIAB_AMT"/>
+		  <result property="overdrawAssetAmt"       column="OVERDRAW_ASSET_AMT"/>
+		  <result property="overdrawLiabAmt"        column="OVERDRAW_LIAB_AMT"/>
+		  <result property="duesAssetAmt"           column="DUES_ASSET_AMT"/>
+		  <result property="duesLiabAmt"            column="DUES_LIAB_AMT"/>
+		  <result property="approvedLinesAmt"       column="APPROVED_LINES_AMT"/>
+		  <result property="applicationsAmt"        column="APPLICATIONS_AMT"/>
+		  <result property="facilitiesAmt"          column="FACILITIES_AMT"/>
+		  <result property="drawdownsAmt"           column="DRAWDOWNS_AMT"/>
+		  <result property="collateralsAmt"         column="COLLATERALS_AMT"/>
+		  <result property="guaranteesAmt"          column="GUARANTEES_AMT"/>
+		  <result property="lcAmt"                  column="LC_AMT"/>
+		  <result property="lgAmt"                  column="LG_AMT"/>
+		  <result property="billsAmt"               column="BILLS_AMT"/>
+		  <result property="acceptanceAmt"          column="ACCEPTANCE_AMT"/>
+		  <result property="impLcSum"          		column="IMP_LC_SUM"/>
+		  <result property="impLcOuts"          	column="IMP_LC_OUTS"/>
+		  <result property="impLcAccept"          	column="IMP_LC_ACCEPT"/>
+		  <result property="impLcSettled"          	column="IMP_LC_SETTLED"/>
+		  <result property="expLcSum"          		column="EXP_LC_SUM"/>
+		  <result property="expLcOuts"          	column="EXP_LC_OUTS"/>
+		  <result property="expLcAccept"          	column="EXP_LC_ACCEPT"/>
+		  <result property="expLcSettled"          	column="EXP_LC_SETTLED"/>
+		  <result property="lgOuts"          		column="LG_OUTS"/>
+		  <result property="lgSettled"          	column="LG_SETTLED"/>
+		  <result property="expBillsSum"          	column="EXP_BILLS_SUM"/>
+		  <result property="expBillsOuts"          	column="EXP_BILLS_OUTS"/>
+		  <result property="expBillsAccept"         column="EXP_BILLS_ACCEPT"/>
+		  <result property="expBillsSettled"        column="EXP_BILLS_SETTLED"/>
+		  <result property="impBillsSum"          	column="IMP_BILLS_SUM"/>
+		  <result property="impBillsOuts"          	column="IMP_BILLS_OUTS"/>
+		  <result property="impBillsAccept"         column="IMP_BILLS_ACCEPT"/>
+		  <result property="impBillsSettled"        column="IMP_BILLS_SETTLED"/>
+		  <result property="totalAssetAmt"          column="TOTAL_ASSET_AMT"/>
+		  <result property="totalLiabAmt"           column="TOTAL_LIAB_AMT"/>
+		  <result property="totalIliabAmt"          column="TOTAL_ILIAB_AMT"/>
+		  <result property="totalLimitAmt"          column="TOTAL_LIMIT_AMT"/>
+		  <result property="settledAssetAmt"        column="SETTLED_ASSET_AMT"/>
+		  <result property="settledLiabAmt"         column="SETTLED_LIAB_AMT"/>
+		  <result property="settledIliabAmt"        column="SETTLED_ILIAB_AMT"/>
+		  <result property="settledLimitAmt"        column="SETTLED_LIMIT_AMT"/>
+		  <result property="outstandAssetAmt"       column="OUTSTAND_ASSET_AMT"/>
+		  <result property="outstandLiabAmt"        column="OUTSTAND_LIAB_AMT"/>
+		  <result property="outstandIliabAmt"       column="OUTSTAND_ILIAB_AMT"/>
+		  <result property="outstandLimitAmt"       column="OUTSTAND_LIMIT_AMT"/>
+		  <result property="profitAssetAmt"         column="PROFIT_ASSET_AMT"/>
+		  <result property="profitLiabAmt"          column="PROFIT_LIAB_AMT"/>
+		  <result property="profitIliabAmt"         column="PROFIT_ILIAB_AMT"/>
+		  <result property="profitLimitAmt"         column="PROFIT_LIMIT_AMT"/>
+		  <result property="overdueAssetAmt"        column="OVERDUE_ASSET_AMT"/>
+		  <result property="overdueLiabAmt"         column="OVERDUE_LIAB_AMT"/>
+		  <result property="overdueIliabAmt"        column="OVERDUE_ILIAB_AMT"/>
+		  <result property="overdueLimitAmt"        column="OVERDUE_LIMIT_AMT"/>
+		  <result property="guaranteesAssetAmt"     column="GUARANTEES_ASSET_AMT"/>
+		  <result property="guaranteesLiabAmt"      column="GUARANTEES_LIAB_AMT"/>
+		  <result property="guaranteesIliabAmt"     column="GUARANTEES_ILIAB_AMT"/>
+		  <result property="guaranteesLimitAmt"     column="GUARANTEES_LIMIT_AMT"/>
+		  <result property="collateralAssetAmt"     column="COLLATERAL_ASSET_AMT"/>
+		  <result property="collateralLiabAmt"      column="COLLATERAL_LIAB_AMT"/>
+		  <result property="collateralIliabAmt"     column="COLLATERAL_ILIAB_AMT"/>
+		  <result property="collateralLimitAmt"     column="COLLATERAL_LIMIT_AMT"/>
+		  <result property="promNoteAssetAmt"       column="PROM_NOTE_ASSET_AMT"/>
+		  <result property="promNoteLiabAmt"        column="PROM_NOTE_LIAB_AMT"/>
+		  <result property="promNoteIliabAmt"       column="PROM_NOTE_ILIAB_AMT"/>
+		  <result property="promNoteLimitAmt"       column="PROM_NOTE_LIMIT_AMT"/>
+		  <result property="invCashAmt"             column="INV_CASH_AMT"/>
+		  <result property="invHoldingAmt"          column="INV_HOLDING_AMT"/>
+		  <result property="invSukukAmt"            column="INV_SUKUK_AMT"/>
+		  <result property="treasForexAmt"          column="TREAS_FOREX_AMT"/>
+		  <result property="treasMarketAmt"         column="TREAS_MARKET_AMT"/>
+		  <result property="treasDerivAmt"          column="TREAS_DERIV_AMT"/>
+
+	</resultMap>
+	<select id="returnMainData" parameterType="dashboardSC" resultMap="returnMainDataMap">
+	SELECT 
+	       (CASE WHEN SAFEBOX_CNT           IS NULL THEN 0 ELSE SAFEBOX_CNT           END) SAFEBOX_CNT
+	      ,(CASE WHEN CARDS_NBR             IS NULL THEN 0 ELSE CARDS_NBR             END) CARDS_NBR
+	      ,(CASE WHEN CHEQUEBOOK_NBR        IS NULL THEN 0 ELSE CHEQUEBOOK_NBR        END) CHEQUEBOOK_NBR
+	      ,(CASE WHEN SMS_SUBSCRIPTION_NBR   IS NULL THEN 0 ELSE SMS_SUBSCRIPTION_NBR   END) SMS_SUBSCRIPTION_NBR
+	      ,(CASE WHEN PASSBOOK_NBR          IS NULL THEN 0 ELSE PASSBOOK_NBR          END) PASSBOOK_NBR
+	      ,(CASE WHEN LOSTDOC_NBR           IS NULL THEN 0 ELSE LOSTDOC_NBR           END) LOSTDOC_NBR
+	      ,(CASE WHEN BANKERS_CHEQUE_NBR    IS NULL THEN 0 ELSE BANKERS_CHEQUE_NBR    END) BANKERS_CHEQUE_NBR
+	      ,(CASE WHEN VOIDED_CHEQUE_NBR     IS NULL THEN 0 ELSE VOIDED_CHEQUE_NBR     END) VOIDED_CHEQUE_NBR
+	      ,(CASE WHEN COLLECTION_CHEQUE_NBR IS NULL THEN 0 ELSE COLLECTION_CHEQUE_NBR END) COLLECTION_CHEQUE_NBR
+	      ,(CASE WHEN PDC_CHEQUE_DEP_NBR    IS NULL THEN 0 ELSE PDC_CHEQUE_DEP_NBR    END) PDC_CHEQUE_DEP_NBR
+	      ,(CASE WHEN PDC_CHEQUE_WITH_NBR   IS NULL THEN 0 ELSE PDC_CHEQUE_WITH_NBR   END) PDC_CHEQUE_WITH_NBR
+	      ,(CASE WHEN SPEC_COND_NBR         IS NULL THEN 0 ELSE SPEC_COND_NBR         END) SPEC_COND_NBR
+	      ,(CASE WHEN SO_NBR                IS NULL THEN 0 ELSE SO_NBR                END) SO_NBR
+	      ,(CASE WHEN REMITTANCE_NBR        IS NULL THEN 0 ELSE REMITTANCE_NBR        END) REMITTANCE_NBR
+	      ,(CASE WHEN MEMO_NBR              IS NULL THEN 0 ELSE MEMO_NBR              END) MEMO_NBR
+	      ,(CASE WHEN SIGNATORIES_NBR       IS NULL THEN 0 ELSE SIGNATORIES_NBR       END) SIGNATORIES_NBR
+	      ,(CASE WHEN LINKS_NBR             IS NULL THEN 0 ELSE LINKS_NBR             END) LINKS_NBR
+	      ,(CASE WHEN AMF_ASSET_NBR IS NULL THEN 0 ELSE AMF_ASSET_NBR END) AMF_ASSET_NBR
+	      ,(CASE WHEN AMF_LIAB_NBR IS NULL THEN 0 ELSE AMF_LIAB_NBR END) AMF_LIAB_NBR 
+	      ,CUR_BAL_ASSET_AMT
+	      ,CUR_BAL_LIAB_AMT
+	      ,AVAIL_BAL_ASSET_AMT
+	      ,AVAIL_BAL_LIAB_AMT
+	      ,(CASE WHEN BLOCKED_BAL_ASSET_AMT IS NULL THEN 0 ELSE BLOCKED_BAL_ASSET_AMT END) BLOCKED_BAL_ASSET_AMT
+	      ,(CASE WHEN BLOCKED_BAL_LIAB_AMT IS NULL THEN 0 ELSE BLOCKED_BAL_LIAB_AMT END) BLOCKED_BAL_LIAB_AMT
+	      ,OVERDRAW_ASSET_AMT
+	      ,OVERDRAW_LIAB_AMT
+	      ,DUES_ASSET_AMT
+	      ,DUES_LIAB_AMT
+	      ,APPROVED_LINES_AMT
+	      ,APPLICATIONS_AMT
+	      ,FACILITIES_AMT
+	      ,DRAWDOWNS_AMT
+	      ,COLLATERALS_AMT
+	      ,GUARANTEES_AMT
+	      ,LC_AMT
+	      ,LG_AMT
+	      ,BILLS_AMT
+	      ,ACCEPTANCE_AMT
+	      ,IMP_LC_SUM       
+		  ,IMP_LC_OUTS      
+		  ,IMP_LC_ACCEPT    
+		  ,IMP_LC_SETTLED   
+		  ,EXP_LC_SUM       
+		  ,EXP_LC_OUTS      
+		  ,EXP_LC_ACCEPT    
+		  ,EXP_LC_SETTLED   
+		  ,LG_OUTS          
+		  ,LG_SETTLED       
+		  ,EXP_BILLS_SUM    
+		  ,EXP_BILLS_OUTS   
+		  ,EXP_BILLS_ACCEPT 
+		  ,EXP_BILLS_SETTLED
+		  ,IMP_BILLS_SUM    
+		  ,IMP_BILLS_OUTS   
+		  ,IMP_BILLS_ACCEPT
+		  ,IMP_BILLS_SETTLED
+	      ,TOTAL_ASSET_AMT
+	      ,TOTAL_LIAB_AMT
+	      ,TOTAL_ILIAB_AMT
+	      ,TOTAL_LIMIT_AMT
+	      ,SETTLED_ASSET_AMT
+	      ,SETTLED_LIAB_AMT
+	      ,SETTLED_ILIAB_AMT
+	      ,SETTLED_LIMIT_AMT
+	      ,OUTSTAND_ASSET_AMT
+	      ,OUTSTAND_LIAB_AMT
+	      ,OUTSTAND_ILIAB_AMT
+	      ,OUTSTAND_LIMIT_AMT
+	      ,PROFIT_ASSET_AMT
+	      ,PROFIT_LIAB_AMT
+	      ,PROFIT_ILIAB_AMT
+	      ,PROFIT_LIMIT_AMT
+	      ,OVERDUE_ASSET_AMT
+	      ,OVERDUE_LIAB_AMT
+	      ,OVERDUE_ILIAB_AMT
+	      ,OVERDUE_LIMIT_AMT
+	      ,GUARANTEES_ASSET_AMT
+	      ,GUARANTEES_LIAB_AMT
+	      ,GUARANTEES_ILIAB_AMT
+	      ,GUARANTEES_LIMIT_AMT
+	      ,COLLATERAL_ASSET_AMT
+	      ,COLLATERAL_LIAB_AMT
+	      ,COLLATERAL_ILIAB_AMT
+	      ,COLLATERAL_LIMIT_AMT
+	      ,PROM_NOTE_ASSET_AMT
+	      ,PROM_NOTE_LIAB_AMT
+	      ,PROM_NOTE_ILIAB_AMT
+	      ,PROM_NOTE_LIMIT_AMT
+	      ,INV_CASH_AMT
+	      ,INV_HOLDING_AMT
+	      ,INV_SUKUK_AMT
+	      ,TREAS_FOREX_AMT
+	      ,TREAS_MARKET_AMT
+	      ,TREAS_DERIV_AMT
+	 FROM CIFVIEW_TMP  CT
+	WHERE CT.COMP_CODE = #{compCode}
+	  <choose>
+	    <when test="branchCode!=null">
+           AND CT.BRANCH_CODE = #{branchCode}
+	    </when>
+	    <otherwise>
+	       AND CT.BRANCH_CODE = (SELECT CIF.BRANCH_CODE FROM CIF WHERE CIF.CIF_NO = #{cif_no} AND CIF.COMP_CODE = #{compCode})
+	    </otherwise>
+	  </choose>
+	  AND CT.CIF_NO = #{cif_no}
+	  AND CT.USER_ID = #{userId}
+	</select>	
+	
+	<sql id="dropDashTables">
+		IF OBJECT_ID('#CTSTRS_TMP') IS NOT NULL
+		BEGIN
+		    DROP TABLE #CTSTRS_TMP
+		END	
+	
+	
+	</sql>
+	
+	<sql id="createDashTables">
+		create table #CTSTRS_TMP(
+					   COMP_CODE   numeric(4,0)  not null,
+					   BRANCH_CODE   numeric(4,0)  not null,   
+					   TO_TRS_AC_CIF   numeric(8,0)  null,
+					   TO_TRS_AC_BR numeric(4) null,
+					   TO_TRS_AC_SL numeric(3) null,
+					   TO_TRS_AC_GL numeric(6) null,
+					   TO_TRS_AC_CY numeric(3) null,
+					   AMOUNT numeric(20,3) null, 
+					   TRS_AC_CIF   numeric(8,0)  null,
+					   STATUS   char(1)  not null,
+					   CREATED_DATE   datetime  null,
+					   VALUE_DATE   datetime  null,
+					   TRS_DATE   datetime  null,
+					   TRX_TYPE   numeric(3,0)  null,
+					   TRS_TYPE   char(1)  not null,
+					   CB_IND   char(1)  not null, 
+					   TRS_NO   numeric(12,0)  not null,
+					   CHQ_SETTL_FLAG   varchar(1)  null,
+					   REMITTANCE_TO_NUM NUMERIC(10)  NULL,
+					   REMITTANCE_FR_NUM NUMERIC(10)  NULL,
+					   CHQ_NUM NUMERIC(10) NULL , 
+					   TRS_CY NUMERIC(3) NULL,
+					   REMITT_CY VARCHAR(1) NULL,
+					   LINKTOOTHER_TRXNO NUMERIC(12) NULL
+					   )
+
+	</sql>
+	
+	<update id ="dropDashTables">
+		<include refid="dashboardMapper.dropDashTables"/>
+	</update>
+	<update id ="createDashTables">
+		<include refid="dashboardMapper.createDashTables"/>
+		<include refid="coreCommonProcedureMapper.beginTans"/>
+	</update>
+	<select id="fillDashboardCounts" parameterType="dashboardSC" statementType="CALLABLE" >
+    { CALL P_FILL_DASHBOARD_COUNTS( #{compCode, 		mode=IN,jdbcType=NUMERIC},
+								    #{branchCode, 		mode=IN,jdbcType=NUMERIC},
+								    #{appName, 			mode=IN,jdbcType=VARCHAR},
+								    #{progRef, 			mode=IN,jdbcType=VARCHAR},
+								    #{cif_no, 			mode=IN,jdbcType=NUMERIC},
+								    #{userId, 			mode=IN,jdbcType=VARCHAR},
+								    #{loginTypeByBr, 	mode=IN,jdbcType=NUMERIC},
+								    #{runningDate,	 	mode=IN,jdbcType=DATE},
+								    #{language,			mode=IN,jdbcType=VARCHAR},
+								    #{errorCode, 		mode=OUT,jdbcType=NUMERIC},
+								    #{errorMessage, 	mode=OUT,jdbcType=VARCHAR}	)}
+	</select>
+	
+
+	<sql id="duesForAccList_sql">
+	SELECT CTS_DUES.COMP_CODE,
+	       CTS_DUES.APP_NAME,
+	       CTS_DUES.DUE_TYPE,
+	       CTS_DUES.BRANCH_CODE,
+	       CTS_DUES.PAYMENT_MODE,
+	       CTS_DUES.TRS_NO,
+	       CTS_DUES.CR_AC_BR,
+	       CTS_DUES.CR_AC_CY,
+	       CTS_DUES.CR_AC_GL,
+	       CTS_DUES.CR_AC_CIF,
+	       CTS_DUES.CR_AC_SL,
+	       CTS_DUES.ORIGINAL_AMT,
+	       (CASE WHEN CTS_DUES.REMAINING_AMOUNT IS NULL THEN 0 ELSE CTS_DUES.REMAINING_AMOUNT END +
+	       	CASE WHEN CTS_DUES.EXEMPTED_AMOUNT IS NULL THEN 0 ELSE CTS_DUES.EXEMPTED_AMOUNT END) REMAINING_AMOUNT,
+	       CTS_DUES.STATUS,
+	       duesStatusLOV.VALUE_DESC statusDesc,
+	       paymentModeLOV.VALUE_DESC paymentModeDesc,
+	       dueTypeLOV.VALUE_DESC dueTypeDesc,
+	       CURRENCIES.DECIMAL_POINTS decimalPoints,
+	       AMF.ACCOUNT_NUMBER as accountNumber
+	  FROM CTS_DUES
+	  
+	  left join SYS_PARAM_LOV_TRANS duesStatusLOV on duesStatusLOV.LOV_TYPE_ID = #{duesStatusLovType}
+	                                             and duesStatusLOV.VALUE_CODE = CTS_DUES.STATUS
+	                                             and duesStatusLOV.LANG_CODE = #{language}
+	  left join SYS_PARAM_LOV_TRANS paymentModeLOV on paymentModeLOV.LOV_TYPE_ID = #{paymentModeLovType}
+	                                         and paymentModeLOV.VALUE_CODE = CTS_DUES.PAYMENT_MODE
+	                                         and paymentModeLOV.LANG_CODE = #{language}
+      left join SYS_PARAM_LOV_TRANS dueTypeLOV on dueTypeLOV.LOV_TYPE_ID = #{duesTypeLovType}
+                                            and dueTypeLOV.VALUE_CODE = CTS_DUES.DUE_TYPE
+                                            and dueTypeLOV.LANG_CODE = #{language}
+	  join CURRENCIES on CURRENCIES.COMP_CODE = CTS_DUES.COMP_CODE
+	                 and CURRENCIES.CURRENCY_CODE = CTS_DUES.CR_AC_CY
+	  join AMF on AMF.COMP_CODE = CTS_DUES.COMP_CODE 
+	  		and AMF.BRANCH_CODE = CTS_DUES.DR_AC_BR 
+	  		and AMF.CURRENCY_CODE = CTS_DUES.DR_AC_CY 
+	  		and AMF.GL_CODE = CTS_DUES.DR_AC_GL 
+	  		and AMF.CIF_SUB_NO = CTS_DUES.DR_AC_CIF
+	  		and AMF.SL_NO  = CTS_DUES.DR_AC_SL
+	 WHERE CTS_DUES.COMP_CODE = #{compCode}
+	   AND CTS_DUES.DR_AC_BR = #{accBr}
+	   AND CTS_DUES.DR_AC_CY = #{currencyCode}
+	   AND CTS_DUES.DR_AC_GL = #{glCode}
+	   AND CTS_DUES.DR_AC_CIF = #{cif_no}
+	   AND CTS_DUES.DR_AC_SL = #{slNo}
+	   AND (CTS_DUES.STATUS in ('P', 'PC') OR (CTS_DUES.STATUS = 'TA' AND CTS_DUES.OLD_STATUS IN ('P','PC')))
+	</sql>
+
+	<resultMap id="duesForAccList_map"  type="dashboardDuesCO" >
+		<result property="ctsDuesVO.APP_NAME" column="APP_NAME" />
+		<result property="ctsDuesVO.DUE_TYPE" column="DUE_TYPE" />
+		<result property="ctsDuesVO.COMP_CODE" column="COMP_CODE" />
+		<result property="ctsDuesVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="ctsDuesVO.PAYMENT_MODE" column="PAYMENT_MODE" />
+		<result property="ctsDuesVO.TRS_NO" column="TRS_NO" />
+		<result property="ctsDuesVO.ORIGINAL_AMT" column="ORIGINAL_AMT" />
+		<result property="ctsDuesVO.REMAINING_AMOUNT" column="REMAINING_AMOUNT" />
+		<result property="ctsDuesVO.STATUS" column="STATUS" />
+		<result property="accNumberStr" column="accNumberStr" />
+		<result property="statusDesc" column="statusDesc" />
+		<result property="decimalPoints" column="decimalPoints" />
+		<result property="paymentModeDesc" column="paymentModeDesc" />
+		<result property="accountNumber" column="accountNumber" />
+		<result property="baseCurrencyCode" column="baseCurrencyCode" />
+	</resultMap>
+
+
+
+
+	<select id="duesForAccList" parameterType="dashboardSC" resultMap="duesForAccList_map">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="duesForAccList_sql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="duesForAccListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="duesForAccList_sql"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+<resultMap id="returnAmfSupplement_map" type="com.path.dbmaps.vo.AMFSUPPLEMENTVO">
+	<result property="CYB_CV_VALUE" column="VALUE" />
+	<result property="MONTH" column="MONTH" />
+	<result property="YEAR" column="YEAR" />
+</resultMap>
+
+<select id="getAmfSupplement" parameterType="dashboardSC" resultMap="returnAmfSupplement_map" >
+
+	SELECT SUM(AMFSUPPLEMENT.CYB_CV_VALUE)VALUE,AMFSUPPLEMENT.MONTH,AMFSUPPLEMENT.YEAR  FROM AMFSUPPLEMENT 
+	WHERE EXISTS 
+	(
+	SELECT 1
+	
+	FROM AMF,GEN_LEDGER
+	WHERE AMF.COMP_CODE        = GEN_LEDGER.COMP_CODE
+	AND AMF.GL_CODE            = GEN_LEDGER.GL_CODE
+	AND GEN_LEDGER.GL_CATEGORY = #{assestsOrLiab}
+	AND GEN_LEDGER.COMP_CODE   = #{compCode}
+	<if test="branchCode!=null">
+	AND AMF.BRANCH_CODE        = #{branchCode}
+	</if>
+	AND AMF.CIF_SUB_NO =  #{cif_no}
+	AND AMF.COMP_CODE =AMFSUPPLEMENT.COMP_CODE 
+	AND AMF.BRANCH_CODE=AMFSUPPLEMENT.BRANCH_CODE
+	AND AMF.CIF_SUB_NO=AMFSUPPLEMENT.CIF_SUB_NO
+	AND AMF.GL_CODE =AMFSUPPLEMENT.GL_CODE
+	AND AMF.SL_NO = AMFSUPPLEMENT.SL_NO
+	AND AMF.CURRENCY_CODE=AMFSUPPLEMENT.CURRENCY_CODE
+	AND NOT EXISTS (
+            SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF.SL_NO = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+	
+	)GROUP BY AMFSUPPLEMENT.MONTH,AMFSUPPLEMENT.YEAR
+	 ORDER BY AMFSUPPLEMENT.YEAR,AMFSUPPLEMENT.MONTH
+  </select>
+  
+    
+  <sql id="returnHiddenAccStatusesCount_sql">
+  	SELECT COUNT(1)
+	  FROM CTSTELLER_ACC_HIDDEN_STATUSES
+	 WHERE COMP_CODE = #{compCode}
+	   AND BRANCH_CODE = #{branchCode}
+	   AND CODE = #{tellerCode}
+  </sql>
+  <select id="returnHiddenAccStatusesCount" parameterType="dashboardSC" resultType="int">
+  		<include refid="returnHiddenAccStatusesCount_sql"/>
+  </select> 
+  
+  <delete id="dashboardDeleteLoginBranchCode">
+  	DELETE FROM CIFVIEW_TMP
+	 WHERE CIFVIEW_TMP.COMP_CODE = #{compCode}
+	   AND CIFVIEW_TMP.BRANCH_CODE >= 0
+	   AND CIFVIEW_TMP.CIF_NO = #{cif_no}
+	   AND CIFVIEW_TMP.USER_ID = #{userId}
+  </delete>
+  
+  <insert id="dashboardInsertLoginBranchCode">
+  	INSERT INTO CIFVIEW_TMP
+  	(COMP_CODE, BRANCH_CODE, USER_ID, CIF_NO)
+	VALUES
+  	(#{compCode},#{accBr},#{userId},#{cif_no})
+  </insert>
+  
+  
+   	<select id="dashboardCheckRestrictedCifById" parameterType="dashboardSC" resultType="int">
+		SELECT COUNT(1)
+ 		FROM CIF
+ 		WHERE COMP_CODE = #{compCode}
+ 		 AND CIF_NO = #{cif_no}
+ 		AND NOT EXISTS(
+		SELECT 1
+		FROM SADS_RESTRICTION_DEFINITION D,
+		     SADS_RESTRICTION_USER       U,
+		     SADS_RESTRICTION_BRANCHES   B,
+		     SADS_RESTRICTION_OPT        O
+		WHERE D.STATUS = 'P'
+		 AND U.USER_ID = #{userId,jdbcType=VARCHAR}
+		 AND B.COMP_CODE = #{compCode}
+		 AND B.BRANCH_CODE = #{restrBranchCode}
+		 AND O.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		 AND O.PROG_REF = #{progRef,jdbcType=VARCHAR}
+		 AND D.RESTRICTION_CODE = U.RESTRICTION_CODE
+		 AND D.RESTRICTION_CODE = B.RESTRICTION_CODE
+		 AND D.RESTRICTION_CODE = O.RESTRICTION_CODE
+		 AND ( EXISTS (SELECT 1
+		            FROM SADS_RESTRICTION_CIF C
+		            WHERE D.RESTRICTION_CODE = C.RESTRICTION_CODE
+		            AND C.COMP_CODE = B.COMP_CODE
+		            AND C.RESTRICTION_LEVEL = '1'
+		            AND #{cif_no} BETWEEN C.FROM_CIF_NO AND C.TO_CIF_NO) 
+		 OR EXISTS (SELECT 1
+		            FROM SADS_RESTRICTION_CIFTYPE T
+		            WHERE D.RESTRICTION_CODE = T.RESTRICTION_CODE
+		            AND T.COMP_CODE = B.COMP_CODE
+		            AND T.RESTRICTION_LEVEL = '1'
+		            AND T.CIF_TYPE IN (SELECT CIF_TYPE FROM CIF WHERE CIF.COMP_CODE = B.COMP_CODE AND CIF.CIF_NO = #{cif_no})))
+		            )
+		 
+			 
+	</select>
+
+  	<resultMap id="resDashSmsSubscriptionListMap" type="com.path.vo.common.global360view.DashSmsSubscriptionCO">
+		<result property="BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="CODE"    	   column="CODE"/>
+		<result property="ACC_BR"      column="ACC_BR"/>
+		<result property="ACC_CY"      column="ACC_CY"/>
+		<result property="ACC_GL"      column="ACC_GL"/>
+		<result property="ACC_CIF"     column="ACC_CIF"/>
+		<result property="ACC_SL"      column="ACC_SL"/>
+		<result property="MOBILE_NUM"  column="MOBILE_NUM"/>
+		<result property="STATUS"      column="STATUS"/>
+		<result property="smsSubStatus" column="smsSubStatus"/>
+		<result property="IBAN_ACC_NO"   column="IBAN_ACC_NO"/>
+		<result property="ACC_ADD_REF"   column="ACC_ADD_REF"/>
+	</resultMap>  
+  	<sql id="querySmsSubscriptionSQL">
+	SELECT SMS_SUBSCRIPTION.CODE,
+		       SMS_SUBSCRIPTION.ACC_BR,
+		       SMS_SUBSCRIPTION.ACC_CY,
+		       SMS_SUBSCRIPTION.ACC_GL,
+		       SMS_SUBSCRIPTION.ACC_CIF,
+		       SMS_SUBSCRIPTION.ACC_SL,
+		       SMS_SUBSCRIPTION.STATUS,
+		       SMS_SUBSCRIPTION.BRANCH_CODE,
+		       SMS_SUBSCRIPTION.MOBILE_NUM,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+				FROM SYS_PARAM_LOV_TRANS
+				WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = SMS_SUBSCRIPTION.STATUS 
+			  	 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+			  	 AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language,jdbcType=VARCHAR} ) smsSubStatus,
+			  	 (SELECT AMF.IBAN_ACC_NO FROM AMF WHERE
+			  	 AMF.COMP_CODE=SMS_SUBSCRIPTION.COMP_CODE AND
+			  	 AMF.BRANCH_CODE=SMS_SUBSCRIPTION.BRANCH_CODE AND		  	 
+			  	AMF.BRANCH_CODE=  SMS_SUBSCRIPTION.ACC_BR AND
+		        AMF.CURRENCY_CODE=SMS_SUBSCRIPTION.ACC_CY AND
+		     	AMF.GL_CODE= SMS_SUBSCRIPTION.ACC_GL AND
+		        AMF.CIF_SUB_NO= SMS_SUBSCRIPTION.ACC_CIF AND
+		        AMF.SL_NO= SMS_SUBSCRIPTION.ACC_SL 	       	  	 
+			  	 ) IBAN_ACC_NO,
+			  	 (SELECT AMF.ADDITIONAL_REFERENCE FROM AMF WHERE
+			  	 AMF.COMP_CODE=SMS_SUBSCRIPTION.COMP_CODE AND
+			  	 AMF.BRANCH_CODE=SMS_SUBSCRIPTION.BRANCH_CODE AND
+			  	AMF.BRANCH_CODE=  SMS_SUBSCRIPTION.ACC_BR AND
+		        AMF.CURRENCY_CODE=SMS_SUBSCRIPTION.ACC_CY AND
+		     	AMF.GL_CODE= SMS_SUBSCRIPTION.ACC_GL AND
+		        AMF.CIF_SUB_NO= SMS_SUBSCRIPTION.ACC_CIF AND
+		        AMF.SL_NO= SMS_SUBSCRIPTION.ACC_SL 	       	  	 
+			  	 ) ACC_ADD_REF		  	 
+		  FROM SMS_SUBSCRIPTION
+		 WHERE SMS_SUBSCRIPTION.COMP_CODE = (#{compCode,jdbcType=NUMERIC})
+		   AND SMS_SUBSCRIPTION.BRANCH_CODE = CASE WHEN (#{branchCode,jdbcType=NUMERIC})= 0 THEN SMS_SUBSCRIPTION.BRANCH_CODE
+		                                           ELSE (#{branchCode,jdbcType=NUMERIC}) END
+		   AND SMS_SUBSCRIPTION.LINE_NO = 0
+		    <if test='crudMode!="R"'>
+		     AND SMS_SUBSCRIPTION.STATUS IN (SELECT LOVOPT.VALUE_CODE
+			    								 FROM SYS_PARAM_LOV_LK_OPT LOVOPT
+										          WHERE LOVOPT.LOV_TYPE_ID = (#{lovTypeId,jdbcType=NUMERIC})
+										            AND LOVOPT.PROG_REF = (#{originalProgRef,jdbcType=VARCHAR})
+										            AND LOVOPT.APP_NAME = (#{currAppName,jdbcType=VARCHAR}) )
+		    </if>
+	</sql>
+  	<sql id="Cif_Condition" >
+    AND SMS_SUBSCRIPTION.ACC_CIF = (#{cifNo,jdbcType=NUMERIC})
+    AND NOT EXISTS (SELECT 1
+                  FROM CTSTELLER_ACC_HIDDEN_STATUSES, AMF
+                 WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+                   AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+                   AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+                   AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+                   AND AMF.COMP_CODE = SMS_SUBSCRIPTION.COMP_CODE                      
+                   AND AMF.BRANCH_CODE = SMS_SUBSCRIPTION.BRANCH_CODE
+                   AND AMF.CURRENCY_CODE = SMS_SUBSCRIPTION.ACC_CY
+                   AND AMF.GL_CODE = SMS_SUBSCRIPTION.ACC_GL
+                   AND AMF.CIF_SUB_NO = SMS_SUBSCRIPTION.ACC_CIF
+                   AND AMF.SL_NO = SMS_SUBSCRIPTION.ACC_SL)
+  </sql>																						
+	<select id="returnDashboardSmsSubscriptionList" parameterType="dashboardSC" resultMap="resDashSmsSubscriptionListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="querySmsSubscriptionSQL"/>
+		<include refid="Cif_Condition"/>	
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnDashboardSmsSubscriptionListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="querySmsSubscriptionSQL"/>
+		<include refid="Cif_Condition"/>	
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+  
+  
+  
+  
+  
+  <select id="postDatedChqList" parameterType="dashboardSC" resultMap="postDatedChqLisMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="postDatedChqListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="postDatedChqListCount" parameterType="dashboardSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="postDatedChqListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	 <resultMap id="postDatedChqLisMap" type="dashChequesServicesCO">
+		<result property="ctstrsVO.BRANCH_CODE"      column="BRANCH_CODE"/>
+		<result property="ctstrsVO.TRS_NO"    		 column="TRS_NO"/>
+		<result property="ctstrsVO.TRS_DATE"         column="TRS_DATE"/>
+		<result property="ctstrsVO.VALUE_DATE"       column="VALUE_DATE"/>
+		<result property="ctstrsVO.TRS_AC_AMOUNT"    column="TRS_AC_AMOUNT"/>
+		<result property="ctstrsVO.CV_AMOUNT"        column="CV_AMOUNT"/>
+    </resultMap>
+
+	 <sql id="postDatedChqListQuery">
+    	SELECT TRS_DATE,
+			   VALUE_DATE ,
+			   BRANCH_CODE ,
+			   TRS_NO ,
+			   	<if test="'postDatedDepositchequesBalance'.equals(colname) || 'postDatedWithdrawalchequesBalance'.equals(colname)">
+			   (CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                CTSTRS.TRS_AC_AMOUNT
+		            ELSE
+		                CTSTRS.AMOUNT  
+		         END) AS TRS_AC_AMOUNT,
+		         </if>
+		         <if test="'settlementChequesBalance'.equals(colname) ">
+		         TRS_AC_AMOUNT,
+		         </if>
+			   CV_AMOUNT 
+	FROM 	CTSTRS, CTSTRXTYPE
+	WHERE 	CTSTRS.COMP_CODE  = #{compCode}
+	<if test="'postDatedWithdrawalchequesBalance'.equals(colname) || 'settlementChequesBalance'.equals(colname) " >
+	AND		CTSTRS.TRS_AC_BR  = #{accBr}
+	AND   	CTSTRS.TRS_AC_CY  = #{currencyCode}
+	AND   	CTSTRS.TRS_AC_GL  = #{glCode}
+	AND   	CTSTRS.TRS_AC_CIF = #{cif_no}
+	AND   	CTSTRS.TRS_AC_SL  = #{slNo}
+	AND 	CTSTRS.STATUS     = 'P'
+	AND   	CTSTRS.VALUE_DATE   <![CDATA[>]]> #{runningDate}
+	AND		CTSTRS.COMP_CODE  = CTSTRXTYPE.COMP_CODE
+	AND 	CTSTRS.TRX_TYPE   = CTSTRXTYPE.CODE
+	</if>
+	
+	<if test="'settlementChequesBalance'.equals(colname) ">
+	AND   CTSTRXTYPE.TYPE  = 'D'
+	AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+	</if>
+	<if test="'postDatedDepositchequesBalance'.equals(colname)">
+	AND	  CTSTRS.TRS_AC_BR  	   =  #{accBr}
+	AND   CTSTRS.TRS_AC_CY      =  #{currencyCode}
+	AND   CTSTRS.TRS_AC_GL      =  #{glCode}
+	AND   CTSTRS.TRS_AC_CIF     =  #{cif_no}
+	AND   CTSTRS.TRS_AC_SL      =  #{slNo}
+	AND 	CTSTRS.STATUS    = 'P'
+	AND   CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	AND   CTSTRS.VALUE_DATE   <![CDATA[>]]> #{runningDate}
+	AND	  CTSTRS.TRS_DATE     <![CDATA[>]]> #{runningDate}
+	AND	CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL THEN 'N' ELSE CTSTRS.CHQ_SETTL_FLAG END <![CDATA[<>]]> 'Y' 
+	AND		CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	AND 	CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+	AND   CTSTRXTYPE.TYPE  = 'D'  
+	AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+UNION
+SELECT TRS_DATE,
+			   VALUE_DATE ,
+			   BRANCH_CODE ,
+			   TRS_NO ,
+			   	<if test="'postDatedDepositchequesBalance'.equals(colname) ">
+			   (CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                CTSTRS.TRS_AC_AMOUNT
+		            ELSE
+		                CTSTRS.AMOUNT  
+		         END) AS TRS_AC_AMOUNT,
+		         </if>
+		         <if test="'settlementChequesBalance'.equals(colname) || 'postDatedWithdrawalchequesBalance'.equals(colname)">
+		         TRS_AC_AMOUNT,
+		         </if>
+			   CV_AMOUNT 
+	FROM CTSTRS, CTSTRXTYPE
+	WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	AND   CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+	AND   CTSTRS.COMP_CODE    =  #{compCode}
+	AND	  CTSTRS.TO_TRS_AC_BR  = #{accBr}
+	AND	  CTSTRS.TO_TRS_AC_CY  =  #{currencyCode}
+	AND	  CTSTRS.TO_TRS_AC_GL  = #{glCode}
+	AND	  CTSTRS.TO_TRS_AC_CIF =  #{cif_no}
+	AND	  CTSTRS.TO_TRS_AC_SL  =  #{slNo}
+	AND   CTSTRS.STATUS    = 'P'
+	AND   CTSTRXTYPE.CR_DR_FOREX = 'C'
+	AND   CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	AND   CTSTRS.VALUE_DATE   <![CDATA[>]]> #{runningDate}
+	AND	  CTSTRS.TRS_DATE     <![CDATA[>]]> #{runningDate}
+	AND	  CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL THEN 'N' ELSE CTSTRS.CHQ_SETTL_FLAG END <![CDATA[<>]]> 'Y' 
+	AND   CTSTRXTYPE.TYPE  = 'T'     
+	AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+UNION
+SELECT TRS_DATE,
+			   VALUE_DATE ,
+			   BRANCH_CODE ,
+			   TRS_NO ,
+			   	<if test="'postDatedDepositchequesBalance'.equals(colname) || 'postDatedWithdrawalchequesBalance'.equals(colname)">
+			   (CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                CTSTRS.TRS_AC_AMOUNT
+		            ELSE
+		                CTSTRS.AMOUNT  
+		         END) AS TRS_AC_AMOUNT,
+		         </if>
+		         <if test="'settlementChequesBalance'.equals(colname) ">
+		         TRS_AC_AMOUNT,
+		         </if>
+			   CV_AMOUNT 
+	FROM CTSTRS, CTSTRXTYPE
+	WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	AND   CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+	AND   CTSTRS.COMP_CODE    =  #{compCode}
+	AND	  CTSTRS.TRS_AC_BR  = #{accBr}
+	AND	  CTSTRS.TRS_AC_CY  = #{currencyCode}
+	AND	  CTSTRS.TRS_AC_GL  = #{glCode}
+	AND	  CTSTRS.TRS_AC_CIF = #{cif_no}
+	AND	  CTSTRS.TRS_AC_SL  = #{slNo}
+	AND   CTSTRS.STATUS    = 'P'
+	AND   CTSTRXTYPE.CR_DR_FOREX = 'D'
+	AND   CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	AND   CTSTRS.VALUE_DATE   <![CDATA[>]]> #{runningDate}
+	AND	  CTSTRS.TRS_DATE     <![CDATA[>]]> #{runningDate}
+	AND	  CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL THEN 'N' ELSE CTSTRS.CHQ_SETTL_FLAG END <![CDATA[<>]]> 'Y' 
+	AND   CTSTRXTYPE.TYPE  = 'T'  
+	AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+	</if> 
+	<if test="'postDatedWithdrawalchequesBalance'.equals(colname)">
+	AND   CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	AND	CTSTRS.TRS_DATE     <![CDATA[>]]> #{runningDate}
+	AND	CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL THEN 'N' ELSE CTSTRS.CHQ_SETTL_FLAG END <![CDATA[<>]]> 'Y' 
+	AND   (CTSTRXTYPE.TYPE  = 'W' OR  (CTSTRXTYPE.TYPE  = 'T' AND CR_DR_FOREX = 'D' ) )
+	AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')	
+     OR    (
+			   (  CR_DR_FOREX = 'C' 	AND
+				 CTSTRS.TO_TRS_AC_BR  = #{accBr}	AND
+				 CTSTRS.TO_TRS_AC_CY  = #{currencyCode}   AND
+				 CTSTRS.TO_TRS_AC_GL  = #{glCode}	AND
+				 CTSTRS.TO_TRS_AC_CIF = #{cif_no} AND
+				 CTSTRS.TO_TRS_AC_SL  = #{slNo}
+			   )	
+			AND 	CTSTRS.STATUS    = 'P'
+			AND   CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+			AND   CTSTRS.VALUE_DATE   <![CDATA[>]]> #{runningDate}
+			AND	CTSTRS.TRS_DATE     <![CDATA[>]]> #{runningDate} 
+			AND	CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL THEN 'N' ELSE CTSTRS.CHQ_SETTL_FLAG END <![CDATA[<>]]> 'Y'  
+			AND	CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+			AND 	CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+			AND   CTSTRXTYPE.TYPE  = 'T' 
+			AND   CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+				
+              )  	
+	</if>
+    </sql>
+    
+<select id="dashboardReturnScoreRiskDescriptions" parameterType="dashboardCO" resultType="com.path.dbmaps.vo.CIFCONTROL_DEFINE_SCORE_RANGEVO">
+       SELECT RISK_LEVEL, SCORE_CODE, FROM_SCORE, TO_SCORE
+	   FROM CIFCONTROL_DEFINE_SCORE_RANGE
+	   WHERE COMP_CODE = #{loginCompCode}
+	   <if test="scoreRiskValue != null">
+	   	AND #{scoreRiskValue} BETWEEN FROM_SCORE AND TO_SCORE
+	   </if>
+</select>   
+
+  <!-- DBU191081 Muhammed Anas Start -->
+  <select id="returnChildCifList" parameterType="dashboardSC" resultMap="returnChildCifListMap" >
+	  	 SELECT CIF_NO,PARENT_CIF_NO
+	  FROM FMS_SUBSIDIARY_CIFS
+	 WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+	   <choose>
+	    <when test="branchCode!=null">
+           AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{branchCode}
+	    </when>
+	    <otherwise>
+	       AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = (SELECT CIF.BRANCH_CODE FROM CIF WHERE CIF.CIF_NO = #{cif_no} AND CIF.COMP_CODE = #{compCode})
+	    </otherwise>
+	  </choose>
+	   AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName}
+	   AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId}
+	   AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+  	 
+  </select>
+  <resultMap id="returnChildCifListMap" type="com.path.vo.common.global360view.DashboardCO">
+	<result property="childCif" column="CIF_NO" />
+	<result property="cifVO.CIF_NO" column="PARENT_CIF_NO" />
+  </resultMap>
+  <!-- DBU191081 Muhammed Anas End -->
+    
+    <delete id="deleteFmsSubdidiaryCifs">
+	 DELETE
+     FROM   FMS_SUBSIDIARY_CIFS
+     WHERE  COMP_CODE           =  #{compCode}
+     AND    BRANCH_CODE         = #{accBr}
+     AND    APP_NAME            =#{appName}
+     AND    USER_ID             = #{userId}
+  </delete>
+  
+ 
+</mapper>

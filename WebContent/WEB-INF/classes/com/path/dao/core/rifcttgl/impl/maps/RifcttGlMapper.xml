@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="rifcttGlMapper">
+
+ <sql id="rifcttGlListCommon" >
+
+		SELECT 
+		
+ 	   <if test="checkExistGl!=null and checkExistGl!= ''">
+			 <choose >
+	        <when test="isSybase == 1" >
+	       TOP 1 
+	        </when>
+            </choose>
+            
+         </if>
+		
+				RIFCTT_GL.CURRENCY_CODE,   
+	         	RIFCTT_GL.GL_CODE,   
+	         	RIFCTT_GL.SL_NO,   
+	         	RIFCTT_GL.LINE_NBR,   
+	         	RIFCTT_GL.TYPE_CODE  
+	    FROM	RIFCTT_GL  
+	   	<where>
+		  <if test="compCode!=null">
+				RIFCTT_GL.COMP_CODE = #{compCode}
+          </if>
+		  <if test="cifTypeCode!=null and cifTypeCode != emptyBigDecimalValue">
+				AND ( RIFCTT_GL.TYPE_CODE = CASE WHEN #{cifTypeCode} = 0 THEN TYPE_CODE ELSE #{cifTypeCode} + 0 END )  
+          </if>
+		  <if test="glCode!=null and glCode != emptyBigDecimalValue">
+				AND RIFCTT_GL.GL_CODE = #{glCode}
+          </if>
+		  <if test="cyCode!=null and cyCode != emptyBigDecimalValue">
+				AND RIFCTT_GL.CURRENCY_CODE = #{cyCode}
+          </if>
+		  <if test="slNbr!=null and slNbr != emptyBigDecimalValue">
+				AND RIFCTT_GL.SL_NO = #{slNbr}
+          </if>
+          
+           <if test="lineNbr!=null and lineNbr > 0">
+              AND LINE_NBR= #{lineNbr}
+           </if>
+           	<if test="checkExistGl!=null and checkExistGl!= ''">
+             <choose >
+	        <when test="isOracle == 1" >
+	         AND ROWNUM=1
+	        </when>
+            </choose>
+            </if>
+          
+          
+		</where>
+		
+
+ </sql> 
+ 
+ <select id="rifcttGlList" resultMap="RIFCTT_GL.BaseResultMap" parameterType="rifcttGlSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="rifcttGlListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="rifcttGlListCount" resultType="int" parameterType="rifcttGlSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="rifcttGlListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnRifcttGlById" parameterType="rifcttGlSC" resultType="rifcttGlVO">
+  		<include refid="rifcttGlListCommon"/>
+  </select>
+
+
+<sql id="rifMessageByCompLkp_sql" >
+SELECT RIFMESSAGE.COMP_CODE ,
+       RIFMESSAGE.MSG_CODE,
+       RIFMESSAGE.MSG_ENG,
+       RIFMESSAGE.MSG_ARAB,
+       RIFMESSAGE.INCLUDE_INSTR
+  FROM RIFMESSAGE
+ WHERE RIFMESSAGE.COMP_CODE = #{compCode}
+</sql>
+   
+<select id="getRifMessageByCompLkpCount" resultType="int" parameterType="rifcttGlSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="rifMessageByCompLkp_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+<select id="getRifMessageByCompLkpList" resultMap="RIFMESSAGE.BaseResultMap" parameterType="rifcttGlSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="rifMessageByCompLkp_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+ 
+  
+  
+
+</mapper>

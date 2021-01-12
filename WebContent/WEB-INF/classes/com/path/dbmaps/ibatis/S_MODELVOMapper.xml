@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_MODEL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_MODELVO" >
+    <id column="MODEL_ID" property="MODEL_ID" />
+    <result column="MODEL_NAME" property="MODEL_NAME" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="DATE_AUTHORIZED" property="DATE_AUTHORIZED" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DATE_DELETE_REJECTED" property="DATE_DELETE_REJECTED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETE_REJECTED_BY" property="DELETE_REJECTED_BY" />
+    <result column="TO_BE_DELETED" property="TO_BE_DELETED" />
+    <result column="IS_ADMIN_YN" property="IS_ADMIN_YN" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="AUTHORIZED_BY" property="AUTHORIZED_BY" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MODEL_ID, MODEL_NAME, DATE_CREATED, DATE_AUTHORIZED, DATE_DELETED, DATE_DELETE_REJECTED, 
+    DELETED_BY, DELETE_REJECTED_BY, TO_BE_DELETED, IS_ADMIN_YN, DATE_UPDATED, STATUS, 
+    CREATED_BY, AUTHORIZED_BY, MODIFIED_BY, DATE_MODIFIED
+  </sql>
+  <select id="selectS_MODEL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_MODELVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_MODEL
+    where MODEL_ID = #{MODEL_ID}
+  </select>
+  <delete id="deleteS_MODEL" parameterType="com.path.dbmaps.vo.S_MODELVO" >
+    delete from S_MODEL
+    where MODEL_ID = #{MODEL_ID}
+  </delete>
+  <insert id="insertS_MODEL" parameterType="com.path.dbmaps.vo.S_MODELVO" >
+    insert into S_MODEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="MODEL_ID != null and !&quot;&quot;.equals(MODEL_ID)" >
+        MODEL_ID,
+      </if>
+      <if test="MODEL_NAME != null and !&quot;&quot;.equals(MODEL_NAME)" >
+        MODEL_NAME,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="DATE_AUTHORIZED != null" >
+        DATE_AUTHORIZED,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        DATE_DELETE_REJECTED,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETE_REJECTED_BY != null and !&quot;&quot;.equals(DELETE_REJECTED_BY)" >
+        DELETE_REJECTED_BY,
+      </if>
+      <if test="TO_BE_DELETED != null and !&quot;&quot;.equals(TO_BE_DELETED)" >
+        TO_BE_DELETED,
+      </if>
+      <if test="IS_ADMIN_YN != null and !&quot;&quot;.equals(IS_ADMIN_YN)" >
+        IS_ADMIN_YN,
+      </if>
+      DATE_UPDATED,
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="AUTHORIZED_BY != null and !&quot;&quot;.equals(AUTHORIZED_BY)" >
+        AUTHORIZED_BY,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="MODEL_ID != null and !&quot;&quot;.equals(MODEL_ID)" >
+        #{MODEL_ID},
+      </if>
+      <if test="MODEL_NAME != null and !&quot;&quot;.equals(MODEL_NAME)" >
+        #{MODEL_NAME},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="DATE_AUTHORIZED != null" >
+        #{DATE_AUTHORIZED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        #{DATE_DELETE_REJECTED},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETE_REJECTED_BY != null and !&quot;&quot;.equals(DELETE_REJECTED_BY)" >
+        #{DELETE_REJECTED_BY},
+      </if>
+      <if test="TO_BE_DELETED != null and !&quot;&quot;.equals(TO_BE_DELETED)" >
+        #{TO_BE_DELETED},
+      </if>
+      <if test="IS_ADMIN_YN != null and !&quot;&quot;.equals(IS_ADMIN_YN)" >
+        #{IS_ADMIN_YN},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="AUTHORIZED_BY != null and !&quot;&quot;.equals(AUTHORIZED_BY)" >
+        #{AUTHORIZED_BY},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_MODEL" >
+    update S_MODEL
+    <set >
+      <if test="MODEL_NAME != null" >
+        <choose >
+          <when test="MODEL_NAME.equals(&quot;&quot;)" >
+            MODEL_NAME = NULL ,
+          </when>
+          <otherwise >
+            MODEL_NAME = #{MODEL_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="DATE_AUTHORIZED != null" >
+        DATE_AUTHORIZED = #{DATE_AUTHORIZED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        DATE_DELETE_REJECTED = #{DATE_DELETE_REJECTED},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETE_REJECTED_BY != null" >
+        <choose >
+          <when test="DELETE_REJECTED_BY.equals(&quot;&quot;)" >
+            DELETE_REJECTED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETE_REJECTED_BY = #{DELETE_REJECTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_DELETED != null" >
+        <choose >
+          <when test="TO_BE_DELETED.equals(&quot;&quot;)" >
+            TO_BE_DELETED = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_DELETED = #{TO_BE_DELETED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_ADMIN_YN != null" >
+        <choose >
+          <when test="IS_ADMIN_YN.equals(&quot;&quot;)" >
+            IS_ADMIN_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_ADMIN_YN = #{IS_ADMIN_YN},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AUTHORIZED_BY != null" >
+        <choose >
+          <when test="AUTHORIZED_BY.equals(&quot;&quot;)" >
+            AUTHORIZED_BY = NULL ,
+          </when>
+          <otherwise >
+            AUTHORIZED_BY = #{AUTHORIZED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+    </set>
+    where MODEL_ID = #{MODEL_ID}
+  </sql>
+  <update id="updateS_MODEL" parameterType="com.path.dbmaps.vo.S_MODELVO" >
+    <include refid="sql_updateS_MODEL" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

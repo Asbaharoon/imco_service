@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="employeeMapper">
+
+ <sql id="employeeListCommon" >
+	<![CDATA[
+		SELECT
+			EMP.BRANCH_CODE,
+			EMP.EMPLOYEE_ID,
+			EMP.FULL_NAME_ENG
+		FROM  EMP 
+		WHERE EMP.COMP_CODE   = #{compCode}
+        AND   EMP.BRANCH_CODE = CASE WHEN #{branchCode} = 0 THEN  EMP.BRANCH_CODE ELSE #{branchCode} + 0 END
+           
+	]]>	 
+ </sql>
+ 
+
+ <resultMap id="employeeListMap" type="employeeVO">
+	<id property="BRANCH_CODE" column="BRANCH_CODE" />
+	<result property="EMPLOYEE_ID" column="EMPLOYEE_ID" />
+	<result property="FULL_NAME_ENG" column="FULL_NAME_ENG" />
+ </resultMap>
+ 
+ <select id="employeeList" resultMap="employeeListMap" parameterType="employeeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="employeeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="employeeListCount" resultType="int" parameterType="employeeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="employeeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnEmployeeById" parameterType="employeeSC" resultType="employeeVO">
+		 SELECT EMPLOYEE_ID, CASE WHEN #{language} = 'L' THEN FULL_NAME_ENG ELSE FULL_NAME_ARAB END FULL_NAME_ENG
+		 FROM   EMP
+		 WHERE  EMP.EMPLOYEE_ID = #{employee_id}
+		 AND    EMP.BRANCH_CODE = CASE WHEN #{branchCode} = 0 THEN  EMP.BRANCH_CODE ELSE #{branchCode} + 0 END
+		 AND    EMP.COMP_CODE   = #{compCode}
+ </select>
+
+
+ <resultMap type="employeeCO" id="employeeMap">
+ 
+	<result property="empVO.EMPLOYEE_ID"        column="EMPLOYEE_ID"/>
+	<result property="empVO.FULL_NAME_ENG"      column="FULL_NAME_ENG"/>
+	  
+   </resultMap>
+
+<select id="returnEmployeeUsrDetails" parameterType="employeeSC" resultMap="employeeMap">
+
+		 SELECT   EMP.EMPLOYEE_ID  EMPLOYEE_ID,EMP.FULL_NAME_ENG FULL_NAME_ENG
+		 FROM   EMP,USR
+		 WHERE  EMP.EMPLOYEE_ID = USR.EMPLOYEE_ID
+		 AND    EMP.COMP_CODE = #{compCode} 
+		 AND    USR.USER_ID   = #{userId}
+ </select>
+  <resultMap type="employeeCO" id="dependencyByOffIdMap">
+  	<result property="empVO.FULL_NAME_ENG"      column="FULL_NAME_ENG"/>
+  	<result property="empVO.DIV_CODE"      		column="DIV_CODE"/>
+  	<result property="empVO.DEPT_CODE"      	column="DEPT_CODE"/>
+  	<result property="divisionDesc"      		column="divisionDesc"/>
+  	<result property="deptDesc"      			column="deptDesc"/>
+  	<result property="empVO.EMPLOYEE_ID"        column="EMPLOYEE_ID"/>
+  </resultMap>
+
+ <select id="dependencyByOfficerId" parameterType="employeeSC" resultMap="dependencyByOffIdMap">
+	<![CDATA[
+	  SELECT 
+	  	  CASE WHEN #{preferredLanguage} = 'L' THEN FULL_NAME_ENG ELSE FULL_NAME_ARAB END FULL_NAME_ENG,
+	      CASE WHEN DIV_CODE= NULL THEN 0 ELSE DIV_CODE END DIV_CODE,
+	      CASE WHEN DEPT_CODE= NULL THEN 0 ELSE DEPT_CODE END DEPT_CODE,
+	      (SELECT CASE WHEN #{preferredLanguage}  = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END
+	        FROM  DIVISIONS 
+	        WHERE	 DIVISIONS.COMP_CODE  = EMP.COMP_CODE
+	         AND	DIVISIONS.DIVISION_CODE  = EMP.DIV_CODE) divisionDesc,
+	      (SELECT CASE WHEN #{preferredLanguage}  = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB  END
+						FROM  DEPARTMENTS 
+						WHERE	DEPARTMENTS.COMP_CODE  = EMP.COMP_CODE
+						 AND	DEPARTMENTS.DIVISION_CODE  = EMP.DIV_CODE
+						 AND	DEPARTMENTS.DEPT_CODE  = EMP.DEPT_CODE ) deptDesc,
+		EMPLOYEE_ID
+	      FROM  EMP
+	      WHERE  EMP.COMP_CODE   =  #{compCode,jdbcType=NUMERIC}
+	       AND  EMP.EMPLOYEE_ID  = 	#{employee_id,jdbcType=NUMERIC}
+	]]>	 
+ </select>
+</mapper>

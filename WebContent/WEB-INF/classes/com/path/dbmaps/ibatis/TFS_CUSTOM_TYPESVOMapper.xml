@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_CUSTOM_TYPES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_CUSTOM_TYPESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="USER_ID" property="USER_ID" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    BRANCH_CODE,COMP_CODE,DOC_CODE,DOC_TYPE,USER_ID
+  </sql>
+  <select id="selectTFS_CUSTOM_TYPES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_CUSTOM_TYPESVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_CUSTOM_TYPES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and USER_ID = #{USER_ID}
+  </select>
+  
+  <delete id="deleteTFS_CUSTOM_TYPES" parameterType="com.path.dbmaps.vo.TFS_CUSTOM_TYPESVO" >
+    delete from TFS_CUSTOM_TYPES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertTFS_CUSTOM_TYPES" parameterType="com.path.dbmaps.vo.TFS_CUSTOM_TYPESVO" >
+    insert into TFS_CUSTOM_TYPES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_CODE != null" >
+        DOC_CODE,
+      </if>
+      <if test="DOC_TYPE != null and !&quot;&quot;.equals(DOC_TYPE)" >
+        DOC_TYPE,
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_CODE != null" >
+        #{DOC_CODE},
+      </if>
+      <if test="DOC_TYPE != null and !&quot;&quot;.equals(DOC_TYPE)" >
+        #{DOC_TYPE},
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+</mapper>

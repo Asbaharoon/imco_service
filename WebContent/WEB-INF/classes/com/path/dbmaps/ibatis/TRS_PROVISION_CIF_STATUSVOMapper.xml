@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_PROVISION_CIF_STATUS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_PROVISION_CIF_STATUSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROVISION_CLASS" property="PROVISION_CLASS" />
+    <result column="CATEGORY_CODE" property="CATEGORY_CODE" />
+    <result column="CIF_SUB_CLASS" property="CIF_SUB_CLASS" />
+    <result column="CIF_SUB_CLASS_RESET_FLAG" property="CIF_SUB_CLASS_RESET_FLAG" />
+    <result column="CATEGORY_CODE_2" property="CATEGORY_CODE_2" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, PROVISION_CLASS, CATEGORY_CODE, CIF_SUB_CLASS, CIF_SUB_CLASS_RESET_FLAG, 
+    CATEGORY_CODE_2
+  </sql>
+  <select id="selectTRS_PROVISION_CIF_STATUS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_PROVISION_CIF_STATUSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_PROVISION_CIF_STATUS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and PROVISION_CLASS = #{PROVISION_CLASS}
+  </select>
+  <delete id="deleteTRS_PROVISION_CIF_STATUS" parameterType="com.path.dbmaps.vo.TRS_PROVISION_CIF_STATUSVOKey" >
+    delete from TRS_PROVISION_CIF_STATUS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and PROVISION_CLASS = #{PROVISION_CLASS}
+  </delete>
+  <insert id="insertTRS_PROVISION_CIF_STATUS" parameterType="com.path.dbmaps.vo.TRS_PROVISION_CIF_STATUSVO" >
+    insert into TRS_PROVISION_CIF_STATUS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROVISION_CLASS != null and PROVISION_CLASS != emptyBigDecimalValue" >
+        PROVISION_CLASS,
+      </if>
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        CATEGORY_CODE,
+      </if>
+      <if test="CIF_SUB_CLASS != null" >
+        CIF_SUB_CLASS,
+      </if>
+      <if test="CIF_SUB_CLASS_RESET_FLAG != null" >
+        CIF_SUB_CLASS_RESET_FLAG,
+      </if>
+      <if test="CATEGORY_CODE_2 != null and CATEGORY_CODE_2 != emptyBigDecimalValue" >
+        CATEGORY_CODE_2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROVISION_CLASS != null and PROVISION_CLASS != emptyBigDecimalValue" >
+        #{PROVISION_CLASS},
+      </if>
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        #{CATEGORY_CODE},
+      </if>
+      <if test="CIF_SUB_CLASS != null" >
+        #{CIF_SUB_CLASS},
+      </if>
+      <if test="CIF_SUB_CLASS_RESET_FLAG != null" >
+        #{CIF_SUB_CLASS_RESET_FLAG},
+      </if>
+      <if test="CATEGORY_CODE_2 != null and CATEGORY_CODE_2 != emptyBigDecimalValue" >
+        #{CATEGORY_CODE_2},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_PROVISION_CIF_STATUS" >
+    update TRS_PROVISION_CIF_STATUS
+    <set >
+      <if test="CATEGORY_CODE != null" >
+        <choose >
+          <when test="CATEGORY_CODE == emptyBigDecimalValue" >
+            CATEGORY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CATEGORY_CODE = #{CATEGORY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_SUB_CLASS != null" >
+        CIF_SUB_CLASS = #{CIF_SUB_CLASS},
+      </if>
+      <if test="CIF_SUB_CLASS_RESET_FLAG != null" >
+        CIF_SUB_CLASS_RESET_FLAG = #{CIF_SUB_CLASS_RESET_FLAG},
+      </if>
+      <if test="CATEGORY_CODE_2 != null" >
+        <choose >
+          <when test="CATEGORY_CODE_2 == emptyBigDecimalValue" >
+            CATEGORY_CODE_2 = NULL ,
+          </when>
+          <otherwise >
+            CATEGORY_CODE_2 = #{CATEGORY_CODE_2},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and PROVISION_CLASS = #{PROVISION_CLASS}
+  </sql>
+  <update id="updateTRS_PROVISION_CIF_STATUS" parameterType="com.path.dbmaps.vo.TRS_PROVISION_CIF_STATUSVO" >
+    <include refid="sql_updateTRS_PROVISION_CIF_STATUS" />
+  </update>
+</mapper>

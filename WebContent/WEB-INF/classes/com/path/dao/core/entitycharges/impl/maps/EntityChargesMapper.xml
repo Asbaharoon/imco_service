@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="entityChargesMapper">
+
+
+	<sql id="Delete_entityCharges">
+		DELETE FROM CTS_CHARGES_ENTITY
+		WHERE COMP_CODE = #{loginCompCode}
+		AND BRANCH_CODE = #{loginBraCode}
+		AND ENTITY_TYPE = #{entityType}  
+		AND ENTITY_CODE = #{entityCode}
+		AND TYPE_IND = CASE WHEN #{typeInd, jdbcType=VARCHAR} IS NULL THEN TYPE_IND ELSE #{typeInd, jdbcType=VARCHAR} END
+	</sql>
+
+
+	<delete id="deleteEntityCharges" parameterType="entityChargesCO">
+		<include refid="Delete_entityCharges" />
+	</delete>
+	
+	
+	<resultMap id="chargesCurrencyListMap" type ="entityChargesSC">
+	
+		<result property="amount"        					column="AMOUNT" />
+		<result property="ctsChargesVO.ALLOW_MODIFY"       	column="ALLOW_MODIFY" />
+		<result property="ctsChargesVO.ALLOW_CLEARING"		column="ALLOW_CLEARING" />
+		<result property="ctsChargesVO.BRIEF_NAME_ENG"      column="BRIEF_NAME_ENG" />
+		<result property="ctsChargesVO.BRIEF_NAME_ARAB"     column="BRIEF_NAME_ARAB" />
+		<result property="ctsChargesVO.APPLY_TVA"       	column="APPLY_TVA" />
+		<result property="ctsChargesVO.VAT_CODE"       		column="VAT_CODE" />
+	</resultMap>
+	
+	
+	<select id="returnChargesWithChargesCurrency" resultMap="chargesCurrencyListMap" parameterType="entityChargesCO" >
+		SELECT CTSCHARGES_CURRENCY.AMOUNT,
+			CTSCHARGES.ALLOW_MODIFY,
+			CTSCHARGES.ALLOW_CLEARING,
+			CTSCHARGES.BRIEF_NAME_ENG,
+			CTSCHARGES.BRIEF_NAME_ARAB,
+			CTSCHARGES.APPLY_TVA,
+			CTSCHARGES.VAT_CODE
+			FROM  CTSCHARGES ,CTSCHARGES_CURRENCY  
+			WHERE	CTSCHARGES.COMP_CODE          = CTSCHARGES_CURRENCY.COMP_CODE
+			AND     CTSCHARGES.CODE               = CTSCHARGES_CURRENCY.CHARGE_CODE
+			AND     CTSCHARGES.COMP_CODE          = #{loginCompCode}
+			AND     CTSCHARGES.CODE               = #{chargeCode}	 
+			AND     CTSCHARGES_CURRENCY.CY_CODE   = #{chargeAccCurrency} 	
+	</select>
+
+	<select id="selectChargesSchemaList" resultType="BigDecimal" parameterType="entityChargesCO">
+		SELECT CTSCHARGES_SCHEMA.CHARGE_CODE
+		FROM  CTSCHARGES,CTSCHARGES_SCHEMA 
+		WHERE	 (CTSCHARGES.COMP_CODE  = CTSCHARGES_SCHEMA.COMP_CODE)
+		 AND	(CTSCHARGES_SCHEMA.CHARGE_CODE  = CTSCHARGES.CODE)
+		 AND	((CTSCHARGES_SCHEMA.COMP_CODE  = #{loginCompCode})
+		 AND	(CTSCHARGES_SCHEMA.CODE  = #{schema}))
+	</select>
+	
+	
+	<select id="returnCountCharges" resultType="BigDecimal" parameterType="entityChargesCO" >
+		SELECT COUNT(1)
+		FROM  CTSCHARGES,CTS_CHARGES_ENTITY 
+		WHERE  CTS_CHARGES_ENTITY.COMP_CODE = #{loginCompCode}
+		AND CTS_CHARGES_ENTITY.BRANCH_CODE  = #{loginBraCode}
+		AND CTS_CHARGES_ENTITY.ENTITY_TYPE  = #{entityType}
+		AND CTS_CHARGES_ENTITY.ENTITY_CODE  = #{entityCode}
+		AND CTS_CHARGES_ENTITY.TYPE_IND 	= #{typeInd}
+		AND CTSCHARGES.COMP_CODE = CTS_CHARGES_ENTITY.COMP_CODE
+		AND CTSCHARGES.CODE    	 = CTS_CHARGES_ENTITY.CHARGE_CODE	
+	</select>
+	
+	
+	<resultMap id="ctsChargesEntityCOMap" type="ctsChargesEntityCO">
+		<result property="ctsChargesEntityVO.ENTITY_TYPE" 			column="ENTITY_TYPE" />
+		<result property="ctsChargesEntityVO.ENTITY_CODE" 			column="ENTITY_CODE" />
+		<result property="ctsChargesEntityVO.CHARGE_CODE" 			column="CHARGE_CODE" />
+		<result property="ctsChargesEntityVO.TYPE_IND" 				column="TYPE_IND" />
+		<result property="ctsChargesEntityVO.AMOUNT" 				column="AMOUNT" />
+		<result property="ctsChargesEntityVO.AMOUNT_FC" 			column="AMOUNT_FC" />
+		<result property="ctsChargesEntityVO.AMOUNT_ORIGINAL" 		column="ctsAmountOrig" />
+		<result property="ctsChargesEntityVO.AMOUNT_ORIGINAL_FC" 	column="ctsAmountOrigFC" />
+		<result property="ctsChargesEntityVO.SCHEMA_CODE"		 	column="SCHEMA_CODE" />
+		<result property="ctsChargesEntityVO.DUES_COLLECTION_TYPE"  column="DUES_COLLECTION_TYPE" />
+        <result property="ctsChargesEntityVO.DUES_MODE_PAY"         column="DUES_MODE_PAY" />
+        <result property="ctsChargesEntityVO.ACC_BR"         		column="chargeAccBranch" />
+        <result property="ctsChargesEntityVO.ACC_CY"         		column="chargeAccCurrency" />
+        <result property="ctsChargesEntityVO.ACC_GL"         		column="chargeAccGL" />
+        <result property="ctsChargesEntityVO.ACC_CIF"         		column="chargeAccCIF" />
+        <result property="ctsChargesEntityVO.ACC_SL"         		column="chargeAccSL" />
+        <result property="ctsChargesEntityVO.DEDUCT_FROM_ACC_BR"    column="DEDUCT_FROM_ACC_BR" />
+        <result property="ctsChargesEntityVO.DEDUCT_FROM_ACC_CY"    column="DEDUCT_FROM_ACC_CY" />
+        <result property="ctsChargesEntityVO.DEDUCT_FROM_ACC_GL"    column="DEDUCT_FROM_ACC_GL" />
+        <result property="ctsChargesEntityVO.DEDUCT_FROM_ACC_CIF"   column="DEDUCT_FROM_ACC_CIF" />
+        <result property="ctsChargesEntityVO.DEDUCT_FROM_ACC_SL"    column="DEDUCT_FROM_ACC_SL" />
+        <result property="ctsChargesEntityVO.DR_CRITERIA"  			column="DR_CRITERIA" />
+        <result property="ctsChargesEntityVO.PASS_SEPARATELY"       column="PASS_SEPARATELY" />
+		<result property="chargeDesc" 								column="chargeDesc" />
+		<result property="vatCtsChargesEntityVO.ENTITY_TYPE" 		column="vatEntityType" />
+		<result property="vatCtsChargesEntityVO.ENTITY_CODE" 		column="vatEntityCode" />
+		<result property="vatCtsChargesEntityVO.CHARGE_CODE" 		column="vatChargeCode" />
+		<result property="vatCtsChargesEntityVO.TYPE_IND" 			column="vatTypeInd" />
+		<result property="vatCtsChargesEntityVO.AMOUNT" 			column="vatAmount" />
+		<result property="vatCtsChargesEntityVO.AMOUNT_FC" 			column="vatAmountFC" />
+		<result property="vatCtsChargesEntityVO.AMOUNT_ORIGINAL" 	column="vatAmountOrig" />
+		<result property="vatCtsChargesEntityVO.AMOUNT_ORIGINAL_FC" column="vatAmountOrigFC" />
+		<result property="vatCtsChargesEntityVO.ACC_BR"         	column="vatAccBranch" />
+        <result property="vatCtsChargesEntityVO.ACC_CY"         	column="vatAccCurrency" />
+        <result property="vatCtsChargesEntityVO.ACC_GL"         	column="vatAccGL" />
+        <result property="vatCtsChargesEntityVO.ACC_CIF"         	column="vatAccCIF" />
+        <result property="vatCtsChargesEntityVO.ACC_SL"         	column="vatAccSL" />
+        <result property="vatCtsChargesEntityVO.DR_CRITERIA"  		column="vatDrCriteria" />
+        <result property="vatCtsChargesEntityVO.PASS_SEPARATELY"   	column="vatPassSeparately" />
+        <result property="ctsChargesVO.FIX_CHARGES"         		column="FIX_CHARGES" />
+	</resultMap>
+	<select id="retrieveCtsChargesEntityCOList" resultMap="ctsChargesEntityCOMap" parameterType="entityChargesCO" >
+		SELECT  ENTITY_CHARGES.ENTITY_TYPE,
+                ENTITY_CHARGES.ENTITY_CODE,
+                ENTITY_CHARGES.CHARGE_CODE,
+                ENTITY_CHARGES.TYPE_IND,
+                ENTITY_CHARGES.AMOUNT,
+                ENTITY_CHARGES.AMOUNT_FC,
+                ENTITY_CHARGES.AMOUNT_ORIGINAL ctsAmountOrig,
+                ENTITY_CHARGES.AMOUNT_ORIGINAL_FC ctsAmountOrigFC,
+                ENTITY_CHARGES.SCHEMA_CODE,
+                ENTITY_CHARGES.DUES_COLLECTION_TYPE,
+                ENTITY_CHARGES.DUES_MODE_PAY,
+                ENTITY_CHARGES.ACC_BR  chargeAccBranch,
+				ENTITY_CHARGES.ACC_CY  chargeAccCurrency,
+				ENTITY_CHARGES.ACC_GL  chargeAccGL,
+				ENTITY_CHARGES.ACC_CIF chargeAccCIF,
+				ENTITY_CHARGES.ACC_SL  chargeAccSL,
+				ENTITY_CHARGES.DEDUCT_FROM_ACC_BR,
+				ENTITY_CHARGES.DEDUCT_FROM_ACC_CY,
+				ENTITY_CHARGES.DEDUCT_FROM_ACC_GL,
+				ENTITY_CHARGES.DEDUCT_FROM_ACC_CIF,
+				ENTITY_CHARGES.DEDUCT_FROM_ACC_SL,
+				ENTITY_CHARGES.DR_CRITERIA,
+				ENTITY_CHARGES.PASS_SEPARATELY,
+				(CASE WHEN #{loginPreferrredLanguage, jdbcType=VARCHAR} = 'L' 
+                			  THEN CHARGES.BRIEF_NAME_ENG ELSE CHARGES.BRIEF_NAME_ARAB  END ) chargeDesc,
+
+                VAT_CHARGES.ENTITY_TYPE vatEntityType,
+                VAT_CHARGES.ENTITY_CODE vatEntityCode,
+                VAT_CHARGES.CHARGE_CODE vatChargeCode,
+                VAT_CHARGES.TYPE_IND vatTypeInd,
+                VAT_CHARGES.AMOUNT vatAmount,
+                VAT_CHARGES.AMOUNT_FC vatAmountFC,
+                VAT_CHARGES.AMOUNT_ORIGINAL vatAmountOrig,
+                VAT_CHARGES.AMOUNT_ORIGINAL_FC vatAmountOrigFC,
+                VAT_CHARGES.ACC_BR  vatAccBranch,
+				VAT_CHARGES.ACC_CY  vatAccCurrency,
+				VAT_CHARGES.ACC_GL  vatAccGL,
+				VAT_CHARGES.ACC_CIF vatAccCIF,
+				VAT_CHARGES.ACC_SL  vatAccSL,
+				VAT_CHARGES.DR_CRITERIA vatDrCriteria,
+				VAT_CHARGES.PASS_SEPARATELY vatPassSeparately,
+				CHARGES.FIX_CHARGES
+          FROM  CTSCHARGES CHARGES, CTS_CHARGES_ENTITY ENTITY_CHARGES
+          LEFT  JOIN CTS_CHARGES_ENTITY VAT_CHARGES 
+          					 ON VAT_CHARGES.CHARGE_CODE =-ENTITY_CHARGES.CHARGE_CODE
+                            AND VAT_CHARGES.ENTITY_TYPE = ENTITY_CHARGES.ENTITY_TYPE
+                            AND VAT_CHARGES.ENTITY_CODE = ENTITY_CHARGES.ENTITY_CODE
+                            AND VAT_CHARGES.TYPE_IND 	= ENTITY_CHARGES.TYPE_IND
+                            AND VAT_CHARGES.COMP_CODE 	= ENTITY_CHARGES.COMP_CODE
+                            AND VAT_CHARGES.BRANCH_CODE = ENTITY_CHARGES.BRANCH_CODE
+         WHERE ENTITY_CHARGES.CHARGE_CODE > 0
+           AND ENTITY_CHARGES.COMP_CODE 	= #{loginCompCode,jdbcType=NUMERIC}
+           AND ENTITY_CHARGES.BRANCH_CODE 	= #{loginBraCode,jdbcType=NUMERIC}
+           <if test="!'LOS'.equals(entityType) and !'CHQ'.equals(entityType) and ((!'CER'.equals(entityType)) or ('CER'.equals(entityType) and !''.equals(typeInd)))">
+           AND (ENTITY_CHARGES.TYPE_IND 		= #{typeInd,jdbcType=VARCHAR})
+           </if>
+           AND ENTITY_CHARGES.ENTITY_TYPE 	= #{entityType,jdbcType=VARCHAR}
+           AND ENTITY_CHARGES.ENTITY_CODE 	= #{entityCode,jdbcType=NUMERIC}
+           AND ENTITY_CHARGES.COMP_CODE 	= CHARGES.COMP_CODE
+           AND ENTITY_CHARGES.CHARGE_CODE 	= CHARGES.CODE
+	</select>
+	
+	<select id="retrieveReqChargesEntityCOList" resultMap="ctsChargesEntityCOMap" parameterType="entityChargesCO" >
+		SELECT 'REQ' ENTITY_TYPE,
+		       CTSREQ_CHARGES_DET.REQ_NO,
+		       CTSREQ_CHARGES_DET.CHARGE_CODE,
+		       NULL TYPE_IND,
+		       CTSREQ_CHARGES_DET.AMOUNT AMOUNT,
+		       CTSREQ_CHARGES_DET.AMOUNT_FC_NEW AMOUNT_FC,
+		       NULL AMOUNT_ORIGINAL,
+		       NULL AMOUNT_ORIGINAL_FC,
+		       NULL SCHEMA_CODE,
+		       NULL DUES_COLLECTION_TYPE,
+		       NULL DUES_MODE_PAY,
+		       CTSREQ_CHARGES_DET.ACC_BR CHARGEACCBRANCH,
+		       CTSREQ_CHARGES_DET.ACC_CY CHARGEACCCURRENCY,
+		       CTSREQ_CHARGES_DET.ACC_GL CHARGEACCGL,
+		       CTSREQ_CHARGES_DET.ACC_CIF CHARGEACCCIF,
+		       CTSREQ_CHARGES_DET.ACC_SL CHARGEACCSL,
+		       (CASE
+		         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+		          CTSREQ_CHARGES_DET.INV_ACC_BR
+		         ELSE
+		          CTSREQ_CHARGES_DET.NOSTRO_ACC_BR
+		       END) DEDUCT_FROM_ACC_BR,
+		       (CASE
+		         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+		          CTSREQ_CHARGES_DET.INV_ACC_CY
+		         ELSE
+		          CTSREQ_CHARGES_DET.NOSTRO_ACC_CY
+		       END) DEDUCT_FROM_ACC_CY,
+		       (CASE
+		         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+		          CTSREQ_CHARGES_DET.INV_ACC_GL
+		         ELSE
+		          CTSREQ_CHARGES_DET.NOSTRO_ACC_GL
+		       END) DEDUCT_FROM_ACC_GL,
+		       (CASE
+		         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+		          CTSREQ_CHARGES_DET.INV_ACC_CIF
+		         ELSE
+		          CTSREQ_CHARGES_DET.NOSTRO_ACC_CIF
+		       END) DEDUCT_FROM_ACC_CIF,
+		       (CASE
+		         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+		          CTSREQ_CHARGES_DET.INV_ACC_SL
+		         ELSE
+		          CTSREQ_CHARGES_DET.NOSTRO_ACC_SL
+		       END) DEDUCT_FROM_ACC_SL,
+		       (SELECT CASE
+		                 WHEN #{loginPreferrredLanguage, jdbcType=VARCHAR} = 'L' THEN
+		                  BRIEF_NAME_ENG
+		                 ELSE
+		                  BRIEF_NAME_ARAB
+		               END
+		          FROM CTSCHARGES
+		         WHERE CTSCHARGES.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+		           AND CTSCHARGES.CODE = CTSREQ_CHARGES_DET.CHARGE_CODE) CHARGEDESC,
+       'REQ' VATENTITYTYPE,
+       NULL VATENTITYCODE,
+       VAT_CHARGES.CHARGE_CODE VATCHARGECODE,
+       NULL VATTYPEIND,
+       VAT_CHARGES.AMOUNT VATAMOUNT,
+       VAT_CHARGES.AMOUNT_FC_NEW VATAMOUNTFC,
+       VAT_CHARGES.ACC_BR VATACCBRANCH,
+       VAT_CHARGES.ACC_CY VATACCCURRENCY,
+       VAT_CHARGES.ACC_GL VATACCGL,
+       VAT_CHARGES.ACC_CIF VATACCCIF,
+       VAT_CHARGES.ACC_SL VATACCSL
+  FROM CTSREQ_CHARGES_DET
+  LEFT JOIN CTSREQ_CHARGES_DET VAT_CHARGES ON VAT_CHARGES.REQ_NO = CTSREQ_CHARGES_DET.REQ_NO
+                                          AND VAT_CHARGES.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+                                          AND VAT_CHARGES.BRANCH_CODE = CTSREQ_CHARGES_DET.BRANCH_CODE
+                                          AND VAT_CHARGES.CHARGE_CODE = -CTSREQ_CHARGES_DET.CHARGE_CODE
+ WHERE CTSREQ_CHARGES_DET.COMP_CODE = #{loginCompCode}
+   AND CTSREQ_CHARGES_DET.BRANCH_CODE = #{loginBraCode}
+   AND CTSREQ_CHARGES_DET.REQ_NO = #{entityCode}
+   AND CTSREQ_CHARGES_DET.CHARGE_CODE > 0
+       
+	</select>
+	
+	<select id="retrieveChargesSchema" resultType="BigDecimal" parameterType="entityChargesCO" > 
+	 	SELECT 	CTSCHARGES_SCHEMA.CHARGE_CODE  
+		FROM 	CTSCHARGES_SCHEMA  
+		WHERE  	CTSCHARGES_SCHEMA.COMP_CODE = #{loginCompCode} 
+		AND		CTSCHARGES_SCHEMA.CODE 		= #{schema}
+		AND	 	CTSCHARGES_SCHEMA.LINE_NO > 0	
+	 </select>
+	 
+	 <select id="retrieveCountChargesSchema" resultType="BigDecimal" parameterType="entityChargesSC" > 
+		SELECT COUNT(1)
+		FROM CTSCHARGES_SCHEMA,CTSCHARGES
+		WHERE CTSCHARGES_SCHEMA.COMP_CODE 	= #{compCode} 
+		AND CTSCHARGES_SCHEMA.CODE 	  		= #{code}
+		AND CTSCHARGES_SCHEMA.LINE_NO	 	> 0
+		AND CTSCHARGES_SCHEMA.COMP_CODE 	= CTSCHARGES.COMP_CODE
+		AND CTSCHARGES_SCHEMA.CHARGE_CODE 	= CTSCHARGES.CODE
+	</select>
+	
+	<select id="retrieveCountChargesSchemaVAT" resultType="BigDecimal" parameterType="entityChargesSC" > 
+		SELECT COUNT(1)
+		FROM CTSCHARGES_SCHEMA,CTSCHARGES
+		WHERE CTSCHARGES_SCHEMA.COMP_CODE 	= #{compCode} 
+		AND CTSCHARGES_SCHEMA.CODE 	  		= #{code}
+		AND CTSCHARGES_SCHEMA.LINE_NO	 	> 0
+		AND CTSCHARGES_SCHEMA.COMP_CODE 	= CTSCHARGES.COMP_CODE
+		AND CTSCHARGES_SCHEMA.CHARGE_CODE 	= CTSCHARGES.CODE
+		AND CTSCHARGES.APPLY_TVA 			= '1'
+	</select>
+	
+	<select id="retrieveCountAllChargesSchema" resultType="BigDecimal" parameterType="entityChargesSC" > 
+		SELECT COUNT(1) 
+		FROM  CTSCHARGES_SCHEMA 
+		WHERE COMP_CODE 		= #{compCode} 
+		AND   CODE 				= #{code}
+		AND	  LINE_NO			> 0
+	</select>
+	
+	<sql id="select_sumFCAmount">
+		SELECT SUM(AMOUNT_FC)
+	</sql>
+	
+	
+	<sql id="from_ctsChargesEntity">
+		FROM CTS_CHARGES_ENTITY
+		WHERE COMP_CODE = #{loginCompCode,jdbcType=NUMERIC}
+		AND BRANCH_CODE = #{loginBraCode,jdbcType=NUMERIC}
+		AND ENTITY_TYPE = #{entityType,jdbcType=VARCHAR}
+		AND ENTITY_CODE = #{entityCode,jdbcType=NUMERIC}
+		AND TYPE_IND = #{typeInd,jdbcType=VARCHAR}
+	</sql>
+	
+	<select id="retrieveSumOfChargesAmountFc" resultType="BigDecimal" parameterType="entityChargesCO" >
+		<include refid="select_sumFCAmount" />
+		<include refid="from_ctsChargesEntity" />
+	</select>
+	
+	
+	<sql id="select_sumsAmount">
+		SELECT SUM(AMOUNT_FC) amountFC, SUM(AMOUNT) amount
+	</sql>
+	
+	
+	
+	<resultMap id="retrieveSumsOfChargesAmountMap" type="entityChargesCO">
+		<result property="totalAllAmount" 			column="amountFC" />
+		<result property="totalAllAmountFc" 		column="amount" />
+	</resultMap>
+	
+	<select id="retrieveSumsOfChargesAmount" resultMap="retrieveSumsOfChargesAmountMap" parameterType="entityChargesCO" >
+		<include refid="select_sumsAmount" />
+		<include refid="from_ctsChargesEntity" />
+	</select>
+	
+	<delete id="deleteCtsTrsAccDetTmp" parameterType="trxMgntSC" >
+		DELETE FROM CTSTRS_ACC_DET_TMP 
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+		and BRANCH_CODE = #{branchCode,jdbcType=NUMERIC} 
+		and TRS_ACC_NO  = #{tellerCode,jdbcType=NUMERIC}
+	</delete>
+	
+	<update id="updateCTSTRSEntityInfo" parameterType="trxMgntSC">
+		UPDATE CTSTRS
+		SET INSTRUCTIONS1 = #{instructions1},
+		<if test='instructions2 != null'>
+		    INSTRUCTIONS2 = #{instructions2},
+		</if>
+			REFERENCE1 	  = #{reference}
+		<if test='trsDate != null'>
+		, RELEASE_DATE = #{trsDate}
+		</if>
+		WHERE  (COMP_CODE  		= #{compCode,jdbcType=NUMERIC})
+		 AND	(BRANCH_CODE  	= #{branchCode,jdbcType=NUMERIC})
+		 AND	(TRS_TYPE  		= 'R')
+		 AND	(CB_IND  		= 'C')
+		 AND	(TRS_NO  		= #{trsNo,jdbcType=NUMERIC})
+  </update>
+  
+  	 <update id="waiveEntityCharges" parameterType="entityChargesCO" >
+	   UPDATE CTS_CHARGES_ENTITY
+	 	  SET AMOUNT 	= 0, 
+	 	   	  AMOUNT_FC = 0
+		WHERE COMP_CODE 	= #{loginCompCode,jdbcType=NUMERIC}
+		  AND BRANCH_CODE 	= #{loginBraCode,jdbcType=NUMERIC}
+		  AND ENTITY_TYPE 	= #{entityType,jdbcType=VARCHAR}
+		  AND ENTITY_CODE 	= #{entityCode,jdbcType=NUMERIC}
+		  AND TYPE_IND 		= #{typeInd,jdbcType=VARCHAR}
+	 </update>
+  
+  
+  <select id="retrieveCountNonExemptedCharges" resultType="BigDecimal" parameterType="entityChargesSC" > 
+		SELECT COUNT(1)
+		FROM CTSCHARGES
+		WHERE COMP_CODE 	= #{compCode}
+		<if test="applyVAT == 1">
+			AND APPLY_TVA 	= 1
+		</if>
+		AND CODE IN (SELECT CHARGE_CODE
+					 FROM CTSCHARGES_SCHEMA
+					 WHERE CTSCHARGES_SCHEMA.COMP_CODE 	= CTSCHARGES.COMP_CODE 
+					  AND  CTSCHARGES_SCHEMA.CODE 		= #{code}
+					  AND  CTSCHARGES_SCHEMA.LINE_NO	<![CDATA[>]]> 0)
+		AND NOT EXISTS( SELECT 1
+						FROM CTSCHARGES_EXEMPTED_BRANCH
+						WHERE CTSCHARGES_EXEMPTED_BRANCH.COMP_CODE = CTSCHARGES.COMP_CODE 
+						 AND  CTSCHARGES_EXEMPTED_BRANCH.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+						 AND  CTSCHARGES_EXEMPTED_BRANCH.CHARGE_CODE = CTSCHARGES.CODE)
+		AND NOT EXISTS( SELECT 1
+						FROM CTSCHARGES_EXEMPTED_BRANCH
+						WHERE CTSCHARGES_EXEMPTED_BRANCH.COMP_CODE = CTSCHARGES.COMP_CODE 
+						 AND  CTSCHARGES_EXEMPTED_BRANCH.BRANCH_CODE = #{debitAccBr,jdbcType=NUMERIC}
+						 AND  CTSCHARGES_EXEMPTED_BRANCH.CHARGE_CODE = CTSCHARGES.CODE)
+	</select>
+	
+	
+	<select id="checkNonexistingChargesByCurrency" resultType="BigDecimal" parameterType="entityChargesSC" >
+		SELECT 
+		<choose >
+      		<when test="isSybase == 1" >
+     				TOP 1 
+      		</when>
+        </choose> 
+        CODE
+		FROM CTSCHARGES
+		WHERE COMP_CODE = #{compCode}
+		 AND CODE IN(SELECT  CHARGE_CODE
+		             FROM CTSCHARGES_SCHEMA
+		             WHERE COMP_CODE = #{compCode}
+		              AND CODE = #{schema})
+		 AND NOT EXISTS (SELECT 1
+		                 FROM  CTSCHARGES_CURRENCY  
+		                 WHERE COMP_CODE  = #{compCode}
+		                  AND  CY_CODE   = #{chargeCurrency}
+		                  AND  CHARGE_CODE IN(SELECT  CHARGE_CODE
+                                              FROM CTSCHARGES_SCHEMA
+                                              WHERE COMP_CODE = #{compCode}
+                                               AND CODE = #{schema})
+                          AND CTSCHARGES_CURRENCY.CHARGE_CODE = CTSCHARGES.CODE)
+        <choose >
+	        <when test="isOracle == 1" >
+	         AND ROWNUM=1
+	        </when>
+        </choose>
+	</select>
+	
+	<update id="updateCTSTRSCreatedBy" parameterType="trxMgntSC">
+	UPDATE CTSTRS
+	   SET CREATED_BY = #{createdBy}
+	     <if test="createdByTellerCode != null and createdByTellerCode != emptyBigDecimalValue">
+		  ,TELLER_CODE = #{createdByTellerCode}
+		</if>
+	 WHERE  COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	   AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+	   AND TRS_TYPE = 'R'
+	   AND CB_IND = 'C'
+	   AND TRS_NO = #{outTrsno,jdbcType=NUMERIC}
+  </update>
+  <update id="updateDOFCreatedBy" parameterType="trxMgntSC">
+	UPDATE DOF
+	   SET CREATED_BY = #{createdBy}
+	 WHERE  COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	   AND CTS_TRS_BR = #{branchCode,jdbcType=NUMERIC}
+	   AND CTS_TRS_TYPE = 'R'
+	   AND CTS_CB_IND = 'C'
+	   AND CTS_TRS_NO = #{outTrsno,jdbcType=NUMERIC}           	   
+  </update>  
+
+	<select id="returnCountAccountLimits" resultType="BigDecimal" parameterType="entityChargesSC" >
+		SELECT COUNT(1)
+		FROM  CTS_ACC_LIMITS 
+		WHERE COMP_CODE = #{compCode}
+		AND STATUS = 'P'
+	</select>
+
+ <select id="returnCountLostFound" resultType="BigDecimal" parameterType="entityChargesCO" >
+              SELECT COUNT(1)
+              FROM CTS_CHARGES_ENTITY C, CTSLOSTFOUND L
+              WHERE C.COMP_CODE = L.COMP_CODE
+              AND C.BRANCH_CODE = L.BRANCH_CODE
+              AND C.ENTITY_CODE = L.TRX_NO
+              AND C.ENTITY_TYPE = 'LOS'
+              AND C.COMP_CODE = #{loginCompCode,jdbcType=NUMERIC}
+              AND L.DOC_TYPE IN (SELECT CTS_LOSTDOC.DOC_CODE 
+                                            FROM  CTS_LOSTDOC 
+                                            WHERE CTS_LOSTDOC.DOC_CARD IN ('C', 'Q')
+                                            AND   CTS_LOSTDOC.APPLY_CHRG_FIRST_DAILY_ACC_YN = '1' )
+              AND L.STATUS IN ('P', 'W', 'N')
+              AND L.ACC_BR = #{accBranch,jdbcType=NUMERIC}
+              AND L.ACC_CY = #{accCurrency,jdbcType=NUMERIC}
+              AND L.ACC_GL = #{accGL,jdbcType=NUMERIC}
+              AND L.ACC_CIF = #{accCIF,jdbcType=NUMERIC}
+              AND L.ACC_SL = #{accSL,jdbcType=NUMERIC}
+             <choose>
+                     <when test="isSybase == 1">
+                           AND CONVERT(DATE,L.DATE_CREATED,103) = #{runningDate,jdbcType=DATE}
+                     </when>
+                     <otherwise>
+                           AND TRUNC(L.DATE_CREATED) = TRUNC(#{runningDate,jdbcType=DATE})
+                     </otherwise>
+              </choose>
+
+       </select>		
+</mapper>	

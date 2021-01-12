@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLSOLEST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLSOLESTVO" >
+    <id column="APP_REF" property="APP_REF" />
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="SOLICITOR" property="SOLICITOR" />
+    <result column="ESTIMATOR" property="ESTIMATOR" />
+    <result column="PAYMENT_METHOD" property="PAYMENT_METHOD" />
+    <result column="CHEQUE_NO" property="CHEQUE_NO" />
+    <result column="CHEQUE_BANK" property="CHEQUE_BANK" />
+    <result column="ADD_FIELD" property="ADD_FIELD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_REF, BRANCH, COMP_CODE, SOLICITOR, ESTIMATOR, PAYMENT_METHOD, CHEQUE_NO, CHEQUE_BANK, 
+    ADD_FIELD
+  </sql>
+  <select id="selectFMSAPPLSOLEST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLSOLESTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLSOLEST
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFMSAPPLSOLEST" parameterType="com.path.dbmaps.vo.FMSAPPLSOLESTVOKey" >
+    delete from FMSAPPLSOLEST
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFMSAPPLSOLEST" parameterType="com.path.dbmaps.vo.FMSAPPLSOLESTVO" >
+    insert into FMSAPPLSOLEST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        APP_REF,
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SOLICITOR != null and SOLICITOR != emptyBigDecimalValue" >
+        SOLICITOR,
+      </if>
+      <if test="ESTIMATOR != null and ESTIMATOR != emptyBigDecimalValue" >
+        ESTIMATOR,
+      </if>
+      <if test="PAYMENT_METHOD != null and !&quot;&quot;.equals(PAYMENT_METHOD)" >
+        PAYMENT_METHOD,
+      </if>
+      <if test="CHEQUE_NO != null and !&quot;&quot;.equals(CHEQUE_NO)" >
+        CHEQUE_NO,
+      </if>
+      <if test="CHEQUE_BANK != null and !&quot;&quot;.equals(CHEQUE_BANK)" >
+        CHEQUE_BANK,
+      </if>
+      <if test="ADD_FIELD != null and !&quot;&quot;.equals(ADD_FIELD)" >
+        ADD_FIELD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        #{APP_REF},
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SOLICITOR != null and SOLICITOR != emptyBigDecimalValue" >
+        #{SOLICITOR},
+      </if>
+      <if test="ESTIMATOR != null and ESTIMATOR != emptyBigDecimalValue" >
+        #{ESTIMATOR},
+      </if>
+      <if test="PAYMENT_METHOD != null and !&quot;&quot;.equals(PAYMENT_METHOD)" >
+        #{PAYMENT_METHOD},
+      </if>
+      <if test="CHEQUE_NO != null and !&quot;&quot;.equals(CHEQUE_NO)" >
+        #{CHEQUE_NO},
+      </if>
+      <if test="CHEQUE_BANK != null and !&quot;&quot;.equals(CHEQUE_BANK)" >
+        #{CHEQUE_BANK},
+      </if>
+      <if test="ADD_FIELD != null and !&quot;&quot;.equals(ADD_FIELD)" >
+        #{ADD_FIELD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLSOLEST" >
+    update FMSAPPLSOLEST
+    <set >
+      <if test="SOLICITOR != null" >
+        <choose >
+          <when test="SOLICITOR == emptyBigDecimalValue" >
+            SOLICITOR = NULL ,
+          </when>
+          <otherwise >
+            SOLICITOR = #{SOLICITOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ESTIMATOR != null" >
+        <choose >
+          <when test="ESTIMATOR == emptyBigDecimalValue" >
+            ESTIMATOR = NULL ,
+          </when>
+          <otherwise >
+            ESTIMATOR = #{ESTIMATOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYMENT_METHOD != null" >
+        <choose >
+          <when test="PAYMENT_METHOD.equals(&quot;&quot;)" >
+            PAYMENT_METHOD = NULL ,
+          </when>
+          <otherwise >
+            PAYMENT_METHOD = #{PAYMENT_METHOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHEQUE_NO != null" >
+        <choose >
+          <when test="CHEQUE_NO.equals(&quot;&quot;)" >
+            CHEQUE_NO = NULL ,
+          </when>
+          <otherwise >
+            CHEQUE_NO = #{CHEQUE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHEQUE_BANK != null" >
+        <choose >
+          <when test="CHEQUE_BANK.equals(&quot;&quot;)" >
+            CHEQUE_BANK = NULL ,
+          </when>
+          <otherwise >
+            CHEQUE_BANK = #{CHEQUE_BANK},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADD_FIELD != null" >
+        <choose >
+          <when test="ADD_FIELD.equals(&quot;&quot;)" >
+            ADD_FIELD = NULL ,
+          </when>
+          <otherwise >
+            ADD_FIELD = #{ADD_FIELD},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFMSAPPLSOLEST" parameterType="com.path.dbmaps.vo.FMSAPPLSOLESTVO" >
+    <include refid="sql_updateFMSAPPLSOLEST" />
+  </update>
+</mapper>

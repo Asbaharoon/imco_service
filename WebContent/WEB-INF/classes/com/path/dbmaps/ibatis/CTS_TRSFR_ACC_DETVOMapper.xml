@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_TRSFR_ACC_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_TRSFR_ACC_DETVO" >
+    <id column="BATCH_LINE_NO" property="BATCH_LINE_NO" />
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="ACC_BR" property="ACC_BR" />
+    <result column="ACC_CY" property="ACC_CY" />
+    <result column="ACC_GL" property="ACC_GL" />
+    <result column="ACC_CIF" property="ACC_CIF" />
+    <result column="ACC_SL" property="ACC_SL" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_LINE_NO, BATCH_NO, COMP_CODE, ACC_BR, ACC_CY, ACC_GL, ACC_CIF, ACC_SL, STATUS, 
+    DATE_UPDATED
+  </sql>
+  <select id="selectCTS_TRSFR_ACC_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_TRSFR_ACC_DET
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTS_TRSFR_ACC_DET" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_DETVOKey" >
+    delete from CTS_TRSFR_ACC_DET
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTS_TRSFR_ACC_DET" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_DETVO" >
+    insert into CTS_TRSFR_ACC_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_LINE_NO != null and BATCH_LINE_NO != emptyBigDecimalValue" >
+        BATCH_LINE_NO,
+      </if>
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        ACC_BR,
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        ACC_CY,
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        ACC_GL,
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        ACC_CIF,
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        ACC_SL,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_LINE_NO != null and BATCH_LINE_NO != emptyBigDecimalValue" >
+        #{BATCH_LINE_NO},
+      </if>
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        #{ACC_BR},
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        #{ACC_CY},
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        #{ACC_GL},
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        #{ACC_CIF},
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        #{ACC_SL},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_TRSFR_ACC_DET" >
+    update CTS_TRSFR_ACC_DET
+    <set >
+      <if test="ACC_BR != null" >
+        <choose >
+          <when test="ACC_BR == emptyBigDecimalValue" >
+            ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_BR = #{ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CY != null" >
+        <choose >
+          <when test="ACC_CY == emptyBigDecimalValue" >
+            ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            ACC_CY = #{ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_GL != null" >
+        <choose >
+          <when test="ACC_GL == emptyBigDecimalValue" >
+            ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_GL = #{ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CIF != null" >
+        <choose >
+          <when test="ACC_CIF == emptyBigDecimalValue" >
+            ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_CIF = #{ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_SL != null" >
+        <choose >
+          <when test="ACC_SL == emptyBigDecimalValue" >
+            ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_SL = #{ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTS_TRSFR_ACC_DET" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_DETVO" >
+    <include refid="sql_updateCTS_TRSFR_ACC_DET" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

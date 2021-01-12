@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_PAYMENT_CHANNEL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_PAYMENT_CHANNELVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CY_CODE" property="CY_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PAYMENT_CHANNEL" property="PAYMENT_CHANNEL" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="MAX_BILL_REGISTRATION" property="MAX_BILL_REGISTRATION" />
+    <result column="ORGANIZATION_CODE" property="ORGANIZATION_CODE" />
+    <result column="CHANNEL_CHECKED" property="CHANNEL_CHECKED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, CY_CODE, LINE_NO, PAYMENT_CHANNEL, TRX_TYPE, MAX_BILL_REGISTRATION, 
+    ORGANIZATION_CODE, CHANNEL_CHECKED
+  </sql>
+  <select id="selectCTS_PAYMENT_CHANNEL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_PAYMENT_CHANNELVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_PAYMENT_CHANNEL
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PAYMENT_CHANNEL = #{PAYMENT_CHANNEL}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteCTS_PAYMENT_CHANNEL" parameterType="com.path.dbmaps.vo.CTS_PAYMENT_CHANNELVOKey" >
+    delete from CTS_PAYMENT_CHANNEL
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PAYMENT_CHANNEL = #{PAYMENT_CHANNEL}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertCTS_PAYMENT_CHANNEL" parameterType="com.path.dbmaps.vo.CTS_PAYMENT_CHANNELVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="LINE_NO" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(LINE_NO),0)+1</when><otherwise>NVL(MAX(LINE_NO),0)+1</otherwise></choose> FROM CTS_PAYMENT_CHANNEL
+    </selectKey>
+    insert into CTS_PAYMENT_CHANNEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      LINE_NO,
+      <if test="PAYMENT_CHANNEL != null" >
+        PAYMENT_CHANNEL,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="MAX_BILL_REGISTRATION != null and MAX_BILL_REGISTRATION != emptyBigDecimalValue" >
+        MAX_BILL_REGISTRATION,
+      </if>
+      <if test="ORGANIZATION_CODE != null" >
+        ORGANIZATION_CODE,
+      </if>
+      <if test="CHANNEL_CHECKED != null" >
+        CHANNEL_CHECKED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      #{LINE_NO},
+      <if test="PAYMENT_CHANNEL != null" >
+        #{PAYMENT_CHANNEL},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="MAX_BILL_REGISTRATION != null and MAX_BILL_REGISTRATION != emptyBigDecimalValue" >
+        #{MAX_BILL_REGISTRATION},
+      </if>
+      <if test="ORGANIZATION_CODE != null" >
+        #{ORGANIZATION_CODE},
+      </if>
+      <if test="CHANNEL_CHECKED != null" >
+        #{CHANNEL_CHECKED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_PAYMENT_CHANNEL" >
+    update CTS_PAYMENT_CHANNEL
+    <set >
+      <if test="MAX_BILL_REGISTRATION != null" >
+        <choose >
+          <when test="MAX_BILL_REGISTRATION == emptyBigDecimalValue" >
+            MAX_BILL_REGISTRATION = NULL ,
+          </when>
+          <otherwise >
+            MAX_BILL_REGISTRATION = #{MAX_BILL_REGISTRATION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORGANIZATION_CODE != null" >
+        ORGANIZATION_CODE = #{ORGANIZATION_CODE},
+      </if>
+      <if test="CHANNEL_CHECKED != null" >
+        CHANNEL_CHECKED = #{CHANNEL_CHECKED},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PAYMENT_CHANNEL = #{PAYMENT_CHANNEL}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateCTS_PAYMENT_CHANNEL" parameterType="com.path.dbmaps.vo.CTS_PAYMENT_CHANNELVO" >
+    <include refid="sql_updateCTS_PAYMENT_CHANNEL" />
+  </update>
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_SWIFT_TEXT_PARAM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_SWIFT_TEXT_PARAMVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="PARAM_LEVEL_TYPE" property="PARAM_LEVEL_TYPE" />
+    <result column="NARRATIVE_OR_DISCREP" property="NARRATIVE_OR_DISCREP" />
+    <result column="SWIFT_CODE" property="SWIFT_CODE" />
+    <result column="CHAR_NBR_PER_LINE" property="CHAR_NBR_PER_LINE" />
+    <result column="LINE_NBR" property="LINE_NBR" />
+     <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, PARAM_LEVEL_TYPE, NARRATIVE_OR_DISCREP, SWIFT_CODE, CHAR_NBR_PER_LINE, 
+    LINE_NBR,DATE_UPDATED
+  </sql>
+  <select id="selectTFS_SWIFT_TEXT_PARAM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_SWIFT_TEXT_PARAMVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_SWIFT_TEXT_PARAM
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTFS_SWIFT_TEXT_PARAM" parameterType="com.path.dbmaps.vo.TFS_SWIFT_TEXT_PARAMVO" >
+    delete from TFS_SWIFT_TEXT_PARAM
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTFS_SWIFT_TEXT_PARAM" parameterType="com.path.dbmaps.vo.TFS_SWIFT_TEXT_PARAMVO" >
+    insert into TFS_SWIFT_TEXT_PARAM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PARAM_LEVEL_TYPE != null" >
+        PARAM_LEVEL_TYPE,
+      </if>
+      <if test="NARRATIVE_OR_DISCREP != null" >
+        NARRATIVE_OR_DISCREP,
+      </if>
+      <if test="SWIFT_CODE != null and SWIFT_CODE != emptyBigDecimalValue" >
+        SWIFT_CODE,
+      </if>
+      <if test="CHAR_NBR_PER_LINE != null and CHAR_NBR_PER_LINE != emptyBigDecimalValue" >
+        CHAR_NBR_PER_LINE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+       DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PARAM_LEVEL_TYPE != null" >
+        #{PARAM_LEVEL_TYPE},
+      </if>
+      <if test="NARRATIVE_OR_DISCREP != null" >
+        #{NARRATIVE_OR_DISCREP},
+      </if>
+      <if test="SWIFT_CODE != null and SWIFT_CODE != emptyBigDecimalValue" >
+        #{SWIFT_CODE},
+      </if>
+      <if test="CHAR_NBR_PER_LINE != null and CHAR_NBR_PER_LINE != emptyBigDecimalValue" >
+        #{CHAR_NBR_PER_LINE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_SWIFT_TEXT_PARAM" >
+    update TFS_SWIFT_TEXT_PARAM
+    <set >
+      <if test="PARAM_LEVEL_TYPE != null" >
+        PARAM_LEVEL_TYPE = #{PARAM_LEVEL_TYPE},
+      </if>
+      <if test="NARRATIVE_OR_DISCREP != null" >
+        NARRATIVE_OR_DISCREP = #{NARRATIVE_OR_DISCREP},
+      </if>
+      <if test="SWIFT_CODE != null" >
+        <choose >
+          <when test="SWIFT_CODE == emptyBigDecimalValue" >
+            SWIFT_CODE = NULL ,
+          </when>
+          <otherwise >
+            SWIFT_CODE = #{SWIFT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHAR_NBR_PER_LINE != null" >
+        <choose >
+          <when test="CHAR_NBR_PER_LINE == emptyBigDecimalValue" >
+            CHAR_NBR_PER_LINE = NULL ,
+          </when>
+          <otherwise >
+            CHAR_NBR_PER_LINE = #{CHAR_NBR_PER_LINE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINE_NBR != null" >
+        <choose >
+          <when test="LINE_NBR == emptyBigDecimalValue" >
+            LINE_NBR = NULL ,
+          </when>
+          <otherwise >
+            LINE_NBR = #{LINE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTFS_SWIFT_TEXT_PARAM" parameterType="com.path.dbmaps.vo.TFS_SWIFT_TEXT_PARAMVO" >
+    <include refid="sql_updateTFS_SWIFT_TEXT_PARAM" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+     </if>
+  </update>
+</mapper>

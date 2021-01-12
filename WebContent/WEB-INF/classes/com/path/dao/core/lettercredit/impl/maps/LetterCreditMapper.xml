@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="letterCreditMapper">
+
+<sql id="select_LetterCredit">
+   SELECT TFSLC1.COMP_CODE,
+  	   TFSLC1.BRANCH, 
+  	   TFSLC1.LC_TYPE,
+       TFSLC1.LC_NBR,
+       TFSLC1.LC_REFERENCE_NBR,
+       TFSLC1.LC_STATUS,
+       (SELECT VALUE_DESC 
+        FROM SYS_PARAM_LOV_TRANS 
+        WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+        AND VALUE_CODE = TFSLC1.LC_STATUS) lcStatusDesc,
+       TFSLC1.LC_REFERENCE_TYPE,
+	  ( SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS 
+	          WHERE LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	          AND VALUE_CODE = TFSLC1.LC_REFERENCE_TYPE 
+	          AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		) lcRefTypeDesc,
+       TFSLC1.LC_REFERENCE_TIME,
+       TFSLC1.LC_REFERENCE_YEAR,
+       TFSLC1.CIF,
+       TFSLC1.APPLICATION_DATE,
+       TFSLC1.VALIDITY_FROM,
+       TFSLC1.VALIDITY_TO,
+       TFSLC1.LC_CURRENCY,
+       TFSLC1.LC_AMOUNT,
+       (CASE WHEN TFSLC1.TOTAL_SHIPMENT_AMOUNT IS NULL THEN 0 ELSE TFSLC1.TOTAL_SHIPMENT_AMOUNT END) totalShipAmt,
+       (CASE WHEN TFSLC2.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TFSLC2.SETTLEMENT_AMOUNT END) setlAmt,
+       (CASE WHEN TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT IS NULL THEN 0 ELSE TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT END) totalShipGuarantAmt,
+       (CASE WHEN TFSLC2.PARTIAL_SHIPMENTS_ALLOWED IS NULL THEN 0 ELSE TFSLC2.PARTIAL_SHIPMENTS_ALLOWED END) partialShipAllowed,
+        TFSLC1.CREDIT_AVAILABILITY ,
+        CURRENCIES.BRIEF_DESC_ENG cyDesc,
+        CURRENCIES.DECIMAL_POINTS cyDecimalPt,
+        (CASE WHEN (CASE WHEN TFSLC1.CIF IS NULL THEN 0 ELSE TFSLC1.CIF END) = 0 THEN TFSLC1.CIF_NAME ELSE CIF.SHORT_NAME_ENG END) cifDesc,
+        TFSLC1.SETTLEMENT_METHOD,
+         ( SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS 
+	          WHERE LOV_TYPE_ID = #{setlMethodLovType,jdbcType=NUMERIC}
+	          AND VALUE_CODE = TFSLC1.SETTLEMENT_METHOD 
+	          AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		) setlMethodDesc,
+        TFSLC1.TYPE,
+ 
+        (SELECT TFSDOCTYPE.BRIEF_NAME_ENG
+    	 FROM TFSDOCTYPE
+   		 WHERE TFSDOCTYPE.COMP_CODE = TFSLC1.COMP_CODE
+		 AND TFSDOCTYPE.DOC_TYPE  = TFSLC1.LC_TYPE
+		 AND TFSDOCTYPE.CODE=TFSLC1.TYPE) tfsDocTypeDesc
+                    
+             
+        
+  FROM  TFSLC2, CURRENCIES, TFSDOCTYPE
+       , TFSLC1 LEFT OUTER JOIN CIF ON TFSLC1.COMP_CODE = CIF.COMP_CODE
+  AND TFSLC1.CIF  = CIF.CIF_NO
+  WHERE TFSLC1.COMP_CODE = TFSLC2.COMP_CODE
+  AND TFSLC1.BRANCH = TFSLC2.BRANCH
+  AND TFSLC1.LC_TYPE = TFSLC2.LC_TYPE
+  AND TFSLC1.LC_YEAR = TFSLC2.LC_YEAR
+  AND TFSLC1.LC_NBR = TFSLC2.LC_NBR
+  AND TFSLC1.COMP_CODE = CURRENCIES.COMP_CODE
+  and TFSLC1.LC_CURRENCY = CURRENCIES.CURRENCY_CODE
+  
+  AND TFSDOCTYPE.COMP_CODE = TFSLC1.COMP_CODE
+  AND TFSDOCTYPE.DOC_TYPE = TFSLC1.LC_TYPE
+  AND TFSDOCTYPE.CODE = TFSLC1.TYPE
+  
+  <if test='isContractRegist!=null and "R".equals(isContractRegist) and "O".equals(lcType)'>
+  AND TFSDOCTYPE.CONTRACT_REGISTRATION = '1'
+  </if>
+  
+  <if test='isContractRegist==null and "O".equals(lcType)'>
+  AND TFSDOCTYPE.CONTRACT_REGISTRATION = '0'
+  </if>
+  
+  and TFSLC1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+  and TFSLC1.BRANCH = #{branchCode,jdbcType=NUMERIC}
+  and TFSLC1.LC_TYPE = #{lcType,jdbcType=VARCHAR}
+  and TFSLC1.LC_REFERENCE_NBR > 0 
+     
+     <if test='lcRefNbr!=null'>
+     	 AND TFSLC1.LC_REFERENCE_NBR = #{lcRefNbr,jdbcType=NUMERIC}
+     </if>
+    
+    <if test='lcRefYear!=null'>
+    	AND  TFSLC1.LC_REFERENCE_YEAR = #{lcRefYear,jdbcType=NUMERIC}
+    </if>
+    
+      <if test='creditAvailable!=null and "1".equals(creditAvailable)'>
+     	 AND TFSLC1.CREDIT_AVAILABILITY IN ('T', 'M', 'D', 'E')
+     </if>
+  
+  	<if test="status!=null">
+  		AND TFSLC1.LC_STATUS = #{status,jdbcType=VARCHAR}
+  	</if>
+  	
+  	<if test="statusInclude!=null">
+  		AND TFSLC1.LC_STATUS in (${statusInclude})
+  	</if>
+  	
+  	<if test='lcRefType!=null'>
+    	AND TFSLC1.LC_REFERENCE_TYPE = #{lcRefType,jdbcType=VARCHAR}
+    </if> 
+
+    <if test='"1".equals(advPayFilter)'>
+	  	AND NOT EXISTS ( SELECT 1 FROM TFSTRX 
+						 WHERE COMP_CODE = TFSLC1.COMP_CODE
+						 AND BRANCH = TFSLC1.BRANCH
+						 AND TFSLC1.LC_TYPE = LC_TYPE
+						 AND TFSLC1.LC_REFERENCE_YEAR = LC_YEAR
+					   	 AND TFSLC1.LC_REFERENCE_NBR = LC_NBR
+					   	 AND TRX_TYPE IN(1015,1020)
+					   )
+	    AND NOT EXISTS( SELECT 1 FROM TFSDOCTYPE
+					  	WHERE TFSDOCTYPE.COMP_CODE = TFSLC1.COMP_CODE
+					  	AND TFSDOCTYPE.DOC_TYPE  = TFSLC1.LC_TYPE
+					  	AND TFSDOCTYPE.CODE=TFSLC1.TYPE
+					  	AND TFSDOCTYPE.PRE_SETT_ENABLED = '1'
+					  )
+	    AND TFSLC1.DOM_REQUEST_NBR IS NULL
+	    <!-- Bassam Eid - BUG# 934570 - system does not display the ILC under look up table. 
+	    	AND TFSLC1.ADVANCE_PAYMENT_AMT IS NOT NULL
+	     -->
+	</if>   
+	
+</sql>
+	
+	<select id="selectLetterCreditLookupList"
+	        resultMap="resultLetterCreditLookupMap" 
+	        parameterType="tfsLcSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="letterCreditMapper.select_LetterCredit"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="selectLetterCreditLookupCount"  resultType="int" parameterType="tfsLcSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="letterCreditMapper.select_LetterCredit"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<resultMap id="resultLetterCreditLookupMap" type="tfsLcCO">
+		<result property="tfsLc1VO.COMP_CODE" 		 	column="COMP_CODE" />
+		<result property="tfsLc1VO.BRANCH" 		 		column="BRANCH" />
+		<result property="tfsLc1VO.LC_TYPE" 			column="LC_TYPE" />
+		<result property="tfsLc1VO.LC_NBR" 				column="LC_NBR" />
+		<result property="tfsLc1VO.LC_REFERENCE_NBR" 	column="LC_REFERENCE_NBR" />
+		<result property="tfsLc1VO.LC_STATUS" 			column="LC_STATUS" />
+		<result property="lcStatusDesc" 				column="lcStatusDesc" />
+		<result property="tfsLc1VO.LC_REFERENCE_TYPE" 	column="LC_REFERENCE_TYPE" />
+		<result property="tfsLc1VO.LC_REFERENCE_TIME" 	column="LC_REFERENCE_TIME" />
+		<result property="tfsLc1VO.LC_REFERENCE_YEAR" 	column="LC_REFERENCE_YEAR" />
+		<result property="tfsLc1VO.CIF" 		 		column="CIF" />
+		<result property="tfsLc1VO.APPLICATION_DATE" 	column="APPLICATION_DATE" />
+		<result property="tfsLc1VO.VALIDITY_FROM" 		column="VALIDITY_FROM" />
+		<result property="tfsLc1VO.VALIDITY_TO" 		column="VALIDITY_TO" />
+		<result property="tfsLc1VO.LC_CURRENCY" 		column="LC_CURRENCY" />
+		<result property="tfsLc1VO.LC_AMOUNT" 			column="LC_AMOUNT" />
+		<result property="totalShipAmt" 				column="totalShipAmt" />
+		<result property="setlAmt" 						column="setlAmt" />
+		<result property="totalShipGuarantAmt" 			column="totalShipGuarantAmt" />
+		<result property="partialShipAllowed" 			column="partialShipAllowed" />
+		<result property="tfsLc1VO.CREDIT_AVAILABILITY" column="CREDIT_AVAILABILITY" />
+		<result property="cyDesc" 						column="cyDesc" />
+		<result property="cyDecimalPt"    				column="cyDecimalPt" />
+		<result property="cifDesc" 						column="cifDesc" />
+		<result property="tfsLc1VO.SETTLEMENT_METHOD" 	column="SETTLEMENT_METHOD" />
+		<result property="setlMethodDesc" 				column="setlMethodDesc" />
+		<result property="tfsLc1VO.TYPE" 				column="TYPE" />
+		<result property="lcRefTypeDesc" 				column="lcRefTypeDesc" />
+		<result property="tfsDocTypeDesc" 				column="tfsDocTypeDesc" />
+		 
+	</resultMap>
+
+  <select id="returnLetterCreditById" parameterType="tfsLcSC" resultType="tfsLc1VO">
+ 	SELECT TFSLC1.LC_NBR 
+    FROM TFSLC1 
+    WHERE TFSLC1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+    AND TFSLC1.BRANCH	   = #{branchCode,jdbcType=NUMERIC}
+    AND TFSLC1.LC_NBR 	   = #{lcNbr,jdbcType=NUMERIC}
+  </select>  
+  
+  
+  <resultMap id="resultLcDetailsMap" type="tfsLcCO">
+		<result property="tfsLc1VO.LC_STATUS" 		 				column="LC_STATUS" />
+		<result property="tfsLc1VO.SETTLEMENT_AMOUNT" 		 		column="SETTLEMENT_AMOUNT" />
+		<result property="tfsLc1VO.CREDIT_AVAILABILITY" 			column="CREDIT_AVAILABILITY" />
+		<result property="tfsLc1VO.LC_REFERENCE_YEAR" 		 		column="LC_REFERENCE_YEAR" />
+		<result property="tfsLc1VO.LC_REFERENCE_NBR" 		 		column="LC_REFERENCE_NBR" />
+		<result property="tfsLc1VO.LC_REFERENCE_TYPE" 		 		column="LC_REFERENCE_TYPE" />
+		<result property="tfsLc1VO.TOTAL_SHIPPING_GUARANTEE_AMT" 	column="TOTAL_SHIPPING_GUARANTEE_AMT" />
+		<result property="tfsLc1VO.LC_AMOUNT" 	                    column="LC_AMOUNT" />
+		<result property="tfsLc1VO.CV_AMOUNT"                       column="CV_AMOUNT" />
+		<result property="tfsLc1VO.BEARING_CHARGES" 	            column="BEARING_CHARGES" />		
+		<result property="tfsLc1VO.CHARGES_ACC_BR" 	                column="CHARGES_ACC_BR" />
+		<result property="tfsLc1VO.CHARGES_ACC_CY" 	                column="CHARGES_ACC_CY" />
+		<result property="tfsLc1VO.CHARGES_ACC_GL" 	                column="CHARGES_ACC_GL" />
+		<result property="tfsLc1VO.CHARGES_ACC_CIF" 	            column="CHARGES_ACC_CIF" />
+		<result property="tfsLc1VO.CHARGES_ACC_SL" 	                column="CHARGES_ACC_SL" />		
+		<result property="tfsLc1VO.BENEF_CHARGES_ACC_BR" 	        column="BENEF_CHARGES_ACC_BR" />
+		<result property="tfsLc1VO.BENEF_CHARGES_ACC_CY" 	        column="BENEF_CHARGES_ACC_CY" />
+		<result property="tfsLc1VO.BENEF_CHARGES_ACC_GL" 	        column="BENEF_CHARGES_ACC_GL" />
+		<result property="tfsLc1VO.BENEF_CHARGES_ACC_CIF" 	        column="BENEF_CHARGES_ACC_CIF" />
+		<result property="tfsLc1VO.BENEF_CHARGES_ACC_SL" 	        column="BENEF_CHARGES_ACC_SL" />
+		<result property="tfsLc1VO.LC_CURRENCY" 	        		column="LC_CURRENCY" />
+		<result property="tfsLc1VO.ISSUING_BANK_BR"              	column="ISSUING_BANK_BR" />
+  		<result property="tfsLc1VO.ISSUING_BANK_CY"              	column="ISSUING_BANK_CY" />
+  		<result property="tfsLc1VO.ISSUING_BANK_GL"              	column="ISSUING_BANK_GL" />
+  		<result property="tfsLc1VO.ISSUING_BANK_CIF"              	column="ISSUING_BANK_CIF" />
+  		<result property="tfsLc1VO.ISSUING_BANK_SL"              	column="ISSUING_BANK_SL" />
+		<result property="tfsLc1VO.VALIDITY_FROM"              		column="VALIDITY_FROM" />
+  		<result property="tfsLc1VO.VALIDITY_TO"              		column="VALIDITY_TO" />
+  		<result property="tfsLc1VO.LC_CY_RATE"              		column="LC_CY_RATE" /> 
+  		<result property="tfsLc1VO.MARGIN_AMOUNT"              		column="MARGIN_AMOUNT" />
+  		<result property="tfsLc1VO.CROSS_RATE"              		column="CROSS_RATE" />
+  		<result property="tfsLc1VO.CROSS_MULT_DIV"              	column="CROSS_MULT_DIV" />
+  		<result property="tfsLc1VO.NOSTRO_MARGIN_CY"              	column="NOSTRO_MARGIN_CY" />
+  		<result property="tfsLc1VO.AUTO_MARGIN_ACC_CY"              column="AUTO_MARGIN_ACC_CY" />
+  		<result property="tfsLc1VO.OUTSTANDING_FC_AMT"              column="OUTSTANDING_FC_AMT" />
+  		<result property="outstandingMarginAmount"             		column="outstandingMarginAmount" />
+  		 		
+	</resultMap>
+  
+  <select id="returnLcDetailsById" parameterType="tfsLcSC" resultMap="resultLcDetailsMap" >
+  	SELECT TFSLC1.LC_REFERENCE_YEAR,
+			TFSLC1.LC_REFERENCE_TYPE, 
+			TFSLC1.LC_REFERENCE_NBR,
+			TFSLC1.CREDIT_AVAILABILITY,
+			TFSLC1.LC_STATUS, 
+			CASE WHEN TFSLC2.SETTLEMENT_AMOUNT IS NULL THEN 0 
+				ELSE TFSLC2.SETTLEMENT_AMOUNT END,
+			CASE WHEN TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT IS NULL THEN 0 
+				ELSE TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT END,
+			TFSLC1.BEARING_CHARGES,
+			TFSLC1.LC_AMOUNT,
+			TFSLC1.CV_AMOUNT,
+			TFSLC1.CHARGES_ACC_BR,
+			TFSLC1.CHARGES_ACC_CY,
+			TFSLC1.CHARGES_ACC_GL,
+			TFSLC1.CHARGES_ACC_CIF,
+			TFSLC1.CHARGES_ACC_SL,
+			TFSLC1.BENEF_CHARGES_ACC_BR,
+			TFSLC1.BENEF_CHARGES_ACC_CY,
+			TFSLC1.BENEF_CHARGES_ACC_GL,
+			TFSLC1.BENEF_CHARGES_ACC_CIF,
+			TFSLC1.BENEF_CHARGES_ACC_SL,
+			TFSLC1.ISSUING_BANK_BR,
+		    TFSLC1.ISSUING_BANK_CY,
+		    TFSLC1.ISSUING_BANK_GL,
+		    TFSLC1.ISSUING_BANK_CIF,
+		    TFSLC1.ISSUING_BANK_SL,
+			TFSLC1.LC_CURRENCY,
+			TFSLC1.VALIDITY_FROM,
+       		TFSLC1.VALIDITY_TO,
+       		TFSLC1.LC_CY_RATE,
+       		
+       		-- kaldanaf - ABAR130110 - obtaining the needed amounts for provision, non-provision modification
+       		(CASE WHEN TOTAL_MARGIN_AMOUNT IS NULL THEN 0 ELSE TOTAL_MARGIN_AMOUNT END) - 
+       		(CASE WHEN CLOSED_AUTO_MARGIN IS NULL THEN 0 ELSE CLOSED_AUTO_MARGIN END) - 
+       		(CASE WHEN CLOSED_AUTO_MARGIN_TRANS IS NULL THEN 0 ELSE CLOSED_AUTO_MARGIN_TRANS END) - 
+       		(CASE WHEN CLOSED_MARGIN_BS IS NULL THEN 0 ELSE CLOSED_MARGIN_BS END) outstandingMarginAmount,
+       		TFSLC1.MARGIN_AMOUNT,
+			TFSLC1.CROSS_RATE,
+			TFSLC1.CROSS_MULT_DIV,
+	  		TFSLC1.NOSTRO_MARGIN_CY,
+	  		TFSLC1.AUTO_MARGIN_ACC_CY,
+	  		TFSLC1.OUTSTANDING_FC_AMT
+			
+	FROM  TFSLC1, TFSLC2, TFSDOCTYPE
+	WHERE TFSLC1.COMP_CODE = TFSLC2.COMP_CODE
+		AND TFSLC1.BRANCH    = TFSLC2.BRANCH
+		AND TFSLC1.LC_TYPE   = TFSLC2.LC_TYPE
+		AND TFSLC1.LC_YEAR   = TFSLC2.LC_YEAR
+		AND TFSLC1.LC_NBR    = TFSLC2.LC_NBR
+		
+		AND TFSDOCTYPE.COMP_CODE = TFSLC1.COMP_CODE
+		AND TFSDOCTYPE.DOC_TYPE = TFSLC1.LC_TYPE
+		AND TFSDOCTYPE.CODE = TFSLC1.TYPE
+		
+		<if test='isContractRegist!=null and "R".equals(isContractRegist) and "O".equals(lcType)'>
+			AND TFSDOCTYPE.CONTRACT_REGISTRATION = '1'
+		</if>
+		
+		<if test='isContractRegist==null and "O".equals(lcType)'>
+			AND TFSDOCTYPE.CONTRACT_REGISTRATION = '0'
+		</if>
+		
+		AND TFSLC1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND TFSLC1.BRANCH    = #{branchCode,jdbcType=NUMERIC}
+		AND TFSLC1.LC_TYPE   = #{lcType,jdbcType=VARCHAR}
+		AND TFSLC1.LC_REFERENCE_YEAR   = #{lcRefYear,jdbcType=NUMERIC}
+		AND TFSLC1.LC_REFERENCE_NBR    = #{lcRefNbr,jdbcType=NUMERIC}
+  </select>
+  
+  <resultMap id="resultLcIssueLookupMap" type="tfsLcCO">
+            <result property="tfsLc1VO.LC_TYPE"                   column="LC_TYPE" />
+            <result property="tfsLc1VO.LC_NBR"                    column="LC_NBR" />
+            <result property="tfsLc1VO.STATUS"                    column="STATUS" />
+            <result property="lcStatusDesc"                       column="lcStatusDesc" />
+            <result property="tfsLc1VO.CIF"                       column="CIF" />
+            <result property="cifDesc"                                  column="cifDesc" />
+            <result property="tfsLc1VO.APPLICATION_DATE"    column="APPLICATION_DATE" />
+            <result property="tfsLc1VO.VALIDITY_FROM"             column="VALIDITY_FROM" />
+            <result property="tfsLc1VO.VALIDITY_TO"         column="VALIDITY_TO" />
+            <result property="tfsLc1VO.LC_CURRENCY"         column="LC_CURRENCY" />
+            <result property="cyDesc"                                   column="cyDesc" />
+            <result property="tfsLc1VO.LC_AMOUNT"                 column="LC_AMOUNT" />
+            <result property="cyDecimalPt"                        column="cyDecimalPt" />
+            
+      </resultMap>
+
+      <sql id="returnLcIssueList">
+           SELECT TFSLC1.LC_TYPE,   
+                  TFSLC1.LC_YEAR,   
+            TFSLC1.LC_NBR,
+                  TFSLC1.STATUS,
+                  ( SELECT VALUE_DESC 
+              FROM SYS_PARAM_LOV_TRANS 
+              WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+              AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+              AND VALUE_CODE = TFSLC1.STATUS
+            ) lcStatusDesc,   
+              TFSLC1.CIF,    
+            CIF.SHORT_NAME_ENG cifDesc,
+              TFSLC1.APPLICATION_DATE, 
+              TFSLC1.VALIDITY_FROM,   
+              TFSLC1.VALIDITY_TO, 
+              TFSLC1.LC_CURRENCY,
+              CURRENCIES.BRIEF_DESC_ENG cyDesc,   
+              TFSLC1.LC_AMOUNT,   
+                  CURRENCIES.DECIMAL_POINTS
+            
+          FROM TFSLC1,   
+               CURRENCIES,   
+               CIF  
+          WHERE TFSLC1.COMP_CODE   = CURRENCIES.COMP_CODE 
+            AND TFSLC1.LC_CURRENCY = CURRENCIES.CURRENCY_CODE  
+            AND TFSLC1.COMP_CODE   = CIF.COMP_CODE
+              AND TFSLC1.CIF         = CIF.CIF_NO
+            AND TFSLC1.COMP_CODE   = #{compCode,jdbcType=NUMERIC}
+              AND TFSLC1.BRANCH      = #{branchCode,jdbcType=NUMERIC}
+              AND TFSLC1.LC_TYPE     = #{lcType,jdbcType=VARCHAR}
+              AND TFSLC1.LC_REFERENCE_NBR IS NULL
+              AND TFSLC1.STATUS = 'P' 
+      </sql>
+      
+      <select id="selectLcIssueLookupList" resultMap="resultLcIssueLookupMap" parameterType="tfsLcSC">
+           <include refid="servicesCommon.commonGridWrpBefFlip"/>
+            <include refid="letterCreditMapper.returnLcIssueList"/>
+            <include refid="servicesCommon.commonGridWrpAftFlip"/>
+          <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+      </select>
+      
+      <select id="selectLcIssueLookupCount"  resultType="int" parameterType="tfsLcSC" > 
+            <include refid="servicesCommon.commonGridWrpBefCnt"/>
+            <include refid="letterCreditMapper.returnLcIssueList"/>
+            <include refid="servicesCommon.commonGridWrpAftCnt"/>
+          <include refid="servicesCommon.commonGridCountWrpClose"/>     
+      </select>
+  
+  
+ </mapper>
+
+ 

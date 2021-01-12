@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PROC_PRODUCT_PARAM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PROC_PRODUCT_PARAMVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PRODUCT_CODE" property="PRODUCT_CODE" />
+    <result column="SYS_BEHAVIOR_TYPE" property="SYS_BEHAVIOR_TYPE" />
+    <result column="REACTIVATE_YN" property="REACTIVATE_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PRODUCT_CODE, SYS_BEHAVIOR_TYPE, REACTIVATE_YN
+  </sql>
+  <select id="selectPROC_PRODUCT_PARAM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PROC_PRODUCT_PARAMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PROC_PRODUCT_PARAM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_CODE = #{PRODUCT_CODE}
+  </select>
+  <delete id="deletePROC_PRODUCT_PARAM" parameterType="com.path.dbmaps.vo.PROC_PRODUCT_PARAMVOKey" >
+    delete from PROC_PRODUCT_PARAM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_CODE = #{PRODUCT_CODE}
+  </delete>
+  <insert id="insertPROC_PRODUCT_PARAM" parameterType="com.path.dbmaps.vo.PROC_PRODUCT_PARAMVO" >
+    insert into PROC_PRODUCT_PARAM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PRODUCT_CODE != null and PRODUCT_CODE != emptyBigDecimalValue" >
+        PRODUCT_CODE,
+      </if>
+      <if test="SYS_BEHAVIOR_TYPE != null" >
+        SYS_BEHAVIOR_TYPE,
+      </if>
+      <if test="REACTIVATE_YN != null" >
+        REACTIVATE_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PRODUCT_CODE != null and PRODUCT_CODE != emptyBigDecimalValue" >
+        #{PRODUCT_CODE},
+      </if>
+      <if test="SYS_BEHAVIOR_TYPE != null" >
+        #{SYS_BEHAVIOR_TYPE},
+      </if>
+      <if test="REACTIVATE_YN != null" >
+        #{REACTIVATE_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePROC_PRODUCT_PARAM" >
+    update PROC_PRODUCT_PARAM
+    <set >
+      <if test="SYS_BEHAVIOR_TYPE != null" >
+        SYS_BEHAVIOR_TYPE = #{SYS_BEHAVIOR_TYPE},
+      </if>
+      <if test="REACTIVATE_YN != null" >
+        REACTIVATE_YN = #{REACTIVATE_YN},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_CODE = #{PRODUCT_CODE}
+  </sql>
+  <update id="updatePROC_PRODUCT_PARAM" parameterType="com.path.dbmaps.vo.PROC_PRODUCT_PARAMVO" >
+    <include refid="sql_updatePROC_PRODUCT_PARAM" />
+  </update>
+</mapper>

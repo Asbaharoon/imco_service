@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSTRACK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSTRACKVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRACK_NBR" property="TRACK_NBR" />
+    <result column="CLASS" property="CLASS" />
+    <result column="CATEGORY" property="CATEGORY" />
+    <result column="TRS_DEAL_SERIAL_NO" property="TRS_DEAL_SERIAL_NO" />
+    <result column="TOTAL_EXPENSE" property="TOTAL_EXPENSE" />
+    <result column="TOTAL_REVENUE" property="TOTAL_REVENUE" />
+    <result column="TOTAL_PAYMENT" property="TOTAL_PAYMENT" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TRACK_DATE" property="TRACK_DATE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="DATE_REVERSED" property="DATE_REVERSED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="SERVER_CREATED_DATE" property="SERVER_CREATED_DATE" />
+    <result column="SERVER_APPROVED_DATE" property="SERVER_APPROVED_DATE" />
+    <result column="SERVER_REVERSED_DATE" property="SERVER_REVERSED_DATE" />
+    <result column="TRACK_TYPE" property="TRACK_TYPE" />
+    <result column="REVERSAL_STATUS" property="REVERSAL_STATUS" />
+    <result column="REVERSAL_CREATED_BY" property="REVERSAL_CREATED_BY" />
+    <result column="REVERSAL_CREATED_DATE" property="REVERSAL_CREATED_DATE" />
+    <result column="SERVER_REVERSAL_CREATED_DATE" property="SERVER_REVERSAL_CREATED_DATE" />
+    <result column="REVERSAL_DELETED_BY" property="REVERSAL_DELETED_BY" />
+    <result column="REVERSAL_DELETED_DATE" property="REVERSAL_DELETED_DATE" />
+    <result column="SERVER_REVERSAL_DELETED_DATE" property="SERVER_REVERSAL_DELETED_DATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="MUSHARAKA_PROFIT" property="MUSHARAKA_PROFIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, TRACK_NBR, CLASS, CATEGORY, TRS_DEAL_SERIAL_NO, TOTAL_EXPENSE, 
+    TOTAL_REVENUE, TOTAL_PAYMENT, STATUS, TRACK_DATE, CREATED_BY, APPROVED_BY, REVERSED_BY, 
+    DELETED_BY, DATE_DELETED, DATE_APPROVED, DATE_REVERSED, MODIFIED_BY, DATE_MODIFIED, 
+    SERVER_CREATED_DATE, SERVER_APPROVED_DATE, SERVER_REVERSED_DATE, TRACK_TYPE, REVERSAL_STATUS, 
+    REVERSAL_CREATED_BY, REVERSAL_CREATED_DATE, SERVER_REVERSAL_CREATED_DATE, REVERSAL_DELETED_BY, 
+    REVERSAL_DELETED_DATE, SERVER_REVERSAL_DELETED_DATE, DATE_UPDATED, MUSHARAKA_PROFIT
+  </sql>
+  <select id="selectTRSTRACK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSTRACKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSTRACK
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TRACK_NBR = #{TRACK_NBR}
+  </select>
+  <delete id="deleteTRSTRACK" parameterType="com.path.dbmaps.vo.TRSTRACKVOKey" >
+    delete from TRSTRACK
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TRACK_NBR = #{TRACK_NBR}
+  </delete>
+  <insert id="insertTRSTRACK" parameterType="com.path.dbmaps.vo.TRSTRACKVO" >
+    insert into TRSTRACK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        TRACK_NBR,
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        CLASS,
+      </if>
+      <if test="CATEGORY != null and CATEGORY != emptyBigDecimalValue" >
+        CATEGORY,
+      </if>
+      <if test="TRS_DEAL_SERIAL_NO != null and TRS_DEAL_SERIAL_NO != emptyBigDecimalValue" >
+        TRS_DEAL_SERIAL_NO,
+      </if>
+      <if test="TOTAL_EXPENSE != null and TOTAL_EXPENSE != emptyBigDecimalValue" >
+        TOTAL_EXPENSE,
+      </if>
+      <if test="TOTAL_REVENUE != null and TOTAL_REVENUE != emptyBigDecimalValue" >
+        TOTAL_REVENUE,
+      </if>
+      <if test="TOTAL_PAYMENT != null and TOTAL_PAYMENT != emptyBigDecimalValue" >
+        TOTAL_PAYMENT,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TRACK_DATE != null" >
+        TRACK_DATE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE,
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE,
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        SERVER_REVERSED_DATE,
+      </if>
+      <if test="TRACK_TYPE != null" >
+        TRACK_TYPE,
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        REVERSAL_STATUS,
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        REVERSAL_CREATED_BY,
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        REVERSAL_CREATED_DATE,
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        SERVER_REVERSAL_CREATED_DATE,
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        REVERSAL_DELETED_BY,
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        REVERSAL_DELETED_DATE,
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        SERVER_REVERSAL_DELETED_DATE,
+      </if>
+      DATE_UPDATED,
+      <if test="MUSHARAKA_PROFIT != null and MUSHARAKA_PROFIT != emptyBigDecimalValue" >
+        MUSHARAKA_PROFIT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        #{TRACK_NBR},
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        #{CLASS},
+      </if>
+      <if test="CATEGORY != null and CATEGORY != emptyBigDecimalValue" >
+        #{CATEGORY},
+      </if>
+      <if test="TRS_DEAL_SERIAL_NO != null and TRS_DEAL_SERIAL_NO != emptyBigDecimalValue" >
+        #{TRS_DEAL_SERIAL_NO},
+      </if>
+      <if test="TOTAL_EXPENSE != null and TOTAL_EXPENSE != emptyBigDecimalValue" >
+        #{TOTAL_EXPENSE},
+      </if>
+      <if test="TOTAL_REVENUE != null and TOTAL_REVENUE != emptyBigDecimalValue" >
+        #{TOTAL_REVENUE},
+      </if>
+      <if test="TOTAL_PAYMENT != null and TOTAL_PAYMENT != emptyBigDecimalValue" >
+        #{TOTAL_PAYMENT},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TRACK_DATE != null" >
+        #{TRACK_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="REVERSED_BY != null" >
+        #{REVERSED_BY},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        #{DATE_REVERSED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        #{SERVER_CREATED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        #{SERVER_REVERSED_DATE},
+      </if>
+      <if test="TRACK_TYPE != null" >
+        #{TRACK_TYPE},
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        #{REVERSAL_STATUS},
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        #{REVERSAL_CREATED_BY},
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        #{REVERSAL_CREATED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        #{SERVER_REVERSAL_CREATED_DATE},
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        #{REVERSAL_DELETED_BY},
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        #{REVERSAL_DELETED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        #{SERVER_REVERSAL_DELETED_DATE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="MUSHARAKA_PROFIT != null and MUSHARAKA_PROFIT != emptyBigDecimalValue" >
+        #{MUSHARAKA_PROFIT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSTRACK" >
+    update TRSTRACK
+    <set >
+      <if test="CLASS != null" >
+        <choose >
+          <when test="CLASS == emptyBigDecimalValue" >
+            CLASS = NULL ,
+          </when>
+          <otherwise >
+            CLASS = #{CLASS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CATEGORY != null" >
+        <choose >
+          <when test="CATEGORY == emptyBigDecimalValue" >
+            CATEGORY = NULL ,
+          </when>
+          <otherwise >
+            CATEGORY = #{CATEGORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_DEAL_SERIAL_NO != null" >
+        <choose >
+          <when test="TRS_DEAL_SERIAL_NO == emptyBigDecimalValue" >
+            TRS_DEAL_SERIAL_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_DEAL_SERIAL_NO = #{TRS_DEAL_SERIAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_EXPENSE != null" >
+        <choose >
+          <when test="TOTAL_EXPENSE == emptyBigDecimalValue" >
+            TOTAL_EXPENSE = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_EXPENSE = #{TOTAL_EXPENSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_REVENUE != null" >
+        <choose >
+          <when test="TOTAL_REVENUE == emptyBigDecimalValue" >
+            TOTAL_REVENUE = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_REVENUE = #{TOTAL_REVENUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_PAYMENT != null" >
+        <choose >
+          <when test="TOTAL_PAYMENT == emptyBigDecimalValue" >
+            TOTAL_PAYMENT = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_PAYMENT = #{TOTAL_PAYMENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TRACK_DATE != null" >
+        TRACK_DATE = #{TRACK_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY = #{REVERSED_BY},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED = #{DATE_REVERSED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE = #{SERVER_CREATED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE = #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        SERVER_REVERSED_DATE = #{SERVER_REVERSED_DATE},
+      </if>
+      <if test="TRACK_TYPE != null" >
+        TRACK_TYPE = #{TRACK_TYPE},
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        REVERSAL_STATUS = #{REVERSAL_STATUS},
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        REVERSAL_CREATED_BY = #{REVERSAL_CREATED_BY},
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        REVERSAL_CREATED_DATE = #{REVERSAL_CREATED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        SERVER_REVERSAL_CREATED_DATE = #{SERVER_REVERSAL_CREATED_DATE},
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        REVERSAL_DELETED_BY = #{REVERSAL_DELETED_BY},
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        REVERSAL_DELETED_DATE = #{REVERSAL_DELETED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        SERVER_REVERSAL_DELETED_DATE = #{SERVER_REVERSAL_DELETED_DATE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="MUSHARAKA_PROFIT != null" >
+        <choose >
+          <when test="MUSHARAKA_PROFIT == emptyBigDecimalValue" >
+            MUSHARAKA_PROFIT = NULL ,
+          </when>
+          <otherwise >
+            MUSHARAKA_PROFIT = #{MUSHARAKA_PROFIT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TRACK_NBR = #{TRACK_NBR}
+  </sql>
+  <update id="updateTRSTRACK" parameterType="com.path.dbmaps.vo.TRSTRACKVO" >
+    <include refid="sql_updateTRSTRACK" />
+  </update>
+</mapper>

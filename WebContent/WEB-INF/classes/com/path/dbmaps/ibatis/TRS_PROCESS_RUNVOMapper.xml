@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_PROCESS_RUN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_PROCESS_RUNVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PROCESS_CODE" property="PROCESS_CODE" />
+    <id column="PROCESS_DATE" property="PROCESS_DATE" />
+    <result column="PROCESS_START_DATETIME" property="PROCESS_START_DATETIME" />
+    <result column="PROCESS_END_DATETIME" property="PROCESS_END_DATETIME" />
+    <result column="PROCESS_STATUS" property="PROCESS_STATUS" />
+    <result column="PROCESS_REMARKS" property="PROCESS_REMARKS" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="APP_NAME_VER" property="APP_NAME_VER" />
+    <result column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, PROCESS_CODE, PROCESS_DATE, PROCESS_START_DATETIME, 
+    PROCESS_END_DATETIME, PROCESS_STATUS, PROCESS_REMARKS, APP_NAME, APP_NAME_VER, USER_ID
+  </sql>
+  <select id="selectTRS_PROCESS_RUN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_PROCESS_RUNVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_PROCESS_RUN
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+  </select>
+  <delete id="deleteTRS_PROCESS_RUN" parameterType="com.path.dbmaps.vo.TRS_PROCESS_RUNVOKey" >
+    delete from TRS_PROCESS_RUN
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+  </delete>
+  <insert id="insertTRS_PROCESS_RUN" parameterType="com.path.dbmaps.vo.TRS_PROCESS_RUNVO" >
+    insert into TRS_PROCESS_RUN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        PROCESS_CODE,
+      </if>
+      <if test="PROCESS_DATE != null" >
+        PROCESS_DATE,
+      </if>
+      <if test="PROCESS_START_DATETIME != null" >
+        PROCESS_START_DATETIME,
+      </if>
+      <if test="PROCESS_END_DATETIME != null" >
+        PROCESS_END_DATETIME,
+      </if>
+      <if test="PROCESS_STATUS != null" >
+        PROCESS_STATUS,
+      </if>
+      <if test="PROCESS_REMARKS != null" >
+        PROCESS_REMARKS,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="APP_NAME_VER != null" >
+        APP_NAME_VER,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="PROCESS_DATE != null" >
+        #{PROCESS_DATE},
+      </if>
+      <if test="PROCESS_START_DATETIME != null" >
+        #{PROCESS_START_DATETIME},
+      </if>
+      <if test="PROCESS_END_DATETIME != null" >
+        #{PROCESS_END_DATETIME},
+      </if>
+      <if test="PROCESS_STATUS != null" >
+        #{PROCESS_STATUS},
+      </if>
+      <if test="PROCESS_REMARKS != null" >
+        #{PROCESS_REMARKS},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="APP_NAME_VER != null" >
+        #{APP_NAME_VER},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_PROCESS_RUN" >
+    update TRS_PROCESS_RUN
+    <set >
+      <if test="PROCESS_START_DATETIME != null" >
+        PROCESS_START_DATETIME = #{PROCESS_START_DATETIME},
+      </if>
+      <if test="PROCESS_END_DATETIME != null" >
+        PROCESS_END_DATETIME = #{PROCESS_END_DATETIME},
+      </if>
+      <if test="PROCESS_STATUS != null" >
+        PROCESS_STATUS = #{PROCESS_STATUS},
+      </if>
+      <if test="PROCESS_REMARKS != null" >
+        PROCESS_REMARKS = #{PROCESS_REMARKS},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="APP_NAME_VER != null" >
+        APP_NAME_VER = #{APP_NAME_VER},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROCESS_CODE = #{PROCESS_CODE}
+      and PROCESS_DATE = #{PROCESS_DATE}
+  </sql>
+  <update id="updateTRS_PROCESS_RUN" parameterType="com.path.dbmaps.vo.TRS_PROCESS_RUNVO" >
+    <include refid="sql_updateTRS_PROCESS_RUN" />
+  </update>
+</mapper>

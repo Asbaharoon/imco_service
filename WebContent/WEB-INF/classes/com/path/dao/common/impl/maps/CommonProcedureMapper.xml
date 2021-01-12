@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="commonProcedureMapper">
+	<update id="callSQLSessionTrace" parameterType="com.path.struts2.lib.common.BaseSC" statementType="CALLABLE">
+	<!-- THe names of the parameters are arbitrary just to reuse those available in BaseSC
+	   sectionKey: HttpSession ID
+	   currAppName: Trace information, User, Appl, prog ref, SQL Id
+	   crudMode: httpSession ID part 2 if its length > 64 characters (oracle), > 30 (sybase)
+	 -->
+  		{ CALL P_SET_PATH_CID(#{sectionKey,mode=IN,jdbcType=VARCHAR}
+  							,#{currAppName,mode=IN,jdbcType=VARCHAR} 
+  							,#{crudMode,mode=IN,jdbcType=VARCHAR}) 
+  							}
+  	</update>
+	<update id="terminateSQLSessions" parameterType="commonLibSC" statementType="CALLABLE">
+	   		{ CALL P_TERMINATE_SESSION(#{httpSessionId,mode=IN,jdbcType=VARCHAR}) 	}
+  	</update>
+	<select id="checkAccRestriction" parameterType="accountSC" statementType="CALLABLE">
+                                          
+      { CALL <choose>
+      			<when test="isSybase == 1"> P_CHECK_ACC_RESTRICTION </when>
+      			<otherwise> P_CHECK_ACC_RESTRICTION_NEW </otherwise>
+      		 </choose>
+					 		( #{compCode,          mode=IN, jdbcType=NUMERIC},
+							  #{branchCode,        mode=IN, jdbcType=NUMERIC},
+                              #{brCode,            mode=IN, jdbcType=NUMERIC},
+                              #{currencyCode,      mode=IN, jdbcType=NUMERIC},
+                              #{glCode,            mode=IN, jdbcType=NUMERIC},
+                              #{cifCode,           mode=IN, jdbcType=NUMERIC},
+                              #{slNbr,             mode=IN, jdbcType=NUMERIC},
+                              #{appName,           mode=IN, jdbcType=VARCHAR},
+                              #{screenRef,         mode=IN, jdbcType=VARCHAR},
+                              #{userId,            mode=IN, jdbcType=VARCHAR},
+                              #{errorType,         mode=OUT, jdbcType=VARCHAR},
+                              #{returnVal,         mode=OUT, jdbcType=NUMERIC},
+                              #{errorCode,         mode=OUT, jdbcType=NUMERIC},
+                              #{warningMessages,   mode=OUT, jdbcType=VARCHAR})
+                }
+    </select>
+
+	<select id="returnNextWorkdayCy" parameterType="dateParamSC" statementType="CALLABLE">
+       { CALL P_RET_GET_NEXT_WORKING_DAY(#{compCode, 		mode=IN, jdbcType=NUMERIC},
+										 #{dayNum,			mode=IN, jdbcType=NUMERIC},
+					                   	 #{compCountryCode, mode=IN, jdbcType=NUMERIC},
+										 #{type,			mode=IN, jdbcType=VARCHAR},
+										 #{currentDate,		mode=IN, jdbcType=DATE},
+					                   	 #{valueDate, 		mode=OUT,jdbcType=DATE},
+				                   		 #{errorCode,		mode=OUT,jdbcType=NUMERIC},
+				                   		 #{errorMessage, 	mode=OUT,jdbcType=VARCHAR} )}  
+	</select>
+
+<select id="checkBackdatedTrx" parameterType="com.path.vo.common.BaseProcedureSC" statementType="CALLABLE">
+   		{ CALL P_PMS_CHECK_BACKDATED_TRX
+   			(	#{compCode,				mode=IN, jdbcType=NUMERIC},
+   				#{branchCode,	      	mode=IN, jdbcType=NUMERIC},
+   				#{tradeDate,       		mode=IN, jdbcType=DATE},
+   				#{runningDate,     		mode=IN, jdbcType=DATE},
+   				#{preferredLanguage,	mode=IN, jdbcType=VARCHAR},
+   				#{errorMessage,	      	mode=OUT, jdbcType=VARCHAR} )}
+  	</select>
+  	
+<update id="createREP_SPEC_APP_MENU_TEMP" statementType="STATEMENT" parameterType="menuSC">
+	CREATE TABLE #REP_SPEC_APP_MENU_TEMP (
+	PROG_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+	)
+</update>
+
+<update id="createMENU_CHILDREN" statementType="STATEMENT" parameterType="menuSC">
+	CREATE TABLE #MENU_CHILDREN ( PARENT_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL )
+</update>
+<update id="createMENU_MAIN_LEVEL" statementType="STATEMENT" parameterType="menuSC">
+	CREATE TABLE #MENU_MAIN_LEVEL ( MENU_TITLE VARCHAR(100) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								PARENT_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								PROG_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								PROG_ORDER NUMERIC(3) NULL,
+								DISP_ORDER NUMERIC(4) NULL,
+								DYNAMIC_OPT VARCHAR(1) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								PROG_DESC VARCHAR(100) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								PROG_TYPE VARCHAR(1) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+								CATEG_ID NUMERIC(10) NULL,
+								IS_VISIBLE_AFTER_BR_CLOSURE_YN VARCHAR(1) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+								) 
+</update>
+
+<update id="dropREP_SPEC_APP_MENU_TEMP" statementType="STATEMENT">
+	IF OBJECT_ID(<choose><when test="isSQLServer == 1">'tempdb..#REP_SPEC_APP_MENU_TEMP'</when><otherwise>'#REP_SPEC_APP_MENU_TEMP'</otherwise></choose>) IS NOT NULL
+	BEGIN
+	DROP TABLE #REP_SPEC_APP_MENU_TEMP
+	END
+</update>
+<update id="createSYS_COMMON_PARENT_OPT_TEMP" statementType="STATEMENT" parameterType="menuSC">
+	CREATE TABLE #SYS_COMMON_PARENT_OPT_TEMP (
+	PROG_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+	)
+</update>
+
+<update id="dropSYS_COMMON_PARENT_OPT_TEMP" statementType="STATEMENT">
+	IF OBJECT_ID(<choose><when test="isSQLServer == 1">'tempdb..#SYS_COMMON_PARENT_OPT_TEMP'</when><otherwise>'#SYS_COMMON_PARENT_OPT_TEMP'</otherwise></choose>) IS NOT NULL
+	BEGIN
+	DROP TABLE #SYS_COMMON_PARENT_OPT_TEMP
+	END
+</update>
+ <select id="fillRepMenuForSpecApp" parameterType="menuSC" statementType="CALLABLE">
+   	{ CALL P_RETURN_REP_SPEC_APP_MENU
+   		(#{appName,mode=IN, jdbcType=VARCHAR},
+   		#{progRef,mode=IN, jdbcType=VARCHAR},
+   		#{compCode,mode=IN, jdbcType=NUMERIC},
+   		#{branchCode,mode=IN, jdbcType=NUMERIC},
+   		#{usrName,mode=IN, jdbcType=VARCHAR},
+   		#{profType,mode=IN, jdbcType=VARCHAR})
+   	}
+</select> 	
+ <select id="fillMenuWithExtendedData" parameterType="menuSC" statementType="CALLABLE">
+   	{ CALL P_HAS_CHILD_IN_OPT_EXTENDED
+   		(#{appName,mode=IN, jdbcType=VARCHAR},
+   		#{progRef,mode=IN, jdbcType=VARCHAR},
+   		#{compCode,mode=IN, jdbcType=NUMERIC},
+   		#{branchCode,mode=IN, jdbcType=NUMERIC},
+   		#{usrName,mode=IN, jdbcType=VARCHAR},
+   		#{profType,mode=IN, jdbcType=VARCHAR})
+   	}
+</select> 
+
+<select id="commonCheckGlobActBusProc" parameterType="commonLibSC" statementType="CALLABLE" >
+    { 
+    	CALL P_COMMON_CHECK_GLOB_ACT_BUS (
+    										#{companyCode,			mode=IN, jdbcType=NUMERIC},
+    										#{branchCode,			mode=IN, jdbcType=NUMERIC},
+    										#{appName,			 	mode=IN, jdbcType=VARCHAR},
+    										#{progRef,			    mode=IN, jdbcType=VARCHAR},
+    										#{crudMode,		 	    mode=IN, jdbcType=VARCHAR},
+    										#{userId, 		        mode=IN, jdbcType=VARCHAR},
+    										#{runningDate,			mode=IN, jdbcType=DATE},
+    										#{elementId,		 	mode=IN, jdbcType=VARCHAR},    										
+    										#{flag, 				mode=OUT,jdbcType=VARCHAR},
+    										#{elemFormat, 			mode=OUT,jdbcType=VARCHAR}    										    	
+    									 )
+    }
+</select>	
+  	
+</mapper>

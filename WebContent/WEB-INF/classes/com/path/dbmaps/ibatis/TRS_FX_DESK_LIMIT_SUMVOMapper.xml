@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_FX_DESK_LIMIT_SUM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_FX_DESK_LIMIT_SUMVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DESK_CODE" property="DESK_CODE" />
+    <id column="FIRST_CY" property="FIRST_CY" />
+    <id column="SECOND_CY" property="SECOND_CY" />
+    <id column="TRX_DATE" property="TRX_DATE" />
+    <result column="OPENING_BAL_OPEN_POSITION" property="OPENING_BAL_OPEN_POSITION" />
+    <result column="OPEN_POSITION" property="OPEN_POSITION" />
+    <result column="POSITION_IN_SECOND_CY" property="POSITION_IN_SECOND_CY" />
+    <result column="OVERNIGHT_POSITION_USD" property="OVERNIGHT_POSITION_USD" />
+    <result column="LONG_AMOUNT" property="LONG_AMOUNT" />
+    <result column="SHORT_AMOUNT" property="SHORT_AMOUNT" />
+    <result column="AVG_RATE" property="AVG_RATE" />
+    <result column="EX_RATE_USD" property="EX_RATE_USD" />
+    <result column="EX_RATE_BASE_CY" property="EX_RATE_BASE_CY" />
+    <result column="MTM_RATE" property="MTM_RATE" />
+    <result column="AVG_RATE_LONG" property="AVG_RATE_LONG" />
+    <result column="AVG_RATE_SHORT" property="AVG_RATE_SHORT" />
+    <result column="DESK_LIMIT_BREACHED" property="DESK_LIMIT_BREACHED" />
+    <result column="STOP_LOSS_LIMIT_BREACHED" property="STOP_LOSS_LIMIT_BREACHED" />
+    <result column="REALIZED_GAIN" property="REALIZED_GAIN" />
+    <result column="UNREALIZED_GAIN" property="UNREALIZED_GAIN" />
+    <result column="OVERNIGHT_POSTN_LIMIT_AMT" property="OVERNIGHT_POSTN_LIMIT_AMT" />
+    <result column="STOP_LOSS_LMT_DAILY_AMT" property="STOP_LOSS_LMT_DAILY_AMT" />
+    <result column="STOP_LOSS_LMT_MONTHLY_AMT" property="STOP_LOSS_LMT_MONTHLY_AMT" />
+    <result column="STOP_LOSS_LMT_YEARLY_AMT" property="STOP_LOSS_LMT_YEARLY_AMT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DESK_CODE, FIRST_CY, SECOND_CY, TRX_DATE, OPENING_BAL_OPEN_POSITION, 
+    OPEN_POSITION, POSITION_IN_SECOND_CY, OVERNIGHT_POSITION_USD, LONG_AMOUNT, SHORT_AMOUNT, 
+    AVG_RATE, EX_RATE_USD, EX_RATE_BASE_CY, MTM_RATE, AVG_RATE_LONG, AVG_RATE_SHORT, 
+    DESK_LIMIT_BREACHED, STOP_LOSS_LIMIT_BREACHED, REALIZED_GAIN, UNREALIZED_GAIN, OVERNIGHT_POSTN_LIMIT_AMT, 
+    STOP_LOSS_LMT_DAILY_AMT, STOP_LOSS_LMT_MONTHLY_AMT, STOP_LOSS_LMT_YEARLY_AMT
+  </sql>
+  <select id="selectTRS_FX_DESK_LIMIT_SUM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_FX_DESK_LIMIT_SUMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_FX_DESK_LIMIT_SUM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DESK_CODE = #{DESK_CODE}
+      and FIRST_CY = #{FIRST_CY}
+      and SECOND_CY = #{SECOND_CY}
+      and TRX_DATE = #{TRX_DATE}
+  </select>
+  <delete id="deleteTRS_FX_DESK_LIMIT_SUM" parameterType="com.path.dbmaps.vo.TRS_FX_DESK_LIMIT_SUMVOKey" >
+    delete from TRS_FX_DESK_LIMIT_SUM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DESK_CODE = #{DESK_CODE}
+      and FIRST_CY = #{FIRST_CY}
+      and SECOND_CY = #{SECOND_CY}
+      and TRX_DATE = #{TRX_DATE}
+  </delete>
+  <insert id="insertTRS_FX_DESK_LIMIT_SUM" parameterType="com.path.dbmaps.vo.TRS_FX_DESK_LIMIT_SUMVO" >
+    insert into TRS_FX_DESK_LIMIT_SUM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DESK_CODE != null and DESK_CODE != emptyBigDecimalValue" >
+        DESK_CODE,
+      </if>
+      <if test="FIRST_CY != null and FIRST_CY != emptyBigDecimalValue" >
+        FIRST_CY,
+      </if>
+      <if test="SECOND_CY != null and SECOND_CY != emptyBigDecimalValue" >
+        SECOND_CY,
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE,
+      </if>
+      <if test="OPENING_BAL_OPEN_POSITION != null and OPENING_BAL_OPEN_POSITION != emptyBigDecimalValue" >
+        OPENING_BAL_OPEN_POSITION,
+      </if>
+      <if test="OPEN_POSITION != null and OPEN_POSITION != emptyBigDecimalValue" >
+        OPEN_POSITION,
+      </if>
+      <if test="POSITION_IN_SECOND_CY != null and POSITION_IN_SECOND_CY != emptyBigDecimalValue" >
+        POSITION_IN_SECOND_CY,
+      </if>
+      <if test="OVERNIGHT_POSITION_USD != null and OVERNIGHT_POSITION_USD != emptyBigDecimalValue" >
+        OVERNIGHT_POSITION_USD,
+      </if>
+      <if test="LONG_AMOUNT != null and LONG_AMOUNT != emptyBigDecimalValue" >
+        LONG_AMOUNT,
+      </if>
+      <if test="SHORT_AMOUNT != null and SHORT_AMOUNT != emptyBigDecimalValue" >
+        SHORT_AMOUNT,
+      </if>
+      <if test="AVG_RATE != null and AVG_RATE != emptyBigDecimalValue" >
+        AVG_RATE,
+      </if>
+      <if test="EX_RATE_USD != null and EX_RATE_USD != emptyBigDecimalValue" >
+        EX_RATE_USD,
+      </if>
+      <if test="EX_RATE_BASE_CY != null and EX_RATE_BASE_CY != emptyBigDecimalValue" >
+        EX_RATE_BASE_CY,
+      </if>
+      <if test="MTM_RATE != null and MTM_RATE != emptyBigDecimalValue" >
+        MTM_RATE,
+      </if>
+      <if test="AVG_RATE_LONG != null and AVG_RATE_LONG != emptyBigDecimalValue" >
+        AVG_RATE_LONG,
+      </if>
+      <if test="AVG_RATE_SHORT != null and AVG_RATE_SHORT != emptyBigDecimalValue" >
+        AVG_RATE_SHORT,
+      </if>
+      <if test="DESK_LIMIT_BREACHED != null" >
+        DESK_LIMIT_BREACHED,
+      </if>
+      <if test="STOP_LOSS_LIMIT_BREACHED != null" >
+        STOP_LOSS_LIMIT_BREACHED,
+      </if>
+      <if test="REALIZED_GAIN != null and REALIZED_GAIN != emptyBigDecimalValue" >
+        REALIZED_GAIN,
+      </if>
+      <if test="UNREALIZED_GAIN != null and UNREALIZED_GAIN != emptyBigDecimalValue" >
+        UNREALIZED_GAIN,
+      </if>
+      <if test="OVERNIGHT_POSTN_LIMIT_AMT != null and OVERNIGHT_POSTN_LIMIT_AMT != emptyBigDecimalValue" >
+        OVERNIGHT_POSTN_LIMIT_AMT,
+      </if>
+      <if test="STOP_LOSS_LMT_DAILY_AMT != null and STOP_LOSS_LMT_DAILY_AMT != emptyBigDecimalValue" >
+        STOP_LOSS_LMT_DAILY_AMT,
+      </if>
+      <if test="STOP_LOSS_LMT_MONTHLY_AMT != null and STOP_LOSS_LMT_MONTHLY_AMT != emptyBigDecimalValue" >
+        STOP_LOSS_LMT_MONTHLY_AMT,
+      </if>
+      <if test="STOP_LOSS_LMT_YEARLY_AMT != null and STOP_LOSS_LMT_YEARLY_AMT != emptyBigDecimalValue" >
+        STOP_LOSS_LMT_YEARLY_AMT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DESK_CODE != null and DESK_CODE != emptyBigDecimalValue" >
+        #{DESK_CODE},
+      </if>
+      <if test="FIRST_CY != null and FIRST_CY != emptyBigDecimalValue" >
+        #{FIRST_CY},
+      </if>
+      <if test="SECOND_CY != null and SECOND_CY != emptyBigDecimalValue" >
+        #{SECOND_CY},
+      </if>
+      <if test="TRX_DATE != null" >
+        #{TRX_DATE},
+      </if>
+      <if test="OPENING_BAL_OPEN_POSITION != null and OPENING_BAL_OPEN_POSITION != emptyBigDecimalValue" >
+        #{OPENING_BAL_OPEN_POSITION},
+      </if>
+      <if test="OPEN_POSITION != null and OPEN_POSITION != emptyBigDecimalValue" >
+        #{OPEN_POSITION},
+      </if>
+      <if test="POSITION_IN_SECOND_CY != null and POSITION_IN_SECOND_CY != emptyBigDecimalValue" >
+        #{POSITION_IN_SECOND_CY},
+      </if>
+      <if test="OVERNIGHT_POSITION_USD != null and OVERNIGHT_POSITION_USD != emptyBigDecimalValue" >
+        #{OVERNIGHT_POSITION_USD},
+      </if>
+      <if test="LONG_AMOUNT != null and LONG_AMOUNT != emptyBigDecimalValue" >
+        #{LONG_AMOUNT},
+      </if>
+      <if test="SHORT_AMOUNT != null and SHORT_AMOUNT != emptyBigDecimalValue" >
+        #{SHORT_AMOUNT},
+      </if>
+      <if test="AVG_RATE != null and AVG_RATE != emptyBigDecimalValue" >
+        #{AVG_RATE},
+      </if>
+      <if test="EX_RATE_USD != null and EX_RATE_USD != emptyBigDecimalValue" >
+        #{EX_RATE_USD},
+      </if>
+      <if test="EX_RATE_BASE_CY != null and EX_RATE_BASE_CY != emptyBigDecimalValue" >
+        #{EX_RATE_BASE_CY},
+      </if>
+      <if test="MTM_RATE != null and MTM_RATE != emptyBigDecimalValue" >
+        #{MTM_RATE},
+      </if>
+      <if test="AVG_RATE_LONG != null and AVG_RATE_LONG != emptyBigDecimalValue" >
+        #{AVG_RATE_LONG},
+      </if>
+      <if test="AVG_RATE_SHORT != null and AVG_RATE_SHORT != emptyBigDecimalValue" >
+        #{AVG_RATE_SHORT},
+      </if>
+      <if test="DESK_LIMIT_BREACHED != null" >
+        #{DESK_LIMIT_BREACHED},
+      </if>
+      <if test="STOP_LOSS_LIMIT_BREACHED != null" >
+        #{STOP_LOSS_LIMIT_BREACHED},
+      </if>
+      <if test="REALIZED_GAIN != null and REALIZED_GAIN != emptyBigDecimalValue" >
+        #{REALIZED_GAIN},
+      </if>
+      <if test="UNREALIZED_GAIN != null and UNREALIZED_GAIN != emptyBigDecimalValue" >
+        #{UNREALIZED_GAIN},
+      </if>
+      <if test="OVERNIGHT_POSTN_LIMIT_AMT != null and OVERNIGHT_POSTN_LIMIT_AMT != emptyBigDecimalValue" >
+        #{OVERNIGHT_POSTN_LIMIT_AMT},
+      </if>
+      <if test="STOP_LOSS_LMT_DAILY_AMT != null and STOP_LOSS_LMT_DAILY_AMT != emptyBigDecimalValue" >
+        #{STOP_LOSS_LMT_DAILY_AMT},
+      </if>
+      <if test="STOP_LOSS_LMT_MONTHLY_AMT != null and STOP_LOSS_LMT_MONTHLY_AMT != emptyBigDecimalValue" >
+        #{STOP_LOSS_LMT_MONTHLY_AMT},
+      </if>
+      <if test="STOP_LOSS_LMT_YEARLY_AMT != null and STOP_LOSS_LMT_YEARLY_AMT != emptyBigDecimalValue" >
+        #{STOP_LOSS_LMT_YEARLY_AMT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_FX_DESK_LIMIT_SUM" >
+    update TRS_FX_DESK_LIMIT_SUM
+    <set >
+      <if test="OPENING_BAL_OPEN_POSITION != null" >
+        <choose >
+          <when test="OPENING_BAL_OPEN_POSITION == emptyBigDecimalValue" >
+            OPENING_BAL_OPEN_POSITION = NULL ,
+          </when>
+          <otherwise >
+            OPENING_BAL_OPEN_POSITION = #{OPENING_BAL_OPEN_POSITION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OPEN_POSITION != null" >
+        <choose >
+          <when test="OPEN_POSITION == emptyBigDecimalValue" >
+            OPEN_POSITION = NULL ,
+          </when>
+          <otherwise >
+            OPEN_POSITION = #{OPEN_POSITION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSITION_IN_SECOND_CY != null" >
+        <choose >
+          <when test="POSITION_IN_SECOND_CY == emptyBigDecimalValue" >
+            POSITION_IN_SECOND_CY = NULL ,
+          </when>
+          <otherwise >
+            POSITION_IN_SECOND_CY = #{POSITION_IN_SECOND_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OVERNIGHT_POSITION_USD != null" >
+        <choose >
+          <when test="OVERNIGHT_POSITION_USD == emptyBigDecimalValue" >
+            OVERNIGHT_POSITION_USD = NULL ,
+          </when>
+          <otherwise >
+            OVERNIGHT_POSITION_USD = #{OVERNIGHT_POSITION_USD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_AMOUNT != null" >
+        <choose >
+          <when test="LONG_AMOUNT == emptyBigDecimalValue" >
+            LONG_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            LONG_AMOUNT = #{LONG_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHORT_AMOUNT != null" >
+        <choose >
+          <when test="SHORT_AMOUNT == emptyBigDecimalValue" >
+            SHORT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            SHORT_AMOUNT = #{SHORT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AVG_RATE != null" >
+        <choose >
+          <when test="AVG_RATE == emptyBigDecimalValue" >
+            AVG_RATE = NULL ,
+          </when>
+          <otherwise >
+            AVG_RATE = #{AVG_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EX_RATE_USD != null" >
+        <choose >
+          <when test="EX_RATE_USD == emptyBigDecimalValue" >
+            EX_RATE_USD = NULL ,
+          </when>
+          <otherwise >
+            EX_RATE_USD = #{EX_RATE_USD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EX_RATE_BASE_CY != null" >
+        <choose >
+          <when test="EX_RATE_BASE_CY == emptyBigDecimalValue" >
+            EX_RATE_BASE_CY = NULL ,
+          </when>
+          <otherwise >
+            EX_RATE_BASE_CY = #{EX_RATE_BASE_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MTM_RATE != null" >
+        <choose >
+          <when test="MTM_RATE == emptyBigDecimalValue" >
+            MTM_RATE = NULL ,
+          </when>
+          <otherwise >
+            MTM_RATE = #{MTM_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AVG_RATE_LONG != null" >
+        <choose >
+          <when test="AVG_RATE_LONG == emptyBigDecimalValue" >
+            AVG_RATE_LONG = NULL ,
+          </when>
+          <otherwise >
+            AVG_RATE_LONG = #{AVG_RATE_LONG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AVG_RATE_SHORT != null" >
+        <choose >
+          <when test="AVG_RATE_SHORT == emptyBigDecimalValue" >
+            AVG_RATE_SHORT = NULL ,
+          </when>
+          <otherwise >
+            AVG_RATE_SHORT = #{AVG_RATE_SHORT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESK_LIMIT_BREACHED != null" >
+        DESK_LIMIT_BREACHED = #{DESK_LIMIT_BREACHED},
+      </if>
+      <if test="STOP_LOSS_LIMIT_BREACHED != null" >
+        STOP_LOSS_LIMIT_BREACHED = #{STOP_LOSS_LIMIT_BREACHED},
+      </if>
+      <if test="REALIZED_GAIN != null" >
+        <choose >
+          <when test="REALIZED_GAIN == emptyBigDecimalValue" >
+            REALIZED_GAIN = NULL ,
+          </when>
+          <otherwise >
+            REALIZED_GAIN = #{REALIZED_GAIN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNREALIZED_GAIN != null" >
+        <choose >
+          <when test="UNREALIZED_GAIN == emptyBigDecimalValue" >
+            UNREALIZED_GAIN = NULL ,
+          </when>
+          <otherwise >
+            UNREALIZED_GAIN = #{UNREALIZED_GAIN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OVERNIGHT_POSTN_LIMIT_AMT != null" >
+        <choose >
+          <when test="OVERNIGHT_POSTN_LIMIT_AMT == emptyBigDecimalValue" >
+            OVERNIGHT_POSTN_LIMIT_AMT = NULL ,
+          </when>
+          <otherwise >
+            OVERNIGHT_POSTN_LIMIT_AMT = #{OVERNIGHT_POSTN_LIMIT_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STOP_LOSS_LMT_DAILY_AMT != null" >
+        <choose >
+          <when test="STOP_LOSS_LMT_DAILY_AMT == emptyBigDecimalValue" >
+            STOP_LOSS_LMT_DAILY_AMT = NULL ,
+          </when>
+          <otherwise >
+            STOP_LOSS_LMT_DAILY_AMT = #{STOP_LOSS_LMT_DAILY_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STOP_LOSS_LMT_MONTHLY_AMT != null" >
+        <choose >
+          <when test="STOP_LOSS_LMT_MONTHLY_AMT == emptyBigDecimalValue" >
+            STOP_LOSS_LMT_MONTHLY_AMT = NULL ,
+          </when>
+          <otherwise >
+            STOP_LOSS_LMT_MONTHLY_AMT = #{STOP_LOSS_LMT_MONTHLY_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STOP_LOSS_LMT_YEARLY_AMT != null" >
+        <choose >
+          <when test="STOP_LOSS_LMT_YEARLY_AMT == emptyBigDecimalValue" >
+            STOP_LOSS_LMT_YEARLY_AMT = NULL ,
+          </when>
+          <otherwise >
+            STOP_LOSS_LMT_YEARLY_AMT = #{STOP_LOSS_LMT_YEARLY_AMT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DESK_CODE = #{DESK_CODE}
+      and FIRST_CY = #{FIRST_CY}
+      and SECOND_CY = #{SECOND_CY}
+      and TRX_DATE = #{TRX_DATE}
+  </sql>
+  <update id="updateTRS_FX_DESK_LIMIT_SUM" parameterType="com.path.dbmaps.vo.TRS_FX_DESK_LIMIT_SUMVO" >
+    <include refid="sql_updateTRS_FX_DESK_LIMIT_SUM" />
+  </update>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_ATTRIBUTE_TOOL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTE_TOOLVO" >
+    <id column="ATTRIBUTE_TOOL_ID" property="ATTRIBUTE_TOOL_ID" />
+    <result column="ATTRIBUTE_TOOL_DESC" property="ATTRIBUTE_TOOL_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATTRIBUTE_TOOL_ID, ATTRIBUTE_TOOL_DESC
+  </sql>
+  <select id="selectSYS_PARAM_ATTRIBUTE_TOOL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTE_TOOLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_ATTRIBUTE_TOOL
+    where ATTRIBUTE_TOOL_ID = #{ATTRIBUTE_TOOL_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_ATTRIBUTE_TOOL" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTE_TOOLVOKey" >
+    delete from SYS_PARAM_ATTRIBUTE_TOOL
+    where ATTRIBUTE_TOOL_ID = #{ATTRIBUTE_TOOL_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_ATTRIBUTE_TOOL" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTE_TOOLVO" >
+    insert into SYS_PARAM_ATTRIBUTE_TOOL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_TOOL_ID != null and ATTRIBUTE_TOOL_ID != emptyBigDecimalValue" >
+        ATTRIBUTE_TOOL_ID,
+      </if>
+      <if test="ATTRIBUTE_TOOL_DESC != null" >
+        ATTRIBUTE_TOOL_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_TOOL_ID != null and ATTRIBUTE_TOOL_ID != emptyBigDecimalValue" >
+        #{ATTRIBUTE_TOOL_ID},
+      </if>
+      <if test="ATTRIBUTE_TOOL_DESC != null" >
+        #{ATTRIBUTE_TOOL_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_ATTRIBUTE_TOOL" >
+    update SYS_PARAM_ATTRIBUTE_TOOL
+    <set >
+      <if test="ATTRIBUTE_TOOL_DESC != null" >
+        ATTRIBUTE_TOOL_DESC = #{ATTRIBUTE_TOOL_DESC},
+      </if>
+    </set>
+    where ATTRIBUTE_TOOL_ID = #{ATTRIBUTE_TOOL_ID}
+  </sql>
+  <update id="updateSYS_PARAM_ATTRIBUTE_TOOL" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTE_TOOLVO" >
+    <include refid="sql_updateSYS_PARAM_ATTRIBUTE_TOOL" />
+  </update>
+</mapper>

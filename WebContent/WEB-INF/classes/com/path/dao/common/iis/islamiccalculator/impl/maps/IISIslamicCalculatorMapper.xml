@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="iisIslamicCalculator">
+
+<resultMap id="repaymentPlanDealDetailsMap" type="com.path.dbmaps.vo.TRSDEALVO" >
+   <result property="DEAL_CY" column="DEAL_CY" />
+   <result property="DEAL_TYPE" column="DEAL_TYPE" />
+   <result property="CIF_NO" column="CIF_NO" />
+   <result property="CLASS" column="CLASS" />
+   <result property="CHARGES_AMOUNT" column="CHARGES_AMOUNT" />
+   <result property="CHARGES_AMOUNT_PROFIT" column="CHARGES_AMOUNT_PROFIT" />
+   <result property="DEAL_AMOUNT" column="DEAL_AMOUNT" />
+   <result property="DEAL_UNIT" column="DEAL_UNIT" />
+   <result property="VALUE_DATE" column="VALUE_DATE" />
+   <result property="MATURITY_DATE" column="MATURITY_DATE" />
+   <result property="PAYMENT_PLAN_NBR" column="PAYMENT_PLAN_NBR" />
+   <result property="STATUS" column="STATUS" />
+   <result property="YIELD" column="YIELD" />
+   <result property="PROFIT_ON_CHARGE" column="PROFIT_ON_CHARGE" />
+   <result property="DRAWDOWN_BRANCH" column="DRAWDOWN_BRANCH" />
+   <result property="REFERENCE_NO" column="REFERENCE_NO" />
+   <result property="DEAL_EXPECTED_YIELD" column="DEAL_EXPECTED_YIELD" />
+   <result property="MINIMUM_YIELD" column="MINIMUM_YIELD" />
+   <result property="MAXIMUM_YIELD" column="MAXIMUM_YIELD" />
+   <result property="LIBOR_RATE" column="LIBOR_RATE" />
+   <result property="COUNTRY_CODE" column="COUNTRY_CODE" />
+   <result property="LIMIT_SERIAL_NO" column="LIMIT_SERIAL_NO" />
+   <result property="CALENDAR_TYPE" column="CALENDAR_TYPE" />
+   <result property="HOLIDAY_ACTION" column="HOLIDAY_ACTION" />
+   <result property="NEXT_RATE_REV_DATE" column="NEXT_RATE_REV_DATE" />
+   <result property="RATE_REV_DATE" column="RATE_REV_DATE" />
+   <result property="MUDARABAH_RATE_CODE" column="MUDARABAH_RATE_CODE" />
+   <result property="MODARIB_CONTRIB_PERCENTAGE" column="MODARIB_CONTRIB_PERCENTAGE" />
+   <result property="MODARIB_PARTY_PERCENTAGE" column="MODARIB_PARTY_PERCENTAGE" />
+   <result property="EXPECTED_RATE_OF_RETURN" column="EXPECTED_RATE_OF_RETURN" />
+   <result property="DISBURS_MAINTAIN_INDIV_PLAN_YN" column="DISBURS_MAINTAIN_INDIV_PLAN_YN" />
+   <result property="DEAL_VERIFY_STATUS" column="DEAL_VERIFY_STATUS" />
+   <result property="VAT_CODE" column="VAT_CODE" />
+   <result property="LINKED_DEAL_NO" column="LINKED_DEAL_NO" />
+
+</resultMap>
+
+	<select id="getTrsDealDetails" resultMap="repaymentPlanDealDetailsMap" parameterType="com.path.dbmaps.vo.TRSDEALVOKey">
+		SELECT DEAL_CY,
+				 DEAL_TYPE,
+				 CIF_NO,
+				 CLASS,
+				 CHARGES_AMOUNT,
+				 CHARGES_AMOUNT_PROFIT,
+				 DEAL_AMOUNT,
+				 DEAL_UNIT,
+				 VALUE_DATE,
+				 MATURITY_DATE,
+				 CASE WHEN PAYMENT_PLAN_NBR IS NULL THEN  0 ELSE PAYMENT_PLAN_NBR END PAYMENT_PLAN_NBR ,
+				 STATUS,
+				 CASE WHEN YIELD IS NULL THEN  0 ELSE YIELD END YIELD,
+				 PROFIT_ON_CHARGE,
+				 DRAWDOWN_BRANCH,
+				 CASE WHEN REFERENCE_NO IS NULL THEN  0 ELSE REFERENCE_NO END REFERENCE_NO,
+				 CASE WHEN DEAL_EXPECTED_YIELD IS NULL THEN  0 ELSE DEAL_EXPECTED_YIELD END DEAL_EXPECTED_YIELD,
+				 CASE WHEN MINIMUM_YIELD IS NULL THEN  0 ELSE MINIMUM_YIELD END MINIMUM_YIELD,
+				 CASE WHEN MAXIMUM_YIELD IS NULL THEN  0 ELSE MAXIMUM_YIELD END MAXIMUM_YIELD, 
+				 CASE WHEN LIBOR_RATE IS NULL THEN  0 ELSE LIBOR_RATE END LIBOR_RATE,
+				 COUNTRY_CODE ,
+				 LIMIT_SERIAL_NO,
+				 CALENDAR_TYPE,
+				 HOLIDAY_ACTION,
+				 NEXT_RATE_REV_DATE,
+				 RATE_REV_DATE,
+				 MUDARABAH_RATE_CODE,
+				 MODARIB_CONTRIB_PERCENTAGE,
+				 MODARIB_PARTY_PERCENTAGE,
+				 EXPECTED_RATE_OF_RETURN,
+				 CASE WHEN DISBURS_MAINTAIN_INDIV_PLAN_YN IS NULL THEN 'N' ELSE DISBURS_MAINTAIN_INDIV_PLAN_YN END DISBURS_MAINTAIN_INDIV_PLAN_YN,
+				 DEAL_VERIFY_STATUS		,
+				 CASE WHEN VAT_CODE IS NULL THEN 0 ELSE VAT_CODE END VAT_CODE,
+				 CASE WHEN AUTO_CREATE_SETTLEMENT IS NULL THEN 'Y' ELSE AUTO_CREATE_SETTLEMENT END AUTO_CREATE_SETTLEMENT
+		FROM   TRSDEAL
+		WHERE	(COMP_CODE  	= #{COMP_CODE})
+		AND	 (BRANCH_CODE  = #{BRANCH_CODE})
+		AND	 (SERIAL_NO  	= #{SERIAL_NO})
+	</select>
+	
+	
+	<select id="getTrsDealDisbursmentDetails" resultMap="repaymentPlanDealDetailsMap" parameterType="com.path.dbmaps.vo.TRSDEALVOKey">
+		SELECT DEAL_CY,
+				 DEAL_TYPE,
+				 CIF_NO,
+				 CLASS,
+				 CHARGES_AMOUNT,
+				 CHARGES_AMOUNT_PROFIT,
+				 DEAL_AMOUNT,
+				 DEAL_UNIT,
+				 VALUE_DATE,
+				 MATURITY_DATE,
+				 CASE WHEN PAYMENT_PLAN_NBR IS NULL THEN  0 ELSE PAYMENT_PLAN_NBR END PAYMENT_PLAN_NBR ,
+				 STATUS,
+				 CASE WHEN YIELD IS NULL THEN  0 ELSE YIELD END YIELD,
+				 PROFIT_ON_CHARGE,
+				 DRAWDOWN_BRANCH,
+				 CASE WHEN REFERENCE_NO IS NULL THEN  0 ELSE REFERENCE_NO END REFERENCE_NO,
+				 CASE WHEN DEAL_EXPECTED_YIELD IS NULL THEN  0 ELSE DEAL_EXPECTED_YIELD END DEAL_EXPECTED_YIELD,
+				 CASE WHEN MINIMUM_YIELD IS NULL THEN  0 ELSE MINIMUM_YIELD END MINIMUM_YIELD,
+				 CASE WHEN MAXIMUM_YIELD IS NULL THEN  0 ELSE MAXIMUM_YIELD END MAXIMUM_YIELD, 
+				 CASE WHEN LIBOR_RATE IS NULL THEN  0 ELSE LIBOR_RATE END LIBOR_RATE,
+				 COUNTRY_CODE ,
+				 LIMIT_SERIAL_NO,
+				 CALENDAR_TYPE,
+				 HOLIDAY_ACTION,
+				 NEXT_RATE_REV_DATE,
+				 RATE_REV_DATE,
+				 MUDARABAH_RATE_CODE,
+				 MODARIB_CONTRIB_PERCENTAGE,
+				 MODARIB_PARTY_PERCENTAGE,
+				 EXPECTED_RATE_OF_RETURN,
+				 CASE WHEN DISBURS_MAINTAIN_INDIV_PLAN_YN IS NULL THEN 'N' ELSE DISBURS_MAINTAIN_INDIV_PLAN_YN END DISBURS_MAINTAIN_INDIV_PLAN_YN,
+				 DEAL_VERIFY_STATUS		,
+				 CASE WHEN VAT_CODE IS NULL THEN 0 ELSE VAT_CODE END VAT_CODE,
+				 CASE WHEN AUTO_CREATE_SETTLEMENT IS NULL THEN 'Y' ELSE AUTO_CREATE_SETTLEMENT END AUTO_CREATE_SETTLEMENT,
+				 LINKED_DEAL_NO 
+		FROM   TRSDEAL_DISBURSE TRSDEAL
+		WHERE	(COMP_CODE  	= #{COMP_CODE})
+		AND	 (BRANCH_CODE  = #{BRANCH_CODE})
+		AND	 (SERIAL_NO  	= #{SERIAL_NO})
+	</select>
+
+	<select id="getVatPercentageInt" parameterType="com.path.dbmaps.vo.TRSVATVOKey" resultType="String">
+		SELECT PERCENTAGE_IND FROM TRSCLASS_EXTENDED
+		WHERE COMP_CODE = #{COMP_CODE} AND CODE = #{CODE}
+	</select>
+
+	
+	<select id="getTrsdealCountryHolidayList" parameterType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVOKey"
+		resultType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVO">
+		SELECT 
+			TRSDEAL_COUNTRY_HOLIDAY.COMP_CODE,
+			TRSDEAL_COUNTRY_HOLIDAY.BRANCH_CODE,
+			TRSDEAL_COUNTRY_HOLIDAY.SERIAL_NO,
+			TRSDEAL_COUNTRY_HOLIDAY.COUNTRY_CODE,
+			TRSDEAL_COUNTRY_HOLIDAY.LINE_NO
+		FROM TRSDEAL_COUNTRY_HOLIDAY WHERE
+			TRSDEAL_COUNTRY_HOLIDAY.COMP_CODE =	#{COMP_CODE}
+			AND TRSDEAL_COUNTRY_HOLIDAY.BRANCH_CODE = #{BRANCH_CODE}
+			AND TRSDEAL_COUNTRY_HOLIDAY.SERIAL_NO = #{SERIAL_NO}
+	</select>
+
+<select id="getDealMaturityAccount" parameterType="com.path.dbmaps.vo.TRSDEALVOKey"
+		resultType="com.path.dbmaps.vo.TRSDETVO">
+		SELECT MIN(TRSDET.MATR_AC_BR) MATR_AC_BR,
+			MIN(TRSDET.MATR_AC_CY) MATR_AC_CY,   
+			MIN(TRSDET.MATR_AC_GL) MATR_AC_GL,   
+			MIN(TRSDET.MATR_AC_CIF) MATR_AC_CIF,   
+			MIN(TRSDET.MATR_AC_SL) MATR_AC_SL,
+			MIN(AMF.BRIEF_NAME_ENG) CONTRIBBLOCK_TRF_REASON
+		FROM  TRSDET, AMF
+		WHERE  TRSDET.COMP_CODE 	= #{COMP_CODE}
+			AND TRSDET.BRANCH_CODE 	= #{BRANCH_CODE}
+			AND TRSDET.SERIAL_NO	= #{SERIAL_NO}
+			AND AMF.COMP_CODE	 	= TRSDET.COMP_CODE
+			AND AMF.BRANCH_CODE 	= TRSDET.MATR_AC_BR
+			AND AMF.CURRENCY_CODE 	= TRSDET.MATR_AC_CY
+			AND AMF.GL_CODE			= TRSDET.MATR_AC_GL
+			AND	AMF.CIF_SUB_NO		= TRSDET.MATR_AC_CIF
+			AND AMF.SL_NO			= TRSDET.MATR_AC_SL
+	</select>
+
+
+
+	<select id="getProducClassDetails" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey"
+		resultType="com.path.dbmaps.vo.TRSCLASSVO">
+		SELECT 
+			CASE WHEN PROFIT_UPFRONT IS NULL THEN 'Y' ELSE
+			PROFIT_UPFRONT END PROFIT_UPFRONT, CASE WHEN ACCRUAL_BASIS IS
+			NULL THEN
+			1 ELSE ACCRUAL_BASIS END ACCRUAL_BASIS, CASE WHEN
+			FLOATING_RATE IS NULL
+			THEN 'N' ELSE FLOATING_RATE END
+			FLOATING_RATE, CASE WHEN
+			SEGMENT_APPLIED_YN IS NULL THEN 'N'
+			ELSE SEGMENT_APPLIED_YN END
+			SEGMENT_APPLIED_YN, CASE WHEN
+			SHOW_PAY_SCHEDULE IS NULL THEN 'N' ELSE
+			SHOW_PAY_SCHEDULE END
+			SHOW_PAY_SCHEDULE, CASE WHEN ACCRUAL_AMOUNT_TYPE
+			IS NULL THEN
+			'P' ELSE ACCRUAL_AMOUNT_TYPE END ACCRUAL_AMOUNT_TYPE,
+			CATEGORY,
+			CASE WHEN PLAN_SHOW_PRINCIPAL_AMOUNT_YN IS NULL THEN 'Y' ELSE
+			PLAN_SHOW_PRINCIPAL_AMOUNT_YN END PLAN_SHOW_PRINCIPAL_AMOUNT_YN,
+			CASE
+			WHEN HOLIDAY_ACTION_WARNING_IND IS NULL THEN 'N' ELSE
+			HOLIDAY_ACTION_WARNING_IND END HOLIDAY_ACTION_WARNING_IND, CASE
+			WHEN
+			HOLIDAY_ACTION_RECALC_PROFIT IS NULL THEN 'N' ELSE
+			HOLIDAY_ACTION_RECALC_PROFIT END HOLIDAY_ACTION_RECALC_PROFIT,
+			CASE
+			WHEN GRACE_PERIOD_COMPOUNDING_YNED IS NULL THEN '4' ELSE
+			GRACE_PERIOD_COMPOUNDING_YNED END GRACE_PERIOD_COMPOUNDING_YNED,
+			CASE
+			WHEN DEAL_PERIOD_COMPOUNDING_YNED IS NULL THEN '4' ELSE
+			DEAL_PERIOD_COMPOUNDING_YNED END DEAL_PERIOD_COMPOUNDING_YNED,
+			CASE
+			WHEN CAPITALIZE_PROFIT_YN IS NULL THEN 'N' ELSE
+			CAPITALIZE_PROFIT_YN
+			END CAPITALIZE_PROFIT_YN, CASE WHEN
+			PLAN_EDIT_SCHEDULE_DETAILS_YN IS
+			NULL THEN 'Y' ELSE
+			PLAN_EDIT_SCHEDULE_DETAILS_YN END
+			PLAN_EDIT_SCHEDULE_DETAILS_YN,
+			CASE WHEN PLAN_CALC_FRSTPAYDT_PAYEVRY_YN
+			IS NULL THEN 'N' ELSE
+			PLAN_CALC_FRSTPAYDT_PAYEVRY_YN END
+			PLAN_CALC_FRSTPAYDT_PAYEVRY_YN ,
+			CASE  WHEN CAPITALIZE_PAYM_PERIOD_NBR IS NULL THEN 0 ELSE CAPITALIZE_PAYM_PERIOD_NBR END CAPITALIZE_PAYM_PERIOD_NBR,
+            CASE  WHEN CAPITALIZE_PAYM_PERIOD_POS IS NULL THEN 'E' ELSE CAPITALIZE_PAYM_PERIOD_POS END CAPITALIZE_PAYM_PERIOD_POS,
+            CASE  WHEN DAILY_DEPRECIATION_YN IS NULL THEN 'N' ELSE DAILY_DEPRECIATION_YN END DAILY_DEPRECIATION_YN,
+            CASE  WHEN CAPITALIZE_PAYM_PERIODICITY IS NULL THEN 'D' ELSE CAPITALIZE_PAYM_PERIODICITY END CAPITALIZE_PAYM_PERIODICITY,
+            CASE WHEN REPAYMENTS_MAX IS NULL THEN 999 ELSE REPAYMENTS_MAX END REPAYMENTS_MAX,
+            CASE WHEN YIELD_REQUIRED IS NULL THEN 'N' ELSE YIELD_REQUIRED END YIELD_REQUIRED,
+            CASE WHEN EXCL_PRFT_RECLC_DUE_INST_YN IS NULL THEN 'N' ELSE EXCL_PRFT_RECLC_DUE_INST_YN END EXCL_PRFT_RECLC_DUE_INST_YN,
+            CASE WHEN GRACE_PRD_CMPND_PFT_DEAL_YN IS NULL THEN 'N' ELSE GRACE_PRD_CMPND_PFT_DEAL_YN END GRACE_PRD_CMPND_PFT_DEAL_YN,
+            CALCULATE_PROFIT,
+            PROFIT_DIST_METHOD,
+            PAYM_PERIODICITY,
+            PAYM_PERIOD_NBR,
+            PAYM_PERIOD_POS,
+            PAY_RES_AMT,
+            CASE WHEN MUSAWAMAH_YN IS NULL THEN 'N' ELSE MUSAWAMAH_YN END MUSAWAMAH_YN,
+            CASE WHEN PFT_CALC_BASED_TRADE_CY_YN IS NULL THEN 'N' ELSE PFT_CALC_BASED_TRADE_CY_YN END PFT_CALC_BASED_TRADE_CY_YN,
+            CASE WHEN PRFT_ACCR_ON_OUTSTAND_PRINC_YN IS NULL THEN 'N' ELSE PRFT_ACCR_ON_OUTSTAND_PRINC_YN END PRFT_ACCR_ON_OUTSTAND_PRINC_YN,
+            CASE WHEN ROUNDING_TYPE_INST_AMT IS NULL THEN 'R' ELSE ROUNDING_TYPE_INST_AMT END ROUNDING_TYPE_INST_AMT,
+            CASE WHEN ACCRUE_AGENCY_FEE_YN IS NULL THEN 'N' ELSE ACCRUE_AGENCY_FEE_YN END ACCRUE_AGENCY_FEE_YN
+            
+		FROM TRSCLASS WHERE	TRSCLASS.COMP_CODE =#{COMP_CODE} AND TRSCLASS.CODE = #{CODE}
+	</select>
+
+	<select id="getHijiriDate" parameterType="com.path.dbmaps.vo.TRSHIJRI_DETAIL_CALENDARVO"
+		resultType="com.path.dbmaps.vo.TRSHIJRI_DETAIL_CALENDARVO">
+		SELECT HIJRI_YEAR,HIJRI_MONTH,HIJRI_DAY	FROM TRSHIJRI_DETAIL_CALENDAR
+			WHERE COMP_CODE = #{COMP_CODE} AND	GREGORIAN_DATE = #{GREGORIAN_DATE}
+	</select>
+
+	<select id="getTemplateDetails" parameterType="com.path.dbmaps.vo.TRSPAYPLANTMPLTDETVOKey"
+		resultType="com.path.dbmaps.vo.TRSPAYPLANTMPLTDETVO">
+		SELECT 
+			TRSPAYPLANTMPLTDET.COMP_CODE,
+			TRSPAYPLANTMPLTDET.BRANCH_CODE,
+			TRSPAYPLANTMPLTDET.TEMPLATE_CODE,
+			TRSPAYPLANTMPLTDET.LINE_NBR,
+			TRSPAYPLANTMPLTDET.INST_NBR_FROM,
+			TRSPAYPLANTMPLTDET.INST_NBR_TO,
+			TRSPAYPLANTMPLTDET.PAYM_PERIODICITY,
+			TRSPAYPLANTMPLTDET.PAYM_PERIOD_NBR,
+			TRSPAYPLANTMPLTDET.PAYM_PERIOD_POS,
+			TRSPAYPLANTMPLTDET.PAYMENT_TYPE,
+			TRSPAYPLANTMPLTDET.AMOUNT FROM
+			TRSPAYPLANTMPLTDET 
+		WHERE
+			(TRSPAYPLANTMPLTDET.COMP_CODE = #{COMP_CODE})
+			AND(TRSPAYPLANTMPLTDET.BRANCH_CODE = #{BRANCH_CODE})
+			AND(TRSPAYPLANTMPLTDET.TEMPLATE_CODE = #{TEMPLATE_CODE})
+		order by TRSPAYPLANTMPLTDET.LINE_NBR
+	</select>
+
+	<select id="getLastInstallmentDateasMaturityDateYN"
+		parameterType="com.path.dbmaps.vo.TRSPAYPLANTMPLTVOKey" resultType="String">
+		SELECT 
+			CASE WHEN
+				SET_LAST_INST_ON_MAT_DTE_IFNOT IS NULL THEN 'Y'
+			ELSE
+				SET_LAST_INST_ON_MAT_DTE_IFNOT END
+			SET_LAST_INST_ON_MAT_DTE_IFNOT 
+		FROM TRSPAYPLANTMPLT WHERE
+		COMP_CODE = #{COMP_CODE} AND BRANCH_CODE =#{BRANCH_CODE} AND TEMPLATE_CODE = #{TEMPLATE_CODE}
+	</select>
+
+	
+
+	<select id="getDealChargesInsuranceYn" parameterType="com.path.dbmaps.vo.TRSCHARGESVOKey" resultType="com.path.dbmaps.vo.TRSCHARGESVO">
+		SELECT INSURANCE,
+			   CALC_ON_YERLY_OUTSTND_PRINC_YN,
+			   CHARGE_TYPE,
+			   PERCENTAGE  
+		FROM TRSCHARGES 
+		WHERE COMP_CODE =	#{COMP_CODE} 
+		AND CODE = #{CODE}
+	</select>
+
+	<select id="getCurrencyBaseInfo" parameterType="com.path.dbmaps.vo.CURRENCIESVOKey"
+		resultType="com.path.dbmaps.vo.CURRENCIESVO">
+		SELECT	BRIEF_DESC_ENG,	DECIMAL_POINTS,	UNIT,	PT_METHOD, 
+		CASE WHEN ORIGIN IS NULL THEN '1' ELSE ORIGIN END ORIGIN
+		FROM CURRENCIES
+		WHERE COMP_CODE = #{COMP_CODE}	AND CURRENCY_CODE =	#{CURRENCY_CODE}
+	</select>
+
+	<select id="getDealMultipleYield" parameterType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVOKey"
+		resultType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVO">
+		SELECT FROM_DATE, YIELD, MARGIN_RATE, FLOATING_RATE, FIXED_FLOATING_RATE_YN, REVAL_YN
+			FROM TRSDEAL_MULTIPLE_YIELD
+			WHERE COMP_CODE = #{COMP_CODE} AND BRANCH_CODE = #{BRANCH_CODE} AND DEAL_NO =#{DEAL_NO}
+			ORDER BY FROM_DATE
+	</select>
+
+	<select id="getHolidayActions" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey" resultType="com.path.dbmaps.vo.TRSCLASSVO">
+		SELECT CASE WHEN HOLIDAY_ACTION	IS NULL THEN  0  ELSE HOLIDAY_ACTION END,
+		CASE WHEN HOLIDAY_ACTION_WARNING_IND IS NULL THEN 'N' ELSE HOLIDAY_ACTION_WARNING_IND 	END
+		FROM TRSCLASS 
+		WHERE TRSCLASS.COMP_CODE  = #{compCode}	AND TRSCLASS.CODE =#{classCode}
+	</select>
+	
+	<select id="getIisCtrlInfoForRepaymentPlan" parameterType="com.path.dbmaps.vo.IISCTRLVO" resultType="com.path.dbmaps.vo.IISCTRLVO">SELECT 
+
+			CASE WHEN 
+			INCLUDE_INST_DATE_IN_PRF_CALC IS NULL THEN
+			'N'
+			ELSE INCLUDE_INST_DATE_IN_PRF_CALC 
+END
+			INCLUDE_INST_DATE_IN_PRF_CALC, CASE WHEN INST_AMT_IN_BALLOON IS
+			NULL
+			THEN 'N' ELSE INST_AMT_IN_BALLOON 
+END INST_AMT_IN_BALLOON,
+			
+			CASE WHEN
+			INST_AMT_IN_LAST_BALLOON IS NULL THEN 'N' ELSE
+			INST_AMT_IN_LAST_BALLOON 
+END INST_AMT_IN_LAST_BALLOON, CASE WHEN
+			APPLY_ROUNDING_FACT_AFTER_CALC IS NULL THEN 'N' ELSE
+			APPLY_ROUNDING_FACT_AFTER_CALC 
+END
+			APPLY_ROUNDING_FACT_AFTER_CALC,
+			 
+			CASE WHEN
+			EXCESS_PROFIT_IN_NEXT_INSTALL IS NULL THEN 
+'Y' ELSE
+			EXCESS_PROFIT_IN_NEXT_INSTALL END EXCESS_PROFIT_IN_NEXT_INSTALL,
+			CASE
+			WHEN ACCRUAL_BASIS_ACTUAL_DAYS_YN 
+IS NULL THEN 'N' ELSE
+			ACCRUAL_BASIS_ACTUAL_DAYS_YN END ACCRUAL_BASIS_ACTUAL_DAYS_YN,
+			CASE WHEN 
+LIMIT_REINSTATE_BASED_ON IS NULL THEN 'P' ELSE LIMIT_REINSTATE_BASED_ON END LIMIT_REINSTATE_BASED_ON,
+			
+CASE WHEN CALC_MAX_USER_PFT_SYS_PFT_DIFF IS NULL THEN   0  ELSE CALC_MAX_USER_PFT_SYS_PFT_DIFF END CALC_MAX_USER_PFT_SYS_PFT_DIFF,
+			
+CASE WHEN CALC_MAX_ITER_GETYIELD_FRM_PFT IS NULL THEN   1  ELSE CALC_MAX_ITER_GETYIELD_FRM_PFT END CALC_MAX_ITER_GETYIELD_FRM_PFT
+		
+FROM IISCTRL
+		WHERE COMP_CODE = #{COMP_CODE}	AND BRANCH_CODE = #{BRANCH_CODE}
+	</select>
+
+	<resultMap id="memoFormMap" type="com.path.vo.common.memo.MemoDtlCO">
+		<result column="TRX_NO" property="ctsMemoDetVO.TRX_NO" />
+		<result column="MEMO_CODE" property="ctsMemoDetVO.MEMO_CODE" />
+		<result column="ENG_COMENT" property="ctsMemoDetVO.ENG_COMENT" />
+		<result column="ARAB_COMENT" property="ctsMemoDetVO.ARAB_COMENT" />
+		<result column="CIF_NO" property="ctsMemoDetVO.CIF_NO" />
+		<result column="ACC_ADD_REF" property="ctsMemoDetVO.ACC_ADD_REF" />
+		<result column="ACC_BR" property="ctsMemoDetVO.ACC_BR" />
+		<result column="ACC_CY" property="ctsMemoDetVO.ACC_CY" />
+		<result column="ACC_BR" property="ctsMemoDetVO.ACC_BR" />
+		<result column="ACC_GL" property="ctsMemoDetVO.ACC_GL" />
+		<result column="ACC_CIF" property="ctsMemoDetVO.ACC_CIF" />
+		<result column="ACC_SL" property="ctsMemoDetVO.ACC_SL" />
+		<result column="FROM_DATE" property="ctsMemoDetVO.FROM_DATE" />
+		<result column="DATE_TO" property="ctsMemoDetVO.DATE_TO" />
+		<result column="BRIEF_DESC_ENG" property="ctsMemoVO.BRIEF_DESC_ENG" />
+		<result column="LAST_REVIEW_NO" property="ctsMemoDetVO.LAST_REVIEW_NO" />
+		<result column="LONG_NAME_ENG" property="cifDesc" />
+	</resultMap>
+	
+	<select id="getDealDisbursementDetails"  parameterType="com.path.dbmaps.vo.TRSDEAL3VOKey" resultType="com.path.dbmaps.vo.TRSDEAL3VO">
+	 <![CDATA[	
+	  SELECT *
+    FROM TRSDEAL3  
+   WHERE ( TRSDEAL3.COMP_CODE = #{COMP_CODE} ) AND  
+         ( TRSDEAL3.BRANCH_CODE = #{BRANCH_CODE} ) AND  
+         ( TRSDEAL3.SERIAL_NO = #{SERIAL_NO} )   AND 
+ 				TRSDEAL3.LINE_NO <> 0  
+ 			]]>	
+ 	</select> 
+ 	
+ 	<select id="getDealChargesdet"  parameterType="com.path.dbmaps.vo.TRSDEALCHARGESVOKey" resultType="trsDealChargesCO">
+	SELECT * FROM TRSDEALCHARGES
+	 WHERE COMP_CODE = #{COMP_CODE}
+	 AND BRANCH_CODE = #{BRANCH_CODE}
+	 AND SERIAL_NO = #{SERIAL_NO}
+	 
+ 	</select> 
+ 	
+ 	<select id="getNidcDeal"  parameterType="com.path.dbmaps.vo.TRSDEAL_NIDCVOKey" resultType="com.path.dbmaps.vo.TRSDEAL_NIDCVO">
+	  SELECT TRSDEAL_NIDC.COMP_CODE,   
+         TRSDEAL_NIDC.BRANCH_CODE,   
+         TRSDEAL_NIDC.TRS_NO,   
+         TRSDEAL_NIDC.DEAL_NO,   
+         TRSDEAL_NIDC.FACE_VALUE,   
+         TRSDEAL_NIDC.NO_OF_CERTIFICATE,   
+         TRSDEAL_NIDC.ISSUE_AT_TYPE,   
+         TRSDEAL_NIDC.COUPON_PAYMENT_TYPE  
+    FROM TRSDEAL_NIDC  
+   WHERE ( TRSDEAL_NIDC.COMP_CODE = #{COMP_CODE}) AND  
+         ( TRSDEAL_NIDC.BRANCH_CODE = #{BRANCH_CODE}) AND  
+         ( TRSDEAL_NIDC.TRS_NO = #{TRS_NO})    
+ 	</select> 
+ 	
+
+	<select id="getNidcDealDetails"  parameterType="com.path.dbmaps.vo.TRSDEAL_NIDCVOKey" resultType="com.path.dbmaps.vo.TRSDEAL_NIDC_DETVO">
+	    SELECT TRSDEAL_NIDC_DET.COMP_CODE,   
+         TRSDEAL_NIDC_DET.BRANCH_CODE,   
+         TRSDEAL_NIDC_DET.TRS_NO,   
+         TRSDEAL_NIDC_DET.LINE_NO,   
+         TRSDEAL_NIDC_DET.CERTIFICATE_NO,   
+         TRSDEAL_NIDC_DET.TENOR_PERIODICITY_NBR,   
+         TRSDEAL_NIDC_DET.TENOR_PERIODICITY_TYPE,   
+         TRSDEAL_NIDC_DET.NOMINAL_AMOUNT,   
+         TRSDEAL_NIDC_DET.PROFIT_RATE,   
+         TRSDEAL_NIDC_DET.PRICE,   
+         TRSDEAL_NIDC_DET.PROCEED_AMOUNT,   
+         TRSDEAL_NIDC_DET.EXPENSES,   
+         TRSDEAL_NIDC_DET.NIDC_HOLDER_CIF,   
+         TRSDEAL_NIDC_DET.SETTLED_YN,   
+         TRSDEAL_NIDC_DET.ACCRUED_PROFIT  
+    FROM TRSDEAL_NIDC_DET  
+   WHERE ( TRSDEAL_NIDC_DET.COMP_CODE = #{COMP_CODE} ) AND  
+         ( TRSDEAL_NIDC_DET.BRANCH_CODE = #{BRANCH_CODE}) AND  
+         ( TRSDEAL_NIDC_DET.TRS_NO = #{TRS_NO} )    
+    
+ 	</select> 
+
+	<select id="returnPlanScheduleList"  parameterType="com.path.dbmaps.vo.TRSPAYPLANDETVOKey" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO">
+	    SELECT *  FROM TRSPAYPLANDET  
+   		WHERE( TRSPAYPLANDET.COMP_CODE = #{COMP_CODE} ) AND  
+	         ( TRSPAYPLANDET.BRANCH = #{BRANCH}) AND
+	         ( TRSPAYPLANDET.PLAN_NBR = #{PLAN_NBR} )  AND 
+	         ( TRSPAYPLANDET.PLAN_SEQ = #{PLAN_SEQ} )
+	         ORDER BY LINE_NBR
+ 	</select>
+ 	
+ 	<select id="returnDisbursePlanScheduleList"  parameterType="com.path.dbmaps.vo.TRSPAYPLANDETVOKey" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO">
+	    SELECT *  FROM TRSPAYPLANDET_DISBURSE  
+   		WHERE( TRSPAYPLANDET_DISBURSE.COMP_CODE = #{COMP_CODE} ) AND  
+	         ( TRSPAYPLANDET_DISBURSE.BRANCH = #{BRANCH}) AND
+	         ( TRSPAYPLANDET_DISBURSE.PLAN_NBR = #{PLAN_NBR} )  AND 
+	         ( TRSPAYPLANDET_DISBURSE.PLAN_SEQ = #{PLAN_SEQ} )
+	         ORDER BY LINE_NBR
+ 	</select>
+	<select id="returnPlanHeaderList"  parameterType="com.path.dbmaps.vo.TRSPAYPLANVOKey" resultType="com.path.dbmaps.vo.TRSPAYPLANVO">
+	    SELECT RESCHEDULE_VALUE_DATE, 
+	    	PLAN_EXPECTED_YIELD, 
+	    	PLAN_LIBOR_RATE, 
+	    	PLAN_PRINCIPAL, 
+	    	STATUS, 
+	    	PLAN_NBR, 
+	    	PLAN_SEQ 
+		FROM TRSPAYPLAN 
+		WHERE COMP_CODE 	= #{COMP_CODE}
+			AND BRANCH 		= #{BRANCH} 
+			AND TRX_NBR 	= #{TRX_NBR} 
+			AND STATUS IN ('P','S')
+		ORDER BY PLAN_NBR, PLAN_SEQ  
+   		
+ 	</select>
+
+	<select id="returnLastFullySettledInstllmentDate"  parameterType="Date" resultType="com.path.dbmaps.vo.TRSPAYPLANVO">
+	   SELECT MAX(VALUE_DATE)
+	   FROM TRSPAYPLANDET 
+	   WHERE COMP_CODE = #{COMP_CODE}
+	   AND BRANCH = #{BRANCH}
+	   AND PLAN_NBR = #{PLAN_NBR}
+	   AND PLAN_SEQ = #{PLAN_SEQ}
+	   AND SETTLEMENT_AMOUNT > 0 
+	   AND AMOUNT_NEW = SETTLEMENT_AMOUNT
+    
+ 	</select>
+
+
+<select id="returnRescheduleCountByDealAndDate"  parameterType="com.path.dbmaps.vo.TRSPAYPLANDETVOKey" resultType="BigDecimal">
+	SELECT COUNT(1)
+	FROM TRSPAYPLAN 
+	WHERE COMP_CODE 	= #{COMP_CODE}
+	 AND BRANCH 		= #{BRANCH}
+	 AND TRX_NBR 	= #{TRX_NBR}
+	 AND STATUS IN ('P','S')
+	 <![CDATA[
+	 AND RESCHEDULE_VALUE_DATE > #{DATE_CREATED} 
+	 AND RESCHEDULE_VALUE_DATE < #{DATE_APPROVED}
+	  ]]>
+ 	</select>
+
+	<select id="returnTotalAccrualProfitAsOfDate" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT SUM(REVENUE)
+		FROM TRSDEALDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH = #{branchCode}
+		AND DEAL_NO = #{dealNo}
+	<![CDATA[AND TRADE_DATE  < #{valueDate} ]]>
+	</select>
+	
+	<select id="returnTotalPlanProfitAsOfDate" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT SUM(PROFIT_AMT_NEW)
+		FROM TRSPAYPLANDET 
+		WHERE COMP_CODE =	#{compCode}
+		AND BRANCH = #{branchCode}
+		AND PLAN_NBR = #{planNbr}
+		AND PLAN_SEQ = #{planSeq}
+		<![CDATA[
+		AND VALUE_DATE  <= #{valueDate}
+		]]>
+	</select>
+	
+	<select id="returnTotalPlanSettledProfitAsOfDate" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT SUM(CASE WHEN SETTLED_PROFIT_AMT IS NULL THEN 0 ELSE SETTLED_PROFIT_AMT END)
+		FROM TRSPAYPLANDET  
+		WHERE COMP_CODE =	#{compCode}
+		AND BRANCH = #{branchCode}
+		AND PLAN_NBR = #{planNbr}
+		AND PLAN_SEQ = #{planSeq}
+		<![CDATA[
+		AND VALUE_DATE  <= #{valueDate}
+		]]>
+	</select>
+
+<select id="returnAgencyFeePcnt"
+		parameterType="com.path.dbmaps.vo.TRSDEAL2VOKey" resultType="BigDecimal">
+		SELECT  AGENCY_FEE_PCNT
+		FROM TRSDEAL2 
+		WHERE COMP_CODE = #{COMP_CODE} 
+		AND BRANCH_CODE =#{BRANCH_CODE} 
+		AND SERIAL_NO = #{SERIAL_NO}
+	</select>
+	<!-- 	EWBI160081; Saheer.Naduthodi; 02/03/2017 [Begin]-->
+	<select id="returnDealSettlementChargeDetails" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="com.path.vo.common.iis.islamiccalculator.TrsDealSettlementChargesCO">
+		<include refid="returnDealSettlementChargeDetQuery"/>
+	</select>
+	<sql id="returnDealSettlementChargeDetQuery">
+	SELECT 
+			S.COMP_CODE,
+			S.BRANCH_CODE,
+			S.SERIAL_NO,
+			S.LINE_NO,
+			S.CHARGE_CODE,
+			S.CHARGE_AMOUNT,
+			S.INCLUDE_IN_INSTALLMENT_YN,
+			S.DEFAULT_FROM_PRODUCT_CLASS_YN,
+			S.VAT_AMOUNT
+	  FROM 	TRSDEAL_SETTLEMENT_CHARGES S
+	 WHERE S.COMP_CODE 	= #{companyCode}
+	   AND S.BRANCH_CODE= #{BranchCode}
+	   AND S.SERIAL_NO 	= #{dealNo}
+	</sql>
+	<!-- 	EWBI160081; Saheer.Naduthodi; 02/03/2017 [End]-->
+	
+		<!-- 	TP 546955 BB160195 Fawas.Kuruvakkottil 23/01/2018 [Start] -->
+	<select id="returnTrsDealCoveringAccountDet" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="com.path.dbmaps.vo.TRSDEAL_COVERING_ACCOUNTSVO">
+	SELECT 
+	COMP_CODE, 
+	BRANCH_CODE,
+	SERIAL_NO, 
+	LINE_NO, 
+	ACCOUNT_BRANCH, 
+	ACCOUNT_CURRENCY,
+	ACCOUNT_GL,
+	ACCOUNT_CIF, 
+	ACCOUNT_SL, 
+	PRIORITY_NO
+	FROM TRSDEAL_COVERING_ACCOUNTS TC WHERE TC.COMP_CODE=#{companyCode}
+	AND TC.BRANCH_CODE=#{branchCode}
+	AND TC.SERIAL_NO=#{dealNo}
+	AND TC.PRIORITY_NO=1
+	
+	</select>
+	<select id="returnAccountName" parameterType="com.path.dbmaps.vo.TRSDEAL_COVERING_ACCOUNTSVO" resultType="String">
+	SELECT BRIEF_NAME_ENG 
+	FROM	AMF WHERE
+	COMP_CODE = #{COMP_CODE}  AND 
+	BRANCH_CODE = #{ACCOUNT_BRANCH} AND
+	CURRENCY_CODE= #{ACCOUNT_CURRENCY} AND
+	GL_CODE = #{ACCOUNT_GL} AND
+	CIF_SUB_NO = #{ACCOUNT_CIF} AND
+	SL_NO = #{ACCOUNT_SL}
+	</select>
+	<!-- 	TP 546955 BB160195 Fawas.Kuruvakkottil 23/01/2018 [End] -->
+	
+	<select id="returnTrsCifLimitDetValueCalc" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="com.path.dbmaps.vo.TRSCIFLIMITDETVO">
+ 		<![CDATA[
+ 			SELECT 	 TRSCIFLIMITDET.COMP_CODE,
+ 					 TRSCIFLIMITDET.ACC_BRANCH,   
+					 TRSCIFLIMITDET.ACC_CURRENCY,   
+					 TRSCIFLIMITDET.ACC_GL_CODE,   
+					 TRSCIFLIMITDET.ACC_CIF_NO,   
+					 TRSCIFLIMITDET.ACC_SL_NO,
+					 TRSCIFLIMITDET.EXPIRY_DATE,
+					 TRSCIFLIMITDET.INV_DOWN_PAYMENT_PERC,
+					 TRSCIFLIMITDET.REVOLVING_TYPE
+
+		 	FROM     	TRSCIFLIMITDET  
+		 	WHERE    	( TRSCIFLIMITDET.COMP_CODE 		= #{compCode} ) AND  
+				    	( TRSCIFLIMITDET.BRANCH_CODE 	= #{branchCode} ) 	AND  
+				    	( TRSCIFLIMITDET.CIF 			= #{trsdealVO.CIF_NO} )  
+			AND 		 TRSCIFLIMITDET.STATUS <> 'D' 
+				
+			AND         ( TRSCIFLIMITDET.SERIAL_NO 	= #{limitSerialNo} )
+ 		
+ 			]]>
+ 				
+ </select>
+ 
+ <select id="returnTRSCIFLIMITDET" resultMap="returnTRSCIFLIMITDETsMap"
+              parameterType="com.path.dbmaps.vo.TRSCIFLIMITDETVO">
+              SELECT TRSCIFLIMITDET.PROFIT_CALCULATION_METHOD PROFIT_CALCULATION_METHOD,
+              TRSCIFLIMITDET.PROFIT_DIST_METHOD PROFIT_DIST_METHOD,
+              TRSCIFLIMITDET.PRINCIPAL_LAST PRINCIPAL_LAST,
+              TRSCIFLIMITDET.NO_OF_PAYMENTS NO_OF_PAYMENTS,
+              TRSCIFLIMITDET.ROUNDING_FACTOR ROUNDING_FACTOR,
+              TRSCIFLIMITDET.PAY_RES_AMT PAY_RES_AMT,
+              TRSCIFLIMITDET.PAYM_PERIODICITY PAYM_PERIODICITY,
+              TRSCIFLIMITDET.PAYM_PERIOD_NBR PAYM_PERIOD_NBR,
+              TRSCIFLIMITDET.PAYM_PERIOD_POS PAYM_PERIOD_POS,
+              TRSCIFLIMITDET.GRACE_PERIOD_OPTION GRACE_PERIOD_OPTION,
+              TRSCIFLIMITDET.GRACE_PERIOD GRACE_PERIOD,
+              TRSCIFLIMITDET.GRACE_PERIODICITY GRACE_PERIODICITY,
+              TRSCIFLIMITDET.CLASS,
+              TRSCIFLIMITDET.CIF
+              FROM TRSCIFLIMITDET
+              WHERE TRSCIFLIMITDET.COMP_CODE = #{COMP_CODE}
+              AND TRSCIFLIMITDET.BRANCH_CODE = #{BRANCH_CODE}
+              AND TRSCIFLIMITDET.STATUS != 'D'
+              AND    TRSCIFLIMITDET.SERIAL_NO = #{SERIAL_NO}
+       </select>
+       <resultMap id="returnTRSCIFLIMITDETsMap" type="com.path.dbmaps.vo.TRSCIFLIMITDETVO">
+              <result property="PROFIT_CALCULATION_METHOD" column="PROFIT_CALCULATION_METHOD" />
+              <result property="PROFIT_DIST_METHOD" column="PROFIT_DIST_METHOD" />
+              <result property="PRINCIPAL_LAST" column="PRINCIPAL_LAST" />
+              <result property="NO_OF_PAYMENTS" column="NO_OF_PAYMENTS" />
+              <result property="ROUNDING_FACTOR" column="ROUNDING_FACTOR" />
+              <result property="PAY_RES_AMT" column="PAY_RES_AMT" />
+              <result property="PAYM_PERIODICITY" column="PAYM_PERIODICITY" />
+              <result property="PAYM_PERIOD_NBR" column="PAYM_PERIOD_NBR" />
+              <result property="PAYM_PERIOD_POS" column="PAYM_PERIOD_POS" />
+              <result property="GRACE_PERIOD_OPTION" column="GRACE_PERIOD_OPTION" />
+              <result property="GRACE_PERIOD" column="GRACE_PERIOD" />
+              <result property="GRACE_PERIODICITY" column="GRACE_PERIODICITY" />
+              <result property="CLASS" column="CLASS" />
+              <result property="CIF" column="CIF" />
+       </resultMap>
+ <select id="selectOnChangeProductClass" parameterType="islamicCalculatorEventMgmtCO" resultMap="resultIslamicCalculatorEventMgmtCOMap">
+		<include refid="populateOnChangeProductClass"/>
+	</select>
+	
+	<sql id="populateOnChangeProductClass">
+		SELECT  
+			ACCRUAL_AMOUNT_TYPE,
+			NO_OF_PAYMENTS,
+			ROUNDING_FACTOR,
+			PAY_RES_AMT,
+			PAYM_PERIOD_NBR,
+			PAYM_PERIODICITY,
+			PAYM_PERIOD_POS,
+	        GRACE_PERIOD_OPTION,
+	        GRACE_PERIOD,
+	        GRACE_PERIODICITY,
+	        CASE WHEN PRINCIPAL_LAST IS NULL THEN  'N' ELSE PRINCIPAL_LAST END,
+	        REPAYMENT_TEMPLATE,
+	        CASE WHEN CALCULATE_PROFIT = 'D' THEN 'R' ELSE 'S' END CALCULATE_PROFIT,
+	 		PROFIT_DIST_METHOD,
+	 		ACCRUAL_BASIS,
+	 		DOWN_PAYMENT_PERC,
+	 		MAX_DEAL_INST_PERC_OF_SAL,
+	 		CASE WHEN ROUNDING_TYPE_REPAY_AMT IS NULL THEN 'R' ELSE ROUNDING_TYPE_REPAY_AMT END ROUNDING_TYPE_REPAY_AMT,
+	        CASE WHEN ROUNDING_TYPE_INST_AMT IS NULL THEN 'R' ELSE ROUNDING_TYPE_INST_AMT END ROUNDING_TYPE_INST_AMT,
+	        CASE WHEN HOLIDAY_ACTION IS NULL THEN  0  ELSE HOLIDAY_ACTION END HOLIDAY_ACTION,
+	        CATEGORY,
+	        PROFIT_UPFRONT,
+	        BALLOON_AMOUNT_MAX_PERC,
+	        MIN_BALLOON_AMT_PERC,
+	        CASE WHEN INCLUDE_VAT_IN_INSTL_YN IS NULL THEN 'N' ELSE INCLUDE_VAT_IN_INSTL_YN END INCLUDE_VAT_IN_INSTL_YN,
+			CASE WHEN  VAT_APPLICABLE_YN  IS NULL THEN 'N' ELSE  VAT_APPLICABLE_YN  END	VAT_APPLICABLE_YN ,
+			CASE WHEN VAT_CODE IS NULL THEN 0 ELSE VAT_CODE END VAT_CODE,
+			CASE WHEN ALLOW_TO_EDIT_VAT_YN IS NULL THEN 'Y' ELSE ALLOW_TO_EDIT_VAT_YN END ALLOW_TO_EDIT_VAT_YN,
+			CASE WHEN CALCULATE_PROFIT = 'D' THEN 'R' ELSE 'S' END  PROFIT_CALCULATION_METHOD,
+			SHOW_PAY_SCHEDULE,
+			RATE_TYPE,
+			CASE WHEN FLOATING_RATE IS NULL THEN 'N' ELSE FLOATING_RATE END FLOATING_RATE,
+			CASE WHEN BILLS_YN IS NULL THEN 'N' ELSE BILLS_YN END BILLS_YN,
+			CASE WHEN NIDC_YN IS NULL THEN 'N' ELSE NIDC_YN END NIDC_YN,
+			APPLY_TEG_YN  <!-- DN# EWBI160013; deepu.mohandas  -->
+			
+			 
+        FROM  TRSCLASS
+        WHERE 
+		TRSCLASS.COMP_CODE  = #{compCode} AND TRSCLASS.CODE = #{productClass}
+     </sql>
+ 	<resultMap id="resultIslamicCalculatorEventMgmtCOMap" type="islamicCalculatorEventMgmtCO">
+		<result property="cifName" 						column="CIF_NAME" />
+		<result property="idNo"    						column="ID_NO" />
+		<result property="cifNo"   						column="CIF_NO" />
+		<result property="initialPaymentType"   		column="INITIAL_PAYMENT_TYPE" />
+		<result property="minimumSecurityDepositType"   column="MINIMUM_SECURITY_DEPOSIT_TYPE" />
+		<result property="minimumSecurityDepositAmount" column="MINIMUM_SECURITY_DEPOSIT_AMT" />
+		<result property="maintainSalaryAccount" 		column="MAINTAIN_SALARY_ACC" />
+		
+		<result property="vatPercentage" 				column="PERCENTAGE" />
+		<result property="roundingFactor" 				column="ROUNDING_FACTOR" />
+		<result property="payResAmt"    				column="PAY_RES_AMT" />
+		<result property="paymPeriodNbr"				column="PAYM_PERIOD_NBR" />
+		<result property="paymPeriodicity"   			column="PAYM_PERIODICITY" />
+		<result property="paymPeriodPos"   				column="PAYM_PERIOD_POS" />
+		<result property="gracePeriodOption" 			column="GRACE_PERIOD_OPTION" />
+		<result property="gracePeriod" 					column="GRACE_PERIOD" />
+		<result property="gracePeriodicity" 			column="GRACE_PERIODICITY" />
+		<result property="principalLast" 				column="PRINCIPAL_LAST" />
+		<result property="repaymentTemplate" 			column="REPAYMENT_TEMPLATE" />
+		<result property="calculateProfit" 				column="CALCULATE_PROFIT" />
+		<result property="profitDistMethod" 			column="PROFIT_DIST_METHOD" />
+		<result property="accrualBasis" 				column="ACCRUAL_BASIS" />
+		<result property="downPaymentPercentage" 		column="DOWN_PAYMENT_PERC" />
+		<result property="maxDealInstPercOfSal" 		column="MAX_DEAL_INST_PERC_OF_SAL" />
+		<result property="roundingTypeRepayAmt" 		column="ROUNDING_TYPE_REPAY_AMT" />
+		<result property="roundingTypeInstAmt" 			column="ROUNDING_TYPE_INST_AMT" />
+		<result property="accrualAmountType" 			column="ACCRUAL_AMOUNT_TYPE" />
+		
+		<result property="currencyUnit" 				column="UNIT" />
+		<result property="multipleDivisionIndicator" 	column="MULT_DIV_IND" />
+		<result property="currencyDecimalPoints" 		column="DECIMAL_POINTS" />
+		
+		<result property="noOfPayments" 				column="NO_OF_PAYMENTS" />
+		<result property="holidayAction" 				column="HOLIDAY_ACTION" />
+		<result property="currencyDesc" 				column="BRIEF_DESC_ENG" />
+		
+		<result property="profitUpfront" 				column="PROFIT_UPFRONT" />
+		<result property="category" 				column="CATEGORY" />
+		
+		<result property="baloonAmountMaxPerc" 			column="BALLOON_AMOUNT_MAX_PERC" />
+		<result property="baloonAmountMinPerc" 			column="MIN_BALLOON_AMT_PERC" />
+		<result property="includeVatinInstallment" 		column="INCLUDE_VAT_IN_INSTL_YN" />
+		<result property="vatApplicable" 				column="VAT_APPLICABLE_YN" />
+		<result property="vatCode" 						column="VAT_CODE" />
+		<result property="allowtoEditVat" 				column="ALLOW_TO_EDIT_VAT_YN" />
+		<result property="profitCalcMethod" column="PROFIT_CALCULATION_METHOD"/>
+		<result property="showPaySchedule" column="SHOW_PAY_SCHEDULE"/>
+		<result property="salaryWithBank" column="MAINTAIN_SALARY_ACC"/>
+		<result property="floatingRateCode" column="RATE_TYPE"/>
+		<result property="FLOATING_RATE" column="FLOATING_RATE"/>
+		
+		<result property="bills_yn" column="BILLS_YN"/>
+		<result property="nidc" column="NIDC_YN"/>
+		<!-- DN# EWBI160013; deepu.mohandas  -->
+		<result property="APPLY_TEG_YN" column="APPLY_TEG_YN"/>
+		
+	</resultMap>
+
+	<select id="returnTotalAccrualProfitAsOfDateWithNewRate" parameterType="iisCommonCO" resultType="BigDecimal">
+		<![CDATA[
+		SELECT SUM(CASE WHEN TRADE_DATE <  #{startDate} THEN REVENUE ELSE ROUND((OUTSTANDING_PRINCIPAL * #{YIELD} / (#{ptMethod}  * 100)), #{dealCyDecimalPoint} ) END)
+				FROM TRSDEALDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH = #{branchCode}
+		AND DEAL_NO = #{dealNo}
+		AND TRADE_DATE  < #{valueDate}
+	 	]]>
+	</select>
+	
+	<select id="returnPlanScheduleFirstLegList"  parameterType="com.path.dbmaps.vo.TRSPAYPLANDETVOKey" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO">
+	    SELECT *  FROM TRSPAYPLANDET_PROFIT_RATE_SWAP  
+   		WHERE( TRSPAYPLANDET_PROFIT_RATE_SWAP.COMP_CODE = #{COMP_CODE} ) AND  
+	         ( TRSPAYPLANDET_PROFIT_RATE_SWAP.BRANCH = #{BRANCH}) AND
+	         ( TRSPAYPLANDET_PROFIT_RATE_SWAP.PLAN_NBR = #{PLAN_NBR} )  AND 
+	         ( TRSPAYPLANDET_PROFIT_RATE_SWAP.PLAN_SEQ = #{PLAN_SEQ} )
+	         ORDER BY LINE_NBR
+ 	</select>
+	
+	<select id="returnTrspayplanFirstLegListByTrxNo"  parameterType="com.path.dbmaps.vo.TRSPAYPLANVOKey" resultType="com.path.dbmaps.vo.TRSPAYPLANVO">
+	    
+SELECT CASE WHEN TRSPAYPLAN_PROFIT_RATE_SWAP.RESCHEDULE_VALUE_DATE IS NULL THEN TRSPAYPLAN.RESCHEDULE_VALUE_DATE ELSE TRSPAYPLAN_PROFIT_RATE_SWAP.RESCHEDULE_VALUE_DATE END RESCHEDULE_VALUE_DATE, 
+	   CASE WHEN TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_EXPECTED_YIELD IS NULL THEN TRSDEAL_SWAP_DETAILS.YIELD ELSE TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_EXPECTED_YIELD END PLAN_EXPECTED_YIELD, 
+	   0 PLAN_LIBOR_RATE, 
+	   CASE WHEN TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_PRINCIPAL IS NULL THEN TRSPAYPLAN.PLAN_PRINCIPAL ELSE TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_PRINCIPAL END PLAN_PRINCIPAL, 
+	    	TRSPAYPLAN_PROFIT_RATE_SWAP.STATUS, 
+	    	TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_NBR, 
+	    	TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_SEQ 
+		FROM TRSPAYPLAN_PROFIT_RATE_SWAP, TRSPAYPLAN, TRSDEAL_SWAP_DETAILS
+		WHERE TRSPAYPLAN_PROFIT_RATE_SWAP.COMP_CODE = TRSPAYPLAN.COMP_CODE
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.BRANCH = TRSPAYPLAN.BRANCH
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+			
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.COMP_CODE = TRSDEAL_SWAP_DETAILS.COMP_CODE
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.BRANCH = TRSDEAL_SWAP_DETAILS.BRANCH_CODE
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.TRX_NBR = TRSDEAL_SWAP_DETAILS.DEAL_NO
+			
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.COMP_CODE 	= #{COMP_CODE}
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.BRANCH 		= #{BRANCH} 
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.TRX_NBR 	= #{TRX_NBR} 
+			AND TRSPAYPLAN_PROFIT_RATE_SWAP.STATUS IN ('P','S')
+		ORDER BY TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_NBR, TRSPAYPLAN_PROFIT_RATE_SWAP.PLAN_SEQ  
+   		
+ 	</select>
+ 	
+	
+	 <select id="returnDealFirstPaymentDate"  resultType="Date" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO">
+	   SELECT MIN(TRSPAYPLANDET.VALUE_DATE)
+	   FROM TRSPAYPLANDET ,TRSPAYPLAN
+	   WHERE TRSPAYPLANDET.COMP_CODE  = TRSPAYPLAN.COMP_CODE
+	   AND   TRSPAYPLANDET.BRANCH     = TRSPAYPLAN.BRANCH
+	   AND   TRSPAYPLANDET.PLAN_NBR   = TRSPAYPLAN.PLAN_NBR
+	   AND   TRSPAYPLANDET.PLAN_SEQ   = TRSPAYPLAN.PLAN_SEQ
+	   AND   TRSPAYPLAN.COMP_CODE     = #{COMP_CODE} 
+	   AND   TRSPAYPLAN.BRANCH        = #{BRANCH}   
+	   AND   TRSPAYPLAN.PLAN_NBR      = #{PLAN_NBR} 
+	   AND   TRSPAYPLAN.STATUS         IN('P', 'S')
+	   AND   TRSPAYPLAN.PLAN_SEQ      =(SELECT MIN(PLAN_SEQ) FROM TRSPAYPLAN 
+										WHERE COMP_CODE = #{COMP_CODE} 
+										AND BRANCH = #{BRANCH} 
+										AND PLAN_NBR = #{PLAN_NBR} 
+										AND STATUS IN('P', 'S'))
+    
+ 	</select>
+ 	
+ 	<select id="returnTRSPAYPLAN_BREAKUP_PROFITList" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO" resultType="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVO">
+		  SELECT TRSPAYPLAN_BREAKUP_PROFIT . COMP_CODE ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . BRANCH ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . PLAN_NBR ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . PLAN_SEQ ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . LINE_NO ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . PROFIT_AMOUNT ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . DEAL_AMOUNT ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . FROM_DATE ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . TO_DATE ,   
+          TRSPAYPLAN_BREAKUP_PROFIT . YIELD   
+    FROM  TRSPAYPLAN ,   
+          TRSPAYPLAN_BREAKUP_PROFIT   
+   WHERE (  TRSPAYPLAN . COMP_CODE  =  TRSPAYPLAN_BREAKUP_PROFIT . COMP_CODE  ) and  
+         (  TRSPAYPLAN . BRANCH  =  TRSPAYPLAN_BREAKUP_PROFIT . BRANCH  ) and  
+         (  TRSPAYPLAN . PLAN_NBR  =  TRSPAYPLAN_BREAKUP_PROFIT . PLAN_NBR  ) and  
+         (  TRSPAYPLAN . PLAN_SEQ  =  TRSPAYPLAN_BREAKUP_PROFIT . PLAN_SEQ  ) and  
+         ( (TRSPAYPLAN . COMP_CODE  = #{COMP_CODE}) AND  
+         (  TRSPAYPLAN . BRANCH  = #{BRANCH} ) AND  
+         (  TRSPAYPLAN . PLAN_NBR  = #{PLAN_NBR} ) AND  
+         (  TRSPAYPLAN . STATUS  in ( 'P','S' ) ) )   
+		order by TRSPAYPLAN_BREAKUP_PROFIT . PLAN_NBR ,
+	  TRSPAYPLAN_BREAKUP_PROFIT . FROM_DATE,
+	  TRSPAYPLAN_BREAKUP_PROFIT . PLAN_SEQ 
+	</select>
+	
+
+
+	<select id="returnTotalDsibursedAfterVDate" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO" resultType="BigDecimal">
+		  SELECT SUM(AMOUNT) 
+		  FROM TRSDEAL3 
+		  WHERE COMP_CODE = #{COMP_CODE} 
+		  AND BRANCH_CODE = #{BRANCH} 
+		  AND SERIAL_NO = #{TRX_NBR}  
+		  AND CASE WHEN PAID_IND IS NULL THEN 'N' ELSE PAID_IND END = 'Y'
+          AND VALUE_DATE > #{RESCHEDULE_VALUE_DATE}
+   	</select>
+	
+	<select id="returnCurrentDsiburseAmount" parameterType="com.path.dbmaps.vo.TRSDEALVO" resultType="BigDecimal">
+		  SELECT DEAL_AMOUNT FROM TRSDEAL_DISBURSE 
+			WHERE COMP_CODE = #{COMP_CODE} 
+			AND BRANCH_CODE = #{BRANCH_CODE} 
+			AND SERIAL_NO = #{SERIAL_NO} 
+   	</select>
+   	
+
+	<select id="returnCurrentMultipleYield" parameterType="com.path.dbmaps.vo.TRSDEALVO" resultType="BigDecimal">
+		 SELECT YIELD FROM TRSDEAL_MULTIPLE_YIELD 
+		 WHERE COMP_CODE = #{COMP_CODE} 
+		 	AND BRANCH_CODE = #{BRANCH_CODE}
+		 	AND DEAL_NO = #{SERIAL_NO}
+		 	AND FROM_DATE = (SELECT MAX(FROM_DATE) 
+		 					FROM TRSDEAL_MULTIPLE_YIELD 
+		 					WHERE COMP_CODE = #{COMP_CODE} 
+		 					AND BRANCH_CODE = #{BRANCH_CODE} 
+		 					AND DEAL_NO = #{SERIAL_NO}
+		 					<![CDATA[
+ 							AND FROM_DATE <= #{VALUE_DATE})  
+							]]>
+		 					
+   	</select>
+
+
+	<select id="returnMultipleYieldCount" parameterType="com.path.dbmaps.vo.TRSDEALVO" resultType="int">
+		 SELECT COUNT(1) FROM TRSDEAL_MULTIPLE_YIELD 
+		 WHERE COMP_CODE = #{COMP_CODE} 
+		 	AND BRANCH_CODE = #{BRANCH_CODE}
+		 	AND DEAL_NO = #{SERIAL_NO}
+   	</select>
+   	
+	
+	
+	<select id="returnVendorDiscountAmount" parameterType="com.path.dbmaps.vo.TRSDEALVOKey" resultType="BigDecimal">
+		select sum(ADJUST_TO_YIELD) from TRSDEAL_ASSET_VNDR_INCENTIVE
+		where TRSDEAL_ASSET_VNDR_INCENTIVE.COMP_CODE 	= #{COMP_CODE}
+			AND TRSDEAL_ASSET_VNDR_INCENTIVE.BRANCH_CODE = #{BRANCH_CODE}
+			AND TRSDEAL_ASSET_VNDR_INCENTIVE.SERIAL_NO = #{SERIAL_NO}
+	</select>
+	
+	   <!-- TP # 772002 Muhammed.Anas -->	
+   	<select id="getDealMaturityAccountForCrossCurrencySwap" parameterType="com.path.dbmaps.vo.TRSDETVOKey"
+		resultType="com.path.dbmaps.vo.TRSDETVO">
+			SELECT TRSDET.MATR_AC_BR,
+			TRSDET.MATR_AC_CY,   
+			TRSDET.MATR_AC_GL,   
+			TRSDET.MATR_AC_CIF,   
+			TRSDET.MATR_AC_SL,
+			AMF.BRIEF_NAME_ENG CONTRIBBLOCK_TRF_REASON
+		FROM  TRSDET, AMF
+		WHERE  TRSDET.COMP_CODE 	= #{COMP_CODE}
+			AND TRSDET.BRANCH_CODE 	= #{BRANCH_CODE}
+			AND TRSDET.SERIAL_NO	= #{SERIAL_NO}
+   			AND TRSDET.LINE_NO		= #{LINE_NO}
+   			AND TRSDET.FUND_LINE_NO	= #{FUND_LINE_NO}
+   			AND TRSDET.DEAL_IND		= #{DEAL_IND}
+			AND AMF.COMP_CODE	 	= TRSDET.COMP_CODE
+			AND AMF.BRANCH_CODE 	= TRSDET.MATR_AC_BR
+			AND AMF.CURRENCY_CODE 	= TRSDET.MATR_AC_CY
+			AND AMF.GL_CODE			= TRSDET.MATR_AC_GL
+			AND	AMF.CIF_SUB_NO		= TRSDET.MATR_AC_CIF
+			AND AMF.SL_NO			= TRSDET.MATR_AC_SL
+	</select>
+	<!-- TP  # 772002 Muhammed.Anas  -->
+	
+	<select id="retrieveLastRepaymentInstalment" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO" resultType="com.path.vo.common.iis.islamiccalculator.TrspayplandetCO">
+		  SELECT * FROM TRSPAYPLANDET 
+		  	WHERE COMP_CODE = #{COMP_CODE}
+		  	AND BRANCH = #{BRANCH}
+		  	AND PLAN_NBR = #{PLAN_NBR} 
+		  	AND PLAN_SEQ = #{PLAN_SEQ} 
+          AND LINE_NBR IN (SELECT MAX(LINE_NBR)FROM TRSPAYPLANDET 
+          						WHERE COMP_CODE = #{COMP_CODE} 
+          						AND BRANCH = #{BRANCH} 
+          						AND PLAN_NBR = #{PLAN_NBR} 
+          						AND PLAN_SEQ = #{PLAN_SEQ})
+	</select>
+	
+	<!--	DN# EWBI160013 deepu.mohandas-->
+	<select id="returnMinYield" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="BigDecimal">
+		SELECT MIN_YIELD
+  FROM TRS_TIE_RATE
+ WHERE PRODUCT_CLASS = #{productClassCode}
+   AND COMP_CODE = #{companyCode}
+   AND STATUS = 'P'
+   AND TRS_DATE =
+       (SELECT MAX(TRS_DATE)
+          FROM TRS_TIE_RATE
+         WHERE PRODUCT_CLASS = #{productClassCode}
+           AND COMP_CODE = #{companyCode}
+           AND STATUS = 'P'
+		<![CDATA[
+  AND  TRS_DATE <= #{valueDate}) 
+		]]>
+	</select>
+	
+	<!--	DN# EWBI160013 deepu.mohandas -->
+	<select id="returnTtrschargesVOList" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="com.path.dbmaps.vo.TRSCHARGESVO">SELECT * FROM TRSCHARGES
+	 WHERE COMP_CODE = #{companyCode}
+	AND   CODE IN (${chargeCodes}) ORDER BY TEG_ADJUSTMENT_PRIORITY</select>
+	
+	<!--	DN# EWBI160013 deepu.mohandas -->
+	<select id="returnMarginRate" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="BigDecimal">
+	SELECT TIE_MARGIN  FROM TRS_TIE_RATE WHERE
+   	PRODUCT_CLASS=#{productClassCode} 
+  	AND COMP_CODE=#{companyCode}
+  	AND STATUS = 'P'
+  	AND TRS_DATE=(SELECT MAX(TRS_DATE) FROM  TRS_TIE_RATE WHERE PRODUCT_CLASS=#{productClassCode} 
+  	AND COMP_CODE=#{companyCode}
+		<![CDATA[
+ 	AND  TRS_DATE <= #{valueDate})  
+		]]>
+	</select>
+	
+	<select id="getChargesDetails" parameterType="com.path.dbmaps.vo.TRSCHARGESVOKey" resultType="com.path.dbmaps.vo.TRSCHARGESVO">
+	SELECT CODE,BRIEF_NAME_ENG, INCLUDE_IN_TEG_CALC_YN, CHARGE_AMT_PER_INST_YN
+	FROM TRSCHARGES
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND CODE = #{CODE}
+	</select>
+	
+	<!--  SBI200204,SBI200085 MODIFICATION-SBI170014 	 -->
+	<select id="returnTradeDealAdvancePaymentList"   parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="com.path.dbmaps.vo.TRSDEAL_ADVANCE_PAYMENTVO">
+	SELECT PAYMENT_NO,
+	LINE_NO,
+	PAYMENT_DATE,
+	PAYMENT_AMOUNT,
+	 REMARKS
+	FROM TRSDEAL_ADVANCE_PAYMENT where COMP_CODE=#{companyCode} 
+	  AND BRANCH_CODE=#{BranchCode}
+	   AND  DEAL_NO = #{dealNo}
+	</select>
+	
+	<!--	DN# EWBI160013 -->
+	<select id="returnExcessiveProfitRate" parameterType="com.path.vo.common.iis.islamiccalculator.IslamicCalculatorCO" resultType="BigDecimal">
+		SELECT TIE_RATE  FROM TRS_TIE_RATE WHERE
+		  PRODUCT_CLASS=#{productClassCode} 
+		  AND COMP_CODE=#{companyCode}
+		  AND STATUS = 'P'
+		  AND TRS_DATE=(SELECT MAX(TRS_DATE) FROM  TRS_TIE_RATE WHERE PRODUCT_CLASS=#{productClassCode} 
+		  AND COMP_CODE=#{companyCode}
+		  <![CDATA[
+		 		AND  TRS_DATE <= #{valueDate})  
+		  ]]>
+	</select>
+	
+</mapper>

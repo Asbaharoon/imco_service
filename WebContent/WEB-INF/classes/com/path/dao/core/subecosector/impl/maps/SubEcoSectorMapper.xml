@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="subEcoSectorMapper">
+
+ <sql id="subEcoSectorListCommon">
+	<![CDATA[
+		SELECT RIFSEC.SUB_SECTOR_CODE,
+			 RIFSEC.BRIEF_DESC_ENG,
+			 RIFSEC.BRIEF_DESC_ARAB,
+			 RIFSEC.LONG_DESC_ENG,
+			 RIFSEC.LONG_DESC_ARAB
+	FROM  RIFSEC
+	WHERE	RIFSEC.COMP_CODE  = #{compCode}
+	AND (exists (select 1 from RIFCTT_ECO_SECTOR
+	where RIFCTT_ECO_SECTOR.COMP_CODE=RIFSEC.COMP_CODE
+	AND RIFCTT_ECO_SECTOR.SECTOR_CODE=	RIFSEC.SECTOR_CODE
+	AND RIFCTT_ECO_SECTOR.SUB_SECTOR_CODE=RIFSEC.SUB_SECTOR_CODE
+	AND RIFCTT_ECO_SECTOR.SECTOR_CODE=#{sectorCode}
+	AND RIFCTT_ECO_SECTOR.CIF_TYPE_CODE= #{cifType} AND RIFCTT_ECO_SECTOR.SUB_SECTOR_CODE<>0)
+	OR (not exists (select 1 from RIFCTT_ECO_SECTOR
+	where RIFCTT_ECO_SECTOR.COMP_CODE=RIFSEC.COMP_CODE
+		AND RIFCTT_ECO_SECTOR.SECTOR_CODE=	RIFSEC.SECTOR_CODE
+		AND  RIFCTT_ECO_SECTOR.SECTOR_CODE=#{sectorCode}
+		AND RIFCTT_ECO_SECTOR.CIF_TYPE_CODE= #{cifType}  AND RIFCTT_ECO_SECTOR.SUB_SECTOR_CODE<>0) AND RIFSEC.SECTOR_CODE=#{sectorCode}))
+	]]>	 
+	
+ </sql>
+ <sql id="subEcoSectorAllTypeSQL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'' FROM DUAL 
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'' 
+	        </when>
+        </choose>
+ </sql>
+   <sql id="subEcoSectorAdditionalDataFms">
+ 		 	 
+	 SELECT 0 SUB_SECTOR_CODE , 'All Types' BRIEF_DESC_ENG ,
+	 	'All Types' BRIEF_DESC_ARAB,'All Types' LONG_DESC_ENG, 'All Types' LONG_DESC_ARAB
+	 FROM DUAL
+	 WHERE #{calledFrom}  IN ('G')	
+	 
+	 UNION  
+	 
+ </sql>
+ 
+ 
+  <sql id="subEcoSectorListCommonUnique"> 
+ 	AND RIFSEC.SECTOR_CODE		=	#{sectorCode}
+	AND RIFSEC.SUB_SECTOR_CODE 	=	#{subSectorCode}
+ </sql>
+ 
+  <select id="returnDependencyBySubSectorCodeforFOM" parameterType="subEcoSectorSC" resultType="subEcoSectorVO">
+ 	<include refid="subEcoSectorListCommon"/>
+	<include refid="subEcoSectorListCommonUnique"/> 
+  </select>
+
+ <resultMap id="subEcoSectorList_ResMap" type="subEcoSectorVO">
+	<id property="SUB_SECTOR_CODE" column="SUB_SECTOR_CODE"/>
+	
+	<result property="SECTOR_CODE" column="SECTOR_CODE" />
+	<result property="SUB_SECTOR_CODE" column="SUB_SECTOR_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="subEcoSectorList" resultMap="subEcoSectorList_ResMap" parameterType="subEcoSectorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="subEcoSectorAdditionalDataFms"  />
+	<include refid="subEcoSectorListCommon"/>	
+	<!--   TP#621590 ;13-Feb-2018;d.james-->
+	<if test='"true".equals(allTypesFlag)'> 
+		<include refid="subEcoSectorAllTypeSQL"/>
+	</if>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="subEcoSectorListCount" resultType="int" parameterType="subEcoSectorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="subEcoSectorAdditionalDataFms"  />
+	<include refid="subEcoSectorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnDependencyBySubSectorCode" parameterType="subEcoSectorSC" resultType="subEcoSectorVO">
+ 	<![CDATA[
+ 		SELECT SUB_SECTOR_CODE,
+			   CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  RIFSEC
+		WHERE	RIFSEC.COMP_CODE  = #{compCode}
+			AND RIFSEC.SECTOR_CODE=#{sectorCode}
+			AND RIFSEC.SUB_SECTOR_CODE =#{subSectorCode}
+	]]>	 
+</select>
+
+<select id="subEcoSectorParentList" resultMap="subEcoSectorList_ResMap" parameterType="subEcoSectorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="subEcoSectorParentListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="subEcoSectorParentListCount" resultType="int" parameterType="subEcoSectorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="subEcoSectorParentListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <sql id="subEcoSectorParentListCommon">
+	<![CDATA[
+		SELECT
+			 
+			 RIFSEC.SUB_SECTOR_CODE,
+			 RIFSEC.BRIEF_DESC_ENG,
+			 RIFSEC.LONG_DESC_ENG,
+			 RIFSEC.BRIEF_DESC_ARAB,
+			 RIFSEC.LONG_DESC_ARAB,
+			 RIFSEC.SECTOR_CODE
+	FROM  RIFSEC,
+		 ECO_SECTORS 
+	WHERE	 (RIFSEC.SECTOR_CODE  = ECO_SECTORS.SECTOR_CODE)
+	 AND	(RIFSEC.COMP_CODE  = ECO_SECTORS.COMP_CODE)
+	 AND	((RIFSEC.COMP_CODE  = #{compCode})
+	 AND	RIFSEC.SECTOR_CODE  = #{sectorCode})
+	]]>	 
+ </sql>
+
+</mapper>

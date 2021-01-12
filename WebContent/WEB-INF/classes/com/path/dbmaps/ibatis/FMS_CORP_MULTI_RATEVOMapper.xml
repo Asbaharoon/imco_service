@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_CORP_MULTI_RATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_CORP_MULTI_RATEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="RATE_LINE_NO" property="RATE_LINE_NO" />
+    <result column="NO_OF_PAYMENTS" property="NO_OF_PAYMENTS" />
+    <result column="MARGIN_RATE" property="MARGIN_RATE" />
+    <result column="FLOATING_RATE" property="FLOATING_RATE" />
+    <result column="FIXED_FLOATING_RATE" property="FIXED_FLOATING_RATE" />
+    <result column="CAP_RATE" property="CAP_RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NBR, RATE_LINE_NO, NO_OF_PAYMENTS, MARGIN_RATE, 
+    FLOATING_RATE, FIXED_FLOATING_RATE, CAP_RATE
+  </sql>
+  <select id="selectFMS_CORP_MULTI_RATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_CORP_MULTI_RATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_CORP_MULTI_RATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and RATE_LINE_NO = #{RATE_LINE_NO}
+  </select>
+  <delete id="deleteFMS_CORP_MULTI_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_MULTI_RATEVOKey" >
+    delete from FMS_CORP_MULTI_RATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and RATE_LINE_NO = #{RATE_LINE_NO}
+  </delete>
+  <insert id="insertFMS_CORP_MULTI_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_MULTI_RATEVO" >
+    insert into FMS_CORP_MULTI_RATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="RATE_LINE_NO != null and RATE_LINE_NO != emptyBigDecimalValue" >
+        RATE_LINE_NO,
+      </if>
+      <if test="NO_OF_PAYMENTS != null and NO_OF_PAYMENTS != emptyBigDecimalValue" >
+        NO_OF_PAYMENTS,
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        MARGIN_RATE,
+      </if>
+      <if test="FLOATING_RATE != null and FLOATING_RATE != emptyBigDecimalValue" >
+        FLOATING_RATE,
+      </if>
+      <if test="FIXED_FLOATING_RATE != null and !&quot;&quot;.equals(FIXED_FLOATING_RATE)" >
+        FIXED_FLOATING_RATE,
+      </if>
+      <if test="CAP_RATE != null and CAP_RATE != emptyBigDecimalValue" >
+        CAP_RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="RATE_LINE_NO != null and RATE_LINE_NO != emptyBigDecimalValue" >
+        #{RATE_LINE_NO},
+      </if>
+      <if test="NO_OF_PAYMENTS != null and NO_OF_PAYMENTS != emptyBigDecimalValue" >
+        #{NO_OF_PAYMENTS},
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        #{MARGIN_RATE},
+      </if>
+      <if test="FLOATING_RATE != null and FLOATING_RATE != emptyBigDecimalValue" >
+        #{FLOATING_RATE},
+      </if>
+      <if test="FIXED_FLOATING_RATE != null and !&quot;&quot;.equals(FIXED_FLOATING_RATE)" >
+        #{FIXED_FLOATING_RATE},
+      </if>
+      <if test="CAP_RATE != null and CAP_RATE != emptyBigDecimalValue" >
+        #{CAP_RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_CORP_MULTI_RATE" >
+    update FMS_CORP_MULTI_RATE
+    <set >
+      <if test="NO_OF_PAYMENTS != null" >
+        <choose >
+          <when test="NO_OF_PAYMENTS == emptyBigDecimalValue" >
+            NO_OF_PAYMENTS = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_PAYMENTS = #{NO_OF_PAYMENTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MARGIN_RATE != null" >
+        <choose >
+          <when test="MARGIN_RATE == emptyBigDecimalValue" >
+            MARGIN_RATE = NULL ,
+          </when>
+          <otherwise >
+            MARGIN_RATE = #{MARGIN_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLOATING_RATE != null" >
+        <choose >
+          <when test="FLOATING_RATE == emptyBigDecimalValue" >
+            FLOATING_RATE = NULL ,
+          </when>
+          <otherwise >
+            FLOATING_RATE = #{FLOATING_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIXED_FLOATING_RATE != null" >
+        <choose >
+          <when test="FIXED_FLOATING_RATE.equals(&quot;&quot;)" >
+            FIXED_FLOATING_RATE = NULL ,
+          </when>
+          <otherwise >
+            FIXED_FLOATING_RATE = #{FIXED_FLOATING_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CAP_RATE != null" >
+        <choose >
+          <when test="CAP_RATE == emptyBigDecimalValue" >
+            CAP_RATE = NULL ,
+          </when>
+          <otherwise >
+            CAP_RATE = #{CAP_RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and RATE_LINE_NO = #{RATE_LINE_NO}
+  </sql>
+  <update id="updateFMS_CORP_MULTI_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_MULTI_RATEVO" >
+    <include refid="sql_updateFMS_CORP_MULTI_RATE" />
+  </update>
+</mapper>

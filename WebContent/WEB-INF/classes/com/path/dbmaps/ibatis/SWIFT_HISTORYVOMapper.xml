@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_HISTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_HISTORYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="HISTORY_DATE" property="HISTORY_DATE" />
+    <id column="MODULE" property="MODULE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <id column="MSG_ORDER" property="MSG_ORDER" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="ACK" property="ACK" />
+    <result column="REFERENCE_TAG_DATA" property="REFERENCE_TAG_DATA" />
+    <result column="MSG_IN_OUT" property="MSG_IN_OUT" />
+    <result column="NO_OF_GENERATION" property="NO_OF_GENERATION" />
+    <result column="PRINTED" property="PRINTED" />
+    <result column="MARK_GENERATED" property="MARK_GENERATED" />
+    <result column="MSG_STATUS" property="MSG_STATUS" />
+    <result column="ACK_NACK_CTR" property="ACK_NACK_CTR" />
+    <result column="SWIFT_TRX_NO" property="SWIFT_TRX_NO" />
+    <result column="MID_STATUS" property="MID_STATUS" />
+    <result column="MID_STATUS_REASON" property="MID_STATUS_REASON" />
+    <result column="ALL_STATUS" property="ALL_STATUS" />
+    <result column="ALL_STATUS_REASON" property="ALL_STATUS_REASON" />
+     <result column="INTEGRATION_TYPE" property="INTEGRATION_TYPE" />
+    <result column="QUEUE_STATUS" property="QUEUE_STATUS" />
+    <result column="QUEUE_RESPONSE_ID" property="QUEUE_RESPONSE_ID" />
+    <result column="QUEUE_RESPONSE_TYPE" property="QUEUE_RESPONSE_TYPE" />
+    <result column="REJECTION_REASON" property="REJECTION_REASON" />
+    
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_HISTORYVOWithBLOBs" extends="BaseResultMap" >
+    <result column="SWFT_MSG" property="SWFT_MSG" />
+    <result column="SWIFT_MSG_BLOB" property="SWIFT_MSG_BLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, HISTORY_DATE, MODULE, MSG_CODE, MSG_ORDER, TRS_NO, TRX_TYPE, 
+    ACK, REFERENCE_TAG_DATA, MSG_IN_OUT, NO_OF_GENERATION, PRINTED, MARK_GENERATED, MSG_STATUS, 
+    ACK_NACK_CTR, SWIFT_TRX_NO, MID_STATUS, MID_STATUS_REASON, ALL_STATUS, ALL_STATUS_REASON,INTEGRATION_TYPE, QUEUE_STATUS, QUEUE_RESPONSE_ID, QUEUE_RESPONSE_TYPE, REJECTION_REASON
+  </sql>
+  <sql id="Blob_Column_List" >
+    SWFT_MSG, SWIFT_MSG_BLOB
+  </sql>
+  <select id="selectSWIFT_HISTORY" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_HISTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and HISTORY_DATE = #{HISTORY_DATE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and MSG_ORDER = #{MSG_ORDER}
+      and TRS_NO = #{TRS_NO}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteSWIFT_HISTORY" parameterType="com.path.dbmaps.vo.SWIFT_HISTORYVOKey" >
+    delete from SWIFT_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and HISTORY_DATE = #{HISTORY_DATE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and MSG_ORDER = #{MSG_ORDER}
+      and TRS_NO = #{TRS_NO}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertSWIFT_HISTORY" parameterType="com.path.dbmaps.vo.SWIFT_HISTORYVOWithBLOBs" >
+    insert into SWIFT_HISTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="HISTORY_DATE != null" >
+        HISTORY_DATE,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="MSG_CODE != null" >
+        MSG_CODE,
+      </if>
+      <if test="MSG_ORDER != null and MSG_ORDER != emptyBigDecimalValue" >
+        MSG_ORDER,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRX_TYPE != null" >
+        TRX_TYPE,
+      </if>
+      <if test="ACK != null and ACK != emptyBigDecimalValue" >
+        ACK,
+      </if>
+      <if test="REFERENCE_TAG_DATA != null" >
+        REFERENCE_TAG_DATA,
+      </if>
+      <if test="MSG_IN_OUT != null" >
+        MSG_IN_OUT,
+      </if>
+      <if test="NO_OF_GENERATION != null and NO_OF_GENERATION != emptyBigDecimalValue" >
+        NO_OF_GENERATION,
+      </if>
+      <if test="PRINTED != null" >
+        PRINTED,
+      </if>
+      <if test="MARK_GENERATED != null and MARK_GENERATED != emptyBigDecimalValue" >
+        MARK_GENERATED,
+      </if>
+      <if test="MSG_STATUS != null" >
+        MSG_STATUS,
+      </if>
+      <if test="ACK_NACK_CTR != null and ACK_NACK_CTR != emptyBigDecimalValue" >
+        ACK_NACK_CTR,
+      </if>
+      <if test="SWIFT_TRX_NO != null and SWIFT_TRX_NO != emptyBigDecimalValue" >
+        SWIFT_TRX_NO,
+      </if>
+       <if test="MID_STATUS != null" >
+        MID_STATUS,
+      </if>
+      <if test="MID_STATUS_REASON != null" >
+        MID_STATUS_REASON,
+      </if>
+      <if test="ALL_STATUS != null" >
+        ALL_STATUS,
+      </if>
+      <if test="ALL_STATUS_REASON != null" >
+        ALL_STATUS_REASON,
+      </if>
+      <if test="SWFT_MSG != null" >
+        SWFT_MSG,
+      </if>
+      <if test="SWIFT_MSG_BLOB != null" >
+        SWIFT_MSG_BLOB,
+      </if>
+       <if test="INTEGRATION_TYPE != null" >
+        INTEGRATION_TYPE,
+      </if>
+      <if test="QUEUE_STATUS != null" >
+        QUEUE_STATUS,
+      </if>
+      <if test="QUEUE_RESPONSE_ID != null and QUEUE_RESPONSE_ID != emptyBigDecimalValue" >
+        QUEUE_RESPONSE_ID,
+      </if>
+      <if test="QUEUE_RESPONSE_TYPE != null" >
+        QUEUE_RESPONSE_TYPE,
+      </if>
+      <if test="REJECTION_REASON != null" >
+        REJECTION_REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="HISTORY_DATE != null" >
+        #{HISTORY_DATE},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="MSG_CODE != null" >
+        #{MSG_CODE},
+      </if>
+      <if test="MSG_ORDER != null and MSG_ORDER != emptyBigDecimalValue" >
+        #{MSG_ORDER},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRX_TYPE != null" >
+        #{TRX_TYPE},
+      </if>
+      <if test="ACK != null and ACK != emptyBigDecimalValue" >
+        #{ACK},
+      </if>
+      <if test="REFERENCE_TAG_DATA != null" >
+        #{REFERENCE_TAG_DATA},
+      </if>
+      <if test="MSG_IN_OUT != null" >
+        #{MSG_IN_OUT},
+      </if>
+      <if test="NO_OF_GENERATION != null and NO_OF_GENERATION != emptyBigDecimalValue" >
+        #{NO_OF_GENERATION},
+      </if>
+      <if test="PRINTED != null" >
+        #{PRINTED},
+      </if>
+      <if test="MARK_GENERATED != null and MARK_GENERATED != emptyBigDecimalValue" >
+        #{MARK_GENERATED},
+      </if>
+      <if test="MSG_STATUS != null" >
+        #{MSG_STATUS},
+      </if>
+      <if test="ACK_NACK_CTR != null and ACK_NACK_CTR != emptyBigDecimalValue" >
+        #{ACK_NACK_CTR},
+      </if>
+      <if test="SWIFT_TRX_NO != null and SWIFT_TRX_NO != emptyBigDecimalValue" >
+        #{SWIFT_TRX_NO},
+      </if>
+       <if test="MID_STATUS != null" >
+        #{MID_STATUS},
+      </if>
+      <if test="MID_STATUS_REASON != null" >
+        #{MID_STATUS_REASON},
+      </if>
+      <if test="ALL_STATUS != null" >
+        #{ALL_STATUS},
+      </if>
+      <if test="ALL_STATUS_REASON != null" >
+        #{ALL_STATUS_REASON},
+      </if>
+      <if test="SWFT_MSG != null" >
+        #{SWFT_MSG},
+      </if>
+      <if test="SWIFT_MSG_BLOB != null" >
+        #{SWIFT_MSG_BLOB},
+      </if>
+        <if test="INTEGRATION_TYPE != null" >
+        #{INTEGRATION_TYPE},
+      </if>
+      <if test="QUEUE_STATUS != null" >
+        #{QUEUE_STATUS},
+      </if>
+      <if test="QUEUE_RESPONSE_ID != null and QUEUE_RESPONSE_ID != emptyBigDecimalValue" >
+        #{QUEUE_RESPONSE_ID},
+      </if>
+      <if test="QUEUE_RESPONSE_TYPE != null" >
+        #{QUEUE_RESPONSE_TYPE},
+      </if>
+      <if test="REJECTION_REASON != null" >
+        #{REJECTION_REASON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_HISTORY" >
+    update SWIFT_HISTORY
+    <set >
+      <if test="ACK != null" >
+        <choose >
+          <when test="ACK == emptyBigDecimalValue" >
+            ACK = NULL ,
+          </when>
+          <otherwise >
+            ACK = #{ACK},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REFERENCE_TAG_DATA != null" >
+        REFERENCE_TAG_DATA = #{REFERENCE_TAG_DATA},
+      </if>
+      <if test="MSG_IN_OUT != null" >
+        MSG_IN_OUT = #{MSG_IN_OUT},
+      </if>
+      <if test="NO_OF_GENERATION != null" >
+        <choose >
+          <when test="NO_OF_GENERATION == emptyBigDecimalValue" >
+            NO_OF_GENERATION = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_GENERATION = #{NO_OF_GENERATION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRINTED != null" >
+        PRINTED = #{PRINTED},
+      </if>
+      <if test="MARK_GENERATED != null" >
+        <choose >
+          <when test="MARK_GENERATED == emptyBigDecimalValue" >
+            MARK_GENERATED = NULL ,
+          </when>
+          <otherwise >
+            MARK_GENERATED = #{MARK_GENERATED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MSG_STATUS != null" >
+        MSG_STATUS = #{MSG_STATUS},
+      </if>
+      <if test="ACK_NACK_CTR != null" >
+        <choose >
+          <when test="ACK_NACK_CTR == emptyBigDecimalValue" >
+            ACK_NACK_CTR = NULL ,
+          </when>
+          <otherwise >
+            ACK_NACK_CTR = #{ACK_NACK_CTR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACK_NACK_CTR != null" >
+        <choose >
+          <when test="SWIFT_TRX_NO == emptyBigDecimalValue" >
+            SWIFT_TRX_NO = NULL ,
+          </when>
+          <otherwise >
+            SWIFT_TRX_NO = #{SWIFT_TRX_NO},
+          </otherwise>
+        </choose>
+      </if>
+        <if test="MID_STATUS != null" >
+        MID_STATUS = #{MID_STATUS},
+      </if>
+      <if test="MID_STATUS_REASON != null" >
+        MID_STATUS_REASON = #{MID_STATUS_REASON},
+      </if>
+      <if test="ALL_STATUS != null" >
+        ALL_STATUS = #{ALL_STATUS},
+      </if>
+      <if test="ALL_STATUS_REASON != null" >
+        ALL_STATUS_REASON = #{ALL_STATUS_REASON},
+      </if>
+      <if test="SWFT_MSG != null" >
+        SWFT_MSG = #{SWFT_MSG},
+      </if>
+      <if test="SWIFT_MSG_BLOB != null" >
+        SWIFT_MSG_BLOB = #{SWIFT_MSG_BLOB},
+      </if>
+           <if test="INTEGRATION_TYPE != null" >
+        INTEGRATION_TYPE = #{INTEGRATION_TYPE},
+      </if>
+      <if test="QUEUE_STATUS != null" >
+        QUEUE_STATUS = #{QUEUE_STATUS},
+      </if>
+      <if test="QUEUE_RESPONSE_ID != null" >
+        <choose >
+          <when test="QUEUE_RESPONSE_ID == emptyBigDecimalValue" >
+            QUEUE_RESPONSE_ID = NULL ,
+          </when>
+          <otherwise >
+            QUEUE_RESPONSE_ID = #{QUEUE_RESPONSE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="QUEUE_RESPONSE_TYPE != null" >
+        QUEUE_RESPONSE_TYPE = #{QUEUE_RESPONSE_TYPE},
+      </if>
+      <if test="REJECTION_REASON != null" >
+        REJECTION_REASON = #{REJECTION_REASON},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and HISTORY_DATE = #{HISTORY_DATE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and MSG_ORDER = #{MSG_ORDER}
+      and TRS_NO = #{TRS_NO}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateSWIFT_HISTORY" parameterType="com.path.dbmaps.vo.SWIFT_HISTORYVOWithBLOBs" >
+    <include refid="sql_updateSWIFT_HISTORY" />
+  </update>
+</mapper>

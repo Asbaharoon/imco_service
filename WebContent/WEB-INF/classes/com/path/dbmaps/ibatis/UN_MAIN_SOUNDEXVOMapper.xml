@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UN_MAIN_SOUNDEX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.UN_MAIN_SOUNDEXVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TABLE_TYPE" property="TABLE_TYPE" />
+    <result column="SOUNDEX_NAME" property="SOUNDEX_NAME" />
+    <result column="WORDS_NO" property="WORDS_NO" />
+    <result column="SOUNDEX_NAME_AR" property="SOUNDEX_NAME_AR" />
+    <result column="WORDS_NO_AR" property="WORDS_NO_AR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, TABLE_TYPE, SOUNDEX_NAME, WORDS_NO, SOUNDEX_NAME_AR, WORDS_NO_AR
+  </sql>
+  <select id="selectUN_MAIN_SOUNDEX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.UN_MAIN_SOUNDEXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from UN_MAIN_SOUNDEX
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TABLE_TYPE = #{TABLE_TYPE}
+  </select>
+  <delete id="deleteUN_MAIN_SOUNDEX" parameterType="com.path.dbmaps.vo.UN_MAIN_SOUNDEXVOKey" >
+    delete from UN_MAIN_SOUNDEX
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TABLE_TYPE = #{TABLE_TYPE}
+  </delete>
+  <insert id="insertUN_MAIN_SOUNDEX" parameterType="com.path.dbmaps.vo.UN_MAIN_SOUNDEXVO" >
+    insert into UN_MAIN_SOUNDEX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TABLE_TYPE != null" >
+        TABLE_TYPE,
+      </if>
+      <if test="SOUNDEX_NAME != null" >
+        SOUNDEX_NAME,
+      </if>
+      <if test="WORDS_NO != null and WORDS_NO != emptyBigDecimalValue" >
+        WORDS_NO,
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        SOUNDEX_NAME_AR,
+      </if>
+      <if test="WORDS_NO_AR != null and WORDS_NO_AR != emptyBigDecimalValue" >
+        WORDS_NO_AR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TABLE_TYPE != null" >
+        #{TABLE_TYPE},
+      </if>
+      <if test="SOUNDEX_NAME != null" >
+        #{SOUNDEX_NAME},
+      </if>
+      <if test="WORDS_NO != null and WORDS_NO != emptyBigDecimalValue" >
+        #{WORDS_NO},
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        #{SOUNDEX_NAME_AR},
+      </if>
+      <if test="WORDS_NO_AR != null and WORDS_NO_AR != emptyBigDecimalValue" >
+        #{WORDS_NO_AR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUN_MAIN_SOUNDEX" >
+    update UN_MAIN_SOUNDEX
+    <set >
+      <if test="SOUNDEX_NAME != null" >
+        SOUNDEX_NAME = #{SOUNDEX_NAME},
+      </if>
+      <if test="WORDS_NO != null" >
+        <choose >
+          <when test="WORDS_NO == emptyBigDecimalValue" >
+            WORDS_NO = NULL ,
+          </when>
+          <otherwise >
+            WORDS_NO = #{WORDS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SOUNDEX_NAME_AR != null" >
+        SOUNDEX_NAME_AR = #{SOUNDEX_NAME_AR},
+      </if>
+      <if test="WORDS_NO_AR != null" >
+        <choose >
+          <when test="WORDS_NO_AR == emptyBigDecimalValue" >
+            WORDS_NO_AR = NULL ,
+          </when>
+          <otherwise >
+            WORDS_NO_AR = #{WORDS_NO_AR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TABLE_TYPE = #{TABLE_TYPE}
+  </sql>
+  <update id="updateUN_MAIN_SOUNDEX" parameterType="com.path.dbmaps.vo.UN_MAIN_SOUNDEXVO" >
+    <include refid="sql_updateUN_MAIN_SOUNDEX" />
+  </update>
+</mapper>

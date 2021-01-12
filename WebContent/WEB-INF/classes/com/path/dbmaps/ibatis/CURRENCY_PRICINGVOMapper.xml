@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CURRENCY_PRICING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CURRENCY_PRICINGVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_PRIORITY" property="CIF_PRIORITY" />
+    <id column="CIF_TYPE" property="CIF_TYPE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="B_POINTS" property="b_POINTS" />
+    <result column="S_POINTS" property="s_POINTS" />
+    <result column="B_PERCENTAGE" property="b_PERCENTAGE" />
+    <result column="S_PERCENTAGE" property="s_PERCENTAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_PRIORITY, CIF_TYPE, COMP_CODE, CURRENCY_CODE, B_POINTS, S_POINTS, 
+    B_PERCENTAGE, S_PERCENTAGE
+  </sql>
+  <select id="selectCURRENCY_PRICING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CURRENCY_PRICINGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CURRENCY_PRICING
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_PRIORITY = #{CIF_PRIORITY}
+      and CIF_TYPE = #{CIF_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </select>
+  <delete id="deleteCURRENCY_PRICING" parameterType="com.path.dbmaps.vo.CURRENCY_PRICINGVOKey" >
+    delete from CURRENCY_PRICING
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_PRIORITY = #{CIF_PRIORITY}
+      and CIF_TYPE = #{CIF_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </delete>
+  <insert id="insertCURRENCY_PRICING" parameterType="com.path.dbmaps.vo.CURRENCY_PRICINGVO" >
+    insert into CURRENCY_PRICING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_PRIORITY != null and CIF_PRIORITY != emptyBigDecimalValue" >
+        CIF_PRIORITY,
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        CIF_TYPE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="b_POINTS != null and b_POINTS != emptyBigDecimalValue" >
+        B_POINTS,
+      </if>
+      <if test="s_POINTS != null and s_POINTS != emptyBigDecimalValue" >
+        S_POINTS,
+      </if>
+      <if test="b_PERCENTAGE != null and b_PERCENTAGE != emptyBigDecimalValue" >
+        B_PERCENTAGE,
+      </if>
+      <if test="s_PERCENTAGE != null and s_PERCENTAGE != emptyBigDecimalValue" >
+        S_PERCENTAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_PRIORITY != null and CIF_PRIORITY != emptyBigDecimalValue" >
+        #{CIF_PRIORITY},
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        #{CIF_TYPE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="b_POINTS != null and b_POINTS != emptyBigDecimalValue" >
+        #{b_POINTS},
+      </if>
+      <if test="s_POINTS != null and s_POINTS != emptyBigDecimalValue" >
+        #{s_POINTS},
+      </if>
+      <if test="b_PERCENTAGE != null and b_PERCENTAGE != emptyBigDecimalValue" >
+        #{b_PERCENTAGE},
+      </if>
+      <if test="s_PERCENTAGE != null and s_PERCENTAGE != emptyBigDecimalValue" >
+        #{s_PERCENTAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCURRENCY_PRICING" >
+    update CURRENCY_PRICING
+    <set >
+      <if test="b_POINTS != null" >
+        <choose >
+          <when test="b_POINTS == emptyBigDecimalValue" >
+            B_POINTS = NULL ,
+          </when>
+          <otherwise >
+            B_POINTS = #{b_POINTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="s_POINTS != null" >
+        <choose >
+          <when test="s_POINTS == emptyBigDecimalValue" >
+            S_POINTS = NULL ,
+          </when>
+          <otherwise >
+            S_POINTS = #{s_POINTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="b_PERCENTAGE != null" >
+        <choose >
+          <when test="b_PERCENTAGE == emptyBigDecimalValue" >
+            B_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            B_PERCENTAGE = #{b_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="s_PERCENTAGE != null" >
+        <choose >
+          <when test="s_PERCENTAGE == emptyBigDecimalValue" >
+            S_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            S_PERCENTAGE = #{s_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_PRIORITY = #{CIF_PRIORITY}
+      and CIF_TYPE = #{CIF_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </sql>
+  <update id="updateCURRENCY_PRICING" parameterType="com.path.dbmaps.vo.CURRENCY_PRICINGVO" >
+    <include refid="sql_updateCURRENCY_PRICING" />
+  </update>
+</mapper>

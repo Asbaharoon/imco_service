@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_BLACKLIST_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_BLACKLIST_LOGVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <result column="CRITERIA_MATCH_PERCENT" property="CRITERIA_MATCH_PERCENT" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+    <result column="REMARK_VALUE" property="REMARK_VALUE" />
+    <result column="ENTITY_NO" property="ENTITY_NO" />
+    <result column="SENT_BY_USER" property="SENT_BY_USER" /> 
+    <result column="RECEIVED_BRANCH" property="RECEIVED_BRANCH" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, ENTITY_TYPE, CRITERIA_MATCH_PERCENT, ACTION_TYPE, 
+    REMARK_VALUE, ENTITY_NO,SENT_BY_USER,RECEIVED_BRANCH,DATE_UPDATED
+  </sql>
+  <select id="selectCTS_BLACKLIST_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_BLACKLIST_LOGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_BLACKLIST_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_BLACKLIST_LOG" parameterType="com.path.dbmaps.vo.CTS_BLACKLIST_LOGVOKey" >
+    delete from CTS_BLACKLIST_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_BLACKLIST_LOG" parameterType="com.path.dbmaps.vo.CTS_BLACKLIST_LOGVO" >
+    insert into CTS_BLACKLIST_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="ENTITY_TYPE != null and !&quot;&quot;.equals(ENTITY_TYPE)" >
+        ENTITY_TYPE,
+      </if>
+      <if test="CRITERIA_MATCH_PERCENT != null and !&quot;&quot;.equals(CRITERIA_MATCH_PERCENT)" >
+        CRITERIA_MATCH_PERCENT,
+      </if>
+      <if test="ACTION_TYPE != null and !&quot;&quot;.equals(ACTION_TYPE)" >
+        ACTION_TYPE,
+      </if>
+      <if test="REMARK_VALUE != null and !&quot;&quot;.equals(REMARK_VALUE)" >
+        REMARK_VALUE,
+      </if>
+      <if test="ENTITY_NO != null and ENTITY_NO != emptyBigDecimalValue" >
+        ENTITY_NO,
+      </if>
+       <if test="SENT_BY_USER != null and !&quot;&quot;.equals(SENT_BY_USER)" >
+        SENT_BY_USER,
+      </if>
+      <if test="RECEIVED_BRANCH != null and RECEIVED_BRANCH != emptyBigDecimalValue" >
+        RECEIVED_BRANCH,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="ENTITY_TYPE != null and !&quot;&quot;.equals(ENTITY_TYPE)" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="CRITERIA_MATCH_PERCENT != null and !&quot;&quot;.equals(CRITERIA_MATCH_PERCENT)" >
+        #{CRITERIA_MATCH_PERCENT},
+      </if>
+      <if test="ACTION_TYPE != null and !&quot;&quot;.equals(ACTION_TYPE)" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="REMARK_VALUE != null and !&quot;&quot;.equals(REMARK_VALUE)" >
+        #{REMARK_VALUE},
+      </if>
+      <if test="ENTITY_NO != null and ENTITY_NO != emptyBigDecimalValue" >
+        #{ENTITY_NO},
+      </if>
+      <if test="SENT_BY_USER != null and !&quot;&quot;.equals(SENT_BY_USER)" >
+        #{SENT_BY_USER},
+      </if>
+      <if test="RECEIVED_BRANCH != null and RECEIVED_BRANCH != emptyBigDecimalValue" >
+        #{RECEIVED_BRANCH},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_BLACKLIST_LOG" >
+    update CTS_BLACKLIST_LOG
+    <set >
+      <if test="ENTITY_TYPE != null" >
+        <choose >
+          <when test="ENTITY_TYPE.equals(&quot;&quot;)" >
+            ENTITY_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ENTITY_TYPE = #{ENTITY_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA_MATCH_PERCENT != null" >
+        <choose >
+          <when test="CRITERIA_MATCH_PERCENT.equals(&quot;&quot;)" >
+            CRITERIA_MATCH_PERCENT = NULL ,
+          </when>
+          <otherwise >
+            CRITERIA_MATCH_PERCENT = #{CRITERIA_MATCH_PERCENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTION_TYPE != null" >
+        <choose >
+          <when test="ACTION_TYPE.equals(&quot;&quot;)" >
+            ACTION_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ACTION_TYPE = #{ACTION_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REMARK_VALUE != null" >
+        <choose >
+          <when test="REMARK_VALUE.equals(&quot;&quot;)" >
+            REMARK_VALUE = NULL ,
+          </when>
+          <otherwise >
+            REMARK_VALUE = #{REMARK_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ENTITY_NO != null" >
+        <choose >
+          <when test="ENTITY_NO == emptyBigDecimalValue" >
+            ENTITY_NO = NULL ,
+          </when>
+          <otherwise >
+            ENTITY_NO = #{ENTITY_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SENT_BY_USER != null" >
+        <choose >
+          <when test="SENT_BY_USER.equals(&quot;&quot;)" >
+            SENT_BY_USER = NULL ,
+          </when>
+          <otherwise >
+            SENT_BY_USER = #{SENT_BY_USER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RECEIVED_BRANCH != null" >
+        <choose >
+          <when test="RECEIVED_BRANCH == emptyBigDecimalValue" >
+            RECEIVED_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            RECEIVED_BRANCH = #{RECEIVED_BRANCH},
+          </otherwise>
+        </choose>
+      </if>      
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_BLACKLIST_LOG" parameterType="com.path.dbmaps.vo.CTS_BLACKLIST_LOGVO" >
+    <include refid="sql_updateCTS_BLACKLIST_LOG" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

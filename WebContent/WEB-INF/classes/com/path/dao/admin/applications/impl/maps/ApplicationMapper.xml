@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="applicationMapper">
+ 
+<!-- Applications LIST -->
+ <sql id="applicationsListCommon" >
+	 <choose>
+		<when test="screenSrc!=null and 'DYN'.equals(screenSrc)">
+			SELECT B.APP_NAME,
+				   B.LONG_DESC_ENG,
+				   S.LONG_DESC_AR, 
+				   S.LONG_DESC_FR,
+				   S.APP_DESC, 
+				   S.APP_DESC_AR, 
+				   S.APP_DESC_FR				
+				   FROM BCOM_DYN_ENTITY_APP_LIST B 
+				   LEFT JOIN S_APP S ON B.APP_NAME = S.APP_NAME		
+		</when>
+		<otherwise>
+				SELECT APP_NAME,LONG_DESC,LONG_DESC_AR, LONG_DESC_FR,APP_DESC, APP_DESC_AR, APP_DESC_FR FROM S_APP
+				<if test='webAppsOnly != null'>
+					WHERE IS_WEB_YN = 1 OR IS_WEB_YN = 2
+				</if>	
+		</otherwise>
+	</choose>
+
+</sql>
+
+ <resultMap id="returnApplicationsList_ResMap" type="sAppVO" >
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="LONG_DESC" property="LONG_DESC" />
+    <result column="LONG_DESC_AR" property="LONG_DESC_AR" />
+    <result column="LONG_DESC_FR" property="LONG_DESC_FR" />
+    <result column="APP_DESC" property="APP_DESC" />
+    <result column="APP_DESC_AR" property="APP_DESC_AR" />
+    <result column="APP_DESC_FR" property="APP_DESC_FR" />
+ </resultMap>
+ 
+ <select id="returnApplications"  resultMap="returnApplicationsList_ResMap" parameterType="applicationsSC">
+     <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="applicationsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="returnApplicationsCount"  resultType="int" parameterType="applicationsSC" > 
+ 	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="applicationsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+</mapper>

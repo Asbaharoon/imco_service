@@ -1,0 +1,1350 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="swiftMapper">
+  
+	<resultMap id="selectScheduledSwiftReportsMap" type="swiftOutwardSchedRepCO">
+		<result property="swiftDwsVO.REP_ID" column="REP_ID" />
+		<result property="swiftDwsVO.MODULE" column="MODULE" />
+		<result property="swiftDwsVO.STAT_ACC" column="STAT_ACC" />
+		<result property="swiftReportsVO.REP_TITLE" column="REP_TITLE" />
+		<result property="swiftReportsVO.APP_NAME" column="APP_NAME" />
+		<result property="swiftDwschedVO.COMP_CODE" column="COMP_CODE" />
+		<result property="swiftReportsVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="swiftReportsVO.REP_OBJ_NAME" column="REP_OBJ_NAME" />
+		<result property="swiftDwschedVO.SCHED_ID" column="SCHED_ID" />
+		<result property="swiftDwschedVO.PERIOD" column="PERIOD" />
+		<result property="swiftDwschedVO.PERIOD_TYPE" column="PERIOD_TYPE" />
+		<result property="swiftDwschedVO.PERIOD_DAY" column="PERIOD_DAY" />
+		<result property="swiftDwschedVO.TRANS_FROM" column="TRANS_FROM" />
+		<result property="swiftDwschedVO.TRANS_TO" column="TRANS_TO" />
+		<result property="swiftDwschedVO.DATE_FROM" column="DATE_FROM" />
+		<result property="swiftDwschedVO.DATE_TO" column="DATE_TO" />
+		<result property="swiftDwschedVO.SUSPEND_REPLICATION" column="SUSPEND_REPLICATION" />
+		<result property="swiftDwschedVO.BRANCH_FROM" column="BRANCH_FROM" />
+		<result property="swiftDwschedVO.BRANCH_TO" column="BRANCH_TO" />
+		<result property="swiftDwschedVO.CY_FROM" column="CY_FROM" />
+		<result property="swiftDwschedVO.CY_TO" column="CY_TO" />
+		<result property="swiftDwschedVO.GL_FROM" column="GL_FROM" />
+		<result property="swiftDwschedVO.GL_TO" column="GL_TO" />
+		<result property="swiftDwschedVO.CIF_FROM" column="CIF_FROM" />
+		<result property="swiftDwschedVO.CIF_TO" column="CIF_TO" />
+		<result property="swiftDwschedVO.SL_FROM" column="SL_FROM" />
+		<result property="swiftDwschedVO.SL_TO" column="SL_TO" />
+		<result property="swiftDwschedVO.RECEIVER_CIF" column="RECEIVER_CIF" />
+		<result property="swiftDwschedVO.NEXT_REPLICATION" column="NEXT_REPLICATION" />
+		<result property="swiftDwschedVO.SCHED_TIME" column="SCHED_TIME" />
+		<result property="swiftDwschedVO.REQ_GEN_950" column="REQ_GEN_950" />
+		<result property="swiftDwschedVO.SCHED_TIME" column="SCHED_TIME" />
+		<result property="swiftDwschedVO.MSG_CODE" column="MSG_CODE" />
+		<result property="swiftDwschedVO.GENERATE_MESSAGE" column="GENERATE_MESSAGE" />
+	</resultMap>
+
+	<sql id="selectCommonScheduledSwiftReports">
+		SELECT
+		SWIFT_REPORTS.REP_ID,
+		SWIFT_REPORTS.REP_TITLE,
+		SWIFT_REPORTS.APP_NAME,
+		SWIFT_DWSCHED.COMP_CODE,
+		SWIFT_REPORTS.BRANCH_CODE,
+		SWIFT_REPORTS.REP_OBJ_NAME,
+		SWIFT_DWSCHED.SCHED_ID,
+		SWIFT_DWSCHED.PERIOD,
+		SWIFT_DWSCHED.PERIOD_TYPE,
+		SWIFT_DWSCHED.PERIOD_DAY,
+		SWIFT_DWSCHED.TRANS_FROM,
+		SWIFT_DWSCHED.TRANS_TO,
+		SWIFT_DWSCHED.DATE_FROM,
+		SWIFT_DWSCHED.DATE_TO,
+		SWIFT_DWSCHED.BRANCH_FROM,
+		SWIFT_DWSCHED.BRANCH_TO,
+		SWIFT_DWSCHED.CY_FROM,
+		SWIFT_DWSCHED.CY_TO,
+		SWIFT_DWSCHED.GL_FROM,
+		SWIFT_DWSCHED.GL_TO,
+		SWIFT_DWSCHED.CIF_FROM,
+		SWIFT_DWSCHED.CIF_TO,
+		SWIFT_DWSCHED.SL_FROM,
+		SWIFT_DWSCHED.SL_TO,
+		SWIFT_DWS.STAT_ACC,
+		SWIFT_DWS.MODULE,
+		SWIFT_DWSCHED.RECEIVER_CIF,
+		SWIFT_DWSCHED.NEXT_REPLICATION,
+		SWIFT_DWSCHED.SCHED_TIME,
+		CASE WHEN SWIFT_DWSCHED.REQ_GEN_950 IS NULL THEN 0 ELSE
+		SWIFT_DWSCHED.REQ_GEN_950 END REQ_GEN_950,
+		SWIFT_DWSCHED.SUSPEND_REPLICATION,
+		SWIFT_DWSCHED.MSG_CODE,
+		SWIFT_DWSCHED.GENERATE_MESSAGE
+		FROM SWIFT_REPORTS,
+		SWIFT_DWS,
+		SWIFT_DWSCHED
+  </sql>
+	<select id="selectScheduledSwiftReports" resultMap="selectScheduledSwiftReportsMap"
+		parameterType="swiftOutwardSC">
+		<include refid="selectCommonScheduledSwiftReports" />
+		WHERE SWIFT_REPORTS.REP_ID = SWIFT_DWS.REP_ID
+		AND SWIFT_DWS.REP_ID = SWIFT_DWSCHED.REP_ID
+		AND SWIFT_DWS.MODULE = SWIFT_DWSCHED.MODULE
+		  <![CDATA[
+		  AND SWIFT_DWSCHED.SUSPEND_REPLICATION <> 1
+		  AND SWIFT_DWSCHED.NEXT_REPLICATION <= #{nextReplication}
+		  ]]>
+		AND SWIFT_DWS.SUSPENDED IN ('S','B')
+		AND SWIFT_DWSCHED.JAVA_PROCESS = 1
+		ORDER BY SWIFT_DWSCHED.SCHED_ID,
+		SWIFT_DWS.MODULE, SWIFT_DWS.REP_ID
+	</select>
+	<select id="selectScheduledSwiftReportsWithPerformance"
+		resultMap="selectScheduledSwiftReportsMap" parameterType="swiftOutwardSC">
+		<include refid="selectCommonScheduledSwiftReports" />
+		, SWIFT_TRS_LOG
+		WHERE SWIFT_REPORTS.REP_ID = SWIFT_DWS.REP_ID
+		AND SWIFT_DWS.REP_ID = SWIFT_DWSCHED.REP_ID
+		AND SWIFT_DWS.MODULE = SWIFT_DWSCHED.MODULE
+		  <![CDATA[
+		  AND SWIFT_DWSCHED.SUSPEND_REPLICATION <> 1
+		  AND SWIFT_DWSCHED.NEXT_REPLICATION <= #{nextReplication}
+		  AND SWIFT_DWS.SUSPENDED IN ('S','B')
+		  AND SWIFT_TRS_LOG.DW_NAME = SWIFT_REPORTS.REP_OBJ_NAME
+		  AND SWIFT_TRS_LOG.COUNTER > 0
+		  ]]>
+		AND SWIFT_DWSCHED.JAVA_PROCESS = 1
+		ORDER BY SWIFT_DWSCHED.SCHED_ID, SWIFT_DWS.MODULE, SWIFT_DWS.REP_ID
+	</select>
+
+	<resultMap id="selectSwiftLogMap" type="swiftLogVO">
+		<result column="REPID" property="REPID" />
+		<result column="COMP_CODE" property="COMP_CODE" />
+		<result column="TITLE" property="TITLE" />
+		<result column="SEVERITY" property="SEVERITY" />
+		<result column="LOG_DATE" property="LOG_DATE" />
+		<result column="MSG" property="MSG" />
+	</resultMap>
+	<sql id="selectSwiftLogList">
+	<choose>
+		<when test="isSybase == 1" >
+		  	SELECT
+			SWIFT_LOG.REPID,
+			SWIFT_LOG.COMP_CODE,
+			SWIFT_LOG.TITLE,
+			SWIFT_LOG.SEVERITY,
+			SWIFT_LOG.LOG_DATE,
+			SWIFT_LOG.MSG
+			FROM SWIFT_LOG
+		
+			WHERE CONVERT(DATE,LOG_DATE,103)=CONVERT(DATE,#{engineDateString},103)
+		</when>
+		<otherwise>
+			SELECT
+			SWIFT_LOG.REPID,
+			SWIFT_LOG.COMP_CODE,
+			SWIFT_LOG.TITLE,
+			SWIFT_LOG.SEVERITY,
+			SWIFT_LOG.LOG_DATE,
+			SWIFT_LOG.MSG
+			FROM SWIFT_LOG
+		
+			WHERE TO_CHAR(LOG_DATE,'dd/mm/yyyy') = TO_CHAR(TO_DATE(#{engineDateString}, 'dd/mm/yyyy'),'dd/mm/yyyy')
+		</otherwise>
+	</choose>
+	</sql>
+	<select id="selectSwiftLog" resultMap="selectSwiftLogMap" parameterType="swiftOutwardSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="swiftMapper.selectSwiftLogList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+    </select>
+  
+  <select id="selectSwiftOutLogCount" resultType="Integer" parameterType="swiftOutwardSC">
+   	    <include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="swiftMapper.selectSwiftLogList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+		
+  </select>
+
+  <delete id="deleteSwiftDwSchedReqGen950">
+		DELETE FROM SWIFT_DWSCHED
+		WHERE REQ_GEN_950 = 1 and SUSPEND_REPLICATION = 1  
+  </delete>
+  
+  <delete id="deleteSwiftLogOutward">
+		DELETE FROM SWIFT_LOG
+  </delete>
+
+	<resultMap id="selectSwiftRepListMap" type="swiftOutwardSchedRepCO">
+		<result column="MODULE" property="swiftDwsVO.MODULE" />
+		<result column="REP_ID" property="swiftReportsVO.REP_ID" />
+		<result column="REP_TITLE" property="swiftReportsVO.REP_TITLE" />
+		<result column="APP_NAME" property="swiftReportsVO.APP_NAME" />
+		<result column="COMP_CODE" property="swiftReportsVO.COMP_CODE" />
+		<result column="BRANCH_CODE" property="swiftReportsVO.BRANCH_CODE" />
+		<result column="REP_OBJ_NAME" property="swiftReportsVO.REP_OBJ_NAME" />
+	</resultMap>
+	<select id="selectSwiftRepList" resultMap="selectSwiftRepListMap"
+		parameterType="swiftOutwardSC">
+		SELECT DISTINCT SWIFT_DWS.MODULE AS MODULE ,
+		0 AS REP_ID ,
+		'' AS REP_TITLE,
+		'' AS APP_NAME,
+		SWIFT_REPORTS.COMP_CODE AS COMP_CODE,
+		SWIFT_REPORTS.BRANCH_CODE AS BRANCH_CODE,
+		'' AS REP_OBJ_NAME
+		FROM SWIFT_REPORTS ,
+		SWIFT_DWS
+		WHERE SWIFT_REPORTS.REP_ID = SWIFT_DWS.REP_ID AND
+		SWIFT_DWS.SUSPENDED IN ('B','M') AND
+		SWIFT_DWS.STAT_ACC = 0
+
+		UNION
+
+		SELECT SWIFT_DWS.MODULE AS MODULE,
+		SWIFT_REPORTS.REP_ID AS REP_ID,
+		SWIFT_REPORTS.REP_TITLE AS REP_TITLE,
+		SWIFT_REPORTS.APP_NAME AS APP_NAME,
+		SWIFT_REPORTS.COMP_CODE AS COMP_CODE,
+		SWIFT_REPORTS.BRANCH_CODE AS BRANCH_CODE,
+		SWIFT_REPORTS.REP_OBJ_NAME AS REP_OBJ_NAME
+		FROM SWIFT_REPORTS,
+		SWIFT_DWS
+		WHERE SWIFT_REPORTS.REP_ID = SWIFT_DWS.REP_ID AND
+		SWIFT_DWS.SUSPENDED IN ('B','M') AND
+		SWIFT_DWS.STAT_ACC = 0
+
+		ORDER BY MODULE, REP_ID   
+  </select>
+
+	<resultMap id="selectSwiftSOARepListMap" type="swiftRepListCO">
+		<result column="MODULE" property="swiftDwsVO.MODULE" />
+		<result column="REP_ID" property="swiftReportsVO.REP_ID" />
+		<result column="REP_TITLE" property="swiftReportsVO.REP_TITLE" />
+		<result column="APP_NAME" property="swiftReportsVO.APP_NAME" />
+		<result column="COMP_CODE" property="swiftReportsVO.COMP_CODE" />
+		<result column="BRANCH_CODE" property="swiftReportsVO.BRANCH_CODE" />
+		<result column="REP_OBJ_NAME" property="swiftReportsVO.REP_OBJ_NAME" />
+	</resultMap>
+	<select id="selectSwiftSOARepList" resultMap="selectSwiftSOARepListMap" parameterType="swiftOutwardSC">
+		SELECT SWIFT_DWS.MODULE AS MODULE,
+		SWIFT_REPORTS.REP_ID AS REP_ID,
+		SWIFT_REPORTS.REP_TITLE AS REP_TITLE,
+		SWIFT_REPORTS.APP_NAME AS APP_NAME,
+		SWIFT_REPORTS.COMP_CODE AS COMP_CODE,
+		SWIFT_REPORTS.BRANCH_CODE AS BRANCH_CODE,
+		SWIFT_REPORTS.REP_OBJ_NAME AS REP_OBJ_NAME
+		FROM SWIFT_REPORTS,
+		SWIFT_DWS
+		WHERE SWIFT_REPORTS.REP_ID = SWIFT_DWS.REP_ID AND
+		SWIFT_DWS.SUSPENDED IN ('B','M') AND
+		SWIFT_DWS.STAT_ACC = 1
+
+		ORDER BY MODULE, REP_ID   
+  </select>
+
+	<select id="checkSwiftHoliday" parameterType="swiftOutwardSC"
+		statementType="CALLABLE">
+		{ CALL P_SWIFT_CHECK_HOLIDAY( #{compCode , mode=IN , jdbcType=NUMERIC}
+		,
+		#{branchCode , mode=IN , jdbcType=NUMERIC} ,
+		#{holValueDate , mode=IN , jdbcType=TIMESTAMP} ,
+		#{holidayCode , mode=OUT , jdbcType=NUMERIC}
+		)}
+  </select>
+
+	<select id="executeUpdateStmt" parameterType="swiftOutwardSC">
+		${dynamicUpdateStmt}
+  </select>
+
+	<update id="updateEasServiceStatus" parameterType="swiftOutwardSC">
+		UPDATE EAS_SERVICES
+		SET STATUS = #{serviceStatus}
+		WHERE EAS_SERVICES.SERVICE_NAME = #{serviceName}
+  </update>
+
+	<update id="updateEngineNextReplicationdate" parameterType="swiftOutwardSC">
+		UPDATE SWIFT_DWSCHED
+		SET NEXT_REPLICATION = #{nextReplication}
+	<![CDATA[
+	WHERE NEXT_REPLICATION <  #{dbServerDate}
+	]]>
+	</update>
+
+	<select id="selectMaxTrsNoAccHst" resultType="BigDecimal"
+		parameterType="swiftOutwardSC">
+		SELECT Max(TRS_NO) AS MAX_ACC_TRS_NO
+		FROM SWIFT_HISTORY
+		WHERE COMP_CODE = #{compCode} and BRANCH_CODE = #{branchCode} and MSG_CODE
+		= #{msgCode} and
+		MODULE = #{module} and TRX_TYPE = #{transType}
+  </select>
+
+	<select id="selectMaxTrsNoHst" resultType="BigDecimal"
+		parameterType="swiftOutwardSC">
+		SELECT COUNT(1) AS COUNT_SWFT_HST
+		FROM SWIFT_HISTORY
+		WHERE COMP_CODE = #{compCode} and BRANCH_CODE = #{branchCode} and MSG_CODE
+		= #{msgCode} and
+		MODULE = #{module} and TRX_TYPE = #{transType} and TRS_NO = #{trsNo} and
+		MSG_ORDER = #{msgOrder}  
+			<![CDATA[
+			AND TRS_NO <> 0
+			]]>
+	</select>
+
+	<select id="selectMsgCountByGrpNbr" resultType="BigDecimal" parameterType="swiftOutwardSC">
+		SELECT COUNT(1) AS MSG_GRP_COUNT FROM SWIFT_MSGDET
+		WHERE MSG_CODE = #{msgCode}
+		AND MODULE = #{module}
+		AND TRX_TYPE = #{transType}
+		<![CDATA[
+		AND GROUP_NBR >= 1
+		]]>
+	</select>
+	
+	<resultMap id="selectSwiftProcessMap" type="swiftOutwardProcessCO">
+		<result column="MSG_CODE" property="swiftMsgDetVO.MSG_CODE" />
+		<result column="MODULE" property="swiftMsgDetVO.MODULE" />
+		<result column="TRX_TYPE" property="swiftMsgDetVO.TRX_TYPE" />
+		<result column="LINE_NO" property="swiftMsgDetVO.LINE_NO" />
+		<result column="INFORMATION" property="swiftMsgDetVO.INFORMATION" />
+		<result column="MESSAGE_ORDER" property="swiftMsgDetVO.MESSAGE_ORDER" />
+		<result column="STATUS" property="swiftFormatVO.STATUS" />
+		<result column="TAG" property="swiftFormatVO.TAG" />
+		<result column="DESCRIPTION" property="swiftFormatVO.DESCRIPTION" />
+		<result column="OPTIONS" property="swiftFormatVO.OPTIONS" />
+		<result column="SKIP_COND" property="swiftMsgDetVOWithBLOBs.SKIP_COND" />
+		<result column="TAG_COND" property="swiftMsgDetVOWithBLOBs.TAG_COND" />
+		<result column="VALUE_COND" property="swiftMsgDetVOWithBLOBs.VALUE_COND" />
+		<result column="COLUMN_NAME" property="swiftMsgDetVOWithBLOBs.COLUMN_NAME" />
+		<result column="GROUP_NBR" property="swiftMsgDetVO.GROUP_NBR" />
+		<result column="INCLUDE_HDR" property="swiftMsgDetVO.INCLUDE_HDR" />
+		<result column="BEGIN_GRP" property="swiftMsgDetVO.BEGIN_GRP" />
+		<result column="END_GRP" property="swiftMsgDetVO.END_GRP" />
+		<result column="FIRST_LINE_IN_GRP" property="swiftMsgDetVO.FIRST_LINE_IN_GRP" />
+		<result column="SKIP_SPECIAL_CHARS_YN" property="swiftMsgDetVOWithBLOBs.SKIP_SPECIAL_CHARS_YN" />
+	</resultMap>
+	<select id="selectSwiftProcess" resultMap="selectSwiftProcessMap"
+		parameterType="swiftOutwardSC">
+		SELECT SWIFT_MSGDET.MSG_CODE,
+		SWIFT_MSGDET.MODULE,
+		SWIFT_MSGDET.TRX_TYPE,
+		SWIFT_MSGDET.LINE_NO,
+		SWIFT_MSGDET.INFORMATION,
+		SWIFT_MSGDET.MESSAGE_ORDER,
+		SWIFT_FORMAT.STATUS,
+		SWIFT_FORMAT.TAG,
+		SWIFT_FORMAT.DESCRIPTION,
+		SWIFT_FORMAT.OPTIONS,
+		SWIFT_MSGDET.SKIP_COND,
+		SWIFT_MSGDET.TAG_COND,
+		SWIFT_MSGDET.VALUE_COND ,
+		SWIFT_MSGDET.COLUMN_NAME ,
+		SWIFT_MSGDET.SKIP_SPECIAL_CHARS_YN,
+		CASE WHEN SWIFT_MSGDET.GROUP_NBR IS NULL THEN 0 ElSE SWIFT_MSGDET.GROUP_NBR END AS GROUP_NBR,
+		CASE WHEN SWIFT_MSGDET.INCLUDE_HDR IS NULL THEN 0 ElSE SWIFT_MSGDET.INCLUDE_HDR END AS INCLUDE_HDR,
+		CASE WHEN SWIFT_MSGDET.BEGIN_GRP IS NULL THEN 0 ElSE SWIFT_MSGDET.BEGIN_GRP END AS BEGIN_GRP,
+		CASE WHEN SWIFT_MSGDET.END_GRP IS NULL THEN 0 ElSE SWIFT_MSGDET.END_GRP END AS END_GRP,
+		CASE WHEN SWIFT_MSGDET.FIRST_LINE_IN_GRP IS NULL THEN 0 ElSE SWIFT_MSGDET.FIRST_LINE_IN_GRP END AS FIRST_LINE_IN_GRP
+		FROM SWIFT_FORMAT RIGHT OUTER JOIN SWIFT_MSGDET ON SWIFT_FORMAT.MSG_CODE = SWIFT_MSGDET.MSG_CODE
+		AND SWIFT_FORMAT.LINE_NO = SWIFT_MSGDET.ORIGINAL_LINE
+		WHERE SWIFT_MSGDET.MSG_CODE = #{msgCode}
+		AND SWIFT_MSGDET.MODULE = #{module}
+		AND SWIFT_MSGDET.TRX_TYPE = #{transType}
+		AND SWIFT_MSGDET.MESSAGE_ORDER = #{msgOrder}
+		ORDER BY SWIFT_MSGDET.LINE_NO          
+  </select>
+
+	<resultMap id="selectSwiftReportsMap" type="swiftReportsVO">
+		<result column="COMP_CODE" property="COMP_CODE" />
+		<result column="BRANCH_CODE" property="BRANCH_CODE" />
+		<result column="REP_ID" property="REP_ID" />
+		<result column="REP_TITLE" property="REP_TITLE" />
+		<result column="REP_SQL" property="REP_SQL" />
+		<result column="REP_OBJ_NAME" property="REP_OBJ_NAME" />
+		<result column="APP_NAME" property="APP_NAME" />
+		<result column="USER_ID" property="USER_ID" />
+		<result column="QUERY_TYPE" property="QUERY_TYPE" />
+	</resultMap>
+	<select id="selectSwiftReports" resultMap="selectSwiftReportsMap"
+		parameterType="swiftOutwardSC">
+		SELECT SWIFT_REPORTS.COMP_CODE,
+		SWIFT_REPORTS.BRANCH_CODE,
+		SWIFT_REPORTS.REP_ID,
+		SWIFT_REPORTS.REP_TITLE,
+		SWIFT_REPORTS.REP_SQL,
+		SWIFT_REPORTS.REP_OBJ_NAME,
+		SWIFT_REPORTS.APP_NAME,
+		SWIFT_REPORTS.USER_ID,
+		SWIFT_REPORTS.QUERY_TYPE
+		FROM SWIFT_REPORTS
+		WHERE SWIFT_REPORTS.REP_ID = #{repId}
+  </select>
+
+	<resultMap id="selectSwiftPrintHdrMap" type="swiftPrintHdrVO">
+		<result column="MODULE" property="MODULE" />
+		<result column="PROG_REF" property="PROG_REF" />
+		<result column="PROG_TYPE" property="PROG_TYPE" />
+		<result column="REP_ID" property="REP_ID" />
+		<result column="TABLE_NAME" property="TABLE_NAME" />
+	</resultMap>
+	<select id="selectSwiftPrintHdr" resultMap="selectSwiftPrintHdrMap"
+		parameterType="swiftOutwardSC">
+		SELECT REP_ID, TABLE_NAME
+		FROM SWIFT_PRINT_HDR
+		WHERE
+		MODULE = #{appName} AND
+		PROG_REF = #{progRef} AND
+		PROG_TYPE = CASE WHEN #{progType} IS NULL OR #{progType} = '' THEN PROG_TYPE
+		ELSE #{progType} END 
+  </select>
+
+	<resultMap id="selectSwiftPrintDetMap" type="swiftPrintDetVO">
+		<result column="LINE_NO" property="LINE_NO" />
+		<result column="MODULE" property="MODULE" />
+		<result column="PROG_REF" property="PROG_REF" />
+		<result column="PROG_TYPE" property="PROG_TYPE" />
+		<result column="REP_ID" property="REP_ID" />
+		<result column="TABLE_NAME" property="TABLE_NAME" />
+		<result column="COLUMN_NAME" property="COLUMN_NAME" />
+		<result column="COLUMN_TYPE" property="COLUMN_TYPE" />
+		<result column="POSITION_FR" property="POSITION_FR" />
+		<result column="POSITION_TO" property="POSITION_TO" />
+		<result column="KEY_VALUE_TYPE" property="KEY_VALUE_TYPE" />
+	</resultMap>
+	<select id="selectSwiftPrintDet" resultMap="selectSwiftPrintDetMap"
+		parameterType="swiftOutwardSC">
+		SELECT COLUMN_NAME, COLUMN_TYPE, POSITION_FR, POSITION_TO, KEY_VALUE_TYPE
+		FROM SWIFT_PRINT_DET
+		WHERE
+		MODULE = #{appName} AND
+		PROG_REF = #{progRef} AND
+		PROG_TYPE = CASE WHEN #{progType} IS NULL OR #{progType} = '' THEN PROG_TYPE
+		ELSE #{progType} END
+		ORDER BY LINE_NO ASC
+  </select>
+ <resultMap id="selectSwiftDwsCFMap" type="swiftDwsCfVO">
+		<result column="REP_ID" property="REP_ID" />
+		<result column="CF_NAME" property="CF_NAME" />
+		<result column="CF_EXPRESSION" property="CF_EXPRESSION" />
+		<result column="ORDER_NO" property="ORDER_NO" />		
+	</resultMap> 
+  <select id="selectSwiftDwsCF" resultMap="selectSwiftDwsCFMap"  parameterType="swiftOutwardSC" >
+  		SELECT REP_ID,CF_NAME,CF_EXPRESSION,ORDER_NO
+  		FROM SWIFT_DWS_CF
+  		WHERE REP_ID=#{repId}
+  		ORDER BY ORDER_NO ASC
+  </select>
+	<update id="updateSwiftDwschedNextRepl" parameterType="swiftOutwardSC">
+		<choose >
+        	<when test="isSybase == 1" >
+		        UPDATE SWIFT_DWSCHED SET NEXT_REPLICATION = (SELECT 
+				CASE WHEN SCHED_TIME IS NULL OR LTRIM(RTRIM(SCHED_TIME)) = '' THEN
+					NEXT_REPLICATION
+				ELSE
+					CONVERT(DATETIME,CONVERT(VARCHAR,CONVERT(DATE,NEXT_REPLICATION,103)) || ' ' || SCHED_TIME,102)
+				END	
+				FROM SWIFT_DWSCHED K
+				WHERE 
+				K.SCHED_ID = SWIFT_DWSCHED.SCHED_ID AND
+				K.REP_ID = SWIFT_DWSCHED.REP_ID AND
+				K.MODULE = SWIFT_DWSCHED.MODULE AND
+				K.NEXT_REPLICATION IS NOT NULL)
+        	</when>
+        	<otherwise >
+		        UPDATE SWIFT_DWSCHED S
+				SET S.NEXT_REPLICATION = ( 
+				SELECT CASE WHEN K.SCHED_TIME IS NULL OR TRIM(K.SCHED_TIME)='' THEN
+				          K.NEXT_REPLICATION
+				       ELSE
+				          TO_DATE(TO_CHAR(TRUNC(K.NEXT_REPLICATION), 'DD/MM/YYYY') || ' ' || K.SCHED_TIME,'DD/MM/YYYY HH24:MI:SS') 
+				       END
+				FROM SWIFT_DWSCHED K
+				WHERE 
+				K.SCHED_ID = S.SCHED_ID AND
+				K.REP_ID = S.REP_ID AND
+				K.MODULE = S.MODULE AND
+				K.NEXT_REPLICATION IS NOT NULL)
+       		</otherwise>
+      	</choose>
+  </update>
+  
+  <select id="returnOpenedDateBranch" resultType="java.lang.String" parameterType="yrtSC" >
+<choose>
+	<when test="isOracle == 1">
+	SELECT MAX(LTRIM(RTRIM(TO_CHAR(YRT.YEAR, '0000'))) || LTRIM(RTRIM(TO_CHAR(YRT.MONTH, '00'))))
+	  FROM YRT
+	 WHERE YRT.COMP_CODE = #{compCode}
+	   AND YRT.BRANCH_CODE = #{branchCode}
+	   AND YRT.STATUS = 'C'
+	   AND YRT.MONTH <![CDATA[<>]]> 0
+	   AND LTRIM(RTRIM(TO_CHAR(YRT.YEAR, '0000'))) ||
+	       LTRIM(RTRIM(TO_CHAR(YRT.MONTH, '00'))) <![CDATA[<]]> LTRIM(RTRIM( #{yrMonth}))
+	</when>
+	<otherwise>
+	SELECT MAX(REPLICATE('0', 4 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.YEAR)))) +
+	           RTRIM(CONVERT(VARCHAR, YRT.YEAR)) + REPLICATE('0', 2 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.MONTH)))) +
+	           RTRIM(CONVERT(VARCHAR, YRT.MONTH)))
+	  FROM YRT
+	 WHERE YRT.COMP_CODE = #{compCode}
+	   AND YRT.BRANCH_CODE = #{branchCode}
+	   AND YRT.STATUS = 'C'
+	   AND YRT.MONTH <![CDATA[<>]]> 0
+	   AND REPLICATE('0', 4 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.YEAR)))) +
+	       RTRIM(CONVERT(VARCHAR, YRT.YEAR)) +
+	       REPLICATE('0', 2 - CHAR_LENGTH(RTRIM(CONVERT(VARCHAR, YRT.MONTH)))) +
+	       RTRIM(CONVERT(VARCHAR, YRT.MONTH)) <![CDATA[<]]> LTRIM(RTRIM(#{yrMonth}))
+	</otherwise>
+</choose>
+</select>
+
+		<select id="selectCountByAccountRange" resultType="BigDecimal" parameterType="swiftProcNostroCO">
+				SELECT COUNT(1) 
+					FROM  AMF 
+					WHERE	 (AMF.COMP_CODE  = #{compCode})
+					AND	(AMF.BRANCH_CODE   BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+					AND	(AMF.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+					AND	(AMF.GL_CODE  BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+					AND	(AMF.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+					AND	(AMF.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+					AND	(AMF.STATUS  NOT IN ( 'O'  , 'R'  , 'D'  ))
+					AND	(AMF.ACC_BC <![CDATA[<>]]> 'S')		
+		</select>
+	
+	<delete id="deleteACCBalTmpByAccRange" parameterType="swiftProcNostroCO">
+		DELETE FROM ACC_BAL_TMP    
+			WHERE  ACC_BAL_TMP.COMP_CODE  = #{compCode, jdbcType=NUMERIC}
+			AND	ACC_BAL_TMP.BRANCH_CODE BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC}
+			<!-- AND	ACC_BAL_TMP.USER_ID  = #{userId, jdbcType=VARCHAR} --> 
+   </delete>
+   
+   <delete id="deleteACCBalTmp1ByAccRange" parameterType="swiftProcNostroCO">
+		DELETE FROM   ACC_BAL_TMP1    
+			WHERE  ACC_BAL_TMP1.COMP_CODE  = #{compCode}
+			AND	ACC_BAL_TMP1.BRANCH_CODE BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC}
+			<!-- AND	ACC_BAL_TMP1.USER_ID  = #{userId, jdbcType=VARCHAR} --> 
+   </delete>
+   
+   <sql id="insertACCBalTmpDOF">
+    INSERT INTO  ACC_BAL_TMP    
+			( COMP_CODE , 
+			BRANCH_CODE , 
+			CURRENCY_CODE , 
+			GL_CODE , 
+			CIF_SUB_NO , 
+			SL_NO , 
+			FC_AMOUNT , 
+			CV_AMOUNT , 
+			VALUE_DATE , 
+			USER_ID,
+			ADD_STRING5)  
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 DOF.BRANCH_CODE , 
+			 DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			 DOF.SL_NO,
+			 SUM(CASE WHEN DOF.FC_AMOUNT IS NULL THEN  0 ELSE DOF.FC_AMOUNT END ),
+			 SUM(CASE WHEN DOF.CV_AMOUNT IS NULL THEN  0 ELSE DOF.CV_AMOUNT END ),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  DOF
+		WHERE	 (DOF.COMP_CODE  =  #{compCode, jdbcType=NUMERIC})
+		AND	(DOF.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(DOF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(DOF.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(DOF.OP_STATUS  = 'A')
+		AND	(DOF.LINE_NO  <![CDATA[>]]>  0)
+		AND	(DOF.BC_FLAG  <![CDATA[<>]]> 'S')
+   </sql>
+   
+   <sql id="selectACCBalTmpDOF">
+    <choose>
+	<when test="isOracle == 1">
+        UNION ALL
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 DOF.BRANCH_CODE , 
+			 DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			 DOF.SL_NO,
+			 SUM(NVL(DOF.FC_AMOUNT,0)),
+			 SUM(NVL(DOF.CV_AMOUNT,0)),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  DOF
+		WHERE	 (DOF.COMP_CODE  =  #{compCode, jdbcType=NUMERIC})
+		AND	(DOF.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(DOF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(DOF.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(DOF.OP_STATUS  = 'A')
+		AND	(DOF.LINE_NO  <![CDATA[>]]>  0)
+		AND	(DOF.BC_FLAG  <![CDATA[<>]]> 'S')
+		</when>
+		<otherwise>
+		UNION ALL
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 DOF.BRANCH_CODE , 
+			 DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			 DOF.SL_NO,
+			 SUM(COALESCE(DOF.FC_AMOUNT,0)),
+			 SUM(COALESCE(DOF.CV_AMOUNT,0)),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  DOF
+		WHERE	 (DOF.COMP_CODE  =  #{compCode, jdbcType=NUMERIC})
+		AND	(DOF.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(DOF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(DOF.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(DOF.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(DOF.OP_STATUS  = 'A')
+		AND	(DOF.LINE_NO  <![CDATA[>]]>  0)
+		AND	(DOF.BC_FLAG  <![CDATA[<>]]> 'S')
+		</otherwise>
+		</choose>
+   </sql>   
+   
+   <insert id="insertACCBalTmpDOFN" parameterType="swiftProcNostroCO">
+	<include refid="insertACCBalTmpDOF" />
+		AND	(
+				 #{vT, jdbcType=VARCHAR} = 'T' AND DOF.TRANS_DATE
+					  <![CDATA[<]]> #{reqDate, jdbcType=DATE})
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+			  <include refid="selectACCBalTmpDOF" />
+			  AND	(
+				 #{vT, jdbcType=VARCHAR} = 'P' AND DOF.POST_DATE
+					  <![CDATA[<]]> #{reqDate, jdbcType=DATE})
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+			  
+			  <include refid="selectACCBalTmpDOF" />
+			  AND	(
+				 #{vT, jdbcType=VARCHAR} = 'V' AND DOF.VALUE_DATE
+					  <![CDATA[<]]> #{reqDate, jdbcType=DATE})
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+	</insert>
+	
+	<insert id="insertACCBalTmpDOFY" parameterType="swiftProcNostroCO">
+	<include refid="insertACCBalTmpDOF" />
+		AND	(
+			 #{vT, jdbcType=VARCHAR} = 'T' 
+			 AND DOF.TRANS_DATE BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})
+				
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+			  <include refid="selectACCBalTmpDOF" />
+			  AND	(
+			 #{vT, jdbcType=VARCHAR} = 'P' 
+			 AND DOF.POST_DATE BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})
+				
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+			  <include refid="selectACCBalTmpDOF" />
+			  AND	(
+			 #{vT, jdbcType=VARCHAR} = 'V' 
+			 AND DOF.VALUE_DATE BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})
+				
+		GROUP BY DOF.BRANCH_CODE,
+		DOF.CURRENCY_CODE,
+			 DOF.GL_CODE,
+			 DOF.CIF_SUB_NO,
+			  DOF.SL_NO
+	</insert> 
+	
+	<sql id="insertACCBalTmpHST">
+	 INSERT INTO  ACC_BAL_TMP    
+			( COMP_CODE , 
+			BRANCH_CODE , 
+			CURRENCY_CODE , 
+			GL_CODE , 
+			CIF_SUB_NO , 
+			SL_NO , 
+			FC_AMOUNT , 
+			CV_AMOUNT , 
+			VALUE_DATE , 
+			USER_ID,
+			ADD_STRING5)  
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 HST.BRANCH_CODE,
+			 HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			 HST.SL_NO,
+			 SUM(CASE WHEN HST.FC_AMOUNT IS NULL THEN  0 ELSE HST.FC_AMOUNT END ),
+			 SUM(CASE WHEN HST.CV_AMOUNT IS NULL THEN  0 ELSE HST.CV_AMOUNT END ),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  HST
+		WHERE	 (HST.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+		AND	(HST.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(HST.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(HST.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(HST.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(HST.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(HST.OP_STATUS  = 'A')
+		AND	(HST.LINE_NO   <![CDATA[>]]>  0)
+		AND	(HST.BC_FLAG  <![CDATA[<>]]> 'S')
+	</sql>
+	
+	<sql id="selectACCBalTmpHST">
+	<choose>
+	  <when test="isOracle == 1">
+	    UNION ALL
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 HST.BRANCH_CODE,
+			 HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			 HST.SL_NO,
+			 SUM(NVL(HST.FC_AMOUNT,0)),
+			 SUM(NVL(HST.CV_AMOUNT,0)),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  HST
+		WHERE	 (HST.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+		AND	(HST.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(HST.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(HST.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(HST.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(HST.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(HST.OP_STATUS  = 'A')
+		AND	(HST.LINE_NO   <![CDATA[>]]>  0)
+		AND	(HST.BC_FLAG  <![CDATA[<>]]> 'S')
+		</when>
+		<otherwise>
+		UNION ALL
+		SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 HST.BRANCH_CODE,
+			 HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			 HST.SL_NO,
+			 SUM(COALESCE(HST.FC_AMOUNT,0)),
+			 SUM(COALESCE(HST.CV_AMOUNT,0)),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+		FROM  HST
+		WHERE	 (HST.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+		AND	(HST.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+		AND	(HST.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+		AND	(HST.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+		AND	(HST.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+		AND	(HST.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+		AND	(HST.OP_STATUS  = 'A')
+		AND	(HST.LINE_NO   <![CDATA[>]]>  0)
+		AND	(HST.BC_FLAG  <![CDATA[<>]]> 'S')
+		</otherwise>
+	</choose>
+	    
+	</sql>
+		
+	 <insert id="insertACCBalTmpHSTN" parameterType="swiftProcNostroCO">
+		<include refid="insertACCBalTmpHST"/>
+		AND	(
+				  #{vT, jdbcType=VARCHAR} = 'T' AND HST.TRANS_DATE
+					  <![CDATA[<]]> #{ReqDate, jdbcType=DATE})
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+			  
+			  <include refid="selectACCBalTmpHST"/>
+			  AND	(
+				  #{vT, jdbcType=VARCHAR} = 'P' AND HST.POST_DATE
+					  <![CDATA[<]]> #{ReqDate, jdbcType=DATE})
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+			  <include refid="selectACCBalTmpHST"/>
+			  AND	(
+				  #{vT, jdbcType=VARCHAR} = 'V' AND HST.VALUE_DATE
+					  <![CDATA[<]]> #{ReqDate, jdbcType=DATE})
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+	</insert>
+	
+	<insert id="insertACCBalTmpHSTY" parameterType="swiftProcNostroCO">
+		<include refid="insertACCBalTmpHST"/>
+ 		AND	(
+				  #{vT, jdbcType=VARCHAR} = 'T' 
+				  AND HST.TRANS_DATE  BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})	
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+			  <include refid="selectACCBalTmpHST"/>
+			  AND	(
+				  #{vT, jdbcType=VARCHAR} = 'P' AND HST.POST_DATE  BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})	
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+			  <include refid="selectACCBalTmpHST"/>
+			  AND	(
+				  #{vT, jdbcType=VARCHAR} = 'V' AND HST.VALUE_DATE  BETWEEN #{openedDate, jdbcType=DATE} AND #{prevDate, jdbcType=DATE})	
+		GROUP BY HST.BRANCH_CODE,
+		HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			  HST.SL_NO
+	</insert>
+
+	<insert id="insertACCBalTmpAmfSuppl" parameterType="swiftProcNostroCO">
+	<choose>
+	  <when test="isOracle == 1">
+	    INSERT INTO  ACC_BAL_TMP    
+					( COMP_CODE , 
+					BRANCH_CODE , 
+					CURRENCY_CODE , 
+					GL_CODE , 
+					CIF_SUB_NO , 
+					SL_NO , 
+					FC_AMOUNT , 
+					CV_AMOUNT , 
+					VALUE_DATE , 
+					USER_ID,
+					ADD_STRING5)  
+			SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					NVL(AMFSUPPLEMENT.CYB_FC_TRADE,0) 
+						,
+					
+					NVL(AMFSUPPLEMENT.CYB_CV_TRADE,0)
+						,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'T'  
+				
+				UNION ALL
+				SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					NVL(AMFSUPPLEMENT.CYB_FC_VALUE,0) 
+					,
+					
+					NVL(AMFSUPPLEMENT.CYB_CV_VALUE,0) 
+					,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'V'  
+				UNION ALL
+				SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					NVL(AMFSUPPLEMENT.CYB_FC_POST,0) 
+						,
+					
+					NVL(AMFSUPPLEMENT.CYB_CV_POST,0) 
+						,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'P'
+				</when>
+		<otherwise>
+		  INSERT INTO  ACC_BAL_TMP    
+					( COMP_CODE , 
+					BRANCH_CODE , 
+					CURRENCY_CODE , 
+					GL_CODE , 
+					CIF_SUB_NO , 
+					SL_NO , 
+					FC_AMOUNT , 
+					CV_AMOUNT , 
+					VALUE_DATE , 
+					USER_ID,
+					ADD_STRING5)  
+			SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					COALESCE(AMFSUPPLEMENT.CYB_FC_TRADE,0) 
+						,
+					
+					COALESCE(AMFSUPPLEMENT.CYB_CV_TRADE,0)
+						,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'T'  
+				
+				UNION ALL
+				SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					COALESCE(AMFSUPPLEMENT.CYB_FC_VALUE,0) 
+					,
+					
+					COALESCE(AMFSUPPLEMENT.CYB_CV_VALUE,0) 
+					,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'V'  
+				UNION ALL
+				SELECT
+					 #{compCode, jdbcType=NUMERIC},
+					 AMFSUPPLEMENT.BRANCH_CODE,
+					 AMFSUPPLEMENT.CURRENCY_CODE,
+					 AMFSUPPLEMENT.GL_CODE,
+					 AMFSUPPLEMENT.CIF_SUB_NO,
+					 AMFSUPPLEMENT.SL_NO,
+					 
+					COALESCE(AMFSUPPLEMENT.CYB_FC_POST,0) 
+						,
+					
+					COALESCE(AMFSUPPLEMENT.CYB_CV_POST,0) 
+						,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+				FROM  AMFSUPPLEMENT
+				WHERE	 (AMFSUPPLEMENT.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.YEAR  = #{year, jdbcType=NUMERIC})
+				AND	(AMFSUPPLEMENT.MONTH = #{month, jdbcType=NUMERIC})
+				AND #{vT, jdbcType=VARCHAR} = 'P'
+		 </otherwise>
+	  </choose>
+		
+	</insert>
+
+	<insert id="insertACCBalTmpAmf" parameterType="swiftProcNostroCO">
+		INSERT INTO  ACC_BAL_TMP    
+					( COMP_CODE , 
+					BRANCH_CODE , 
+					CURRENCY_CODE , 
+					GL_CODE , 
+					CIF_SUB_NO , 
+					SL_NO , 
+					FC_AMOUNT , 
+					CV_AMOUNT , 
+					VALUE_DATE , 
+					USER_ID,
+					ADD_STRING5)  
+			SELECT
+					  #{compCode, jdbcType=NUMERIC},
+					 AMF.BRANCH_CODE,
+					 AMF.CURRENCY_CODE,
+					 AMF.GL_CODE,
+					 AMF.CIF_SUB_NO,
+					 AMF.SL_NO,
+					 0,
+					 0,
+					 #{ReqDate, jdbcType=DATE},
+					 #{gvUserId, jdbcType=VARCHAR},
+					 #{userId, jdbcType=VARCHAR} 
+			FROM  AMF 
+			WHERE	 (AMF.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+			AND	(AMF.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC})
+			AND	(AMF.CURRENCY_CODE  BETWEEN #{amfVOFrom.CURRENCY_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.CURRENCY_CODE, jdbcType=NUMERIC})
+			AND	(AMF.GL_CODE BETWEEN #{amfVOFrom.GL_CODE, jdbcType=NUMERIC}  AND  #{amfVOTo.GL_CODE, jdbcType=NUMERIC})
+			AND	(AMF.CIF_SUB_NO  BETWEEN #{amfVOFrom.CIF_SUB_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.CIF_SUB_NO, jdbcType=NUMERIC})
+			AND	(AMF.SL_NO  BETWEEN #{amfVOFrom.SL_NO, jdbcType=NUMERIC}  AND  #{amfVOTo.SL_NO, jdbcType=NUMERIC})
+			AND	(AMF.STATUS  NOT IN ( 'O'  , 'R'  , 'D'  ))
+			AND	AMF.ACC_BC  <![CDATA[<>]]>  'S'
+	</insert>
+	 
+	<insert id="insertACCBalTmp1" parameterType="swiftProcNostroCO"> 
+	 INSERT INTO  ACC_BAL_TMP1    
+			( COMP_CODE , 
+			BRANCH_CODE , 
+			CURRENCY_CODE , 
+			GL_CODE , 
+			CIF_SUB_NO , 
+			SL_NO , 
+			FC_AMOUNT , 
+			CV_AMOUNT , 
+			VALUE_DATE , 
+			USER_ID,
+			ADD_STRING5)  
+	SELECT
+			 #{compCode, jdbcType=NUMERIC},
+			 ACC_BAL_TMP.BRANCH_CODE,
+			 ACC_BAL_TMP.CURRENCY_CODE,
+			 ACC_BAL_TMP.GL_CODE,
+			 ACC_BAL_TMP.CIF_SUB_NO,
+			 ACC_BAL_TMP.SL_NO,
+			 SUM(CASE WHEN ACC_BAL_TMP.FC_AMOUNT IS NULL THEN  0 ELSE ACC_BAL_TMP.FC_AMOUNT END ),
+			 SUM(CASE WHEN ACC_BAL_TMP.CV_AMOUNT IS NULL THEN  0 ELSE ACC_BAL_TMP.CV_AMOUNT END ),
+			 #{ReqDate, jdbcType=DATE},
+			 #{gvUserId, jdbcType=VARCHAR},
+			 #{userId, jdbcType=VARCHAR} 
+	FROM  ACC_BAL_TMP
+	WHERE	 ACC_BAL_TMP.COMP_CODE  = #{compCode, jdbcType=NUMERIC}
+	 AND	ACC_BAL_TMP.BRANCH_CODE  BETWEEN #{amfVOFrom.BRANCH_CODE, jdbcType=NUMERIC} AND  #{amfVOTo.BRANCH_CODE, jdbcType=NUMERIC}
+	 AND	ACC_BAL_TMP.VALUE_DATE  = #{ReqDate, jdbcType=DATE}
+	 AND	ACC_BAL_TMP.USER_ID  = #{gvUserId, jdbcType=VARCHAR}
+	 AND	ACC_BAL_TMP.ADD_STRING5 =#{userId, jdbcType=VARCHAR} 
+	GROUP BY ACC_BAL_TMP.BRANCH_CODE, 
+	    ACC_BAL_TMP.CURRENCY_CODE,
+		 ACC_BAL_TMP.GL_CODE,
+		 ACC_BAL_TMP.CIF_SUB_NO,
+		 ACC_BAL_TMP.SL_NO
+	</insert>
+	
+	<!--efarah 07/04/2017 EWBI170270-->
+	<select id="returnLanguage" resultType="java.lang.String" parameterType="java.lang.String" >
+		select case when ENABLE_LANGUAGE is null then 'EN' else ENABLE_LANGUAGE end
+		from S_APP
+		where APP_NAME=#{appName, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- efarah 23/05/2017 BMO160149 -->
+	<select id="selectSwenOutwardFlag" resultType="swiftControlVO">
+		SELECT
+ 		SWEN_OUT_TRACE 
+		FROM SWIFT_CONTROL
+	</select>
+	<!--LBedrane  on 18/01/2018 copying KIB170005 US = 605700 from PB to Java  -->		 
+	<select id="ReturnGenFileYnValue" resultType="BigDecimal">
+	 SELECT GEN_FILES_YN
+	FROM  SWIFT_CONTROL
+	</select>
+	
+	<!--Added by LBedrane on 23/02/2018 for #405559 AUBBH160008 - SWIFT Multiple Companies issue - in order to not update commonlibMapper END  -->
+   <select id="returnSwiftCtrlByComp" resultMap="swiftCtrlResultMap">
+    SELECT 
+    SWIFT_CONTROL.FILE_MODE FILE_MODE, 
+    SWIFT_CONTROL.SHOW_ERR_MSG SHOW_ERR_MSG, 
+    SWIFT_CONTROL.PREVIEW_WITH_ERROR PREVIEW_WITH_ERROR, 
+    SWIFT_CONTROL.PERFORMANCE PERFORMANCE,
+  	SWIFT_CONTROL.FORMAT_MSG FORMAT_MSG, 
+  	SWIFT_CONTROL.RUN_EXT_PROG RUN_EXT_PROG, 
+  	SWIFT_CONTROL.EXT_PROG_PATH EXT_PROG_PATH, 
+  	SWIFT_CONTROL.ACK ACK, 
+  	SWIFT_CONTROL.REQ_GEN_950 REQ_GEN_950, 
+  	SWIFT_CONTROL.AUTOMATIC_RECON AUTOMATIC_RECON, 
+  	SWIFT_CONTROL.RMV_CHAR_BEGIN RMV_CHAR_BEGIN, 
+  	SWIFT_CONTROL.CHECK_USER_ACCESS CHECK_USER_ACCESS, 
+  	SWIFT_CONTROL.CHECK_950_TRX CHECK_950_TRX,
+  	SWIFT_CONTROL.CHECK_950_DATE CHECK_950_DATE, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.LOG_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) LOG_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.SAVE_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) SAVE_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.DYNAMIC_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) DYNAMIC_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.ARCHIVE_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) ARCHIVE_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.LOG_IN_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode})LOG_IN_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.INWARD_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) INWARD_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.INWARD_ACK_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode})INWARD_ACK_PATH, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.INWARD_NACK_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) INWARD_NACK_PATH, 
+  	SWIFT_CONTROL.TRIM_LINES TRIM_LINES, 
+  	SWIFT_CONTROL.RMV_SPCAR RMV_SPCAR,
+  	SWIFT_CONTROL.UPPER_CASE UPPER_CASE, 
+  	SWIFT_CONTROL.PROCESS_ALL_INWARD PROCESS_ALL_INWARD, 
+  	SWIFT_CONTROL.PRINT_SWIFT PRINT_SWIFT, 
+  	SWIFT_CONTROL.RECON_BY_TDATE RECON_BY_TDATE, 
+  	SWIFT_CONTROL.RECON_BY_VDATE RECON_BY_VDATE,
+  	SWIFT_CONTROL.RECON_BY_DESC  RECON_BY_DESC, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.LOG_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) LOG_PATH_JAVA, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.SAVE_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) SAVE_PATH_JAVA, 
+  	(SELECT SWIFT_CTRL_LOCATIONS.DYNAMIC_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) DYNAMIC_PATH_JAVA, 
+    (SELECT	SWIFT_CTRL_LOCATIONS.ARCHIVE_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) ARCHIVE_PATH_JAVA,
+    (SELECT SWIFT_CTRL_LOCATIONS.LOG_IN_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) LOG_IN_PATH_JAVA, 
+    (SELECT SWIFT_CTRL_LOCATIONS.INWARD_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode})INWARD_PATH_JAVA, 
+    (SELECT SWIFT_CTRL_LOCATIONS.INWARD_ACK_PATH FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode}) INWARD_ACK_PATH_JAVA, 
+    (SELECT SWIFT_CTRL_LOCATIONS.INWARD_NACK_PATH  FROM  SWIFT_CTRL_LOCATIONS WHERE  COMP_CODE = #{compCode})INWARD_NACK_PATH_JAVA,
+    SWIFT_CONTROL.FULL_MATCH_EXPRESSION FULL_MATCH_EXPRESSION, 
+    SWIFT_CONTROL.FIRST_PARTIAL_MATCH FIRST_PARTIAL_MATCH, 
+    SWIFT_CONTROL.SECOND_PARTIAL_MATCH SECOND_PARTIAL_MATCH, 
+    SWIFT_CONTROL.THIRD_PARTIAL_MATCH THIRD_PARTIAL_MATCH,
+    SWIFT_CONTROL.FIRST_PARTIAL_REASON FIRST_PARTIAL_REASON, 
+    SWIFT_CONTROL.SECOND_PARTIAL_REASON SECOND_PARTIAL_REASON, 
+    SWIFT_CONTROL.THIRD_PARTIAL_REASON THIRD_PARTIAL_REASON, 
+    SWIFT_CONTROL.NOT_IN_CORE_REASON NOT_IN_CORE_REASON, 
+    SWIFT_CONTROL.NOT_IN_FILE_REASON NOT_IN_FILE_REASON, 
+    SWIFT_CONTROL.GEN_FILES_YN GEN_FILES_YN
+  	FROM SWIFT_CONTROL
+  </select>
+
+<!--************************************** SWIFT CONTROL RECORD (SWIFT_CONTROL)**************************************-->
+<resultMap id="swiftCtrlResultMap" type="swiftControlVO" >
+    <result column="FILE_MODE" property="FILE_MODE" />
+    <result column="SHOW_ERR_MSG" property="SHOW_ERR_MSG" />
+    <result column="PERFORMANCE" property="PERFORMANCE" />
+    <result column="PREVIEW_WITH_ERROR" property="PREVIEW_WITH_ERROR" />
+    <result column="FORMAT_MSG" property="FORMAT_MSG" />
+    <result column="RUN_EXT_PROG" property="RUN_EXT_PROG" />
+    <result column="EXT_PROG_PATH" property="EXT_PROG_PATH" />
+    <result column="ACK" property="ACK" />
+    <result column="REQ_GEN_950" property="REQ_GEN_950" />
+    <result column="AUTOMATIC_RECON" property="AUTOMATIC_RECON" />
+    <result column="RMV_CHAR_BEGIN" property="RMV_CHAR_BEGIN" />
+    <result column="CHECK_USER_ACCESS" property="CHECK_USER_ACCESS" />
+    <result column="CHECK_950_TRX" property="CHECK_950_TRX" />
+    <result column="CHECK_950_DATE" property="CHECK_950_DATE" />
+    <result column="LOG_PATH" property="LOG_PATH" />
+    <result column="SAVE_PATH" property="SAVE_PATH" />
+    <result column="DYNAMIC_PATH" property="DYNAMIC_PATH" />
+    <result column="ARCHIVE_PATH" property="ARCHIVE_PATH" />
+    <result column="LOG_IN_PATH" property="LOG_IN_PATH" />
+    <result column="INWARD_PATH" property="INWARD_PATH" />
+    <result column="INWARD_ACK_PATH" property="INWARD_ACK_PATH" />
+    <result column="INWARD_NACK_PATH" property="INWARD_NACK_PATH" />
+    <result column="TRIM_LINES" property="TRIM_LINES" />
+    <result column="RMV_SPCAR" property="RMV_SPCAR" />
+    <result column="UPPER_CASE" property="UPPER_CASE" />
+    <result column="PROCESS_ALL_INWARD" property="PROCESS_ALL_INWARD" />
+    <result column="PRINT_SWIFT" property="PRINT_SWIFT" />
+    <result column="RECON_BY_TDATE" property="RECON_BY_TDATE" />
+    <result column="RECON_BY_VDATE" property="RECON_BY_VDATE" />
+    <result column="RECON_BY_DESC" property="RECON_BY_DESC" />
+    <result column="LOG_PATH_JAVA" property="LOG_PATH_JAVA" />
+    <result column="SAVE_PATH_JAVA" property="SAVE_PATH_JAVA" />
+    <result column="DYNAMIC_PATH_JAVA" property="DYNAMIC_PATH_JAVA" />
+    <result column="ARCHIVE_PATH_JAVA" property="ARCHIVE_PATH_JAVA" />
+    <result column="LOG_IN_PATH_JAVA" property="LOG_IN_PATH_JAVA" />
+    <result column="INWARD_PATH_JAVA" property="INWARD_PATH_JAVA" />
+    <result column="INWARD_ACK_PATH_JAVA" property="INWARD_ACK_PATH_JAVA" />
+    <result column="INWARD_NACK_PATH_JAVA" property="INWARD_NACK_PATH_JAVA" />    
+    <result column="FULL_MATCH_EXPRESSION" property="FULL_MATCH_EXPRESSION" />
+    <result column="FIRST_PARTIAL_MATCH" property="FIRST_PARTIAL_MATCH" />
+    <result column="SECOND_PARTIAL_MATCH" property="SECOND_PARTIAL_MATCH" />
+    <result column="THIRD_PARTIAL_MATCH" property="THIRD_PARTIAL_MATCH" />
+    <result column="FIRST_PARTIAL_REASON" property="FIRST_PARTIAL_REASON" />
+    <result column="SECOND_PARTIAL_REASON" property="SECOND_PARTIAL_REASON" />
+    <result column="THIRD_PARTIAL_REASON" property="THIRD_PARTIAL_REASON" />
+    <result column="NOT_IN_CORE_REASON" property="NOT_IN_CORE_REASON" />
+    <result column="NOT_IN_FILE_REASON" property="NOT_IN_FILE_REASON" />
+  </resultMap>
+<!--Added by LBedrane on 23/02/2018 for #405559 AUBBH160008 - SWIFT Multiple Companies issue - in order to not update commonlibMapper END  -->
+	
+		
+	<update id="updateSwtMsgCounterByTblName"  parameterType="java.lang.String">
+		UPDATE ${value}  SET CODE=CODE+1
+	</update>
+
+	<select id="retSwtMsgCounterByTblName" parameterType="java.lang.String" resultType="BigDecimal">
+		SELECT CODE FROM  ${value}  
+	</select>	
+	
+	<!-- mhojeij 12/07/2018 BMOI180040 -->
+	<select id="readMQSettings" resultType="swiftControlVO">
+		SELECT OUT_GEN_FILE_YN,
+			   QM_NAME,
+			   QM_PORT, 
+			   HOST_NAME,  
+			   OUT_CHANNEL_NAME, 
+			   OUT_QUEUE_NAME,  
+			   OUT_RETRY, 
+			   IN_CHANNEL_NAME, 
+			   IN_QUEUE_NAME,  
+			   DEAD_QUEUE_NAME,
+			   QUEUE_INT_YN 
+		FROM SWIFT_CONTROL 
+	</select>	 
+		
+	<!-- efarah 05/06/2017 BMOI170016 -->
+	<select id="returnGenerateAchFlag" parameterType="com.path.vo.common.swift.swiftinward.SwiftInwardCO" resultType="BigDecimal">
+		<choose >
+	        <when test="isSybase == 1" >
+				SELECT TOP 1 GENERATE_ACH_YN 
+			</when>
+			<otherwise>
+				SELECT GENERATE_ACH_YN 
+			</otherwise>
+		</choose>
+			FROM SWIFT_MSGHDR_IN
+			WHERE MSG_CODE=#{cf_mt, jdbcType=VARCHAR}
+		<choose >
+	        <when test="isSybase == 0" >
+	        	AND ROWNUM = 1
+	        </when>
+	    </choose>		
+	</select>
+	
+	<!-- efarah 05/06/2017 BMOI170016 -->
+	<select id="returnGenerateAchFlagOut" parameterType="com.path.vo.common.swift.swiftinward.SwiftInwardCO" resultType="BigDecimal">
+		<choose >
+	        <when test="isSybase == 1" >
+				SELECT TOP 1 GENERATE_ACH_YN 
+			</when>
+			<otherwise>
+				SELECT GENERATE_ACH_YN 
+			</otherwise>
+		</choose>
+			FROM SWIFT_MSGMOD
+			WHERE MSG_CODE=#{cf_mt, jdbcType=VARCHAR}
+		<choose >
+	        <when test="isSybase == 0" >
+	        	AND ROWNUM = 1
+	        </when>
+	    </choose>		
+	</select>
+	
+	<!-- efarah 05/06/2017 BMOI170016 -->
+	<select id="returnKeyStore" resultType="swiftControlVO">
+		SELECT KEYSTORE_IN_PATH,KEYSTORE_IN_PASS,KEYSTORE_IN_ALIAS,KEYSTORE_OUT_PATH,KEYSTORE_OUT_PASS,KEYSTORE_OUT_ALIAS,SECRET_MESSAGE
+		FROM SWIFT_CONTROL 
+	</select>
+		
+		
+	<!--  // #558956 SBI170063 - Real Time Gross Settlement (RTGS)--> 
+		
+ <resultMap id="HistoryMap" type="com.path.dbmaps.vo.SWIFT_HISTORYVOWithBLOBs" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="HISTORY_DATE" property="HISTORY_DATE" />
+    <id column="MODULE" property="MODULE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <id column="MSG_ORDER" property="MSG_ORDER" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="ACK" property="ACK" />
+    <result column="REFERENCE_TAG_DATA" property="REFERENCE_TAG_DATA" />
+    <result column="MSG_IN_OUT" property="MSG_IN_OUT" />
+    <result column="NO_OF_GENERATION" property="NO_OF_GENERATION" />
+    <result column="PRINTED" property="PRINTED" />
+    <result column="MARK_GENERATED" property="MARK_GENERATED" />
+    <result column="MSG_STATUS" property="MSG_STATUS" />
+    <result column="ACK_NACK_CTR" property="ACK_NACK_CTR" />
+    <result column="SWIFT_TRX_NO" property="SWIFT_TRX_NO" />
+    <result column="MID_STATUS" property="MID_STATUS" />
+    <result column="MID_STATUS_REASON" property="MID_STATUS_REASON" />
+    <result column="ALL_STATUS" property="ALL_STATUS" />
+    <result column="ALL_STATUS_REASON" property="ALL_STATUS_REASON" />
+    <result column="SWFT_MSG" property="SWFT_MSG" />
+    <result column="SWIFT_MSG_BLOB" property="SWIFT_MSG_BLOB" />
+  </resultMap>
+
+  <sql id="History_Column_List" >
+    BRANCH_CODE, COMP_CODE, HISTORY_DATE, MODULE, MSG_CODE, MSG_ORDER, TRS_NO, TRX_TYPE, 
+    ACK, REFERENCE_TAG_DATA, MSG_IN_OUT, NO_OF_GENERATION, PRINTED, MARK_GENERATED, MSG_STATUS, 
+    ACK_NACK_CTR, SWIFT_TRX_NO, MID_STATUS, MID_STATUS_REASON, ALL_STATUS, ALL_STATUS_REASON, SWFT_MSG, SWIFT_MSG_BLOB
+  </sql>
+
+   <select id="selectPrint_SWIFT_HISTORY" resultMap="HistoryMap" parameterType="swiftOutwardSC" >
+    select 
+    <include refid="History_Column_List" />
+    
+    from SWIFT_HISTORY
+    where BRANCH_CODE = #{branchCode}
+      and COMP_CODE = #{compCode}
+      and MODULE = #{module}
+      and MSG_CODE = #{msgCode}
+      and MSG_ORDER = #{msgOrder}
+      and TRS_NO = #{trsNo}
+  </select>  
+		
+		
+		 
+</mapper>

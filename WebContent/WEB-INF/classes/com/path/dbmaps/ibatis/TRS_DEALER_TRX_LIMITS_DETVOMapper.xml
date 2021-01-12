@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_DEALER_TRX_LIMITS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_DEALER_TRX_LIMITS_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CLASS" property="CLASS" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="LIMIT_CURRENCY" property="LIMIT_CURRENCY" />
+    <result column="TRX_LIMIT_AMT" property="TRX_LIMIT_AMT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CLASS, COMP_CODE, USER_ID, LIMIT_CURRENCY, TRX_LIMIT_AMT
+  </sql>
+  <select id="selectTRS_DEALER_TRX_LIMITS_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_DEALER_TRX_LIMITS_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_DEALER_TRX_LIMITS_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteTRS_DEALER_TRX_LIMITS_DET" parameterType="com.path.dbmaps.vo.TRS_DEALER_TRX_LIMITS_DETVOKey" >
+    delete from TRS_DEALER_TRX_LIMITS_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertTRS_DEALER_TRX_LIMITS_DET" parameterType="com.path.dbmaps.vo.TRS_DEALER_TRX_LIMITS_DETVO" >
+    insert into TRS_DEALER_TRX_LIMITS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        CLASS,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="LIMIT_CURRENCY != null and LIMIT_CURRENCY != emptyBigDecimalValue" >
+        LIMIT_CURRENCY,
+      </if>
+      <if test="TRX_LIMIT_AMT != null and TRX_LIMIT_AMT != emptyBigDecimalValue" >
+        TRX_LIMIT_AMT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        #{CLASS},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="LIMIT_CURRENCY != null and LIMIT_CURRENCY != emptyBigDecimalValue" >
+        #{LIMIT_CURRENCY},
+      </if>
+      <if test="TRX_LIMIT_AMT != null and TRX_LIMIT_AMT != emptyBigDecimalValue" >
+        #{TRX_LIMIT_AMT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_DEALER_TRX_LIMITS_DET" >
+    update TRS_DEALER_TRX_LIMITS_DET
+    <set >
+      <if test="LIMIT_CURRENCY != null" >
+        <choose >
+          <when test="LIMIT_CURRENCY == emptyBigDecimalValue" >
+            LIMIT_CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            LIMIT_CURRENCY = #{LIMIT_CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_LIMIT_AMT != null" >
+        <choose >
+          <when test="TRX_LIMIT_AMT == emptyBigDecimalValue" >
+            TRX_LIMIT_AMT = NULL ,
+          </when>
+          <otherwise >
+            TRX_LIMIT_AMT = #{TRX_LIMIT_AMT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateTRS_DEALER_TRX_LIMITS_DET" parameterType="com.path.dbmaps.vo.TRS_DEALER_TRX_LIMITS_DETVO" >
+    <include refid="sql_updateTRS_DEALER_TRX_LIMITS_DET" />
+  </update>
+</mapper>

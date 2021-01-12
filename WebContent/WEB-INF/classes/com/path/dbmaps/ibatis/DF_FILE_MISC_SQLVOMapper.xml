@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_MISC_SQL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_MISC_SQLVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="SOURCE_SQL_NO" property="SOURCE_SQL_NO" />
+    <result column="BF_AF_FLAG" property="BF_AF_FLAG" />
+    <result column="ALLOW_STOP_EXEC" property="ALLOW_STOP_EXEC" />
+    <result column="EXEC_BY_DEFAULT" property="EXEC_BY_DEFAULT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, SOURCE_SQL_NO, BF_AF_FLAG, ALLOW_STOP_EXEC, EXEC_BY_DEFAULT
+  </sql>
+  <select id="selectDF_FILE_MISC_SQL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_MISC_SQLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_MISC_SQL
+    where FILE_CODE = #{FILE_CODE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </select>
+  <delete id="deleteDF_FILE_MISC_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_MISC_SQLVOKey" >
+    delete from DF_FILE_MISC_SQL
+    where FILE_CODE = #{FILE_CODE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </delete>
+  <insert id="insertDF_FILE_MISC_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_MISC_SQLVO" >
+    insert into DF_FILE_MISC_SQL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        SOURCE_SQL_NO,
+      </if>
+      <if test="BF_AF_FLAG != null" >
+        BF_AF_FLAG,
+      </if>
+      <if test="ALLOW_STOP_EXEC != null" >
+        ALLOW_STOP_EXEC,
+      </if>
+      <if test="EXEC_BY_DEFAULT != null" >
+        EXEC_BY_DEFAULT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        #{SOURCE_SQL_NO},
+      </if>
+      <if test="BF_AF_FLAG != null" >
+        #{BF_AF_FLAG},
+      </if>
+      <if test="ALLOW_STOP_EXEC != null" >
+        #{ALLOW_STOP_EXEC},
+      </if>
+      <if test="EXEC_BY_DEFAULT != null" >
+        #{EXEC_BY_DEFAULT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_MISC_SQL" >
+    update DF_FILE_MISC_SQL
+    <set >
+      <if test="BF_AF_FLAG != null" >
+        BF_AF_FLAG = #{BF_AF_FLAG},
+      </if>
+      <if test="ALLOW_STOP_EXEC != null" >
+        ALLOW_STOP_EXEC = #{ALLOW_STOP_EXEC},
+      </if>
+      <if test="EXEC_BY_DEFAULT != null" >
+        EXEC_BY_DEFAULT = #{EXEC_BY_DEFAULT},
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </sql>
+  <update id="updateDF_FILE_MISC_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_MISC_SQLVO" >
+    <include refid="sql_updateDF_FILE_MISC_SQL" />
+  </update>
+</mapper>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_BTN_CUST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" >
+    <id column="BTN_ID" property="BTN_ID" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="PROG_REF" property="PROG_REF" />
+    <result column="TOOLBAR_ID" property="TOOLBAR_ID" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="LABEL_KEY" property="LABEL_KEY" />
+    <result column="BTN_ORDER" property="BTN_ORDER" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="APPLY_FORM_VALIDATION_YN" property="APPLY_FORM_VALIDATION_YN" />
+    <result column="ACCESS_PROG_REF" property="ACCESS_PROG_REF" />
+    <result column="VISIBILITY_EXPRESSION" property="VISIBILITY_EXPRESSION" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" extends="BaseResultMap" >
+    <result column="RESULT_EXPR" property="RESULT_EXPR" />
+    <result column="ICON_IMAGE" property="ICON_IMAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BTN_ID, APP_NAME, COMP_CODE, PROG_REF, TOOLBAR_ID, DESCRIPTION, LABEL_KEY, BTN_ORDER, 
+    CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, APPLY_FORM_VALIDATION_YN, ACCESS_PROG_REF,VISIBILITY_EXPRESSION
+  </sql>
+  <sql id="Blob_Column_List" >
+    RESULT_EXPR,ICON_IMAGE
+  </sql>
+  <select id="selectSYS_PARAM_BTN_CUST" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_BTN_CUST
+    where BTN_ID = #{BTN_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_BTN_CUST" parameterType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" >
+    delete from SYS_PARAM_BTN_CUST
+    where BTN_ID = #{BTN_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_BTN_CUST" parameterType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="BTN_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(BTN_ID),0)+1</when><otherwise>NVL(MAX(BTN_ID),0)+1</otherwise></choose> FROM SYS_PARAM_BTN_CUST
+    </selectKey>
+    insert into SYS_PARAM_BTN_CUST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      BTN_ID,
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TOOLBAR_ID != null" >
+        TOOLBAR_ID,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="LABEL_KEY != null" >
+        LABEL_KEY,
+      </if>
+      <if test="BTN_ORDER != null" >
+        BTN_ORDER,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="APPLY_FORM_VALIDATION_YN != null" >
+        APPLY_FORM_VALIDATION_YN,
+      </if>
+      <if test="ACCESS_PROG_REF != null" >
+        ACCESS_PROG_REF,
+      </if>
+      <if test='VISIBILITY_EXPRESSION != null and !&quot;&quot;.equals(VISIBILITY_EXPRESSION)' >
+        VISIBILITY_EXPRESSION,
+      </if>
+      <if test="RESULT_EXPR != null" >
+        RESULT_EXPR,
+      </if>
+      <if test="ICON_IMAGE != null" >
+        ICON_IMAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{BTN_ID},
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="TOOLBAR_ID != null" >
+        #{TOOLBAR_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="LABEL_KEY != null" >
+        #{LABEL_KEY},
+      </if>
+      <if test="BTN_ORDER != null" >
+        #{BTN_ORDER},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="APPLY_FORM_VALIDATION_YN != null" >
+        #{APPLY_FORM_VALIDATION_YN},
+      </if>
+      <if test="ACCESS_PROG_REF != null" >
+        #{ACCESS_PROG_REF},
+      </if>
+      <if test="VISIBILITY_EXPRESSION != null and !&quot;&quot;.equals(VISIBILITY_EXPRESSION)" >
+        #{VISIBILITY_EXPRESSION},
+      </if>
+      <if test="RESULT_EXPR != null" >
+        #{RESULT_EXPR},
+      </if>
+      <if test="ICON_IMAGE != null" >
+        #{ICON_IMAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_BTN_CUST" >
+    update SYS_PARAM_BTN_CUST
+    <set >
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE = #{COMP_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF = #{PROG_REF},
+      </if>
+      <if test="TOOLBAR_ID != null" >
+        TOOLBAR_ID = #{TOOLBAR_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="LABEL_KEY != null" >
+        LABEL_KEY = #{LABEL_KEY},
+      </if>
+      <if test="BTN_ORDER != null" >
+        BTN_ORDER = #{BTN_ORDER},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="APPLY_FORM_VALIDATION_YN != null" >
+        APPLY_FORM_VALIDATION_YN = #{APPLY_FORM_VALIDATION_YN},
+      </if>
+      <if test="ACCESS_PROG_REF != null" >
+        ACCESS_PROG_REF = #{ACCESS_PROG_REF},
+      </if>
+      <if test='VISIBILITY_EXPRESSION != null' >
+       <choose >
+          <when test="VISIBILITY_EXPRESSION.equals(&quot;&quot;)" >
+            VISIBILITY_EXPRESSION = NULL ,
+          </when>
+          <otherwise >
+            VISIBILITY_EXPRESSION = #{VISIBILITY_EXPRESSION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESULT_EXPR != null" >
+        RESULT_EXPR = #{RESULT_EXPR},
+      </if>
+      <if test="ICON_IMAGE != null" >
+        ICON_IMAGE = #{ICON_IMAGE},
+      </if>
+    </set>
+    where BTN_ID = #{BTN_ID}
+  </sql>
+  <update id="updateSYS_PARAM_BTN_CUST" parameterType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" >
+    <include refid="sql_updateSYS_PARAM_BTN_CUST" />
+  </update>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_DT_FILE_GROUP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_DT_FILE_GROUPVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="GROUP_CODE" property="GROUP_CODE" />
+    <result column="FILE_ORDER" property="FILE_ORDER" />
+    <result column="FILE_TYPE" property="FILE_TYPE" />
+    <result column="PARENT_FILE_CODE" property="PARENT_FILE_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, GROUP_CODE, FILE_ORDER, FILE_TYPE, PARENT_FILE_CODE
+  </sql>
+  <select id="selectDF_DT_FILE_GROUP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_DT_FILE_GROUPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_DT_FILE_GROUP
+    where FILE_CODE = #{FILE_CODE}
+      and GROUP_CODE = #{GROUP_CODE}
+  </select>
+  <delete id="deleteDF_DT_FILE_GROUP" parameterType="com.path.dbmaps.vo.DF_DT_FILE_GROUPVOKey" >
+    delete from DF_DT_FILE_GROUP
+    where FILE_CODE = #{FILE_CODE}
+      and GROUP_CODE = #{GROUP_CODE}
+  </delete>
+  <insert id="insertDF_DT_FILE_GROUP" parameterType="com.path.dbmaps.vo.DF_DT_FILE_GROUPVO" >
+    insert into DF_DT_FILE_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="GROUP_CODE != null" >
+        GROUP_CODE,
+      </if>
+      <if test="FILE_ORDER != null and FILE_ORDER != emptyBigDecimalValue" >
+        FILE_ORDER,
+      </if>
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE,
+      </if>
+      <if test="PARENT_FILE_CODE != null" >
+        PARENT_FILE_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="GROUP_CODE != null" >
+        #{GROUP_CODE},
+      </if>
+      <if test="FILE_ORDER != null and FILE_ORDER != emptyBigDecimalValue" >
+        #{FILE_ORDER},
+      </if>
+      <if test="FILE_TYPE != null" >
+        #{FILE_TYPE},
+      </if>
+      <if test="PARENT_FILE_CODE != null" >
+        #{PARENT_FILE_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_DT_FILE_GROUP" >
+    update DF_DT_FILE_GROUP
+    <set >
+      <if test="FILE_ORDER != null" >
+        <choose >
+          <when test="FILE_ORDER == emptyBigDecimalValue" >
+            FILE_ORDER = NULL ,
+          </when>
+          <otherwise >
+            FILE_ORDER = #{FILE_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE = #{FILE_TYPE},
+      </if>
+      <if test="PARENT_FILE_CODE != null" >
+        PARENT_FILE_CODE = #{PARENT_FILE_CODE},
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and GROUP_CODE = #{GROUP_CODE}
+  </sql>
+  <update id="updateDF_DT_FILE_GROUP" parameterType="com.path.dbmaps.vo.DF_DT_FILE_GROUPVO" >
+    <include refid="sql_updateDF_DT_FILE_GROUP" />
+  </update>
+</mapper>

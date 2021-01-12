@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_ONLINE_ACCESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_ONLINE_ACCESSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="APP_ID" property="APP_ID" />
+    <result column="CHANNEL_ID" property="CHANNEL_ID" />
+    <result column="ACCESS_YN" property="ACCESS_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, APP_ID, CHANNEL_ID, ACCESS_YN
+  </sql>
+  <select id="selectCIF_ONLINE_ACCESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_ONLINE_ACCESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_ONLINE_ACCESS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_ONLINE_ACCESS" parameterType="com.path.dbmaps.vo.CIF_ONLINE_ACCESSVOKey" >
+    delete from CIF_ONLINE_ACCESS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_ONLINE_ACCESS" parameterType="com.path.dbmaps.vo.CIF_ONLINE_ACCESSVO" >
+    insert into CIF_ONLINE_ACCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="APP_ID != null and APP_ID != emptyBigDecimalValue" >
+        APP_ID,
+      </if>
+      <if test="CHANNEL_ID != null and CHANNEL_ID != emptyBigDecimalValue" >
+        CHANNEL_ID,
+      </if>
+      <if test="ACCESS_YN != null and !&quot;&quot;.equals(ACCESS_YN)" >
+        ACCESS_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="APP_ID != null and APP_ID != emptyBigDecimalValue" >
+        #{APP_ID},
+      </if>
+      <if test="CHANNEL_ID != null and CHANNEL_ID != emptyBigDecimalValue" >
+        #{CHANNEL_ID},
+      </if>
+      <if test="ACCESS_YN != null and !&quot;&quot;.equals(ACCESS_YN)" >
+        #{ACCESS_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_ONLINE_ACCESS" >
+    update CIF_ONLINE_ACCESS
+    <set >
+      <if test="APP_ID != null" >
+        <choose >
+          <when test="APP_ID == emptyBigDecimalValue" >
+            APP_ID = NULL ,
+          </when>
+          <otherwise >
+            APP_ID = #{APP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHANNEL_ID != null" >
+        <choose >
+          <when test="CHANNEL_ID == emptyBigDecimalValue" >
+            CHANNEL_ID = NULL ,
+          </when>
+          <otherwise >
+            CHANNEL_ID = #{CHANNEL_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACCESS_YN != null" >
+        <choose >
+          <when test="ACCESS_YN.equals(&quot;&quot;)" >
+            ACCESS_YN = NULL ,
+          </when>
+          <otherwise >
+            ACCESS_YN = #{ACCESS_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_ONLINE_ACCESS" parameterType="com.path.dbmaps.vo.CIF_ONLINE_ACCESSVO" >
+    <include refid="sql_updateCIF_ONLINE_ACCESS" />
+  </update>
+</mapper>

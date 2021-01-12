@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="integrationSettingsMapper">
+<resultMap id="resIntegrationSettingsListMap" type="com.path.imco.vo.integrationsettings.IntegrationSettingsCO">
+		<result property="sync_entity_parametersblobVO.BR_CODE" column="BR_CODE"/>
+		<result property="sync_entity_parametersblobVO.ENTITY_CODE" column="ENTITY_CODE"/>
+		<result property="sync_entity_parametersblobVO.TO_BR" column="TO_BR"/>
+		<result property="sync_entity_parametersblobVO.REPL_TYPE" column="REPL_TYPE"/>
+		<result property="sync_entity_parametersblobVO.REPL_DATETIME" column="REPL_DATETIME"/>
+		<result property="sync_entity_parametersblobVO.PERIOD" column="PERIOD"/>
+		<result property="sync_entity_parametersblobVO.PERIOD_TYPE" column="PERIOD_TYPE"/>
+		<result property="sync_entity_parametersblobVO.WHO_WINS" column="WHO_WINS"/>
+		<result property="sync_entity_parametersblobVO.ENABLE_TRIGGER" column="ENABLE_TRIGGER"/>
+		<result property="sync_entity_parametersblobVO.SYS_REPLICATION" column="SYS_REPLICATION"/>
+		<result property="sync_entity_parametersblobVO.ERR_SUSPENDED" column="ERR_SUSPENDED"/>
+		<result property="sync_entity_parametersblobVO.ERR_PERIOD" column="ERR_PERIOD"/>
+		<result property="sync_entity_parametersblobVO.ERR_PERIOD_TYPE" column="ERR_PERIOD_TYPE"/>
+		<result property="sync_entity_parametersblobVO.ERR_STOP_AFTER" column="ERR_STOP_AFTER"/>
+		<result property="sync_entity_parametersblobVO.CRITERIA" column="CRITERIA"/>
+		<result property="sync_entity_parametersblobVO.PERIOD_DAY" column="PERIOD_DAY"/>
+		<result property="sync_entityVO.ENTITY_NAME" column="SYNCENTITYENTITYNAME"/>
+		<result property="sync_entity_parametersblobVO.ENTITY_NAME" column="ENTITY_NAME"/>
+		<result property="sync_branchVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="sync_entity_parametersblobVO.REPL_INSERT" column="REPL_INSERT"/>
+		<result property="sync_entity_parametersblobVO.REPL_UPDATE" column="REPL_UPDATE"/>
+		<result property="sync_entity_parametersblobVO.REPL_DELETE" column="REPL_DELETE"/>
+		<result property="relativeBr" column="relativeBr"/>
+		<result property="sync_entity_parametersblobVO.TMP_COLUMNS" column="TMP_COLUMNS"/>
+		<result property="sync_entity_parametersblobVO.SP_SPECIFICATIONS" column="SP_SPECIFICATIONS"/>
+		<result property="sync_entity_parametersblobVO.SP_NAME" column="SP_NAME"/>
+		<result property="sync_entity_parametersblobVO.ENTITY_TYPE" column="ENTITY_TYPE"/>
+		<result property="sync_entity_parametersblobVO.QUERY_SPECIFICATIONS" column="QUERY_SPECIFICATIONS"/>
+		<result property="sync_entity_parametersblobVO.QUERY_SPECIFICATIONS1" column="QUERY_SPECIFICATIONS1"/>
+		<result property="sync_entity_parametersblobVO.QUERY_SPECIFICATIONS2" column="QUERY_SPECIFICATIONS2"/>
+		<result property="sync_entity_parametersblobVO.QUERY_SPECIFICATIONS3" column="QUERY_SPECIFICATIONS3"/>
+		<result property="sync_entity_parametersblobVO.INT_LEVEL" column="INT_LEVEL"/>
+		<result property="sync_entity_parametersblobVO.EXT_SP_NAME" column="EXT_SP_NAME"/>
+		<result property="sync_entityVO.REQUEST_API_CODE" column="REQUEST_API_CODE"/>
+		<result property="sync_entityVO.RESPONSE_API_CODE" column="RESPONSE_API_CODE"/>
+	</resultMap>
+	<select id="returnIntegrationSettingsList" parameterType="com.path.imco.vo.integrationsettings.IntegrationSettingsSC" resultMap="resIntegrationSettingsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryIntegrationSettingsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnIntegrationSettingsListCount" parameterType="com.path.imco.vo.integrationsettings.IntegrationSettingsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryIntegrationSettingsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryIntegrationSettingsSQL">
+	SELECT     SYNC_ENTITY_PARAMETERS.BR_CODE ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_CODE ,
+           (SELECT SYNC_BRANCH.DESCRIPTION FROM SYNC_BRANCH WHERE SYNC_BRANCH.BR_CODE = SYNC_ENTITY_PARAMETERS.BR_CODE) AS DESCRIPTION,
+           SYNC_ENTITY_PARAMETERS.TO_BR ,
+           SYNC_ENTITY_PARAMETERS.REPL_TYPE ,
+           SYNC_ENTITY_PARAMETERS.REPL_DATETIME ,
+           SYNC_ENTITY_PARAMETERS.PERIOD ,
+           SYNC_ENTITY_PARAMETERS.PERIOD_TYPE ,
+           SYNC_ENTITY_PARAMETERS.WHO_WINS ,
+           SYNC_ENTITY_PARAMETERS.ENABLE_TRIGGER ,
+           SYNC_ENTITY_PARAMETERS.SYS_REPLICATION ,
+           SYNC_ENTITY_PARAMETERS.ERR_SUSPENDED ,
+           SYNC_ENTITY_PARAMETERS.ERR_PERIOD ,
+           SYNC_ENTITY_PARAMETERS.ERR_PERIOD_TYPE ,
+           SYNC_ENTITY_PARAMETERS.ERR_STOP_AFTER ,
+           SYNC_ENTITY_PARAMETERS.PERIOD_DAY ,
+           SYNC_ENTITY.ENTITY_NAME AS SYNCENTITYENTITYNAME,
+           SYNC_ENTITY_PARAMETERS.REPL_INSERT ,
+           SYNC_ENTITY_PARAMETERS.REPL_UPDATE ,
+           SYNC_ENTITY_PARAMETERS.REPL_DELETE ,
+			  0 AS RELATIVE_BR ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_NAME ,
+           SYNC_ENTITY_PARAMETERS.SP_NAME ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_TYPE ,
+			  SYNC_ENTITY_PARAMETERS.INT_LEVEL  ,
+SYNC_ENTITY_PARAMETERS.EXT_SP_NAME,
+SYNC_ENTITY.REQUEST_API_CODE,
+SYNC_ENTITY.RESPONSE_API_CODE
+
+ FROM    SYNC_ENTITY_PARAMETERS,
+         SYNC_ENTITY
+ WHERE      SYNC_ENTITY_PARAMETERS.ENTITY_CODE = SYNC_ENTITY.ENTITY_CODE
+	</sql>
+
+	<resultMap id="resSyncBranchLookupMap" type="syncBranchVO">
+		<result property="BR_CODE" column="BR_CODE"/>
+		<result property="DESCRIPTION" column="DESCRIPTION"/>
+		<result property="EMAIL1" column="EMAIL1"/>
+		<result property="EMAIL2" column="EMAIL2"/>
+		<result property="EMAIL3" column="EMAIL3"/>
+		<result property="EMAIL4" column="EMAIL4"/>
+		<result property="EMAIL5" column="EMAIL5"/>
+		<result property="MESSAGE1" column="MESSAGE1"/>
+		<result property="SUBJECT" column="SUBJECT"/>
+     	<result property="IP_ADDRESS" column="IP_ADDRESS"/>
+		<result property="SERVICE_NAME" column="SERVICE_NAME"/>
+		<result property="RDBMS_TYPE" column="RDBMS_TYPE"/>
+		<result property="EXT_RDBMS" column="EXT_RDBMS"/>
+		<result property="SB_IND" column="SB_IND"/>
+		<result property="BR_STATUS" column="BR_STATUS"/>
+		<result property="SUSPEND_BR" column="SUSPEND_BR"/>
+		<result property="BYPASS_BR_STATUS" column="BYPASS_BR_STATUS"/>
+		<result property="ORDER_FLAG" column="ORDER_FLAG"/>
+		<result property="ERR_SUBJECT" column="ERR_SUBJECT"/>
+		<result property="ERR_MESSAGE" column="ERR_MESSAGE"/>
+		<result property="VR_MODE" column="VR_MODE"/>
+		<result property="GENERATE_DML" column="GENERATE_DML"/>
+		<result property="RDBMS_TYPE" column="RDBMS_TYPE"/>
+		
+												
+	</resultMap>
+	<select id="returnSyncBranchLookup" parameterType="integrationSettingsSC" resultMap="resSyncBranchLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="querySyncBranchLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnSyncBranchLookupCount" parameterType="integrationSettingsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="querySyncBranchLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="querySyncBranchLkpSQL">
+ SELECT BR_CODE, 
+		DESCRIPTION,
+		EMAIL1,
+		EMAIL2,
+		EMAIL3,
+		EMAIL4,
+		EMAIL5,
+		MESSAGE1,
+		SUBJECT,
+		IP_ADDRESS,
+		SERVICE_NAME,
+		RDBMS_TYPE,
+		EXT_RDBMS,
+		SB_IND,
+		BR_STATUS,
+		SUSPEND_BR,
+		BYPASS_BR_STATUS,
+		ORDER_FLAG,
+		ERR_SUBJECT,
+		ERR_MESSAGE,
+		VR_MODE,
+		GENERATE_DML,
+		VR_HOST_BR
+		  FROM SYNC_BRANCH
+	</sql>
+
+	<resultMap id="reschacodeSyncBranchMap" type="syncBranchVO">
+	</resultMap>
+	<select id="onChangeCode" parameterType="com.path.imco.vo.integrationsettings.IntegrationSettingsSC" resultMap="reschacodeSyncBranchMap">
+		SELECT BR_CODE, DESCRIPTION FROM SYNC_BRANCH WHERE BR_CODE = #{BR_CODE}
+	</select>
+
+
+
+<select id="returnintegrationDetails" parameterType="com.path.imco.vo.integrationsettings.IntegrationSettingsSC" resultMap="resIntegrationSettingsListMap">
+SELECT     SYNC_ENTITY_PARAMETERS.BR_CODE ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_CODE ,
+           (SELECT SYNC_BRANCH.DESCRIPTION FROM SYNC_BRANCH WHERE SYNC_BRANCH.BR_CODE = SYNC_ENTITY_PARAMETERS.BR_CODE) AS DESCRIPTION,
+           SYNC_ENTITY_PARAMETERS.TO_BR ,
+           SYNC_ENTITY_PARAMETERS.REPL_TYPE ,
+           SYNC_ENTITY_PARAMETERS.REPL_DATETIME ,
+           SYNC_ENTITY_PARAMETERS.PERIOD ,
+           SYNC_ENTITY_PARAMETERS.PERIOD_TYPE ,
+           SYNC_ENTITY_PARAMETERS.WHO_WINS ,
+           SYNC_ENTITY_PARAMETERS.ENABLE_TRIGGER ,
+           SYNC_ENTITY_PARAMETERS.SYS_REPLICATION ,
+           SYNC_ENTITY_PARAMETERS.ERR_SUSPENDED ,
+           SYNC_ENTITY_PARAMETERS.ERR_PERIOD ,
+           SYNC_ENTITY_PARAMETERS.ERR_PERIOD_TYPE ,
+           SYNC_ENTITY_PARAMETERS.ERR_STOP_AFTER ,
+           SYNC_ENTITY_PARAMETERS.CRITERIA ,
+           SYNC_ENTITY_PARAMETERS.PERIOD_DAY ,
+           SYNC_ENTITY.ENTITY_NAME AS SYNCENTITYENTITYNAME,
+           SYNC_ENTITY_PARAMETERS.REPL_INSERT ,
+           SYNC_ENTITY_PARAMETERS.REPL_UPDATE ,
+           SYNC_ENTITY_PARAMETERS.REPL_DELETE ,
+			  0 AS RELATIVE_BR ,
+           SYNC_ENTITY_PARAMETERS.TMP_COLUMNS ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_NAME ,
+           SYNC_ENTITY_PARAMETERS.SP_SPECIFICATIONS ,
+           SYNC_ENTITY_PARAMETERS.SP_NAME ,
+           SYNC_ENTITY_PARAMETERS.ENTITY_TYPE ,
+           SYNC_ENTITY_PARAMETERS.QUERY_SPECIFICATIONS ,
+           SYNC_ENTITY_PARAMETERS.QUERY_SPECIFICATIONS1 ,
+           SYNC_ENTITY_PARAMETERS.QUERY_SPECIFICATIONS2 ,
+           SYNC_ENTITY_PARAMETERS.QUERY_SPECIFICATIONS3 ,
+			  SYNC_ENTITY_PARAMETERS.INT_LEVEL  ,
+SYNC_ENTITY_PARAMETERS.EXT_SP_NAME,
+SYNC_ENTITY.REQUEST_API_CODE,
+SYNC_ENTITY.RESPONSE_API_CODE
+
+ FROM    SYNC_ENTITY_PARAMETERS,
+         SYNC_ENTITY
+ WHERE      SYNC_ENTITY_PARAMETERS.ENTITY_CODE = SYNC_ENTITY.ENTITY_CODE AND
+ (  SYNC_ENTITY_PARAMETERS.ENTITY_CODE =#{entitycode}) AND
+               (SYNC_ENTITY_PARAMETERS.BR_CODE =#{br_code})  
+              
+
+</select>
+</mapper>

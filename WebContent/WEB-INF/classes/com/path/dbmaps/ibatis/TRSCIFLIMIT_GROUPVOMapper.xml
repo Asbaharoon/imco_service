@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCIFLIMIT_GROUP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCIFLIMIT_GROUPVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="GROUP_ID" property="GROUP_ID" />
+    <result column="GROUP_NAME" property="GROUP_NAME" />
+    <result column="GROUP_LIMIT" property="GROUP_LIMIT" />
+    <result column="GROUP_LIMIT_CY" property="GROUP_LIMIT_CY" />
+    <result column="TEMPLATE_CODE" property="TEMPLATE_CODE" />
+    <result column="POSTED_AMOUNT" property="POSTED_AMOUNT" />
+    <result column="CASH_NON_CASH_IND" property="CASH_NON_CASH_IND" />
+    <result column="ORIGINAL_GROUP_LIMIT" property="ORIGINAL_GROUP_LIMIT" />
+    <result column="PRODUCT_GROUP_HEAD" property="PRODUCT_GROUP_HEAD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_NO, COMP_CODE, GROUP_ID, GROUP_NAME, GROUP_LIMIT, GROUP_LIMIT_CY, 
+    TEMPLATE_CODE, POSTED_AMOUNT, CASH_NON_CASH_IND, ORIGINAL_GROUP_LIMIT, PRODUCT_GROUP_HEAD
+  </sql>
+  <select id="selectTRSCIFLIMIT_GROUP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_GROUPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCIFLIMIT_GROUP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </select>
+  <delete id="deleteTRSCIFLIMIT_GROUP" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_GROUPVOKey" >
+    delete from TRSCIFLIMIT_GROUP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </delete>
+  <insert id="insertTRSCIFLIMIT_GROUP" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_GROUPVO" >
+    insert into TRSCIFLIMIT_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        GROUP_ID,
+      </if>
+      <if test="GROUP_NAME != null" >
+        GROUP_NAME,
+      </if>
+      <if test="GROUP_LIMIT != null and GROUP_LIMIT != emptyBigDecimalValue" >
+        GROUP_LIMIT,
+      </if>
+      <if test="GROUP_LIMIT_CY != null and GROUP_LIMIT_CY != emptyBigDecimalValue" >
+        GROUP_LIMIT_CY,
+      </if>
+      <if test="TEMPLATE_CODE != null and TEMPLATE_CODE != emptyBigDecimalValue" >
+        TEMPLATE_CODE,
+      </if>
+      <if test="POSTED_AMOUNT != null and POSTED_AMOUNT != emptyBigDecimalValue" >
+        POSTED_AMOUNT,
+      </if>
+      <if test="CASH_NON_CASH_IND != null" >
+        CASH_NON_CASH_IND,
+      </if>
+      <if test="ORIGINAL_GROUP_LIMIT != null and ORIGINAL_GROUP_LIMIT != emptyBigDecimalValue" >
+        ORIGINAL_GROUP_LIMIT,
+      </if>
+      <if test="PRODUCT_GROUP_HEAD != null and PRODUCT_GROUP_HEAD != emptyBigDecimalValue" >
+        PRODUCT_GROUP_HEAD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        #{GROUP_ID},
+      </if>
+      <if test="GROUP_NAME != null" >
+        #{GROUP_NAME},
+      </if>
+      <if test="GROUP_LIMIT != null and GROUP_LIMIT != emptyBigDecimalValue" >
+        #{GROUP_LIMIT},
+      </if>
+      <if test="GROUP_LIMIT_CY != null and GROUP_LIMIT_CY != emptyBigDecimalValue" >
+        #{GROUP_LIMIT_CY},
+      </if>
+      <if test="TEMPLATE_CODE != null and TEMPLATE_CODE != emptyBigDecimalValue" >
+        #{TEMPLATE_CODE},
+      </if>
+      <if test="POSTED_AMOUNT != null and POSTED_AMOUNT != emptyBigDecimalValue" >
+        #{POSTED_AMOUNT},
+      </if>
+      <if test="CASH_NON_CASH_IND != null" >
+        #{CASH_NON_CASH_IND},
+      </if>
+      <if test="ORIGINAL_GROUP_LIMIT != null and ORIGINAL_GROUP_LIMIT != emptyBigDecimalValue" >
+        #{ORIGINAL_GROUP_LIMIT},
+      </if>
+      <if test="PRODUCT_GROUP_HEAD != null and PRODUCT_GROUP_HEAD != emptyBigDecimalValue" >
+        #{PRODUCT_GROUP_HEAD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCIFLIMIT_GROUP" >
+    update TRSCIFLIMIT_GROUP
+    <set >
+      <if test="GROUP_NAME != null" >
+        GROUP_NAME = #{GROUP_NAME},
+      </if>
+      <if test="GROUP_LIMIT != null" >
+        <choose >
+          <when test="GROUP_LIMIT == emptyBigDecimalValue" >
+            GROUP_LIMIT = NULL ,
+          </when>
+          <otherwise >
+            GROUP_LIMIT = #{GROUP_LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_LIMIT_CY != null" >
+        <choose >
+          <when test="GROUP_LIMIT_CY == emptyBigDecimalValue" >
+            GROUP_LIMIT_CY = NULL ,
+          </when>
+          <otherwise >
+            GROUP_LIMIT_CY = #{GROUP_LIMIT_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TEMPLATE_CODE != null" >
+        <choose >
+          <when test="TEMPLATE_CODE == emptyBigDecimalValue" >
+            TEMPLATE_CODE = NULL ,
+          </when>
+          <otherwise >
+            TEMPLATE_CODE = #{TEMPLATE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSTED_AMOUNT != null" >
+        <choose >
+          <when test="POSTED_AMOUNT == emptyBigDecimalValue" >
+            POSTED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            POSTED_AMOUNT = #{POSTED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CASH_NON_CASH_IND != null" >
+        CASH_NON_CASH_IND = #{CASH_NON_CASH_IND},
+      </if>
+      <if test="ORIGINAL_GROUP_LIMIT != null" >
+        <choose >
+          <when test="ORIGINAL_GROUP_LIMIT == emptyBigDecimalValue" >
+            ORIGINAL_GROUP_LIMIT = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_GROUP_LIMIT = #{ORIGINAL_GROUP_LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRODUCT_GROUP_HEAD != null" >
+        <choose >
+          <when test="PRODUCT_GROUP_HEAD == emptyBigDecimalValue" >
+            PRODUCT_GROUP_HEAD = NULL ,
+          </when>
+          <otherwise >
+            PRODUCT_GROUP_HEAD = #{PRODUCT_GROUP_HEAD},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+  </sql>
+  <update id="updateTRSCIFLIMIT_GROUP" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_GROUPVO" >
+    <include refid="sql_updateTRSCIFLIMIT_GROUP" />
+  </update>
+</mapper>

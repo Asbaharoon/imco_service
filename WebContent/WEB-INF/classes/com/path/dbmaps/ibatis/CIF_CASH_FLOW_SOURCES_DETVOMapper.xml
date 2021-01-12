@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CASH_FLOW_SOURCES_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CASH_FLOW_SOURCES_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="DETAILS_ENG" property="DETAILS_ENG" />
+    <result column="DETAILS_ARAB" property="DETAILS_ARAB" />
+    <result column="CASH_FLOW_AMT" property="CASH_FLOW_AMT" />
+    <result column="CASH_FLOW_CY" property="CASH_FLOW_CY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, DETAILS_ENG, DETAILS_ARAB, CASH_FLOW_AMT, CASH_FLOW_CY
+  </sql>
+  <select id="selectCIF_CASH_FLOW_SOURCES_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CASH_FLOW_SOURCES_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CASH_FLOW_SOURCES_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_CASH_FLOW_SOURCES_DET" parameterType="com.path.dbmaps.vo.CIF_CASH_FLOW_SOURCES_DETVOKey" >
+    delete from CIF_CASH_FLOW_SOURCES_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_CASH_FLOW_SOURCES_DET" parameterType="com.path.dbmaps.vo.CIF_CASH_FLOW_SOURCES_DETVO" >
+     insert into CIF_CASH_FLOW_SOURCES_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      COMP_CODE,
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG,
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB,
+      </if>
+      <if test="CASH_FLOW_AMT != null and CASH_FLOW_AMT != emptyBigDecimalValue" >
+        CASH_FLOW_AMT,
+      </if>
+      <if test="CASH_FLOW_CY != null and CASH_FLOW_CY != emptyBigDecimalValue" >
+        CASH_FLOW_CY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      #{COMP_CODE},
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="DETAILS_ENG != null" >
+        #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        #{DETAILS_ARAB},
+      </if>
+      <if test="CASH_FLOW_AMT != null and CASH_FLOW_AMT != emptyBigDecimalValue" >
+        #{CASH_FLOW_AMT},
+      </if>
+      <if test="CASH_FLOW_CY != null and CASH_FLOW_CY != emptyBigDecimalValue" >
+        #{CASH_FLOW_CY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CASH_FLOW_SOURCES_DET" >
+    update CIF_CASH_FLOW_SOURCES_DET
+    <set >
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG = #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB = #{DETAILS_ARAB},
+      </if>
+      <if test="CASH_FLOW_AMT != null" >
+        <choose >
+          <when test="CASH_FLOW_AMT == emptyBigDecimalValue" >
+            CASH_FLOW_AMT = NULL ,
+          </when>
+          <otherwise >
+            CASH_FLOW_AMT = #{CASH_FLOW_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CASH_FLOW_CY != null" >
+        <choose >
+          <when test="CASH_FLOW_CY == emptyBigDecimalValue" >
+            CASH_FLOW_CY = NULL ,
+          </when>
+          <otherwise >
+            CASH_FLOW_CY = #{CASH_FLOW_CY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_CASH_FLOW_SOURCES_DET" parameterType="com.path.dbmaps.vo.CIF_CASH_FLOW_SOURCES_DETVO" >
+    <include refid="sql_updateCIF_CASH_FLOW_SOURCES_DET" />
+  </update>
+</mapper>

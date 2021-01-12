@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSCSTDINVENTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSCSTDINVENTORYVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CUSTODIAN" property="CUSTODIAN" />
+    <id column="SECURITY_CODE1" property="SECURITY_CODE1" />
+    <id column="SECURITY_CODE2" property="SECURITY_CODE2" />
+    <id column="SHORT_POSITION" property="SHORT_POSITION" />
+    <result column="QTY" property="QTY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, CUSTODIAN, SECURITY_CODE1, SECURITY_CODE2, SHORT_POSITION, QTY
+  </sql>
+  <select id="selectPMSCSTDINVENTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSCSTDINVENTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSCSTDINVENTORY
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and CUSTODIAN = #{CUSTODIAN}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+      and SHORT_POSITION = #{SHORT_POSITION}
+  </select>
+  <delete id="deletePMSCSTDINVENTORY" parameterType="com.path.dbmaps.vo.PMSCSTDINVENTORYVOKey" >
+    delete from PMSCSTDINVENTORY
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and CUSTODIAN = #{CUSTODIAN}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+      and SHORT_POSITION = #{SHORT_POSITION}
+  </delete>
+  <insert id="insertPMSCSTDINVENTORY" parameterType="com.path.dbmaps.vo.PMSCSTDINVENTORYVO" >
+    insert into PMSCSTDINVENTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CUSTODIAN != null and CUSTODIAN != emptyBigDecimalValue" >
+        CUSTODIAN,
+      </if>
+      <if test="SECURITY_CODE1 != null and SECURITY_CODE1 != emptyBigDecimalValue" >
+        SECURITY_CODE1,
+      </if>
+      <if test="SECURITY_CODE2 != null and SECURITY_CODE2 != emptyBigDecimalValue" >
+        SECURITY_CODE2,
+      </if>
+      <if test="SHORT_POSITION != null and SHORT_POSITION != emptyBigDecimalValue" >
+        SHORT_POSITION,
+      </if>
+      <if test="QTY != null and QTY != emptyBigDecimalValue" >
+        QTY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CUSTODIAN != null and CUSTODIAN != emptyBigDecimalValue" >
+        #{CUSTODIAN},
+      </if>
+      <if test="SECURITY_CODE1 != null and SECURITY_CODE1 != emptyBigDecimalValue" >
+        #{SECURITY_CODE1},
+      </if>
+      <if test="SECURITY_CODE2 != null and SECURITY_CODE2 != emptyBigDecimalValue" >
+        #{SECURITY_CODE2},
+      </if>
+      <if test="SHORT_POSITION != null and SHORT_POSITION != emptyBigDecimalValue" >
+        #{SHORT_POSITION},
+      </if>
+      <if test="QTY != null and QTY != emptyBigDecimalValue" >
+        #{QTY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSCSTDINVENTORY" >
+    update PMSCSTDINVENTORY
+    <set >
+      <if test="QTY != null" >
+        <choose >
+          <when test="QTY == emptyBigDecimalValue" >
+            QTY = NULL ,
+          </when>
+          <otherwise >
+            QTY = #{QTY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and CUSTODIAN = #{CUSTODIAN}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+      and SHORT_POSITION = #{SHORT_POSITION}
+  </sql>
+  <update id="updatePMSCSTDINVENTORY" parameterType="com.path.dbmaps.vo.PMSCSTDINVENTORYVO" >
+    <include refid="sql_updatePMSCSTDINVENTORY" />
+  </update>
+</mapper>

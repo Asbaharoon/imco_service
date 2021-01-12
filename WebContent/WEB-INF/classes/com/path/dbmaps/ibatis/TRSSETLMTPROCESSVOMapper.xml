@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSSETLMTPROCESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSSETLMTPROCESSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROCESS_CODE" property="PROCESS_CODE" />
+    <result column="PROCESS_DATE" property="PROCESS_DATE" />
+    <result column="PROCESSED_BY" property="PROCESSED_BY" />
+    <result column="SERVER_DATE_START" property="SERVER_DATE_START" />
+    <result column="SERVER_DATE_END" property="SERVER_DATE_END" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="CALL_TYPE" property="CALL_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PROCESS_CODE, PROCESS_DATE, PROCESSED_BY, SERVER_DATE_START, 
+    SERVER_DATE_END, CIF_NO, CALL_TYPE
+  </sql>
+  <select id="selectTRSSETLMTPROCESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSSETLMTPROCESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSSETLMTPROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </select>
+  <delete id="deleteTRSSETLMTPROCESS" parameterType="com.path.dbmaps.vo.TRSSETLMTPROCESSVOKey" >
+    delete from TRSSETLMTPROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </delete>
+  <insert id="insertTRSSETLMTPROCESS" parameterType="com.path.dbmaps.vo.TRSSETLMTPROCESSVO" >
+    insert into TRSSETLMTPROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        PROCESS_CODE,
+      </if>
+      <if test="PROCESS_DATE != null" >
+        PROCESS_DATE,
+      </if>
+      <if test="PROCESSED_BY != null" >
+        PROCESSED_BY,
+      </if>
+      <if test="SERVER_DATE_START != null" >
+        SERVER_DATE_START,
+      </if>
+      <if test="SERVER_DATE_END != null" >
+        SERVER_DATE_END,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="CALL_TYPE != null and CALL_TYPE != emptyBigDecimalValue" >
+        CALL_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="PROCESS_DATE != null" >
+        #{PROCESS_DATE},
+      </if>
+      <if test="PROCESSED_BY != null" >
+        #{PROCESSED_BY},
+      </if>
+      <if test="SERVER_DATE_START != null" >
+        #{SERVER_DATE_START},
+      </if>
+      <if test="SERVER_DATE_END != null" >
+        #{SERVER_DATE_END},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="CALL_TYPE != null and CALL_TYPE != emptyBigDecimalValue" >
+        #{CALL_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSSETLMTPROCESS" >
+    update TRSSETLMTPROCESS
+    <set >
+      <if test="PROCESS_DATE != null" >
+        PROCESS_DATE = #{PROCESS_DATE},
+      </if>
+      <if test="PROCESSED_BY != null" >
+        PROCESSED_BY = #{PROCESSED_BY},
+      </if>
+      <if test="SERVER_DATE_START != null" >
+        SERVER_DATE_START = #{SERVER_DATE_START},
+      </if>
+      <if test="SERVER_DATE_END != null" >
+        SERVER_DATE_END = #{SERVER_DATE_END},
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CALL_TYPE != null" >
+        <choose >
+          <when test="CALL_TYPE == emptyBigDecimalValue" >
+            CALL_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CALL_TYPE = #{CALL_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </sql>
+  <update id="updateTRSSETLMTPROCESS" parameterType="com.path.dbmaps.vo.TRSSETLMTPROCESSVO" >
+    <include refid="sql_updateTRSSETLMTPROCESS" />
+  </update>
+</mapper>

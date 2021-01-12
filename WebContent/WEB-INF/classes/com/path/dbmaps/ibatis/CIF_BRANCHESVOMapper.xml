@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_BRANCHES" >
+
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_BRANCHESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_NAME" property="BRANCH_NAME" />
+    <result column="DAYS_OF_BILLS_ONSITE_OFFSITE" property="DAYS_OF_BILLS_ONSITE_OFFSITE" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_NO, COMP_CODE, BRANCH_NAME, DAYS_OF_BILLS_ONSITE_OFFSITE
+  </sql>
+  
+  <select id="selectCIF_BRANCHES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_BRANCHESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_BRANCHES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  
+  <delete id="deleteCIF_BRANCHES" parameterType="com.path.dbmaps.vo.CIF_BRANCHESVOKey" >
+    delete from CIF_BRANCHES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  
+  <insert id="insertCIF_BRANCHES" parameterType="com.path.dbmaps.vo.CIF_BRANCHESVO" >
+    insert into CIF_BRANCHES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_NAME != null and !&quot;&quot;.equals(BRANCH_NAME)" >
+        BRANCH_NAME,
+      </if>
+      <if test="DAYS_OF_BILLS_ONSITE_OFFSITE != null and !&quot;&quot;.equals(DAYS_OF_BILLS_ONSITE_OFFSITE)" >
+        DAYS_OF_BILLS_ONSITE_OFFSITE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_NAME != null and !&quot;&quot;.equals(BRANCH_NAME)" >
+        #{BRANCH_NAME},
+      </if>
+      <if test="DAYS_OF_BILLS_ONSITE_OFFSITE != null and !&quot;&quot;.equals(DAYS_OF_BILLS_ONSITE_OFFSITE)" >
+        #{DAYS_OF_BILLS_ONSITE_OFFSITE},
+      </if>
+    </trim>
+  </insert>
+  
+  <sql id="sql_updateCIF_BRANCHES" >
+    update CIF_BRANCHES
+    <set >
+      <if test="BRANCH_NAME != null" >
+        <choose >
+          <when test="BRANCH_NAME.equals(&quot;&quot;)" >
+            BRANCH_NAME = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_NAME = #{BRANCH_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DAYS_OF_BILLS_ONSITE_OFFSITE != null" >
+        <choose >
+          <when test="DAYS_OF_BILLS_ONSITE_OFFSITE.equals(&quot;&quot;)" >
+            DAYS_OF_BILLS_ONSITE_OFFSITE = NULL ,
+          </when>
+          <otherwise >
+            DAYS_OF_BILLS_ONSITE_OFFSITE = #{DAYS_OF_BILLS_ONSITE_OFFSITE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_BRANCHES" parameterType="com.path.dbmaps.vo.CIF_BRANCHESVO" >
+    <include refid="sql_updateCIF_BRANCHES" />
+  </update>
+  
+</mapper>

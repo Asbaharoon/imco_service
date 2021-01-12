@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLCIF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLCIFVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="LINE_NBR_DET" property="LINE_NBR_DET" />
+    <result column="CIF" property="CIF" />
+    <result column="CIF_AMOUNT" property="CIF_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NBR, LINE_NBR_DET, CIF, CIF_AMOUNT
+  </sql>
+  <select id="selectFMSAPPLCIF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLCIFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLCIF
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and LINE_NBR_DET = #{LINE_NBR_DET}
+  </select>
+  <delete id="deleteFMSAPPLCIF" parameterType="com.path.dbmaps.vo.FMSAPPLCIFVOKey" >
+    delete from FMSAPPLCIF
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and LINE_NBR_DET = #{LINE_NBR_DET}
+  </delete>
+  <insert id="insertFMSAPPLCIF" parameterType="com.path.dbmaps.vo.FMSAPPLCIFVO" >
+    insert into FMSAPPLCIF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="LINE_NBR_DET != null and LINE_NBR_DET != emptyBigDecimalValue" >
+        LINE_NBR_DET,
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="CIF_AMOUNT != null and CIF_AMOUNT != emptyBigDecimalValue" >
+        CIF_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="LINE_NBR_DET != null and LINE_NBR_DET != emptyBigDecimalValue" >
+        #{LINE_NBR_DET},
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="CIF_AMOUNT != null and CIF_AMOUNT != emptyBigDecimalValue" >
+        #{CIF_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLCIF" >
+    update FMSAPPLCIF
+    <set >
+      <if test="CIF != null" >
+        <choose >
+          <when test="CIF == emptyBigDecimalValue" >
+            CIF = NULL ,
+          </when>
+          <otherwise >
+            CIF = #{CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_AMOUNT != null" >
+        <choose >
+          <when test="CIF_AMOUNT == emptyBigDecimalValue" >
+            CIF_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CIF_AMOUNT = #{CIF_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and LINE_NBR_DET = #{LINE_NBR_DET}
+  </sql>
+  <update id="updateFMSAPPLCIF" parameterType="com.path.dbmaps.vo.FMSAPPLCIFVO" >
+    <include refid="sql_updateFMSAPPLCIF" />
+  </update>
+</mapper>

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="facilityTypeListMapper">
+
+ <sql id="facilityTypeListCommon">
+	<![CDATA[
+		          SELECT
+                                                FMSFACILITYTYPE.CODE,
+                                                FMSFACILITYTYPE.BRIEF_NAME_ENG,
+                                                FMSFACILITYTYPE.BRIEF_NAME_ARAB,
+                                                FMSFACILITYTYPE.FACILITY_CATEG
+                FROM  FMSFACILITYTYPE 
+                WHERE FMSFACILITYTYPE.COMP_CODE  = #{compCode} 
+                AND     (  FMSFACILITYTYPE.FACILITY_CATEG  = #{FACILITY_CATEG,jdbcType=NUMERIC} OR    #{FACILITY_CATEG,jdbcType=NUMERIC} = 0 )
+
+	]]>	
+	<!--   TP#621590 ;13-Feb-2018;d.james-->
+	<if test='"true".equals(allTypesFlag)'> 
+		<include refid="facilityTypeAllTypeSQL"/>
+	</if>
+ </sql>
+ <sql id="facilityTypeAllTypeSQL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, #{allTypes} FROM DUAL
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT 0, #{allTypes} 
+	        </when>
+        </choose>
+ </sql>
+ 
+ 
+ <resultMap id="facilityTypeListMap" type="facilityTypeVO">
+	<id property="CODE" column="CODE"/>
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />	
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />	
+	<result property="FACILITY_CATEG" column="FACILITY_CATEG" />
+		
+ </resultMap>
+ 
+ <select id="facilityTypeList" resultMap="facilityTypeListMap" parameterType="com.path.vo.core.facilitytype.FacilityTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="facilityTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="facilityTypeListCount" resultType="int" parameterType="com.path.vo.core.facilitytype.FacilityTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="facilityTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnFacilityTypeByCode" parameterType="facilityTypeSC" resultType="facilityTypeVO"  >
+  		SELECT
+			FMSFACILITYTYPE.CODE,
+            FMSFACILITYTYPE.BRIEF_NAME_ENG
+                FROM  FMSFACILITYTYPE 
+                WHERE FMSFACILITYTYPE.COMP_CODE  = #{compCode} 
+                AND      FMSFACILITYTYPE.FACILITY_CATEG  = #{FACILITY_CATEG} 
+                AND FMSFACILITYTYPE.CODE = #{code}
+ </select>
+ 
+
+ <select id="returnFacilityTypeById" parameterType="facilityTypeSC" resultType="facilityTypeVO">
+  			
+	  SELECT
+                                                FMSFACILITYTYPE.CODE,
+                                                FMSFACILITYTYPE.BRIEF_NAME_ENG
+                FROM  FMSFACILITYTYPE 
+                WHERE FMSFACILITYTYPE.COMP_CODE  = #{compCode} 
+                AND FMSFACILITYTYPE.CODE = #{code}
+                AND      FMSFACILITYTYPE.FACILITY_CATEG  = (SELECT FMSCATEGORY.CODE 
+                                FROM   FMSCATEGORY 
+                WHERE FMSCATEGORY.COMP_CODE = #{compCode} 
+                
+                                AND FMSCATEGORY.OPT_REF   = 'C00'  )
+ </select>
+ 
+  <resultMap id="facilityCOListMap" type="facilityCO">
+	<result property="CODE" column="CODE" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />	
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+ </resultMap>
+ 
+ <sql id="facilityNumberListCommon">
+   <choose>
+           <when test='sectionKey != null and !(sectionKey.equals("")) and sectionKey.equals("IMY")'>
+           	SELECT FMSFACILITY.CODE, CIF.SHORT_NAME_ENG, CIF.LONG_NAME_ENG
+			  FROM FMSFACILITY, CIF, FMSFACILITYDET
+			 WHERE FMSFACILITY.COMP_CODE = #{compCode}
+			   AND FMSFACILITY.BRANCH = #{branchCode}
+			   AND FMSFACILITY.STATUS     = 'P'
+			   AND CIF.CIF_NO = #{cifNo}
+			   AND FMSFACILITY.COMP_CODE = CIF.COMP_CODE
+			   AND FMSFACILITY.CIF = CIF.CIF_NO
+			   AND FMSFACILITY.COMP_CODE = FMSFACILITYDET.COMP_CODE
+			   AND FMSFACILITY.BRANCH = FMSFACILITYDET.BRANCH
+			   AND FMSFACILITY.CODE = FMSFACILITYDET.CODE
+			   AND FMSFACILITYDET.GENERAL_FACILITY_TYPE = 'P'
+			   AND FMSFACILITYDET.CATEGORY = 22
+			   AND FMSFACILITYDET.CLASS_TYPE = (CASE WHEN #{odType}= 'M' THEN 3 ELSE 2 END)
+            </when>
+            <otherwise>
+            <![CDATA[
+			SELECT CODE,
+				CIF.SHORT_NAME_ENG,			 
+				CIF.LONG_NAME_ENG			
+			FROM  FMSFACILITY, CIF 
+			WHERE	FMSFACILITY.COMP_CODE  = #{compCode}
+				AND	FMSFACILITY.COMP_CODE  = CIF.COMP_CODE
+				AND 	FMSFACILITY.CIF		  = CIF.CIF_NO	
+				AND	FMSFACILITY.BRANCH     = #{branchCode}
+				AND	FMSFACILITY.STATUS     = 'P'
+				AND  CIF.CIF_NO             = #{cifNo}
+		]]>	 
+            </otherwise>
+    </choose>
+ </sql>
+ 
+  <sql id="facilityNumberDependencyByCode">
+ 	AND FMSFACILITY.CODE = #{code}
+ </sql>
+ 
+ <select id="facilityNumberList" resultMap="facilityCOListMap" parameterType="facilityTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="facilityNumberListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="facilityNumberListCount" resultType="int" parameterType="facilityTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="facilityNumberListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnFacilityCOByCode" resultType="facilityCO" parameterType="facilityTypeSC" >
+	<include refid="facilityNumberListCommon"/>
+	<include refid="facilityNumberDependencyByCode"/>
+ </select>
+ 
+ <sql id="facilitySubLimitListCommon">
+	<![CDATA[
+	SELECT FMSFACILITYDET.COMP_CODE,   
+		FMSFACILITYDET.BRANCH,   
+		FMSFACILITYDET.CODE,   
+		FMSFACILITYDET.LINE_NBR,    
+		FMSFACILITYDET.CATEGORY,   
+		FMSFACILITYDET.GENERAL_FACILITY_TYPE,    
+		FMSFACILITYDET.FACILITY_VALUE,
+		FMSFACILITYDET.MATURITY_DATE,
+		FMSFACILITYDET.CLASS_TYPE,
+		FMSFACILITYDET.FLOATING_RATE,
+		FMSFACILITYDET.MARGIN_RATE,
+		FMSFACILITYDET.REMARKS,
+		FMSFACILITYDET.EXCH_RATE,
+		FMSFACILITYDET.CV_VALUE,
+		FMSFACILITYDET.VALUE_DATE
+	FROM FMSFACILITYDET
+	WHERE COMP_CODE   = #{compCode}
+		AND BRANCH    = #{branchCode}
+		AND CODE      = #{code}
+		AND APP_TYPE  = 'F'
+		AND CATEGORY = 22
+	]]>	 
+ </sql>
+ 
+  <sql id="facilitySubLimitDependencyByCode">
+ 	AND LINE_NBR = #{lineNbr}
+ </sql>
+ 
+  <select id="facilitySubLimitList" resultMap="FMSFACILITYDET.BaseResultMap" parameterType="facilityTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="facilitySubLimitListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="facilitySubLimitListCount" resultType="int" parameterType="facilityTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="facilitySubLimitListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnFacilityDetVOByCode" resultType="fmsFacilityDet" parameterType="facilityTypeSC" >
+	<include refid="facilitySubLimitListCommon"/>
+	<include refid="facilitySubLimitDependencyByCode"/>
+ </select>
+ 
+ 
+  <resultMap id="facilityCOListMapTFA" type="facilityCO">
+	<result property="CODE" 			column="CODE" />
+	<result property="branch" 			column="BRANCH" />
+	<result property="fromApplication" 	column="FROM_APPLICATION" />	
+	<result property="revolvingOneOff" 	column="REVOLVING_ONEOFF" />
+	<result property="facilityType" 	column="FACILITY_TYPE" />
+	<result property="status" 			column="STATUS" />
+	<result property="cif" 				column="CIF" />
+	<result property="facilityValue" 	column="FACILITY_VALUE" />
+	<result property="drwdwnAmount" 	column="DRWDWN_AMOUNT" />	
+	<result property="currency" 		column="CURRENCY" />
+	<result property="shortNameEng" 	column="SHORT_NAME_ENG" />
+	<result property="briefDescEng" 	column="BRIEF_DESC_ENG" />	
+ </resultMap>
+ 
+  <select id="facilityNumberTFAList" resultMap="facilityCOListMapTFA" parameterType="facilityTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="facilityNumberTFAListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="facilityNumberTFAListCount" resultType="int" parameterType="facilityTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="facilityNumberTFAListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <sql id="facilityNumberTFAListCommon">
+		SELECT 
+			FMSFACILITY.CODE,
+			FMSFACILITY.BRANCH,
+			FMSFACILITY.FROM_APPLICATION,
+			(SELECT VALUE_DESC 
+		        FROM SYS_PARAM_LOV_TRANS 
+		        WHERE LOV_TYPE_ID = #{oneOffLovType,jdbcType=NUMERIC}
+		        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		        AND VALUE_CODE = FMSFACILITY.REVOLVING_ONEOFF
+		    ) REVOLVING_ONEOFF,
+			(SELECT VALUE_DESC 
+		        FROM SYS_PARAM_LOV_TRANS 
+		        WHERE LOV_TYPE_ID = #{facilityTypeLovType,jdbcType=NUMERIC}
+		        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		        AND VALUE_CODE = FMSFACILITY.FACILITY_TYPE
+		    ) FACILITY_TYPE,
+			(SELECT VALUE_DESC 
+		        FROM SYS_PARAM_LOV_TRANS 
+		        WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+		        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		        AND VALUE_CODE = FMSFACILITY.STATUS
+		    ) STATUS,
+			FMSFACILITY.CIF,
+			FMSFACILITY.FACILITY_VALUE,
+			FMSFACILITY.DRWDWN_AMOUNT,
+			FMSFACILITY.CURRENCY,
+			(SELECT CIF.SHORT_NAME_ENG 
+			 FROM CIF 
+			 WHERE CIF.COMP_CODE = FMSFACILITY.COMP_CODE 
+			 AND CIF.CIF_NO = FMSFACILITY.CIF
+			) SHORT_NAME_ENG,
+			(SELECT CURRENCIES.BRIEF_DESC_ENG 
+			 FROM CURRENCIES
+			 WHERE CURRENCIES.COMP_CODE = FMSFACILITY.COMP_CODE	 
+			 AND CURRENCIES.CURRENCY_CODE = FMSFACILITY.CURRENCY
+			 ) BRIEF_DESC_ENG
+		FROM FMSFACILITY 
+		WHERE FMSFACILITY.COMP_CODE			= #{compCode,jdbcType=NUMERIC} 
+		<if test="branchCode != null and branchCode != emptyBigDecimalValue">
+			AND FMSFACILITY.BRANCH 				= #{branchCode,jdbcType=NUMERIC} 
+		</if>
+		AND FMSFACILITY.CIF 				= #{cifNo,jdbcType=NUMERIC}
+		AND	FMSFACILITY.STATUS 				= 'P'
+	
+		<if test='!"1".equals(settleMethod)' >		
+			<choose>
+			  <when test='"I".equals(settleMethod)'>
+			   	 AND (FMSFACILITY.FACILITY_TYPE  	= 'S' OR FMSFACILITY.FACILITY_TYPE  = 'N')
+			  </when>
+			  
+			  <when test='"B".equals(settleMethod)'>
+			   	 AND (FMSFACILITY.FACILITY_TYPE  	= 'L' OR FMSFACILITY.FACILITY_TYPE  = 'N' OR FMSFACILITY.FACILITY_TYPE  = 'G')
+			  </when>
+			</choose>
+		</if>
+		
+		<if test="cifNo != null and cifNo != emptyBigDecimalValue"> 
+			AND FMSFACILITY.CIF = #{cifNo,jdbcType=NUMERIC}
+		</if>
+		
+ 	</sql>
+ 
+ 	
+ 	<resultMap id="cardsFacilityResultList" type="cardsManagementCO" >
+		<result property="cifVO.CIF_NO"    column="CIF_NO"/>  
+	 	<result property="destBranchDesc"    column="BRIEF_DESC_ENG"/>		
+		<result property="fmsFacilityDetVO.CODE"	column="CODE" />
+		<result property="fmsCreditCardDetailsVO.APPLICATION_CODE"    column="APPLICATION_CODE"/>   
+        <result property="fmsCreditCardDetailsVO.COMP_CODE"    column="COMP_CODE"/>   
+        <result property="fmsCreditCardDetailsVO.BRANCH_CODE"    column="BRANCH_CODE"/>   
+        <result property="fmsCreditCardDetailsVO.SUBLIMIT_LINE_NBR"    column="SUBLIMIT_LINE_NBR"/>   
+        <result property="fmsCreditCardDetailsVO.LINE_NBR"    column="LINE_NBR"/>   
+        <result property="fmsCreditCardDetailsVO.CREDIT_CARD_NUMBER"    column="CREDIT_CARD_NUMBER"/>   
+        <result property="fmsCreditCardDetailsVO.INDICATOR"    column="INDICATOR"/>   
+        <result property="fmsCreditCardDetailsVO.CARD_HOLDER_NAME"    column="CARD_HOLDER_NAME"/>   
+        <result property="fmsCreditCardDetailsVO.CARD_TYPE"    column="CARD_TYPE"/>   
+        <result property="fmsCreditCardDetailsVO.PAYMENT_PERC"    column="PAYMENT_PERC"/>   
+        <result property="fmsCreditCardDetailsVO.LIMIT_AMT"    column="LIMIT_AMT"/>   
+        <result property="fmsCreditCardDetailsVO.OUTSTANDING_AMT"    column="OUTSTANDING_AMT"/>   
+        <result property="fmsCreditCardDetailsVO.EFFECTIVE_DATE"    column="EFFECTIVE_DATE"/>   
+        <result property="fmsCreditCardDetailsVO.EXPIRY_DATE"    column="EXPIRY_DATE"/>   
+        <result property="fmsCreditCardDetailsVO.STATUS"    column="STATUS"/>  
+		<result property ="statusDesc" column="STATUS_DESC"/>
+	</resultMap>
+
+	<select id="cardsFacilityList" resultMap="cardsFacilityResultList"	parameterType="cardsManagementSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cardsFacilityListSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cardsFacilityListCount" resultType="int" parameterType="cardsManagementSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="cardsFacilityListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ 	</select>
+		
+	<sql id="cardsFacilityListSQL">
+	SELECT FMSCREDITCARD_DETAILS.APPLICATION_CODE,
+	   CIF.CIF_NO,
+	   BRANCHES.BRIEF_DESC_ENG,	   
+       FMSCREDITCARD_DETAILS.COMP_CODE,
+       FMSCREDITCARD_DETAILS.BRANCH_CODE,
+       FMSFACILITY.CODE,
+       FMSCREDITCARD_DETAILS.SUBLIMIT_LINE_NBR,
+       FMSCREDITCARD_DETAILS.LINE_NBR,
+       FMSCREDITCARD_DETAILS.CREDIT_CARD_NUMBER,
+       FMSCREDITCARD_DETAILS.INDICATOR,
+       FMSCREDITCARD_DETAILS.CARD_HOLDER_NAME,
+       FMSCREDITCARD_DETAILS.CARD_TYPE,
+       FMSCREDITCARD_DETAILS.PAYMENT_PERC,
+       FMSCREDITCARD_DETAILS.LIMIT_AMT,
+       FMSCREDITCARD_DETAILS.OUTSTANDING_AMT,
+       FMSCREDITCARD_DETAILS.EFFECTIVE_DATE,
+       FMSCREDITCARD_DETAILS.EXPIRY_DATE,
+       FMSCREDITCARD_DETAILS.STATUS,
+       		(
+		  SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+        	 WHERE LOV_TYPE_ID = #{lovTypeStatus,jdbcType = NUMERIC} 
+        	 AND LANG_CODE = #{language,jdbcType = VARCHAR}
+         	AND VALUE_CODE = FMSCREDITCARD_DETAILS.STATUS
+		)AS STATUS_DESC		
+       
+  FROM FMSFACILITY
+ INNER JOIN BRANCHES ON BRANCHES.BRANCH_CODE = FMSFACILITY.BRANCH AND BRANCHES.COMP_CODE = FMSFACILITY.COMP_CODE
+ INNER JOIN BRANCHES ON BRANCHES.COMP_CODE = FMSFACILITY.COMP_CODE AND BRANCHES.BRANCH_CODE = FMSFACILITY.BRANCH
+ INNER JOIN CIF ON FMSFACILITY.COMP_CODE = CIF.COMP_CODE
+               AND FMSFACILITY.CIF = CIF.CIF_NO
+ INNER JOIN FMSFACILITYDET ON FMSFACILITY.COMP_CODE =
+                              FMSFACILITYDET.COMP_CODE
+                          AND FMSFACILITYDET.BRANCH = FMSFACILITY.BRANCH
+                          AND FMSFACILITYDET.CODE = FMSFACILITY.CODE
+ INNER JOIN FMSCREDITCARD_DETAILS ON FMSCREDITCARD_DETAILS.COMP_CODE =
+                                     FMSFACILITY.COMP_CODE
+                                 AND FMSCREDITCARD_DETAILS.BRANCH_CODE =
+                                     FMSFACILITY.BRANCH
+                                 AND FMSCREDITCARD_DETAILS.APPLICATION_CODE =
+                                     FMSFACILITY.FROM_APPLICATION
+                                 AND FMSCREDITCARD_DETAILS.SUBLIMIT_LINE_NBR =
+                                     FMSFACILITYDET.LINE_NBR
+ WHERE FMSFACILITY.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+   AND FMSFACILITY.STATUS = 'P'
+   AND FMSFACILITYDET.APP_TYPE = 'F'
+   AND FMSCREDITCARD_DETAILS.CARD_TYPE = #{cardType,jdbcType=NUMERIC}
+   AND  CIF.CIF_NO             = #{cif, jdbcType=NUMERIC}
+                                               												
+	
+	</sql>
+</mapper>

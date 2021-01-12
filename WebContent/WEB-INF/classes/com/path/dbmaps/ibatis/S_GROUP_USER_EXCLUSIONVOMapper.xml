@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_GROUP_USER_EXCLUSION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_GROUP_USER_EXCLUSIONVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="GROUP_ID" property="GROUP_ID" />
+    <id column="ROLE_NAME" property="ROLE_NAME" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TO_BE_DELETED" property="TO_BE_DELETED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, GROUP_ID, ROLE_NAME, USER_ID, STATUS, TO_BE_DELETED
+  </sql>
+  <select id="selectS_GROUP_USER_EXCLUSION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_GROUP_USER_EXCLUSIONVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_GROUP_USER_EXCLUSION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+      and ROLE_NAME = #{ROLE_NAME}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteS_GROUP_USER_EXCLUSION" parameterType="com.path.dbmaps.vo.S_GROUP_USER_EXCLUSIONVO" >
+    delete from S_GROUP_USER_EXCLUSION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      <if test="GROUP_ID != null" >
+      and GROUP_ID = #{GROUP_ID}
+      </if>
+      <if test="ROLE_NAME != null" >
+      and ROLE_NAME = #{ROLE_NAME}
+      </if>
+      <if test="USER_ID != null" >
+      and USER_ID = #{USER_ID}
+      </if>
+  </delete>
+  <insert id="insertS_GROUP_USER_EXCLUSION" parameterType="com.path.dbmaps.vo.S_GROUP_USER_EXCLUSIONVO" >
+    insert into S_GROUP_USER_EXCLUSION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="GROUP_ID != null" >
+        GROUP_ID,
+      </if>
+      <if test="ROLE_NAME != null" >
+        ROLE_NAME,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TO_BE_DELETED != null" >
+        TO_BE_DELETED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="GROUP_ID != null" >
+        #{GROUP_ID},
+      </if>
+      <if test="ROLE_NAME != null" >
+        #{ROLE_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TO_BE_DELETED != null" >
+        #{TO_BE_DELETED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_GROUP_USER_EXCLUSION" >
+    update S_GROUP_USER_EXCLUSION
+    <set >
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TO_BE_DELETED != null" >
+        TO_BE_DELETED = #{TO_BE_DELETED},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and GROUP_ID = #{GROUP_ID}
+      and ROLE_NAME = #{ROLE_NAME}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateS_GROUP_USER_EXCLUSION" parameterType="com.path.dbmaps.vo.S_GROUP_USER_EXCLUSIONVO" >
+    <include refid="sql_updateS_GROUP_USER_EXCLUSION" />
+  </update>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="tempCodeListMapper">
+
+ <sql id="tempCodeListCommon">
+	<![CDATA[
+		SELECT TRSPAYPLANTMPLT.COMP_CODE             ,                                               
+       TRSPAYPLANTMPLT.BRANCH_CODE,                                                               
+       TRSPAYPLANTMPLT.TEMPLATE_CODE ,                                                          
+       TRSPAYPLANTMPLT.BRIEF_NAME_ENG,                                        
+       TRSPAYPLANTMPLT.BRIEF_NAME_ARAB,                     
+       TRSPAYPLANTMPLT.LONG_NAME_ENG,       
+       TRSPAYPLANTMPLT.LONG_NAME_ARAB 
+                FROM  TRSPAYPLANTMPLT
+                WHERE TRSPAYPLANTMPLT.COMP_CODE  = #{compCode} 
+                AND      TRSPAYPLANTMPLT.BRANCH_CODE  = #{branchCode}
+
+	]]>	 
+ </sql>
+ 
+ <resultMap id="tempCodeListMap" type="tempCodeVO">
+	<id property="TEMPLATE_CODE" column="TEMPLATE_CODE"/>
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+ </resultMap>
+ 
+ <select id="tempCodeList" resultMap="tempCodeListMap" parameterType="tempCodeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="tempCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="tempCodeListCount" resultType="int" parameterType="tempCodeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="tempCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <select id="returnTempCodeById" parameterType="tempCodeSC" resultType="tempCodeVO">
+  		SELECT
+  		CASE WHEN #{language} = 'L'
+ 		THEN BRIEF_NAME_ENG ELSE
+		BRIEF_NAME_ARAB END BRIEF_NAME_ENG,
+		TEMPLATE_CODE
+		FROM  TRSPAYPLANTMPLT 
+		WHERE TRSPAYPLANTMPLT.COMP_CODE = #{compCode} 
+		AND   TRSPAYPLANTMPLT.BRANCH_CODE  = #{branchCode}
+		AND   TRSPAYPLANTMPLT.TEMPLATE_CODE = #{templateCode}
+ </select>
+</mapper>

@@ -1,0 +1,2196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="bpmMapper" >
+
+	<resultMap id="returnBpmTaskOutArgMappingMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="taskMapArgOutVO.ARG_NAME" 			column="ARG_NAME"/>
+		 <result property="taskMapArgOutVO.MAP_TYPE" 			column="MAP_TYPE"/>
+		 <result property="taskMapArgOutVO.MAP_VALUE" 			column="MAP_VALUE"/>
+		 <result property="fieldTechDetVO.ELEMENT_NAME" 		column="ELEMENT_NAME"/>
+		 <result property="fieldTechDetVO.VO_PROPERTY_NAME" 	column="VO_PROPERTY_NAME"/>
+		 <result property="fieldTechDetVO.VO_CO_REFERENCE" 		column="VO_CO_REFERENCE"/>
+	</resultMap> 
+	 
+	<select id="returnBpmTaskOutArgMapping" resultMap="returnBpmTaskOutArgMappingMap" parameterType="com.path.vo.common.bpm.BpmCO" > 
+		SELECT O.ARG_NAME,
+		       O.MAP_TYPE,
+		       O.MAP_VALUE,
+		       F.ELEMENT_NAME,
+		       F.VO_PROPERTY_NAME,
+		       F.VO_CO_REFERENCE
+		  FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT O
+		  LEFT JOIN FIELD_TECH_DETAILS F ON F.FLD_IDENTIFIER = O.FLD_IDENTIFIER
+		 WHERE O.TASK_MAP_ID =
+		       (SELECT T.TASK_MAP_ID
+		          FROM SYS_PARAM_BPM_TASK_MAP T
+		         where T.TASK_NAME = #{taskName,jdbcType=VARCHAR}
+		           AND T.PROCESS_ID =
+		               (SELECT P.PROCESS_ID
+		                  FROM SYS_PARAM_BPM_PROCESS_DEF P
+		                 WHERE P.PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} ))
+	</select> 
+	  
+	<resultMap id="returnBpmTaskInArgMappingMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="taskMapVO.TASK_MAP_ID" 				column="TASK_MAP_ID"/>
+		 <result property="taskMapVO.TASK_NAME" 				column="TASK_NAME"/>
+		 <result property="taskMapVO.SCREEN_CODE" 				column="SCREEN_CODE"/>
+		 <result property="screenDefVO.APP_NAME" 				column="APP_NAME"/>
+		 <result property="taskMapVO.PROG_REF" 					column="PROG_REF"/>
+		 <result property="screenDefVO.URL" 					column="URL"/>
+		 <result property="taskMapArgInVO.ARG_NAME" 			column="ARG_NAME"/>
+		 <result property="taskMapArgInVO.MAP_TYPE" 			column="MAP_TYPE"/>
+		 <result property="taskMapArgInVO.MAP_VALUE" 			column="MAP_VALUE"/>
+		 <result property="screenArgVO.DEFAULT_VALUE" 			column="DEFAULT_VALUE"/>
+		 <result property="taskMapVO.ACTION_TYPE" 				column="ACTION_TYPE"/>
+	</resultMap> 
+	 
+	<select id="returnBpmTaskInArgMapping" resultMap="returnBpmTaskInArgMappingMap" parameterType="com.path.vo.common.bpm.BpmCO" > 
+	
+		SELECT T.TASK_MAP_ID,
+		       T.TASK_NAME,
+		       (CASE 
+	       			WHEN T.ACTION_TYPE = '2' THEN
+	       			<choose>
+		 				<when test="isSybase == 1">
+	      					CONVERT(VARCHAR,T.DYN_SCREEN_ID) 
+	      				</when>
+		 				<otherwise>
+		 					TO_CHAR(T.DYN_SCREEN_ID)
+	      				</otherwise>
+		   			</choose>
+	       			ELSE T.SCREEN_CODE
+	       		 END
+	       		)SCREEN_CODE,
+		       S.APP_NAME,
+		       T.PROG_REF,
+		       S.URL,
+		       I.ARG_NAME,
+		       I.MAP_TYPE,
+		       I.MAP_VALUE,
+		       A.DEFAULT_VALUE,
+		       T.ACTION_TYPE
+		  FROM SYS_PARAM_BPM_TASK_MAP T
+		  LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON S.SCREEN_CODE = T.SCREEN_CODE
+		  LEFT JOIN SYS_PARAM_BPM_TASK_MAP_ARG_IN I ON I.TASK_MAP_ID = T.TASK_MAP_ID
+		  LEFT JOIN SYS_PARAM_SCREEN_ARG A ON A.ARG_NAME = I.ARG_NAME AND A.SCREEN_CODE = I.SCREEN_CODE
+		 WHERE T.TASK_NAME = #{taskName,jdbcType=VARCHAR}
+		   AND T.PROCESS_ID =
+		       (SELECT P.PROCESS_ID
+		          FROM SYS_PARAM_BPM_PROCESS_DEF P
+		         WHERE P.PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR})
+         
+   	</select>
+   	
+   	
+   	<!-- Screen definition lookup -->
+   	
+   	<select id="returnScreenDefDependency" resultMap="screenDefGridMap" parameterType="com.path.vo.common.bpm.BpmSC">
+    	SELECT S.SCREEN_CODE, 
+    	    S.PROG_REF,
+        	S.APP_NAME,
+        	( 
+        		CASE 
+        			WHEN S.SCREEN_DESC_VALUE_CODE IS NOT NULL AND S.SCREEN_DESC_VALUE_CODE <![CDATA[<>]]> '' THEN
+        				(   
+        					SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      				FROM SYS_PARAM_LOV_TRANS
+		      				WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = S.SCREEN_DESC_VALUE_CODE 
+		        			AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		        			AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+		        		)
+        			ELSE S.SCREEN_DESC		
+        		END
+        	) SCREEN_DESC
+		FROM SYS_PARAM_SCREEN_DEFINITION S
+		<if test='screenCode != null and !screenCode.isEmpty() and fromDependency != null and fromDependency.equals("true")'>
+ 			WHERE S.SCREEN_CODE = #{screenCode,jdbcType=VARCHAR}
+ 		</if>
+	</select>
+   	
+   	
+   	<resultMap id="screenDefGridMap" type="com.path.dbmaps.vo.SYS_PARAM_SCREEN_DEFINITIONVO">
+		 <result property="SCREEN_CODE"     column="SCREEN_CODE"/>
+		 <result property="SCREEN_DESC"     column="SCREEN_DESC"/>
+		 <result property="PROG_REF"  		column="PROG_REF"/>
+		 <result property="APP_NAME"  		column="APP_NAME"/>
+	</resultMap>
+	
+	<sql id="select_screenDefList">
+		  SELECT S.SCREEN_CODE,
+                     S.PROG_REF,
+                     S.APP_NAME,
+                     (CASE
+                       WHEN S.SCREEN_DESC_VALUE_CODE IS NOT NULL AND
+                            S.SCREEN_DESC_VALUE_CODE <![CDATA[<>]]> '' THEN
+                        (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                           FROM SYS_PARAM_LOV_TRANS
+                          WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE =
+                                S.SCREEN_DESC_VALUE_CODE
+                            AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+                            AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR})
+                       ELSE
+                        S.SCREEN_DESC
+                     END) SCREEN_DESC
+            FROM SYS_PARAM_SCREEN_DEFINITION S, OPT O
+            WHERE O.PROG_REF = S.PROG_REF 
+            AND O.APP_NAME = S.APP_NAME
+            AND ( EXISTS  (  SELECT 1
+              FROM   AXS
+              WHERE AXS.USER_ID     = #{userId,jdbcType=VARCHAR}
+              AND  AXS.COMP_CODE    = #{compCode,jdbcType=NUMERIC} 
+              AND  AXS.BRANCH_CODE  = #{branchCode,jdbcType=NUMERIC}
+              AND  AXS.APP_NAME     = O.APP_NAME
+              AND  AXS.PROG_REF     = O.PROG_REF
+              AND  AXS.STATUS       = 'P'
+              AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                 ) 
+          
+              OR (#{profType,jdbcType=VARCHAR} = '1' 
+                AND (EXISTS (  SELECT 1
+                    FROM   S_APPROLUSR, S_ROLE_DETAIL
+                    WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                    AND S_ROLE_DETAIL.ROLE_NAME  = S_APPROLUSR.ROLE_NAME   
+                    AND S_ROLE_DETAIL.APP_NAME   = O.APP_NAME
+                    AND S_ROLE_DETAIL.PROG_REF   = O.PROG_REF
+                    AND S_APPROLUSR.STATUS       = 'P'
+                    AND S_ROLE_DETAIL.STATUS     = 'P'
+                    AND S_APPROLUSR.COMP_CODE    = #{compCode,jdbcType=NUMERIC} 
+                    AND S_APPROLUSR.BRANCH_CODE  = #{branchCode,jdbcType=NUMERIC}
+                    AND S_APPROLUSR.APP_NAME     = S.APP_NAME
+                    AND S_APPROLUSR.USER_ID      = #{userId,jdbcType=VARCHAR}
+                    )  
+                  OR EXISTS
+                   (
+                     SELECT 1
+                     FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                     WHERE (S_GROUP_USER.COMP_CODE   = #{compCode,jdbcType=NUMERIC}  OR S_GROUP_USER.COMP_CODE   = 0)
+                     AND   (S_GROUP_USER.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC} OR S_GROUP_USER.BRANCH_CODE = 0)
+                     AND   S_GROUP_USER.USER_ID      = #{userId,jdbcType=VARCHAR}
+                     AND   S_GROUP_USER.STATUS       = 'P'
+      				 AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+      				 		   
+                     AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+                     AND   S_GROUP_PROFILE.APP_NAME   = S_ROLE_DETAIL.APP_NAME
+                     AND   S_GROUP_PROFILE.APP_NAME   = S.APP_NAME
+                     AND   S_GROUP_PROFILE.STATUS     = 'P'
+      						   
+                     AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+                     AND S_ROLE_DETAIL.APP_NAME      = O.APP_NAME
+                     AND S_ROLE_DETAIL.PROG_REF      = O.PROG_REF
+                     AND S_ROLE_DETAIL.STATUS        = 'P'
+                     AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+                   )
+                  )
+                )
+             )
+             <if test='whereQuery != null and whereQuery != ""'>
+				AND ${whereQuery}
+			 </if>
+            
+            UNION
+            
+            SELECT S.SCREEN_CODE, OE.PROG_REF, S.APP_NAME, O.PROG_DESC SCREEN_DESC
+               FROM  OPT O, OPT_EXTENDED OE, SYS_PARAM_SCREEN_DEFINITION S
+               WHERE O.APP_NAME = S.APP_NAME
+               AND OE.APP_NAME = O.APP_NAME
+               AND OE.PROG_REF = O.PROG_REF
+               AND S.PROG_REF = OE.OPT_REFERENCE
+               AND ( EXISTS  (  SELECT 1
+              FROM   AXS
+              WHERE AXS.USER_ID     = #{userId,jdbcType=VARCHAR}
+              AND  AXS.COMP_CODE    = #{compCode,jdbcType=NUMERIC}
+              AND  AXS.BRANCH_CODE  = #{branchCode,jdbcType=NUMERIC}
+              AND  AXS.APP_NAME     = O.APP_NAME
+              AND  AXS.PROG_REF     = O.PROG_REF
+              AND  AXS.STATUS       = 'P'
+              AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                 ) 
+          
+              OR (#{profType,jdbcType=VARCHAR} = '1' 
+                AND (EXISTS (  SELECT 1
+                    FROM   S_APPROLUSR, S_ROLE_DETAIL
+                    WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                    AND S_ROLE_DETAIL.ROLE_NAME  = S_APPROLUSR.ROLE_NAME   
+                    AND S_ROLE_DETAIL.APP_NAME   = O.APP_NAME
+                    AND S_ROLE_DETAIL.PROG_REF   = O.PROG_REF
+                    AND S_APPROLUSR.STATUS       = 'P'
+                    AND S_ROLE_DETAIL.STATUS     = 'P'
+                    AND S_APPROLUSR.COMP_CODE    = #{compCode,jdbcType=NUMERIC}
+                    AND S_APPROLUSR.BRANCH_CODE  = #{branchCode,jdbcType=NUMERIC}
+                    AND S_APPROLUSR.APP_NAME     = S.APP_NAME
+                    AND S_APPROLUSR.USER_ID      = #{userId,jdbcType=VARCHAR}
+                    )  
+                  OR EXISTS
+                   (
+                     SELECT 1
+                     FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                     WHERE (S_GROUP_USER.COMP_CODE   = #{compCode,jdbcType=NUMERIC} OR S_GROUP_USER.COMP_CODE   = 0)
+                     AND   (S_GROUP_USER.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC} OR S_GROUP_USER.BRANCH_CODE = 0)
+                     AND   S_GROUP_USER.USER_ID      = #{userId,jdbcType=VARCHAR}
+                     AND   S_GROUP_USER.STATUS       = 'P'
+      				 AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+      						   
+                     AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+                     AND   S_GROUP_PROFILE.APP_NAME   = S_ROLE_DETAIL.APP_NAME
+                     AND   S_GROUP_PROFILE.APP_NAME   = S.APP_NAME
+                     AND   S_GROUP_PROFILE.STATUS     = 'P'
+      						   
+                     AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+                     AND S_ROLE_DETAIL.APP_NAME      = O.APP_NAME
+                     AND S_ROLE_DETAIL.PROG_REF      = O.PROG_REF
+                     AND S_ROLE_DETAIL.STATUS        = 'P'
+                     AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+                   )
+                  )
+                )
+             )
+             <if test='whereQuery != null and whereQuery != ""'>
+				AND ${whereQuery}
+			 </if>
+ 		 
+	</sql>
+	
+	<select id="returnScreenDefList" resultMap="screenDefGridMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_screenDefList"/>
+		) TBL
+		<!-- /* remove wherequery on union and apply it on each query inside bpmMapper.select_screenDefList #520274*/ -->
+		<!-- /* <include refid="servicesCommon.commonGridWrpAftCnt"/>*/-->
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnScreenDefListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_screenDefList"/>
+		) TBL
+		<!-- /* remove wherequery on union and apply it on each query inside bpmMapper.select_screenDefList #520274*/ -->
+		<!-- /* <include refid="servicesCommon.commonGridWrpAftCnt"/>*/-->
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- delete current mapping -->
+	<delete id="deleteUserTaskMapping" parameterType="com.path.vo.common.bpm.BpmSC" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN  WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT  WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+				END
+		 </when>
+		 <otherwise>
+		 		BEGIN
+		   			DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN C WHERE C.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT M WHERE M.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+				END;
+		 </otherwise>
+	   </choose>
+  	</delete> 
+  	
+  	<!-- delete process definition -->
+	<delete id="deleteUploadedProcDef" parameterType="com.path.vo.common.bpm.BpmSC" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN WHERE TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT WHERE TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+					DELETE FROM SYS_PARAM_BPM_TASK_ASSIGNMENT WHERE TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_ACCESS_RIGHT WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_PROCESS_VAR WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_PROCESS_DEF WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC}
+ 				END
+		 </when>
+		 <otherwise>
+		 		BEGIN
+		   			DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN C WHERE C.TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} );
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT M WHERE M.TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} );
+					DELETE FROM SYS_PARAM_BPM_TASK_ASSIGNMENT L WHERE L.TASK_MAP_ID IN ( SELECT A.TASK_MAP_ID FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC} );
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP A WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_ACCESS_RIGHT WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_PROCESS_VAR WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_PROCESS_DEF P WHERE P.PROCESS_ID = #{processId,jdbcType=NUMERIC};
+ 				END;
+		 </otherwise>
+	   </choose>
+  	</delete> 
+  	
+  	<!-- delete all task mapping data -->
+	<delete id="deleteAllTaskMappingData" parameterType="com.path.vo.common.bpm.BpmSC" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_TASK_ASSIGNMENT WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+ 				END
+		 </when>
+		 <otherwise>
+		 		BEGIN
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_TASK_ASSIGNMENT WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BPM_TASK_MAP WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC};
+ 				END;
+		 </otherwise>
+	   </choose>
+  	</delete> 
+  	
+  	<!-- uploaded process definition grid -->
+   	
+   	<resultMap id="uploadProcessDefGridMap" type="com.path.dbmaps.vo.SYS_PARAM_BPM_PROCESS_DEFVO">
+		 <result property="PROCESS_ID"     	column="PROCESS_ID"/>
+		 <result property="PROCESS_DEF_ID"  column="PROCESS_DEF_ID"/>
+		 <result property="PROCESS_NAME"  	column="PROCESS_NAME"/>
+		 <result property="VERSION"  		column="VERSION"/>
+		 <result property="ACTIVE"  		column="ACTIVE"/>
+	</resultMap>
+	
+	<sql id="select_uploadProcDefList">
+    	SELECT PROCESS_ID, 
+    	    PROCESS_DEF_ID,
+        	PROCESS_NAME,
+        	VERSION,
+        	ACTIVE
+		FROM SYS_PARAM_BPM_PROCESS_DEF 
+	</sql>
+	
+	<select id="returnUploadedProcessDefList" resultMap="uploadProcessDefGridMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_uploadProcDefList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnUploadedProcessDefListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_uploadProcDefList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- task mapping grid -->
+   	
+   	<resultMap id="userTaskMapGridMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="taskMapVO.PROCESS_ID"  		column="PROCESS_ID"/>
+		 <result property="taskMapVO.TASK_MAP_ID"     	column="TASK_MAP_ID"/>
+		 <result property="taskMapVO.TASK_NAME"  		column="TASK_NAME"/>
+		 <result property="taskMapVO.SCREEN_CODE"  		column="SCREEN_CODE"/>
+		 <result property="procDefVO.PROCESS_NAME"  	column="PROCESS_NAME"/>
+		 <result property="procDefVO.PROCESS_DEF_ID"  	column="PROCESS_DEF_ID"/>
+		 <result property="screenDefVO.PROG_REF"  		column="PROG_REF"/>
+		 <result property="screenDefVO.SCREEN_DESC"  	column="SCREEN_DESC"/>
+		 <result property="screenDefVO.APP_NAME"  		column="APP_NAME"/>
+		 <result property="taskMapVO.BPM_ASSIGNMENT_YN"  	column="BPM_ASSIGNMENT_YN"/>
+		 <result property="taskMapVO.COMPLETION_TYPE"  		column="COMPLETION_TYPE"/>
+		 <result property="taskMapVO.ACTION_TYPE"  		column="ACTION_TYPE"/>
+		 <result property="taskMapVO.PRIORITY"  		column="PRIORITY"/>
+		 <result property="completionTypeDesc"  		column="COMPLETION_TYPE_DESC"/>
+		 <result property="actionTypeDesc"  			column="ACTION_TYPE_DESC"/>
+		 <result property="taskMapVO.PROG_REF"  		column="PROG_REF"/>
+		 <result property="taskPriorityDesc"  			column="TASK_PRIORITY_DESC"/>
+	</resultMap>
+	
+	<sql id="select_userTaskMapList">
+    	SELECT T.PROCESS_ID, 
+    	    T.TASK_MAP_ID,
+        	T.TASK_NAME,
+       	 	(CASE 
+       			WHEN T.ACTION_TYPE = '2' THEN
+       			<choose>
+	 				<when test="isSybase == 1">
+      					CONVERT(VARCHAR,T.DYN_SCREEN_ID) 
+      				</when>
+	 				<otherwise>
+	 					TO_CHAR(T.DYN_SCREEN_ID)
+      				</otherwise>
+	   			</choose>
+       			ELSE T.SCREEN_CODE
+       		 END
+       		)SCREEN_CODE,
+        	P.PROCESS_NAME,
+        	P.PROCESS_DEF_ID,
+        	T.PROG_REF,
+        	( 
+        		CASE 
+        			WHEN T.ACTION_TYPE = '1' THEN
+		        		CASE 
+		        			WHEN S.SCREEN_DESC_VALUE_CODE IS NOT NULL AND S.SCREEN_DESC_VALUE_CODE <![CDATA[<>]]> '' THEN
+		        				(   
+		        					SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				      				FROM SYS_PARAM_LOV_TRANS
+				      				WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = S.SCREEN_DESC_VALUE_CODE 
+				        			AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+				        			AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+				        		)
+		        			ELSE S.SCREEN_DESC		
+		        		END
+		        	WHEN T.ACTION_TYPE = '2' THEN 	
+       				(
+      						SELECT DYN_SCREEN_DESC FROM SYS_DYN_SCREEN_DEF SDSF 
+      						WHERE T.DYN_SCREEN_ID = SDSF.DYN_SCREEN_ID
+       				)
+		       END 		
+        	) SCREEN_DESC,
+        	(CASE 
+       			WHEN T.ACTION_TYPE = '2' THEN
+       				(SELECT APP_NAME FROM SYS_DYN_SCREEN_DEF WHERE DYN_SCREEN_ID = T.DYN_SCREEN_ID)
+       			ELSE 
+       				S.APP_NAME
+       		 END
+       		)APP_NAME,
+			T.BPM_ASSIGNMENT_YN,
+			T.COMPLETION_TYPE,
+			T.ACTION_TYPE,
+			T.PRIORITY,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = T.COMPLETION_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{completionLovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) COMPLETION_TYPE_DESC,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = T.ACTION_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{actionLovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ACTION_TYPE_DESC,
+		    (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = T.PRIORITY
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{taskPriorityLovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) TASK_PRIORITY_DESC
+		FROM SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON S.SCREEN_CODE = T.SCREEN_CODE , SYS_PARAM_BPM_PROCESS_DEF P 
+		WHERE T.PROCESS_ID = P.PROCESS_ID
+		AND T.PROCESS_ID = #{processId,jdbcType=NUMERIC} 
+	</sql>
+	
+	<select id="returnUserTaskMapList" resultMap="userTaskMapGridMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_userTaskMapList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnUserTaskMapListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_userTaskMapList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- input argument mapping -->
+	
+	<resultMap id="returnTaskInputArgMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="screenArgVO.SCREEN_CODE" 			column="SCREEN_CODE"/>
+		 <result property="screenArgVO.ARG_NAME" 				column="ARG_NAME"/>
+		 <result property="screenArgVO.ARG_DESC" 				column="ARG_DESC"/>
+		 <result property="screenArgVO.DEFAULT_VALUE" 			column="DEFAULT_VALUE"/>
+		 <result property="taskMapArgInVO.MAP_TYPE" 			column="MAP_TYPE"/>
+		 <result property="taskMapArgInVO.MAP_VALUE" 			column="MAP_VALUE"/>
+		 <result property="taskMapArgInVO.TASK_MAP_ID" 			column="TASK_MAP_ID"/>
+		 <result property="fieldType" 							column="FIELD_TYPE"/>
+		 <result property="typeCode" 							column="Element_Type_Code"/>
+		 <result property="valueType" 							column="VALUE_TYPE"/>
+		 
+	</resultMap> 
+	
+	<select id="returnTaskInputArg" resultMap="returnTaskInputArgMap" parameterType="com.path.vo.common.bpm.BpmSC" >
+		<choose>
+		 	<when test="actionType == 1">
+			 	SELECT P.SCREEN_CODE,
+				       P.ARG_NAME,
+				       (CASE
+				         WHEN P.ARG_DESC_VALUE_CODE IS NOT NULL AND P.ARG_DESC_VALUE_CODE <![CDATA[<>]]> '' THEN
+				          (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+				             FROM SYS_PARAM_LOV_TRANS
+				            WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = P.ARG_DESC_VALUE_CODE
+				              AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+				              AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR})
+				         ELSE
+				          P.ARG_DESC
+				       END) ARG_DESC,
+				       P.DEFAULT_VALUE,
+				       I.MAP_TYPE,
+				       I.MAP_VALUE,
+				       #{taskMapId,jdbcType=NUMERIC} TASK_MAP_ID
+				  FROM SYS_PARAM_SCREEN_ARG P
+				  LEFT JOIN SYS_PARAM_BPM_TASK_MAP_ARG_IN I ON I.SCREEN_CODE = P.SCREEN_CODE
+				                                           AND I.ARG_NAME = P.ARG_NAME
+				                                           AND I.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+				 WHERE P.SCREEN_CODE = #{screenCode,jdbcType=VARCHAR}
+	 		</when>
+	 		<otherwise>
+			SELECT E.ELEMENT_ID ARG_NAME,
+			       D.PROPERTY_VALUE ARG_DESC,
+			       #{screenCode,jdbcType=VARCHAR} SCREEN_CODE,
+			       I.MAP_TYPE,
+				   I.MAP_VALUE,
+				   E.Element_Type_Code,
+             	   (
+             	    CASE
+                    	WHEN E.ELEMENT_TYPE_CODE = 4 THEN 
+                    		(SELECT PROPERTY_VALUE FROM SYS_DYN_SCREEN_ELEMENTS_DET WHERE PROPERTY_CODE = 'date' and element_id = e.element_id)
+                    	ELSE
+                    		(SELECT PROPERTY_VALUE FROM SYS_DYN_SCREEN_ELEMENTS_DET WHERE PROPERTY_CODE = 'mode' and element_id = e.element_id)
+              		END)VALUE_TYPE,
+				   (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+				    WHERE LOV_TYPE_ID = #{dynScreenElemTypeLovTypeId,jdbcType=NUMERIC}
+				     AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+				     AND VALUE_CODE = E.ELEMENT_TYPE_CODE) FIELD_TYPE,
+			       #{taskMapId,jdbcType=NUMERIC} TASK_MAP_ID
+			     FROM SYS_DYN_SCREEN_ELEMENTS E 
+			     LEFT JOIN SYS_DYN_SCREEN_ELEMENTS_DET D ON E.ELEMENT_ID = D.ELEMENT_ID AND D.PROPERTY_CODE = 'id'
+			     LEFT JOIN SYS_PARAM_BPM_TASK_MAP_ARG_IN I ON I.SCREEN_CODE = ${screenCode} 
+			     										   AND I.ARG_NAME = E.ELEMENT_ID
+				                                           AND I.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+				WHERE E.DYN_SCREEN_ID = ${screenCode} AND E.ELEMENT_TYPE_CODE NOT IN (2,5,6,8)
+	 		</otherwise>
+		</choose>
+	</select>
+	  
+	<!-- output argument mapping --> 
+	 
+	<resultMap type="hashmap" id="returnTaskOutputArgMap">
+		<result property="TASK_MAP_ID"         	column="TASK_MAP_ID"  		javaType="BigDecimal"/>
+		<result property="ARG_NAME"         	column="ARG_NAME"  			javaType="string"/>
+		<result property="MAP_TYPE"         	column="MAP_TYPE"  			javaType="string"/>
+		<result property="MAP_VALUE"         	column="MAP_VALUE"  		javaType="string"/>
+		<result property="APP_NAME"         	column="APP_NAME"  			javaType="string"/>
+		<result property="PROG_REF"         	column="PROG_REF"  			javaType="string"/>
+		<result property="FLD_IDENTIFIER"       column="FLD_IDENTIFIER"  	javaType="BigDecimal"/>
+		<result property="FIELD_KEY_LABEL_CODE"  column="FIELD_KEY_LABEL_CODE" javaType="string"/>
+	</resultMap>
+
+	<select id="returnTaskOutputArg"  resultMap="returnTaskOutputArgMap" parameterType="com.path.vo.common.bpm.BpmSC">
+		SELECT M.TASK_MAP_ID,
+		       M.ARG_NAME,
+		       M.MAP_TYPE,
+		       M.MAP_VALUE,
+		       M.APP_NAME,
+		       M.PROG_REF,
+		       M.FLD_IDENTIFIER,
+		       (
+		           CASE
+		             WHEN M.MAP_TYPE = '1' THEN
+		              (SELECT E.FIELD_KEY_LABEL_CODE
+		                 FROM SYS_PARAM_SCREEN_ELEMENTS E
+		                WHERE E.APP_NAME = M.APP_NAME
+		                  AND E.PROG_REF = M.PROG_REF
+		                  AND E.FLD_IDENTIFIER = M.FLD_IDENTIFIER)
+		             ELSE ''
+		           END
+		        ) FIELD_KEY_LABEL_CODE
+		  FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT M
+		 WHERE M.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+	</select>
+	
+	<!-- save input argument mapping -->
+	
+	<insert id="saveInputArgMapping" parameterType="com.path.vo.common.bpm.BpmTaskMappingCO" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DECLARE @RECORD_EXISTS VARCHAR(1)
+					DECLARE @ERROR	INT
+					
+					SELECT @RECORD_EXISTS = '1' FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN I WHERE I.ARG_NAME = #{screenArgVO.ARG_NAME,jdbcType=VARCHAR} AND I.SCREEN_CODE = #{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR} AND I.TASK_MAP_ID = #{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC}
+					SELECT @ERROR = @@ERROR
+					IF @ERROR != 0 OR @RECORD_EXISTS <![CDATA[<>]]> '1' 
+						BEGIN
+							INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_IN (TASK_MAP_ID,SCREEN_CODE,ARG_NAME,MAP_TYPE,MAP_VALUE,CREATED_BY,CREATED_DATE)
+		   					VALUES(#{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC},#{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR},#{screenArgVO.ARG_NAME,jdbcType=VARCHAR},#{taskMapArgInVO.MAP_TYPE,jdbcType=VARCHAR},#{taskMapArgInVO.MAP_VALUE,jdbcType=VARCHAR},#{bpmUserName,jdbcType=VARCHAR},#{runningDate,jdbcType=DATE})
+						END
+					ELSE IF @RECORD_EXISTS = '1' 
+						BEGIN
+							UPDATE SYS_PARAM_BPM_TASK_MAP_ARG_IN SET MAP_TYPE = #{taskMapArgInVO.MAP_TYPE,jdbcType=VARCHAR} , MAP_VALUE = #{taskMapArgInVO.MAP_VALUE,jdbcType=VARCHAR}, MODIFIED_BY = #{bpmUserName,jdbcType=VARCHAR} , MODIFIED_DATE = #{runningDate,jdbcType=DATE}
+		   					WHERE  TASK_MAP_ID = #{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC} AND SCREEN_CODE = #{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR} AND ARG_NAME = #{screenArgVO.ARG_NAME,jdbcType=VARCHAR}
+						END
+				END
+		 </when>
+		 <otherwise>
+		 		DECLARE 
+		 			RECORD_EXISTS VARCHAR2(1);
+		   		BEGIN
+		   		
+		   			BEGIN
+		   				SELECT '1' INTO RECORD_EXISTS FROM SYS_PARAM_BPM_TASK_MAP_ARG_IN I 
+		   				WHERE I.ARG_NAME = #{screenArgVO.ARG_NAME,jdbcType=VARCHAR} AND I.SCREEN_CODE = #{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR} AND I.TASK_MAP_ID = #{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC};
+		   			EXCEPTION
+			          WHEN NO_DATA_FOUND THEN
+			            BEGIN
+			              	INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_IN (TASK_MAP_ID,SCREEN_CODE,ARG_NAME,MAP_TYPE,MAP_VALUE,CREATED_BY,CREATED_DATE)
+		   					VALUES(#{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC},#{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR},#{screenArgVO.ARG_NAME,jdbcType=VARCHAR},#{taskMapArgInVO.MAP_TYPE,jdbcType=VARCHAR},#{taskMapArgInVO.MAP_VALUE,jdbcType=VARCHAR},#{bpmUserName,jdbcType=VARCHAR},#{runningDate,jdbcType=DATE});
+			            END;
+		   			END;
+		   			
+		   			IF RECORD_EXISTS IS NOT NULL THEN 
+		   				UPDATE SYS_PARAM_BPM_TASK_MAP_ARG_IN SET MAP_TYPE = #{taskMapArgInVO.MAP_TYPE,jdbcType=VARCHAR} , MAP_VALUE = #{taskMapArgInVO.MAP_VALUE,jdbcType=VARCHAR} , MODIFIED_BY = #{bpmUserName,jdbcType=VARCHAR} , MODIFIED_DATE = #{runningDate,jdbcType=DATE}
+		   				WHERE  TASK_MAP_ID = #{taskMapArgInVO.TASK_MAP_ID,jdbcType=NUMERIC} AND SCREEN_CODE = #{screenArgVO.SCREEN_CODE,jdbcType=VARCHAR} AND ARG_NAME = #{screenArgVO.ARG_NAME,jdbcType=VARCHAR};
+		   			END IF;
+
+				END;
+		 </otherwise>
+	   </choose>
+  	</insert> 
+  	
+  	
+  	<!-- save output argument mapping -->
+	
+	<insert id="saveOutputArgMapping" parameterType="com.path.vo.common.bpm.BpmTaskMappingCO" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DECLARE @RECORD_EXISTS VARCHAR(1)
+					DECLARE @ERROR	INT
+					
+					SELECT @RECORD_EXISTS = '1' FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT O WHERE O.ARG_NAME = #{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR} AND O.TASK_MAP_ID = #{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC}
+					SELECT @ERROR = @@ERROR
+					IF @ERROR != 0 OR @RECORD_EXISTS <![CDATA[<>]]> '1' 
+						BEGIN
+							INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_OUT (TASK_MAP_ID,ARG_NAME,MAP_TYPE,MAP_VALUE,APP_NAME,PROG_REF,FLD_IDENTIFIER,CREATED_BY,CREATED_DATE)
+		   					VALUES(#{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC},#{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR},#{taskMapArgOutVO.MAP_TYPE,jdbcType=VARCHAR},#{taskMapArgOutVO.MAP_VALUE,jdbcType=VARCHAR},#{taskMapArgOutVO.APP_NAME,jdbcType=VARCHAR},#{taskMapArgOutVO.PROG_REF,jdbcType=VARCHAR},#{taskMapArgOutVO.FLD_IDENTIFIER,jdbcType=NUMERIC},#{bpmUserName,jdbcType=VARCHAR},#{runningDate,jdbcType=DATE})
+						END
+					ELSE IF @RECORD_EXISTS = '1'
+						BEGIN
+							UPDATE SYS_PARAM_BPM_TASK_MAP_ARG_OUT SET MAP_TYPE = #{taskMapArgOutVO.MAP_TYPE,jdbcType=VARCHAR} , MAP_VALUE = #{taskMapArgOutVO.MAP_VALUE,jdbcType=VARCHAR}, APP_NAME = #{taskMapArgOutVO.APP_NAME,jdbcType=VARCHAR}, PROG_REF = #{taskMapArgOutVO.PROG_REF,jdbcType=VARCHAR}, FLD_IDENTIFIER = #{taskMapArgOutVO.FLD_IDENTIFIER,jdbcType=NUMERIC}, MODIFIED_BY = #{bpmUserName,jdbcType=VARCHAR} , MODIFIED_DATE = #{runningDate,jdbcType=DATE} 
+		   				WHERE  TASK_MAP_ID = #{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC} AND ARG_NAME = #{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR}
+						END
+				END
+		 </when>
+		 <otherwise>
+		 		DECLARE 
+		 			RECORD_EXISTS VARCHAR2(1);
+		   		BEGIN
+		   		
+		   			BEGIN
+		   				SELECT '1' INTO RECORD_EXISTS FROM SYS_PARAM_BPM_TASK_MAP_ARG_OUT O 
+		   				WHERE O.ARG_NAME = #{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR} AND O.TASK_MAP_ID = #{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC};
+		   			EXCEPTION
+			          WHEN NO_DATA_FOUND THEN
+			            BEGIN
+			              	INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_OUT (TASK_MAP_ID,ARG_NAME,MAP_TYPE,MAP_VALUE,APP_NAME,PROG_REF,FLD_IDENTIFIER,CREATED_BY,CREATED_DATE)
+		   					VALUES(#{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC},#{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR},#{taskMapArgOutVO.MAP_TYPE,jdbcType=VARCHAR},#{taskMapArgOutVO.MAP_VALUE,jdbcType=VARCHAR},#{taskMapArgOutVO.APP_NAME,jdbcType=VARCHAR},#{taskMapArgOutVO.PROG_REF,jdbcType=VARCHAR},#{taskMapArgOutVO.FLD_IDENTIFIER,jdbcType=NUMERIC},#{bpmUserName,jdbcType=VARCHAR},#{runningDate,jdbcType=DATE});
+			            END;
+		   			END;
+		   			
+		   			IF RECORD_EXISTS IS NOT NULL THEN 
+		   				UPDATE SYS_PARAM_BPM_TASK_MAP_ARG_OUT SET MAP_TYPE = #{taskMapArgOutVO.MAP_TYPE,jdbcType=VARCHAR} , MAP_VALUE = #{taskMapArgOutVO.MAP_VALUE,jdbcType=VARCHAR}, APP_NAME = #{taskMapArgOutVO.APP_NAME,jdbcType=VARCHAR}, PROG_REF = #{taskMapArgOutVO.PROG_REF,jdbcType=VARCHAR}, FLD_IDENTIFIER = #{taskMapArgOutVO.FLD_IDENTIFIER,jdbcType=NUMERIC}, MODIFIED_BY = #{bpmUserName,jdbcType=VARCHAR} , MODIFIED_DATE = #{runningDate,jdbcType=DATE} 
+		   				WHERE  TASK_MAP_ID = #{taskMapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC} AND ARG_NAME = #{taskMapArgOutVO.ARG_NAME,jdbcType=VARCHAR};
+		   			END IF;
+
+				END;
+		 </otherwise>
+	   </choose>
+  	</insert> 
+	
+	<select id="returnUploadedProcessByDef"  resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_PROCESS_DEFVO" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_PROCESS_DEFVO">
+		SELECT M.PROCESS_ID, M.ACTIVE
+		FROM SYS_PARAM_BPM_PROCESS_DEF M
+		WHERE M.PROCESS_DEF_ID = #{PROCESS_DEF_ID,jdbcType=VARCHAR} 
+		<if test="PROCESS_NAME != null" >
+	        AND M.PROCESS_NAME = #{PROCESS_NAME,jdbcType=VARCHAR}
+	    </if>
+	</select>
+	
+	
+	<!-- task assignment grid -->
+   	
+   	<resultMap id="userTaskAssignGridMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="taskAssignVO.TASK_MAP_ID"  		column="TASK_MAP_ID"/>
+		 <result property="taskAssignVO.ENTITY_TYPE"     	column="ENTITY_TYPE"/>
+		 <result property="taskAssignVO.ENTITY_NAME"  		column="ENTITY_NAME"/>
+		 <result property="assignmentTypeDesc"  		column="ASSIGNMENT_TYPE_DESC"/>
+	</resultMap>
+	
+	<sql id="select_userTaskAssignList">
+    	SELECT 	A.TASK_MAP_ID,
+       			A.ENTITY_TYPE,
+       			(CASE WHEN A.ENTITY_TYPE = '3' THEN (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+											          FROM SYS_PARAM_LOV_TRANS
+											         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = A.ENTITY_TYPE
+											           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+											           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) 
+		           ELSE A.ENTITY_NAME END) ENTITY_NAME,
+       			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = A.ENTITY_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ASSIGNMENT_TYPE_DESC
+		FROM SYS_PARAM_BPM_TASK_ASSIGNMENT A
+		WHERE A.TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+	</sql>
+	
+	<select id="returnUserTaskAssignList" resultMap="userTaskAssignGridMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_userTaskAssignList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnUserTaskAssignListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_userTaskAssignList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	
+	<update id="updateBpmTaskMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_TASK_MAPVO">
+    	update SYS_PARAM_BPM_TASK_MAP
+	    <set >
+	      <if test="PROCESS_ID != null" >
+	        PROCESS_ID = #{PROCESS_ID},
+	      </if>
+	      <if test="TASK_NAME != null" >
+	        TASK_NAME = #{TASK_NAME},
+	      </if>
+	      <choose>
+		      <when test='SCREEN_CODE != null and !"".equals(SCREEN_CODE)' >
+			      <choose>
+				       <when test="ACTION_TYPE == 1">
+				        SCREEN_CODE = #{SCREEN_CODE},
+				        DYN_SCREEN_ID = NULL,
+				       </when>
+				       <otherwise>
+				        DYN_SCREEN_ID = ${SCREEN_CODE},
+				        SCREEN_CODE = NULL, 
+				      </otherwise>
+			      </choose>
+		      </when>
+		      <otherwise>
+		        SCREEN_CODE = NULL,
+		        DYN_SCREEN_ID = NULL, 
+		      </otherwise>
+	      </choose>
+	      <if test="BPM_ASSIGNMENT_YN != null" >
+	        BPM_ASSIGNMENT_YN = #{BPM_ASSIGNMENT_YN},
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        CREATED_BY = #{CREATED_BY},
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        CREATED_DATE = #{CREATED_DATE},
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        MODIFIED_BY = #{MODIFIED_BY},
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        MODIFIED_DATE = #{MODIFIED_DATE},
+	      </if>
+	      <choose>
+		      <when test='PROG_REF != null and !"".equals(PROG_REF)' >
+		        PROG_REF = #{PROG_REF},
+		      </when>
+		      <otherwise>
+		        PROG_REF = NULL,
+		      </otherwise>
+	      </choose>
+	      
+	      <if test="COMPLETION_TYPE != null">
+        	COMPLETION_TYPE = #{COMPLETION_TYPE},
+      	  </if>
+	      <if test="ACTION_TYPE != null">
+        	ACTION_TYPE = #{ACTION_TYPE},
+      	  </if>
+      	  <if test="PRIORITY != null">
+        	PRIORITY = #{PRIORITY},
+      	  </if>
+	    </set>
+	    where TASK_MAP_ID = #{TASK_MAP_ID}
+	</update>
+	
+	<!-- roles grid -->
+   	
+   	<resultMap id="returnRolesListMap" type="hashmap">
+		 <result property="USER_ID"     	column="ROLE_NAME"/>
+		 <result property="LONG_NAME"  		column="LONG_NAME"/>
+		 <result property="APP_NAME"  		column="APP_NAME"/>
+	</resultMap>
+	
+	<sql id="select_returnRolesList">
+    	SELECT S.ROLE_NAME, S.LONG_NAME, S.APP_NAME 
+    	FROM S_ROLE S
+		WHERE S.STATUS = 'P'
+		<if test='entityName != null'>
+		 		AND  S.ROLE_NAME  = #{entityName}
+		  </if>
+	</sql>
+	
+	<select id="returnRolesList" resultMap="returnRolesListMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_returnRolesList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnRolesListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_returnRolesList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	
+	<!-- users grid -->
+   	
+   	<resultMap id="returnUsersListMap" 		type="usrVO">
+		 <result property="USER_ID"     		column="USER_ID"/>
+		 <result property="FIRST_NAME"  		column="FIRST_NAME"/>
+		 <result property="MIDDLE_NAME"  		column="MIDDLE_NAME"/>
+		 <result property="LAST_NAME"  			column="LAST_NAME"/>
+		 <result property="USER_GRP_ID"  		column="USER_GRP_ID"/>
+		 <result property="USER_GRP_DESC"  		column="USER_GRP_DESC"/>
+		 <result property="USER_VALID_DT"  		column="USER_VALID_DT"/>
+		 <result property="USER_STS"  			column="USER_STS"/>
+		 <result property="DATE_AUTHORIZED"  	column="DATE_AUTHORIZED"/>
+	</resultMap>
+	
+	<sql id="select_returnUsersList">
+    	 SELECT DISTINCT USR.USER_ID,
+                 USR.FIRST_NAME,
+                 USR.MIDDLE_NAME,
+                 USR.LAST_NAME,
+                 USR.USER_GRP_ID,
+                 USR.USER_GRP_DESC,
+                 USR.USER_VALID_DT,
+                 USR.USER_STS,
+                 USR.DATE_AUTHORIZED
+		  FROM USR WHERE USR.USER_ID IS NOT NULL
+		  AND USR.USER_STS IN ('N', 'A', 'L')
+		  AND USR.DATE_AUTHORIZED IS NOT NULL
+		  <if test='entityName != null'>
+		 		AND  USR.USER_ID  = #{entityName}
+		  </if>
+		  <if test='excludeLoggedInUser != null and "true".equals(excludeLoggedInUser)'>
+		  		AND  USR.USER_ID  != #{bpmUserName,jdbcType=VARCHAR}
+		  </if> 
+		  <if test='currAppName != null and screenCode != null and !"".equals(screenCode)'>
+		  		AND  (EXISTS (SELECT 1 
+		  							 FROM AXS 
+		  					 		 WHERE COMP_CODE     = #{compCode, jdbcType=NUMERIC}
+		  					 		 	AND BRANCH_CODE  = #{branchCode, jdbcType=NUMERIC}
+		  					 		 	AND PROG_REF     = #{screenCode, jdbcType=VARCHAR}
+		  					 		 	AND APP_NAME     = #{currAppName, jdbcType=VARCHAR}
+		  					 			AND STATUS       = 'P'
+		  					 		 	AND AXS.USER_ID  = USR.USER_ID )
+		  				)
+		  </if>
+		  union
+		  SELECT DISTINCT USR.USER_ID,
+                 USR.FIRST_NAME,
+                 USR.MIDDLE_NAME,
+                 USR.LAST_NAME,
+                 USR.USER_GRP_ID,
+                 USR.USER_GRP_DESC,
+                 USR.USER_VALID_DT,
+                 USR.USER_STS,
+                 USR.DATE_AUTHORIZED
+		  FROM USR WHERE USR.USER_ID IS NOT NULL
+		  AND USR.USER_STS IN ('N', 'A', 'L')
+		  AND USR.DATE_AUTHORIZED IS NOT NULL
+		  <if test='entityName != null'>
+		 		AND  USR.USER_ID  = #{entityName}
+		  </if>
+		  <if test='excludeLoggedInUser != null and "true".equals(excludeLoggedInUser)'>
+		  		AND  USR.USER_ID  != #{bpmUserName,jdbcType=VARCHAR}
+		  </if> 
+		  <if test='currAppName != null and screenCode != null and !"".equals(screenCode)'>				
+	  			AND	(EXISTS (SELECT 1
+						             FROM   S_APPROLUSR, S_ROLE_DETAIL
+						             WHERE S_ROLE_DETAIL.APP_NAME  = #{currAppName, jdbcType=VARCHAR}
+						             	AND S_ROLE_DETAIL.PROG_REF    = #{screenCode, jdbcType=VARCHAR} 
+						             	AND S_APPROLUSR.STATUS        = 'P'
+						             	AND S_ROLE_DETAIL.STATUS      = 'P'
+						             	AND S_APPROLUSR.COMP_CODE     = #{compCode, jdbcType=NUMERIC}
+						             	AND S_APPROLUSR.BRANCH_CODE   = #{branchCode, jdbcType=NUMERIC}
+						             	AND S_APPROLUSR.USER_ID       = USR.USER_ID
+						               	AND S_ROLE_DETAIL.APP_NAME 	  =  S_APPROLUSR.APP_NAME
+						             	AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME  )
+		  				)
+		  </if>
+		  union
+		  SELECT DISTINCT USR.USER_ID,
+                 USR.FIRST_NAME,
+                 USR.MIDDLE_NAME,
+                 USR.LAST_NAME,
+                 USR.USER_GRP_ID,
+                 USR.USER_GRP_DESC,
+                 USR.USER_VALID_DT,
+                 USR.USER_STS,
+                 USR.DATE_AUTHORIZED
+		  FROM USR WHERE USR.USER_ID IS NOT NULL
+		  AND USR.USER_STS IN ('N', 'A', 'L')
+		  AND USR.DATE_AUTHORIZED IS NOT NULL
+		  <if test='entityName != null'>
+		 		AND  USR.USER_ID  = #{entityName}
+		  </if>
+		  <if test='excludeLoggedInUser != null and "true".equals(excludeLoggedInUser)'>
+		  		AND  USR.USER_ID  != #{bpmUserName,jdbcType=VARCHAR}
+		  </if> 
+		  <if test='currAppName != null and screenCode != null and !"".equals(screenCode)'>				
+		  		AND	(EXISTS (SELECT 1
+	                                FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	                                WHERE S_GROUP_USER.STATUS            = 'P'
+	                                	AND  (S_GROUP_USER.COMP_CODE     = #{compCode, jdbcType=NUMERIC} OR S_GROUP_USER.COMP_CODE   = 0)
+	                                	AND   (S_GROUP_USER.BRANCH_CODE  = #{branchCode, jdbcType=NUMERIC} OR S_GROUP_USER.BRANCH_CODE = 0)
+	                                	AND   S_GROUP_USER.USER_ID       = USR.USER_ID
+	                                	AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                                
+	                                	AND   S_GROUP_PROFILE.APP_NAME   = #{currAppName, jdbcType=VARCHAR}
+	                                	AND   S_GROUP_PROFILE.STATUS     = 'P'
+	                                	AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+	                                	AND   S_GROUP_PROFILE.APP_NAME   = S_ROLE_DETAIL.APP_NAME
+	                                
+	                                	AND S_ROLE_DETAIL.PROG_REF       = #{screenCode, jdbcType=VARCHAR} 
+	                                	AND S_ROLE_DETAIL.STATUS         = 'P'
+	                                	AND S_ROLE_DETAIL.ROLE_NAME      = S_GROUP_PROFILE.ROLE_NAME
+	                                
+	                                	AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+	                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID         = S_GROUP_USER.USER_ID 
+	                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID    = S_GROUP_USER.GROUP_ID
+	                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE   = S_GROUP_USER.COMP_CODE
+	                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+	                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME ) )
+		  				)
+		  </if> 
+		  
+	</sql>
+	
+	<select id="returnUsersList" resultMap="returnUsersListMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_returnUsersList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnUsersListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_returnUsersList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- delete task assignments by task map id -->
+	<delete id="deleteAllTaskAssignments" parameterType="com.path.vo.common.bpm.BpmSC" >
+		DELETE FROM SYS_PARAM_BPM_TASK_ASSIGNMENT 
+		WHERE TASK_MAP_ID = #{taskMapId,jdbcType=NUMERIC}
+	</delete>  
+	
+	<!-- delete access right by process id -->
+	<delete id="deleteAllProcessAccessRight" parameterType="com.path.vo.common.bpm.BpmSC" >
+		DELETE FROM SYS_PARAM_BPM_ACCESS_RIGHT
+		WHERE PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</delete>  
+	
+	
+	<!-- select task assignment by process definition id and task name -->
+	
+	<resultMap id="returnSysParamTaskAssignmentMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="taskAssignVO.ENTITY_NAME" 		column="ENTITY_NAME"/>
+		 <result property="taskAssignVO.ENTITY_TYPE" 		column="ENTITY_TYPE"/>
+		 <result property="taskAssignVO.TASK_MAP_ID" 		column="TASK_MAP_ID"/>
+	</resultMap> 
+	 
+	<select id="returnSysParamTaskAssignment" resultMap="returnSysParamTaskAssignmentMap" parameterType="com.path.vo.common.bpm.BpmCO" > 
+		SELECT TASK_MAP_ID, ENTITY_TYPE, ENTITY_NAME
+  		FROM SYS_PARAM_BPM_TASK_ASSIGNMENT
+ 		WHERE TASK_MAP_ID =
+       	( SELECT TASK_MAP_ID
+            FROM SYS_PARAM_BPM_TASK_MAP
+          WHERE PROCESS_ID =
+               (SELECT PROCESS_ID
+                  FROM SYS_PARAM_BPM_PROCESS_DEF
+                 WHERE PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR})
+          AND TASK_NAME = #{taskName,jdbcType=VARCHAR})
+	</select>   
+	
+	<resultMap type="com.path.vo.common.bpm.BpmTaskMappingCO" id="returnTaskMapByProcessDefMap">
+   		<result property="fieldDesc" 		 		 column="FIELD_DESC"/>
+   		<result property="taskMapVO.COMPLETION_TYPE" column="COMPLETION_TYPE"/>
+   		<result property="taskMapVO.TASK_NAME" 		 column="TASK_NAME"/>
+    </resultMap>
+    
+ 	<select id="returnTaskMapByProcessDef" parameterType="com.path.vo.common.bpm.BpmSC" resultMap="returnTaskMapByProcessDefMap">
+ 		SELECT P.PROCESS_DEF_ID || '_' || T.TASK_NAME FIELD_DESC, 
+ 			   T.TASK_NAME,
+ 			   T.COMPLETION_TYPE
+ 		  FROM SYS_PARAM_BPM_TASK_MAP T, SYS_PARAM_BPM_PROCESS_DEF P
+		 WHERE P.PROCESS_ID = T.PROCESS_ID
+		   AND T.PROCESS_ID IN
+		       (SELECT PROCESS_ID
+		          FROM SYS_PARAM_BPM_PROCESS_DEF
+		         WHERE PROCESS_DEF_ID IN
+				          <foreach item="item" index="index" open="(" close=")" separator="," collection="processDefList" > 
+				           #{item,jdbcType=VARCHAR} 
+				          </foreach>
+				 )
+		   <if test="taskNameList != null and taskNameList.size() > 0"> 
+	         AND T.TASK_NAME IN
+	         <foreach item="item" index="index" open="(" close=")" separator="," collection="taskNameList" > 
+	         #{item,jdbcType=VARCHAR} 
+	         </foreach>
+	       </if>    
+		       
+ 	</select>
+ 	
+ 	
+ 	<!-- process access right grid -->
+   	
+   	<resultMap id="returnProcessAccessRightMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="accessRightVO.PROCESS_ID"  		column="PROCESS_ID"/>
+		 <result property="accessRightVO.ENTITY_TYPE"     	column="ENTITY_TYPE"/>
+		 <result property="accessRightVO.ENTITY_NAME"  		column="ENTITY_NAME"/>
+		 <result property="accessRightVO.START_INSTANCE_YN"  		column="START_INSTANCE_YN"/>
+		 <result property="accessRightVO.SHOW_PROCESS_IMAGE_YN"  	column="SHOW_PROCESS_IMAGE_YN"/>
+		 <result property="accessRightVO.SHOW_INSTANCE_IMAGE_YN"  	column="SHOW_INSTANCE_IMAGE_YN"/>
+		 <result property="accessRightVO.SHOW_EXPORT_DOC_YN"  		column="SHOW_EXPORT_DOC_YN"/>
+		 <result property="accessRightVO.SHOW_ABORT_INSTANCE_YN"    column="SHOW_ABORT_INSTANCE_YN"/>
+		 <result property="accessRightVO.START_WITH_PROC_VAR_YN"    column="START_WITH_PROC_VAR_YN"/>
+		 <result property="accessRightVO.SHOW_SUSPEND_RESUME_YN"    column="SHOW_SUSPEND_RESUME_YN"/>
+		 <result property="accessRightVO.SHOW_TASK_ADMIN_LOGS_YN"   column="SHOW_TASK_ADMIN_LOGS_YN"/>
+		 <result property="accessRightVO.SHOW_PROC_INST_DOC_YN"     column="SHOW_PROC_INST_DOC_YN"/>
+		 
+		 <result property="accessRightVO.SHOW_DOC_UPLOAD_YN"     	column="SHOW_DOC_UPLOAD_YN"/>
+		 <result property="accessRightVO.SHOW_DOC_DOWNLOAD_YN"     	column="SHOW_DOC_DOWNLOAD_YN"/>
+		 <result property="accessRightVO.SHOW_DOC_DELETE_YN"     	column="SHOW_DOC_DELETE_YN"/>
+		 <result property="accessRightVO.SHOW_FORWARD_TASK_YN"     	column="SHOW_FORWARD_TASK_YN"/>
+		 <result property="accessRightVO.SHOW_COMMENT_ADD_YN"     	column="SHOW_COMMENT_ADD_YN"/>
+		 <result property="accessRightVO.SHOW_COMMENT_DELETE_YN"    column="SHOW_COMMENT_DELETE_YN"/>
+		 <result property="accessRightVO.SHOW_COMMENT_UPDATE_YN"    column="SHOW_COMMENT_UPDATE_YN"/>
+		 <result property="assignmentTypeDesc"  		column="ASSIGNMENT_TYPE_DESC"/>
+	</resultMap>
+	
+	<sql id="select_processAccessRightList">
+    	SELECT 	A.PROCESS_ID,
+       			A.ENTITY_TYPE,
+       			A.ENTITY_NAME,
+       			A.START_INSTANCE_YN,
+       			A.SHOW_PROCESS_IMAGE_YN,
+       			A.SHOW_INSTANCE_IMAGE_YN,
+       			A.SHOW_EXPORT_DOC_YN,
+       			A.SHOW_ABORT_INSTANCE_YN,
+       			A.START_WITH_PROC_VAR_YN,
+       			A.SHOW_SUSPEND_RESUME_YN,
+       			A.SHOW_TASK_ADMIN_LOGS_YN,
+       			A.SHOW_PROC_INST_DOC_YN,
+       			A.SHOW_DOC_UPLOAD_YN,
+       			A.SHOW_DOC_DOWNLOAD_YN,
+       			A.SHOW_DOC_DELETE_YN,
+       			A.SHOW_FORWARD_TASK_YN,
+       			A.SHOW_COMMENT_ADD_YN,
+       			A.SHOW_COMMENT_DELETE_YN,
+       			A.SHOW_COMMENT_UPDATE_YN,
+       			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = A.ENTITY_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ASSIGNMENT_TYPE_DESC
+		FROM SYS_PARAM_BPM_ACCESS_RIGHT A
+		WHERE A.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</sql>
+	
+	<select id="returnProcessAccessRightList" resultMap="returnProcessAccessRightMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_processAccessRightList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnProcessAccessRightListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_processAccessRightList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	
+	<resultMap type="com.path.vo.common.bpm.BpmTaskMappingCO" id="returnProcesAccessRightByUserMap">
+   		<result property="procDefVO.PROCESS_DEF_ID" 		 		 column="PROCESS_DEF_ID"/>
+   		<result property="accessRightVO.START_INSTANCE_YN" 			 column="START_INSTANCE_YN"/>
+   		<result property="accessRightVO.SHOW_PROCESS_IMAGE_YN" 		 column="SHOW_PROCESS_IMAGE_YN"/>
+   		<result property="accessRightVO.SHOW_INSTANCE_IMAGE_YN" 	 column="SHOW_INSTANCE_IMAGE_YN"/>
+   		<result property="accessRightVO.SHOW_EXPORT_DOC_YN" 	 	 column="SHOW_EXPORT_DOC_YN"/>
+   		<result property="accessRightVO.SHOW_ABORT_INSTANCE_YN" 	 column="SHOW_ABORT_INSTANCE_YN"/>
+   		<result property="accessRightVO.START_WITH_PROC_VAR_YN" 	 column="START_WITH_PROC_VAR_YN"/>
+   		<result property="accessRightVO.SHOW_SUSPEND_RESUME_YN" 	 column="SHOW_SUSPEND_RESUME_YN"/>
+   		<result property="accessRightVO.SHOW_TASK_ADMIN_LOGS_YN" 	 column="SHOW_TASK_ADMIN_LOGS_YN"/>
+   		<result property="accessRightVO.SHOW_PROC_INST_DOC_YN" 	 	 column="SHOW_PROC_INST_DOC_YN"/>
+   		<result property="accessRightVO.SHOW_DOC_UPLOAD_YN" 	 	 column="SHOW_DOC_UPLOAD_YN"/>
+   		<result property="accessRightVO.SHOW_DOC_DOWNLOAD_YN" 	 	 column="SHOW_DOC_DOWNLOAD_YN"/>
+   		<result property="accessRightVO.SHOW_DOC_DELETE_YN" 	 	 column="SHOW_DOC_DELETE_YN"/>
+   		<result property="accessRightVO.SHOW_FORWARD_TASK_YN" 	 	 column="SHOW_FORWARD_TASK_YN"/>
+   		<result property="accessRightVO.SHOW_COMMENT_ADD_YN" 	 	 column="SHOW_COMMENT_ADD_YN"/>
+   		<result property="accessRightVO.SHOW_COMMENT_DELETE_YN" 	 column="SHOW_COMMENT_DELETE_YN"/>
+   		<result property="accessRightVO.SHOW_COMMENT_UPDATE_YN" 	 column="SHOW_COMMENT_UPDATE_YN"/>
+    </resultMap>
+    
+ 	<select id="returnProcesAccessRightByUser" parameterType="com.path.vo.common.bpm.BpmSC" resultMap="returnProcesAccessRightByUserMap">
+ 			<!-- MAX is used to return for each process only one record, since in case of Role same user can be included in multiple Roles
+ 			     So if Access is Granted in any of the Roles then user will have this access -->
+ 			SELECT P.PROCESS_DEF_ID,
+				 MAX(A.START_INSTANCE_YN) START_INSTANCE_YN,
+	             MAX(A.SHOW_PROCESS_IMAGE_YN) SHOW_PROCESS_IMAGE_YN,
+	             MAX(A.SHOW_INSTANCE_IMAGE_YN) SHOW_INSTANCE_IMAGE_YN,
+	             MAX(A.SHOW_EXPORT_DOC_YN) SHOW_EXPORT_DOC_YN,
+	             MAX(A.SHOW_ABORT_INSTANCE_YN) SHOW_ABORT_INSTANCE_YN,
+	             MAX(A.START_WITH_PROC_VAR_YN) START_WITH_PROC_VAR_YN,
+	             MAX(A.SHOW_SUSPEND_RESUME_YN) SHOW_SUSPEND_RESUME_YN,
+	             MAX(A.SHOW_TASK_ADMIN_LOGS_YN) SHOW_TASK_ADMIN_LOGS_YN,          
+	             MAX(A.SHOW_PROC_INST_DOC_YN) SHOW_PROC_INST_DOC_YN,
+	             MAX(A.SHOW_DOC_UPLOAD_YN) SHOW_DOC_UPLOAD_YN,
+	             MAX(A.SHOW_DOC_DOWNLOAD_YN) SHOW_DOC_DOWNLOAD_YN,
+	             MAX(A.SHOW_DOC_DELETE_YN) SHOW_DOC_DELETE_YN,
+	             MAX(A.SHOW_FORWARD_TASK_YN) SHOW_FORWARD_TASK_YN,
+	             MAX(A.SHOW_COMMENT_ADD_YN) SHOW_COMMENT_ADD_YN,
+	             MAX(A.SHOW_COMMENT_DELETE_YN) SHOW_COMMENT_DELETE_YN,
+	             MAX(A.SHOW_COMMENT_UPDATE_YN) SHOW_COMMENT_UPDATE_YN
+			 FROM SYS_PARAM_BPM_ACCESS_RIGHT A, SYS_PARAM_BPM_PROCESS_DEF P
+			 WHERE A.PROCESS_ID = P.PROCESS_ID
+			   AND (( A.ENTITY_TYPE = '1' AND A.ENTITY_NAME = #{userId,jdbcType=VARCHAR} )
+			    	OR ( A.ENTITY_TYPE = '2' AND EXISTS
+										        (SELECT 1
+										           FROM S_APPROLUSR S
+										          WHERE S.USER_ID = #{userId,jdbcType=VARCHAR} 
+										            AND S.ROLE_NAME = A.ENTITY_NAME
+										            AND S.STATUS = 'P')
+			          )
+			         )
+			GROUP BY P.PROCESS_DEF_ID 
+ 	</select>
+ 	
+ 	<!--  Process Variables Grid -->
+ 	
+   	<resultMap id="returnProcessVariablesMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		 <result property="processVariablesVO.PROCESS_ID"  						column="PROCESS_ID"/>
+		 <result property="processVariablesVO.VARIABLE_ID"  					column="VARIABLE_ID"/>
+		 <result property="processVariablesVO.VARIABLE_NAME"  					column="VARIABLE_NAME"/>
+		 <result property="processVariablesVO.VARIABLE_TYPE"  					column="VARIABLE_TYPE"/>
+		 <result property="processVariablesVO.BUSINESS_NAME"  					column="BUSINESS_NAME"/>
+		 <result property="processVariablesVO.DESCRIPTION"  					column="DESCRIPTION"/>
+		 <result property="processVariablesVO.IS_MANDATORY_YN"  				column="IS_MANDATORY_YN"/>
+		 <result property="processVariablesVO.SHOW_ON_STARTUP_YN"  				column="SHOW_ON_STARTUP_YN"/>
+		 <result property="processVariablesVO.DEFAULT_VALUE"  					column="DEFAULT_VALUE"/>
+		 <result property="variableValue"  										column="DEFAULT_VALUE"/>
+		 <result property="processVariablesVO.DEFAULT_TYPE"  					column="DEFAULT_TYPE"/>
+	</resultMap>
+	
+	<sql id="select_processVariablesList">
+    	SELECT 	P.PROCESS_ID,
+       			P.VARIABLE_ID,
+       			P.VARIABLE_NAME,
+       			P.VARIABLE_TYPE,
+       			P.BUSINESS_NAME,
+       			P.DESCRIPTION,
+       			P.IS_MANDATORY_YN,
+       			P.SHOW_ON_STARTUP_YN,
+       			P.DEFAULT_VALUE,
+       			P.DEFAULT_TYPE
+		FROM SYS_PARAM_BPM_PROCESS_VAR P
+		WHERE P.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</sql>
+	
+	<select id="returnProcessVariablesList" resultMap="returnProcessVariablesMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_processVariablesList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnProcessVariablesListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_processVariablesList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- select BPM process variables to be filled on startup of a new process instance -->
+	<select id="returnProcessVariablesOnStartUp" resultMap="returnProcessVariablesMap" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="select_processVariablesList"></include>
+		AND SHOW_ON_STARTUP_YN = '1'
+	</select>   
+	
+	<!-- Process Instance Temp Table -->
+	
+	<update id="commitTrans">
+		COMMIT
+	</update>
+	
+	<sql id="beginTans">
+		BEGIN TRANSACTION
+	</sql>
+	
+	<update id="dropTempTableForProcessInstanceLog" >
+	    IF OBJECT_ID('#BPM_PROC_INST_LOG_TEMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #BPM_PROC_INST_LOG_TEMP
+		END
+	</update>
+	
+	<sql id="createProcessInstanceLogTemp">
+		CREATE TABLE #BPM_PROC_INST_LOG_TEMP(
+			PROCESS_INSTANCE_ID   				NUMERIC(19)  NOT NULL,
+			PROCESS_ID   						VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,   
+			PROCESS_NAME   						VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			EXTERNAL_ID							VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			PROCESS_INSTANCE_DESCRIPTION 		VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			USER_IDENTITY 						VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			PROCESS_VERSION 					VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			STATUS 								VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			START_DATE							DATETIME  NULL,
+			END_DATE							DATETIME  NULL)
+	</sql>
+	
+	<update id ="createTempTableForProcessInstanceLog" parameterType="com.path.vo.common.bpm.BpmSC">
+		<include refid="bpmMapper.createProcessInstanceLogTemp"/>	
+		<include refid="bpmMapper.beginTans"/>		
+	</update>
+	
+	<update id="insertTempTableForProcessInstanceLog" parameterType="com.path.vo.common.bpm.BpmCO">
+		<if test="isOracle == 1">begin</if>
+  		<foreach collection="historyLogList" item="bpmProcessInstanceLogCO">
+			INSERT INTO <choose>
+						<when test="isSybase == 1">
+							#BPM_PROC_INST_LOG_TEMP
+						</when>
+						<otherwise>
+							BPM_PROC_INST_LOG_TEMP
+						</otherwise>
+					</choose>
+			(
+				PROCESS_INSTANCE_ID,
+				PROCESS_ID,
+				PROCESS_NAME,
+				EXTERNAL_ID,
+				PROCESS_INSTANCE_DESCRIPTION,
+				<choose>
+						<when test="isSybase == 1">
+							USER_IDENTITY,
+						</when>
+						<otherwise>
+							IDENTITY,
+						</otherwise>
+				</choose>
+				PROCESS_VERSION,
+				STATUS,
+				START_DATE,
+				END_DATE
+			)
+			VALUES (
+				#{bpmProcessInstanceLogCO.processInstanceId,jdbcType=NUMERIC},
+				#{bpmProcessInstanceLogCO.processId,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.processName,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.externalId,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.processInstanceDescription,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.identity,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.processVersion,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.status,jdbcType=VARCHAR},
+				#{bpmProcessInstanceLogCO.startDate,jdbcType=TIMESTAMP},
+				#{bpmProcessInstanceLogCO.endDate,jdbcType=TIMESTAMP})<if test="isOracle == 1">;</if>
+		</foreach>
+		<if test="isOracle == 1">end;</if>
+	</update>
+	 
+	<!--  Process Instance Grid -->
+ 	<resultMap id="returnProcessInstanceLogMap" type="com.path.vo.common.bpm.BpmProcessInstanceLogCO">
+		<result property="processInstanceId" 				column="PROCESS_INSTANCE_ID"/>
+		<result property="processId" 						column="PROCESS_ID"/>
+		<result property="processName" 						column="PROCESS_NAME"/>
+		<result property="externalId" 						column="EXTERNAL_ID"/>
+		<result property="processInstanceDescription" 		column="PROCESS_INSTANCE_DESCRIPTION"/>
+		<result property="identity" 						column="USER_IDENTITY"/>
+		<result property="processVersion" 					column="PROCESS_VERSION"/>
+		<result property="status" 							column="STATUS"/>
+		<result property="startDate" 						column="START_DATE"/>
+		<result property="endDate" 							column="END_DATE"/>
+		<result property="comment"	 						column="ACTION_COMMENT"/>
+	</resultMap>
+	
+	<sql id="select_processInstanceLogList">
+    	SELECT 	P.PROCESS_INSTANCE_ID,
+				P.PROCESS_ID,
+				P.PROCESS_NAME,
+				P.EXTERNAL_ID,
+				P.PROCESS_INSTANCE_DESCRIPTION,
+				<choose>
+						<when test="isSybase == 1">
+							P.USER_IDENTITY USER_IDENTITY,
+						</when>
+						<otherwise>
+							P.IDENTITY USER_IDENTITY,
+						</otherwise>
+				</choose>
+				P.PROCESS_VERSION,
+				P.STATUS,
+				P.START_DATE,
+				P.END_DATE,
+				L.ACTION_COMMENT
+		FROM <choose>
+				<when test="isSybase == 1">
+					#BPM_PROC_INST_LOG_TEMP P
+				</when>
+				<otherwise>
+					BPM_PROC_INST_LOG_TEMP P
+				</otherwise>
+			</choose> LEFT JOIN SYS_PARAM_BPM_LOGS L ON L.ENTITY_ID = P.PROCESS_INSTANCE_ID AND L.ENTITY_TYPE = '1' AND L.ACTION_TYPE = '3'
+		WHERE P.STATUS = #{type,jdbcType=VARCHAR}	
+	</sql>
+	
+	<select id="returnProcessInstanceLogList" resultMap="returnProcessInstanceLogMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_processInstanceLogList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnProcessInstanceLogCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_processInstanceLogList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- User Tasks Temp Table -->
+	
+	<update id="dropTempTableForTasks" >
+	    IF OBJECT_ID('#BPM_TASKS_TEMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #BPM_TASKS_TEMP
+		END
+	</update>
+	
+	<sql id="createTasksTemp" >
+		CREATE TABLE #BPM_TASKS_TEMP(
+			TASK_ID   				NUMERIC(19) NOT NULL,
+			PROCESS_INSTANCE_ID   	NUMERIC(19) NOT NULL,
+			PROCESS_ID   			VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,  
+			DEPLOYMENT_ID 			VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			TASK_NAME   			VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			TASK_DESC				VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			TASK_STATUS 		    VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			TASK_OWNER 				VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			TASK_CREATION_DATE 		DATETIME NULL,
+			TASK_EXPIRATION_DATE 	DATETIME NULL)
+	</sql>
+	
+	<update id ="createTempTableForTasks" parameterType="com.path.vo.common.bpm.BpmSC">
+		<include refid="bpmMapper.createTasksTemp"/>	
+		<include refid="bpmMapper.beginTans"/>		
+	</update>
+	
+	<update id="insertTempTableForTasks" parameterType="com.path.vo.common.bpm.BpmCO">
+		<if test="isOracle == 1">begin</if>
+  		<foreach collection="taskSummaryList" item="bpmTaskCO">
+			INSERT INTO <choose>
+						<when test="isSybase == 1">
+							#BPM_TASKS_TEMP
+						</when>
+						<otherwise>
+							BPM_TASKS_TEMP
+						</otherwise>
+					</choose>
+			(
+				TASK_ID,
+				PROCESS_INSTANCE_ID,
+				PROCESS_ID,
+				DEPLOYMENT_ID,
+				TASK_NAME,
+				TASK_DESC,
+				TASK_STATUS,
+				TASK_OWNER,
+				TASK_CREATION_DATE,
+				TASK_EXPIRATION_DATE
+			)
+			VALUES (
+				#{bpmTaskCO.taskId,jdbcType=NUMERIC},
+				#{bpmTaskCO.processInstanceId,jdbcType=NUMERIC},
+				#{bpmTaskCO.processId,jdbcType=VARCHAR},
+				#{bpmTaskCO.deploymentId,jdbcType=VARCHAR},
+				#{bpmTaskCO.taskName,jdbcType=VARCHAR},
+				#{bpmTaskCO.taskDesc,jdbcType=VARCHAR},
+				#{bpmTaskCO.taskStatus,jdbcType=VARCHAR},
+				#{bpmTaskCO.taskOwner,jdbcType=VARCHAR},
+				#{bpmTaskCO.taskCreationDate,jdbcType=TIMESTAMP},
+				#{bpmTaskCO.taskExpirationDate,jdbcType=TIMESTAMP}
+				)<if test="isOracle == 1">;</if>
+		</foreach>
+		<if test="isOracle == 1">end;</if>
+	</update>
+	
+	<!--  Process Tasks Grid -->
+ 	<resultMap id="returnTasksMap" type="com.path.vo.common.bpm.BpmTaskCO">
+		<result property="taskId" 				column="TASK_ID"/>
+		<result property="processInstanceId" 	column="PROCESS_INSTANCE_ID"/>
+		<result property="processId" 			column="PROCESS_ID"/>
+		<result property="deploymentId" 		column="DEPLOYMENT_ID"/>
+		<result property="taskName" 			column="TASK_NAME"/>
+		<result property="taskDesc" 			column="TASK_DESC"/>
+		<result property="taskStatus" 			column="TASK_STATUS"/>
+		<result property="taskOwner" 			column="TASK_OWNER"/>
+		<result property="taskCreationDate" 	column="TASK_CREATION_DATE"/>
+		<result property="taskExpirationDate" 	column="TASK_EXPIRATION_DATE"/>
+		<result property="priority" 			column="TASK_PRIORITY_DESC"/>
+	</resultMap>
+	
+	<sql id="select_returnTasks">
+    	SELECT 	P.TASK_ID,
+    			P.PROCESS_INSTANCE_ID,
+				P.PROCESS_ID,
+				P.DEPLOYMENT_ID,
+				P.TASK_NAME,
+				P.TASK_DESC,
+				P.TASK_STATUS,
+				P.TASK_OWNER,
+				P.TASK_CREATION_DATE,
+				P.TASK_EXPIRATION_DATE,
+				( SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = M.PRIORITY
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{taskPriorityLovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR} ) TASK_PRIORITY_DESC
+				
+		FROM <choose>
+				<when test="isSybase == 1">
+					#BPM_TASKS_TEMP P
+				</when>
+				<otherwise>
+					BPM_TASKS_TEMP P
+				</otherwise>
+			</choose>
+		LEFT JOIN SYS_PARAM_BPM_PROCESS_DEF T ON T.PROCESS_DEF_ID = P.PROCESS_ID 
+        LEFT JOIN SYS_PARAM_BPM_TASK_MAP M 	  ON M.TASK_NAME = P.TASK_NAME
+                                              AND M.PROCESS_ID = T.PROCESS_ID	
+	</sql>
+	
+	<select id="returnTaskList" resultMap="returnTasksMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_returnTasks"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnTasksListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_returnTasks"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- Process Definition Temp Table -->
+	
+	<update id="dropTempTableForProcessDef" >
+	    IF OBJECT_ID('#BPM_PROCESS_DEF_TEMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #BPM_PROCESS_DEF_TEMP
+		END
+	</update>
+	
+	<sql id="createProcessDefTemp" >
+		CREATE TABLE #BPM_PROCESS_DEF_TEMP(
+			PROCESS_ID   		VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			DEPLOYMENT_ID   	VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,   
+			PROCESS_NAME   		VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			VERSION				VARCHAR(255) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL)
+	</sql>
+	
+	<update id ="createTempTableForProcessDef" parameterType="com.path.vo.common.bpm.BpmSC">
+		<include refid="bpmMapper.createProcessDefTemp"/>	
+		<include refid="bpmMapper.beginTans"/>		
+	</update>
+	
+	<update id="insertTempTableForProcessDef" parameterType="com.path.vo.common.bpm.BpmCO">
+		<if test="isOracle == 1">begin</if>
+  		<foreach collection="processDefinitionList" item="bpmProcessCO">
+			INSERT INTO <choose>
+						<when test="isSybase == 1">
+							#BPM_PROCESS_DEF_TEMP
+						</when>
+						<otherwise>
+							BPM_PROCESS_DEF_TEMP
+						</otherwise>
+					</choose>
+			(
+				PROCESS_ID,
+				DEPLOYMENT_ID,
+				PROCESS_NAME,
+				VERSION
+			)
+			VALUES (
+				#{bpmProcessCO.processId,jdbcType=VARCHAR},
+				#{bpmProcessCO.deploymentId,jdbcType=VARCHAR},
+				#{bpmProcessCO.processName,jdbcType=VARCHAR},
+				#{bpmProcessCO.version,jdbcType=VARCHAR}
+				)<if test="isOracle == 1">;</if>
+		</foreach>
+		<if test="isOracle == 1">end;</if>
+	</update>
+	
+	<!--  Process Def Grid -->
+ 	<resultMap id="returnProcessDefMap" type="com.path.vo.common.bpm.BpmProcessCO">
+		<result property="processId" 		column="PROCESS_ID"/>
+		<result property="deploymentId" 	column="DEPLOYMENT_ID"/>
+		<result property="processName" 		column="PROCESS_NAME"/>
+		<result property="version" 			column="VERSION"/>
+	</resultMap>
+	
+	<sql id="select_returnProcessDef">
+    	SELECT 	P.PROCESS_ID,
+				P.DEPLOYMENT_ID,
+				P.PROCESS_NAME,
+				P.VERSION
+		FROM <choose>
+				<when test="isSybase == 1">
+					#BPM_PROCESS_DEF_TEMP P
+				</when>
+				<otherwise>
+					BPM_PROCESS_DEF_TEMP P
+				</otherwise>
+			</choose>
+	</sql>
+	
+	<select id="returnProcessDefList" resultMap="returnProcessDefMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_returnProcessDef"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnProcessDefListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_returnProcessDef"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	
+	
+	<!--  BPM Logs Grid 	-->
+	
+ 	<resultMap id="returnBpmLogsMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		<result property="logsVO.LOG_ID" 					column="LOG_ID"/>
+		<result property="logsVO.ENTITY_TYPE" 				column="ENTITY_TYPE"/>
+		<result property="logsVO.ENTITY_ID" 				column="ENTITY_ID"/>
+		<result property="logsVO.ACTION_TYPE" 				column="ACTION_TYPE"/>
+		<result property="logsVO.CREATED_DATE" 				column="CREATED_DATE"/>
+		<result property="logsVO.CREATED_BY" 				column="CREATED_BY"/>
+		<result property="logsVO.ACTION_COMMENT" 			column="ACTION_COMMENT"/>
+		<result property="actionTypeDesc" 					column="ACTION_TYPE_DESC"/>
+	</resultMap>
+	
+	<sql id="select_BpmLogsList">
+    	SELECT 	P.LOG_ID,
+    			P.ENTITY_TYPE,
+    			P.ENTITY_ID,
+    			P.ACTION_TYPE,
+    			P.CREATED_DATE,
+				P.CREATED_BY,
+				P.ACTION_COMMENT,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = P.ACTION_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ACTION_TYPE_DESC
+		FROM SYS_PARAM_BPM_LOGS P
+		WHERE P.ENTITY_TYPE = #{entityType,jdbcType=VARCHAR}	
+			  AND P.ENTITY_ID = #{entityId,jdbcType=NUMERIC}
+			  <choose>
+				<when test="actionTypesList != null and actionTypesList.size() > 0">
+			     	AND P.ACTION_TYPE IN 
+				         <foreach item="item" index="index" open="(" close=")" separator="," collection="actionTypesList" > 
+				         #{item} 
+				         </foreach>
+			  	</when>
+			  	<otherwise>
+			 		AND P.ACTION_TYPE = #{actionType,jdbcType=VARCHAR} 	
+			  	</otherwise>
+			  </choose> 	
+	</sql>
+	
+	<select id="returnBpmLogsList" resultMap="returnBpmLogsMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_BpmLogsList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnBpmLogsListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_BpmLogsList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!--  BPM Docs Grid 	-->
+	
+ 	<resultMap id="returnBpmDocsMap" type="com.path.vo.common.bpm.BpmTaskMappingCO">
+		<result property="docVO.DOC_ID" 					column="DOC_ID"/>
+		<result property="docVO.DOC_TYPE" 					column="DOC_TYPE"/>
+		<result property="docVO.DOC_NAME" 					column="DOC_NAME"/>
+	</resultMap>
+	
+	<sql id="select_BpmDocsList">
+    	SELECT 	P.DOC_ID,
+    			P.DOC_TYPE,
+    			P.DOC_NAME
+		FROM SYS_PARAM_BPM_DOC P
+		WHERE P.PROCESS_INSTANCE_ID = #{processId,jdbcType=NUMERIC}	
+	</sql>
+	
+	<select id="returnBpmDocsList" resultMap="returnBpmDocsMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="bpmMapper.select_BpmDocsList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnBpmDocsListCount" resultType="int" parameterType="com.path.vo.common.bpm.BpmSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="bpmMapper.select_BpmDocsList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- End BPM Docs Grid 	-->
+	
+
+	<!-- added by fares for Export Process -->
+	<select id="returnBpmExporter_processDefVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_PROCESS_DEFVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</select>
+	  
+	<select id="returnBpmExporter_taskMapVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_TASK_MAPVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</select>
+	
+	<select id="returnBpmExporter_mapArgInVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_TASK_MAP_ARG_INVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * 
+	   	from SYS_PARAM_BPM_TASK_MAP_ARG_IN 
+	   	WHERE TASK_MAP_ID IN 
+		(select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID = #{processId,jdbcType=NUMERIC})
+	</select>
+	
+	<select id="returnBpmExporter_procVarVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_PROCESS_VARVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_BPM_PROCESS_VAR where PROCESS_ID = #{processId,jdbcType=NUMERIC}
+	</select>
+	
+	<select id="returnBpmExporter_optVO" resultType="com.path.dbmaps.vo.OPTVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select O.* 
+		from OPT O, 
+		(select distinct T.PROG_REF,S.APP_NAME
+	        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+	        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+		) B 
+		WHERE O.APP_NAME = B.APP_NAME and O.PROG_REF = B.PROG_REF
+	</select>
+	
+	<select id="returnBpmExporter_optExtendedVO" resultType="com.path.dbmaps.vo.OPT_EXTENDEDVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select OE.* from OPT_EXTENDED OE, 
+		(select distinct T.PROG_REF,S.APP_NAME
+	        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+	        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+		) B 
+		WHERE OE.APP_NAME = B.APP_NAME and OE.PROG_REF = B.PROG_REF 
+	</select>
+	
+	<select id="returnBpmExporter_paramBtnCustVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select C.* from SYS_PARAM_BTN_CUST C , 
+		(select distinct T.PROG_REF,S.APP_NAME
+	        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+	        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+		) B 
+		WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+	</select>
+	
+	<select id="returnBpmExporter_paramBtnCustActionVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUST_ACTIONSVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_BTN_CUST_ACTIONS where BTN_ID IN
+		(
+		        select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+				(select distinct T.PROG_REF,S.APP_NAME
+			        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+				) B 
+				WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+		)
+	</select>
+	
+	<select id="returnBpmExporter_paramActionArgMapVO" resultType="com.path.dbmaps.vo.SYS_PARAM_ACTION_ARG_MAPVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_ACTION_ARG_MAP where BTN_ID IN 
+		(
+		        select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+				(select distinct T.PROG_REF,S.APP_NAME
+			        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+				) B
+				WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+		)
+	</select>
+	
+	<select id="returnBpmExporter_paramActionCondMapVO" resultType="com.path.dbmaps.vo.SYS_PARAM_ACTION_COND_MAPVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+	   	select * from SYS_PARAM_ACTION_COND_MAP where BTN_ID IN 
+		(
+		        select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+				(select distinct T.PROG_REF,S.APP_NAME
+			        from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			        where T.PROCESS_ID = #{processId,jdbcType=NUMERIC}
+				) B 
+				WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+		)
+	</select>
+
+	<select id="returnBpmExporter_mapArgOutVO" resultType="com.path.dbmaps.vo.SYS_PARAM_BPM_TASK_MAP_ARG_OUTVO" parameterType="com.path.vo.common.bpm.BpmSC" >
+		select * from SYS_PARAM_BPM_TASK_MAP_ARG_OUT where TASK_MAP_ID IN (
+		select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+	</select>
+	
+	<resultMap type="hashmap" id="fldIdentifierArgOutResultMap">
+		<result property="FLD_IDENTIFIER"        	column="FLD_IDENTIFIER"   javaType="BigDecimal"/>
+   		<result property="ELEMENT_NAME"         	column="ELEMENT_NAME"     javaType="string"/>
+ 	</resultMap>
+ 	
+	<select id="returnfldIdentifierArgOutMap"  resultMap="fldIdentifierArgOutResultMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	    select T.FLD_IDENTIFIER, T.ELEMENT_NAME 
+	    from SYS_PARAM_BPM_TASK_MAP_ARG_OUT O, FIELD_TECH_DETAILS T where O.TASK_MAP_ID IN (
+		select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+		AND O.FLD_IDENTIFIER = T.FLD_IDENTIFIER AND O.MAP_TYPE = '1'
+	</select>
+	
+	<select id="returnfldIdentifierParamActionArgMap"  resultMap="fldIdentifierArgOutResultMap" parameterType="com.path.vo.common.bpm.BpmSC">
+	  	select T.FLD_IDENTIFIER, T.ELEMENT_NAME
+	    from SYS_PARAM_ACTION_ARG_MAP A, FIELD_TECH_DETAILS T
+	   	where A.BTN_ID IN (select C.BTN_ID
+	                        from SYS_PARAM_BTN_CUST C,
+	                             (select distinct T.PROG_REF, S.APP_NAME
+	                                from SYS_PARAM_BPM_TASK_MAP T
+	                                LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE =
+	                                                                           S.SCREEN_CODE
+	                               where T.PROCESS_ID = #{processId,jdbcType=NUMERIC} ) B
+	                       WHERE C.APP_NAME = B.APP_NAME
+	                         and C.PROG_REF = B.PROG_REF)
+	     AND A.MAP_TYPE = '1'
+	     AND <if test="isSybase == 1">CONVERT(VARCHAR,</if>T.FLD_IDENTIFIER<if test="isSybase == 1">)</if> = A.MAP_VALUE
+	</select>
+	
+	<select id="returnBpmExporter_sysParamScreenDisplay"  resultType="com.path.dbmaps.vo.SYS_PARAM_SCREEN_DISPLAYVO" parameterType="com.path.vo.common.bpm.BpmSC">
+	  select D.*
+	  FROM SYS_PARAM_SCREEN_DISPLAY D,
+	       (select distinct T.PROG_REF, S.APP_NAME
+	          from SYS_PARAM_BPM_TASK_MAP T
+	          LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE =
+	                                                     S.SCREEN_CODE
+	         where T.PROCESS_ID = #{processId,jdbcType=NUMERIC} 
+	         AND EXISTS (SELECT 1
+                  FROM OPT_EXTENDED OE
+                 WHERE OE.PROG_REF = T.PROG_REF
+                   AND OE.APP_NAME = S.APP_NAME
+                   AND OPT_URL = 'SAVED_AS')) B
+	  where D.COMP_CODE = 0
+	   AND D.PROG_REF = B.PROG_REF
+	   AND D.APP_NAME = B.APP_NAME
+   </select>
+   
+   <select id="returnBpmExporter_fieldTechDetails"  resultType="com.path.dbmaps.vo.FIELD_TECH_DETAILSVO" parameterType="com.path.vo.common.bpm.BpmSC">
+   	 select F.*
+	 from FIELD_TECH_DETAILS F
+	 where F.FLD_IDENTIFIER IN
+	       (
+	        SELECT Z.FLD_IDENTIFIER FROM (
+	        
+	       	  select D.FLD_IDENTIFIER
+	          FROM SYS_PARAM_SCREEN_DISPLAY D,
+	               (select distinct T.PROG_REF, S.APP_NAME
+	                  from SYS_PARAM_BPM_TASK_MAP T
+	                  LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE =
+	                                                             S.SCREEN_CODE
+	                 where T.PROCESS_ID = #{processId,jdbcType=NUMERIC} 
+	                 AND EXISTS (SELECT 1
+	                  FROM OPT_EXTENDED OE
+	                 WHERE OE.PROG_REF = T.PROG_REF
+	                   AND OE.APP_NAME = S.APP_NAME
+	                   AND OPT_URL = 'SAVED_AS')) B
+	         where D.COMP_CODE = 0
+	           AND D.PROG_REF = B.PROG_REF
+	           AND D.APP_NAME = B.APP_NAME
+	        
+	       	UNION
+	       	
+	       		select T.FLD_IDENTIFIER
+			    from SYS_PARAM_ACTION_ARG_MAP A, FIELD_TECH_DETAILS T
+			   	where A.BTN_ID IN (select C.BTN_ID
+			                        from SYS_PARAM_BTN_CUST C,
+			                             (select distinct T.PROG_REF, S.APP_NAME
+			                                from SYS_PARAM_BPM_TASK_MAP T
+			                                LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE =
+			                                                                           S.SCREEN_CODE
+			                               where T.PROCESS_ID = #{processId,jdbcType=NUMERIC} ) B
+			                       WHERE C.APP_NAME = B.APP_NAME
+			                         and C.PROG_REF = B.PROG_REF)
+			     AND A.MAP_TYPE = '1'
+			     AND <if test="isSybase == 1">CONVERT(VARCHAR,</if>T.FLD_IDENTIFIER<if test="isSybase == 1">)</if> = A.MAP_VALUE
+	       	
+	       	UNION
+	       	
+	       		select DISTINCT O.FLD_IDENTIFIER
+  				from SYS_PARAM_BPM_TASK_MAP_ARG_OUT O
+ 				WHERE O.MAP_TYPE = '1'
+   				AND O.TASK_MAP_ID IN ( select TASK_MAP_ID
+                           			   from SYS_PARAM_BPM_TASK_MAP T
+                          			   where T.PROCESS_ID = #{processId,jdbcType=NUMERIC} )
+	       	
+	       	
+	       	) Z
+	       	
+	      )     
+   </select>
+   
+	<select id="insertionApplied" resultType="int" parameterType="com.path.vo.common.bpm.BpmExporterCO" >
+	select count(1) from SYS_PARAM_BPM_TASK_MAP_ARG_OUT 
+	where TASK_MAP_ID  = #{mapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC} and ARG_NAME = #{mapArgOutVO.ARG_NAME,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertIntoSysParamBpmTaskMapArgOut" parameterType="com.path.vo.common.bpm.BpmExporterCO">
+	<if test="isOracle == 1">
+	<if test='"1".equals(mapArgOutVO.MAP_TYPE)'>
+	DECLARE LL_COUNT NUMBER(10);
+	begin
+	SELECT COUNT(1) into LL_COUNT FROM FIELD_TECH_DETAILS D WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR};
+	if LL_COUNT > 0 then
+	DECLARE LL_COUNT_EXISTS NUMBER(10);
+  	begin
+  	SELECT COUNT(1) INTO LL_COUNT_EXISTS FROM  SYS_PARAM_SCREEN_ELEMENTS S WHERE S.APP_NAME = #{mapArgOutVO.APP_NAME,jdbcType=VARCHAR} AND S.PROG_REF = #{mapArgOutVO.PROG_REF,jdbcType=VARCHAR} AND S.FLD_IDENTIFIER = (SELECT D.FLD_IDENTIFIER FROM FIELD_TECH_DETAILS D WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR} AND S.FLD_IDENTIFIER = D.FLD_IDENTIFIER AND ROWNUM = 1 );
+		if LL_COUNT_EXISTS> 0 then  
+    </if>
+		INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_OUT
+		(TASK_MAP_ID, ARG_NAME, MAP_TYPE, MAP_VALUE, APP_NAME, PROG_REF, FLD_IDENTIFIER, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE) 
+		VALUES 
+		(#{mapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC},
+		#{mapArgOutVO.ARG_NAME,jdbcType=VARCHAR},
+		#{mapArgOutVO.MAP_TYPE,jdbcType=VARCHAR},
+		#{mapArgOutVO.MAP_VALUE,jdbcType=VARCHAR},
+		#{mapArgOutVO.APP_NAME,jdbcType=VARCHAR},
+		#{mapArgOutVO.PROG_REF,jdbcType=VARCHAR},
+		(SELECT D.FLD_IDENTIFIER FROM FIELD_TECH_DETAILS D,SYS_PARAM_SCREEN_ELEMENTS S WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR} AND S.FLD_IDENTIFIER = D.FLD_IDENTIFIER AND ROWNUM = 1 ),
+		#{mapArgOutVO.CREATED_BY,jdbcType=VARCHAR},
+		#{mapArgOutVO.CREATED_DATE,jdbcType=DATE},
+		#{mapArgOutVO.MODIFIED_BY,jdbcType=VARCHAR},
+		#{mapArgOutVO.MODIFIED_DATE,jdbcType=DATE})
+		 <if test='"1".equals(mapArgOutVO.MAP_TYPE)'>
+		 ;
+		 end if;
+    	end;
+    	
+		end if;
+		end;
+		</if>
+		</if>
+	<if test="isSybase == 1">
+	<if test='"1".equals(mapArgOutVO.MAP_TYPE)'>
+	BEGIN
+			DECLARE @FLD_IDENTIFIER NUMERIC(6)
+			if exists( SELECT 1 FROM FIELD_TECH_DETAILS D WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR} )
+			BEGIN 
+			set rowcount 1
+			SELECT  @FLD_IDENTIFIER  = D.FLD_IDENTIFIER FROM FIELD_TECH_DETAILS D,SYS_PARAM_SCREEN_ELEMENTS S WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR} AND  D.FLD_IDENTIFIER = S.FLD_IDENTIFIER
+			set rowcount 0		
+			
+			if exists( SELECT 1 FROM SYS_PARAM_SCREEN_ELEMENTS S WHERE S.APP_NAME = #{mapArgOutVO.APP_NAME,jdbcType=VARCHAR} AND S.PROG_REF = #{mapArgOutVO.PROG_REF,jdbcType=VARCHAR} AND S.FLD_IDENTIFIER = @FLD_IDENTIFIER )
+			BEGIN
+			</if>
+			INSERT INTO SYS_PARAM_BPM_TASK_MAP_ARG_OUT
+			(TASK_MAP_ID, ARG_NAME, MAP_TYPE, MAP_VALUE, APP_NAME, PROG_REF, FLD_IDENTIFIER, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE) 
+			VALUES 
+			(#{mapArgOutVO.TASK_MAP_ID,jdbcType=NUMERIC},
+			#{mapArgOutVO.ARG_NAME,jdbcType=VARCHAR},
+			#{mapArgOutVO.MAP_TYPE,jdbcType=VARCHAR},
+			#{mapArgOutVO.MAP_VALUE,jdbcType=VARCHAR},
+			#{mapArgOutVO.APP_NAME,jdbcType=VARCHAR},
+			#{mapArgOutVO.PROG_REF,jdbcType=VARCHAR},
+			<choose>
+ 				<when test='"1".equals(mapArgOutVO.MAP_TYPE)'>
+     					@FLD_IDENTIFIER, 
+     			</when>
+ 				<otherwise>
+ 					NULL,
+     			</otherwise>
+		   	</choose>
+			#{mapArgOutVO.CREATED_BY,jdbcType=VARCHAR},
+			#{mapArgOutVO.CREATED_DATE,jdbcType=DATE},
+			#{mapArgOutVO.MODIFIED_BY,jdbcType=VARCHAR},
+			#{mapArgOutVO.MODIFIED_DATE,jdbcType=DATE})
+			 <if test='"1".equals(mapArgOutVO.MAP_TYPE)'>
+			END
+			END
+		END
+		</if>
+	</if>
+	</insert>
+	<insert id="insertIntoSysParamActionArgMap" parameterType="com.path.vo.common.bpm.BpmExporterCO">
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+				
+					DECLARE @FLD_IDENTIFIER NUMERIC(6)
+					set rowcount 1
+					SELECT  TOP 1 @FLD_IDENTIFIER = D.FLD_IDENTIFIER FROM FIELD_TECH_DETAILS D WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR}
+					set rowcount 0
+					INSERT INTO SYS_PARAM_ACTION_ARG_MAP
+					(ARG_ID, BTN_ID, OP_ID, MAP_TYPE, MAP_VALUE, LINK_OP_ID, LINK_API_CODE, LINK_ARG_ID, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE ) 
+					VALUES 
+					(#{actionArgMapVO.ARG_ID,jdbcType=NUMERIC},     
+					 #{actionArgMapVO.BTN_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.OP_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.MAP_TYPE,jdbcType=VARCHAR},
+					 CONVERT(VARCHAR,@FLD_IDENTIFIER),
+					 #{actionArgMapVO.LINK_OP_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.LINK_API_CODE,jdbcType=NUMERIC},
+					 #{actionArgMapVO.LINK_ARG_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.CREATED_BY,jdbcType=VARCHAR},
+					 #{actionArgMapVO.CREATED_DATE,jdbcType=DATE},
+					 #{actionArgMapVO.MODIFIED_BY,jdbcType=VARCHAR},
+					 #{actionArgMapVO.MODIFIED_DATE,jdbcType=DATE})
+					
+				END
+		 </when>
+		 <otherwise>
+		 		BEGIN
+					INSERT INTO SYS_PARAM_ACTION_ARG_MAP
+					(ARG_ID, BTN_ID, OP_ID, MAP_TYPE, MAP_VALUE, LINK_OP_ID, LINK_API_CODE, LINK_ARG_ID, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE ) 
+					VALUES 
+					(#{actionArgMapVO.ARG_ID,jdbcType=NUMERIC},     
+					 #{actionArgMapVO.BTN_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.OP_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.MAP_TYPE,jdbcType=VARCHAR},
+					 (SELECT D.FLD_IDENTIFIER FROM FIELD_TECH_DETAILS D WHERE D.ELEMENT_NAME = #{elementName,jdbcType=VARCHAR} AND ROWNUM = 1 ),
+					 #{actionArgMapVO.LINK_OP_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.LINK_API_CODE,jdbcType=NUMERIC},
+					 #{actionArgMapVO.LINK_ARG_ID,jdbcType=NUMERIC},
+					 #{actionArgMapVO.CREATED_BY,jdbcType=VARCHAR},
+					 #{actionArgMapVO.CREATED_DATE,jdbcType=DATE},
+					 #{actionArgMapVO.MODIFIED_BY,jdbcType=VARCHAR},
+					 #{actionArgMapVO.MODIFIED_DATE,jdbcType=DATE});
+				END;
+		 </otherwise>
+	   </choose>
+	</insert>
+
+	<!--  delete all previous data related to the already existing process -->
+	<!-- delete current mapping -->
+	<delete id="deletePreviousProcessDefForImport" parameterType="com.path.vo.common.bpm.BpmCO">
+		BEGIN
+			delete from SYS_PARAM_BPM_PROCESS_VAR where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BPM_ACCESS_RIGHT where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BPM_TASK_ASSIGNMENT where TASK_MAP_ID IN (
+			select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BPM_TASK_MAP_ARG_IN where TASK_MAP_ID IN (
+			select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BPM_TASK_MAP_ARG_OUT where TASK_MAP_ID IN (
+			select TASK_MAP_ID from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_ACTION_COND_MAP where BTN_ID IN 
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+					(select distinct T.PROG_REF,S.APP_NAME
+			         from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			         where T.PROCESS_ID IN
+								   (SELECT PROCESS_ID
+									  from SYS_PARAM_BPM_PROCESS_DEF
+									 where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR})
+					) B 
+					WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_ACTION_ARG_MAP where BTN_ID IN 
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+					(select distinct T.PROG_REF,S.APP_NAME
+			         from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			         where T.PROCESS_ID IN
+								   (SELECT PROCESS_ID
+									  from SYS_PARAM_BPM_PROCESS_DEF
+									 where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR})
+					) B 
+					WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BTN_CUST_ACTIONS where BTN_ID IN
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+					(select distinct T.PROG_REF,S.APP_NAME
+			         from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			         where T.PROCESS_ID IN
+								   (SELECT PROCESS_ID
+									  from SYS_PARAM_BPM_PROCESS_DEF
+									 where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR})
+					) B 
+					WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BTN_CUST where BTN_ID IN (
+			select C.BTN_ID from SYS_PARAM_BTN_CUST C , 
+			(select distinct T.PROG_REF,S.APP_NAME
+			          from SYS_PARAM_BPM_TASK_MAP T LEFT JOIN SYS_PARAM_SCREEN_DEFINITION S ON T.SCREEN_CODE = S.SCREEN_CODE 
+			         where T.PROCESS_ID IN
+			               (SELECT PROCESS_ID
+			                  from SYS_PARAM_BPM_PROCESS_DEF
+			                 where PROCESS_DEF_ID  = #{processDefId,jdbcType=VARCHAR})
+			) B 
+			WHERE C.APP_NAME = B.APP_NAME and C.PROG_REF = B.PROG_REF 
+			)<if test="isOracle == 1">;</if>
+						
+			delete from SYS_PARAM_BPM_TASK_MAP where PROCESS_ID IN ( SELECT PROCESS_ID from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR} )<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BPM_PROCESS_DEF where PROCESS_DEF_ID = #{processDefId,jdbcType=VARCHAR}<if test="isOracle == 1">;</if>
+		END<if test="isOracle == 1">;</if>
+	</delete> 
+	
+	<delete id="deletePreviousCustForImport" parameterType="com.path.vo.common.bpm.BpmCO">
+		BEGIN
+			
+			delete from SYS_PARAM_ACTION_COND_MAP where BTN_ID IN 
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C  
+					WHERE C.APP_NAME IN (#{appName,jdbcType=VARCHAR}) and C.PROG_REF IN  (#{progRef,jdbcType=VARCHAR}) 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_ACTION_ARG_MAP where BTN_ID IN 
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C  
+					WHERE C.APP_NAME IN (#{appName,jdbcType=VARCHAR}) and C.PROG_REF IN  (#{progRef,jdbcType=VARCHAR}) 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BTN_CUST_ACTIONS where BTN_ID IN
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C  
+					WHERE C.APP_NAME IN (#{appName,jdbcType=VARCHAR}) and C.PROG_REF IN  (#{progRef,jdbcType=VARCHAR}) 
+			)<if test="isOracle == 1">;</if>
+			
+			delete from SYS_PARAM_BTN_CUST where BTN_ID IN
+			(
+			       select C.BTN_ID from SYS_PARAM_BTN_CUST C  
+					WHERE C.APP_NAME IN (#{appName,jdbcType=VARCHAR}) and C.PROG_REF IN  (#{progRef,jdbcType=VARCHAR}) 
+			)<if test="isOracle == 1">;</if>
+						
+		END<if test="isOracle == 1">;</if>
+	</delete>
+	
+	<insert id="insertSYS_PARAM_BTN_CUST_ACTIONS" parameterType="com.path.dbmaps.vo.SYS_PARAM_BTN_CUST_ACTIONSVO" >
+	    insert into SYS_PARAM_BTN_CUST_ACTIONS
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="BTN_ID != null" >
+	        BTN_ID,
+	      </if>
+	      <if test="OP_ID != null" >
+	        OP_ID,
+	      </if>
+	      <if test="OP_TYPE != null" >
+	        OP_TYPE,
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        DESCRIPTION,
+	      </if>
+	      <if test="PARENT_OP_ID != null" >
+	        PARENT_OP_ID,
+	      </if>
+	      <if test="API_CODE != null" >
+	        API_CODE,
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        CREATED_BY,
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        CREATED_DATE,
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        MODIFIED_BY,
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        MODIFIED_DATE,
+	      </if>
+	      <if test="REPORT_PROG_REF != null" >
+	        REPORT_PROG_REF,
+	      </if>
+	      <if test="REPORT_APP_NAME != null" >
+	        REPORT_APP_NAME,
+	      </if>
+	      <if test="COND_EXPR != null" >
+	        COND_EXPR,
+	      </if>
+	      <if test="API_TYPE != null" >
+	        API_TYPE,
+	      </if>
+	      <if test="SCREEN_WIDTH != null" >
+	        SCREEN_WIDTH,
+	      </if>
+	      <if test="SCREEN_HEIGHT != null" >
+	        SCREEN_HEIGHT,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="BTN_ID != null" >
+	        #{BTN_ID},
+	      </if>
+	      <if test="OP_ID != null" >
+	        #{OP_ID},
+	      </if>
+	      <if test="OP_TYPE != null" >
+	        #{OP_TYPE},
+	      </if>
+	      <if test="DESCRIPTION != null" >
+	        #{DESCRIPTION},
+	      </if>
+	      <if test="PARENT_OP_ID != null" >
+	        #{PARENT_OP_ID},
+	      </if>
+	      <if test="API_CODE != null" >
+	        #{API_CODE},
+	      </if>
+	      <if test="CREATED_BY != null" >
+	        #{CREATED_BY},
+	      </if>
+	      <if test="CREATED_DATE != null" >
+	        #{CREATED_DATE},
+	      </if>
+	      <if test="MODIFIED_BY != null" >
+	        #{MODIFIED_BY},
+	      </if>
+	      <if test="MODIFIED_DATE != null" >
+	        #{MODIFIED_DATE},
+	      </if>
+	      <if test="REPORT_PROG_REF != null" >
+	        #{REPORT_PROG_REF},
+	      </if>
+	      <if test="REPORT_APP_NAME != null" >
+	        #{REPORT_APP_NAME},
+	      </if>
+	      <if test="COND_EXPR != null" >
+	        #{COND_EXPR},
+	      </if>
+	      <if test="API_TYPE != null" >
+	        #{API_TYPE},
+	      </if>
+	      <if test="SCREEN_WIDTH != null" >
+	        #{SCREEN_WIDTH},
+	      </if>
+	      <if test="SCREEN_HEIGHT != null" >
+	        #{SCREEN_HEIGHT},
+	      </if>
+	    </trim>
+  </insert>
+	
+</mapper>

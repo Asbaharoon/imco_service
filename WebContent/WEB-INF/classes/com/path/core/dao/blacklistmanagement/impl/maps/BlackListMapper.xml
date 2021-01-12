@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackListMapper">
+	
+	
+	<sql id="blackListGridCommon">
+		SELECT	MOSBLACKLIST.CODE,
+				MOSBLACKLIST.BRIEF_NAME_ENG,
+				MOSBLACKLIST.LONG_NAME_ENG,
+				MOSBLACKLIST.CIF_FIRST_NAME_AR,
+				MOSBLACKLIST.CIF_FIRST_NAME_ENG,
+				MOSBLACKLIST.CIF_LAST_NAME_AR,
+				MOSBLACKLIST.CIF_LAST_NAME_ENG,
+				MOSBLACKLIST.CIF_MOTHER_FNAME,
+				MOSBLACKLIST.CIF_MOTHER_FNAME_ARAB,
+				MOSBLACKLIST.CIF_MOTHER_LNAME,
+				MOSBLACKLIST.CIF_MOTHER_LNAME_ARAB,
+				MOSBLACKLIST.CIF_SEC_NAME_AR,
+				MOSBLACKLIST.CIF_SEC_NAME_ENG,
+				MOSBLACKLIST.CIF_THIRD_NAME_AR,
+				MOSBLACKLIST.CIF_THIRD_NAME_ENG,
+				MOSBLACKLIST.DATE_OF_BIRTH,
+				MOSBLACKLIST.CIF_PLACE_OF_BIRTH,
+				MOSBLACKLIST.CIF_REGISTER_NO,
+				MOSBLACKLIST.CIF_NATION_CODE,
+				MOSBLACKLIST.CIF_REGION_CODE,
+				MOSBLACKLIST.COUNTRY,
+				MOSBLACKLIST.LEGAL_STATUS,
+				MOSBLACKLIST.CIF,
+				MOSBLACKLIST.BRIEF_NAME_ARAB,
+				MOSBLACKLIST.LONG_NAME_ARAB,
+            	CIF.SHORT_NAME_ENG,
+				MOSBLACKLIST.OID_DOCUMENT_NBR,
+				MOSBLACKLIST.STATUS,
+				(
+					SELECT VALUE_DESC 
+					              FROM 	SYS_PARAM_LOV_TRANS 
+					              WHERE VALUE_CODE = MOSBLACKLIST.STATUS
+					              AND	LOV_TYPE_ID = #{lovType}
+					              AND 	LANG_CODE = #{langCode}
+				) 	
+				STATUS_DESC,
+				MOSBLACKLIST.APPROVED_BY  
+		FROM  	MOSBLACKLIST  LEFT OUTER JOIN  CIF  ON  MOSBLACKLIST.COMP_CODE  = CIF.COMP_CODE AND	MOSBLACKLIST.CIF  = CIF.CIF_NO  
+		WHERE	MOSBLACKLIST.COMP_CODE  = #{compCode}
+
+		<if test=' !@com.path.core.bo.blacklistmanagement.BlackListConstant@CRUD_MAINTENANCE.equals(ivCrud) '>
+					AND MOSBLACKLIST.STATUS IN ( SELECT LOVOPT.VALUE_CODE
+											           FROM SYS_PARAM_LOV_LK_OPT LOVOPT
+											          WHERE LOVOPT.LOV_TYPE_ID = #{lovType}
+											            AND LOVOPT.PROG_REF = #{sectionKey}
+											            AND LOVOPT.APP_NAME = #{currAppName})
+		</if>
+
+		<if test="cif != null and cif != -1" >
+		AND	(MOSBLACKLIST.CIF = #{cif})
+		</if>
+	</sql>
+	                
+	 <resultMap id="blackListGridMap" type="blackListCO" >
+	    <id column="CODE" property="blackListVO.CODE" />
+	    <result column="BRIEF_NAME_ENG" property="blackListVO.BRIEF_NAME_ENG" />
+	    <result column="LONG_NAME_ENG" property="blackListVO.LONG_NAME_ENG" />
+	    <result column="CIF" property="blackListVO.CIF" />
+	    <result column="CIF_FIRST_NAME_AR" property="blackListVO.CIF_FIRST_NAME_AR" />
+	    <result column="CIF_FIRST_NAME_ENG" property="blackListVO.CIF_FIRST_NAME_ENG" />
+	    <result column="CIF_LAST_NAME_AR" property="blackListVO.CIF_LAST_NAME_AR" />
+	    <result column="CIF_LAST_NAME_ENG" property="blackListVO.CIF_LAST_NAME_ENG" />
+	  	<result column="CIF_MOTHER_FNAME" property="blackListVO.CIF_MOTHER_FNAME" />
+	    <result column="CIF_MOTHER_FNAME_ARAB" property="blackListVO.CIF_MOTHER_FNAME_ARAB" />
+	    <result column="CIF_MOTHER_LNAME" property="blackListVO.CIF_MOTHER_LNAME" />
+	    <result column="CIF_MOTHER_LNAME_ARAB" property="blackListVO.CIF_MOTHER_LNAME_ARAB" />
+	    <result column="CIF_SEC_NAME_AR" property="blackListVO.CIF_SEC_NAME_AR" />
+	    <result column="CIF_SEC_NAME_ENG" property="blackListVO.CIF_SEC_NAME_ENG" />
+	  	<result column="CIF_THIRD_NAME_AR" property="blackListVO.CIF_THIRD_NAME_AR" />
+	    <result column="CIF_THIRD_NAME_ENG" property="blackListVO.CIF_THIRD_NAME_ENG" />
+	    <result column="DATE_OF_BIRTH" property="blackListVO.DATE_OF_BIRTH" />
+	    <result column="CIF_PLACE_OF_BIRTH" property="blackListVO.CIF_PLACE_OF_BIRTH" />
+	    <result column="OID_DOCUMENT_NBR" property="blackListVO.OID_DOCUMENT_NBR" />
+	    <result column="CIF_REGISTER_NO" property="blackListVO.CIF_REGISTER_NO" />
+	    <result column="CIF_NATION_CODE" property="blackListVO.CIF_NATION_CODE" />
+	    <result column="CIF_REGION_CODE" property="blackListVO.CIF_REGION_CODE" />
+	    <result column="COUNTRY" property="blackListVO.COUNTRY" />
+	    <result column="LEGAL_STATUS" property="blackListVO.LEGAL_STATUS" />
+	  	<result column="BRIEF_NAME_ARAB" property="blackListVO.BRIEF_NAME_ARAB" />
+	    <result column="LONG_NAME_ARAB" property="blackListVO.LONG_NAME_ARAB" />	    	    
+	    <result column="CIF" property="blackListVO.CIF" />
+	    <result column="STATUS" property="blackListVO.STATUS" />
+	    <result column="STATUS_DESC" property="statusDesc" />
+	    <result column="SHORT_NAME_ENG" property="cifDesc" />
+	    <result column="APPROVED_BY" property="blackListVO.APPROVED_BY" />
+	</resultMap>
+
+
+	<select id="blackListRecordList" resultMap="blackListGridMap" parameterType="blackListSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="blackListGridCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="blackListRecordCount" resultType="int" parameterType="blackListSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="blackListGridCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="blackListDetailCommon">
+			SELECT	 MOSBLACKLIST.COMP_CODE				,
+					 MOSBLACKLIST.BRANCH				,
+					 MOSBLACKLIST.CODE					,
+					 MOSBLACKLIST.BRIEF_NAME_ENG		,
+					 MOSBLACKLIST.LONG_NAME_ENG			,
+					 MOSBLACKLIST.BRIEF_NAME_ARAB		,
+					 MOSBLACKLIST.LONG_NAME_ARAB		,
+					 MOSBLACKLIST.SOURCE_OF_BLACKLISTING,
+					 MOSBLACKLIST.TYPE					,
+					 MOSBLACKLIST.DATE_OF_BIRTH			,
+					 MOSBLACKLIST.COUNTRY				,
+					 MOSBLACKLIST.OID_DOCUMENT_TYPE		,
+					 MOSBLACKLIST.OID_DATE_ISSUED		,
+					 MOSBLACKLIST.OID_DOCUMENT_NBR		,
+					 MOSBLACKLIST.OID_ISSUING_COUNTRY	,
+					 MOSBLACKLIST.CIF					,
+					 MOSBLACKLIST.STATUS				,
+					 (SELECT VALUE_DESC   FROM 	SYS_PARAM_LOV_TRANS 
+							              WHERE VALUE_CODE 		= MOSBLACKLIST.STATUS
+							              AND	LOV_TYPE_ID 	= #{lovType}
+							              AND 	LANG_CODE 		= #{langCode}
+					 ) STATUS_DESC  					,
+					 MOSBLACKLIST.CREATED_BY			,
+					 MOSBLACKLIST.DATE_CREATED			,
+					 MOSBLACKLIST.UPDATED_BY			,
+					 MOSBLACKLIST.DATE_UPDATED			,
+					 MOSBLACKLIST.APPROVED_BY			,
+					 MOSBLACKLIST.DATE_APPROVED			,
+					 MOSBLACKLIST.REVERSED_BY			,
+					 MOSBLACKLIST.DATE_REVERSED			,
+					 MOSDOCTYPE.BRIEF_NAME_ENG			,
+					 CIF.SHORT_NAME_ENG					,
+					 MOSBLACKLIST.BLACKLIST_TYPE		,
+					 (SELECT MOSBLACKLIST_TYPE.BRIEF_NAME_ENG FROM MOSBLACKLIST_TYPE WHERE MOSBLACKLIST_TYPE.COMP_CODE = MOSBLACKLIST.COMP_CODE AND MOSBLACKLIST_TYPE.CODE = MOSBLACKLIST.BLACKLIST_TYPE) TYPE_DESC,
+					 MOSBLACKLIST.REASON				,
+					 MOSBLACKLIST.CIF_TYPE				,
+					 (SELECT RIFCTT.BRIEF_DESC_ENG FROM RIFCTT WHERE RIFCTT.COMP_CODE  = MOSBLACKLIST.COMP_CODE AND RIFCTT.TYPE_CODE = MOSBLACKLIST.CIF_TYPE) CIF_TYPE_DESC,
+					 MOSBLACKLIST.CODE_SOURCE			,
+					(SELECT MOSBLACKSOURCE.BRIEF_DESC_ENG FROM MOSBLACKSOURCE WHERE MOSBLACKSOURCE.COMP_CODE = MOSBLACKLIST.COMP_CODE AND MOSBLACKSOURCE.CODE = MOSBLACKLIST.CODE_SOURCE) CODE_SOURCE_DESC,
+					 MOSBLACKLIST.SOURCE_REFERENCE		,
+					 MOSBLACKLIST.SOURCE_DATE			,
+					 MOSBLACKLIST.REVISION_DATE			,
+					 MOSBLACKLIST.CIF_MOTHER_FNAME		,
+					 MOSBLACKLIST.CIF_MOTHER_LNAME		,
+					 MOSBLACKLIST.CIF_FIRST_NAME_ENG	,
+					 MOSBLACKLIST.CIF_SEC_NAME_ENG		,
+					 MOSBLACKLIST.CIF_THIRD_NAME_ENG	,
+					 MOSBLACKLIST.CIF_LAST_NAME_ENG		,
+					 MOSBLACKLIST.CIF_FIRST_NAME_AR		,
+					 MOSBLACKLIST.CIF_SEC_NAME_AR		,
+					 MOSBLACKLIST.CIF_THIRD_NAME_AR		,
+					 MOSBLACKLIST.CIF_LAST_NAME_AR		,
+					 MOSBLACKLIST.CIF_PLACE_OF_BIRTH	,
+					 MOSBLACKLIST.CIF_REGISTER_NO		,
+					 MOSBLACKLIST.CIF_REGION_CODE		,
+					 (SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE  = MOSBLACKLIST.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = MOSBLACKLIST.COUNTRY AND COUNTRIES_REGION.REGION_CODE = MOSBLACKLIST.CIF_REGION_CODE) REGION_DESC,
+					 MOSBLACKLIST.CIF_NATION_CODE		,
+					 (SELECT NATIONALITY.BRIEF_DESC_ENG FROM  NATIONALITY WHERE NATIONALITY.COMP_CODE  = MOSBLACKLIST.COMP_CODE AND NATIONALITY.CODE = MOSBLACKLIST.CIF_NATION_CODE) NATION_DESC,
+					 MOSBLACKLIST.SOUNDEX_NAME			,
+					 MOSBLACKLIST.TO_BE_REVERSED_BY		,
+					 MOSBLACKLIST.TO_BE_REVERSED_DATE	,
+					 MOSBLACKLIST.LEGAL_STATUS			,
+					(SELECT LEGAL_STATUS.BRIEF_DESC_ENG FROM LEGAL_STATUS WHERE LEGAL_STATUS.COMP_CODE = MOSBLACKLIST.COMP_CODE AND LEGAL_STATUS.STATUS_CODE = MOSBLACKLIST.LEGAL_STATUS) LEGAL_STATUS_DESC,
+					 MOSBLACKLIST.REPORTING_BANKS		,
+					 MOSBLACKLIST.REG_NO_2,
+					COUNTRIES_A.BRIEF_DESC_ENG	COUNTRIES_DESC,
+					COUNTRIES_B.BRIEF_DESC_ENG 	ISSUE_COUNTRY_DESC,
+					CIF.SHORT_NAME_ENG CIF_DESC,
+					MOSBLACKLIST.CIF_MOTHER_FNAME_ARAB,
+					 MOSBLACKLIST.CIF_MOTHER_LNAME_ARAB		
+			FROM  	MOSBLACKLIST 		LEFT OUTER JOIN  COUNTRIES COUNTRIES_A 		ON  	MOSBLACKLIST.COMP_CODE 				= COUNTRIES_A.COMP_CODE
+				 																	AND		MOSBLACKLIST.COUNTRY  				= COUNTRIES_A.COUNTRY_CODE  
+		
+										LEFT OUTER JOIN  MOSDOCTYPE  				ON  	MOSBLACKLIST.COMP_CODE				= MOSDOCTYPE.COMP_CODE
+																					AND		MOSBLACKLIST.OID_DOCUMENT_TYPE  	= MOSDOCTYPE.CODE   
+		
+										LEFT OUTER JOIN  COUNTRIES COUNTRIES_B 		ON  	MOSBLACKLIST.COMP_CODE  			= COUNTRIES_B.COMP_CODE
+																					AND		MOSBLACKLIST.OID_ISSUING_COUNTRY	= COUNTRIES_B.COUNTRY_CODE   
+		
+										LEFT OUTER JOIN  CIF  						ON  	MOSBLACKLIST.COMP_CODE  			= CIF.COMP_CODE
+																					AND		MOSBLACKLIST.CIF  					= CIF.CIF_NO  
+		
+			WHERE	 MOSBLACKLIST.COMP_CODE  		= #{compCode}
+			AND		 MOSBLACKLIST.CODE  			= #{code}
+
+	</sql>
+	
+	<resultMap id="blackListDetailMap" type="blackListCO" >
+		<id column="COMP_CODE" property="blackListVO.COMP_CODE" />
+		<id column="BRANCH" property="blackListVO.BRANCH" />
+	    <id column="CODE" property="blackListVO.CODE" />
+	    <result column="BRIEF_NAME_ENG" property="blackListVO.BRIEF_NAME_ENG" />
+	    <result column="LONG_NAME_ENG" property="blackListVO.LONG_NAME_ENG" />
+	    <result column="BRIEF_NAME_ARAB" property="blackListVO.BRIEF_NAME_ARAB" />
+	    <result column="LONG_NAME_ARAB" property="blackListVO.LONG_NAME_ARAB" />
+		<result column="SOURCE_OF_BLACKLISTING" property="blackListVO.SOURCE_OF_BLACKLISTING" />
+		<result column="TYPE" property="blackListVO.TYPE" />
+	    <result column="DATE_OF_BIRTH" property="blackListVO.DATE_OF_BIRTH" />
+	    <result column="COUNTRY" property="blackListVO.COUNTRY" />
+	    <result column="OID_DOCUMENT_TYPE" property="blackListVO.OID_DOCUMENT_TYPE" />
+	    <result column="OID_DATE_ISSUED" property="blackListVO.OID_DATE_ISSUED" />
+	    <result column="OID_DOCUMENT_NBR" property="blackListVO.OID_DOCUMENT_NBR" />
+	    <result column="OID_ISSUING_COUNTRY" property="blackListVO.OID_ISSUING_COUNTRY" />
+		<result column="CIF" property="blackListVO.CIF" />
+		<result column="STATUS" property="blackListVO.STATUS" />
+		<result column="CREATED_BY" property="blackListVO.CREATED_BY" />
+	    <result column="DATE_CREATED" property="blackListVO.DATE_CREATED" />
+	    <result column="UPDATED_BY" property="blackListVO.UPDATED_BY" />
+	    <result column="DATE_UPDATED" property="blackListVO.DATE_UPDATED" />
+	    <result column="APPROVED_BY" property="blackListVO.APPROVED_BY" />
+	    <result column="DATE_APPROVED" property="blackListVO.DATE_APPROVED" />
+	    <result column="REVERSED_BY" property="blackListVO.REVERSED_BY" />
+	    <result column="DATE_REVERSED" property="blackListVO.DATE_REVERSED" />
+	    <result column="BLACKLIST_TYPE" property="blackListVO.BLACKLIST_TYPE" />
+	    <result column="REASON" property="blackListVO.REASON" />
+	    <result column="CIF_TYPE" property="blackListVO.CIF_TYPE" />
+	    <result column="CODE_SOURCE" property="blackListVO.CODE_SOURCE" />
+	    <result column="SOURCE_REFERENCE" property="blackListVO.SOURCE_REFERENCE" />
+	    <result column="SOURCE_DATE" property="blackListVO.SOURCE_DATE" />
+	    <result column="REVISION_DATE" property="blackListVO.REVISION_DATE" />
+	    <result column="CIF_MOTHER_FNAME" property="blackListVO.CIF_MOTHER_FNAME" />
+	    <result column="CIF_MOTHER_LNAME" property="blackListVO.CIF_MOTHER_LNAME" />
+	    <result column="CIF_FIRST_NAME_ENG" property="blackListVO.CIF_FIRST_NAME_ENG" />
+	    <result column="CIF_SEC_NAME_ENG" property="blackListVO.CIF_SEC_NAME_ENG" />
+	    <result column="CIF_THIRD_NAME_ENG" property="blackListVO.CIF_THIRD_NAME_ENG" />
+	    <result column="CIF_LAST_NAME_ENG" property="blackListVO.CIF_LAST_NAME_ENG" />
+	    <result column="CIF_FIRST_NAME_AR" property="blackListVO.CIF_FIRST_NAME_AR" />
+	    <result column="CIF_SEC_NAME_AR" property="blackListVO.CIF_SEC_NAME_AR" />
+	    <result column="CIF_THIRD_NAME_AR" property="blackListVO.CIF_THIRD_NAME_AR" />
+	    <result column="CIF_LAST_NAME_AR" property="blackListVO.CIF_LAST_NAME_AR" />
+	    <result column="CIF_PLACE_OF_BIRTH" property="blackListVO.CIF_PLACE_OF_BIRTH" />
+	    <result column="CIF_REGISTER_NO" property="blackListVO.CIF_REGISTER_NO" />
+	    <result column="CIF_REGION_CODE" property="blackListVO.CIF_REGION_CODE" />
+	    <result column="CIF_NATION_CODE" property="blackListVO.CIF_NATION_CODE" />
+	    <result column="SOUNDEX_NAME" property="blackListVO.SOUNDEX_NAME" />
+	    <result column="TO_BE_REVERSED_BY" property="blackListVO.TO_BE_REVERSED_BY" />
+	    <result column="TO_BE_REVERSED_DATE" property="blackListVO.TO_BE_REVERSED_DATE" />
+	    <result column="LEGAL_STATUS" property="blackListVO.LEGAL_STATUS" />
+	    <result column="REPORTING_BANKS" property="blackListVO.REPORTING_BANKS" />
+	    <result column="REG_NO_2" property="blackListVO.REG_NO_2" />
+	    
+	    <result column="STATUS_DESC" property="statusDesc" />
+	    <result column="REGION_DESC" property="regionDesc" /> 
+	    <result column="NATION_DESC" property="nationDesc" /> 
+	    <result column="LEGAL_STATUS_DESC" property="legalStatusDesc" />
+	    <result column="CIF_TYPE_DESC" property="ciftypeDesc" /> 
+	    <result column="CODE_SOURCE_DESC" property="codeSourceDesc" />
+	    <result column="TYPE_DESC" property="typeDesc" />
+	    <result column="COUNTRIES_DESC" property="countriesDesc" />
+	    <result column="ISSUE_COUNTRY_DESC" property="issueCountryDesc" />
+	    <result column="CIF_DESC" property="cifDesc" />
+	    <result column="CIF_MOTHER_FNAME_ARAB" property="blackListVO.CIF_MOTHER_FNAME_ARAB" />
+	    <result column="CIF_MOTHER_LNAME_ARAB" property="blackListVO.CIF_MOTHER_LNAME_ARAB" />
+	</resultMap>
+<!-- not mapped -TO DO-
+COUNTRIES_A.BRIEF_DESC_ENG	,
+MOSDOCTYPE.BRIEF_NAME_ENG	,
+COUNTRIES_B.BRIEF_DESC_ENG 	COUNTRIES_B_BRIEF_DESC_ENG	,
+CIF.SHORT_NAME_ENG			,
+'' LEGAL_STATUS_LONG_DESC_ENG,
+-->
+	<select id="getBlackListDetails" resultMap="blackListDetailMap" parameterType="blackListSC" > 
+		<include refid="blackListDetailCommon"/>
+	</select>
+	
+	<select id="cifRecordCountbyIdNo" resultType="int" parameterType="cifSC">
+		SELECT  COUNT(1)
+				FROM CIF
+				WHERE CIF.COMP_CODE = #{compCode}
+		 		AND	  CIF.ID_NO  	= #{id_no}	
+	</select>
+	
+	<select id="returnCifNobyIdNo" resultMap="CIF.BaseResultMap" parameterType="cifSC">
+		SELECT CIF_NO 
+		FROM CIF
+				WHERE CIF.COMP_CODE = #{compCode}
+		 		AND	  CIF.ID_NO  	= #{id_no}	
+	</select>
+	
+	<select id="checkCIFisBlacklisted" resultType="int" parameterType="cifSC">
+		SELECT 	  MAX(MOSBLACKLIST.CODE)
+		FROM  	  MOSBLACKLIST 
+		WHERE	  MOSBLACKLIST.CIF  		= #{cif_no}
+	 	AND		  MOSBLACKLIST.STATUS  		NOT IN ('D','R')
+	 	AND		  MOSBLACKLIST.COMP_CODE  	= #{compCode}
+	</select>
+	
+	<sql id="blackListIDsGridCommon">
+	<![CDATA[	
+		SELECT 
+				MOSBLACKLIST_ID.CODE,
+				MOSBLACKLIST_ID.COMP_CODE,
+				MOSBLACKLIST_ID.ID_NO,
+				MOSBLACKLIST_ID.ID_TYPE,
+				(SELECT ID_TYPES.DESC_ENG FROM ID_TYPES WHERE ID_TYPES.COMP_CODE = MOSBLACKLIST_ID.COMP_CODE AND ID_TYPES.CODE = MOSBLACKLIST_ID.ID_TYPE)ID_TYPE_DESC
+		FROM 	MOSBLACKLIST_ID
+		WHERE 	COMP_CODE	=	#{compCode}
+		AND   	CODE 		=	#{code}
+ 	]]>
+	</sql>
+
+	<update id="updateCIF_DELETED_BLACKLISTED" parameterType="com.path.vo.core.cif.CifSC">
+		UPDATE	CIF
+		SET BLACK_LISTED = 0
+		WHERE (COMP_CODE = #{compCode})
+		AND ((CIF_NO = #{cif_no})
+		OR (EXISTS (SELECT 1 FROM CIF_JOINT_DET J
+					WHERE J.COMP_CODE = CIF.COMP_CODE
+					AND J.CIF_NO = CIF.CIF_NO
+					AND J.JOINT_CIF_NO = #{cif_no})
+					AND NOT EXISTS (SELECT 1 FROM CIF_JOINT_DET J , CIF C
+									WHERE J.COMP_CODE = CIF.COMP_CODE
+									AND J.COMP_CODE = C.COMP_CODE
+									AND J.JOINT_CIF_NO = C.CIF_NO
+									AND J.JOINT_CIF_NO != #{cif_no}
+									AND J.CIF_NO = CIF.CIF_NO
+									AND C.BLACK_LISTED = 1)
+					)
+			)
+  </update>
+   <update id="updateCifBlackListed" parameterType="blackListSC" >
+     
+     UPDATE  CIF  SET CIF.BLACK_LISTED = 1  
+        WHERE 	COMP_CODE     = #{compCode}
+		AND		BLACK_LISTED = 0
+		AND   CIF_NO   = #{cif}       
+		AND STATUS IN('A','S','C','I')
+        AND EXISTS
+        (SELECT CIF_MOSBLACKLIST.CIF_NO FROM  CIF_MOSBLACKLIST WHERE CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO)
+     
+     </update>	  
+
+	<update id="updateCifApprovedBlackListStatus" parameterType="blackListSC">
+		<if test="isSybase != 1" >
+		begin
+		</if>
+		UPDATE  CIF  SET CIF.BLACK_LISTED = 1  
+        WHERE 	COMP_CODE     = #{compCode}
+		AND		BLACK_LISTED = 0
+		AND   CIF_NO   = #{cif}       
+		AND STATUS IN('A','S','C','I')
+        AND EXISTS
+        (SELECT CIF_MOSBLACKLIST.CIF_NO FROM  CIF_MOSBLACKLIST WHERE CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO)
+		
+		<if test="isSybase != 1" >
+		;
+		</if>
+		
+		UPDATE MOSBLACKLIST SET STATUS='P',APPROVED_BY=#{userId},DATE_APPROVED=#{runningDate}	
+		<if test="revisionDate != null" >
+		,REVISION_DATE =#{revisionDate}	
+		</if>
+		 WHERE (COMP_CODE = #{compCode}) AND (CODE = #{code})
+		<if test="isSybase != 1" >
+		;
+		end;
+		</if>
+  </update>
+	<update id="updateCIF_BlackListed" parameterType="com.path.vo.core.cif.CifSC">
+		UPDATE CIF
+		SET CIF.BLACK_LISTED = 1
+		WHERE CIF.BLACK_LISTED = 0
+			AND CIF.COMP_CODE = #{compCode}
+			AND (CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.CIF_NO = #{cif_no}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode})
+			OR CIF.CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.JOINT_CIF_NO =#{cif_no}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode})
+		<if test="cif_no != null" >
+		OR (CIF.CIF_NO=#{cif_no} AND CIF.STATUS IN('A','S','C','I'))
+		</if>
+			 )
+  	</update>
+
+	<resultMap id="blackListIDsGridMap" type="blackListIdCO">
+		<id column="CODE" property="blackListIdVO.CODE" />
+		<id column="COMP_CODE" property="blackListIdVO.COMP_CODE" />
+		<id column="ID_NO" property="blackListIdVO.ID_NO" />
+		<id column="ID_TYPE" property="blackListIdVO.ID_TYPE" />
+		<result column="ID_TYPE_DESC" property="idTypeDesc" />
+	</resultMap>
+
+	<select id="blackListIDsList" resultMap="blackListIDsGridMap"
+		parameterType="blackListSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="blackListIDsGridCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="blackListIDsListCount" resultType="int"
+		parameterType="blackListSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="blackListIDsGridCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="blackListRevisionPeriod" resultType="blackListTypeVO"
+		parameterType="blackListSC">
+		SELECT 
+		CASE WHEN REVISION_PERIOD IS NULL THEN 0 ELSE REVISION_PERIOD END
+		REVISION_PERIOD ,
+		CASE WHEN REVISION_BASIS IS NULL THEN 'N' ELSE REVISION_BASIS END
+		REVISION_BASIS 
+		FROM MOSBLACKLIST_TYPE
+		WHERE MOSBLACKLIST_TYPE.COMP_CODE = #{compCode}
+		AND MOSBLACKLIST_TYPE.CODE = #{blackListType} 
+	</select>
+	<update id="insert_cifOnCifMosBlackListBasedOnCif"
+		parameterType="blackListSC">
+		INSERT INTO CIF_MOSBLACKLIST( COMP_CODE, MOS_CODE, CIF_NO )
+			SELECT CIF_JOINT_DET.COMP_CODE,#{code},CIF_JOINT_DET.CIF_NO
+      		FROM CIF_JOINT_DET 
+    	WHERE CIF_JOINT_DET.COMP_CODE = #{compCode}
+			AND CIF_JOINT_DET.JOINT_CIF_NO = #{cif} 
+			AND NOT EXISTS (select 1 from CIF_MOSBLACKLIST
+							WHERE CIF_MOSBLACKLIST.CIF_NO = CIF_JOINT_DET.CIF_NO)
+		GROUP BY CIF_JOINT_DET.COMP_CODE, CIF_JOINT_DET.CIF_NO
+	</update>
+	<update id="insert_cifOnCifMosBlackListBasedOnDocNo"
+		parameterType="blackListSC">
+		  INSERT INTO CIF_MOSBLACKLIST( COMP_CODE, MOS_CODE, CIF_NO )
+			SELECT CIF.COMP_CODE,#{code},CIF.CIF_NO
+			FROM CIF  
+		WHERE CIF.COMP_CODE = #{compCode}
+			AND ID_NO = #{idNo}
+			AND CIF.CIF_NO != #{cif}
+      		AND NOT EXISTS (SELECT 1 FROM CIF_MOSBLACKLIST
+     						WHERE CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO) 
+     		GROUP BY CIF.COMP_CODE, CIF.CIF_NO
+	</update>
+	<update id="updateToBeReversed" parameterType="MOSBLACKLISTVO">
+		UPDATE MOSBLACKLIST 
+		SET
+		 	 MOSBLACKLIST.TO_BE_REVERSED_DATE =#{TO_BE_REVERSED_DATE} ,
+			MOSBLACKLIST.TO_BE_REVERSED_BY =#{TO_BE_REVERSED_BY} ,
+			STATUS =#{STATUS} 
+	   WHERE CODE= #{CODE}
+	</update>
+	
+	<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+	<sql id="checkiFCifChangesToZeroExist">
+	 
+		AND NOT EXISTS(select 1 from CIF_MOSBLACKLIST_UPDATES_TEMP cfmu where 
+       USER_ID=#{REVERSED_BY} AND
+       COMP_CODE=#{COMP_CODE} AND
+       cfmu.CIF_NO=CIF.CIF_NO And
+       cfmu.NEW_STATUS='0')
+       	
+	</sql>
+	<!-- END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+	<update id="reverse" parameterType="MOSBLACKLISTVO">
+	<if test="isSybase != 1" >
+	begin
+	</if>	
+	<!-- BUG 328629 changing update query for performance issue on BBS -->	
+	<!--  UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+		WHERE  (COMP_CODE  = #{COMP_CODE})
+			AND CIF.STATUS IN('A','S','C','I')
+			AND NOT EXISTS( SELECT 1
+							FROM MOSBLACKLIST MOS
+							WHERE MOS.COMP_CODE  = #{COMP_CODE}
+							AND MOS.CIF            = CIF.CIF_NO 
+							AND MOS.STATUS     = 'P'
+							AND MOS.CODE != #{CODE}
+						)   
+			AND NOT EXISTS( SELECT 1
+							FROM CIF_MOSBLACKLIST M         
+							WHERE M.COMP_CODE  = #{COMP_CODE}
+							AND M.CIF_NO         = CIF.CIF_NO 
+							AND M.MOS_CODE     != #{CODE}
+						)  
+			AND (	(CIF_NO           = #{CIF})
+					OR
+					( BLACK_LISTED = 1
+						AND
+						(EXISTS           (SELECT 1
+						  FROM    CIF_MOSBLACKLIST M
+						  WHERE  COMP_CODE   = #{COMP_CODE}
+						  AND      M.CIF_NO     = CIF.CIF_NO 
+						  AND     M.MOS_CODE   = #{CODE})
+						)
+						OR
+						(EXISTS           (SELECT 1
+						  FROM    CIF_BLACKLIST M
+						  WHERE  COMP_CODE   = #{COMP_CODE}
+						  AND      M.CIF_NO     = CIF.CIF_NO 
+						  AND     M.BL_CODE   = #{CODE})            
+						  AND NOT EXISTS   ( SELECT 1          
+										 FROM CIF_MOSBLACKLIST M
+										 WHERE M.COMP_CODE  = #{COMP_CODE}
+										 AND M.CIF_NO         = CIF.CIF_NO 
+										 AND M.MOS_CODE     != #{CODE}
+										  )
+						)  
+					)
+				)		
+		<if test="isSybase != 1" >
+		;
+		</if>		  -->
+				
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+		DELETE CIF_MOSBLACKLIST_UPDATES_TEMP WHERE USER_ID = #{REVERSED_BY}
+		<if test="isSybase != 1" >
+		;
+		</if> 
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{REVERSED_BY}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		FROM CIF 
+		WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND (CIF_NO =#{CIF})
+	   	<include refid="checkiFCifChangesToZeroExist" />
+		<if test="isSybase != 1" >
+		;
+		</if> 
+		<!--  END 286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+		
+		
+		
+	UPDATE  CIF    
+	 SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND (CIF_NO =#{CIF})
+	<if test="isSybase != 1" >
+		;
+	</if>
+		
+	
+	<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{REVERSED_BY}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		FROM CIF 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_MOSBLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.MOS_CODE = #{CODE}))))
+	   <include refid="checkiFCifChangesToZeroExist" />
+	<if test="isSybase != 1" >
+		;
+	</if>
+	<!-- END 286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+	UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_MOSBLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.MOS_CODE = #{CODE}))))
+	                     	                     
+	<if test="isSybase != 1" >
+		;
+	</if>
+	
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{REVERSED_BY}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		FROM CIF 
+		WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_BLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.BL_CODE = #{CODE}) AND NOT EXISTS
+	        (SELECT 1
+	             FROM CIF_MOSBLACKLIST M
+	            WHERE M.COMP_CODE = #{COMP_CODE}
+	              AND M.CIF_NO = CIF.CIF_NO
+	              AND M.MOS_CODE != #{CODE}))))
+	   <include refid="checkiFCifChangesToZeroExist" />
+	                     
+	<if test="isSybase != 1" >
+		;
+	</if>
+			<!--END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+	UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_BLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.BL_CODE = #{CODE}) AND NOT EXISTS
+	        (SELECT 1
+	             FROM CIF_MOSBLACKLIST M
+	            WHERE M.COMP_CODE = #{COMP_CODE}
+	              AND M.CIF_NO = CIF.CIF_NO
+	              AND M.MOS_CODE != #{CODE}))))
+	<if test="isSybase != 1" >
+		;
+	</if>
+	<!-- end bug 328629 changing update query for performance issue on BBS -->	
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{REVERSED_BY}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		FROM CIF 
+		WHERE CIF.COMP_CODE = #{COMP_CODE}
+		AND CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = #{CIF}
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+		AND NOT EXISTS  ( SELECT 1 FROM MOSBLACKLIST WHERE COMP_CODE = CIF.COMP_CODE AND STATUS IN ('P','V') AND MOSBLACKLIST.CODE != #{CODE} 
+							AND (	CIF = CIF.CIF_NO
+									OR CIF IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+												FROM CIF_JOINT_DET 
+												WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+												AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+									OR CIF IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								)
+						)
+		AND NOT EXISTS  ( SELECT 1 FROM CIF_MOSBLACKLIST WHERE CIF_MOSBLACKLIST.COMP_CODE = CIF.COMP_CODE AND CIF_MOSBLACKLIST.MOS_CODE != #{CODE} 
+							AND (CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								) 
+						)
+		<include refid="checkiFCifChangesToZeroExist" />
+		<if test="isSybase != 1" >
+		;
+	</if>
+		<!--END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+	UPDATE CIF
+		SET CIF.BLACK_LISTED = 0
+		WHERE CIF.COMP_CODE = #{COMP_CODE}
+		AND CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = #{CIF}
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+		AND NOT EXISTS  ( SELECT 1 FROM MOSBLACKLIST WHERE COMP_CODE = CIF.COMP_CODE AND STATUS IN ('P','V') AND MOSBLACKLIST.CODE != #{CODE} 
+							AND (	CIF = CIF.CIF_NO
+									OR CIF IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+												FROM CIF_JOINT_DET 
+												WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+												AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+									OR CIF IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								)
+						)
+		AND NOT EXISTS  ( SELECT 1 FROM CIF_MOSBLACKLIST WHERE CIF_MOSBLACKLIST.COMP_CODE = CIF.COMP_CODE AND CIF_MOSBLACKLIST.MOS_CODE != #{CODE} 
+							AND (CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								) 
+						)
+		<if test="isSybase != 1" >
+		;
+		</if>	
+		UPDATE MOSBLACKLIST 
+		SET
+		 	 MOSBLACKLIST.DATE_REVERSED =#{DATE_REVERSED} ,
+			MOSBLACKLIST.REVERSED_BY =#{REVERSED_BY} ,
+			STATUS =#{STATUS} 
+	   WHERE CODE= #{CODE}
+	   <if test="isSybase != 1" >
+		;
+		end;
+		</if>	
+	</update>
+	<update id="reverseUpdateBlackListed1" parameterType="MOSBLACKLISTVO">
+	<!-- BUG 328629 changing update query for performance issue on BBS -->	
+	<!--  UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+		WHERE  (COMP_CODE  = #{COMP_CODE})
+			AND CIF.STATUS IN('A','S','C','I')
+			AND NOT EXISTS( SELECT 1
+							FROM MOSBLACKLIST MOS
+							WHERE MOS.COMP_CODE  = #{COMP_CODE}
+							AND MOS.CIF            = CIF.CIF_NO 
+							AND MOS.STATUS     = 'P'
+							AND MOS.CODE != #{CODE}
+						)   
+			AND NOT EXISTS( SELECT 1
+							FROM CIF_MOSBLACKLIST M         
+							WHERE M.COMP_CODE  = #{COMP_CODE}
+							AND M.CIF_NO         = CIF.CIF_NO 
+							AND M.MOS_CODE     != #{CODE}
+						)  
+			AND (	(CIF_NO           = #{CIF})
+					OR
+					( BLACK_LISTED = 1
+						AND
+						(EXISTS           (SELECT 1
+						  FROM    CIF_MOSBLACKLIST M
+						  WHERE  COMP_CODE   = #{COMP_CODE}
+						  AND      M.CIF_NO     = CIF.CIF_NO 
+						  AND     M.MOS_CODE   = #{CODE})
+						)
+						OR
+						(EXISTS           (SELECT 1
+						  FROM    CIF_BLACKLIST M
+						  WHERE  COMP_CODE   = #{COMP_CODE}
+						  AND      M.CIF_NO     = CIF.CIF_NO 
+						  AND     M.BL_CODE   = #{CODE})            
+						  AND NOT EXISTS   ( SELECT 1          
+										 FROM CIF_MOSBLACKLIST M
+										 WHERE M.COMP_CODE  = #{COMP_CODE}
+										 AND M.CIF_NO         = CIF.CIF_NO 
+										 AND M.MOS_CODE     != #{CODE}
+										  )
+						)  
+					)
+				)		
+		<if test="isSybase != 1" >
+		;
+		</if>		  -->
+	UPDATE  CIF    
+	 SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND (CIF_NO =#{CIF})
+	</update>
+
+	<update id="reverseUpdateBlackListed2" parameterType="MOSBLACKLISTVO">
+	UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_MOSBLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.MOS_CODE = #{CODE}))))
+	</update>
+	<update id="reverseUpdateBlackListed3" parameterType="MOSBLACKLISTVO">
+	UPDATE  CIF    
+	SET    BLACK_LISTED = 0 
+	WHERE (COMP_CODE = #{COMP_CODE})
+	   AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+	   AND NOT EXISTS (SELECT 1
+	          FROM MOSBLACKLIST MOS
+	         WHERE MOS.COMP_CODE = #{COMP_CODE}
+	           AND MOS.CIF = CIF.CIF_NO
+	           AND MOS.STATUS = 'P'
+	           AND MOS.CODE != #{CODE})
+	   AND NOT EXISTS
+	(SELECT 1
+	          FROM CIF_MOSBLACKLIST M
+	         WHERE M.COMP_CODE = #{COMP_CODE}
+	           AND M.CIF_NO = CIF.CIF_NO
+	           AND M.MOS_CODE != #{CODE})
+	   AND ((BLACK_LISTED = 1 AND
+	       (EXISTS (SELECT 1
+	                    FROM CIF_BLACKLIST M
+	                   WHERE COMP_CODE = #{COMP_CODE}
+	                     AND M.CIF_NO = CIF.CIF_NO
+	                     AND M.BL_CODE = #{CODE}) AND NOT EXISTS
+	        (SELECT 1
+	             FROM CIF_MOSBLACKLIST M
+	            WHERE M.COMP_CODE = #{COMP_CODE}
+	              AND M.CIF_NO = CIF.CIF_NO
+	              AND M.MOS_CODE != #{CODE}))))
+	</update>
+	<update id="reverseUpdateBlackListed4" parameterType="MOSBLACKLISTVO">
+	<!-- end bug 328629 changing update query for performance issue on BBS -->	
+	UPDATE CIF
+		SET CIF.BLACK_LISTED = 0
+		WHERE CIF.COMP_CODE = #{COMP_CODE}
+		AND CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = #{CIF}
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+		AND NOT EXISTS  ( SELECT 1 FROM MOSBLACKLIST WHERE COMP_CODE = CIF.COMP_CODE AND STATUS IN ('P','V') AND MOSBLACKLIST.CODE != #{CODE} 
+							AND (	CIF = CIF.CIF_NO
+									OR CIF IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+												FROM CIF_JOINT_DET 
+												WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+												AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+									OR CIF IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								)
+						)
+		AND NOT EXISTS  ( SELECT 1 FROM CIF_MOSBLACKLIST WHERE CIF_MOSBLACKLIST.COMP_CODE = CIF.COMP_CODE AND CIF_MOSBLACKLIST.MOS_CODE != #{CODE} 
+							AND (CIF_MOSBLACKLIST.CIF_NO = CIF.CIF_NO
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.CIF_NO = CIF.CIF_NO  
+										AND  CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								OR CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO 
+										FROM CIF_JOINT_DET 
+										WHERE CIF_JOINT_DET.JOINT_CIF_NO = CIF.CIF_NO
+										AND CIF_JOINT_DET.COMP_CODE = CIF.COMP_CODE)
+								) 
+						)
+	</update>
+
+	<update id="reverseUpdateStatus" parameterType="MOSBLACKLISTVO">
+		UPDATE MOSBLACKLIST
+		   SET MOSBLACKLIST.DATE_REVERSED = #{DATE_REVERSED},
+		   	   MOSBLACKLIST.REVERSED_BY = #{REVERSED_BY,jdbcType=VARCHAR},
+		   	   STATUS = #{STATUS,jdbcType=VARCHAR}
+		 WHERE CODE= #{CODE,jdbcType=VARCHAR}
+	</update>
+
+	<update id="deleteMosBlackListIds" parameterType="blackListSC">
+		DELETE FROM MOSBLACKLIST_ID WHERE COMP_CODE =#{compCode} AND CODE = #{code}
+	</update>
+
+
+	<update id="updateSuspendBlacklist_FMSFACILITY" parameterType="blackListCO" >
+		UPDATE FMSFACILITY
+		   <set>
+		   	   <if test='"P".equals(crud)'>
+		   	   FMSFACILITY.STATUS         = #{blackListVO.STATUS},
+		   	   FMSFACILITY.CIF_OLD_STATUS	  = FMSFACILITY.STATUS,
+		       FMSFACILITY.DATE_SUSPENDED = #{runningDate},
+		       FMSFACILITY.SUSPENDED_BY   = #{loginUserId}
+		   	   </if>
+		   	   <if test='"V".equals(crud)'>
+		   	   FMSFACILITY.STATUS         = FMSFACILITY.CIF_OLD_STATUS,
+		       FMSFACILITY.DATE_SUSPENDED = null,
+		       FMSFACILITY.SUSPENDED_BY   = null
+		   	   </if>
+		   </set> 
+		 WHERE FMSFACILITY.COMP_CODE = #{loginCompCode}
+		   AND FMSFACILITY.BRANCH = #{loginBraCode}
+		   AND FMSFACILITY.STATUS IN ('A', 'P','S')
+		   AND FMSFACILITY.CIF = #{blackListVO.CIF}
+	</update>
+
+
+	<update id="updateSuspendBlacklist_CIF" parameterType="blackListCO" >
+		UPDATE CIF
+		   <set>
+		   	   <if test='"P".equals(crud)'>
+			   CIF.STATUS         = #{blackListVO.STATUS},
+		   	   CIF.OLD_STATUS	  = CIF.STATUS,
+		       CIF.SUSPENDED_BY   = #{loginUserId} ,
+		       CIF.DATE_SUSPENDED = #{runningDate}	
+		   	   </if>
+		   	   <if test='"V".equals(crud)'>
+			   CIF.STATUS          = CIF.OLD_STATUS,
+			   CIF.DATE_REINSTATED = #{runningDate},	
+			   CIF.REINSTATED_BY   = #{loginUserId}
+		       <!--  CIF.SUSPENDED_BY   = null ,
+		       CIF.DATE_SUSPENDED = null-->
+		   	   </if>
+		   </set> 
+		 WHERE CIF.COMP_CODE = #{loginCompCode}
+		   AND CIF.STATUS in ('A', 'I', 'S')
+		   AND CIF.CIF_NO = #{blackListVO.CIF}
+
+	</update>
+	
+	
+	<delete id="deleteCifMosBlackList" parameterType="blackListTypeVO" >
+		DELETE FROM CIF_MOSBLACKLIST
+		WHERE COMP_CODE  = #{COMP_CODE}
+		AND      MOS_CODE =   #{CODE}
+	</delete>
+	
+	<delete id="deleteCifBlackList" parameterType="blackListTypeVO" >
+		DELETE FROM CIF_BLACKLIST
+		WHERE COMP_CODE  = #{COMP_CODE}
+		AND   BL_TYPE = 'M'
+		AND   BL_CODE =   #{CODE}
+	</delete>	
+
+	<select id="selectBlackListReasonLineNo" resultType="BigDecimal" parameterType="blackListSC">
+		SELECT 
+			LINE_NO
+		FROM BLACKLIST_OVERRIDE_REASON
+		WHERE COMP_CODE = #{compCode}
+		  AND BRANCH_CODE = #{branchCode}
+		  AND PARENT_REF = #{parentRef}
+		  AND APP_NAME = #{appName}
+		  
+		  <if test = "parentRef == 'Q000' or parentRef == 'G00' or parentRef == 'ACCOUNT'">
+		  	AND ENTITY_CODE = #{entity}
+		  </if>
+		  
+		   <if test = "parentRef == 'D001'">
+		  	AND ENTITY_CODE = #{entity}
+		  	AND TRS_TYPE 	= #{trsType}
+		  	AND CB_IND		= #{cbInd}
+		  </if>
+		  
+	 </select>
+	 
+	 <update id="updateBlackListReason" parameterType="blackListSC">
+		UPDATE BLACKLIST_OVERRIDE_REASON
+		SET	REASON_CODE = #{reasonCode},
+			USER_ID = #{userId},
+			DATE_UPDATED =	
+					<choose >
+		        		<when test="isSybase == 1" >
+		           			GETDATE()
+		        		</when>
+		        		<otherwise >
+		           			SYSDATE
+		        		</otherwise>
+		      		</choose>
+		WHERE COMP_CODE = #{compCode}
+		  AND BRANCH_CODE = #{branchCode}
+		  AND PARENT_REF = #{parentRef}
+		  AND APP_NAME = #{appName}
+		  AND ENTITY_CODE = #{entity}
+		  AND LINE_NO = #{lineNo}
+		  
+	 </update>
+	
+	<update id="insertBlackListReason" parameterType="blackListSC">
+		INSERT INTO BLACKLIST_OVERRIDE_REASON (COMP_CODE, PARENT_REF, APP_NAME, LINE_NO, ENTITY_CODE, BRANCH_CODE, 
+												CURRENCY_CODE, GL_CODE, CIF_NO, SL_NO, TRS_TYPE, CB_IND, REASON_CODE, DATE_UPDATED, USER_ID, CREATED_DATE)
+		VALUES (#{compCode}, #{parentRef}, #{appName}, #{lineNo}, #{entity}, #{branchCode,jdbcType=NUMERIC}, 
+				#{cyCode,jdbcType=NUMERIC}, #{glCode,jdbcType=NUMERIC}, #{cif,jdbcType=NUMERIC}, #{slNo,jdbcType=NUMERIC}, 
+				#{trsType,jdbcType=VARCHAR}, #{cbInd,jdbcType=VARCHAR}, #{reasonCode},
+					<choose >
+		        		<when test="isSybase == 1" >
+		           			GETDATE()
+		        		</when>
+		        		<otherwise >
+		           			SYSDATE
+		        		</otherwise>
+		      		</choose>,
+		      		#{userId,jdbcType=VARCHAR},
+		      		<choose >
+		        		<when test="isSybase == 1" >
+		           			GETDATE()
+		        		</when>
+		        		<otherwise >
+		           			SYSDATE
+		        		</otherwise>
+		      		</choose>)
+	 </update>
+	
+</mapper>

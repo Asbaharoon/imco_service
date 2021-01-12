@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_PRC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_PRCVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="PRC_NO" property="PRC_NO" />
+    <result column="BF_AF_FLAG" property="BF_AF_FLAG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, PRC_NO, BF_AF_FLAG
+  </sql>
+  <select id="selectDF_FILE_PRC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_PRCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_PRC
+    where FILE_CODE = #{FILE_CODE}
+      and PRC_NO = #{PRC_NO}
+  </select>
+  <delete id="deleteDF_FILE_PRC" parameterType="com.path.dbmaps.vo.DF_FILE_PRCVOKey" >
+    delete from DF_FILE_PRC
+    where FILE_CODE = #{FILE_CODE}
+      and PRC_NO = #{PRC_NO}
+  </delete>
+  <insert id="insertDF_FILE_PRC" parameterType="com.path.dbmaps.vo.DF_FILE_PRCVO" >
+    insert into DF_FILE_PRC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="PRC_NO != null" >
+        PRC_NO,
+      </if>
+      <if test="BF_AF_FLAG != null" >
+        BF_AF_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="PRC_NO != null" >
+        #{PRC_NO},
+      </if>
+      <if test="BF_AF_FLAG != null" >
+        #{BF_AF_FLAG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_PRC" >
+    update DF_FILE_PRC
+    <set >
+      <if test="BF_AF_FLAG != null" >
+        BF_AF_FLAG = #{BF_AF_FLAG},
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and PRC_NO = #{PRC_NO}
+  </sql>
+  <update id="updateDF_FILE_PRC" parameterType="com.path.dbmaps.vo.DF_FILE_PRCVO" >
+    <include refid="sql_updateDF_FILE_PRC" />
+  </update>
+</mapper>

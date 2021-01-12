@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SERV_REG_BILL_REF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SERV_REG_BILL_REFVO" >
+    <id column="ADD_REF_LINE_NO" property="ADD_REF_LINE_NO" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="REG_TYPE" property="REG_TYPE" />
+    <result column="REFERENCE" property="REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ADD_REF_LINE_NO, CIF_NO, COMP_CODE, LINE_NO, REG_TYPE, REFERENCE
+  </sql>
+  <select id="selectCTS_SERV_REG_BILL_REF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SERV_REG_BILL_REFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SERV_REG_BILL_REF
+    where ADD_REF_LINE_NO = #{ADD_REF_LINE_NO}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REG_TYPE = #{REG_TYPE}
+  </select>
+  <delete id="deleteCTS_SERV_REG_BILL_REF" parameterType="com.path.dbmaps.vo.CTS_SERV_REG_BILL_REFVOKey" >
+    delete from CTS_SERV_REG_BILL_REF
+    where ADD_REF_LINE_NO = #{ADD_REF_LINE_NO}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REG_TYPE = #{REG_TYPE}
+  </delete>
+  <insert id="insertCTS_SERV_REG_BILL_REF" parameterType="com.path.dbmaps.vo.CTS_SERV_REG_BILL_REFVO" >
+    insert into CTS_SERV_REG_BILL_REF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      ADD_REF_LINE_NO,
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="REG_TYPE != null" >
+        REG_TYPE,
+      </if>
+      <if test="REFERENCE != null" >
+        REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{ADD_REF_LINE_NO},
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="REG_TYPE != null" >
+        #{REG_TYPE},
+      </if>
+      <if test="REFERENCE != null" >
+        #{REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SERV_REG_BILL_REF" >
+    update CTS_SERV_REG_BILL_REF
+    <set >
+      <if test="REFERENCE != null" >
+        REFERENCE = #{REFERENCE},
+      </if>
+    </set>
+    where ADD_REF_LINE_NO = #{ADD_REF_LINE_NO}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REG_TYPE = #{REG_TYPE}
+  </sql>
+  <update id="updateCTS_SERV_REG_BILL_REF" parameterType="com.path.dbmaps.vo.CTS_SERV_REG_BILL_REFVO" >
+    <include refid="sql_updateCTS_SERV_REG_BILL_REF" />
+  </update>
+</mapper>

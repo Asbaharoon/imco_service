@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackListSourceMapper">
+
+
+	<resultMap
+		type="com.path.vo.core.blacklistsource.BlackListSourceCO"
+		id="resBlackListSourceListMap">
+		<result column="CODE" property="blackSourceVO.CODE" />
+		<result column="CIF_NO" property="blackSourceVO.CIF_NO" />
+		<result column="BRIEF_DESC_ENG"
+			property="blackSourceVO.BRIEF_DESC_ENG" />
+		<result column="LONG_DESC_ENG"
+			property="blackSourceVO.LONG_DESC_ENG" />
+		<result column="BRIEF_DESC_ARAB"
+			property="blackSourceVO.BRIEF_DESC_ARAB" />
+		<result column="LONG_DESC_ARAB"
+			property="blackSourceVO.LONG_DESC_ARAB" />
+		<result column="ENTITY_STATUS"
+			property="blackSourceVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+
+
+	<resultMap
+		type="com.path.vo.core.blacklistsource.BlackListSourceCO"
+		id="returnBlackListSourceDataMap">
+
+		<result column="COMP_CODE" property="blackSourceVO.COMP_CODE" />
+		<result column="CODE" property="blackSourceVO.CODE" />
+		<result column="CIF_NO" property="blackSourceVO.CIF_NO" />
+		<result column="BRIEF_DESC_ENG"
+			property="blackSourceVO.BRIEF_DESC_ENG" />
+		<result column="LONG_DESC_ENG"
+			property="blackSourceVO.LONG_DESC_ENG" />
+		<result column="BRIEF_DESC_ARAB"
+			property="blackSourceVO.BRIEF_DESC_ARAB" />
+		<result column="LONG_DESC_ARAB"
+			property="blackSourceVO.LONG_DESC_ARAB" />
+		<result column="CENTRAL_BANK" property="CENTRAL_BANK" />
+		<result column="ENTITY_STATUS"
+			property="blackSourceVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+		<result column="CREATED_BY"
+		property="blackSourceVO.CREATED_BY" />
+		<result column="MODIFIED_BY"
+		property="blackSourceVO.MODIFIED_BY" />
+	</resultMap>
+
+	<resultMap type="com.path.dbmaps.vo.CIFVO"
+		id="returnMapCif">
+
+		<result column="SHORT_NAME_ENG" property="SHORT_NAME_ENG" />
+		<result column="SHORT_NAME_ARAB" property="SHORT_NAME_ARAB" />
+		<result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+		<result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+
+	</resultMap>
+
+
+
+	<sql id="queryBlackListSourceSQL">
+		SELECT
+		MOSBLACKSOURCE.ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM
+		SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE =
+		#{language}
+		AND
+		VALUE_CODE = MOSBLACKSOURCE.ENTITY_STATUS) STATUS_DESC,
+		MOSBLACKSOURCE.CODE,
+		MOSBLACKSOURCE.BRIEF_DESC_ENG,
+		MOSBLACKSOURCE.LONG_DESC_ENG,
+		MOSBLACKSOURCE.BRIEF_DESC_ARAB,
+		MOSBLACKSOURCE.LONG_DESC_ARAB,
+		MOSBLACKSOURCE.CIF_NO
+		FROM MOSBLACKSOURCE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					((MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+					OR
+					(MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKSOURCE B
+					WHERE B.COMP_CODE =
+					-#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKSOURCE.CODE)))
+				</if>
+				<if test='ivCrud == "U"'>
+					((MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC})AND
+					NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKSOURCE B
+					WHERE
+					B.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+					AND
+					B.CODE=MOSBLACKSOURCE.CODE))
+				</if>
+				<if test='ivCrud == "P"'>
+					(MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					(MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+					AND EXISTS(SELECT 1
+					FROM MOSBLACKSOURCE B
+					WHERE
+					B.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND
+					B.CODE=MOSBLACKSOURCE.CODE))
+				</if>
+			</when>
+			<otherwise>
+
+				(MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+
+			</otherwise>
+		</choose>
+
+		<if test='ivCrud == "U"'>
+			AND (MOSBLACKSOURCE.ENTITY_STATUS='P')
+		</if>
+		<if test='ivCrud == "P"'>
+			AND (MOSBLACKSOURCE.ENTITY_STATUS='A')
+		</if>
+
+	</sql>
+
+
+	<select id="returnBlackListSourceList"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceSC"
+		resultMap="resBlackListSourceListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryBlackListSourceSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnBlackListSourceListCount"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryBlackListSourceSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="blackListData"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceSC"
+		resultMap="returnBlackListSourceDataMap">
+
+
+
+		SELECT
+		MOSBLACKSOURCE.ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM
+		SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE =
+		#{language}
+		AND
+		VALUE_CODE = MOSBLACKSOURCE.ENTITY_STATUS) STATUS_DESC,
+		MOSBLACKSOURCE.COMP_CODE,
+		MOSBLACKSOURCE.CODE,
+		MOSBLACKSOURCE.BRIEF_DESC_ENG,
+		MOSBLACKSOURCE.BRIEF_DESC_ARAB,
+		MOSBLACKSOURCE.LONG_DESC_ENG,
+		MOSBLACKSOURCE.LONG_DESC_ARAB,
+		MOSBLACKSOURCE.CIF_NO,
+		MOSBLACKSOURCE.CENTRAL_BANK,
+		MOSBLACKSOURCE.CREATED_BY,
+		MOSBLACKSOURCE.MODIFIED_BY
+		FROM MOSBLACKSOURCE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					((MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+					OR
+					(MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKSOURCE B
+					WHERE B.COMP_CODE =
+					-#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKSOURCE.CODE)))
+				</if>
+				<if test='ivCrud == "U"'>
+					((MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC})AND
+					NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKSOURCE B
+					WHERE B.COMP_CODE =
+					-#{compCode,jdbcType=NUMERIC}
+
+					AND B.CODE=MOSBLACKSOURCE.CODE))
+
+				</if>
+				<if test='ivCrud == "P"'>
+					(MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					<if test="cancelFlag==null">
+						(MOSBLACKSOURCE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+						AND EXISTS (SELECT 1
+						FROM MOSBLACKSOURCE B
+						WHERE B.COMP_CODE =-#{compCode,jdbcType=NUMERIC}
+						AND B.CODE=MOSBLACKSOURCE.CODE))
+					</if>
+					<if test="cancelFlag!=null">
+						<if test='cancelFlag ==1 '>
+							(MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+						</if>
+					</if>
+
+				</if>
+
+
+			</when>
+			<otherwise>
+				(MOSBLACKSOURCE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+
+			</otherwise>
+		</choose>
+		AND
+		(MOSBLACKSOURCE.CODE = #{code,jdbcType=NUMERIC})
+
+	</select>
+
+	<delete id="deleteBlackListSource"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceCO">
+		DELETE FROM MOSBLACKSOURCE
+		WHERE COMP_CODE =
+		#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+		AND
+		CODE=#{blackSourceVO.CODE,jdbcType=NUMERIC}
+
+	</delete>
+
+	<select id="returnCountByCifCode" resultMap="returnMapCif"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceCO">
+		SELECT CIF_NO,SHORT_NAME_ENG, SHORT_NAME_ARAB,
+		LONG_NAME_ENG, LONG_NAME_ARAB
+		FROM CIF
+		WHERE COMP_CODE =
+		#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+		AND CIF_NO = #{blackSourceVO.CIF_NO,jdbcType=NUMERIC}
+	</select>
+
+	<delete id="deleteBlckListSource"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceCO">
+		DELETE FROM MOSBLACKSOURCE
+		WHERE
+		<if test="dualParam!=1">
+			COMP_CODE = #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+		</if>
+		<if test="dualParam==1">
+			<if test="method==1">
+				COMP_CODE = #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+				AND
+				EXISTS (SELECT 1
+				FROM MOSBLACKSOURCE B
+				WHERE B.COMP_CODE
+				=-#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.CODE
+				=MOSBLACKSOURCE.CODE
+				)
+			</if>
+			<if test="method==2">
+				COMP_CODE = -#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</if>
+			<if test="method==3">
+				COMP_CODE IN
+				(-#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC},#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC})
+				AND EXISTS (SELECT 1
+				FROM MOSBLACKSOURCE B
+				WHERE B.COMP_CODE
+				=-#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.CODE
+				=MOSBLACKSOURCE.CODE
+				)
+			</if>
+		</if>
+		AND CODE=#{blackSourceVO.CODE,jdbcType=NUMERIC}
+
+	</delete>
+
+	<sql id="sql_approve">
+		UPDATE MOSBLACKSOURCE
+		<set>
+			COMP_CODE = #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC},
+			ENTITY_STATUS = 'P',
+			MOSBLACKSOURCE.APPROVED_BY=#{blackSourceVO.APPROVED_BY,jdbcType=VARCHAR},
+			MOSBLACKSOURCE.APPROVED_DATE=#{blackSourceVO.APPROVED_DATE,jdbcType=TIMESTAMP}
+		</set>
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				COMP_CODE =
+				-#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT
+				EXISTS (SELECT 1
+				FROM MOSBLACKSOURCE B
+				WHERE B.COMP_CODE
+				=#{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+				AND
+				B.CODE=MOSBLACKSOURCE.CODE
+				)
+
+			</when>
+			<otherwise>
+				COMP_CODE = #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</otherwise>
+		</choose>
+		AND CODE=#{blackSourceVO.CODE,jdbcType=NUMERIC}
+	</sql>
+
+	<update id="approveBlackListSource"
+		parameterType="com.path.vo.core.blacklistsource.BlackListSourceCO">
+		<include refid="blackListSourceMapper.sql_approve" />
+	</update>
+
+<update id="updateBlackListSourceHeader" parameterType="com.path.vo.core.blacklistsource.BlackListSourceCO"  >
+		UPDATE MOSBLACKSOURCE
+		<set>
+		<if test="method ==1">
+		    COMP_CODE     = #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC},
+			MODIFIED_BY   = #{blackSourceVO.MODIFIED_BY,jdbcType=VARCHAR},
+			MODIFIED_DATE = #{blackSourceVO.MODIFIED_DATE,jdbcType=NUMERIC},
+		</if>
+		ENTITY_STATUS = #{blackSourceVO.ENTITY_STATUS,jdbcType=VARCHAR},
+		DATE_UPDATED = 
+		<choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+        </choose>
+		</set>
+		WHERE  COMP_CODE      =  #{blackSourceVO.COMP_CODE,jdbcType=NUMERIC}
+		AND CODE			  =#{blackSourceVO.CODE,jdbcType=NUMERIC}
+		
+	   
+	</update>
+	
+	
+
+</mapper>

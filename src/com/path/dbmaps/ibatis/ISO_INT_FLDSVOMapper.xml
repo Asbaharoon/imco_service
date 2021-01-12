@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ISO_INT_FLDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ISO_INT_FLDSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FIELD_NO" property="FIELD_NO" />
+    <id column="INT_CODE" property="INT_CODE" />
+    <result column="FIELD_NAME" property="FIELD_NAME" />
+    <result column="FIELD_LENGTH" property="FIELD_LENGTH" />
+    <result column="FIELD_LENL" property="FIELD_LENL" />
+    <result column="TOTAL_MASK" property="TOTAL_MASK" />
+    <result column="PARTIAL_MASK" property="PARTIAL_MASK" />
+    <result column="FIELD_TYPE" property="FIELD_TYPE" />
+    <result column="IS_DECIMAL_YN" property="IS_DECIMAL_YN" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.ISO_INT_FLDSVO" extends="BaseResultMap" >
+    <result column="EXPRESSION" property="EXPRESSION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, FIELD_NO, INT_CODE, FIELD_NAME, FIELD_LENGTH, FIELD_LENL, TOTAL_MASK, 
+    PARTIAL_MASK, FIELD_TYPE, IS_DECIMAL_YN
+  </sql>
+  <sql id="Blob_Column_List" >
+    EXPRESSION
+  </sql>
+  <select id="selectISO_INT_FLDS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.ISO_INT_FLDSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ISO_INT_FLDS
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+  </select>
+  <delete id="deleteISO_INT_FLDS" parameterType="com.path.dbmaps.vo.ISO_INT_FLDSVO" >
+    delete from ISO_INT_FLDS
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+  </delete>
+  <insert id="insertISO_INT_FLDS" parameterType="com.path.dbmaps.vo.ISO_INT_FLDSVO" >
+    insert into ISO_INT_FLDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FIELD_NO != null and FIELD_NO != emptyBigDecimalValue" >
+        FIELD_NO,
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        INT_CODE,
+      </if>
+      <if test="FIELD_NAME != null and !&quot;&quot;.equals(FIELD_NAME)" >
+        FIELD_NAME,
+      </if>
+      <if test="FIELD_LENGTH != null and FIELD_LENGTH != emptyBigDecimalValue" >
+        FIELD_LENGTH,
+      </if>
+      <if test="FIELD_LENL != null and FIELD_LENL != emptyBigDecimalValue" >
+        FIELD_LENL,
+      </if>
+      <if test="TOTAL_MASK != null and TOTAL_MASK != emptyBigDecimalValue" >
+        TOTAL_MASK,
+      </if>
+      <if test="PARTIAL_MASK != null and !&quot;&quot;.equals(PARTIAL_MASK)" >
+        PARTIAL_MASK,
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        FIELD_TYPE,
+      </if>
+      <if test="IS_DECIMAL_YN != null and !&quot;&quot;.equals(IS_DECIMAL_YN)" >
+        IS_DECIMAL_YN,
+      </if>
+      <if test="EXPRESSION != null" >
+        EXPRESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FIELD_NO != null and FIELD_NO != emptyBigDecimalValue" >
+        #{FIELD_NO},
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        #{INT_CODE},
+      </if>
+      <if test="FIELD_NAME != null and !&quot;&quot;.equals(FIELD_NAME)" >
+        #{FIELD_NAME},
+      </if>
+      <if test="FIELD_LENGTH != null and FIELD_LENGTH != emptyBigDecimalValue" >
+        #{FIELD_LENGTH},
+      </if>
+      <if test="FIELD_LENL != null and FIELD_LENL != emptyBigDecimalValue" >
+        #{FIELD_LENL},
+      </if>
+      <if test="TOTAL_MASK != null and TOTAL_MASK != emptyBigDecimalValue" >
+        #{TOTAL_MASK},
+      </if>
+      <if test="PARTIAL_MASK != null and !&quot;&quot;.equals(PARTIAL_MASK)" >
+        #{PARTIAL_MASK},
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        #{FIELD_TYPE},
+      </if>
+      <if test="IS_DECIMAL_YN != null and !&quot;&quot;.equals(IS_DECIMAL_YN)" >
+        #{IS_DECIMAL_YN},
+      </if>
+      <if test="EXPRESSION != null" >
+        #{EXPRESSION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateISO_INT_FLDS" >
+    update ISO_INT_FLDS
+    <set >
+      <if test="FIELD_NAME != null" >
+        <choose >
+          <when test="FIELD_NAME.equals(&quot;&quot;)" >
+            FIELD_NAME = NULL ,
+          </when>
+          <otherwise >
+            FIELD_NAME = #{FIELD_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_LENGTH != null" >
+        <choose >
+          <when test="FIELD_LENGTH == emptyBigDecimalValue" >
+            FIELD_LENGTH = NULL ,
+          </when>
+          <otherwise >
+            FIELD_LENGTH = #{FIELD_LENGTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_LENL != null" >
+        <choose >
+          <when test="FIELD_LENL == emptyBigDecimalValue" >
+            FIELD_LENL = NULL ,
+          </when>
+          <otherwise >
+            FIELD_LENL = #{FIELD_LENL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_MASK != null" >
+        <choose >
+          <when test="TOTAL_MASK == emptyBigDecimalValue" >
+            TOTAL_MASK = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_MASK = #{TOTAL_MASK},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PARTIAL_MASK != null" >
+        <choose >
+          <when test="PARTIAL_MASK.equals(&quot;&quot;)" >
+            PARTIAL_MASK = NULL ,
+          </when>
+          <otherwise >
+            PARTIAL_MASK = #{PARTIAL_MASK},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_TYPE != null" >
+        <choose >
+          <when test="FIELD_TYPE.equals(&quot;&quot;)" >
+            FIELD_TYPE = NULL ,
+          </when>
+          <otherwise >
+            FIELD_TYPE = #{FIELD_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_DECIMAL_YN != null" >
+        <choose >
+          <when test="IS_DECIMAL_YN.equals(&quot;&quot;)" >
+            IS_DECIMAL_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_DECIMAL_YN = #{IS_DECIMAL_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXPRESSION != null" >
+        EXPRESSION = #{EXPRESSION},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+  </sql>
+  <update id="updateISO_INT_FLDS" parameterType="com.path.dbmaps.vo.ISO_INT_FLDSVO" >
+    <include refid="sql_updateISO_INT_FLDS" />
+  </update>
+</mapper>

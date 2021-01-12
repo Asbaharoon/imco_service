@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ALRT_ENG_REQUEST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ALRT_ENG_REQUESTVO" >
+    <result column="REQUEST_ID" property="REQUEST_ID" />
+    <result column="EVENT_ID" property="EVENT_ID" />
+    <result column="RECEIVED_TIME" property="RECEIVED_TIME" />
+    <result column="STARTING_TIME" property="STARTING_TIME" />
+    <result column="ENDING_TIME" property="ENDING_TIME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="OUTPUT_MSG" property="OUTPUT_MSG" />
+    <result column="MACHINE_NAME_IP" property="MACHINE_NAME_IP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.ALRT_ENG_REQUESTVO" extends="BaseResultMap" >
+    <result column="REQUEST_BODY" property="REQUEST_BODY" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    REQUEST_BODY
+  </sql>
+  <insert id="insertALRT_ENG_REQUEST" parameterType="com.path.dbmaps.vo.ALRT_ENG_REQUESTVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="REQUEST_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(REQUEST_ID),0)+1</when><otherwise>NVL(MAX(REQUEST_ID),0)+1</otherwise></choose> FROM ALRT_ENG_REQUEST
+    </selectKey>
+    insert into ALRT_ENG_REQUEST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      REQUEST_ID,
+      <if test="EVENT_ID != null and EVENT_ID != emptyBigDecimalValue" >
+        EVENT_ID,
+      </if>
+      <if test="RECEIVED_TIME != null" >
+        RECEIVED_TIME,
+      </if>
+      <if test="STARTING_TIME != null" >
+        STARTING_TIME,
+      </if>
+      <if test="ENDING_TIME != null" >
+        ENDING_TIME,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="OUTPUT_MSG != null and !&quot;&quot;.equals(OUTPUT_MSG)" >
+        OUTPUT_MSG,
+      </if>
+      <if test="MACHINE_NAME_IP != null and !&quot;&quot;.equals(MACHINE_NAME_IP)" >
+        MACHINE_NAME_IP,
+      </if>
+      <if test="REQUEST_BODY != null" >
+        REQUEST_BODY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{REQUEST_ID},
+      <if test="EVENT_ID != null and EVENT_ID != emptyBigDecimalValue" >
+        #{EVENT_ID},
+      </if>
+      <if test="RECEIVED_TIME != null" >
+        #{RECEIVED_TIME},
+      </if>
+      <if test="STARTING_TIME != null" >
+        #{STARTING_TIME},
+      </if>
+      <if test="ENDING_TIME != null" >
+        #{ENDING_TIME},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="OUTPUT_MSG != null and !&quot;&quot;.equals(OUTPUT_MSG)" >
+        #{OUTPUT_MSG},
+      </if>
+      <if test="MACHINE_NAME_IP != null and !&quot;&quot;.equals(MACHINE_NAME_IP)" >
+        #{MACHINE_NAME_IP},
+      </if>
+      <if test="REQUEST_BODY != null" >
+        #{REQUEST_BODY},
+      </if>
+    </trim>
+  </insert>
+</mapper>

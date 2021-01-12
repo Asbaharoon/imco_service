@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSSTAGE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSSTAGEVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LC_NBR" property="LC_NBR" />
+    <id column="LC_TYPE" property="LC_TYPE" />
+    <id column="LC_YEAR" property="LC_YEAR" />
+    <id column="STAGE_NBR" property="STAGE_NBR" />
+    <result column="STAGE_PERC" property="STAGE_PERC" />
+    <result column="STAGE_AMOUNT" property="STAGE_AMOUNT" />
+    <result column="STAGE_UTILIZED" property="STAGE_UTILIZED" />
+    <result column="STAGE_NARRATIVE" property="STAGE_NARRATIVE" />
+    <result column="CREDIT_AVAILABILITY_DAYS" property="CREDIT_AVAILABILITY_DAYS" />
+    <result column="MEANS_OF_TRANSPORT" property="MEANS_OF_TRANSPORT" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LC_NBR, LC_TYPE, LC_YEAR, STAGE_NBR, STAGE_PERC, STAGE_AMOUNT, 
+    STAGE_UTILIZED, STAGE_NARRATIVE, CREDIT_AVAILABILITY_DAYS, MEANS_OF_TRANSPORT, DATE_UPDATED
+  </sql>
+  <select id="selectTFSSTAGE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSSTAGEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSSTAGE
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and STAGE_NBR = #{STAGE_NBR}
+  </select>
+  <delete id="deleteTFSSTAGE" parameterType="com.path.dbmaps.vo.TFSSTAGEVO" >
+    delete from TFSSTAGE
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and STAGE_NBR = #{STAGE_NBR}
+  </delete>
+  <insert id="insertTFSSTAGE" parameterType="com.path.dbmaps.vo.TFSSTAGEVO" >
+    insert into TFSSTAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        LC_NBR,
+      </if>
+      <if test="LC_TYPE != null" >
+        LC_TYPE,
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        LC_YEAR,
+      </if>
+      <if test="STAGE_NBR != null and STAGE_NBR != emptyBigDecimalValue" >
+        STAGE_NBR,
+      </if>
+      <if test="STAGE_PERC != null and STAGE_PERC != emptyBigDecimalValue" >
+        STAGE_PERC,
+      </if>
+      <if test="STAGE_AMOUNT != null and STAGE_AMOUNT != emptyBigDecimalValue" >
+        STAGE_AMOUNT,
+      </if>
+      <if test="STAGE_UTILIZED != null and STAGE_UTILIZED != emptyBigDecimalValue" >
+        STAGE_UTILIZED,
+      </if>
+      <if test="STAGE_NARRATIVE != null" >
+        STAGE_NARRATIVE,
+      </if>
+      <if test="CREDIT_AVAILABILITY_DAYS != null and CREDIT_AVAILABILITY_DAYS != emptyBigDecimalValue" >
+        CREDIT_AVAILABILITY_DAYS,
+      </if>
+      <if test="MEANS_OF_TRANSPORT != null" >
+        MEANS_OF_TRANSPORT,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        #{LC_NBR},
+      </if>
+      <if test="LC_TYPE != null" >
+        #{LC_TYPE},
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        #{LC_YEAR},
+      </if>
+      <if test="STAGE_NBR != null and STAGE_NBR != emptyBigDecimalValue" >
+        #{STAGE_NBR},
+      </if>
+      <if test="STAGE_PERC != null and STAGE_PERC != emptyBigDecimalValue" >
+        #{STAGE_PERC},
+      </if>
+      <if test="STAGE_AMOUNT != null and STAGE_AMOUNT != emptyBigDecimalValue" >
+        #{STAGE_AMOUNT},
+      </if>
+      <if test="STAGE_UTILIZED != null and STAGE_UTILIZED != emptyBigDecimalValue" >
+        #{STAGE_UTILIZED},
+      </if>
+      <if test="STAGE_NARRATIVE != null" >
+        #{STAGE_NARRATIVE},
+      </if>
+      <if test="CREDIT_AVAILABILITY_DAYS != null and CREDIT_AVAILABILITY_DAYS != emptyBigDecimalValue" >
+        #{CREDIT_AVAILABILITY_DAYS},
+      </if>
+      <if test="MEANS_OF_TRANSPORT != null" >
+        #{MEANS_OF_TRANSPORT},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSSTAGE" >
+    update TFSSTAGE
+    <set >
+      <if test="STAGE_PERC != null" >
+        <choose >
+          <when test="STAGE_PERC == emptyBigDecimalValue" >
+            STAGE_PERC = NULL ,
+          </when>
+          <otherwise >
+            STAGE_PERC = #{STAGE_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STAGE_AMOUNT != null" >
+        <choose >
+          <when test="STAGE_AMOUNT == emptyBigDecimalValue" >
+            STAGE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            STAGE_AMOUNT = #{STAGE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STAGE_UTILIZED != null" >
+        <choose >
+          <when test="STAGE_UTILIZED == emptyBigDecimalValue" >
+            STAGE_UTILIZED = NULL ,
+          </when>
+          <otherwise >
+            STAGE_UTILIZED = #{STAGE_UTILIZED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STAGE_NARRATIVE != null" >
+        STAGE_NARRATIVE = #{STAGE_NARRATIVE},
+      </if>
+      <if test="CREDIT_AVAILABILITY_DAYS != null" >
+        <choose >
+          <when test="CREDIT_AVAILABILITY_DAYS == emptyBigDecimalValue" >
+            CREDIT_AVAILABILITY_DAYS = NULL ,
+          </when>
+          <otherwise >
+            CREDIT_AVAILABILITY_DAYS = #{CREDIT_AVAILABILITY_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MEANS_OF_TRANSPORT != null" >
+        MEANS_OF_TRANSPORT = #{MEANS_OF_TRANSPORT},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and STAGE_NBR = #{STAGE_NBR}
+  </sql>
+  <update id="updateTFSSTAGE" parameterType="com.path.dbmaps.vo.TFSSTAGEVO" >
+    <include refid="sql_updateTFSSTAGE" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

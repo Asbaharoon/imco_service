@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_YIELD_AMENDED" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_YIELD_AMENDEDVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="MULTIPLE_YIELD_LINE_NO" property="MULTIPLE_YIELD_LINE_NO" />
+    <result column="YIELD" property="YIELD" />
+    <result column="DEFAULT_YN" property="DEFAULT_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, LINE_NO, MULTIPLE_YIELD_LINE_NO, YIELD, DEFAULT_YN
+  </sql>
+  <select id="selectTRSDEAL_YIELD_AMENDED" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_YIELD_AMENDEDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_YIELD_AMENDED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSDEAL_YIELD_AMENDED" parameterType="com.path.dbmaps.vo.TRSDEAL_YIELD_AMENDEDVOKey" >
+    delete from TRSDEAL_YIELD_AMENDED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSDEAL_YIELD_AMENDED" parameterType="com.path.dbmaps.vo.TRSDEAL_YIELD_AMENDEDVO" >
+    insert into TRSDEAL_YIELD_AMENDED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MULTIPLE_YIELD_LINE_NO != null and MULTIPLE_YIELD_LINE_NO != emptyBigDecimalValue" >
+        MULTIPLE_YIELD_LINE_NO,
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        YIELD,
+      </if>
+      <if test="DEFAULT_YN != null" >
+        DEFAULT_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MULTIPLE_YIELD_LINE_NO != null and MULTIPLE_YIELD_LINE_NO != emptyBigDecimalValue" >
+        #{MULTIPLE_YIELD_LINE_NO},
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        #{YIELD},
+      </if>
+      <if test="DEFAULT_YN != null" >
+        #{DEFAULT_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_YIELD_AMENDED" >
+    update TRSDEAL_YIELD_AMENDED
+    <set >
+      <if test="MULTIPLE_YIELD_LINE_NO != null" >
+        <choose >
+          <when test="MULTIPLE_YIELD_LINE_NO == emptyBigDecimalValue" >
+            MULTIPLE_YIELD_LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            MULTIPLE_YIELD_LINE_NO = #{MULTIPLE_YIELD_LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="YIELD != null" >
+        <choose >
+          <when test="YIELD == emptyBigDecimalValue" >
+            YIELD = NULL ,
+          </when>
+          <otherwise >
+            YIELD = #{YIELD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEFAULT_YN != null" >
+        DEFAULT_YN = #{DEFAULT_YN},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSDEAL_YIELD_AMENDED" parameterType="com.path.dbmaps.vo.TRSDEAL_YIELD_AMENDEDVO" >
+    <include refid="sql_updateTRSDEAL_YIELD_AMENDED" />
+  </update>
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIVIL_CODES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIVIL_CODESVO" >
+    <id column="CIVIL_CODE" property="CIVIL_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="GENDER" property="GENDER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIVIL_CODE, COMP_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    ADDITIONAL_REFERENCE, GENDER
+  </sql>
+  <select id="selectCIVIL_CODES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIVIL_CODESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIVIL_CODES
+    where CIVIL_CODE = #{CIVIL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIVIL_CODES" parameterType="com.path.dbmaps.vo.CIVIL_CODESVOKey" >
+    delete from CIVIL_CODES
+    where CIVIL_CODE = #{CIVIL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIVIL_CODES" parameterType="com.path.dbmaps.vo.CIVIL_CODESVO" >
+    insert into CIVIL_CODES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        CIVIL_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="GENDER != null" >
+        GENDER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        #{CIVIL_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="GENDER != null" >
+        #{GENDER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIVIL_CODES" >
+    update CIVIL_CODES
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="GENDER != null" >
+        GENDER = #{GENDER},
+      </if>
+    </set>
+    where CIVIL_CODE = #{CIVIL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIVIL_CODES" parameterType="com.path.dbmaps.vo.CIVIL_CODESVO" >
+    <include refid="sql_updateCIVIL_CODES" />
+  </update>
+</mapper>

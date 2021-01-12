@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCATEGORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCATEGORYVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="CATEGORY_CODE" property="CATEGORY_CODE" />
+    <result column="DESC_ENG" property="DESC_ENG" />
+    <result column="DESC_ARAB" property="DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, CATEGORY_CODE, DESC_ENG, DESC_ARAB, ADDITIONAL_REFERENCE
+  </sql>
+  <select id="selectTRSCATEGORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCATEGORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCATEGORY
+    where APP_NAME = #{APP_NAME}
+      and CATEGORY_CODE = #{CATEGORY_CODE}
+  </select>
+  <delete id="deleteTRSCATEGORY" parameterType="com.path.dbmaps.vo.TRSCATEGORYVOKey" >
+    delete from TRSCATEGORY
+    where APP_NAME = #{APP_NAME}
+      and CATEGORY_CODE = #{CATEGORY_CODE}
+  </delete>
+  <insert id="insertTRSCATEGORY" parameterType="com.path.dbmaps.vo.TRSCATEGORYVO" >
+    insert into TRSCATEGORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        CATEGORY_CODE,
+      </if>
+      <if test="DESC_ENG != null" >
+        DESC_ENG,
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        #{CATEGORY_CODE},
+      </if>
+      <if test="DESC_ENG != null" >
+        #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        #{DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCATEGORY" >
+    update TRSCATEGORY
+    <set >
+      <if test="DESC_ENG != null" >
+        DESC_ENG = #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB = #{DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and CATEGORY_CODE = #{CATEGORY_CODE}
+  </sql>
+  <update id="updateTRSCATEGORY" parameterType="com.path.dbmaps.vo.TRSCATEGORYVO" >
+    <include refid="sql_updateTRSCATEGORY" />
+  </update>
+</mapper>

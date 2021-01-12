@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="reasonchargesMapper">
+
+<sql id="reasonchargesListCommon" >
+		SELECT
+				 CTSREASONS_CHARGES.COMP_CODE, 
+				 CTSREASONS_CHARGES.REASON_CODE,
+				 CTSREASONS_CHARGES.ENTITY_TYPE,
+				 CTSREASONS_CHARGES.ENTITY_CODE,
+				 CTSREASONS_CHARGES.CHARGE_CODE,
+				 (SELECT CTSCHARGES_SCHEMA.BRIEF_NAME_ENG FROM CTSCHARGES_SCHEMA WHERE CTSCHARGES_SCHEMA.COMP_CODE  = CTSREASONS_CHARGES.COMP_CODE AND CTSCHARGES_SCHEMA.CODE = CTSREASONS_CHARGES.CHARGE_CODE AND CTSCHARGES_SCHEMA.LINE_NO = 0) CHARGE_NAME,
+				 (SELECT CTSREASONS.BRIEF_NAME_ENG FROM CTSREASONS WHERE CTSREASONS.COMP_CODE  = CTSREASONS_CHARGES.COMP_CODE AND CTSREASONS.CODE = CTSREASONS_CHARGES.REASON_CODE) REASON_NAME,
+				 CASE WHEN 
+                 (
+                   CTSREASONS_CHARGES.ENTITY_TYPE = 'C' AND (  CTSREASONS_CHARGES.ENTITY_CODE = #{cifNo} OR CTSREASONS_CHARGES.ENTITY_CODE = 0 )
+                      OR
+                   CTSREASONS_CHARGES.ENTITY_TYPE = 'T' AND (  CTSREASONS_CHARGES.ENTITY_CODE = #{ciftype} OR CTSREASONS_CHARGES.ENTITY_CODE = 0)
+                 ) 
+    			THEN '1' ELSE '0' END VISIBLE_ROW 
+		FROM   	CTSREASONS,CTSREASONS_CHARGES
+		WHERE  	(CTSREASONS.COMP_CODE = CTSREASONS_CHARGES.COMP_CODE)  
+  		AND  	(CTSREASONS.CODE      = CTSREASONS_CHARGES.REASON_CODE)
+  		AND  	(CTSREASONS_CHARGES.COMP_CODE   = #{compCode})
+  	<!--	AND  	(CTSREASONS.SHOW_CHARGE 		  = '1') -->
+ </sql>
+ 
+ <sql id="reasonchargesListCommonWhere" >
+	<if test='"FOM".equals(screenName)'>
+	<!-- 
+	AND 	CASE WHEN 
+                (
+                  CTSREASONS_CHARGES.ENTITY_TYPE = 'C' AND (  CTSREASONS_CHARGES.ENTITY_CODE = #{cifNo} OR CTSREASONS_CHARGES.ENTITY_CODE = 0 )
+                     OR
+                  CTSREASONS_CHARGES.ENTITY_TYPE = 'T' AND (  CTSREASONS_CHARGES.ENTITY_CODE = #{ciftype} OR CTSREASONS_CHARGES.ENTITY_CODE = 0)
+                ) 
+   			THEN '1' ELSE '0' END = '1' -->
+   		<if test="null != cifNo">
+		   AND CTSREASONS_CHARGES.ENTITY_TYPE = 'C'
+		   AND CTSREASONS_CHARGES.ENTITY_CODE = #{cifNo}
+   		</if>
+	</if>
+ </sql>
+ 
+ <resultMap id="reasonchargesDetailMap" type="reasonChargesCO">
+ 	<id column="CHARGE_CODE" property="CHARGE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="REASON_CODE" property="REASON_CODE" />
+    <result column="REASON_NAME" property="REASON_NAME" />
+    <result column="CHARGE_NAME" property="CHARGE_NAME" />
+     <result column="VISIBLE_ROW" property="VISIBLE_ROW" />
+ </resultMap>  
+ 	
+  <select id="reasonchargesList" resultMap="reasonchargesDetailMap" parameterType="reasonChargesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="reasonchargesListCommon"/>
+	<include refid="reasonchargesListCommonWhere"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="reasonchargesListCount" resultType="int" parameterType="reasonChargesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="reasonchargesListCommon"/>
+	<include refid="reasonchargesListCommonWhere"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <delete id="deleteReasonchargesList" parameterType="reasonChargesSC">
+       DELETE FROM CTSREASONS_CHARGES 
+	    WHERE CTSREASONS_CHARGES.COMP_CODE= #{compCode}	
+          AND CTSREASONS_CHARGES.ENTITY_TYPE = 'C'
+          AND CTSREASONS_CHARGES.ENTITY_CODE = #{cifNo}	 	
+</delete>
+  
+</mapper>

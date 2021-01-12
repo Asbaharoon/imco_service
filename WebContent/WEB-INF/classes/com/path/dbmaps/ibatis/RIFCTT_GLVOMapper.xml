@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFCTT_GL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFCTT_GLVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="GL_CODE" property="GL_CODE" />
+    <result column="SL_NO" property="SL_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NBR, TYPE_CODE, CURRENCY_CODE, GL_CODE, SL_NO
+  </sql>
+  <select id="selectRIFCTT_GL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFCTT_GLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFCTT_GL
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteRIFCTT_GL" parameterType="com.path.dbmaps.vo.RIFCTT_GLVOKey" >
+    delete from RIFCTT_GL
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertRIFCTT_GL" parameterType="com.path.dbmaps.vo.RIFCTT_GLVO" >
+    insert into RIFCTT_GL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFCTT_GL" >
+    update RIFCTT_GL
+    <set >
+      <if test="CURRENCY_CODE != null" >
+        <choose >
+          <when test="CURRENCY_CODE == emptyBigDecimalValue" >
+            CURRENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_CODE = #{CURRENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GL_CODE != null" >
+        <choose >
+          <when test="GL_CODE == emptyBigDecimalValue" >
+            GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            GL_CODE = #{GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SL_NO != null" >
+        <choose >
+          <when test="SL_NO == emptyBigDecimalValue" >
+            SL_NO = NULL ,
+          </when>
+          <otherwise >
+            SL_NO = #{SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateRIFCTT_GL" parameterType="com.path.dbmaps.vo.RIFCTT_GLVO" >
+    <include refid="sql_updateRIFCTT_GL" />
+  </update>
+</mapper>

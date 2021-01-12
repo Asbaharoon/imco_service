@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_BATCH_TMP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_BATCH_TMPVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="OPERATION_TYPE" property="OPERATION_TYPE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="PROCESSED" property="PROCESSED" />
+    <result column="FAILURE_REASON" property="FAILURE_REASON" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, OPERATION_TYPE, USER_ID, PROCESSED, FAILURE_REASON
+  </sql>
+  <select id="selectCTS_BATCH_TMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_BATCH_TMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_BATCH_TMP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and OPERATION_TYPE = #{OPERATION_TYPE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteCTS_BATCH_TMP" parameterType="com.path.dbmaps.vo.CTS_BATCH_TMPVOKey" >
+    delete from CTS_BATCH_TMP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and OPERATION_TYPE = #{OPERATION_TYPE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertCTS_BATCH_TMP" parameterType="com.path.dbmaps.vo.CTS_BATCH_TMPVO" >
+    insert into CTS_BATCH_TMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="OPERATION_TYPE != null" >
+        OPERATION_TYPE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="PROCESSED != null and PROCESSED != emptyBigDecimalValue" >
+        PROCESSED,
+      </if>
+      <if test="FAILURE_REASON != null" >
+        FAILURE_REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="OPERATION_TYPE != null" >
+        #{OPERATION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="PROCESSED != null and PROCESSED != emptyBigDecimalValue" >
+        #{PROCESSED},
+      </if>
+      <if test="FAILURE_REASON != null" >
+        #{FAILURE_REASON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_BATCH_TMP" >
+    update CTS_BATCH_TMP
+    <set >
+      <if test="PROCESSED != null" >
+        <choose >
+          <when test="PROCESSED == emptyBigDecimalValue" >
+            PROCESSED = NULL ,
+          </when>
+          <otherwise >
+            PROCESSED = #{PROCESSED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FAILURE_REASON != null" >
+        FAILURE_REASON = #{FAILURE_REASON},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and OPERATION_TYPE = #{OPERATION_TYPE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateCTS_BATCH_TMP" parameterType="com.path.dbmaps.vo.CTS_BATCH_TMPVO" >
+    <include refid="sql_updateCTS_BATCH_TMP" />
+  </update>
+</mapper>

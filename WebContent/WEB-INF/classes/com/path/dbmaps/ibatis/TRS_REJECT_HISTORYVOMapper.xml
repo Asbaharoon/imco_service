@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_REJECT_HISTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_REJECT_HISTORYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="TRS_NO" property="TRS_NO" />
+    <result column="REJECT_REASON" property="REJECT_REASON" />
+    <result column="REJECT_REASON_ARAB" property="REJECT_REASON_ARAB" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="DATE_REJECTED" property="DATE_REJECTED" />
+    <result column="SERVER_REJECTED_DATE" property="SERVER_REJECTED_DATE" />
+    <result column="REMARKS" property="REMARKS" />
+    <result column="REASON_CODE" property="REASON_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, TRS_TYPE, TRS_NO, REJECT_REASON, REJECT_REASON_ARAB, 
+    REJECTED_BY, DATE_REJECTED, SERVER_REJECTED_DATE, REMARKS, REASON_CODE
+  </sql>
+  <select id="selectTRS_REJECT_HISTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_REJECT_HISTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_REJECT_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRS_REJECT_HISTORY" parameterType="com.path.dbmaps.vo.TRS_REJECT_HISTORYVOKey" >
+    delete from TRS_REJECT_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRS_REJECT_HISTORY" parameterType="com.path.dbmaps.vo.TRS_REJECT_HISTORYVO" >
+    insert into TRS_REJECT_HISTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="REJECT_REASON != null" >
+        REJECT_REASON,
+      </if>
+      <if test="REJECT_REASON_ARAB != null" >
+        REJECT_REASON_ARAB,
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY,
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED,
+      </if>
+      <if test="SERVER_REJECTED_DATE != null" >
+        SERVER_REJECTED_DATE,
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS,
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        REASON_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="REJECT_REASON != null" >
+        #{REJECT_REASON},
+      </if>
+      <if test="REJECT_REASON_ARAB != null" >
+        #{REJECT_REASON_ARAB},
+      </if>
+      <if test="REJECTED_BY != null" >
+        #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        #{DATE_REJECTED},
+      </if>
+      <if test="SERVER_REJECTED_DATE != null" >
+        #{SERVER_REJECTED_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        #{REMARKS},
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        #{REASON_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_REJECT_HISTORY" >
+    update TRS_REJECT_HISTORY
+    <set >
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE = #{TRS_TYPE},
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REJECT_REASON != null" >
+        REJECT_REASON = #{REJECT_REASON},
+      </if>
+      <if test="REJECT_REASON_ARAB != null" >
+        REJECT_REASON_ARAB = #{REJECT_REASON_ARAB},
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY = #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED = #{DATE_REJECTED},
+      </if>
+      <if test="SERVER_REJECTED_DATE != null" >
+        SERVER_REJECTED_DATE = #{SERVER_REJECTED_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS = #{REMARKS},
+      </if>
+      <if test="REASON_CODE != null" >
+        <choose >
+          <when test="REASON_CODE == emptyBigDecimalValue" >
+            REASON_CODE = NULL ,
+          </when>
+          <otherwise >
+            REASON_CODE = #{REASON_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRS_REJECT_HISTORY" parameterType="com.path.dbmaps.vo.TRS_REJECT_HISTORYVO" >
+    <include refid="sql_updateTRS_REJECT_HISTORY" />
+  </update>
+</mapper>

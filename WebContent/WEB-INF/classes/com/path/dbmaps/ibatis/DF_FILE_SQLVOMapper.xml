@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_SQL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_SQLVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="PARAM_NO" property="PARAM_NO" />
+    <id column="SOURCE_SQL_NO" property="SOURCE_SQL_NO" />
+    <result column="REF_FILE_CODE" property="REF_FILE_CODE" />
+    <result column="REF_TAG_NO" property="REF_TAG_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, PARAM_NO, SOURCE_SQL_NO, REF_FILE_CODE, REF_TAG_NO
+  </sql>
+  <select id="selectDF_FILE_SQL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_SQLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_SQL
+    where FILE_CODE = #{FILE_CODE}
+      and PARAM_NO = #{PARAM_NO}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </select>
+  <delete id="deleteDF_FILE_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_SQLVOKey" >
+    delete from DF_FILE_SQL
+    where FILE_CODE = #{FILE_CODE}
+      and PARAM_NO = #{PARAM_NO}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </delete>
+  <insert id="insertDF_FILE_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_SQLVO" >
+    insert into DF_FILE_SQL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="PARAM_NO != null and PARAM_NO != emptyBigDecimalValue" >
+        PARAM_NO,
+      </if>
+      <if test="SOURCE_SQL_NO != null and SOURCE_SQL_NO != emptyBigDecimalValue" >
+        SOURCE_SQL_NO,
+      </if>
+      <if test="REF_FILE_CODE != null" >
+        REF_FILE_CODE,
+      </if>
+      <if test="REF_TAG_NO != null and REF_TAG_NO != emptyBigDecimalValue" >
+        REF_TAG_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="PARAM_NO != null and PARAM_NO != emptyBigDecimalValue" >
+        #{PARAM_NO},
+      </if>
+      <if test="SOURCE_SQL_NO != null and SOURCE_SQL_NO != emptyBigDecimalValue" >
+        #{SOURCE_SQL_NO},
+      </if>
+      <if test="REF_FILE_CODE != null" >
+        #{REF_FILE_CODE},
+      </if>
+      <if test="REF_TAG_NO != null and REF_TAG_NO != emptyBigDecimalValue" >
+        #{REF_TAG_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_SQL" >
+    update DF_FILE_SQL
+    <set >
+      <if test="REF_FILE_CODE != null" >
+        REF_FILE_CODE = #{REF_FILE_CODE},
+      </if>
+      <if test="REF_TAG_NO != null" >
+        <choose >
+          <when test="REF_TAG_NO == emptyBigDecimalValue" >
+            REF_TAG_NO = NULL ,
+          </when>
+          <otherwise >
+            REF_TAG_NO = #{REF_TAG_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and PARAM_NO = #{PARAM_NO}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </sql>
+  <update id="updateDF_FILE_SQL" parameterType="com.path.dbmaps.vo.DF_FILE_SQLVO" >
+    <include refid="sql_updateDF_FILE_SQL" />
+  </update>
+</mapper>

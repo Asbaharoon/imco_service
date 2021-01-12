@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IBIS_PROCESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IBIS_PROCESSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="PERIODICAL_PROCESS" property="PERIODICAL_PROCESS" />
+    <result column="POSTING" property="POSTING" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="MACHINE_ID" property="MACHINE_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PERIODICAL_PROCESS, POSTING, APP_NAME, USER_ID, MACHINE_ID
+  </sql>
+  <select id="selectIBIS_PROCESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.IBIS_PROCESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from IBIS_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteIBIS_PROCESS" parameterType="com.path.dbmaps.vo.IBIS_PROCESSVOKey" >
+    delete from IBIS_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertIBIS_PROCESS" parameterType="com.path.dbmaps.vo.IBIS_PROCESSVO" >
+    insert into IBIS_PROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PERIODICAL_PROCESS != null" >
+        PERIODICAL_PROCESS,
+      </if>
+      <if test="POSTING != null" >
+        POSTING,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PERIODICAL_PROCESS != null" >
+        #{PERIODICAL_PROCESS},
+      </if>
+      <if test="POSTING != null" >
+        #{POSTING},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIBIS_PROCESS" >
+    update IBIS_PROCESS
+    <set >
+      <if test="PERIODICAL_PROCESS != null" >
+        PERIODICAL_PROCESS = #{PERIODICAL_PROCESS},
+      </if>
+      <if test="POSTING != null" >
+        POSTING = #{POSTING},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID = #{MACHINE_ID},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateIBIS_PROCESS" parameterType="com.path.dbmaps.vo.IBIS_PROCESSVO" >
+    <include refid="sql_updateIBIS_PROCESS" />
+  </update>
+</mapper>

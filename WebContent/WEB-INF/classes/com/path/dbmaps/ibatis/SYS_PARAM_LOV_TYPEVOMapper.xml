@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_LOV_TYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_LOV_TYPEVO" >
+    <id column="LOV_TYPE_ID" property="LOV_TYPE_ID" />
+    <result column="LOV_TYPE_DESCRIPTION" property="LOV_TYPE_DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LOV_TYPE_ID, LOV_TYPE_DESCRIPTION
+  </sql>
+  <select id="selectSYS_PARAM_LOV_TYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TYPEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_LOV_TYPE
+    where LOV_TYPE_ID = #{LOV_TYPE_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_LOV_TYPE" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TYPEVO" >
+    delete from SYS_PARAM_LOV_TYPE
+    where LOV_TYPE_ID = #{LOV_TYPE_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_LOV_TYPE" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TYPEVO" >
+    insert into SYS_PARAM_LOV_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LOV_TYPE_ID != null and LOV_TYPE_ID != emptyBigDecimalValue" >
+        LOV_TYPE_ID,
+      </if>
+      <if test="LOV_TYPE_DESCRIPTION != null" >
+        LOV_TYPE_DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LOV_TYPE_ID != null and LOV_TYPE_ID != emptyBigDecimalValue" >
+        #{LOV_TYPE_ID},
+      </if>
+      <if test="LOV_TYPE_DESCRIPTION != null" >
+        #{LOV_TYPE_DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_LOV_TYPE" >
+    update SYS_PARAM_LOV_TYPE
+    <set >
+      <if test="LOV_TYPE_DESCRIPTION != null" >
+        LOV_TYPE_DESCRIPTION = #{LOV_TYPE_DESCRIPTION},
+      </if>
+    </set>
+    where LOV_TYPE_ID = #{LOV_TYPE_ID}
+  </sql>
+  <update id="updateSYS_PARAM_LOV_TYPE" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TYPEVO" >
+    <include refid="sql_updateSYS_PARAM_LOV_TYPE" />
+  </update>
+</mapper>

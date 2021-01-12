@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SAFEBOX_KEY_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SAFEBOX_KEY_LOGVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="KEY_NUMBER" property="KEY_NUMBER" />
+    <result column="KEY_STATUS" property="KEY_STATUS" />
+    <result column="CREATION_DATE" property="CREATION_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, TRX_NO, KEY_NUMBER, KEY_STATUS, CREATION_DATE
+  </sql>
+  <select id="selectCTS_SAFEBOX_KEY_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_KEY_LOGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SAFEBOX_KEY_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteCTS_SAFEBOX_KEY_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_KEY_LOGVOKey" >
+    delete from CTS_SAFEBOX_KEY_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertCTS_SAFEBOX_KEY_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_KEY_LOGVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="LINE_NO" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(LINE_NO),0)+1</when><otherwise>NVL(MAX(LINE_NO),0)+1</otherwise></choose> FROM CTS_SAFEBOX_KEY_LOG
+    </selectKey>
+    insert into CTS_SAFEBOX_KEY_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      LINE_NO,
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="KEY_NUMBER != null and KEY_NUMBER != emptyBigDecimalValue" >
+        KEY_NUMBER,
+      </if>
+      <if test="KEY_STATUS != null" >
+        KEY_STATUS,
+      </if>
+      <if test="CREATION_DATE != null" >
+        CREATION_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      #{LINE_NO},
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="KEY_NUMBER != null and KEY_NUMBER != emptyBigDecimalValue" >
+        #{KEY_NUMBER},
+      </if>
+      <if test="KEY_STATUS != null" >
+        #{KEY_STATUS},
+      </if>
+      <if test="CREATION_DATE != null" >
+        #{CREATION_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SAFEBOX_KEY_LOG" >
+    update CTS_SAFEBOX_KEY_LOG
+    <set >
+      <if test="KEY_NUMBER != null" >
+        <choose >
+          <when test="KEY_NUMBER == emptyBigDecimalValue" >
+            KEY_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            KEY_NUMBER = #{KEY_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="KEY_STATUS != null" >
+        KEY_STATUS = #{KEY_STATUS},
+      </if>
+      <if test="CREATION_DATE != null" >
+        CREATION_DATE = #{CREATION_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateCTS_SAFEBOX_KEY_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_KEY_LOGVO" >
+    <include refid="sql_updateCTS_SAFEBOX_KEY_LOG" />
+  </update>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_SIGN_ANN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_SIGN_ANNVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_SUB_NO" property="CIF_SUB_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="GL_CODE" property="GL_CODE" />
+    <id column="OBJECT_CODE" property="OBJECT_CODE" />
+    <id column="SL_NO" property="SL_NO" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.S_SIGN_ANNVO" extends="BaseResultMap" >
+    <result column="ANNOTATION" property="ANNOTATION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_SUB_NO, COMP_CODE, CURRENCY_CODE, GL_CODE, OBJECT_CODE, SL_NO
+  </sql>
+  <sql id="Blob_Column_List" >
+    ANNOTATION
+  </sql>
+  <select id="selectS_SIGN_ANN" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.S_SIGN_ANNVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from S_SIGN_ANN
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and OBJECT_CODE = #{OBJECT_CODE}
+      and SL_NO = #{SL_NO}
+  </select>
+  <delete id="deleteS_SIGN_ANN" parameterType="com.path.dbmaps.vo.S_SIGN_ANNVOKey" >
+    delete from S_SIGN_ANN
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and OBJECT_CODE = #{OBJECT_CODE}
+      and SL_NO = #{SL_NO}
+  </delete>
+  <insert id="insertS_SIGN_ANN" parameterType="com.path.dbmaps.vo.S_SIGN_ANNVO" >
+    insert into S_SIGN_ANN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        CIF_SUB_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="OBJECT_CODE != null and OBJECT_CODE != emptyBigDecimalValue" >
+        OBJECT_CODE,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="ANNOTATION != null" >
+        ANNOTATION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CIF_SUB_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="OBJECT_CODE != null and OBJECT_CODE != emptyBigDecimalValue" >
+        #{OBJECT_CODE},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="ANNOTATION != null" >
+        #{ANNOTATION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_SIGN_ANN" >
+    update S_SIGN_ANN
+    <set >
+      <if test="ANNOTATION != null" >
+        ANNOTATION = #{ANNOTATION},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and OBJECT_CODE = #{OBJECT_CODE}
+      and SL_NO = #{SL_NO}
+  </sql>
+  <update id="updateS_SIGN_ANN" parameterType="com.path.dbmaps.vo.S_SIGN_ANNVO" >
+    <include refid="sql_updateS_SIGN_ANN" />
+  </update>
+</mapper>

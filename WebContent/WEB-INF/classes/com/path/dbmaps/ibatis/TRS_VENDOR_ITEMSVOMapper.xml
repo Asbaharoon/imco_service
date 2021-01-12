@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_VENDOR_ITEMS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_VENDOR_ITEMSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ITEM_CODE" property="ITEM_CODE" />
+    <result column="PURCHASE_CY_CODE" property="PURCHASE_CY_CODE" />
+    <result column="PURCHASE_AMOUNT" property="PURCHASE_AMOUNT" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, ITEM_CODE, PURCHASE_CY_CODE, PURCHASE_AMOUNT, CREATED_BY, DATE_CREATED, 
+    MODIFIED_BY, DATE_MODIFIED
+  </sql>
+  <select id="selectTRS_VENDOR_ITEMS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_VENDOR_ITEMSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_VENDOR_ITEMS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ITEM_CODE = #{ITEM_CODE}
+  </select>
+  <delete id="deleteTRS_VENDOR_ITEMS" parameterType="com.path.dbmaps.vo.TRS_VENDOR_ITEMSVOKey" >
+    delete from TRS_VENDOR_ITEMS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ITEM_CODE = #{ITEM_CODE}
+  </delete>
+  <insert id="insertTRS_VENDOR_ITEMS" parameterType="com.path.dbmaps.vo.TRS_VENDOR_ITEMSVO" >
+    insert into TRS_VENDOR_ITEMS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ITEM_CODE != null and ITEM_CODE != emptyBigDecimalValue" >
+        ITEM_CODE,
+      </if>
+      <if test="PURCHASE_CY_CODE != null and PURCHASE_CY_CODE != emptyBigDecimalValue" >
+        PURCHASE_CY_CODE,
+      </if>
+      <if test="PURCHASE_AMOUNT != null and PURCHASE_AMOUNT != emptyBigDecimalValue" >
+        PURCHASE_AMOUNT,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ITEM_CODE != null and ITEM_CODE != emptyBigDecimalValue" >
+        #{ITEM_CODE},
+      </if>
+      <if test="PURCHASE_CY_CODE != null and PURCHASE_CY_CODE != emptyBigDecimalValue" >
+        #{PURCHASE_CY_CODE},
+      </if>
+      <if test="PURCHASE_AMOUNT != null and PURCHASE_AMOUNT != emptyBigDecimalValue" >
+        #{PURCHASE_AMOUNT},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_VENDOR_ITEMS" >
+    update TRS_VENDOR_ITEMS
+    <set >
+      <if test="PURCHASE_CY_CODE != null" >
+        <choose >
+          <when test="PURCHASE_CY_CODE == emptyBigDecimalValue" >
+            PURCHASE_CY_CODE = NULL ,
+          </when>
+          <otherwise >
+            PURCHASE_CY_CODE = #{PURCHASE_CY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PURCHASE_AMOUNT != null" >
+        <choose >
+          <when test="PURCHASE_AMOUNT == emptyBigDecimalValue" >
+            PURCHASE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            PURCHASE_AMOUNT = #{PURCHASE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ITEM_CODE = #{ITEM_CODE}
+  </sql>
+  <update id="updateTRS_VENDOR_ITEMS" parameterType="com.path.dbmaps.vo.TRS_VENDOR_ITEMSVO" >
+    <include refid="sql_updateTRS_VENDOR_ITEMS" />
+  </update>
+</mapper>

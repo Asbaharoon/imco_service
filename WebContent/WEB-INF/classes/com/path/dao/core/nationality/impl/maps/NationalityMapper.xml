@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="nationalityMapper">
+
+ <sql id="nationalityListCommon" >
+	<![CDATA[
+		SELECT CODE,
+			 BRIEF_DESC_ENG ,
+			 BRIEF_DESC_ARAB  ,
+			 LONG_DESC_ENG ,
+			 LONG_DESC_ARAB,		
+			 ADDITIONAL_REFERENCE		
+		FROM  NATIONALITY 
+		WHERE	 (NATIONALITY.COMP_CODE  = #{compCode})
+	]]>	 
+ </sql>
+ 
+  <sql id="nationalityListCommonOrder" >
+	<![CDATA[
+     ORDER BY LONG_DESC_ENG,LONG_DESC_ARAB
+	]]>	 
+ </sql>
+ 
+ <resultMap id="nationalityListMap" type="nationalityVO">
+	<id property="CODE" column="CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="nationalityList" resultMap="nationalityListMap" parameterType="nationalitySC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="nationalityListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="nationalityListCount" resultType="int" parameterType="nationalitySC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="nationalityListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <select id="returnNationalityById" parameterType="nationalitySC" resultType="nationalityVO">
+	SELECT CODE,
+		   CASE WHEN #{preferredLanguage,jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+		   CASE WHEN #{preferredLanguage,jdbcType=VARCHAR} = 'A' THEN LONG_DESC_ARAB ELSE LONG_DESC_ENG END LONG_DESC_ENG
+	  FROM NATIONALITY 
+	 WHERE NATIONALITY.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+	<if test="nationalityCode != null and nationalityCode != emptyBigDecimalValue" >
+	   AND NATIONALITY.CODE = #{nationalityCode,jdbcType=NUMERIC}
+	</if>
+	<if test="null != nationBriefDesc and  nationBriefDesc!= ''">
+		AND ((NATIONALITY.BRIEF_DESC_ENG = #{nationBriefDesc} AND NATIONALITY.ISO_NATIONALITY != #{nationBriefDesc})
+			OR (NATIONALITY.BRIEF_DESC_ENG != #{nationBriefDesc} AND NATIONALITY.ISO_NATIONALITY = #{nationBriefDesc}))
+	</if>
+ </select>
+ 
+ <select id="nationalityValidCnt" parameterType="nationalityValidSC" resultType="int">
+		SELECT 		COUNT(1)
+		FROM		NATIONALITY_VALID
+		WHERE	 	NATIONALITY_VALID.COMP_CODE 		= 	#{compCode}
+		AND	 		NATIONALITY_VALID.ID_TYPE   		= 	#{idType}
+		AND    		NATIONALITY_VALID.CODE		  		= 	#{nationalityCode}
+ </select>
+ 
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_CIF_MEMBERS_ID" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_CIF_MEMBERS_IDVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="MEMBER_LINE_NO" property="MEMBER_LINE_NO" />
+    <result column="ID_TYPE" property="ID_TYPE" />
+    <result column="ID_NO" property="ID_NO" />
+    <result column="COUNTRY_OF_ISSUANCE" property="COUNTRY_OF_ISSUANCE" />
+    <result column="ISSUANCE_DATE" property="ISSUANCE_DATE" />
+    <result column="EXPIRY_DATE" property="EXPIRY_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, MEMBER_LINE_NO, ID_TYPE, ID_NO, COUNTRY_OF_ISSUANCE, 
+    ISSUANCE_DATE, EXPIRY_DATE
+  </sql>
+  <select id="selectCTS_CIF_MEMBERS_ID" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_IDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_CIF_MEMBERS_ID
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </select>
+  <delete id="deleteCTS_CIF_MEMBERS_ID" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_IDVOKey" >
+    delete from CTS_CIF_MEMBERS_ID
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </delete>
+  <insert id="insertCTS_CIF_MEMBERS_ID" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_IDVO" >
+    insert into CTS_CIF_MEMBERS_ID
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MEMBER_LINE_NO != null and MEMBER_LINE_NO != emptyBigDecimalValue" >
+        MEMBER_LINE_NO,
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        ID_TYPE,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        COUNTRY_OF_ISSUANCE,
+      </if>
+      <if test="ISSUANCE_DATE != null" >
+        ISSUANCE_DATE,
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MEMBER_LINE_NO != null and MEMBER_LINE_NO != emptyBigDecimalValue" >
+        #{MEMBER_LINE_NO},
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        #{ID_TYPE},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{COUNTRY_OF_ISSUANCE},
+      </if>
+      <if test="ISSUANCE_DATE != null" >
+        #{ISSUANCE_DATE},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        #{EXPIRY_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_CIF_MEMBERS_ID" >
+    update CTS_CIF_MEMBERS_ID
+    <set >
+      <if test="ID_TYPE != null" >
+        <choose >
+          <when test="ID_TYPE == emptyBigDecimalValue" >
+            ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ID_TYPE = #{ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO = #{ID_NO},
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_OF_ISSUANCE = #{COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISSUANCE_DATE != null" >
+        ISSUANCE_DATE = #{ISSUANCE_DATE},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE = #{EXPIRY_DATE},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </sql>
+  <update id="updateCTS_CIF_MEMBERS_ID" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_IDVO" >
+    <include refid="sql_updateCTS_CIF_MEMBERS_ID" />
+  </update>
+</mapper>

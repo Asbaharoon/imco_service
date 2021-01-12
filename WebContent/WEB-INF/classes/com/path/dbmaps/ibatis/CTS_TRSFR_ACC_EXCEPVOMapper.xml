@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_TRSFR_ACC_EXCEP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_TRSFR_ACC_EXCEPVO" >
+    <id column="BATCH_LINE_NO" property="BATCH_LINE_NO" />
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="EXCEP_LINE_NO" property="EXCEP_LINE_NO" />
+    <result column="EXCEP_REASON" property="EXCEP_REASON" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_LINE_NO, BATCH_NO, COMP_CODE, EXCEP_LINE_NO, EXCEP_REASON, DATE_UPDATED
+  </sql>
+  <select id="selectCTS_TRSFR_ACC_EXCEP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_EXCEPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_TRSFR_ACC_EXCEP
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and EXCEP_LINE_NO = #{EXCEP_LINE_NO}
+  </select>
+  <delete id="deleteCTS_TRSFR_ACC_EXCEP" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_EXCEPVOKey" >
+    delete from CTS_TRSFR_ACC_EXCEP
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and EXCEP_LINE_NO = #{EXCEP_LINE_NO}
+  </delete>
+  <insert id="insertCTS_TRSFR_ACC_EXCEP" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_EXCEPVO" >
+    insert into CTS_TRSFR_ACC_EXCEP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_LINE_NO != null and BATCH_LINE_NO != emptyBigDecimalValue" >
+        BATCH_LINE_NO,
+      </if>
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="EXCEP_LINE_NO != null and EXCEP_LINE_NO != emptyBigDecimalValue" >
+        EXCEP_LINE_NO,
+      </if>
+      <if test="EXCEP_REASON != null" >
+        EXCEP_REASON,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_LINE_NO != null and BATCH_LINE_NO != emptyBigDecimalValue" >
+        #{BATCH_LINE_NO},
+      </if>
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="EXCEP_LINE_NO != null and EXCEP_LINE_NO != emptyBigDecimalValue" >
+        #{EXCEP_LINE_NO},
+      </if>
+      <if test="EXCEP_REASON != null" >
+        #{EXCEP_REASON},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_TRSFR_ACC_EXCEP" >
+    update CTS_TRSFR_ACC_EXCEP
+    <set >
+      <if test="EXCEP_REASON != null" >
+        EXCEP_REASON = #{EXCEP_REASON},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BATCH_LINE_NO = #{BATCH_LINE_NO}
+      and BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and EXCEP_LINE_NO = #{EXCEP_LINE_NO}
+  </sql>
+  <update id="updateCTS_TRSFR_ACC_EXCEP" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_EXCEPVO" >
+    <include refid="sql_updateCTS_TRSFR_ACC_EXCEP" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFCTT_VALID" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFCTT_VALIDVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="RESIDENT" property="RESIDENT" />
+    <result column="CIVIL_CODE" property="CIVIL_CODE" />
+    <result column="SEXE" property="SEXE" />
+    <result column="RACE_CODE" property="RACE_CODE" />
+    <result column="ID_TYPE" property="ID_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, TYPE_CODE, RESIDENT, CIVIL_CODE, SEXE, RACE_CODE, ID_TYPE
+  </sql>
+  <select id="selectRIFCTT_VALID" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFCTT_VALIDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFCTT_VALID
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteRIFCTT_VALID" parameterType="com.path.dbmaps.vo.RIFCTT_VALIDVOKey" >
+    delete from RIFCTT_VALID
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertRIFCTT_VALID" parameterType="com.path.dbmaps.vo.RIFCTT_VALIDVO" >
+    insert into RIFCTT_VALID
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="RESIDENT != null" >
+        RESIDENT,
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        CIVIL_CODE,
+      </if>
+      <if test="SEXE != null" >
+        SEXE,
+      </if>
+      <if test="RACE_CODE != null and RACE_CODE != emptyBigDecimalValue" >
+        RACE_CODE,
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        ID_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="RESIDENT != null" >
+        #{RESIDENT},
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        #{CIVIL_CODE},
+      </if>
+      <if test="SEXE != null" >
+        #{SEXE},
+      </if>
+      <if test="RACE_CODE != null and RACE_CODE != emptyBigDecimalValue" >
+        #{RACE_CODE},
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        #{ID_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFCTT_VALID" >
+    update RIFCTT_VALID
+    <set >
+      <if test="RESIDENT != null" >
+        RESIDENT = #{RESIDENT},
+      </if>
+      <if test="CIVIL_CODE != null" >
+        <choose >
+          <when test="CIVIL_CODE == emptyBigDecimalValue" >
+            CIVIL_CODE = NULL ,
+          </when>
+          <otherwise >
+            CIVIL_CODE = #{CIVIL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SEXE != null" >
+        SEXE = #{SEXE},
+      </if>
+      <if test="RACE_CODE != null" >
+        <choose >
+          <when test="RACE_CODE == emptyBigDecimalValue" >
+            RACE_CODE = NULL ,
+          </when>
+          <otherwise >
+            RACE_CODE = #{RACE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ID_TYPE != null" >
+        <choose >
+          <when test="ID_TYPE == emptyBigDecimalValue" >
+            ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ID_TYPE = #{ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateRIFCTT_VALID" parameterType="com.path.dbmaps.vo.RIFCTT_VALIDVO" >
+    <include refid="sql_updateRIFCTT_VALID" />
+  </update>
+</mapper>

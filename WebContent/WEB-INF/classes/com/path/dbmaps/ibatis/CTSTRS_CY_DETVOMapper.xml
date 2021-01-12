@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTRS_CY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTRS_CY_DETVO" >
+    <id column="AUTO_NUM" property="AUTO_NUM" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="TRS_NO" property="TRS_NO" />
+    <result column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="CB_IND" property="CB_IND" />
+    <result column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="VALUE" property="VALUE" />
+    <result column="NUMBER_OF_BILLS" property="NUMBER_OF_BILLS" />
+    <result column="TELLER_CODE" property="TELLER_CODE" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="TRS_DATE" property="TRS_DATE" />
+    <result column="IN_OUT" property="IN_OUT" />
+    <result column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="TRS_BRANCH" property="TRS_BRANCH" />
+    <result column="MULTI_CHQ_CODE" property="MULTI_CHQ_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    AUTO_NUM, COMP_CODE, BRANCH_CODE, TRS_NO, TRS_TYPE, CB_IND, CURRENCY_CODE, VALUE, 
+    NUMBER_OF_BILLS, TELLER_CODE, TRX_TYPE, TRS_DATE, IN_OUT, SERIAL_NO, TRS_BRANCH, 
+    MULTI_CHQ_CODE
+  </sql>
+  <select id="selectCTSTRS_CY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTRS_CY_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTRS_CY_DET
+    where AUTO_NUM = #{AUTO_NUM}
+  </select>
+  <delete id="deleteCTSTRS_CY_DET" parameterType="com.path.dbmaps.vo.CTSTRS_CY_DETVO" >
+    delete from CTSTRS_CY_DET
+    where AUTO_NUM = #{AUTO_NUM}
+  </delete>
+  <insert id="insertCTSTRS_CY_DET" parameterType="com.path.dbmaps.vo.CTSTRS_CY_DETVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="AUTO_NUM" order="BEFORE" >
+		<if test="isOracle == 1">
+			SELECT SEQ_CTSTRS_CY_DET_AUTONUM.NEXTVAL FROM DUAL
+		</if>
+		<if test="isSybase == 1 and isSQLServer != 1 " >
+			SELECT (CASE WHEN MAX(AUTO_NUM) IS NULL THEN 0 ELSE MAX(AUTO_NUM)+1 END) AUTO_NUM FROM CTSTRS_CY_DET
+		</if>
+		<if test="isSQLServer == 1 " >
+			SELECT (CASE WHEN MAX(AUTO_NUM) IS NULL THEN 0 ELSE MAX(AUTO_NUM)+1 END) AUTO_NUM FROM CTSTRS_CY_DET
+		</if>
+    </selectKey>
+    insert into CTSTRS_CY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isSybase != 1"> 
+      	AUTO_NUM,
+      </if>	
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="VALUE != null and VALUE != emptyBigDecimalValue" >
+        VALUE,
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        NUMBER_OF_BILLS,
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        TELLER_CODE,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="TRS_DATE != null" >
+        TRS_DATE,
+      </if>
+      <if test="IN_OUT != null" >
+        IN_OUT,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="TRS_BRANCH != null and TRS_BRANCH != emptyBigDecimalValue" >
+        TRS_BRANCH,
+      </if>
+      <if test="MULTI_CHQ_CODE != null and MULTI_CHQ_CODE != emptyBigDecimalValue" >
+        MULTI_CHQ_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="isSybase != 1"> 
+      	 #{AUTO_NUM},
+      </if>	 
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="CB_IND != null" >
+        #{CB_IND},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="VALUE != null and VALUE != emptyBigDecimalValue" >
+        #{VALUE},
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        #{NUMBER_OF_BILLS},
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        #{TELLER_CODE},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="TRS_DATE != null" >
+        #{TRS_DATE},
+      </if>
+      <if test="IN_OUT != null" >
+        #{IN_OUT},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="TRS_BRANCH != null and TRS_BRANCH != emptyBigDecimalValue" >
+        #{TRS_BRANCH},
+      </if>
+      <if test="MULTI_CHQ_CODE != null and MULTI_CHQ_CODE != emptyBigDecimalValue" >
+        #{MULTI_CHQ_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTRS_CY_DET" >
+    update CTSTRS_CY_DET
+    <set >
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE = #{TRS_TYPE},
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND = #{CB_IND},
+      </if>
+      <if test="CURRENCY_CODE != null" >
+        <choose >
+          <when test="CURRENCY_CODE == emptyBigDecimalValue" >
+            CURRENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_CODE = #{CURRENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VALUE != null" >
+        <choose >
+          <when test="VALUE == emptyBigDecimalValue" >
+            VALUE = NULL ,
+          </when>
+          <otherwise >
+            VALUE = #{VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NUMBER_OF_BILLS != null" >
+        <choose >
+          <when test="NUMBER_OF_BILLS == emptyBigDecimalValue" >
+            NUMBER_OF_BILLS = NULL ,
+          </when>
+          <otherwise >
+            NUMBER_OF_BILLS = #{NUMBER_OF_BILLS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TELLER_CODE != null" >
+        <choose >
+          <when test="TELLER_CODE == emptyBigDecimalValue" >
+            TELLER_CODE = NULL ,
+          </when>
+          <otherwise >
+            TELLER_CODE = #{TELLER_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_DATE != null" >
+        TRS_DATE = #{TRS_DATE},
+      </if>
+      <if test="IN_OUT != null" >
+        IN_OUT = #{IN_OUT},
+      </if>
+      <if test="SERIAL_NO != null" >
+        <choose >
+          <when test="SERIAL_NO == emptyBigDecimalValue" >
+            SERIAL_NO = NULL ,
+          </when>
+          <otherwise >
+            SERIAL_NO = #{SERIAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_BRANCH != null" >
+        <choose >
+          <when test="TRS_BRANCH == emptyBigDecimalValue" >
+            TRS_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            TRS_BRANCH = #{TRS_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MULTI_CHQ_CODE != null" >
+        <choose >
+          <when test="MULTI_CHQ_CODE == emptyBigDecimalValue" >
+            MULTI_CHQ_CODE = NULL ,
+          </when>
+          <otherwise >
+            MULTI_CHQ_CODE = #{MULTI_CHQ_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where AUTO_NUM = #{AUTO_NUM}
+  </sql>
+  <update id="updateCTSTRS_CY_DET" parameterType="com.path.dbmaps.vo.CTSTRS_CY_DETVO" >
+    <include refid="sql_updateCTSTRS_CY_DET" />
+  </update>
+</mapper>

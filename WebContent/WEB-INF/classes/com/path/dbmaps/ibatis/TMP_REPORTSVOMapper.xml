@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TMP_REPORTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TMP_REPORTSVO" >
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="REP_ID" property="REP_ID" />
+    <result column="REP_FORMAT" property="REP_FORMAT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.TMP_REPORTSVOWithBLOBs" extends="BaseResultMap" >
+    <result column="REP_OBJECT" property="REP_OBJECT" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    REP_OBJECT
+  </sql>
+  <insert id="insertTMP_REPORTS" parameterType="com.path.dbmaps.vo.TMP_REPORTSVOWithBLOBs" >
+    insert into TMP_REPORTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="REP_FORMAT != null" >
+        REP_FORMAT,
+      </if>
+      <if test="REP_OBJECT != null" >
+        REP_OBJECT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="REP_FORMAT != null" >
+        #{REP_FORMAT},
+      </if>
+      <if test="REP_OBJECT != null" >
+        #{REP_OBJECT},
+      </if>
+    </trim>
+  </insert>
+</mapper>

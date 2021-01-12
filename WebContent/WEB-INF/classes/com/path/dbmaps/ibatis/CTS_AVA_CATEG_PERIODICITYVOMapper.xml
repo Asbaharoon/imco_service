@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_AVA_CATEG_PERIODICITY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_AVA_CATEG_PERIODICITYVO" >
+    <id column="ACTION_TYPE" property="ACTION_TYPE" />
+    <id column="CATEG_CODE" property="CATEG_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="NUM_FOR" property="NUM_FOR" />
+    <result column="PERIOD" property="PERIOD" />
+    <result column="MODE_OF_PAYMENT" property="MODE_OF_PAYMENT" />
+    <result column="SUSPENSION_REASON" property="SUSPENSION_REASON" />
+    <result column="MONTH_NO" property="MONTH_NO" />
+    <result column="STARTING_DATE" property="STARTING_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACTION_TYPE, CATEG_CODE, COMP_CODE, LINE_NO, NUM_FOR, PERIOD, MODE_OF_PAYMENT, SUSPENSION_REASON, 
+    MONTH_NO, STARTING_DATE
+  </sql>
+  <select id="selectCTS_AVA_CATEG_PERIODICITY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PERIODICITYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_AVA_CATEG_PERIODICITY
+    where ACTION_TYPE = #{ACTION_TYPE}
+      and CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_AVA_CATEG_PERIODICITY" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PERIODICITYVOKey" >
+    delete from CTS_AVA_CATEG_PERIODICITY
+    where ACTION_TYPE = #{ACTION_TYPE}
+      and CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_AVA_CATEG_PERIODICITY" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PERIODICITYVO" >
+    insert into CTS_AVA_CATEG_PERIODICITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="CATEG_CODE != null and CATEG_CODE != emptyBigDecimalValue" >
+        CATEG_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="NUM_FOR != null and NUM_FOR != emptyBigDecimalValue" >
+        NUM_FOR,
+      </if>
+      <if test="PERIOD != null" >
+        PERIOD,
+      </if>
+      <if test="MODE_OF_PAYMENT != null" >
+        MODE_OF_PAYMENT,
+      </if>
+      <if test="SUSPENSION_REASON != null and SUSPENSION_REASON != emptyBigDecimalValue" >
+        SUSPENSION_REASON,
+      </if>
+      <if test="MONTH_NO != null and MONTH_NO != emptyBigDecimalValue" >
+        MONTH_NO,
+      </if>
+      <if test="STARTING_DATE != null" >
+        STARTING_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="CATEG_CODE != null and CATEG_CODE != emptyBigDecimalValue" >
+        #{CATEG_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="NUM_FOR != null and NUM_FOR != emptyBigDecimalValue" >
+        #{NUM_FOR},
+      </if>
+      <if test="PERIOD != null" >
+        #{PERIOD},
+      </if>
+      <if test="MODE_OF_PAYMENT != null" >
+        #{MODE_OF_PAYMENT},
+      </if>
+      <if test="SUSPENSION_REASON != null and SUSPENSION_REASON != emptyBigDecimalValue" >
+        #{SUSPENSION_REASON},
+      </if>
+      <if test="MONTH_NO != null and MONTH_NO != emptyBigDecimalValue" >
+        #{MONTH_NO},
+      </if>
+      <if test="STARTING_DATE != null" >
+        #{STARTING_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_AVA_CATEG_PERIODICITY" >
+    update CTS_AVA_CATEG_PERIODICITY
+    <set >
+      <if test="NUM_FOR != null" >
+        <choose >
+          <when test="NUM_FOR == emptyBigDecimalValue" >
+            NUM_FOR = NULL ,
+          </when>
+          <otherwise >
+            NUM_FOR = #{NUM_FOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIOD != null" >
+        PERIOD = #{PERIOD},
+      </if>
+      <if test="MODE_OF_PAYMENT != null" >
+        MODE_OF_PAYMENT = #{MODE_OF_PAYMENT},
+      </if>
+      <if test="SUSPENSION_REASON != null" >
+        <choose >
+          <when test="SUSPENSION_REASON == emptyBigDecimalValue" >
+            SUSPENSION_REASON = NULL ,
+          </when>
+          <otherwise >
+            SUSPENSION_REASON = #{SUSPENSION_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MONTH_NO != null" >
+        <choose >
+          <when test="MONTH_NO == emptyBigDecimalValue" >
+            MONTH_NO = NULL ,
+          </when>
+          <otherwise >
+            MONTH_NO = #{MONTH_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STARTING_DATE != null" >
+        STARTING_DATE = #{STARTING_DATE},
+      </if>
+    </set>
+    where ACTION_TYPE = #{ACTION_TYPE}
+      and CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_AVA_CATEG_PERIODICITY" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PERIODICITYVO" >
+    <include refid="sql_updateCTS_AVA_CATEG_PERIODICITY" />
+  </update>
+</mapper>

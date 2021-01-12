@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSMICRDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSMICRDETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="LINE_SEQ" property="LINE_SEQ" />
+    <result column="POS1" property="POS1" />
+    <result column="LEN1" property="LEN1" />
+    <result column="FIED_TYPE" property="FIED_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NBR, LINE_SEQ, POS1, LEN1, FIED_TYPE
+  </sql>
+  <select id="selectCTSMICRDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSMICRDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSMICRDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteCTSMICRDET" parameterType="com.path.dbmaps.vo.CTSMICRDETVOKey" >
+    delete from CTSMICRDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertCTSMICRDET" parameterType="com.path.dbmaps.vo.CTSMICRDETVO" >
+    insert into CTSMICRDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="LINE_SEQ != null and LINE_SEQ != emptyBigDecimalValue" >
+        LINE_SEQ,
+      </if>
+      <if test="POS1 != null and POS1 != emptyBigDecimalValue" >
+        POS1,
+      </if>
+      <if test="LEN1 != null and LEN1 != emptyBigDecimalValue" >
+        LEN1,
+      </if>
+      <if test="FIED_TYPE != null" >
+        FIED_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="LINE_SEQ != null and LINE_SEQ != emptyBigDecimalValue" >
+        #{LINE_SEQ},
+      </if>
+      <if test="POS1 != null and POS1 != emptyBigDecimalValue" >
+        #{POS1},
+      </if>
+      <if test="LEN1 != null and LEN1 != emptyBigDecimalValue" >
+        #{LEN1},
+      </if>
+      <if test="FIED_TYPE != null" >
+        #{FIED_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSMICRDET" >
+    update CTSMICRDET
+    <set >
+      <if test="LINE_SEQ != null" >
+        <choose >
+          <when test="LINE_SEQ == emptyBigDecimalValue" >
+            LINE_SEQ = NULL ,
+          </when>
+          <otherwise >
+            LINE_SEQ = #{LINE_SEQ},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POS1 != null" >
+        <choose >
+          <when test="POS1 == emptyBigDecimalValue" >
+            POS1 = NULL ,
+          </when>
+          <otherwise >
+            POS1 = #{POS1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LEN1 != null" >
+        <choose >
+          <when test="LEN1 == emptyBigDecimalValue" >
+            LEN1 = NULL ,
+          </when>
+          <otherwise >
+            LEN1 = #{LEN1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIED_TYPE != null" >
+        FIED_TYPE = #{FIED_TYPE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateCTSMICRDET" parameterType="com.path.dbmaps.vo.CTSMICRDETVO" >
+    <include refid="sql_updateCTSMICRDET" />
+  </update>
+</mapper>

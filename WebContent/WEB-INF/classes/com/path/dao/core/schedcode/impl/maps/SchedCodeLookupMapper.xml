@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="schedCodeLookupMapper">
+	<resultMap id="resSchedCodeLookupMap" type="com.path.vo.core.schedcode.SchedCodeLookupCO">
+		<result property="crmVisitSchedVO.COMP_CODE" 	column="COMP_CODE"/>
+		<result property="crmVisitSchedVO.BRANCH_CODE"  column="BRANCH_CODE"/>
+		<result property="crmVisitSchedVO.CODE" 		column="CODE"/>
+		<result property="crmVisitSchedVO.USER_ID" 		column="USER_ID"/>
+		<result property="crmVisitSchedVO.CIF_NO" 		column="CIF_NO"/>
+		<result property="crmVisitSchedVO.VISIT_REASON" column="VISIT_REASON"/>
+		<result property="crmVisitSchedVO.VISIT_DATE" 	column="VISIT_DATE"/>
+		<result property="crmVisitSchedVO.STATUS" 		column="STATUS"/>
+		<result property="shortNameEng" 				column="SHORT_NAME_ENG"/>
+			
+	</resultMap>
+	<select id="returnSchedCodeLookupList" parameterType="com.path.vo.core.schedcode.SchedCodeLookupSC" resultMap="resSchedCodeLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="querySchedCodelookupSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnSchedCodeLookupCount" parameterType="com.path.vo.core.schedcode.SchedCodeLookupSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="querySchedCodelookupSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="querySchedCodelookupSQL">
+		SELECT CRM_VISIT_SCHED.COMP_CODE,
+		       CRM_VISIT_SCHED.BRANCH_CODE,
+		       CRM_VISIT_SCHED.CODE,
+		       CRM_VISIT_SCHED.USER_ID,
+		       CRM_VISIT_SCHED.CIF_NO,
+		       CRM_VISIT_SCHED.VISIT_REASON,
+		       CRM_VISIT_SCHED.VISIT_DATE,
+		       CRM_VISIT_SCHED.STATUS,
+		       CIF.SHORT_NAME_ENG  
+		  FROM CRM_VISIT_SCHED, CIF
+		 WHERE CRM_VISIT_SCHED.COMP_CODE = #{compCode}
+		   AND CRM_VISIT_SCHED.BRANCH_CODE = #{branchCode}
+		   AND CIF.CIF_NO = CRM_VISIT_SCHED.CIF_NO
+		   AND CIF.COMP_CODE = CRM_VISIT_SCHED.COMP_CODE
+		   AND (CRM_VISIT_SCHED.USER_ID = #{userId} OR
+		       CRM_VISIT_SCHED.USER_ID IN
+		       (SELECT USER_ID
+		           FROM CTSTELLERDET
+		          WHERE COMP_CODE = #{compCode}
+		            AND BRANCH_CODE = #{branchCode}
+		            AND CODE = #{tellerCode}))
+		   AND CRM_VISIT_SCHED.STATUS <![CDATA[<>]]> 'D'
+		   AND ((CRM_VISIT_SCHED.CODE NOT IN
+		       (SELECT CASE
+		                   WHEN SCHED_CODE IS NULL THEN
+		                    0
+		                   ELSE
+		                    SCHED_CODE
+		                 END
+		            FROM CRM_MGT
+		           WHERE CRM_MGT.COMP_CODE = #{compCode}
+		             AND CRM_MGT.BRANCH_CODE = #{branchCode})))
+	</sql>
+</mapper>

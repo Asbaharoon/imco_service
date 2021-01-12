@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOLATTYPE_PROPERTY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOLATTYPE_PROPERTYVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROPERTY_CODE" property="PROPERTY_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, PROPERTY_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    DATE_UPDATED, UPDATED_BY
+  </sql>
+  <select id="selectFMSCOLATTYPE_PROPERTY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOLATTYPE_PROPERTYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOLATTYPE_PROPERTY
+    where COMP_CODE = #{COMP_CODE}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </select>
+  <delete id="deleteFMSCOLATTYPE_PROPERTY" parameterType="com.path.dbmaps.vo.FMSCOLATTYPE_PROPERTYVOKey" >
+    delete from FMSCOLATTYPE_PROPERTY
+    where COMP_CODE = #{COMP_CODE}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </delete>
+  <insert id="insertFMSCOLATTYPE_PROPERTY" parameterType="com.path.dbmaps.vo.FMSCOLATTYPE_PROPERTYVO" >
+    insert into FMSCOLATTYPE_PROPERTY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROPERTY_CODE != null and PROPERTY_CODE != emptyBigDecimalValue" >
+        PROPERTY_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null and !&quot;&quot;.equals(BRIEF_DESC_ARAB)" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null and !&quot;&quot;.equals(LONG_DESC_ARAB)" >
+        LONG_DESC_ARAB,
+      </if>
+      DATE_UPDATED,
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROPERTY_CODE != null and PROPERTY_CODE != emptyBigDecimalValue" >
+        #{PROPERTY_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null and !&quot;&quot;.equals(BRIEF_DESC_ARAB)" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null and !&quot;&quot;.equals(LONG_DESC_ARAB)" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOLATTYPE_PROPERTY" >
+    update FMSCOLATTYPE_PROPERTY
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        <choose >
+          <when test="BRIEF_DESC_ENG.equals(&quot;&quot;)" >
+            BRIEF_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        <choose >
+          <when test="BRIEF_DESC_ARAB.equals(&quot;&quot;)" >
+            BRIEF_DESC_ARAB = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        <choose >
+          <when test="LONG_DESC_ENG.equals(&quot;&quot;)" >
+            LONG_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_DESC_ENG = #{LONG_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        <choose >
+          <when test="LONG_DESC_ARAB.equals(&quot;&quot;)" >
+            LONG_DESC_ARAB = NULL ,
+          </when>
+          <otherwise >
+            LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </sql>
+  <update id="updateFMSCOLATTYPE_PROPERTY" parameterType="com.path.dbmaps.vo.FMSCOLATTYPE_PROPERTYVO" >
+    <include refid="sql_updateFMSCOLATTYPE_PROPERTY" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

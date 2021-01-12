@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSBLOCKCONTRIBUTORDETAIL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSBLOCKCONTRIBUTORDETAILVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PARTY_NO" property="PARTY_NO" />
+    <result column="TRSDETLINE_NO" property="TRSDETLINE_NO" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="CHANGEDSTATUS" property="CHANGEDSTATUS" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="TIME_MODIFIED" property="TIME_MODIFIED" />
+    <result column="REASONFORCHANGING" property="REASONFORCHANGING" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, LINE_NO, PARTY_NO, TRSDETLINE_NO, AMOUNT, CHANGEDSTATUS, 
+    MODIFIED_BY, DATE_MODIFIED, TIME_MODIFIED, REASONFORCHANGING
+  </sql>
+  <select id="selectTRSBLOCKCONTRIBUTORDETAIL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSBLOCKCONTRIBUTORDETAILVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSBLOCKCONTRIBUTORDETAIL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+      and PARTY_NO = #{PARTY_NO}
+  </select>
+  <delete id="deleteTRSBLOCKCONTRIBUTORDETAIL" parameterType="com.path.dbmaps.vo.TRSBLOCKCONTRIBUTORDETAILVOKey" >
+    delete from TRSBLOCKCONTRIBUTORDETAIL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+      and PARTY_NO = #{PARTY_NO}
+  </delete>
+  <insert id="insertTRSBLOCKCONTRIBUTORDETAIL" parameterType="com.path.dbmaps.vo.TRSBLOCKCONTRIBUTORDETAILVO" >
+    insert into TRSBLOCKCONTRIBUTORDETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PARTY_NO != null and PARTY_NO != emptyBigDecimalValue" >
+        PARTY_NO,
+      </if>
+      <if test="TRSDETLINE_NO != null and TRSDETLINE_NO != emptyBigDecimalValue" >
+        TRSDETLINE_NO,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="CHANGEDSTATUS != null" >
+        CHANGEDSTATUS,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="TIME_MODIFIED != null" >
+        TIME_MODIFIED,
+      </if>
+      <if test="REASONFORCHANGING != null and REASONFORCHANGING != emptyBigDecimalValue" >
+        REASONFORCHANGING,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PARTY_NO != null and PARTY_NO != emptyBigDecimalValue" >
+        #{PARTY_NO},
+      </if>
+      <if test="TRSDETLINE_NO != null and TRSDETLINE_NO != emptyBigDecimalValue" >
+        #{TRSDETLINE_NO},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="CHANGEDSTATUS != null" >
+        #{CHANGEDSTATUS},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="TIME_MODIFIED != null" >
+        #{TIME_MODIFIED},
+      </if>
+      <if test="REASONFORCHANGING != null and REASONFORCHANGING != emptyBigDecimalValue" >
+        #{REASONFORCHANGING},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSBLOCKCONTRIBUTORDETAIL" >
+    update TRSBLOCKCONTRIBUTORDETAIL
+    <set >
+      <if test="TRSDETLINE_NO != null" >
+        <choose >
+          <when test="TRSDETLINE_NO == emptyBigDecimalValue" >
+            TRSDETLINE_NO = NULL ,
+          </when>
+          <otherwise >
+            TRSDETLINE_NO = #{TRSDETLINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHANGEDSTATUS != null" >
+        CHANGEDSTATUS = #{CHANGEDSTATUS},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="TIME_MODIFIED != null" >
+        TIME_MODIFIED = #{TIME_MODIFIED},
+      </if>
+      <if test="REASONFORCHANGING != null" >
+        <choose >
+          <when test="REASONFORCHANGING == emptyBigDecimalValue" >
+            REASONFORCHANGING = NULL ,
+          </when>
+          <otherwise >
+            REASONFORCHANGING = #{REASONFORCHANGING},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+      and PARTY_NO = #{PARTY_NO}
+  </sql>
+  <update id="updateTRSBLOCKCONTRIBUTORDETAIL" parameterType="com.path.dbmaps.vo.TRSBLOCKCONTRIBUTORDETAILVO" >
+    <include refid="sql_updateTRSBLOCKCONTRIBUTORDETAIL" />
+  </update>
+</mapper>

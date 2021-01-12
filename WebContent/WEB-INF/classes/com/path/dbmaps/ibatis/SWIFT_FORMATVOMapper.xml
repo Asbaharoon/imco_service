@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_FORMAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_FORMATVO" >
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TAG" property="TAG" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="OPTIONS" property="OPTIONS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINE_NO, MSG_CODE, STATUS, TAG, DESCRIPTION, OPTIONS
+  </sql>
+  <select id="selectSWIFT_FORMAT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_FORMATVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_FORMAT
+    where LINE_NO = #{LINE_NO}
+      and MSG_CODE = #{MSG_CODE}
+  </select>
+  <delete id="deleteSWIFT_FORMAT" parameterType="com.path.dbmaps.vo.SWIFT_FORMATVOKey" >
+    delete from SWIFT_FORMAT
+    where LINE_NO = #{LINE_NO}
+      and MSG_CODE = #{MSG_CODE}
+  </delete>
+  <insert id="insertSWIFT_FORMAT" parameterType="com.path.dbmaps.vo.SWIFT_FORMATVO" >
+    insert into SWIFT_FORMAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MSG_CODE != null" >
+        MSG_CODE,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TAG != null" >
+        TAG,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="OPTIONS != null" >
+        OPTIONS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MSG_CODE != null" >
+        #{MSG_CODE},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TAG != null" >
+        #{TAG},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="OPTIONS != null" >
+        #{OPTIONS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_FORMAT" >
+    update SWIFT_FORMAT
+    <set >
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TAG != null" >
+        TAG = #{TAG},
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="OPTIONS != null" >
+        OPTIONS = #{OPTIONS},
+      </if>
+    </set>
+    where LINE_NO = #{LINE_NO}
+      and MSG_CODE = #{MSG_CODE}
+  </sql>
+  <update id="updateSWIFT_FORMAT" parameterType="com.path.dbmaps.vo.SWIFT_FORMATVO" >
+    <include refid="sql_updateSWIFT_FORMAT" />
+  </update>
+</mapper>

@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="scoringControlRecordMapper">
+
+	<resultMap
+		type="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO"
+		id="resRetrieveScoringControlRecord">
+		<result column="SCORE_CODE"
+			property="cifControlDefineScoreRangeVO.SCORE_CODE" />
+		<result column="ENTITY_STATUS"
+			property="cifControlDefineScoreRangeVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+		<result column="CREATED_BY"
+			property="cifControlDefineScoreRangeVO.CREATED_BY" />
+		<result column="MODIFIED_BY"
+		property="cifControlDefineScoreRangeVO.MODIFIED_BY" />
+		<result column="EMPTY_ROWS"
+			property="countOfRows" />
+
+	</resultMap>
+
+	<resultMap
+		type="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO"
+		id="scoringControlRecordDetailsResMap">
+		<result column="COMP_CODE"
+			property="cifControlDefineScoreRangeVO.COMP_CODE" />
+		<result column="SCORE_CODE"
+			property="cifControlDefineScoreRangeVO.SCORE_CODE" />
+		<result column="FROM_SCORE"
+			property="cifControlDefineScoreRangeVO.FROM_SCORE" />
+		<result column="TO_SCORE"
+			property="cifControlDefineScoreRangeVO.TO_SCORE" />
+		<result column="RISK_LEVEL"
+			property="cifControlDefineScoreRangeVO.RISK_LEVEL" />
+		<result column="CREATED_BY"
+			property="cifControlDefineScoreRangeVO.CREATED_BY" />
+		<result column="CREATED_DATE"
+		property="cifControlDefineScoreRangeVO.CREATED_DATE" />
+		<result column="MODIFIED_BY"
+		property="cifControlDefineScoreRangeVO.MODIFIED_BY" />
+		<result column="MODIFIED_DATE"
+		property="cifControlDefineScoreRangeVO.MODIFIED_DATE" />
+		<result column="ENTITY_STATUS"
+		property="cifControlDefineScoreRangeVO.ENTITY_STATUS" />
+		<result column="RISK"
+			property="cifControlDefineScoreRangeVO.RISK" />
+		<result column="EMPTY_ROWS" property="countOfRows" />
+	</resultMap>
+
+	<select id="returnData"
+		resultMap="resRetrieveScoringControlRecord"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		SELECT DISTINCT
+		CASE WHEN CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS = 'D' THEN 'A' ELSE CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS END ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE = #{language}
+		AND
+		VALUE_CODE = CASE WHEN CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS = 'D' THEN 'A' ELSE CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS END) STATUS_DESC,
+		<choose>
+				<when test='ivCrud == "P" || ivCrud == "N"'>
+					  (SELECT COUNT(1) 
+					  FROM CIFCONTROL_DEFINE_SCORE_RANGE
+					  WHERE 
+					  <if test='ivCrud == "P"'>
+					  	 ((CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+							<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>)
+						OR ( 
+								(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+								 AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS = 'D'
+								 AND (NOT EXISTS (SELECT 1
+										FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+										WHERE B.COMP_CODE IN (#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}, -#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+										<![CDATA[ AND B.ENTITY_STATUS <> 'D' ]]> )))
+							))
+					  </if>
+					  <if test='ivCrud == "N"'>
+					  	((CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+							AND EXISTS (SELECT 1
+							FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+							WHERE B.COMP_CODE
+							=#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+							AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE)
+							<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>)
+						OR ( 
+						(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+						 AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS = 'D'
+						 AND (NOT EXISTS (SELECT 1
+								FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+								WHERE B.COMP_CODE IN (#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}, -#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+								<![CDATA[ AND B.ENTITY_STATUS <> 'D' ]]> )
+						 )
+						)))
+					  </if>
+					  ) EMPTY_ROWS
+				</when>
+				<otherwise>
+					0 EMPTY_ROWS
+				</otherwise>
+			</choose>
+		FROM CIFCONTROL_DEFINE_SCORE_RANGE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+					((CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+					OR
+					(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+					AND NOT EXISTS (SELECT 1
+					FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+					WHERE B.COMP_CODE =
+					-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+					AND
+					B.SCORE_CODE
+					=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE)))
+			</when>
+			<otherwise>
+				( CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE
+				=#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+			</otherwise>
+		</choose>
+
+	</select>
+
+
+
+
+
+
+	<sql id="queryScoringControlRecordSQL">
+		SELECT CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.FROM_SCORE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.TO_SCORE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.RISK_LEVEL,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.CREATED_BY,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.CREATED_DATE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.MODIFIED_BY,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.MODIFIED_DATE,
+		    CIFCONTROL_DEFINE_SCORE_RANGE.RISK
+		FROM CIFCONTROL_DEFINE_SCORE_RANGE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<!-- by bilal For BUG#973477, add checking on status <> 'D' -->
+				<if test='ivCrud == "R"'>
+					((CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+					OR
+					(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND NOT EXISTS (SELECT 1
+					FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+					WHERE B.COMP_CODE =-#{compCode,jdbcType=NUMERIC}
+					AND
+					B.SCORE_CODE
+					=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE)))
+					<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>
+				</if>
+				<if test='ivCrud == "U"'>
+					(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=#{compCode,jdbcType=NUMERIC}AND
+					NOT EXISTS (SELECT 1
+					FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+					WHERE B.COMP_CODE =-#{compCode,jdbcType=NUMERIC}
+					AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE)
+					<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>)
+				</if>
+				<if test='ivCrud == "P"'>
+					(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+							<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>)
+				</if>
+				<if test='ivCrud == "N"'>
+					(CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+					AND EXISTS (SELECT 1
+					FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+					WHERE B.COMP_CODE
+					=#{compCode,jdbcType=NUMERIC}
+					AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE)
+					<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>)
+				</if>
+			</when>
+			<otherwise>
+				( CIFCONTROL_DEFINE_SCORE_RANGE.COMP_CODE
+				=#{compCode,jdbcType=NUMERIC})
+			</otherwise>
+		</choose>
+
+	</sql>
+
+	<select id="scoringControlRecordGrid"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordSC"
+		resultMap="scoringControlRecordDetailsResMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryScoringControlRecordSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="scoringControlRecordCount"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryScoringControlRecordSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+	<delete id="deleteGrid"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		DELETE FROM
+		CIFCONTROL_DEFINE_SCORE_RANGE
+		where COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	</delete>
+	<sql id="sql_approve">
+		UPDATE CIFCONTROL_DEFINE_SCORE_RANGE
+		<set>
+			COMP_CODE = #{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC},
+			ENTITY_STATUS = 'P',
+			CIFCONTROL_DEFINE_SCORE_RANGE.APPROVED_BY=#{cifControlDefineScoreRangeVO.APPROVED_BY,jdbcType=VARCHAR},
+			CIFCONTROL_DEFINE_SCORE_RANGE.APPROVED_DATE=#{cifControlDefineScoreRangeVO.APPROVED_DATE,jdbcType=TIMESTAMP}
+		</set>
+		WHERE
+		<choose>
+			<!-- by bilal For BUG#973477, add checking on status <> 'D' -->
+			<when test="dualParam==1">
+				COMP_CODE =
+				-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT
+				EXISTS (SELECT 1
+				FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+				WHERE B.COMP_CODE =#{compCode,jdbcType=NUMERIC}
+				AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE
+				)
+				<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>
+
+			</when>
+			<otherwise>
+				COMP_CODE = #{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<!-- by bilal for TP#987360 -->
+	<sql id="sql_approve_flags">
+		UPDATE AML_CIFCONTROL_RECORD_SCORE A
+		<set>
+			A.COMP_CODE = #{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC},
+			A.STATUS = 'P',
+			A.APPROVED_BY=#{amlCifControlScoreVO.APPROVED_BY,jdbcType=VARCHAR},
+			A.APPROVED_DATE=#{amlCifControlScoreVO.APPROVED_DATE,jdbcType=TIMESTAMP}
+		</set>
+		WHERE
+		<choose>
+			<!-- by bilal For BUG#973477, add checking on status <> 'D' -->
+			<when test="dualParam==1">
+				A.COMP_CODE =
+				-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT
+				EXISTS (SELECT 1
+				FROM AML_CIFCONTROL_RECORD_SCORE B
+				WHERE B.COMP_CODE =#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+				)
+
+			</when>
+			<otherwise>
+				A.COMP_CODE = #{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</otherwise>
+		</choose>
+	</sql>
+	
+  <delete id="deleteControlRecordFlags"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		DELETE FROM
+		AML_CIFCONTROL_RECORD_SCORE
+		where COMP_CODE = #{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+		AND EXISTS (SELECT 1
+			FROM AML_CIFCONTROL_RECORD_SCORE B
+			WHERE B.COMP_CODE = -#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC})
+</delete>		
+	
+	<update id="approveScoringControlRecord"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		<include refid="scoringControlRecordMapper.sql_approve" />
+	</update>
+
+<!-- by bilal for TP#987360 -->
+  <update id="approveControlRecordFlags"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		<include refid="scoringControlRecordMapper.sql_approve_flags" />
+	</update>
+
+
+
+	<delete id="deleteScoringControlRecord"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		DELETE FROM CIFCONTROL_DEFINE_SCORE_RANGE
+		WHERE
+		<if test="dualParam!=1">
+			COMP_CODE =
+			#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+		</if>
+		<if test="dualParam==1">
+			<if test="method==1">
+				COMP_CODE =
+				#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND
+				EXISTS (SELECT 1
+				FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+				WHERE B.COMP_CODE =
+				-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE
+				)
+				<![CDATA[ AND CIFCONTROL_DEFINE_SCORE_RANGE.ENTITY_STATUS <> 'D' ]]>
+			</if>
+			<if test="method==2">
+				COMP_CODE = -#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</if>
+			<if test="method==3">
+				COMP_CODE IN
+				(-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC},
+				#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+				AND EXISTS (SELECT 1
+				FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+				WHERE B.COMP_CODE =
+				-#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE )
+			</if>
+		</if>
+	</delete>
+	
+<!-- For BUG#973477 -->
+<update id="updateDeletedRows"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		<include refid="scoringControlRecordMapper.sql_updateRows" />
+	</update>
+	
+<sql id="sql_updateRows">
+		UPDATE CIFCONTROL_DEFINE_SCORE_RANGE SET ENTITY_STATUS = 'D'
+		WHERE COMP_CODE = #{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT EXISTS (SELECT 1
+							FROM CIFCONTROL_DEFINE_SCORE_RANGE B
+							WHERE B.COMP_CODE = -#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+							AND B.SCORE_CODE=CIFCONTROL_DEFINE_SCORE_RANGE.SCORE_CODE
+							)
+</sql>
+
+<delete id="deletedRows"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		DELETE FROM
+		CIFCONTROL_DEFINE_SCORE_RANGE
+		where COMP_CODE IN (#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}, -#{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC})
+		AND ENTITY_STATUS = 'D'
+</delete>	
+
+<update id="cancelDeletedRows"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		<include refid="scoringControlRecordMapper.sql_cancelDeletedRows" />
+	</update>
+	
+<sql id="sql_cancelDeletedRows">
+		UPDATE CIFCONTROL_DEFINE_SCORE_RANGE SET ENTITY_STATUS = 'P'
+		WHERE COMP_CODE = #{cifControlDefineScoreRangeVO.COMP_CODE,jdbcType=NUMERIC}
+			  AND ENTITY_STATUS = 'D'
+</sql>
+
+<!-- by bilal for TP#987360 -->
+<delete id="cancelControlRecordFlags"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		DELETE FROM AML_CIFCONTROL_RECORD_SCORE
+		WHERE COMP_CODE = -#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+</delete>		
+	
+	<!-- by bilal for TP#987360 -->
+	<update id="updateFlagsControlRecord" parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO"  >
+		UPDATE AML_CIFCONTROL_RECORD_SCORE
+		<set>
+		COMP_CODE     = #{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC},
+			MODIFIED_BY   = #{amlCifControlScoreVO.MODIFIED_BY,jdbcType=VARCHAR},
+			MODIFIED_DATE = #{amlCifControlScoreVO.MODIFIED_DATE,jdbcType=NUMERIC},
+		DATE_UPDATED = 
+		<choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+        </choose>
+		</set>
+		WHERE  COMP_CODE      =  #{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+	</update>
+	
+	<!-- by bilal for TP#987360 -->
+	<resultMap
+		type="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO"
+		id="scoringControlFlagsResMap">
+		<result column="COMP_CODE"
+			property="amlCifControlScoreVO.COMP_CODE" />
+		<result column="SCORING_CALC_CRITERIA_LIST"
+			property="amlCifControlScoreVO.SCORING_CALC_CRITERIA_LIST" />
+		<result column="RETAIN_HIGHEST_SCORE_YN"
+			property="amlCifControlScoreVO.RETAIN_HIGHEST_SCORE_YN" />	
+		<result column="CREATED_BY"
+			property="amlCifControlScoreVO.CREATED_BY" />
+		<result column="CREATED_DATE"
+		property="amlCifControlScoreVO.CREATED_DATE" />
+		<result column="MODIFIED_BY"
+		property="amlCifControlScoreVO.MODIFIED_BY" />
+		<result column="MODIFIED_DATE"
+		property="amlCifControlScoreVO.MODIFIED_DATE" />
+		<result column="STATUS"
+		property="amlCifControlScoreVO.STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+	
+	<!-- by bilal for TP#987360 -->
+	<select id="returnControlRecordFlags" resultMap="scoringControlFlagsResMap"
+		parameterType="com.path.vo.core.scoringcontrolrecord.ScoringControlRecordCO">
+		SELECT
+		  A.COMP_CODE,
+		  A.SCORING_CALC_CRITERIA_LIST,
+		  A.RETAIN_HIGHEST_SCORE_YN,
+		  A.STATUS,
+		  A.CREATED_BY,
+		    A.CREATED_DATE,
+		    A.MODIFIED_BY,
+		    A.MODIFIED_DATE,
+		    (SELECT VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE = #{language}
+		AND VALUE_CODE = A.STATUS) STATUS_DESC
+		FROM AML_CIFCONTROL_RECORD_SCORE A
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					(A.COMP_CODE=-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC})
+					OR
+					(A.COMP_CODE=#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+					AND NOT EXISTS (SELECT 1
+					FROM AML_CIFCONTROL_RECORD_SCORE B
+					WHERE B.COMP_CODE =-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+					))
+				</if>
+				<if test='ivCrud == "U"'>
+					A.COMP_CODE=#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}AND
+					NOT EXISTS (SELECT 1
+					FROM AML_CIFCONTROL_RECORD_SCORE B
+					WHERE B.COMP_CODE =-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+					)
+				</if>
+				<if test='ivCrud == "P"'>
+					(A.COMP_CODE=-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					(A.COMP_CODE=-#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+					AND EXISTS (SELECT 1
+					FROM AML_CIFCONTROL_RECORD_SCORE B
+					WHERE B.COMP_CODE
+					=#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC}
+					))
+				</if>
+			</when>
+			<otherwise>
+				( A.COMP_CODE
+				=#{amlCifControlScoreVO.COMP_CODE,jdbcType=NUMERIC})
+			</otherwise>
+		</choose>
+
+	</select>
+	
+</mapper>

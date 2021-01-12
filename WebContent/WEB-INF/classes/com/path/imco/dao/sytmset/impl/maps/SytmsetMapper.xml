@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="sytmsetMapper">
+	<resultMap id="resSytmsetListMap" type="com.path.imco.vo.sytmset.SytmsetCO">
+		<result property="syncBranchVO.BR_CODE" column="BR_CODE" />
+		<result property="syncBranchVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="syncBranchVO.BR_TYPE" column="BR_TYPE" />
+		<result property="syncBranchVO.EMAIL1" column="EMAIL1" />
+		<result property="syncBranchVO.EMAIL2" column="EMAIL2" />
+		<result property="syncBranchVO.EMAIL3" column="EMAIL3" />
+		<result property="syncBranchVO.EMAIL4" column="EMAIL4" />
+		<result property="syncBranchVO.EMAIL5" column="EMAIL5" />
+		<result property="syncBranchVO.MESSAGE1" column="MESSAGE1" />
+		<result property="syncBranchVO.SUBJECT" column="SUBJECT" />
+		<result property="syncBranchVO.IP_ADDRESS" column="IP_ADDRESS" />
+		<result property="syncBranchVO.SERVICE_NAME" column="SERVICE_NAME" />
+	</resultMap>
+
+
+	<resultMap id="resNetworkMap" type="com.path.imco.vo.sytmset.SytmsetCO">
+		<result property="syncBranchVO.IP_ADDRESS" column="IP_ADDRESS" />
+		<result property="syncBranchVO.SERVICE_NAME" column="SERVICE_NAME" />
+	</resultMap>
+
+	<select id="returnNetworkList" parameterType="com.path.imco.vo.sytmset.SytmsetSC"
+		resultMap="resNetworkMap">
+		<include refid="networkSQL" />
+	</select>
+
+	<select id="returnSytmsetList" parameterType="com.path.imco.vo.sytmset.SytmsetSC"
+		resultMap="resSytmsetListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="querySytmsetSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnSytmsetListCount" parameterType="com.path.imco.vo.sytmset.SytmsetSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="querySytmsetSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnSytmsetDetails" resultMap="SytmsetDetails_ResMap"
+		parameterType="com.path.imco.vo.sytmset.SytmsetSC">
+		SELECT
+		BR_CODE,DESCRIPTION,BR_TYPE,EMAIL1,EMAIL2,EMAIL3,EMAIL4,EMAIL5,MESSAGE1,SUBJECT,IP_ADDRESS,SERVICE_NAME
+		FROM SYNC_BRANCH
+		WHERE SYNC_BRANCH.BR_CODE = #{sytmCode}
+
+
+	</select>
+
+
+	<delete id="deleteGridData" parameterType="com.path.imco.vo.sytmset.SytmsetSC">
+		DELETE FROM
+		SYNC_BRANCH WHERE BR_CODE=#{sytmCode}
+	</delete>
+
+
+
+	<resultMap id="SytmsetDetails_ResMap" type="com.path.imco.vo.sytmset.SytmsetCO">
+		<result property="syncBranchVO.BR_CODE" column="BR_CODE" />
+		<result property="syncBranchVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="syncBranchVO.BR_TYPE" column="BR_TYPE" />
+		<result property="syncBranchVO.EMAIL1" column="EMAIL1" />
+		<result property="syncBranchVO.EMAIL2" column="EMAIL2" />
+		<result property="syncBranchVO.EMAIL3" column="EMAIL3" />
+		<result property="syncBranchVO.EMAIL4" column="EMAIL4" />
+		<result property="syncBranchVO.EMAIL5" column="EMAIL5" />
+		<result property="syncBranchVO.MESSAGE1" column="MESSAGE1" />
+		<result property="syncBranchVO.SUBJECT" column="SUBJECT" />
+		<result property="syncBranchVO.IP_ADDRESS" column="IP_ADDRESS" />
+		<result property="syncBranchVO.SERVICE_NAME" column="SERVICE_NAME" />
+	</resultMap>
+
+
+
+
+	<sql id="querySytmsetSQL">
+		SELECT SYNC_BRANCH.BR_CODE,
+		SYNC_BRANCH.DESCRIPTION,
+		SYNC_BRANCH.BR_TYPE,
+		SYNC_BRANCH.EMAIL1,
+		SYNC_BRANCH.EMAIL2,
+		SYNC_BRANCH.EMAIL3,
+		SYNC_BRANCH.EMAIL4,
+		SYNC_BRANCH.EMAIL5,
+		SYNC_BRANCH.MESSAGE1,
+		SYNC_BRANCH.SUBJECT,
+		SYNC_BRANCH.IP_ADDRESS,
+		SYNC_BRANCH.SERVICE_NAME
+		FROM SYNC_BRANCH
+	</sql>
+
+	<sql id="networkSQL">
+	SELECT SYNC_BRANCH.IP_ADDRESS,
+	SYNC_BRANCH.SERVICE_NAME
+	FROM
+	SYNC_BRANCH
+	WHERE SYNC_BRANCH.BR_CODE = #{branchCode}
+	</sql>
+
+
+
+
+
+	<delete id="deleteFromSyncPingho" parameterType="com.path.imco.vo.sytmset.SytmsetSC">
+		DELETE FROM
+		SYNC_PINGHO WHERE BR_CODE = #{brCode} AND PROCESS = #{process}
+	</delete>
+
+	<select id="returnCountFromSyncPingho" resultType="BigDecimal"
+		parameterType="com.path.imco.vo.sytmset.SytmsetSC">
+		SELECT COUNT(1) FROM SYNC_PINGHO
+		WHERE BR_CODE =
+		#{brCode} AND PROCESS = #{process}
+	</select>
+</mapper>

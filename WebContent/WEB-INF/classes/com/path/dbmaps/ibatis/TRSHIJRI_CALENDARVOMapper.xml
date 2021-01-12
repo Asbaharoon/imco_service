@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSHIJRI_CALENDAR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSHIJRI_CALENDARVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="HIJRI_MONTH" property="HIJRI_MONTH" />
+    <id column="HIJRI_YEAR" property="HIJRI_YEAR" />
+    <result column="NO_OF_DAYS" property="NO_OF_DAYS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, HIJRI_MONTH, HIJRI_YEAR, NO_OF_DAYS, CREATED_BY, DATE_CREATED, STATUS, 
+    APPROVED_BY, MODIFIED_BY, DATE_MODIFIED, DATE_DELETED, DATE_APPROVED, DELETED_BY
+  </sql>
+  <select id="selectTRSHIJRI_CALENDAR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSHIJRI_CALENDAR
+    where COMP_CODE = #{COMP_CODE}
+      and HIJRI_MONTH = #{HIJRI_MONTH}
+      and HIJRI_YEAR = #{HIJRI_YEAR}
+  </select>
+  <delete id="deleteTRSHIJRI_CALENDAR" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVOKey" >
+    delete from TRSHIJRI_CALENDAR
+    where COMP_CODE = #{COMP_CODE}
+      and HIJRI_MONTH = #{HIJRI_MONTH}
+      and HIJRI_YEAR = #{HIJRI_YEAR}
+  </delete>
+  <insert id="insertTRSHIJRI_CALENDAR" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVO" >
+    insert into TRSHIJRI_CALENDAR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="HIJRI_MONTH != null and HIJRI_MONTH != emptyBigDecimalValue" >
+        HIJRI_MONTH,
+      </if>
+      <if test="HIJRI_YEAR != null and HIJRI_YEAR != emptyBigDecimalValue" >
+        HIJRI_YEAR,
+      </if>
+      <if test="NO_OF_DAYS != null and NO_OF_DAYS != emptyBigDecimalValue" >
+        NO_OF_DAYS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="HIJRI_MONTH != null and HIJRI_MONTH != emptyBigDecimalValue" >
+        #{HIJRI_MONTH},
+      </if>
+      <if test="HIJRI_YEAR != null and HIJRI_YEAR != emptyBigDecimalValue" >
+        #{HIJRI_YEAR},
+      </if>
+      <if test="NO_OF_DAYS != null and NO_OF_DAYS != emptyBigDecimalValue" >
+        #{NO_OF_DAYS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSHIJRI_CALENDAR" >
+    update TRSHIJRI_CALENDAR
+    <set >
+      <if test="NO_OF_DAYS != null" >
+        <choose >
+          <when test="NO_OF_DAYS == emptyBigDecimalValue" >
+            NO_OF_DAYS = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_DAYS = #{NO_OF_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and HIJRI_MONTH = #{HIJRI_MONTH}
+      and HIJRI_YEAR = #{HIJRI_YEAR}
+  </sql>
+  <update id="updateTRSHIJRI_CALENDAR" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVO" >
+    <include refid="sql_updateTRSHIJRI_CALENDAR" />
+  </update>
+</mapper>

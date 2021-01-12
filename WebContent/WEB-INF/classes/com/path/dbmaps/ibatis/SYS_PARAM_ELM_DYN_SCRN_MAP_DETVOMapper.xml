@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_ELM_DYN_SCRN_MAP_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_ELM_DYN_SCRN_MAP_DETVO" >
+    <id column="ELEMENT_MAP_ID" property="ELEMENT_MAP_ID" />
+    <id column="FLD_MAP_ID" property="FLD_MAP_ID" />
+    <result column="MAP_TYPE" property="MAP_TYPE" />
+    <result column="MAP_VALUE" property="MAP_VALUE" />
+    <result column="FROM_FLD_APP_NAME" property="FROM_FLD_APP_NAME" />
+    <result column="FROM_FLD_PROG_REF" property="FROM_FLD_PROG_REF" />
+    <result column="FROM_FLD_IDENTIFIER" property="FROM_FLD_IDENTIFIER" />
+    <result column="TO_ELEMENT_ID" property="TO_ELEMENT_ID" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="DYN_PARAM_TYPE" property="DYN_PARAM_TYPE" />
+    <result column="DELIMITER" property="DELIMITER" />
+    <result column="SELECTION_TYPE" property="SELECTION_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ELEMENT_MAP_ID, FLD_MAP_ID, MAP_TYPE, MAP_VALUE, FROM_FLD_APP_NAME, FROM_FLD_PROG_REF, 
+    FROM_FLD_IDENTIFIER, TO_ELEMENT_ID, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE,
+    DYN_PARAM_TYPE,DELIMITER, SELECTION_TYPE
+  </sql>
+  <select id="selectSYS_PARAM_ELM_DYN_SCRN_MAP_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELM_DYN_SCRN_MAP_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+    where ELEMENT_MAP_ID = #{ELEMENT_MAP_ID}
+      and FLD_MAP_ID = #{FLD_MAP_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_ELM_DYN_SCRN_MAP_DET" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELM_DYN_SCRN_MAP_DETVOKey" >
+    delete from SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+    where ELEMENT_MAP_ID = #{ELEMENT_MAP_ID}
+      and FLD_MAP_ID = #{FLD_MAP_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_ELM_DYN_SCRN_MAP_DET" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELM_DYN_SCRN_MAP_DETVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="FLD_MAP_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(FLD_MAP_ID),0)+1</when><otherwise>NVL(MAX(FLD_MAP_ID),0)+1</otherwise></choose> FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+    </selectKey>
+    insert into SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ELEMENT_MAP_ID != null" >
+        ELEMENT_MAP_ID,
+      </if>
+      FLD_MAP_ID,
+      <if test="MAP_TYPE != null" >
+        MAP_TYPE,
+      </if>
+      <if test="MAP_VALUE != null" >
+        MAP_VALUE,
+      </if>
+      <if test="FROM_FLD_APP_NAME != null" >
+        FROM_FLD_APP_NAME,
+      </if>
+      <if test="FROM_FLD_PROG_REF != null" >
+        FROM_FLD_PROG_REF,
+      </if>
+      <if test="FROM_FLD_IDENTIFIER != null" >
+        FROM_FLD_IDENTIFIER,
+      </if>
+      <if test="TO_ELEMENT_ID != null" >
+        TO_ELEMENT_ID,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="DYN_PARAM_TYPE != null" >
+        DYN_PARAM_TYPE,
+      </if>
+      <if test="DELIMITER != null" >
+        DELIMITER,
+      </if>
+      <if test="SELECTION_TYPE != null" >
+        SELECTION_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ELEMENT_MAP_ID != null" >
+        #{ELEMENT_MAP_ID},
+      </if>
+      #{FLD_MAP_ID},
+      <if test="MAP_TYPE != null" >
+        #{MAP_TYPE},
+      </if>
+      <if test="MAP_VALUE != null" >
+        #{MAP_VALUE},
+      </if>
+      <if test="FROM_FLD_APP_NAME != null" >
+        #{FROM_FLD_APP_NAME},
+      </if>
+      <if test="FROM_FLD_PROG_REF != null" >
+        #{FROM_FLD_PROG_REF},
+      </if>
+      <if test="FROM_FLD_IDENTIFIER != null" >
+        #{FROM_FLD_IDENTIFIER},
+      </if>
+      <if test="TO_ELEMENT_ID != null" >
+        #{TO_ELEMENT_ID},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="DYN_PARAM_TYPE != null" >
+        #{DYN_PARAM_TYPE},
+      </if>
+      <if test="DELIMITER != null" >
+        #{DELIMITER},
+      </if>
+      <if test="SELECTION_TYPE != null" >
+        #{SELECTION_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_ELM_DYN_SCRN_MAP_DET" >
+    update SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+    <set >
+      <if test="MAP_TYPE != null" >
+        MAP_TYPE = #{MAP_TYPE},
+      </if>
+      <if test="MAP_VALUE != null" >
+        MAP_VALUE = #{MAP_VALUE},
+      </if>
+      <if test="FROM_FLD_APP_NAME != null" >
+        FROM_FLD_APP_NAME = #{FROM_FLD_APP_NAME},
+      </if>
+      <if test="FROM_FLD_PROG_REF != null" >
+        FROM_FLD_PROG_REF = #{FROM_FLD_PROG_REF},
+      </if>
+      <if test="FROM_FLD_IDENTIFIER != null" >
+        FROM_FLD_IDENTIFIER = #{FROM_FLD_IDENTIFIER},
+      </if>
+      <if test="TO_ELEMENT_ID != null" >
+        TO_ELEMENT_ID = #{TO_ELEMENT_ID},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="DYN_PARAM_TYPE != null" >
+        DYN_PARAM_TYPE = #{DYN_PARAM_TYPE},
+      </if>
+      <if test="DELIMITER != null" >
+        DELIMITER = #{DELIMITER},
+      </if>
+      <if test="SELECTION_TYPE != null" >
+        SELECTION_TYPE = #{SELECTION_TYPE},
+      </if>
+    </set>
+    where ELEMENT_MAP_ID = #{ELEMENT_MAP_ID}
+      and FLD_MAP_ID = #{FLD_MAP_ID}
+  </sql>
+  <update id="updateSYS_PARAM_ELM_DYN_SCRN_MAP_DET" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELM_DYN_SCRN_MAP_DETVO" >
+    <include refid="sql_updateSYS_PARAM_ELM_DYN_SCRN_MAP_DET" />
+  </update>
+</mapper>

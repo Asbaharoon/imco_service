@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCITDET2" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCITDET2VO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY" property="CURRENCY" />
+    <id column="PROFIT_GROUP" property="PROFIT_GROUP" />
+    <result column="INCLUDE_AS_EX_RV" property="INCLUDE_AS_EX_RV" />
+    <result column="INCLUDE_LIABILITY" property="INCLUDE_LIABILITY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, CURRENCY, PROFIT_GROUP, INCLUDE_AS_EX_RV, INCLUDE_LIABILITY
+  </sql>
+  <select id="selectCTSCITDET2" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCITDET2VOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCITDET2
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+      and PROFIT_GROUP = #{PROFIT_GROUP}
+  </select>
+  <delete id="deleteCTSCITDET2" parameterType="com.path.dbmaps.vo.CTSCITDET2VOKey" >
+    delete from CTSCITDET2
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+      and PROFIT_GROUP = #{PROFIT_GROUP}
+  </delete>
+  <insert id="insertCTSCITDET2" parameterType="com.path.dbmaps.vo.CTSCITDET2VO" >
+    insert into CTSCITDET2
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="PROFIT_GROUP != null and PROFIT_GROUP != emptyBigDecimalValue" >
+        PROFIT_GROUP,
+      </if>
+      <if test="INCLUDE_AS_EX_RV != null" >
+        INCLUDE_AS_EX_RV,
+      </if>
+      <if test="INCLUDE_LIABILITY != null" >
+        INCLUDE_LIABILITY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="PROFIT_GROUP != null and PROFIT_GROUP != emptyBigDecimalValue" >
+        #{PROFIT_GROUP},
+      </if>
+      <if test="INCLUDE_AS_EX_RV != null" >
+        #{INCLUDE_AS_EX_RV},
+      </if>
+      <if test="INCLUDE_LIABILITY != null" >
+        #{INCLUDE_LIABILITY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCITDET2" >
+    update CTSCITDET2
+    <set >
+      <if test="INCLUDE_AS_EX_RV != null" >
+        INCLUDE_AS_EX_RV = #{INCLUDE_AS_EX_RV},
+      </if>
+      <if test="INCLUDE_LIABILITY != null" >
+        INCLUDE_LIABILITY = #{INCLUDE_LIABILITY},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+      and PROFIT_GROUP = #{PROFIT_GROUP}
+  </sql>
+  <update id="updateCTSCITDET2" parameterType="com.path.dbmaps.vo.CTSCITDET2VO" >
+    <include refid="sql_updateCTSCITDET2" />
+  </update>
+</mapper>

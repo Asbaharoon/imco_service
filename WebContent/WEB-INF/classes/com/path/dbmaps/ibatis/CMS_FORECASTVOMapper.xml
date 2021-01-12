@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CMS_FORECAST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CMS_FORECASTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FORECAST_NO" property="FORECAST_NO" />
+    <result column="TRX_DATE" property="TRX_DATE" />
+    <result column="VALUE_DATE" property="VALUE_DATE" />
+    <result column="CASH_TYPE" property="CASH_TYPE" />
+    <result column="ORIGIN" property="ORIGIN" />
+    <result column="FORECAST_TYPE" property="FORECAST_TYPE" />
+    <result column="FORECAST_SUBTYPE" property="FORECAST_SUBTYPE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="CY_CODE" property="CY_CODE" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="AMOUNT_CV" property="AMOUNT_CV" />
+    <result column="TYPE" property="TYPE" />
+    <result column="PERCENTAGE" property="PERCENTAGE" />
+    <result column="PAYMENT_MODE" property="PAYMENT_MODE" />
+    <result column="RELEASE_MODE" property="RELEASE_MODE" />
+    <result column="GL_CODE" property="GL_CODE" />
+    <result column="AC_DR_CY" property="AC_DR_CY" />
+    <result column="AC_DR_GL_CODE" property="AC_DR_GL_CODE" />
+    <result column="AC_DR_CIF_SUB_NO" property="AC_DR_CIF_SUB_NO" />
+    <result column="AC_DR_SL_NO" property="AC_DR_SL_NO" />
+    <result column="AC_CR_CY" property="AC_CR_CY" />
+    <result column="AC_CR_GL_CODE" property="AC_CR_GL_CODE" />
+    <result column="AC_CR_CIF_SUB_NO" property="AC_CR_CIF_SUB_NO" />
+    <result column="AC_CR_SL_NO" property="AC_CR_SL_NO" />
+    <result column="BANK_CIF_CODE" property="BANK_CIF_CODE" />
+    <result column="BANK_BIC_CODE" property="BANK_BIC_CODE" />
+    <result column="BIC_ACC_NO" property="BIC_ACC_NO" />
+    <result column="PAY_REC_AC_CY" property="PAY_REC_AC_CY" />
+    <result column="PAY_REC_AC_GL_CODE" property="PAY_REC_AC_GL_CODE" />
+    <result column="PAY_REC_AC_CIF_SUB_NO" property="PAY_REC_AC_CIF_SUB_NO" />
+    <result column="PAY_REC_AC_SL_NO" property="PAY_REC_AC_SL_NO" />
+    <result column="STATUS" property="STATUS" />
+    <result column="APPROVE_CHECK" property="APPROVE_CHECK" />
+    <result column="ARCHIVE_CHECK" property="ARCHIVE_CHECK" />
+    <result column="AC_DR_COMP_CODE" property="AC_DR_COMP_CODE" />
+    <result column="AC_CR_COMP_CODE" property="AC_CR_COMP_CODE" />
+    <result column="AC_DR_BR_CODE" property="AC_DR_BR_CODE" />
+    <result column="AC_CR_BR_CODE" property="AC_CR_BR_CODE" />
+    <result column="BANK_CIF_LINE_NO" property="BANK_CIF_LINE_NO" />
+    <result column="INIT_VALUE_DATE" property="INIT_VALUE_DATE" />
+    <result column="ORIGIN_TRX_NO" property="ORIGIN_TRX_NO" />
+    <result column="COMM_NO" property="COMM_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, FORECAST_NO, TRX_DATE, VALUE_DATE, CASH_TYPE, ORIGIN, FORECAST_TYPE, 
+    FORECAST_SUBTYPE, CIF_NO, CY_CODE, AMOUNT, AMOUNT_CV, TYPE, PERCENTAGE, PAYMENT_MODE, 
+    RELEASE_MODE, GL_CODE, AC_DR_CY, AC_DR_GL_CODE, AC_DR_CIF_SUB_NO, AC_DR_SL_NO, AC_CR_CY, 
+    AC_CR_GL_CODE, AC_CR_CIF_SUB_NO, AC_CR_SL_NO, BANK_CIF_CODE, BANK_BIC_CODE, BIC_ACC_NO, 
+    PAY_REC_AC_CY, PAY_REC_AC_GL_CODE, PAY_REC_AC_CIF_SUB_NO, PAY_REC_AC_SL_NO, STATUS, 
+    APPROVE_CHECK, ARCHIVE_CHECK, AC_DR_COMP_CODE, AC_CR_COMP_CODE, AC_DR_BR_CODE, AC_CR_BR_CODE, 
+    BANK_CIF_LINE_NO, INIT_VALUE_DATE, ORIGIN_TRX_NO, COMM_NO
+  </sql>
+  <select id="selectCMS_FORECAST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CMS_FORECASTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CMS_FORECAST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FORECAST_NO = #{FORECAST_NO}
+  </select>
+  <delete id="deleteCMS_FORECAST" parameterType="com.path.dbmaps.vo.CMS_FORECASTVOKey" >
+    delete from CMS_FORECAST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FORECAST_NO = #{FORECAST_NO}
+  </delete>
+  <insert id="insertCMS_FORECAST" parameterType="com.path.dbmaps.vo.CMS_FORECASTVO" >
+    insert into CMS_FORECAST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FORECAST_NO != null and FORECAST_NO != emptyBigDecimalValue" >
+        FORECAST_NO,
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE,
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE,
+      </if>
+      <if test="CASH_TYPE != null" >
+        CASH_TYPE,
+      </if>
+      <if test="ORIGIN != null" >
+        ORIGIN,
+      </if>
+      <if test="FORECAST_TYPE != null and FORECAST_TYPE != emptyBigDecimalValue" >
+        FORECAST_TYPE,
+      </if>
+      <if test="FORECAST_SUBTYPE != null and FORECAST_SUBTYPE != emptyBigDecimalValue" >
+        FORECAST_SUBTYPE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        AMOUNT_CV,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        PERCENTAGE,
+      </if>
+      <if test="PAYMENT_MODE != null" >
+        PAYMENT_MODE,
+      </if>
+      <if test="RELEASE_MODE != null" >
+        RELEASE_MODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="AC_DR_CY != null and AC_DR_CY != emptyBigDecimalValue" >
+        AC_DR_CY,
+      </if>
+      <if test="AC_DR_GL_CODE != null and AC_DR_GL_CODE != emptyBigDecimalValue" >
+        AC_DR_GL_CODE,
+      </if>
+      <if test="AC_DR_CIF_SUB_NO != null and AC_DR_CIF_SUB_NO != emptyBigDecimalValue" >
+        AC_DR_CIF_SUB_NO,
+      </if>
+      <if test="AC_DR_SL_NO != null and AC_DR_SL_NO != emptyBigDecimalValue" >
+        AC_DR_SL_NO,
+      </if>
+      <if test="AC_CR_CY != null and AC_CR_CY != emptyBigDecimalValue" >
+        AC_CR_CY,
+      </if>
+      <if test="AC_CR_GL_CODE != null and AC_CR_GL_CODE != emptyBigDecimalValue" >
+        AC_CR_GL_CODE,
+      </if>
+      <if test="AC_CR_CIF_SUB_NO != null and AC_CR_CIF_SUB_NO != emptyBigDecimalValue" >
+        AC_CR_CIF_SUB_NO,
+      </if>
+      <if test="AC_CR_SL_NO != null and AC_CR_SL_NO != emptyBigDecimalValue" >
+        AC_CR_SL_NO,
+      </if>
+      <if test="BANK_CIF_CODE != null and BANK_CIF_CODE != emptyBigDecimalValue" >
+        BANK_CIF_CODE,
+      </if>
+      <if test="BANK_BIC_CODE != null" >
+        BANK_BIC_CODE,
+      </if>
+      <if test="BIC_ACC_NO != null" >
+        BIC_ACC_NO,
+      </if>
+      <if test="PAY_REC_AC_CY != null and PAY_REC_AC_CY != emptyBigDecimalValue" >
+        PAY_REC_AC_CY,
+      </if>
+      <if test="PAY_REC_AC_GL_CODE != null and PAY_REC_AC_GL_CODE != emptyBigDecimalValue" >
+        PAY_REC_AC_GL_CODE,
+      </if>
+      <if test="PAY_REC_AC_CIF_SUB_NO != null and PAY_REC_AC_CIF_SUB_NO != emptyBigDecimalValue" >
+        PAY_REC_AC_CIF_SUB_NO,
+      </if>
+      <if test="PAY_REC_AC_SL_NO != null and PAY_REC_AC_SL_NO != emptyBigDecimalValue" >
+        PAY_REC_AC_SL_NO,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="APPROVE_CHECK != null" >
+        APPROVE_CHECK,
+      </if>
+      <if test="ARCHIVE_CHECK != null" >
+        ARCHIVE_CHECK,
+      </if>
+      <if test="AC_DR_COMP_CODE != null and AC_DR_COMP_CODE != emptyBigDecimalValue" >
+        AC_DR_COMP_CODE,
+      </if>
+      <if test="AC_CR_COMP_CODE != null and AC_CR_COMP_CODE != emptyBigDecimalValue" >
+        AC_CR_COMP_CODE,
+      </if>
+      <if test="AC_DR_BR_CODE != null and AC_DR_BR_CODE != emptyBigDecimalValue" >
+        AC_DR_BR_CODE,
+      </if>
+      <if test="AC_CR_BR_CODE != null and AC_CR_BR_CODE != emptyBigDecimalValue" >
+        AC_CR_BR_CODE,
+      </if>
+      <if test="BANK_CIF_LINE_NO != null and BANK_CIF_LINE_NO != emptyBigDecimalValue" >
+        BANK_CIF_LINE_NO,
+      </if>
+      <if test="INIT_VALUE_DATE != null" >
+        INIT_VALUE_DATE,
+      </if>
+      <if test="ORIGIN_TRX_NO != null and ORIGIN_TRX_NO != emptyBigDecimalValue" >
+        ORIGIN_TRX_NO,
+      </if>
+      <if test="COMM_NO != null and COMM_NO != emptyBigDecimalValue" >
+        COMM_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FORECAST_NO != null and FORECAST_NO != emptyBigDecimalValue" >
+        #{FORECAST_NO},
+      </if>
+      <if test="TRX_DATE != null" >
+        #{TRX_DATE},
+      </if>
+      <if test="VALUE_DATE != null" >
+        #{VALUE_DATE},
+      </if>
+      <if test="CASH_TYPE != null" >
+        #{CASH_TYPE},
+      </if>
+      <if test="ORIGIN != null" >
+        #{ORIGIN},
+      </if>
+      <if test="FORECAST_TYPE != null and FORECAST_TYPE != emptyBigDecimalValue" >
+        #{FORECAST_TYPE},
+      </if>
+      <if test="FORECAST_SUBTYPE != null and FORECAST_SUBTYPE != emptyBigDecimalValue" >
+        #{FORECAST_SUBTYPE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        #{AMOUNT_CV},
+      </if>
+      <if test="TYPE != null" >
+        #{TYPE},
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        #{PERCENTAGE},
+      </if>
+      <if test="PAYMENT_MODE != null" >
+        #{PAYMENT_MODE},
+      </if>
+      <if test="RELEASE_MODE != null" >
+        #{RELEASE_MODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="AC_DR_CY != null and AC_DR_CY != emptyBigDecimalValue" >
+        #{AC_DR_CY},
+      </if>
+      <if test="AC_DR_GL_CODE != null and AC_DR_GL_CODE != emptyBigDecimalValue" >
+        #{AC_DR_GL_CODE},
+      </if>
+      <if test="AC_DR_CIF_SUB_NO != null and AC_DR_CIF_SUB_NO != emptyBigDecimalValue" >
+        #{AC_DR_CIF_SUB_NO},
+      </if>
+      <if test="AC_DR_SL_NO != null and AC_DR_SL_NO != emptyBigDecimalValue" >
+        #{AC_DR_SL_NO},
+      </if>
+      <if test="AC_CR_CY != null and AC_CR_CY != emptyBigDecimalValue" >
+        #{AC_CR_CY},
+      </if>
+      <if test="AC_CR_GL_CODE != null and AC_CR_GL_CODE != emptyBigDecimalValue" >
+        #{AC_CR_GL_CODE},
+      </if>
+      <if test="AC_CR_CIF_SUB_NO != null and AC_CR_CIF_SUB_NO != emptyBigDecimalValue" >
+        #{AC_CR_CIF_SUB_NO},
+      </if>
+      <if test="AC_CR_SL_NO != null and AC_CR_SL_NO != emptyBigDecimalValue" >
+        #{AC_CR_SL_NO},
+      </if>
+      <if test="BANK_CIF_CODE != null and BANK_CIF_CODE != emptyBigDecimalValue" >
+        #{BANK_CIF_CODE},
+      </if>
+      <if test="BANK_BIC_CODE != null" >
+        #{BANK_BIC_CODE},
+      </if>
+      <if test="BIC_ACC_NO != null" >
+        #{BIC_ACC_NO},
+      </if>
+      <if test="PAY_REC_AC_CY != null and PAY_REC_AC_CY != emptyBigDecimalValue" >
+        #{PAY_REC_AC_CY},
+      </if>
+      <if test="PAY_REC_AC_GL_CODE != null and PAY_REC_AC_GL_CODE != emptyBigDecimalValue" >
+        #{PAY_REC_AC_GL_CODE},
+      </if>
+      <if test="PAY_REC_AC_CIF_SUB_NO != null and PAY_REC_AC_CIF_SUB_NO != emptyBigDecimalValue" >
+        #{PAY_REC_AC_CIF_SUB_NO},
+      </if>
+      <if test="PAY_REC_AC_SL_NO != null and PAY_REC_AC_SL_NO != emptyBigDecimalValue" >
+        #{PAY_REC_AC_SL_NO},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="APPROVE_CHECK != null" >
+        #{APPROVE_CHECK},
+      </if>
+      <if test="ARCHIVE_CHECK != null" >
+        #{ARCHIVE_CHECK},
+      </if>
+      <if test="AC_DR_COMP_CODE != null and AC_DR_COMP_CODE != emptyBigDecimalValue" >
+        #{AC_DR_COMP_CODE},
+      </if>
+      <if test="AC_CR_COMP_CODE != null and AC_CR_COMP_CODE != emptyBigDecimalValue" >
+        #{AC_CR_COMP_CODE},
+      </if>
+      <if test="AC_DR_BR_CODE != null and AC_DR_BR_CODE != emptyBigDecimalValue" >
+        #{AC_DR_BR_CODE},
+      </if>
+      <if test="AC_CR_BR_CODE != null and AC_CR_BR_CODE != emptyBigDecimalValue" >
+        #{AC_CR_BR_CODE},
+      </if>
+      <if test="BANK_CIF_LINE_NO != null and BANK_CIF_LINE_NO != emptyBigDecimalValue" >
+        #{BANK_CIF_LINE_NO},
+      </if>
+      <if test="INIT_VALUE_DATE != null" >
+        #{INIT_VALUE_DATE},
+      </if>
+      <if test="ORIGIN_TRX_NO != null and ORIGIN_TRX_NO != emptyBigDecimalValue" >
+        #{ORIGIN_TRX_NO},
+      </if>
+      <if test="COMM_NO != null and COMM_NO != emptyBigDecimalValue" >
+        #{COMM_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCMS_FORECAST" >
+    update CMS_FORECAST
+    <set >
+      <if test="TRX_DATE != null" >
+        TRX_DATE = #{TRX_DATE},
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE = #{VALUE_DATE},
+      </if>
+      <if test="CASH_TYPE != null" >
+        CASH_TYPE = #{CASH_TYPE},
+      </if>
+      <if test="ORIGIN != null" >
+        ORIGIN = #{ORIGIN},
+      </if>
+      <if test="FORECAST_TYPE != null" >
+        <choose >
+          <when test="FORECAST_TYPE == emptyBigDecimalValue" >
+            FORECAST_TYPE = NULL ,
+          </when>
+          <otherwise >
+            FORECAST_TYPE = #{FORECAST_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FORECAST_SUBTYPE != null" >
+        <choose >
+          <when test="FORECAST_SUBTYPE == emptyBigDecimalValue" >
+            FORECAST_SUBTYPE = NULL ,
+          </when>
+          <otherwise >
+            FORECAST_SUBTYPE = #{FORECAST_SUBTYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CY_CODE != null" >
+        <choose >
+          <when test="CY_CODE == emptyBigDecimalValue" >
+            CY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CY_CODE = #{CY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_CV != null" >
+        <choose >
+          <when test="AMOUNT_CV == emptyBigDecimalValue" >
+            AMOUNT_CV = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_CV = #{AMOUNT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TYPE != null" >
+        TYPE = #{TYPE},
+      </if>
+      <if test="PERCENTAGE != null" >
+        <choose >
+          <when test="PERCENTAGE == emptyBigDecimalValue" >
+            PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE = #{PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYMENT_MODE != null" >
+        PAYMENT_MODE = #{PAYMENT_MODE},
+      </if>
+      <if test="RELEASE_MODE != null" >
+        RELEASE_MODE = #{RELEASE_MODE},
+      </if>
+      <if test="GL_CODE != null" >
+        <choose >
+          <when test="GL_CODE == emptyBigDecimalValue" >
+            GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            GL_CODE = #{GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_DR_CY != null" >
+        <choose >
+          <when test="AC_DR_CY == emptyBigDecimalValue" >
+            AC_DR_CY = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_CY = #{AC_DR_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_DR_GL_CODE != null" >
+        <choose >
+          <when test="AC_DR_GL_CODE == emptyBigDecimalValue" >
+            AC_DR_GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_GL_CODE = #{AC_DR_GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_DR_CIF_SUB_NO != null" >
+        <choose >
+          <when test="AC_DR_CIF_SUB_NO == emptyBigDecimalValue" >
+            AC_DR_CIF_SUB_NO = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_CIF_SUB_NO = #{AC_DR_CIF_SUB_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_DR_SL_NO != null" >
+        <choose >
+          <when test="AC_DR_SL_NO == emptyBigDecimalValue" >
+            AC_DR_SL_NO = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_SL_NO = #{AC_DR_SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_CY != null" >
+        <choose >
+          <when test="AC_CR_CY == emptyBigDecimalValue" >
+            AC_CR_CY = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_CY = #{AC_CR_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_GL_CODE != null" >
+        <choose >
+          <when test="AC_CR_GL_CODE == emptyBigDecimalValue" >
+            AC_CR_GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_GL_CODE = #{AC_CR_GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_CIF_SUB_NO != null" >
+        <choose >
+          <when test="AC_CR_CIF_SUB_NO == emptyBigDecimalValue" >
+            AC_CR_CIF_SUB_NO = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_CIF_SUB_NO = #{AC_CR_CIF_SUB_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_SL_NO != null" >
+        <choose >
+          <when test="AC_CR_SL_NO == emptyBigDecimalValue" >
+            AC_CR_SL_NO = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_SL_NO = #{AC_CR_SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BANK_CIF_CODE != null" >
+        <choose >
+          <when test="BANK_CIF_CODE == emptyBigDecimalValue" >
+            BANK_CIF_CODE = NULL ,
+          </when>
+          <otherwise >
+            BANK_CIF_CODE = #{BANK_CIF_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BANK_BIC_CODE != null" >
+        BANK_BIC_CODE = #{BANK_BIC_CODE},
+      </if>
+      <if test="BIC_ACC_NO != null" >
+        BIC_ACC_NO = #{BIC_ACC_NO},
+      </if>
+      <if test="PAY_REC_AC_CY != null" >
+        <choose >
+          <when test="PAY_REC_AC_CY == emptyBigDecimalValue" >
+            PAY_REC_AC_CY = NULL ,
+          </when>
+          <otherwise >
+            PAY_REC_AC_CY = #{PAY_REC_AC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAY_REC_AC_GL_CODE != null" >
+        <choose >
+          <when test="PAY_REC_AC_GL_CODE == emptyBigDecimalValue" >
+            PAY_REC_AC_GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            PAY_REC_AC_GL_CODE = #{PAY_REC_AC_GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAY_REC_AC_CIF_SUB_NO != null" >
+        <choose >
+          <when test="PAY_REC_AC_CIF_SUB_NO == emptyBigDecimalValue" >
+            PAY_REC_AC_CIF_SUB_NO = NULL ,
+          </when>
+          <otherwise >
+            PAY_REC_AC_CIF_SUB_NO = #{PAY_REC_AC_CIF_SUB_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAY_REC_AC_SL_NO != null" >
+        <choose >
+          <when test="PAY_REC_AC_SL_NO == emptyBigDecimalValue" >
+            PAY_REC_AC_SL_NO = NULL ,
+          </when>
+          <otherwise >
+            PAY_REC_AC_SL_NO = #{PAY_REC_AC_SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="APPROVE_CHECK != null" >
+        APPROVE_CHECK = #{APPROVE_CHECK},
+      </if>
+      <if test="ARCHIVE_CHECK != null" >
+        ARCHIVE_CHECK = #{ARCHIVE_CHECK},
+      </if>
+      <if test="AC_DR_COMP_CODE != null" >
+        <choose >
+          <when test="AC_DR_COMP_CODE == emptyBigDecimalValue" >
+            AC_DR_COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_COMP_CODE = #{AC_DR_COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_COMP_CODE != null" >
+        <choose >
+          <when test="AC_CR_COMP_CODE == emptyBigDecimalValue" >
+            AC_CR_COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_COMP_CODE = #{AC_CR_COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_DR_BR_CODE != null" >
+        <choose >
+          <when test="AC_DR_BR_CODE == emptyBigDecimalValue" >
+            AC_DR_BR_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_DR_BR_CODE = #{AC_DR_BR_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CR_BR_CODE != null" >
+        <choose >
+          <when test="AC_CR_BR_CODE == emptyBigDecimalValue" >
+            AC_CR_BR_CODE = NULL ,
+          </when>
+          <otherwise >
+            AC_CR_BR_CODE = #{AC_CR_BR_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BANK_CIF_LINE_NO != null" >
+        <choose >
+          <when test="BANK_CIF_LINE_NO == emptyBigDecimalValue" >
+            BANK_CIF_LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            BANK_CIF_LINE_NO = #{BANK_CIF_LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INIT_VALUE_DATE != null" >
+        INIT_VALUE_DATE = #{INIT_VALUE_DATE},
+      </if>
+      <if test="ORIGIN_TRX_NO != null" >
+        <choose >
+          <when test="ORIGIN_TRX_NO == emptyBigDecimalValue" >
+            ORIGIN_TRX_NO = NULL ,
+          </when>
+          <otherwise >
+            ORIGIN_TRX_NO = #{ORIGIN_TRX_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMM_NO != null" >
+        <choose >
+          <when test="COMM_NO == emptyBigDecimalValue" >
+            COMM_NO = NULL ,
+          </when>
+          <otherwise >
+            COMM_NO = #{COMM_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FORECAST_NO = #{FORECAST_NO}
+  </sql>
+  <update id="updateCMS_FORECAST" parameterType="com.path.dbmaps.vo.CMS_FORECASTVO" >
+    <include refid="sql_updateCMS_FORECAST" />
+  </update>
+</mapper>

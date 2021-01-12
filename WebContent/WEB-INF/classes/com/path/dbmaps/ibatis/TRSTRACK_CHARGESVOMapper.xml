@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSTRACK_CHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSTRACK_CHARGESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="TRACK_NBR" property="TRACK_NBR" />
+    <result column="DUE_DATE" property="DUE_DATE" />
+    <result column="CHARGE_AMOUNT" property="CHARGE_AMOUNT" />
+    <result column="AMOUNT_SETTLED" property="AMOUNT_SETTLED" />
+    <result column="BLOCKED_AMOUNT" property="BLOCKED_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NBR, TRACK_NBR, DUE_DATE, CHARGE_AMOUNT, AMOUNT_SETTLED, 
+    BLOCKED_AMOUNT
+  </sql>
+  <select id="selectTRSTRACK_CHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSTRACK_CHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSTRACK_CHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </select>
+  <delete id="deleteTRSTRACK_CHARGES" parameterType="com.path.dbmaps.vo.TRSTRACK_CHARGESVOKey" >
+    delete from TRSTRACK_CHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </delete>
+  <insert id="insertTRSTRACK_CHARGES" parameterType="com.path.dbmaps.vo.TRSTRACK_CHARGESVO" >
+    insert into TRSTRACK_CHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        TRACK_NBR,
+      </if>
+      <if test="DUE_DATE != null" >
+        DUE_DATE,
+      </if>
+      <if test="CHARGE_AMOUNT != null and CHARGE_AMOUNT != emptyBigDecimalValue" >
+        CHARGE_AMOUNT,
+      </if>
+      <if test="AMOUNT_SETTLED != null and AMOUNT_SETTLED != emptyBigDecimalValue" >
+        AMOUNT_SETTLED,
+      </if>
+      <if test="BLOCKED_AMOUNT != null and BLOCKED_AMOUNT != emptyBigDecimalValue" >
+        BLOCKED_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        #{TRACK_NBR},
+      </if>
+      <if test="DUE_DATE != null" >
+        #{DUE_DATE},
+      </if>
+      <if test="CHARGE_AMOUNT != null and CHARGE_AMOUNT != emptyBigDecimalValue" >
+        #{CHARGE_AMOUNT},
+      </if>
+      <if test="AMOUNT_SETTLED != null and AMOUNT_SETTLED != emptyBigDecimalValue" >
+        #{AMOUNT_SETTLED},
+      </if>
+      <if test="BLOCKED_AMOUNT != null and BLOCKED_AMOUNT != emptyBigDecimalValue" >
+        #{BLOCKED_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSTRACK_CHARGES" >
+    update TRSTRACK_CHARGES
+    <set >
+      <if test="DUE_DATE != null" >
+        DUE_DATE = #{DUE_DATE},
+      </if>
+      <if test="CHARGE_AMOUNT != null" >
+        <choose >
+          <when test="CHARGE_AMOUNT == emptyBigDecimalValue" >
+            CHARGE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_AMOUNT = #{CHARGE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_SETTLED != null" >
+        <choose >
+          <when test="AMOUNT_SETTLED == emptyBigDecimalValue" >
+            AMOUNT_SETTLED = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_SETTLED = #{AMOUNT_SETTLED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BLOCKED_AMOUNT != null" >
+        <choose >
+          <when test="BLOCKED_AMOUNT == emptyBigDecimalValue" >
+            BLOCKED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            BLOCKED_AMOUNT = #{BLOCKED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </sql>
+  <update id="updateTRSTRACK_CHARGES" parameterType="com.path.dbmaps.vo.TRSTRACK_CHARGESVO" >
+    <include refid="sql_updateTRSTRACK_CHARGES" />
+  </update>
+</mapper>

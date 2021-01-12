@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOMMITTEEGROUP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOMMITTEEGROUPVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ARAB, 
+    STATUS, CREATED_BY, CREATED_DATE, DELETED_BY, DELETED_DATE, APPROVED_BY, APPROVED_DATE
+  </sql>
+  <select id="selectFMSCOMMITTEEGROUP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOMMITTEEGROUP
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFMSCOMMITTEEGROUP" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUPVOKey" >
+    delete from FMSCOMMITTEEGROUP
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFMSCOMMITTEEGROUP" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUPVO" >
+    insert into FMSCOMMITTEEGROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null and !&quot;&quot;.equals(BRIEF_NAME_ENG)" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null and !&quot;&quot;.equals(LONG_NAME_ENG)" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null and !&quot;&quot;.equals(BRIEF_NAME_ARAB)" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null and !&quot;&quot;.equals(LONG_NAME_ARAB)" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null and !&quot;&quot;.equals(BRIEF_NAME_ENG)" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null and !&quot;&quot;.equals(LONG_NAME_ENG)" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null and !&quot;&quot;.equals(BRIEF_NAME_ARAB)" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null and !&quot;&quot;.equals(LONG_NAME_ARAB)" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOMMITTEEGROUP" >
+    update FMSCOMMITTEEGROUP
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        <choose >
+          <when test="BRIEF_NAME_ENG.equals(&quot;&quot;)" >
+            BRIEF_NAME_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        <choose >
+          <when test="LONG_NAME_ENG.equals(&quot;&quot;)" >
+            LONG_NAME_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_NAME_ENG = #{LONG_NAME_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        <choose >
+          <when test="BRIEF_NAME_ARAB.equals(&quot;&quot;)" >
+            BRIEF_NAME_ARAB = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        <choose >
+          <when test="LONG_NAME_ARAB.equals(&quot;&quot;)" >
+            LONG_NAME_ARAB = NULL ,
+          </when>
+          <otherwise >
+            LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFMSCOMMITTEEGROUP" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUPVO" >
+    <include refid="sql_updateFMSCOMMITTEEGROUP" />
+  </update>
+</mapper>

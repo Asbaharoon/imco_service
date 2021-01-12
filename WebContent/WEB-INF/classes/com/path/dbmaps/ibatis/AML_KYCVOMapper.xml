@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AML_KYC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AML_KYCVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="ENTITY_STATUS" property="ENTITY_STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, CIF_NO, DATE_UPDATED, ENTITY_STATUS, CREATED_BY, CREATED_DATE, 
+    APPROVED_BY, APPROVED_DATE, MODIFIED_BY, MODIFIED_DATE, DELETED_BY, DELETED_DATE
+  </sql>
+  <select id="selectAML_KYC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AML_KYCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from AML_KYC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteAML_KYC" parameterType="com.path.dbmaps.vo.AML_KYCVOKey" >
+    delete from AML_KYC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertAML_KYC" parameterType="com.path.dbmaps.vo.AML_KYCVO" >
+    insert into AML_KYC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="CIF_NO != null" >
+        CIF_NO,
+      </if>
+      DATE_UPDATED,
+      <if test="ENTITY_STATUS != null" >
+        ENTITY_STATUS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="CIF_NO != null" >
+        #{CIF_NO},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="ENTITY_STATUS != null" >
+        #{ENTITY_STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAML_KYC" >
+    update AML_KYC
+    <set >
+      <if test="CIF_NO != null" >
+        CIF_NO = #{CIF_NO},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="ENTITY_STATUS != null" >
+        ENTITY_STATUS = #{ENTITY_STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateAML_KYC" parameterType="com.path.dbmaps.vo.AML_KYCVO" >
+    <include refid="sql_updateAML_KYC" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

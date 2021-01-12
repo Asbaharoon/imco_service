@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCERTIFICATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCERTIFICATEVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CERTIFICATE_CODE" property="CERTIFICATE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="CIF_NAME" property="CIF_NAME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CERTIFICATE_TYPE" property="CERTIFICATE_TYPE" />
+    <result column="CURRENCY" property="CURRENCY" />
+    <result column="BALANCE_TYPE" property="BALANCE_TYPE" />
+    <result column="CLOSING_BALANCE_DATE" property="CLOSING_BALANCE_DATE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="DATE_REJECTED" property="DATE_REJECTED" />
+    <result column="PRINTED_BY" property="PRINTED_BY" />
+    <result column="DATE_PRINTED" property="DATE_PRINTED" />
+    <result column="CERTIFICATE_DATE" property="CERTIFICATE_DATE" />
+    <result column="FIELD1" property="FIELD1" />
+    <result column="FIELD2" property="FIELD2" />
+    <result column="FIELD3" property="FIELD3" />
+    <result column="FIELD4" property="FIELD4" />
+    <result column="FIELD5" property="FIELD5" />
+    <result column="FIELD6" property="FIELD6" />
+    <result column="FIELD7" property="FIELD7" />
+    <result column="FIELD8" property="FIELD8" />
+    <result column="FIELD9" property="FIELD9" />
+    <result column="FIELD10" property="FIELD10" />
+    <result column="ADD_FIELD1" property="ADD_FIELD1" />
+    <result column="ADD_FIELD2" property="ADD_FIELD2" />
+    <result column="ADD_FIELD3" property="ADD_FIELD3" />
+    <result column="ADD_FIELD4" property="ADD_FIELD4" />
+    <result column="DETAILS_FROM" property="DETAILS_FROM" />
+    <result column="PRINT_DETAILS" property="PRINT_DETAILS" />
+    <result column="TRX_NO" property="TRX_NO" />
+    <result column="CHRG_WAIVED" property="CHRG_WAIVED" />
+    <result column="SL_NO" property="SL_NO" />
+    <result column="LANGUAGE" property="LANGUAGE" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="NUMBER_OF_BILLS" property="NUMBER_OF_BILLS" />
+    <result column="TOTAL_AMOUNT_OF_BILLS" property="TOTAL_AMOUNT_OF_BILLS" />
+    <result column="TO_BE_CANCELLED_BY" property="TO_BE_CANCELLED_BY" />
+    <result column="TO_BE_CANCELLED_DATE" property="TO_BE_CANCELLED_DATE" />
+    <result column="CANCELLED_BY" property="CANCELLED_BY" />
+    <result column="CANCELLED_DATE" property="CANCELLED_DATE" />
+    <result column="REASON_CODE" property="REASON_CODE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CTSCERTIFICATEVO" extends="BaseResultMap" >
+    <result column="CERTIFICATE_IMAGE" property="CERTIFICATE_IMAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CERTIFICATE_CODE, COMP_CODE, CIF_NO, CIF_NAME, STATUS, CERTIFICATE_TYPE, 
+    CURRENCY, BALANCE_TYPE, CLOSING_BALANCE_DATE, CREATED_BY, DATE_CREATED, MODIFIED_BY, 
+    DATE_MODIFIED, DELETED_BY, DATE_DELETED, APPROVED_BY, DATE_APPROVED, REJECTED_BY, 
+    DATE_REJECTED, PRINTED_BY, DATE_PRINTED, CERTIFICATE_DATE, FIELD1, FIELD2, FIELD3, 
+    FIELD4, FIELD5, FIELD6, FIELD7, FIELD8, FIELD9, FIELD10, ADD_FIELD1, ADD_FIELD2, 
+    ADD_FIELD3, ADD_FIELD4, DETAILS_FROM, PRINT_DETAILS, TRX_NO, CHRG_WAIVED, SL_NO, 
+    LANGUAGE, ADDITIONAL_REFERENCE, DATE_UPDATED, NUMBER_OF_BILLS, TOTAL_AMOUNT_OF_BILLS,
+    TO_BE_CANCELLED_BY, TO_BE_CANCELLED_DATE,CANCELLED_BY,CANCELLED_DATE,REASON_CODE
+  </sql>
+  <sql id="Blob_Column_List" >
+    CERTIFICATE_IMAGE
+  </sql>
+  <select id="selectCTSCERTIFICATE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CTSCERTIFICATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CTSCERTIFICATE
+    where BRANCH = #{BRANCH}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCERTIFICATE" parameterType="com.path.dbmaps.vo.CTSCERTIFICATEVOKey" >
+    delete from CTSCERTIFICATE
+    where BRANCH = #{BRANCH}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCERTIFICATE" parameterType="com.path.dbmaps.vo.CTSCERTIFICATEVO" >
+    insert into CTSCERTIFICATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CERTIFICATE_CODE != null and CERTIFICATE_CODE != emptyBigDecimalValue" >
+        CERTIFICATE_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="CIF_NAME != null" >
+        CIF_NAME,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CERTIFICATE_TYPE != null and CERTIFICATE_TYPE != emptyBigDecimalValue" >
+        CERTIFICATE_TYPE,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="BALANCE_TYPE != null" >
+        BALANCE_TYPE,
+      </if>
+      <if test="CLOSING_BALANCE_DATE != null" >
+        CLOSING_BALANCE_DATE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY,
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED,
+      </if>
+      <if test="PRINTED_BY != null" >
+        PRINTED_BY,
+      </if>
+      <if test="DATE_PRINTED != null" >
+        DATE_PRINTED,
+      </if>
+      <if test="CERTIFICATE_DATE != null" >
+        CERTIFICATE_DATE,
+      </if>
+      <if test="FIELD1 != null" >
+        FIELD1,
+      </if>
+      <if test="FIELD2 != null" >
+        FIELD2,
+      </if>
+      <if test="FIELD3 != null" >
+        FIELD3,
+      </if>
+      <if test="FIELD4 != null" >
+        FIELD4,
+      </if>
+      <if test="FIELD5 != null" >
+        FIELD5,
+      </if>
+      <if test="FIELD6 != null" >
+        FIELD6,
+      </if>
+      <if test="FIELD7 != null" >
+        FIELD7,
+      </if>
+      <if test="FIELD8 != null" >
+        FIELD8,
+      </if>
+      <if test="FIELD9 != null" >
+        FIELD9,
+      </if>
+      <if test="FIELD10 != null" >
+        FIELD10,
+      </if>
+      <if test="ADD_FIELD1 != null" >
+        ADD_FIELD1,
+      </if>
+      <if test="ADD_FIELD2 != null" >
+        ADD_FIELD2,
+      </if>
+      <if test="ADD_FIELD3 != null" >
+        ADD_FIELD3,
+      </if>
+      <if test="ADD_FIELD4 != null" >
+        ADD_FIELD4,
+      </if>
+      <if test="DETAILS_FROM != null" >
+        DETAILS_FROM,
+      </if>
+      <if test="PRINT_DETAILS != null" >
+        PRINT_DETAILS,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="CHRG_WAIVED != null" >
+        CHRG_WAIVED,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="LANGUAGE != null" >
+        LANGUAGE,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      DATE_UPDATED,
+      <if test="CERTIFICATE_IMAGE != null" >
+        CERTIFICATE_IMAGE,
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        NUMBER_OF_BILLS,
+      </if>
+      <if test="TOTAL_AMOUNT_OF_BILLS != null and TOTAL_AMOUNT_OF_BILLS != emptyBigDecimalValue" >
+        TOTAL_AMOUNT_OF_BILLS,
+      </if>
+      <if test="TO_BE_CANCELLED_BY != null" >
+        TO_BE_CANCELLED_BY,
+      </if>
+        <if test="TO_BE_CANCELLED_DATE != null" >
+        TO_BE_CANCELLED_DATE,
+      </if>
+        <if test="CANCELLED_BY != null" >
+        CANCELLED_BY,
+      </if>
+        <if test="CANCELLED_DATE != null" >
+        CANCELLED_DATE,
+      </if>
+       <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        REASON_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CERTIFICATE_CODE != null and CERTIFICATE_CODE != emptyBigDecimalValue" >
+        #{CERTIFICATE_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="CIF_NAME != null" >
+        #{CIF_NAME},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CERTIFICATE_TYPE != null and CERTIFICATE_TYPE != emptyBigDecimalValue" >
+        #{CERTIFICATE_TYPE},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="BALANCE_TYPE != null" >
+        #{BALANCE_TYPE},
+      </if>
+      <if test="CLOSING_BALANCE_DATE != null" >
+        #{CLOSING_BALANCE_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="REJECTED_BY != null" >
+        #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        #{DATE_REJECTED},
+      </if>
+      <if test="PRINTED_BY != null" >
+        #{PRINTED_BY},
+      </if>
+      <if test="DATE_PRINTED != null" >
+        #{DATE_PRINTED},
+      </if>
+      <if test="CERTIFICATE_DATE != null" >
+        #{CERTIFICATE_DATE},
+      </if>
+      <if test="FIELD1 != null" >
+        #{FIELD1},
+      </if>
+      <if test="FIELD2 != null" >
+        #{FIELD2},
+      </if>
+      <if test="FIELD3 != null" >
+        #{FIELD3},
+      </if>
+      <if test="FIELD4 != null" >
+        #{FIELD4},
+      </if>
+      <if test="FIELD5 != null" >
+        #{FIELD5},
+      </if>
+      <if test="FIELD6 != null" >
+        #{FIELD6},
+      </if>
+      <if test="FIELD7 != null" >
+        #{FIELD7},
+      </if>
+      <if test="FIELD8 != null" >
+        #{FIELD8},
+      </if>
+      <if test="FIELD9 != null" >
+        #{FIELD9},
+      </if>
+      <if test="FIELD10 != null" >
+        #{FIELD10},
+      </if>
+      <if test="ADD_FIELD1 != null" >
+        #{ADD_FIELD1},
+      </if>
+      <if test="ADD_FIELD2 != null" >
+        #{ADD_FIELD2},
+      </if>
+      <if test="ADD_FIELD3 != null" >
+        #{ADD_FIELD3},
+      </if>
+      <if test="ADD_FIELD4 != null" >
+        #{ADD_FIELD4},
+      </if>
+      <if test="DETAILS_FROM != null" >
+        #{DETAILS_FROM},
+      </if>
+      <if test="PRINT_DETAILS != null" >
+        #{PRINT_DETAILS},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="CHRG_WAIVED != null" >
+        #{CHRG_WAIVED},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="LANGUAGE != null" >
+        #{LANGUAGE},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CERTIFICATE_IMAGE != null" >
+        #{CERTIFICATE_IMAGE},
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        #{NUMBER_OF_BILLS},
+      </if>
+      <if test="TOTAL_AMOUNT_OF_BILLS != null and TOTAL_AMOUNT_OF_BILLS != emptyBigDecimalValue" >
+        #{TOTAL_AMOUNT_OF_BILLS},
+      </if>
+      <if test="TO_BE_CANCELLED_BY != null" >
+        #{TO_BE_CANCELLED_BY},
+      </if>
+        <if test="TO_BE_CANCELLED_DATE != null" >
+        #{TO_BE_CANCELLED_DATE},
+      </if>
+        <if test="CANCELLED_BY != null" >
+        #{CANCELLED_BY},
+      </if>
+        <if test="CANCELLED_DATE != null" >
+        #{CANCELLED_DATE},
+      </if>
+       <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        #{REASON_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCERTIFICATE" >
+    update CTSCERTIFICATE
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_NAME != null" >
+        CIF_NAME = #{CIF_NAME},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CERTIFICATE_TYPE != null" >
+        <choose >
+          <when test="CERTIFICATE_TYPE == emptyBigDecimalValue" >
+            CERTIFICATE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CERTIFICATE_TYPE = #{CERTIFICATE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CURRENCY != null" >
+        <choose >
+          <when test="CURRENCY == emptyBigDecimalValue" >
+            CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY = #{CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BALANCE_TYPE != null" >
+        BALANCE_TYPE = #{BALANCE_TYPE},
+      </if>
+      <if test="CLOSING_BALANCE_DATE != null" >
+        CLOSING_BALANCE_DATE = #{CLOSING_BALANCE_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY = #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED = #{DATE_REJECTED},
+      </if>
+      <if test="PRINTED_BY != null" >
+        PRINTED_BY = #{PRINTED_BY},
+      </if>
+      <if test="DATE_PRINTED != null" >
+        DATE_PRINTED = #{DATE_PRINTED},
+      </if>
+      <if test="CERTIFICATE_DATE != null" >
+        CERTIFICATE_DATE = #{CERTIFICATE_DATE},
+      </if>
+      <if test="FIELD1 != null" >
+        FIELD1 = #{FIELD1},
+      </if>
+      <if test="FIELD2 != null" >
+        FIELD2 = #{FIELD2},
+      </if>
+      <if test="FIELD3 != null" >
+        FIELD3 = #{FIELD3},
+      </if>
+      <if test="FIELD4 != null" >
+        FIELD4 = #{FIELD4},
+      </if>
+      <if test="FIELD5 != null" >
+        FIELD5 = #{FIELD5},
+      </if>
+      <if test="FIELD6 != null" >
+        FIELD6 = #{FIELD6},
+      </if>
+      <if test="FIELD7 != null" >
+        FIELD7 = #{FIELD7},
+      </if>
+      <if test="FIELD8 != null" >
+        FIELD8 = #{FIELD8},
+      </if>
+      <if test="FIELD9 != null" >
+        FIELD9 = #{FIELD9},
+      </if>
+      <if test="FIELD10 != null" >
+        FIELD10 = #{FIELD10},
+      </if>
+      <if test="ADD_FIELD1 != null" >
+        ADD_FIELD1 = #{ADD_FIELD1},
+      </if>
+      <if test="ADD_FIELD2 != null" >
+        ADD_FIELD2 = #{ADD_FIELD2},
+      </if>
+      <if test="ADD_FIELD3 != null" >
+        ADD_FIELD3 = #{ADD_FIELD3},
+      </if>
+      <if test="ADD_FIELD4 != null" >
+        ADD_FIELD4 = #{ADD_FIELD4},
+      </if>
+      <if test="DETAILS_FROM != null" >
+        DETAILS_FROM = #{DETAILS_FROM},
+      </if>
+      <if test="PRINT_DETAILS != null" >
+        PRINT_DETAILS = #{PRINT_DETAILS},
+      </if>
+      <if test="TRX_NO != null" >
+        <choose >
+          <when test="TRX_NO == emptyBigDecimalValue" >
+            TRX_NO = NULL ,
+          </when>
+          <otherwise >
+            TRX_NO = #{TRX_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHRG_WAIVED != null" >
+        CHRG_WAIVED = #{CHRG_WAIVED},
+      </if>
+      <if test="SL_NO != null" >
+        <choose >
+          <when test="SL_NO == emptyBigDecimalValue" >
+            SL_NO = NULL ,
+          </when>
+          <otherwise >
+            SL_NO = #{SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LANGUAGE != null" >
+        LANGUAGE = #{LANGUAGE},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CERTIFICATE_IMAGE != null" >
+        CERTIFICATE_IMAGE = #{CERTIFICATE_IMAGE},
+      </if>
+      <if test="NUMBER_OF_BILLS != null" >
+        <choose >
+          <when test="NUMBER_OF_BILLS == emptyBigDecimalValue" >
+            NUMBER_OF_BILLS = NULL ,
+          </when>
+          <otherwise >
+            NUMBER_OF_BILLS = #{NUMBER_OF_BILLS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_AMOUNT_OF_BILLS != null" >
+        <choose >
+          <when test="TOTAL_AMOUNT_OF_BILLS == emptyBigDecimalValue" >
+            TOTAL_AMOUNT_OF_BILLS = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_AMOUNT_OF_BILLS = #{TOTAL_AMOUNT_OF_BILLS},
+          </otherwise>
+        </choose>
+       </if>
+      <if test="TO_BE_CANCELLED_BY != null" >
+        TO_BE_CANCELLED_BY = #{TO_BE_CANCELLED_BY},
+      </if>
+        <if test="TO_BE_CANCELLED_DATE != null" >
+        TO_BE_CANCELLED_DATE = #{TO_BE_CANCELLED_DATE},
+      </if>
+       <if test="CANCELLED_BY != null" >
+        CANCELLED_BY = #{CANCELLED_BY},
+      </if>
+       <if test="CANCELLED_DATE != null" >
+        CANCELLED_DATE  = #{CANCELLED_DATE },
+      </if>
+     <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        REASON_CODE = #{REASON_CODE},
+     </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCERTIFICATE" parameterType="com.path.dbmaps.vo.CTSCERTIFICATEVO" >
+    <include refid="sql_updateCTSCERTIFICATE" />
+     <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

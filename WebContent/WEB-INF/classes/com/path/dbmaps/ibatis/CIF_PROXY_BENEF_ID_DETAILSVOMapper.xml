@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_PROXY_BENEF_ID_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_PROXY_BENEF_ID_DETAILSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SUB_LINE_NO" property="SUB_LINE_NO" />
+    <id column="ID_TYPE_CODE" property="ID_TYPE_CODE" />
+    <result column="ID_NO" property="ID_NO" />
+    <result column="COUNTRY_OF_ISSUANCE" property="COUNTRY_OF_ISSUANCE" />
+    <result column="ID_EXPIRY_DATE" property="ID_EXPIRY_DATE" />
+    <result column="ID_ISSUANCE_DATE" property="ID_ISSUANCE_DATE" />
+    <result column="NICKNAME" property="NICKNAME" />
+  </resultMap>
+  
+ 
+  
+  
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, SUB_LINE_NO, ID_TYPE_CODE, ID_NO , COUNTRY_OF_ISSUANCE, ID_EXPIRY_DATE, ID_ISSUANCE_DATE, NICKNAME
+  </sql>
+  <select id="selectCIF_PROXY_BENEF_ID_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_PROXY_BENEF_ID_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_PROXY_BENEF_ID_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      AND LINE_NO = #{LINE_NO}
+      AND SUB_LINE_NO = #{SUB_LINE_NO}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+  </select>
+  <delete id="deleteCIF_PROXY_BENEF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_PROXY_BENEF_ID_DETAILSVOKey" >
+    delete from CIF_PROXY_BENEF_ID_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+      AND LINE_NO = #{LINE_NO}
+      AND SUB_LINE_NO = #{SUB_LINE_NO}
+  </delete>
+  <insert id="insertCIF_PROXY_BENEF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_PROXY_BENEF_ID_DETAILSVO" >
+    insert into CIF_PROXY_BENEF_ID_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SUB_LINE_NO != null and SUB_LINE_NO != emptyBigDecimalValue" >
+        SUB_LINE_NO,
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        ID_TYPE_CODE,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        COUNTRY_OF_ISSUANCE,
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        ID_EXPIRY_DATE,
+      </if>
+      <if test="ID_ISSUANCE_DATE != null" >
+        ID_ISSUANCE_DATE,
+      </if>
+      <if test="NICKNAME != null" >
+        NICKNAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SUB_LINE_NO != null and SUB_LINE_NO != emptyBigDecimalValue" >
+        #{SUB_LINE_NO},
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        #{ID_TYPE_CODE},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+       <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{COUNTRY_OF_ISSUANCE},
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        #{ID_EXPIRY_DATE},
+      </if>
+      <if test="ID_ISSUANCE_DATE != null" >
+        #{ID_ISSUANCE_DATE},
+      </if>
+      <if test="NICKNAME != null" >
+        #{NICKNAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_PROXY_BENEF_ID_DETAILS" >
+    update CIF_PROXY_BENEF_ID_DETAILS
+    <set >
+      <if test="ID_NO != null" >
+        ID_NO = #{ID_NO},
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_OF_ISSUANCE = #{COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        ID_EXPIRY_DATE = #{ID_EXPIRY_DATE},
+      </if>
+      <if test="ID_ISSUANCE_DATE != null" >
+        ID_ISSUANCE_DATE = #{ID_ISSUANCE_DATE},
+      </if>
+      <if test="NICKNAME != null" >
+        NICKNAME = #{NICKNAME},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+      AND LINE_NO = #{LINE_NO}
+      AND SUB_LINE_NO = #{SUB_LINE_NO}
+  </sql>
+  <update id="updateCIF_PROXY_BENEF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_PROXY_BENEF_ID_DETAILSVO" >
+    <include refid="sql_updateCIF_PROXY_BENEF_ID_DETAILS" />
+  </update>
+</mapper>

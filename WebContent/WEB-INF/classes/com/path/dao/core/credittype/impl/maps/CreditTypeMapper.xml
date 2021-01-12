@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="creditTypeMapper">
+
+ <sql id="creditTypeListCommon" >
+	<![CDATA[
+		SELECT
+		CTSCREDIT_TYPE.CODE   	,        
+		CTSCREDIT_TYPE.DESC_ENG	
+		FROM  CTSCREDIT_TYPE 
+		WHERE	 CTSCREDIT_TYPE.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ 
+ <resultMap id="creditTypeListMap" type="creditTypeVO">
+	<result property="CODE" column="CODE" />
+	<result property="DESC_ENG" column="DESC_ENG" />
+ </resultMap>
+ 
+ <select id="creditTypeList" resultMap="creditTypeListMap" parameterType="creditTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="creditTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="creditTypeListCount" resultType="int" parameterType="creditTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="creditTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <sql id="returnCreditType">
+			AND	CTSCREDIT_TYPE.CODE = #{code}
+ </sql>
+ 
+ <select id="returnCreditTypeById" resultMap="creditTypeListMap" parameterType="creditTypeSC" >
+	<include refid="creditTypeListCommon"/>
+	<include refid="returnCreditType"/>
+ </select>
+
+</mapper>

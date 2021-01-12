@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCLASS_TENURE_BY_ECO_SECTOR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCLASS_TENURE_BY_ECO_SECTORVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="ECO_SECTOR" property="ECO_SECTOR" />
+    <result column="SUB_ECO_SECTOR" property="SUB_ECO_SECTOR" />
+    <result column="MAX_PERIODICITY_NBR" property="MAX_PERIODICITY_NBR" />
+    <result column="MAX_PERIODICITY_TYPE" property="MAX_PERIODICITY_TYPE" />
+    <result column="CHECK_DEAL_PERIOD_YN" property="CHECK_DEAL_PERIOD_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NBR, ECO_SECTOR, SUB_ECO_SECTOR, MAX_PERIODICITY_NBR, MAX_PERIODICITY_TYPE, 
+    CHECK_DEAL_PERIOD_YN
+  </sql>
+  <select id="selectTRSCLASS_TENURE_BY_ECO_SECTOR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCLASS_TENURE_BY_ECO_SECTORVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCLASS_TENURE_BY_ECO_SECTOR
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteTRSCLASS_TENURE_BY_ECO_SECTOR" parameterType="com.path.dbmaps.vo.TRSCLASS_TENURE_BY_ECO_SECTORVOKey" >
+    delete from TRSCLASS_TENURE_BY_ECO_SECTOR
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertTRSCLASS_TENURE_BY_ECO_SECTOR" parameterType="com.path.dbmaps.vo.TRSCLASS_TENURE_BY_ECO_SECTORVO" >
+    insert into TRSCLASS_TENURE_BY_ECO_SECTOR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="ECO_SECTOR != null and ECO_SECTOR != emptyBigDecimalValue" >
+        ECO_SECTOR,
+      </if>
+      <if test="SUB_ECO_SECTOR != null and SUB_ECO_SECTOR != emptyBigDecimalValue" >
+        SUB_ECO_SECTOR,
+      </if>
+      <if test="MAX_PERIODICITY_NBR != null and MAX_PERIODICITY_NBR != emptyBigDecimalValue" >
+        MAX_PERIODICITY_NBR,
+      </if>
+      <if test="MAX_PERIODICITY_TYPE != null" >
+        MAX_PERIODICITY_TYPE,
+      </if>
+      <if test="CHECK_DEAL_PERIOD_YN != null" >
+        CHECK_DEAL_PERIOD_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="ECO_SECTOR != null and ECO_SECTOR != emptyBigDecimalValue" >
+        #{ECO_SECTOR},
+      </if>
+      <if test="SUB_ECO_SECTOR != null and SUB_ECO_SECTOR != emptyBigDecimalValue" >
+        #{SUB_ECO_SECTOR},
+      </if>
+      <if test="MAX_PERIODICITY_NBR != null and MAX_PERIODICITY_NBR != emptyBigDecimalValue" >
+        #{MAX_PERIODICITY_NBR},
+      </if>
+      <if test="MAX_PERIODICITY_TYPE != null" >
+        #{MAX_PERIODICITY_TYPE},
+      </if>
+      <if test="CHECK_DEAL_PERIOD_YN != null" >
+        #{CHECK_DEAL_PERIOD_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCLASS_TENURE_BY_ECO_SECTOR" >
+    update TRSCLASS_TENURE_BY_ECO_SECTOR
+    <set >
+      <if test="ECO_SECTOR != null" >
+        <choose >
+          <when test="ECO_SECTOR == emptyBigDecimalValue" >
+            ECO_SECTOR = NULL ,
+          </when>
+          <otherwise >
+            ECO_SECTOR = #{ECO_SECTOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUB_ECO_SECTOR != null" >
+        <choose >
+          <when test="SUB_ECO_SECTOR == emptyBigDecimalValue" >
+            SUB_ECO_SECTOR = NULL ,
+          </when>
+          <otherwise >
+            SUB_ECO_SECTOR = #{SUB_ECO_SECTOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_PERIODICITY_NBR != null" >
+        <choose >
+          <when test="MAX_PERIODICITY_NBR == emptyBigDecimalValue" >
+            MAX_PERIODICITY_NBR = NULL ,
+          </when>
+          <otherwise >
+            MAX_PERIODICITY_NBR = #{MAX_PERIODICITY_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_PERIODICITY_TYPE != null" >
+        MAX_PERIODICITY_TYPE = #{MAX_PERIODICITY_TYPE},
+      </if>
+      <if test="CHECK_DEAL_PERIOD_YN != null" >
+        CHECK_DEAL_PERIOD_YN = #{CHECK_DEAL_PERIOD_YN},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateTRSCLASS_TENURE_BY_ECO_SECTOR" parameterType="com.path.dbmaps.vo.TRSCLASS_TENURE_BY_ECO_SECTORVO" >
+    <include refid="sql_updateTRSCLASS_TENURE_BY_ECO_SECTOR" />
+  </update>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCOUNTER_CLASS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCOUNTER_CLASSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CLASS" property="CLASS" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TYPE" property="TYPE" />
+    <id column="YEAR" property="YEAR" />
+    <result column="LAST_NUMBER" property="LAST_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CLASS, COMP_CODE, TYPE, YEAR, LAST_NUMBER
+  </sql>
+  <select id="selectTRSCOUNTER_CLASS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCOUNTER_CLASSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCOUNTER_CLASS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+      and YEAR = #{YEAR}
+  </select>
+  <delete id="deleteTRSCOUNTER_CLASS" parameterType="com.path.dbmaps.vo.TRSCOUNTER_CLASSVOKey" >
+    delete from TRSCOUNTER_CLASS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+      and YEAR = #{YEAR}
+  </delete>
+  <insert id="insertTRSCOUNTER_CLASS" parameterType="com.path.dbmaps.vo.TRSCOUNTER_CLASSVO" >
+    insert into TRSCOUNTER_CLASS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        CLASS,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        YEAR,
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        LAST_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        #{CLASS},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        #{YEAR},
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        #{LAST_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCOUNTER_CLASS" >
+    update TRSCOUNTER_CLASS
+    <set >
+      <if test="LAST_NUMBER != null" >
+        <choose >
+          <when test="LAST_NUMBER == emptyBigDecimalValue" >
+            LAST_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LAST_NUMBER = #{LAST_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CLASS = #{CLASS}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+      and YEAR = #{YEAR}
+  </sql>
+  <update id="updateTRSCOUNTER_CLASS" parameterType="com.path.dbmaps.vo.TRSCOUNTER_CLASSVO" >
+    <include refid="sql_updateTRSCOUNTER_CLASS" />
+  </update>
+</mapper>

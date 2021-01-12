@@ -1,0 +1,1583 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="coreCommonMapper">
+
+	<select id="select_closedBalCount" parameterType="trxMgntSC"
+		resultType="int">
+		SELECT COUNT(1)
+		FROM CTSTELLER_CASH_BALANCE
+		WHERE
+		CTSTELLER_CASH_BALANCE.COMP_CODE = #{compCode} AND
+		CTSTELLER_CASH_BALANCE.BRANCH_CODE = #{branchCode} AND
+		CTSTELLER_CASH_BALANCE.TRSFR_TYPE = 'TV' AND
+		<choose>
+			<when test="isSybase == 1">
+				CONVERT(DATE,CTSTELLER_CASH_BALANCE.TRADE_DATE,103)=#{runningDate}
+			</when>
+			<otherwise> 
+				TRUNC(CTSTELLER_CASH_BALANCE.TRADE_DATE)= #{runningDate}
+			</otherwise>
+		</choose> AND
+		<choose>
+			<when test='reference == "L0TT"'>
+				CTSTELLER_CASH_BALANCE.STATUS 	NOT IN ('D','R','O','J','M','B') AND
+				CTSTELLER_CASH_BALANCE.TELLER_CODE IN (#{tellerCode},#{toTellerCode})
+			</when>
+			<otherwise>
+				CTSTELLER_CASH_BALANCE.STATUS 	NOT IN ('D','R','A','O','J','M','B') AND
+				<choose>
+					<when test="reference != null">
+						CTSTELLER_CASH_BALANCE.TELLER_CODE IN (#{tellerCode},#{toTellerCode})
+					</when>
+					<otherwise>
+						CTSTELLER_CASH_BALANCE.TELLER_CODE = #{tellerCode}
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="returnReasonDropDownData" parameterType="reasonSC"
+		resultType="com.path.dbmaps.vo.CTSREASONSVO">
+		SELECT
+		CTSREASONS.CODE,
+		(
+       CASE
+           WHEN #{langCode} = 'EN'
+           THEN CTSREASONS.BRIEF_NAME_ENG
+           WHEN #{langCode} = 'AR'
+                AND  
+			       <choose>
+						<when test="isSybase == 1">
+							RTRIM(LTRIM(CTSREASONS.BRIEF_NAME_ARAB)) IS NOT NULL
+						</when>
+						<otherwise> 
+							TRIM(CTSREASONS.BRIEF_NAME_ARAB) IS NOT NULL
+						</otherwise>
+					</choose>
+          THEN CTSREASONS.BRIEF_NAME_ARAB
+          ELSE CTSREASONS.BRIEF_NAME_ENG
+        END
+		) BRIEF_NAME_ENG
+		,
+		CTSREASONS.BRIEF_NAME_ARAB
+		FROM CTSREASONS
+		WHERE (CTSREASONS.COMP_CODE = #{compCode})
+		<if test="reason_type !=null">
+			<choose>
+			   <when test='"0".equals(reason_type)'>
+			      AND (CTSREASONS.REASON_TYPE IN ('1','4','7','8'))  
+			   </when>
+			   <otherwise>
+			      AND (CTSREASONS.REASON_TYPE = #{reason_type})
+			   </otherwise>
+			</choose>
+		</if>
+		<if test="code != null" >
+			AND CTSREASONS.CODE 	 = #{code} 
+		</if>
+		
+		
+		AND 
+				  CTSREASONS.CODE IN ( (SELECT CTSREASONS_TRX.CODE FROM
+                    CTSREASONS_TRX WHERE CTSREASONS_TRX.COMP_CODE=CTSREASONS.COMP_CODE
+                     AND coalesce(CTSREASONS_TRX.TRX_CODE,0) = #{trxType,jdbcType=NUMERIC}  ))   
+                     
+				    
+         OR CTSREASONS.CODE IN (CASE WHEN(SELECT COUNT (1) FROM
+        CTSREASONS_TRX WHERE CTSREASONS_TRX.COMP_CODE=CTSREASONS.COMP_CODE
+          AND coalesce(CTSREASONS_TRX.TRX_CODE,0) = #{trxType,jdbcType=NUMERIC} 
+         ) =0 THEN CTSREASONS.CODE END  )
+		
+	</select>
+
+	<!--resultMap type="propertiesByTrxTypeCO" id="propertiesByTrxTypeMap">
+		<result property="ctstrxtypeDETVO.DISPLAY_LABEL" column="DISPLAY_LABEL" />
+		<result property="ctstrxtypeDETVO.MANDATORY" column="MANDATORY" />
+		<result property="ctstrxtypeSTDVO.ELEMENT_NAME" column="ELEMENT_NAME" />
+		<result property="ctstrxtypeSTDVO.VO_PROPERTY_NAME" column="VO_PROPERTY_NAME" />
+		<result property="ctstrxtypeSTDVO.VO_CO_REFERENCE" column="VO_CO_REFERENCE" />
+		<result property="ctstrxtypeDETVO.FIELD_NAME" column="FIELD_NAME" />
+	</resultMap-->
+
+	<!-- select id="returnpropertiesByTrxType" parameterType="propertiesByTrxTypeSC"
+		resultMap="propertiesByTrxTypeMap">
+		SELECT
+		CTSTRXTYPE_DET.DISPLAY_LABEL,
+		CTSTRXTYPE_DET.MANDATORY,
+		TD.ELEMENT_NAME,
+		TD.VO_PROPERTY_NAME,
+		TD.VO_CO_REFERENCE,
+		CTSTRXTYPE_DET.FIELD_NAME
+		FROM
+		CTSTRXTYPE_DET, CTSTRXTYPE_STD, FIELD_TECH_DETAILS TD
+		WHERE
+		CTSTRXTYPE_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND CTSTRXTYPE_DET.CODE = #{trxType,jdbcType=NUMERIC}
+		AND CTSTRXTYPE_DET.LINE_NBR = CTSTRXTYPE_STD.LINE_NBR
+		AND TD.ENTITY_TYPE = 'CTSTRS'
+	   	AND TD.PB_FIELD_NAME = s.FIELD_NAME_DB
+		AND TD.VO_PROPERTY_NAME IS NOT NULL
+		AND
+		<choose>
+			<when test='validateProp.equals("P")'>
+				CTSTRXTYPE_DET.PROTECTED = 'Y'
+			</when>
+			<when test='validateProp.equals("M")'>
+				CTSTRXTYPE_DET.MANDATORY = 'Y'
+				AND TD.VO_CO_REFERENCE != 'trxMgntCO'
+			</when>
+			<when test='validateProp.equals("F")'>
+				CTSTRXTYPE_DET.FORBID_ARAB_CHAR = 'Y' 
+			</when>
+			<when test='validateProp.equals("A")'> <![CDATA[
+				CTSTRXTYPE_DET.LINE_NBR < 5 ]]> 
+			</when>
+			<when test='validateProp.equals("H")'>
+				CTSTRXTYPE_DET.HIDE_FIELD = 'Y'
+			</when>
+			<when test='validateProp.equals("N")'>
+				CTSTRXTYPE_DET.HIDE_FIELD = 'N'
+			</when>
+			<when test='validateProp.equals("B")'>
+				CTSTRXTYPE_DET.BLOCK_MODIFY= 'Y'
+			</when>
+		</choose>
+	</select-->
+	
+	
+  <select id="returnTrxType" resultType="trxTypeVO" parameterType="trxTypeVO" >
+	SELECT COMP_CODE,
+	       CODE,
+	       SHORT_DESC_ENG,
+	       SHORT_DESC_ARAB,
+	       TYPE,
+	       (CASE WHEN MULTI_BRANCH IS NULL THEN '0' ELSE MULTI_BRANCH END) MULTI_BRANCH,
+	       MODIF_VDATE,
+	       SHOW_EXCHRATE,
+	       MODIF_EXCHRATE,
+	       POST_DATED_VDATE,
+	       BACK_DATED_VDATE,
+	       SHOW_FEES,
+	       SAME_ACC_CY_TRS_CY,
+	       ALLOW_DEP_FOR_FIX_ACC,
+	       ALLOW_WITHD_FOR_FIX_ACC,
+	       CONF_ARAB_REP_ID,
+	       CONF_ENG_REP_ID,
+	       (CASE WHEN ASK_CONF IS NULL THEN '0' ELSE ASK_CONF END) ASK_CONF,
+	       (CASE WHEN CONF_LANGUAGE IS NULL THEN 'L' ELSE CONF_LANGUAGE END) CONF_LANGUAGE,
+	       VDATE_TYPE,
+	       CHECK_SIGNATURE,
+	       SIGNATURE_MANDATORY,
+	       HC_VDATE_BASED_ON_CY,
+	       HC_VDATE_DAYS_NO,
+	       CC_SHOW_CLEARINGHOUSE,
+	       CC_VDATE_BASED_ON,
+	       CC_VDATE_DAYS_NO,
+	       CC_MAINTAIN_BATCH,
+	       CC_MAINTAIN_SERIAL_NO,
+	       RQST_CY_NOMINATION_DET,
+	       SHOW_CTRL_ACC,
+	       CTRL_ACC_DESC_ENG,
+	       CTRL_ACC_DESC_ARAB,
+	       TRSFR_TYPE,
+	       CHECK_DATA_SYS2,
+	       OVERRIDE_USR_LEVEL,
+	       EXPIRY_PERIOD,
+	       MODIF_CTRL_ACC,
+	       CHQ_RELATED,
+	       DEDUCT_CHRG_FROM_TRX,
+	       ALLOW_MODIFY_CHRG,
+	       ALLOW_CLEARING_CHRG,
+	       STANDING_ORDER,
+	       AUTHORIZ_LEVEL,
+	       (CASE WHEN NOSTRO_MVT IS NULL THEN '0' ELSE NOSTRO_MVT END) NOSTRO_MVT,
+	       REFERENCE,
+	       PROCEED_ON_INSUFF_FUND,
+	       (CASE WHEN PRINT_FORM IS NULL THEN 'P' ELSE PRINT_FORM END) PRINT_FORM,
+	       (CASE WHEN CR_DR_FOREX IS NULL THEN 'D' ELSE CR_DR_FOREX END) CR_DR_FOREX,
+	       (CASE WHEN PROCEED_CIF_BLACKLISTED IS NULL THEN '0' ELSE PROCEED_CIF_BLACKLISTED END) PROCEED_CIF_BLACKLISTED,
+	       (CASE WHEN AUTOMATIC_BATCH IS NULL THEN '0' ELSE AUTOMATIC_BATCH END) AUTOMATIC_BATCH,
+	       (CASE WHEN MONEY_LAUNDRING IS NULL THEN '0' ELSE MONEY_LAUNDRING END) MONEY_LAUNDRING,
+	       (CASE WHEN ML_WARNING_FLAG IS NULL THEN '0' ELSE  ML_WARNING_FLAG END) ML_WARNING_FLAG,
+	       (CASE WHEN ML_ALERT_FLAG IS NULL THEN '0' ELSE ML_ALERT_FLAG END) ML_ALERT_FLAG,
+	       (CASE WHEN ML_ALERT_USER IS NULL THEN '0' ELSE ML_ALERT_USER END) ML_ALERT_USER,
+	       (CASE WHEN ML_DEPOSITOR_FLAG IS NULL THEN '0' ELSE ML_DEPOSITOR_FLAG END) ML_DEPOSITOR_FLAG,
+	       (CASE WHEN JV_REF IS NULL THEN '' ELSE JV_REF END) JV_REF,
+	       (CASE WHEN JV_TYPE IS NULL THEN 0 ELSE JV_TYPE END) JV_TYPE,
+	       TR_CODE,
+	       (CASE WHEN DISPLAY_PHOTO IS NULL THEN '0'ELSE DISPLAY_PHOTO END) DISPLAY_PHOTO,
+	       (CASE WHEN SWIFT_CODE IS NULL THEN '' ELSE SWIFT_CODE END) SWIFT_CODE,
+	       (CASE WHEN AUTO_APPROVE_WITHIN_LIMIT IS NULL THEN '0' ELSE AUTO_APPROVE_WITHIN_LIMIT END) AUTO_APPROVE_WITHIN_LIMIT,
+	       (CASE WHEN LINKED IS NULL THEN '0' ELSE LINKED END) LINKED,
+	       (CASE  WHEN MEMO_CODE IS NULL THEN 0 ELSE MEMO_CODE END) MEMO_CODE,
+	       (CASE WHEN TEMPLATE_CODE IS NULL THEN 0 ELSE TEMPLATE_CODE END) TEMPLATE_CODE,
+	       SO_TYPE,
+	       (CASE WHEN MICR_FLAG IS NULL THEN '0' ELSE MICR_FLAG END) MICR_FLAG,
+	       MICR_CODELINE,
+	       (CASE WHEN SHOW_JVREF_IN_TRS IS NULL THEN '0' ELSE SHOW_JVREF_IN_TRS END) SHOW_JVREF_IN_TRS,
+	       (CASE WHEN CHQ_REPLACE_DATE IS NULL THEN '0' ELSE CHQ_REPLACE_DATE END) CHQ_REPLACE_DATE,
+	       (CASE WHEN BS_CONTRA_FLAG IS NULL THEN 'B' ELSE BS_CONTRA_FLAG END) BS_CONTRA_FLAG,
+	       (CASE WHEN SEND_SWIFT IS NULL THEN '0' ELSE SEND_SWIFT END) SEND_SWIFT,
+	       ENG_ARG_ID,
+	       ARAB_ARG_ID,
+	       (CASE WHEN REV_CHARGES_ON_VOIDING IS NULL THEN '0' ELSE REV_CHARGES_ON_VOIDING END) REV_CHARGES_ON_VOIDING,
+	       SO_PERIOD_DAY,
+	       SO_PERIODICITY,
+	       SO_PERIOD_TYPE,
+	       MULTI_TRX,
+	       DEFAULT_TRSCY,
+	       BLOCK_ACTIVE_WITH,
+	       ALLOW_CHANGE_CLEARING_ACC,
+	       LINKTOOTHER_TRX,
+	       LINKTOOTHER_TRX_TYPE,
+	       (CASE WHEN LINKTOOTHER_TRX_PROCEED IS NULL THEN '0' ELSE LINKTOOTHER_TRX_PROCEED END) LINKTOOTHER_TRX_PROCEED,
+	       REMITT_SHOW_FR_NUM,
+	       REMITT_NUMBER_NAME,
+	       REMITT_SHOW_TO_NUM,
+	       REMITT_TO_NUMBER_NAME,
+	       (CASE WHEN REMITT_TYPE IS NULL THEN 0 ELSE REMITT_TYPE END) REMITT_TYPE,
+	       (CASE WHEN BACKDATED_CHQ IS NULL THEN '0' ELSE BACKDATED_CHQ END) BACKDATED_CHQ,
+	       BACKDATED_PERIOD,
+	       BREAK_FMA,
+	       DEFAULT_DR_ACC_TELLER,
+	       ENABLE_SERIAL_MICR,
+	       BENEF_BANK_MAND,
+	       BENEF_BIC_MAND,
+	       SEND_TELEX,
+	       NO_ENTRIES_ON_VOID,
+	       BENEF_BANK_SHOW,
+	       BENEF_BIC_SHOW,
+	       VAL_SIGN_SAVE,
+	       BENEF_ADDRESSES_SHOW,
+	       CHARGES_ON_VOIDING,
+	       SHOW_VOID_BUTTON,
+	       (CASE WHEN DEF_CHARGE_IN_TRS IS NULL THEN '0' ELSE DEF_CHARGE_IN_TRS END) DEF_CHARGE_IN_TRS,
+	       PROTECT_TRS_AMT,
+	       PAGES_IN_CHRG,
+	       PROCESS_WINDOW,
+	       DEP_ON_OPN,
+	       PROTECT_BENEF_BANK,
+	       (CASE WHEN DEFAULT_ACC_BAL_IN_AMT IS NULL THEN '0' ELSE DEFAULT_ACC_BAL_IN_AMT END) DEFAULT_ACC_BAL_IN_AMT,
+	       FULL_BREAK_DEPOSIT,
+	       TRX_BRANCH,
+	       TRX_BR,
+	       TRX_GL,
+	       TRX_CIF,
+	       TRX_SL,
+	       DEP_ON_MAT,
+	       SHOW_CARD_NO,
+	       HOF_TRXTYPE,
+	       HOF_REASON,
+	       (CASE WHEN DO_HOF IS NULL THEN '0' ELSE DO_HOF END) DO_HOF,
+	       (CASE WHEN OUTSTANDING_PROFIT IS NULL THEN '0' ELSE OUTSTANDING_PROFIT END) OUTSTANDING_PROFIT,
+	       (CASE WHEN MULTI_BENEF IS NULL THEN '0' ELSE MULTI_BENEF END) MULTI_BENEF,
+	       (CASE WHEN APPLY_ADD_CHARGES IS NULL THEN '0' ELSE APPLY_ADD_CHARGES END) APPLY_ADD_CHARGES,
+	       (CASE WHEN SWIFT_CHARGE IS NULL THEN 0 ELSE SWIFT_CHARGE END) SWIFT_CHARGE,
+	       SO_SUSPEND_SCHEMA,
+	       SO_REINSTATE_SCHEMA,
+	       SO_AMEND_SCHEMA,
+	       SO_SETUP_SCHEMA,
+	       (CASE WHEN UTILITY_PAYMENT IS NULL THEN '0' ELSE UTILITY_PAYMENT END) UTILITY_PAYMENT,
+	       SHOW_TRX_PURPOSE,
+	       ENABLE_MCR,
+	       BREAK_CLOSE_ACC,
+	       CHRG_WAVE_RATE,
+	       CHECK_CLOSING_TIME,
+	       SO_PROCESS_TYPE,
+	       NOT_USE_IN_TRX,
+	       NOT_PROC_ON_HOLD_FUND,
+	       DEFINE_AMOUNT_RANGE,
+	       FROM_AMOUNT,
+	       TO_AMOUNT,
+	       (CASE WHEN SHOW_CIF_BLACKLISTED IS NULL THEN '0' ELSE SHOW_CIF_BLACKLISTED END) SHOW_CIF_BLACKLISTED,
+	       OBC_TRX,
+	       FC_CHQ_PURCHASE,
+	       ALLOW_LINKTOOTHER_TRX_BR,
+	       (CASE WHEN CORR_BANK_NOT_MAND IS NULL THEN '0' ELSE CORR_BANK_NOT_MAND END) CORR_BANK_NOT_MAND,
+	       OTHER_INFO_LABEL1_ARAB,
+	       OTHER_INFO_LABEL1,
+	       OTHER_INFO_LABEL2_ARAB,
+	       OTHER_INFO_LABEL2,
+	       OTHER_INFO_LABEL3_ARAB,
+	       OTHER_INFO_LABEL3,
+	       SHOW_INTERNATIONAL_CHQ_NO,
+	       SHOW_ALL_BANK_CIF,
+	       BENEF_NAME_MAND,
+	       SO_CHRG_DEDUCT,
+	       SO_COMMERCIAL,
+	       (CASE WHEN BLOCK_MODIFY IS NULL THEN '0' ELSE BLOCK_MODIFY END) BLOCK_MODIFY,
+	       CHQ_ACC_NUM_MAND,
+	       (CASE WHEN ASK_DR_CR IS NULL THEN '0' ELSE ASK_DR_CR END) ASK_DR_CR,
+	       CONF_ARAB_REP_CR_ID,
+	       CONF_ENG_REP_CR_ID,
+	       ENG_ARG_CR_ID,
+	       ARAB_ARG_CR_ID,
+	       USER_ACC_LIMIT,
+	       HIDE_INTER_DET,
+	       HIDE_CORRESP_DET,
+	       ALLOW_REVERSE_TODAY_TRX_ONLY,
+	       NBR_COPIES,
+	       ADDITIONAL_INFO,
+	       ADDITIONAL_INFO_A,
+	       NBR_COPIES_CR,
+	       ADDITIONAL_INFO_CR,
+	       ADDITIONAL_INFO_A_CR,
+	       VOID_ON_INSUFF_BAL,
+	       (CASE WHEN PROCEED_DRAWN_CHECKS IS NULL THEN '0' ELSE PROCEED_DRAWN_CHECKS END) PROCEED_DRAWN_CHECKS,
+	       BREAK_DEP_MEMO,
+	       HOF_DAYS ,
+	       SO_PERC,
+	       SO_PERC_MIN,
+	       SO_PERC_MAX,
+	       (CASE WHEN SO_PERIOD_INTERVAL IS NULL THEN 1 ELSE SO_PERIOD_INTERVAL END) SO_PERIOD_INTERVAL,
+	       (CASE WHEN SO_ATTEMPT_NUMBER IS NULL THEN 0 ELSE SO_ATTEMPT_NUMBER END) SO_ATTEMPT_NUMBER,
+	       (CASE WHEN SO_MODIFY_TO_DAY IS NULL THEN '1' ELSE SO_MODIFY_TO_DAY END) SO_MODIFY_TO_DAY,
+	       (CASE WHEN SO_CHARGE_BY_ATTEMPT IS NULL THEN '0' ELSE SO_CHARGE_BY_ATTEMPT END) SO_CHARGE_BY_ATTEMPT,
+	       (CASE WHEN SO_CLOSING_NUMBER IS NULL THEN 0 ELSE SO_CLOSING_NUMBER END) SO_CLOSING_NUMBER,
+	       HOF_SO,
+	       TRX_PRIORITY,
+	       (CASE WHEN DEDUCT_CHRG_FROM_AMT IS NULL THEN '0' ELSE DEDUCT_CHRG_FROM_AMT END) DEDUCT_CHRG_FROM_AMT,
+	       SHOW_ALLOW_CHANGE_RATE,
+	       EXCLUDE_PCS_DISTRIBUTION,
+	       EXCLUDE_MATURED_PERIOD_PCS,
+	       CUSTOM_RATE,
+	       CUSTOM_RATE_CODE,
+	       ENTRIES_TEMPLATE,
+	       PERIODICITY_TYPE,
+	       RENEW_COMM,
+	       PERIOD,
+	       (CASE WHEN TRSFR_METHOD IS NULL THEN 1 ELSE TRSFR_METHOD END) TRSFR_METHOD,
+	       (CASE WHEN CREATE_ACTIVE_SO IS NULL THEN '0' ELSE CREATE_ACTIVE_SO END) CREATE_ACTIVE_SO,
+	       SIG_SCHEMA_VAL_DATE,
+	       PROCEED_INEXIST_REC,
+	       PREDEFINED_REASONS,
+	       (CASE WHEN SETTL_OVER_CNTER IS NULL THEN '0'ELSE SETTL_OVER_CNTER END) SETTL_OVER_CNTER,
+	       (CASE WHEN TRX_PURPOSE IS NULL THEN '' ELSE TRX_PURPOSE END) TRX_PURPOSE,
+	       (CASE WHEN LINK_TRX_CANCEL_REMITT IS NULL THEN '0' ELSE LINK_TRX_CANCEL_REMITT END) LINK_TRX_CANCEL_REMITT,
+	       (CASE WHEN HOL_CLEAR_FLAG IS NULL THEN 'N' ELSE HOL_CLEAR_FLAG END) HOL_CLEAR_FLAG,
+	       HOL_CLEAR_BR_CODE,
+	       (CASE WHEN POST_PFT_CR IS NULL THEN '0' ELSE POST_PFT_CR END) POST_PFT_CR,
+	       (CASE WHEN FINCOPY IS NULL THEN '0' ELSE FINCOPY END) FINCOPY,
+	       (CASE WHEN MECANIQUE IS NULL THEN '0' ELSE MECANIQUE END) MECANIQUE,
+	       (CASE WHEN SO_ENDING_M IS NULL THEN 0 ELSE SO_ENDING_M END) SO_ENDING_M,
+	       (CASE WHEN SO_ENDING_Y IS NULL THEN 0 ELSE SO_ENDING_Y END) SO_ENDING_Y,
+	       (CASE WHEN ENABLE_FX IS NULL THEN '0' ELSE ENABLE_FX END) ENABLE_FX,
+	       VALIDATE_IBAN,
+	       SO_TRX_TYPE,
+	       (CASE WHEN REPRESENT_VOID_CHEQUE IS NULL THEN '0' ELSE REPRESENT_VOID_CHEQUE END) REPRESENT_VOID_CHEQUE,
+	       FROM_DAY,
+	       TO_DAY,
+	       INQUIRY_TYPE,
+	       (CASE WHEN CY_EXCH IS NULL THEN '0' ELSE CY_EXCH END) CY_EXCH,
+	       DEFAULT_CR_DR_ACC,
+	       REMITTANCE,
+	       PROCEED_PROHIB_CUR,
+	       ALLOW_PROCEED_PDC,
+	       DEFAULT_CHQ_DATE,
+	       (CASE WHEN FORBID_MULTI_CIF IS NULL THEN '0' ELSE FORBID_MULTI_CIF END) FORBID_MULTI_CIF,
+	       DFLT_STARTING_DT,
+	       FILTER_BENEF,
+	       CTSTRXTYPE.CANCEL_ON_CREATION,
+	       CTSTRXTYPE.LINK_ON_CREATION,
+	       CTSTRXTYPE.ALLOW_REVERSE_TRX,
+	       CTSTRXTYPE.DEDUCT_CASH,
+	       CTSTRXTYPE.DEDUCT_CUSTOMER,
+	       CTSTRXTYPE.DEDUCT_CREDITOR,
+	       CTSTRXTYPE.DEDUCT_DEBITOR,
+	       CTSTRXTYPE.DEDUCT_TELLER,
+	       CTSTRXTYPE.DEDUCT_OTHER,
+	       (CASE WHEN IRIS_ACCOUNT IS NULL THEN '0' ELSE IRIS_ACCOUNT END) IRIS_ACCOUNT,
+	       (CASE WHEN ADV_PROFIT_DISTRIBUTION IS NULL THEN 'N' ELSE ADV_PROFIT_DISTRIBUTION END) ADV_PROFIT_DISTRIBUTION,
+	       (CASE WHEN ACTIVE_TRX_UNAVAIL_STOCK IS NULL THEN '1' ELSE ACTIVE_TRX_UNAVAIL_STOCK END) ACTIVE_TRX_UNAVAIL_STOCK,
+	       ALLOW_LOCAL_APPROVE_ONLY,
+	       ALLOW_REVERSE_LINKED_TRX,
+	       IGNORE_HOLIDAYS_FOR_TRS_DATE,
+	       CNTRY_MAND_NONRESIDENT_BENEF,
+	       (CASE WHEN FORBID_MULTI_CIF_TRX IS NULL THEN '0' ELSE FORBID_MULTI_CIF_TRX END) FORBID_MULTI_CIF_TRX,
+	       (CASE WHEN LINK_TO_DRAWDOWN IS NULL THEN '0' ELSE LINK_TO_DRAWDOWN END) LINK_TO_DRAWDOWN,
+	       ALLOW_FC_DECIMAL_CASHIN,
+	       CTSTRXTYPE.CLEARING_HOUSE,
+	       DEFAULT_LINKED_FIELDS,
+	       CUSTOMER_INFO_ID_CARD_YN,
+	       SAVE_CHQ_IMAGE
+      FROM CTSTRXTYPE
+     WHERE CODE = #{CODE}
+       AND COMP_CODE = #{COMP_CODE}
+      <if test="STATUS != null" >
+        AND STATUS = #{STATUS}
+      </if>
+  </select>
+  <resultMap id="clientBankCIFMap" type="fomCO">
+		<result property="cifVO.CIF_NO" 			column="CIF_NO"/>
+		<result property="cifVO.LONG_NAME_ENG" 		column="LONG_NAME_ENG"/>
+		<result property="cifVO.LONG_NAME_ARAB" 	column="LONG_NAME_ARAB"/>
+		<result property="cifVO.SHORT_NAME_ENG" 	column="SHORT_NAME_ENG"/>
+		<result property="cifVO.SHORT_NAME_ARAB" 	column="SHORT_NAME_ARAB"/>
+		<result property="cifVO.STATUS" 			column="STATUS"/>
+		<result property="cifVO.CHQ_CLEAR" 			column="CHQ_CLEAR"/>
+		<result property="cifVO.DRAFT_CLEAR" 		column="DRAFT_CLEAR"/>
+		<result property="cifVO.CIF_TYPE" 			column="CIF_TYPE"/>
+		<result property="cifVO.COUNTRY" 			column="COUNTRY"/>
+		<result property="cifVO.ID_TYPE" 			column="ID_TYPE"/>
+		<result property="cifVO.TEL" 				column="TEL"/>
+		<result property="cifVO.ID_NO" 				column="ID_NO"/>
+		<result property="cifVO.CIF_TYPE" 			column="CIF_TYPE"/>
+		<result property="idTypesVO.DESC_ENG" 		column="idTypesDesc"/>
+		<result property="cifVO.COUNTRY" 			column="COUNTRY"/>
+		<result property="cifVO.PRIORITY_CODE" 			column="PRIORITY_CODE"/>
+		<result property="cifVO.RESIDENT" 			column="RESIDENT"/>
+		<result property="cifVO.NATION_CODE" 		column="NATION_CODE"/>
+		<result property="nationalityDesc" 			column="nationDesc"/>
+		<result property="rifCttVO.CLIENT" 			column="CLIENT"/>
+		<result property="rifCttVO.BANK" 			column="BANK"/>
+		<result property="cifVO.BIRTH_DATE" 		column="BIRTH_DATE"/>
+		<result property="cifVO.ECO_SECTOR" 		column="ECO_SECTOR"/>
+		<result property="ADDRESS1" 				column="ADDRESS1" />
+		<result property="ADDRESS2" 				column="ADDRESS2" />
+		<result property="ADDRESS3" 				column="ADDRESS3" />
+		<result property="cifVO.ADD_STRING2" 		column="ADD_STRING2" />
+		<result property="cifVO.ADD_STRING3" 		column="ADD_STRING3" />
+		<result property="cifVO.ADD_STRING4" 		column="ADD_STRING4" />
+		<result property="cifVO.BLACK_LISTED" 		column="BLACK_LISTED" />
+	</resultMap>
+	
+	<sql id="returnClientBankCIFSql">
+	    SELECT CIF.CIF_NO,
+	    	   CIF.LONG_NAME_ENG,
+		       CIF.LONG_NAME_ARAB,
+		       CIF.SHORT_NAME_ENG,
+		       CIF.SHORT_NAME_ARAB,
+		       CIF.STATUS,
+		       CIF.CHQ_CLEAR,
+		       CIF.DRAFT_CLEAR,
+		       CIF.CIF_TYPE,
+		       CIF.COUNTRY,
+		       CIF.ID_TYPE,
+		       (SELECT CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ID_TYPES.DESC_ENG ELSE ID_TYPES.DESC_ARAB END 
+		          FROM ID_TYPES 
+		         WHERE ID_TYPES.COMP_CODE = #{compCode}
+		           AND ID_TYPES.CODE 	  = CIF.ID_TYPE) idTypesDesc,
+		       CIF.TEL,
+		       CIF.ID_NO,
+		       CIF.PRIORITY_CODE,
+		       CIF.RESIDENT,
+		       CIF.NATION_CODE,
+		       (SELECT CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END
+				  FROM NATIONALITY
+				 WHERE NATIONALITY.COMP_CODE = #{compCode}
+				   AND NATIONALITY.CODE = CIF.NATION_CODE) nationDesc,
+		       RIFCTT.CLIENT,
+		       RIFCTT.BANK,
+		       CIF.BIRTH_DATE,
+		       CIF.ECO_SECTOR,
+			   CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS1_ENG ELSE ADDRESS1_ARAB END ADDRESS1,
+			   CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS2_ENG ELSE ADDRESS2_ARAB END ADDRESS2,
+			   CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS3_ENG ELSE ADDRESS3_ARAB END ADDRESS3,
+			   CIF.ADD_STRING2,
+			   CIF.ADD_STRING3,
+			   CIF.ADD_STRING4,
+			   CIF.BLACK_LISTED
+		  FROM CIF, RIFCTT
+		 WHERE CIF.COMP_CODE = RIFCTT.COMP_CODE
+		   AND CIF.CIF_TYPE  = RIFCTT.TYPE_CODE
+		   AND CIF.COMP_CODE = #{compCode}
+		   
+		   <if test="status != null">
+			 AND	(CIF.STATUS  = 'A')
+			 AND	(RIFCTT.BANK  = 'Y')
+		   </if>
+		   
+		   <if test="cifNo != null">
+		   AND CIF.CIF_NO    = #{cifNo}
+		   </if>
+		   
+		   <if test="CLIENT != null">
+		   AND RIFCTT.CLIENT = #{CLIENT}
+		   </if>
+		   <if test="ADD_STRING2 != null">
+		   AND CIF.ADD_STRING2 IS NOT NULL
+		   </if>
+
+	</sql>
+	
+  	<select id="returnClientBankCIF" parameterType="fomSC" resultMap="clientBankCIFMap">
+  		<include refid="returnClientBankCIFSql"/>
+  	</select>
+  	
+  	<select id="returnClientBankCIFCount" resultType="Integer" parameterType="fomSC" >
+  		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="returnClientBankCIFSql"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+  	</select>
+  	<select id="returnClientBankCIFList" resultMap="clientBankCIFMap" parameterType="fomSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="returnClientBankCIFSql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+  	</select>
+  	
+  <resultMap id="linkToTrxTypesMap" type="ctstrxtypeLinkVO">
+    <result column="TYPE"        property="TYPE"/>
+    <result column="CHQ_RELATED" property="CHQ_RELATED"/>
+  </resultMap>
+  <select id="linkToTrxTypes" resultType="trxTypeVO" parameterType="trxMgntSC">
+	SELECT 
+	       CTSTRXTYPE.CODE,
+	       CTSTRXTYPE.COMP_CODE,
+	       CTSTRXTYPE.SHORT_DESC_ENG,
+	       CTSTRXTYPE.SHORT_DESC_ARAB,
+	       CTSTRXTYPE.LONG_DESC_ENG,
+	       CTSTRXTYPE.LONG_DESC_ARAB,
+	       CTSTRXTYPE.TYPE,
+	       CTSTRXTYPE.MULTI_BRANCH,
+	       CTSTRXTYPE.MODIF_VDATE,
+	       CTSTRXTYPE.SHOW_EXCHRATE,
+	       CTSTRXTYPE.MODIF_EXCHRATE,
+	       CTSTRXTYPE.POST_DATED_VDATE,
+	       CTSTRXTYPE.BACK_DATED_VDATE,
+	       CTSTRXTYPE.SHOW_FEES,
+	       CTSTRXTYPE.SAME_ACC_CY_TRS_CY,
+	       CTSTRXTYPE.ALLOW_DEP_FOR_FIX_ACC,
+	       CTSTRXTYPE.ALLOW_WITHD_FOR_FIX_ACC,
+	       CTSTRXTYPE.CONF_ARAB_REP_ID,
+	       CTSTRXTYPE.CONF_ENG_REP_ID,
+	       CTSTRXTYPE.ASK_CONF,
+	       CTSTRXTYPE.CONF_LANGUAGE,
+	       CTSTRXTYPE.VDATE_TYPE,
+	       CTSTRXTYPE.CHECK_SIGNATURE,
+	       CTSTRXTYPE.SIGNATURE_MANDATORY,
+	       CTSTRXTYPE.CHQ_RELATED,
+	       CTSTRXTYPE.BANK_CIF_MANDATORY,
+	       CTSTRXTYPE.HC_VDATE_BASED_ON_CY,
+	       CTSTRXTYPE.HC_VDATE_DAYS_NO,
+	       CTSTRXTYPE.CC_SHOW_CLEARINGHOUSE,
+	       CTSTRXTYPE.CC_VDATE_BASED_ON,
+	       CTSTRXTYPE.CC_VDATE_DAYS_NO,
+	       CTSTRXTYPE.CC_MAINTAIN_BATCH,
+	       CTSTRXTYPE.CC_MAINTAIN_SERIAL_NO,
+	       CTSTRXTYPE.RQST_CY_NOMINATION_DET,
+	       CTSTRXTYPE.SHOW_CTRL_ACC,
+	       CTSTRXTYPE.MODIF_CTRL_ACC,
+	       CTSTRXTYPE.CTRL_ACC_DESC_ENG,
+	       CTSTRXTYPE.CTRL_ACC_DESC_ARAB,
+	       CTSTRXTYPE.TRSFR_TYPE,
+	       CTSTRXTYPE.OPT_ORDER,
+	       CTSTRXTYPE.CHECK_DATA_SYS2,
+	       CTSTRXTYPE.OVERRIDE_USR_LEVEL,
+	       CTSTRXTYPE.EXPIRY_PERIOD,
+	       CTSTRXTYPE.DEDUCT_CHRG_FROM_TRX,
+	       CTSTRXTYPE.ALLOW_MODIFY_CHRG,
+	       CTSTRXTYPE.ALLOW_CLEARING_CHRG,
+	       CTSTRXTYPE.AUTHORIZ_LEVEL,
+	       CTSTRXTYPE.STANDING_ORDER,
+	       CTSTRXTYPE.SO_TYPE,
+	       CTSTRXTYPE.SO_PERIODICITY,
+	       CTSTRXTYPE.SO_PERIOD_TYPE,
+	       CTSTRXTYPE.SO_PERIOD_DAY,
+	       CTSTRXTYPE.SO_STARTING_M,
+	       CTSTRXTYPE.SO_STARTING_Y,
+	       CTSTRXTYPE.SO_ENDING_M,
+	       CTSTRXTYPE.SO_ENDING_Y,
+	       CTSTRXTYPE.REFERENCE,
+	       CTSTRXTYPE.NOSTRO_MVT,
+	       CTSTRXTYPE.PROCEED_ON_INSUFF_FUND,
+	       CTSTRXTYPE.PRINT_FORM,
+	       CTSTRXTYPE.CR_DR_FOREX,
+	       CTSTRXTYPE.PROCEED_CIF_BLACKLISTED,
+	       CTSTRXTYPE.MONEY_LAUNDRING,
+	       CTSTRXTYPE.ML_WARNING_FLAG,
+	       CTSTRXTYPE.ML_ALERT_FLAG,
+	       CTSTRXTYPE.ML_ALERT_USER,
+	       CTSTRXTYPE.ML_DEPOSITOR_FLAG,
+	       CTSTRXTYPE.AUTOMATIC_BATCH,
+	       CTSTRXTYPE.TRX_PRIORITY,
+	       CTSTRXTYPE.STATUS,
+	       CTSTRXTYPE.DATE_CREATED,
+	       CTSTRXTYPE.CREATED_BY,
+	       CTSTRXTYPE.DATE_MODIFIED,
+	       CTSTRXTYPE.MODIFIED_BY,
+	       CTSTRXTYPE.DATE_APPROVED,
+	       CTSTRXTYPE.APPROVED_BY,
+	       CTSTRXTYPE.DATE_SUSPENDED,
+	       CTSTRXTYPE.SUSPENDED_BY,
+	       CTSTRXTYPE.DATE_REACTIVATED,
+	       CTSTRXTYPE.REACTIVATED_BY,
+	       CTSTRXTYPE.DATE_DELETED,
+	       CTSTRXTYPE.DELETED_BY,
+	       CTSTRXTYPE.REV_CHARGES_ON_VOIDING,
+	       CTSTRXTYPE.DISPLAY_PHOTO,
+	       CTSTRXTYPE.JV_REF,
+	       CTSTRXTYPE.JV_TYPE,
+	       CTSTRXTYPE.TR_CODE,
+	       CTSTRXTYPE.SWIFT_CODE,
+	       CTSTRXTYPE.AUTO_APPROVE_WITHIN_LIMIT,
+	       CTSTRXTYPE.LINKED,
+	       CTSTRXTYPE.MEMO_CODE,
+	       CTSTRXTYPE.TEMPLATE_CODE,
+	       CTSTRXTYPE.SO_PROCESS_TYPE,
+	       CTSTRXTYPE.IFP_IMAGE,
+	       CTSTRXTYPE.MICR_CODELINE,
+	       CTSTRXTYPE.MICR_FLAG,
+	       CTSTRXTYPE.SHOW_JVREF_IN_TRS,
+	       CTSTRXTYPE.OFF_DB_ACC_BR,
+	       CTSTRXTYPE.OFF_DB_ACC_CY,
+	       CTSTRXTYPE.OFF_DB_ACC_GL,
+	       CTSTRXTYPE.OFF_DB_ACC_CIF,
+	       CTSTRXTYPE.OFF_DB_ACC_SL,
+	       CTSTRXTYPE.OFF_CR_ACC_BR,
+	       CTSTRXTYPE.OFF_CR_ACC_CY,
+	       CTSTRXTYPE.OFF_CR_ACC_GL,
+	       CTSTRXTYPE.OFF_CR_ACC_CIF,
+	       CTSTRXTYPE.OFF_CR_ACC_SL,
+	       CTSTRXTYPE.CHQ_REPLACE_DATE,
+	       CTSTRXTYPE.BS_CONTRA_FLAG,
+	       CTSTRXTYPE.SEND_SWIFT,
+	       CTSTRXTYPE.ENG_ARG_ID,
+	       CTSTRXTYPE.ARAB_ARG_ID,
+	       CTSTRXTYPE.MULTI_TRX,
+	       CTSTRXTYPE.DEFAULT_TRSCY,
+	       CTSTRXTYPE.CLEARING_HOUSE,
+	       CTSTRXTYPE.BLOCK_ACTIVE_WITH,
+	       CTSTRXTYPE.ALLOW_CHANGE_CLEARING_ACC,
+	       CTSTRXTYPE.VAL_SIGN_SAVE,
+	       CTSTRXTYPE.REMITT_TYPE,
+	       CTSTRXTYPE.REMITT_NUMBER_NAME,
+	       CTSTRXTYPE.REMITT_SHOW_FR_NUM,
+	       CTSTRXTYPE.REMITT_SHOW_TO_NUM,
+	       CTSTRXTYPE.REMITT_TO_NUMBER_NAME,
+	       CTSTRXTYPE.REMITT_SHOW_REF_DET,
+	       CTSTRXTYPE.REMITTANCE,
+	       CTSTRXTYPE.SEND_TELEX,
+	       CTSTRXTYPE.LINKTOOTHER_TRX,
+	       CTSTRXTYPE.LINKTOOTHER_TRX_TYPE,
+	       CTSTRXTYPE.LINKTOOTHER_TRX_PROCEED,
+	       CTSTRXTYPE.BREAK_FMA,
+	       CTSTRXTYPE.BACKDATED_CHQ,
+	       CTSTRXTYPE.BACKDATED_PERIOD,
+	       CTSTRXTYPE.DEFAULT_DR_ACC_TELLER,
+	       CTSTRXTYPE.ENABLE_SERIAL_MICR,
+	       CTSTRXTYPE.BENEF_BANK_MAND,
+	       CTSTRXTYPE.BENEF_BIC_MAND,
+	       CTSTRXTYPE.BENEF_BANK_SHOW,
+	       CTSTRXTYPE.BENEF_BIC_SHOW,
+	       CTSTRXTYPE.HIDE_IN_TRS,
+	       CTSTRXTYPE.DEF_CHARGE_IN_TRS,
+	       CTSTRXTYPE.PROTECT_TRS_AMT,
+	       CTSTRXTYPE.PAGES_IN_CHRG,
+	       CTSTRXTYPE.PROCESS_WINDOW,
+	       CTSTRXTYPE.BENEF_ADDRESSES_SHOW,
+	       CTSTRXTYPE.CHARGES_ON_VOIDING,
+	       CTSTRXTYPE.SHOW_VOID_BUTTON,
+	       CTSTRXTYPE.DEP_ON_OPN,
+	       CTSTRXTYPE.PROTECT_BENEF_BANK,
+	       CTSTRXTYPE.DEFAULT_ACC_BAL_IN_AMT,
+	       CTSTRXTYPE.FULL_BREAK_DEPOSIT,
+	       CTSTRXTYPE.TRX_BRANCH,
+	       CTSTRXTYPE.TRX_BR,
+	       CTSTRXTYPE.TRX_GL,
+	       CTSTRXTYPE.TRX_CIF,
+	       CTSTRXTYPE.TRX_SL,
+	       CTSTRXTYPE.DEP_ON_MAT,
+	       CTSTRXTYPE.USER_ACC_LIMIT,
+	       CTSTRXTYPE.SO_CHRG_SCHEMA,
+	       CTSTRXTYPE.SHOW_CARD_NO,
+	       CTSTRXTYPE.COMPUTE_OVERDRAW_POINT,
+	       CTSTRXTYPE.SO_TRX_TYPE,
+	       CTSTRXTYPE.HOF_TRXTYPE,
+	       CTSTRXTYPE.HOF_REASON,
+	       CTSTRXTYPE.DO_HOF,
+	       CTSTRXTYPE.ADDITIONNAL_REFERENCE,
+	       CTSTRXTYPE.OUTSTANDING_PROFIT,
+	       CTSTRXTYPE.MULTI_BENEF,
+	       CTSTRXTYPE.APPLY_ADD_CHARGES,
+	       CTSTRXTYPE.SWIFT_CHARGE,
+	       CTSTRXTYPE.SO_SUSPEND_SCHEMA,
+	       CTSTRXTYPE.SO_REINSTATE_SCHEMA,
+	       CTSTRXTYPE.SO_AMEND_SCHEMA,
+	       CTSTRXTYPE.SO_SETUP_SCHEMA,
+	       CTSTRXTYPE.UTILITY_PAYMENT,
+	       CTSTRXTYPE.SHOW_TRX_PURPOSE,
+	       CTSTRXTYPE.ENABLE_MCR,
+	       CTSTRXTYPE.BREAK_CLOSE_ACC,
+	       CTSTRXTYPE.CHRG_WAVE_RATE,
+	       CTSTRXTYPE.CHECK_CLOSING_TIME,
+	       CTSTRXTYPE.SHOW_CIF_BLACKLISTED,
+	       CTSTRXTYPE.CY_EXCH,
+	       CTSTRXTYPE.NOT_USE_IN_TRX,
+	       CTSTRXTYPE.NOT_PROC_ON_HOLD_FUND,
+	       CTSTRXTYPE.DEFINE_AMOUNT_RANGE,
+	       CTSTRXTYPE.FROM_AMOUNT,
+	       CTSTRXTYPE.TO_AMOUNT,
+	       CTSTRXTYPE.OBC_TRX,
+	       CTSTRXTYPE.FC_CHQ_PURCHASE,
+	       CTSTRXTYPE.CLOSING_TRSFR,
+	       CTSTRXTYPE.SO_COMMERCIAL,
+	       CTSTRXTYPE.ALLOW_LINKTOOTHER_TRX_BR,
+	       CTSTRXTYPE.CORR_BANK_NOT_MAND,
+	       CTSTRXTYPE.ALLOW_REVERSE_TODAY_TRX_ONLY,
+	       CTSTRXTYPE.OTHER_INFO_LABEL1,
+	       CTSTRXTYPE.OTHER_INFO_LABEL2,
+	       CTSTRXTYPE.OTHER_INFO_LABEL3,
+	       CTSTRXTYPE.OTHER_INFO_LABEL1_ARAB,
+	       CTSTRXTYPE.OTHER_INFO_LABEL2_ARAB,
+	       CTSTRXTYPE.OTHER_INFO_LABEL3_ARAB,
+	       CTSTRXTYPE.SHOW_INTERNATIONAL_CHQ_NO,
+	       CTSTRXTYPE.SO_CHRG_DEDUCT,
+	       CTSTRXTYPE.SHOW_ALL_BANK_CIF,
+	       CTSTRXTYPE.BENEF_NAME_MAND,
+	       CTSTRXTYPE.HIDE_INTER_DET,
+	       CTSTRXTYPE.HIDE_CORRESP_DET,
+	       CTSTRXTYPE.BLOCK_MODIFY,
+	       CTSTRXTYPE.CHQ_ACC_NUM_MAND,
+	       CTSTRXTYPE.FINCOPY,
+	       CTSTRXTYPE.NBR_COPIES,
+	       CTSTRXTYPE.ADDITIONAL_INFO,
+	       CTSTRXTYPE.ADDITIONAL_INFO_A,
+	       CTSTRXTYPE.DEDUCT_CHRG_FROM_AMT,
+	       CTSTRXTYPE.NBR_COPIES_CR,
+	       CTSTRXTYPE.ADDITIONAL_INFO_CR,
+	       CTSTRXTYPE.ADDITIONAL_INFO_A_CR,
+	       CTSTRXTYPE.VOID_ON_INSUFF_BAL,
+	       CTSTRXTYPE.STMT_DET_LINES,
+	       CTSTRXTYPE.PROCEED_DRAWN_CHECKS,
+	       CTSTRXTYPE.ASK_DR_CR,
+	       CTSTRXTYPE.CONF_ARAB_REP_CR_ID,
+	       CTSTRXTYPE.CONF_ENG_REP_CR_ID,
+	       CTSTRXTYPE.ENG_ARG_CR_ID,
+	       CTSTRXTYPE.ARAB_ARG_CR_ID,
+	       CTSTRXTYPE.ALERT_FLOW,
+	       CTSTRXTYPE.PASSB_DESC,
+	       CTSTRXTYPE.BREAK_DEP_MEMO,
+	       CTSTRXTYPE.INSTRUCTION1,
+	       CTSTRXTYPE.INSTRUCTION2,
+	       CTSTRXTYPE.INSTRUCTION3,
+	       CTSTRXTYPE.INSTRUCTION4,
+	       CTSTRXTYPE.MANDINSTR1,
+	       CTSTRXTYPE.MANDINSTR2,
+	       CTSTRXTYPE.MANDINSTR3,
+	       CTSTRXTYPE.MANDINSTR4,
+	       CTSTRXTYPE.MECANIQUE,
+	       CTSTRXTYPE.HOF_DAYS,
+	       CTSTRXTYPE.SO_PERC,
+	       CTSTRXTYPE.SO_PERC_MIN,
+	       CTSTRXTYPE.SO_PERC_MAX,
+	       CTSTRXTYPE.INSTRUCTION1_ARAB,
+	       CTSTRXTYPE.INSTRUCTION2_ARAB,
+	       CTSTRXTYPE.INSTRUCTION3_ARAB,
+	       CTSTRXTYPE.INSTRUCTION4_ARAB,
+	       CTSTRXTYPE.SO_PERIOD_INTERVAL,
+	       CTSTRXTYPE.SO_ATTEMPT_NUMBER,
+	       CTSTRXTYPE.SO_MODIFY_TO_DAY,
+	       CTSTRXTYPE.SO_CHARGE_BY_ATTEMPT,
+	       CTSTRXTYPE.SO_CLOSING_NUMBER,
+	       CTSTRXTYPE.EXCLUDE_PCS_DISTRIBUTION,
+	       CTSTRXTYPE.EXCLUDE_MATURED_PERIOD_PCS,
+	       CTSTRXTYPE.APPLY_TRX_RATE,
+	       CTSTRXTYPE.HOF_SO,
+	       CTSTRXTYPE.SHOW_ALLOW_CHANGE_RATE,
+	       CTSTRXTYPE.LINK_TO_DRAWDOWN,
+	       CTSTRXTYPE.PERIODICITY_TYPE,
+	       CTSTRXTYPE.PERIOD,
+	       CTSTRXTYPE.RENEW_COMM,
+	       CTSTRXTYPE.TRSFR_METHOD,
+	       CTSTRXTYPE.PROCEED_INEXIST_REC,
+	       CTSTRXTYPE.CUSTOM_RATE,
+	       CTSTRXTYPE.SETTL_OVER_CNTER,
+	       CTSTRXTYPE.ENTRIES_TEMPLATE,
+	       CTSTRXTYPE.POST_PFT_CR,
+	       CTSTRXTYPE.CUSTOM_RATE_CODE,
+	       CTSTRXTYPE.CREATE_ACTIVE_SO,
+	       CTSTRXTYPE.SIG_SCHEMA_VAL_DATE,
+	       CTSTRXTYPE.PREDEFINED_REASONS,
+	       CTSTRXTYPE.LINK_TRX_CANCEL_REMITT,
+	       CTSTRXTYPE.TRX_PURPOSE,
+	       CTSTRXTYPE.HOL_CLEAR_FLAG,
+	       CTSTRXTYPE.HOL_CLEAR_BR_CODE,
+	       CTSTRXTYPE.IBAN_VALIDATION,
+	       CTSTRXTYPE.ENABLE_FX,
+	       CTSTRXTYPE.VALIDATE_IBAN,
+	       CTSTRXTYPE.PROC_SERV_REG_SCHEMA,
+	       CTSTRXTYPE.OPER_SERV_REG_SCHEMA,
+	       CTSTRXTYPE.REPRESENT_VOID_CHEQUE,
+	       CTSTRXTYPE.FORBID_ARABIC_CC,
+	       CTSTRXTYPE.FROM_DAY,
+	       CTSTRXTYPE.TO_DAY,
+	       CTSTRXTYPE.REQUESTED_BY,
+	       CTSTRXTYPE.INQUIRY_TYPE,
+	       CTSTRXTYPE.DEFAULT_CR_DR_ACC,
+	       CTSTRXTYPE.PROCEED_PROHIB_CUR,
+	       CTSTRXTYPE.TR_CODE_DR,
+	       CTSTRXTYPE.ALLOW_PROCEED_PDC,
+	       CTSTRXTYPE.DEFAULT_CHQ_DATE,
+	       CTSTRXTYPE.DFLT_STARTING_DT,
+	       CTSTRXTYPE.FORBID_MULTI_CIF,
+	       CTSTRXTYPE.FILTER_BENEF,
+	       CTSTRXTYPE.CANCEL_ON_CREATION,
+	       CTSTRXTYPE.LINK_ON_CREATION,
+	       CTSTRXTYPE.CHARGE_BY_BENEF,
+	       CTSTRXTYPE.CHECK_RMA,
+	       CTSTRXTYPE.ALLOW_REVERSE_TRX,
+	       CTSTRXTYPE.IRIS_ACCOUNT,
+	       CTSTRXTYPE.ADV_PROFIT_DISTRIBUTION,
+	       CTSTRXTYPE.ACTIVE_TRX_UNAVAIL_STOCK,
+	       CTSTRXTYPE.ALLOW_LOCAL_APPROVE_ONLY,
+	       CTSTRXTYPE.NO_ENTRIES_ON_VOID
+	  FROM CTSTRXTYPE,CTSTRS
+	 WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+	   AND CTSTRXTYPE.COMP_CODE = CTSTRS.COMP_CODE
+	   AND CTSTRXTYPE.CODE      = CTSTRS.TRX_TYPE
+	   AND CTSTRS.TRS_NO        = #{linkToTrsNo} 
+	   AND CTSTRS.TRS_TYPE  = 'R' 
+	   AND CTSTRS.CB_IND    = 'C'
+	   AND CTSTRS.BRANCH_CODE = #{branchCode}
+	   AND Exists (SELECT 1 
+	                 FROM CTSTRXTYPE_LINK TL 
+	                WHERE TL.TRX_TYPE_CODE = #{trxType} 
+	                  AND TL.LINKED_TRX = CTSTRXTYPE.CODE) 
+  </select>
+
+	<select id="checkAccessOnGlType" resultType="java.lang.Integer"
+		parameterType="ctsTellerAccTypeDetVO">
+		SELECT
+		<if test="isSybase == 1">TOP 1 </if>
+		ACC_TYPE
+		from CTSTELLERACCTYPEDET
+		where ACC_TYPE = #{ACC_TYPE}
+		and BRANCH_CODE = #{BRANCH_CODE}
+		and CODE = #{CODE}
+		and COMP_CODE = #{COMP_CODE}
+		and (TRX_TYPE = #{TRX_TYPE} OR TRX_TYPE = 0)
+		<if test="isSybase != 1"> AND ROWNUM = 1</if>
+	</select>
+  
+  <select id="returnValidateIdByCif" resultType="String" parameterType="com.path.vo.common.DepositerSC">
+	SELECT RIFCTT.VALIDATE_CID
+	  FROM RIFCTT,CIF
+	 WHERE RIFCTT.COMP_CODE = CIF.COMP_CODE
+	   AND RIFCTT.TYPE_CODE = CIF.CIF_TYPE
+	   AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	   AND CIF.CIF_NO = #{cifNo,jdbcType=NUMERIC}
+  </select>
+  
+	<select id="returnNationalityDescription" resultType="String" parameterType="cifSC">
+		SELECT CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END
+	  	FROM NATIONALITY
+	 	WHERE NATIONALITY.COMP_CODE = #{comp_code}
+	   		AND NATIONALITY.CODE = #{code}
+  	</select>
+
+	
+	<select id="countTrxDRCRTYPE" parameterType="trxMgntSC" resultType="int">
+		SELECT COUNT(1)
+		  FROM CTSTRXTYPE_ACC
+		 WHERE CTSTRXTYPE_ACC.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_ACC.CODE 		 = #{trxType,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_ACC.DR_CR_TYPE = #{drCrType,jdbcType=VARCHAR}
+		   <if test="trxDefaultAcc != null">
+		   AND TRX_DEFAULT_ACC = #{trxDefaultAcc,jdbcType=VARCHAR}
+		   </if>
+	</select>
+	
+
+	<update id ="dropHashManualJv">
+		IF OBJECT_ID('#CTS_MANUAL_JV_TMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #CTS_MANUAL_JV_TMP
+		END
+	</update>
+	
+	<update id ="createHashManualJv">
+	CREATE TABLE #CTS_MANUAL_JV_TMP		
+		(  COMP_CODE            NUMERIC(4,0)     NULL,
+		   BRANCH_CODE          NUMERIC(4,0)     NULL, 
+		   CURRENCY_CODE        NUMERIC(3,0)     NULL,
+		   GL_CODE              NUMERIC(6,0)     NULL,
+		   CIF_SUB_NO           NUMERIC(8,0)   	 NULL,
+		   SL_NO                NUMERIC(3,0)     NULL, 
+		   LINE_NO              NUMERIC(6,0)     NULL, 
+		   FC_AMOUNT            NUMERIC(18,3)    NULL, 
+		   EXCHANGE_RATE        NUMERIC(20,6)    NULL,
+		   CV_AMOUNT            NUMERIC(18,3)    NULL, 
+		   TRANS_DATE           DATETIME         NULL, 
+		   VALUE_DATE           DATETIME         NULL,
+		   REQUESTED_DATE       DATETIME         NULL, 
+		   USER_ID              VARCHAR(8)       NULL, 
+		   DESCRIPTION          VARCHAR(100)     NULL, 
+		   DESCRIPTION_A        VARCHAR(80)      NULL,
+		   DESCRIPTION1         VARCHAR(80)      NULL, 
+		   DESCRIPTION1_A       VARCHAR(80)      NULL,
+		   DESCRIPTION2         VARCHAR(80)      NULL, 
+		   DESCRIPTION2_A       VARCHAR(80)      NULL,
+		   BS_CONTRA            VARCHAR(1)       NULL,
+		   JV_TYPE              NUMERIC(4,0)     NULL,
+		   JV_REF               VARCHAR(10)      NULL,
+		   SCREEN_REFERENCE		VARCHAR(50) NULL ) 
+	 <include refid="coreCommonProcedureMapper.beginTans"/>	   
+	</update>
+	
+	<insert id="insertHashManualJv" parameterType="com.path.dbmaps.vo.CTS_MANUAL_JV_TMPVO" >
+    insert into #CTS_MANUAL_JV_TMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        CIF_SUB_NO,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="FC_AMOUNT != null and FC_AMOUNT != emptyBigDecimalValue" >
+        FC_AMOUNT,
+      </if>
+      <if test="EXCHANGE_RATE != null and EXCHANGE_RATE != emptyBigDecimalValue" >
+        EXCHANGE_RATE,
+      </if>
+      <if test="CV_AMOUNT != null and CV_AMOUNT != emptyBigDecimalValue" >
+        CV_AMOUNT,
+      </if>
+      <if test="TRANS_DATE != null" >
+        TRANS_DATE,
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE,
+      </if>
+      <if test="REQUESTED_DATE != null" >
+        REQUESTED_DATE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="DESCRIPTION_A != null" >
+        DESCRIPTION_A,
+      </if>
+      <if test="DESCRIPTION1 != null" >
+        DESCRIPTION1,
+      </if>
+      <if test="DESCRIPTION1_A != null" >
+        DESCRIPTION1_A,
+      </if>
+      <if test="DESCRIPTION2 != null" >
+        DESCRIPTION2,
+      </if>
+      <if test="DESCRIPTION2_A != null" >
+        DESCRIPTION2_A,
+      </if>
+      <if test="BS_CONTRA != null" >
+        BS_CONTRA,
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        JV_TYPE,
+      </if>
+      <if test="JV_REF != null" >
+        JV_REF,
+      </if>
+      <if test="SCREEN_REFERENCE != null" >
+        SCREEN_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CIF_SUB_NO},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="FC_AMOUNT != null and FC_AMOUNT != emptyBigDecimalValue" >
+        #{FC_AMOUNT},
+      </if>
+      <if test="EXCHANGE_RATE != null and EXCHANGE_RATE != emptyBigDecimalValue" >
+        #{EXCHANGE_RATE},
+      </if>
+      <if test="CV_AMOUNT != null and CV_AMOUNT != emptyBigDecimalValue" >
+        #{CV_AMOUNT},
+      </if>
+      <if test="TRANS_DATE != null" >
+        #{TRANS_DATE},
+      </if>
+      <if test="VALUE_DATE != null" >
+        #{VALUE_DATE},
+      </if>
+      <if test="REQUESTED_DATE != null" >
+        #{REQUESTED_DATE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="DESCRIPTION_A != null" >
+        #{DESCRIPTION_A},
+      </if>
+      <if test="DESCRIPTION1 != null" >
+        #{DESCRIPTION1},
+      </if>
+      <if test="DESCRIPTION1_A != null" >
+        #{DESCRIPTION1_A},
+      </if>
+      <if test="DESCRIPTION2 != null" >
+        #{DESCRIPTION2},
+      </if>
+      <if test="DESCRIPTION2_A != null" >
+        #{DESCRIPTION2_A},
+      </if>
+      <if test="BS_CONTRA != null" >
+        #{BS_CONTRA},
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        #{JV_TYPE},
+      </if>
+      <if test="JV_REF != null" >
+        #{JV_REF},
+      </if>
+      <if test="SCREEN_REFERENCE != null" >
+        #{SCREEN_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="deleteManualJvTmp"  parameterType="com.path.dbmaps.vo.CTS_MANUAL_JV_TMPVO" >
+       <choose>
+			<when test="isSybase == 1">
+				DELETE FROM #CTS_MANUAL_JV_TMP
+			</when>
+			<otherwise> 
+				DELETE FROM CTS_MANUAL_JV_TMP
+			</otherwise>
+		</choose>
+  </delete>
+  
+  <update id="commitTrans">
+		COMMIT
+  </update>
+  
+  	<resultMap id="mainVaultResult" type="ctsTellerVO">
+		<result property="CODE" column="CODE" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	</resultMap>
+	
+  	<select id="getMainVault" parameterType="ctsTellerSC"  resultMap="mainVaultResult" >
+	  SELECT TBL.CODE,
+			 (SELECT CASE WHEN #{preferredLanguage} = 'L' THEN BRIEF_NAME_ENG ELSE BRIEF_NAME_ARAB END
+			    FROM CTSTELLER K 
+			   WHERE K.CODE = TBL.CODE
+			     AND K.COMP_CODE = #{compCode}
+			     AND K.BRANCH_CODE = #{branchCode}) BRIEF_NAME_ENG
+	   FROM
+		(
+		  SELECT MIN(CTSTELLER.CODE) CODE
+			FROM CTSTELLER  
+		   WHERE CTSTELLER.COMP_CODE = #{compCode}  
+			 AND CTSTELLER.BRANCH_CODE = #{branchCode}  
+			 AND CTSTELLER.TELLER_TYPE = #{vaultType}
+	         AND CTSTELLER.USER_IS_BRANCH_MANAGER = '1'
+	         AND CTSTELLER.STATUS <![CDATA[ <> ]]> 'D'
+	     ) TBL
+	</select>
+	
+  <select id="checkSignatureExpiryDateMandatory" parameterType="signatureSC" resultMap="checkSignatureExpiryDateMandatoryMap">
+  	<choose>
+		<when test=' signatureTp != null and signatureTp == "C" '>
+			  	SELECT (SELECT COUNT(1)
+				          FROM S_SCAN
+				         WHERE COMP_CODE = #{compCode}
+				           AND CODE IN (SELECT OBJECT_CODE
+				                          FROM CIFOBJECT
+				                         WHERE COMP_CODE = #{compCode}
+				                           AND CIF_NO = #{cifNo}
+				                           AND CIFOBJECT.BRANCH_CODE = S_SCAN.BRANCH_CODE
+				                           AND CIFOBJECT.OBJECT_TYPE = 'S'
+				                           AND STATUS  <![CDATA[<>]]> 'D')
+				           AND S_SCAN.DOC_TYPE = 'S'
+				           AND (EXP_DATE IS NULL OR DEFAULT_UNLIMITED = 1)) AS COUNT_SCAN,
+				       (SELECT COUNT(1)
+				          FROM S_SIGN_MODIF
+				         WHERE COMP_CODE = #{compCode}
+				           AND CIF_NO = #{cifNo}
+				           AND (TO_BE_EXP_DATE IS NULL OR TO_BE_DEFAULT_UNLIMITED = 1)) AS COUNT_SIGN_MODIF
+				FROM DUAL
+		</when>
+		<otherwise> 
+				SELECT (SELECT COUNT(1)
+				          FROM S_SCAN
+				         WHERE COMP_CODE = #{compCode}
+				           AND CODE IN (SELECT OBJECT_CODE
+				                          FROM CIFOBJECT
+				                         WHERE COMP_CODE = #{compCode}
+				                           AND BRANCH_CODE = #{branchCode}
+				                           AND CIFOBJECT.BRANCH_CODE = S_SCAN.BRANCH_CODE
+				                           AND CIFOBJECT.OBJECT_TYPE = 'S'
+				                           AND ACC_CY = #{currencyCode}
+				                           AND ACC_GL = #{glCode}
+				                           AND ACC_CIF = #{cifNo}
+				                           AND ACC_SL = #{slNo}
+				                           AND STATUS  <![CDATA[<>]]> 'D')
+				           AND S_SCAN.DOC_TYPE = 'S'
+				           AND (EXP_DATE IS NULL OR DEFAULT_UNLIMITED = 1)) AS COUNT_SCAN,
+				       (SELECT COUNT(1)
+				          FROM S_SIGN_MODIF
+				         WHERE COMP_CODE = #{compCode}
+				           AND BRANCH_CODE = #{branchCode}
+				           AND ACC_CY = #{currencyCode}
+				           AND ACC_GL = #{glCode}
+				           AND ACC_CIF = #{cifNo}
+				           AND ACC_SL = #{slNo}
+				           AND (TO_BE_EXP_DATE IS NULL OR TO_BE_DEFAULT_UNLIMITED = 1)) AS COUNT_SIGN_MODIF
+				  FROM DUAL
+  		</otherwise>
+  	</choose>
+  </select> 
+
+  <resultMap type="hashmap" id="checkSignatureExpiryDateMandatoryMap">
+		<result property="COUNT_SCAN"        	column="COUNT_SCAN"   		javaType="int"/>
+   		<result property="COUNT_SIGN_MODIF"     column="COUNT_SIGN_MODIF"  	javaType="int"/>
+  </resultMap>	
+
+ <select id="returnAccNvAdvices" parameterType="accountsManagementCO" resultType="com.path.dbmaps.vo.ACC_NV_ADVICEVO">
+  	SELECT DISTINCT A.ADVICE_ID,
+	PRINTING_LEVEL,
+	ENG_REP_ID,
+	ENG_ARG_ID,
+	ARAB_REP_ID,
+	ARAB_ARG_ID,
+	ENG_REP_ID_NCOPIES,
+	ARAB_REP_ID_NCOPIES,
+	ENG_MESSAGE,
+	ARAB_MESSAGE FROM ACC_NV_ADVICE A,ACC_NV_ADVICE_TYPES T
+	WHERE A.COMP_CODE= T.COMP_CODE 
+	AND A.BRANCH_CODE=T.BRANCH_CODE
+	AND A.ADVICE_ID=T.ADVICE_ID
+	AND A.COMP_CODE= #{loginCompCode}
+	AND A.BRANCH_CODE= #{amfVO.BRANCH_CODE}
+	AND T.CIF_TYPE IN (0,#{cifVO.CIF_TYPE})
+	AND T.ACCOUNT_TYPE IN (0,#{amfVO.GL_CODE})
+	AND A.PRINTING_LEVEL= (CASE WHEN #{amfVO.GMI_FLAG} = 'G' THEN '1' 
+							    WHEN #{amfVO.GMI_FLAG} = 'F' THEN '2' END)
+	ORDER BY A.ADVICE_ID ASC						     
+ </select>	
+
+ <select id="returnTrxTypeExtended" resultType="trxTypeExtendedVO" parameterType="trxTypeExtendedVO" >
+ 	SELECT 	COMP_CODE,
+	       	CODE,
+	       	FORCE_OVERDRAW,
+			PROTECT_MAIN_ACC,
+			UPDATE_CHEQUE_DATE,
+			PROCEED_SO_RESTRICTION,
+			VALIDATE_INTER_BANK,
+			CALC_PROFIT_CURRENT_DATE_YN,
+			SHOW_CUSTOMER_RATE_YN,
+			ALLOW_ONLY_REGISTERED_REF,
+			EXCH_RATE_UPDATE_WARN_MSG_YN,
+			MIN_BENEF_NAME_LENGTH,
+			SHOW_UETR_YN,
+			ALLOW_ISSUE_CERTIFIED_CHQ_YN,
+			ALLOW_COLLECT_CERTIFIED_CHQ_YN,
+			DOCUMENT_TYPE,
+			DOCUMENT_VALUE_CODE,
+			ENABLE_REMITT_CHQ_IMAGE_YN,
+			AVA_PAYMENT_CODE,
+			PROFIT_DISTRIB_ON_ANVRSRY_YN,
+			DEFLT_CIF_DET_TO_DEPOSITOR_YN,
+			CHECK_ON_UPDATE_OF_RATE_YN,
+			ALLOW_SEPARATE_CR_DR_VDATE_YN,
+			APPLY_FLOW_NON_BANK_LOANS_YN,
+			BYPASS_CHECK_ON_AVAIL_BAL_YN,
+			ADVICE_STATUS,
+			VALD_ID_TYPE_SWIFT_CODE_YN,
+			RESTRICT_DEPOSIT_CIF_NO_BVN_YN,
+			CONSOL_MULTI_CHQ_TRS_SOA_TYPE,
+			ENABLE_CARD_READER_YN,
+			DOCUMENT_TYPE,
+			DOCUMENT_VALUE_CODE,
+			AVA_PAYMENT_CODE,
+
+			SHOW_UETR_YN,
+			NOT_ALLOW_CREAT_PROD_ID_EXP_YN,
+			TRX_TYPE_LINK_DAYS_NBR,
+			CEFTS_TRANSACTION_YN,
+		  	CEFTS_REVERSE_REASON_CODE,
+		  	REVERSE_INTEGRATION_YN,
+		  	PROCEED_CY_PURCHASE_SALE_YN,
+			VALIDATE_REF_WITH_PROVIDER_YN,
+			TRANSFER_INTEGRATION_YN,
+			REVERSE_REASON,
+			ADD_ACC_IN_TRX_TYPE_LIMITS,
+			ALLOW_TO_CANCEL_CHQ_CERTIF_YN,
+		  	CHECK_ON_TRX_CY_ALLOWED_YN,
+		  	TRX_TYPE_LINK_DAYS_TYPE,
+		  	MASS_TRSF_TO_OTHER_BANKS_YN,
+		  	MANUAL_VOID_ON_TRX_CHEQUE_YN,
+		  	PROCEED_CIF_INCATIVE_YN
+	  FROM CTSTRXTYPE_EXTENDED
+     WHERE CODE = #{CODE}
+       AND COMP_CODE = #{COMP_CODE}
+ </select>
+ 
+ <!-- NABIL FEGHALI - IIAB110182 - IIAB100424 - Conditional Automation  -->	
+ <select id="countSpecialConditions" resultType="java.math.BigDecimal" parameterType="specialConditionsCO">
+ 	SELECT COUNT(1)
+	FROM CTSSPCOND 
+	WHERE COMP_CODE = #{specialConditionsVO.COMP_CODE} AND CIF_NO = #{specialConditionsVO.CIF_NO}
+	<if test='specialConditionsVO.RECORD_SOURCE != null and specialConditionsVO.RECORD_SOURCE.equals("C")'>
+		AND RECORD_SOURCE = 'C' 
+	</if>
+	<if test="statusList != null and statusList.size() > 0"> 
+         AND  STATUS IN  
+         <foreach item="item" index="index" open="(" close=")" separator="," collection="statusList" > 
+         #{item} 
+         </foreach>
+	</if>
+	<if test="condAutoList != null and condAutoList.size() > 0"> 
+         AND  COND_AUTOMATION_CODE IN  
+         <foreach item="item" index="index" open="(" close=")" separator="," collection="condAutoList" > 
+         #{item} 
+         </foreach>
+	</if>
+ </select>	
+ 
+ <!-- NABIL FEGHALI - IIAB110182 - IIAB100424 - Conditional Automation  -->
+ <select id="updateSpecialConditions" parameterType="specialConditionsCO">
+	UPDATE CTSSPCOND
+	<set >
+      <if test="specialConditionsVO.STATUS != null">
+        STATUS = #{specialConditionsVO.STATUS},
+      </if>
+      <if test="specialConditionsVO.DATE_DELETED != null">
+        DATE_DELETED = #{specialConditionsVO.DATE_DELETED},
+      </if>
+      <if test="specialConditionsVO.DELETED_BY != null" >
+        DELETED_BY =  #{specialConditionsVO.DELETED_BY},
+      </if>
+    </set>
+    WHERE COMP_CODE = #{specialConditionsVO.COMP_CODE} AND CIF_NO = #{specialConditionsVO.CIF_NO}
+	<if test='specialConditionsVO.RECORD_SOURCE != null and specialConditionsVO.RECORD_SOURCE.equals("C")'>
+		AND RECORD_SOURCE = 'C' 
+	</if>
+	<if test="statusList != null and statusList.size() > 0"> 
+         AND  STATUS IN  
+         <foreach item="item" index="index" open="(" close=")" separator="," collection="statusList" > 
+         #{item} 
+         </foreach>
+	</if>
+	<if test="condAutoList != null and condAutoList.size() > 0"> 
+         AND  COND_AUTOMATION_CODE IN  
+         <foreach item="item" index="index" open="(" close=")" separator="," collection="condAutoList" > 
+         #{item} 
+         </foreach>
+	</if>
+	
+ </select>
+ 										
+ <!-- NABIL FEGHALI - IIAB110182 - IIAB100424 - Conditional Automation  -->
+ <select id="selectConditionalAutomation" parameterType="com.path.vo.core.conditionalautomation.ConditionalAutomationSC" resultMap="CTS_CONDITIONAL_AUTOMATION.BaseResultMap"> 	
+  	SELECT 
+    <include refid="CTS_CONDITIONAL_AUTOMATION.Base_Column_List" />
+    FROM CTS_CONDITIONAL_AUTOMATION A WHERE A.COMP_CODE = (#{compCode,jdbcType=NUMERIC})
+    <if test="entityType != null" >
+    	AND A.ENTITY_TYPE = (#{entityType,jdbcType=VARCHAR})
+    </if>
+    <if test="eventType != null" >
+    	AND A.EVENT_TYPE = (#{eventType,jdbcType=NUMERIC})
+    </if>
+    <if test="cifType != null" >
+    	<choose>
+    		<when test="cifTypesFlag == null or cifTypesFlag == emptyBigDecimalValue or cifTypesFlag == 0">
+    		 AND A.CIF_TYPE = (#{cifType,jdbcType=VARCHAR})
+    		</when>
+    		<otherwise>
+		    	AND
+		    	(
+			    	(#{cifType}) IN (
+									  SELECT ENTITY_CODE
+									    FROM CTS_CONDITIONAL_AUTO_ENTITY B
+										 WHERE A.COMP_CODE   = B.COMP_CODE
+										   AND B.ENTITY_TYPE = 'T'
+										   AND A.EVENT_TYPE  = (#{eventType,jdbcType=NUMERIC})
+										   AND A.CODE        = B.COND_CODE
+							   		)
+								  	OR
+								    (EXISTS 
+									  (SELECT 1
+									   FROM CTS_CONDITIONAL_AUTO_ENTITY B
+										WHERE A.COMP_CODE   = B.COMP_CODE
+										  AND B.ENTITY_TYPE = 'T'
+										  AND ENTITY_CODE  = 0
+										  AND A.EVENT_TYPE  = (#{eventType,jdbcType=NUMERIC})
+										  AND A.CODE  		= B.COND_CODE)
+								     )
+		    	)
+    	</otherwise>
+    </choose>
+   </if>
+
+    <if test="deleteSpecialCond != null" >
+    	AND DELETE_SPECIAL_COND = (#{deleteSpecialCond,jdbcType=NUMERIC})
+    </if>
+    <if test="linkedCondAutomationCode != null" >
+    	AND LINKED_COND_AUTOMATION_CODE = (#{linkedCondAutomationCode,jdbcType=NUMERIC})
+    </if>
+    
+    <if test="specialCondType != null" >
+    	AND A.SPECIAL_COND_TYPE = (#{specialCondType,jdbcType=VARCHAR})
+    </if>
+ </select>  
+<select id ="checkIfBlackListedCIF" parameterType="cifSC" resultType="int">	
+	SELECT BLACK_LISTED
+	  FROM CIF
+	 WHERE COMP_CODE 	= #{compCode,jdbcType=NUMERIC}
+	   AND BRANCH_CODE 	= #{branchCode,jdbcType=NUMERIC}
+	   AND CIF_NO 		= #{cif_no,jdbcType=NUMERIC}
+</select> 
+
+   <resultMap id="authorizedSigList_ResMap" type="cifCO">
+		
+		<result property="cifVO.CIF_NO" 			          column="CIF_NO"/>
+		<result property="cifVO.AUTH_ID" 			          column="ID"/>
+		<result property="cifVO.AUTH_NAME" 			          column="NAME"/>
+		<result property="cifVO.BRANCH_CODE" 			      column="BRANCH_CODE"/>
+		<result property="ID_TYPE_NAME"      			      column="ID_TYPE_DESC"/>
+		<result property="cifVO.BRANCH_CODE"      	          column="BRANCH_CODE"/>
+		<result property="cif_auth_signatoryVO.ID_TYPE"       column="ID_TYPE"/>
+		<result property="cif_auth_signatoryVO.ID_NO"         column="ID_NO"/>
+		<result property="cif_auth_signatoryVO.DETAILS_TYPE"  column="DETAILS_TYPE"/>
+		<result property="cif_auth_signatoryVO.LINE_NO"       column="LINE_NO"/>
+		<result property="cif_auth_signatoryVO.AUTH_NAME" 	  column="AUTH_NAME"/>
+		
+	</resultMap>
+
+	<select id="authorizedSigList" resultMap="authorizedSigList_ResMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="authorizedSigList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+   <resultMap id="addrefMaskSpecificMapper" type="sAddRefMaskSpecificVO">
+	  <result property="SEQ"   				column="SEQ"/>
+	  <result property="ACC_TYPE"   		column="ACC_TYPE"/>
+	  <result property="COLUMN_NAME"   		column="COLUMN_NAME"/>
+	  <result property="COLUMN_MASK"   		column="COLUMN_MASK"/>
+	  <result property="COLUMN_SEPARATOR"  	column="COLUMN_SEPARATOR"/>
+	  <result property="COLUMN_TYPE"    	column="COLUMN_TYPE"/>
+	 </resultMap>
+	
+	
+	<select id="returnCIFAddRefNumberMask" parameterType="string" resultMap="addrefMaskSpecificMapper">
+	 SELECT S_ADDREF_MASK_SPECIFIC.ACC_TYPE,
+	        S_ADDREF_MASK_SPECIFIC.SEQ,
+	        S_ADDREF_MASK_SPECIFIC.COLUMN_NAME,
+	        S_ADDREF_MASK_SPECIFIC.COLUMN_MASK,
+	        S_ADDREF_MASK_SPECIFIC.COLUMN_SEPARATOR,
+	        S_ADDREF_MASK_SPECIFIC.COLUMN_TYPE
+	   FROM S_ADDREF_MASK_SPECIFIC
+	  WHERE S_ADDREF_MASK_SPECIFIC.ACC_TYPE =  #{accountType,jdbcType=VARCHAR}
+	  	AND SEQ <![CDATA[>=0]]>
+	</select>
+	
+	<sql id="authorizedSigList">
+
+		SELECT 
+			CIF.CIF_NO,
+			CIF.AUTH_ID ID,
+			CIF.AUTH_NAME NAME,
+			CIF.BRANCH_CODE,
+			ID_TYPES.CODE AS  ID_TYPE ,
+			ID_TYPES.DESC_ENG ID_TYPE_DESC,
+			CIF.ID_NO AS ID_NO,
+			' ' AS DETAILS_TYPE,
+			0 AS LINE_NO 
+			
+		FROM CIF, ID_TYPES
+		WHERE CIF.COMP_CODE = ID_TYPES.COMP_CODE
+			AND CIF.SIGNATORY_ID_TYPE = ID_TYPES.CODE
+			AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND CIF.CIF_NO = #{cif_no,jdbcType=NUMERIC}
+		
+		UNION ALL
+		
+		SELECT
+		    CIF.CIF_NO,
+		    '' AS ID,
+			CIF_AUTH_SIGNATORY.AUTH_NAME ,
+			CIF.BRANCH_CODE,
+			CIF_AUTH_SIGNATORY.ID_TYPE ID_TYPE ,
+			ID_TYPES.DESC_ENG ID_TYPE_DESC,
+			CIF_AUTH_SIGNATORY.ID_NO,
+			 CIF_AUTH_SIGNATORY.DETAILS_TYPE,
+			 CIF_AUTH_SIGNATORY.LINE_NO
+	
+		FROM CIF, CIF_AUTH_SIGNATORY, ID_TYPES
+		WHERE CIF.COMP_CODE = CIF_AUTH_SIGNATORY.COMP_CODE
+			AND CIF.CIF_NO = CIF_AUTH_SIGNATORY.CIF_NO
+			AND CIF_AUTH_SIGNATORY.DETAILS_TYPE = 'S'
+			AND CIF_AUTH_SIGNATORY.COMP_CODE = ID_TYPES.COMP_CODE
+			AND CIF_AUTH_SIGNATORY.ID_TYPE = ID_TYPES.CODE
+			AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND CIF.CIF_NO = #{cif_no,jdbcType=NUMERIC}
+	
+	</sql>
+	
+	<select id="returnCIFNoOfBank" parameterType="cifSC" resultType="bigDecimal">
+		SELECT CIF.CIF_NO
+	      FROM CIF
+	     WHERE CIF.COMP_CODE   = #{compCode,jdbcType=NUMERIC}
+	       AND CIF.ADD_STRING2 = #{addString2,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="validationNidCard" parameterType="fomSC" resultType="int">
+           SELECT COUNT(1) FROM CIF C
+           WHERE C.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+           AND ID_TYPE IN (SELECT ID_TYPES.CODE 
+           				   FROM ID_TYPES 
+           				   WHERE ID_TYPES.COMP_CODE = C.COMP_CODE 
+           				   AND ID_TYPES.TYPES = '1' 
+           				   AND ID_TYPES.ID_CARD_TYPE = '5')           
+	           <if test='"1".equals(fromExpDateValid)'>
+	           		<choose>
+						<when test='"1".equals(fromSrc)'>
+							AND ID_TYPE IN (SELECT CTSTRXTYPE_NID_TYPES.ID_TYPE 
+			                  FROM CTSTRXTYPE_NID_TYPES
+			                  WHERE CTSTRXTYPE_NID_TYPES.COMP_CODE = C.COMP_CODE
+			                  AND CTSTRXTYPE_NID_TYPES.TRX_TYPE_CODE = #{transactionType,jdbcType=NUMERIC})
+						</when>
+						<otherwise> 
+							 AND ID_TYPE IN (SELECT CTSCONTROL_NID_TYPES.ID_TYPE 
+			                  FROM CTSCONTROL_NID_TYPES
+			                  WHERE CTSCONTROL_NID_TYPES.COMP_CODE = C.COMP_CODE
+			                  AND CTSCONTROL_NID_TYPES.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}) <!-- check this with sandra -->
+						</otherwise>
+					</choose>          
+	           </if>
+	           <if test="isSybase == 1">
+	           AND substring(C.ID_NO, patindex('%[^0]%', C.ID_NO), len(C.ID_NO)) = #{cardReaderCivilID, jdbcType=VARCHAR}
+	           </if>
+	           <if test="isSybase != 1">
+	           AND to_char(trim(leading 0 from to_char( C.ID_NO )))   =  #{cardReaderCivilID, jdbcType=VARCHAR} 
+	           </if> 
+           <!-- <if test='"1".equals(fromExpDateValid)'>
+           AND C.ID_EXPIRY_DATE <![CDATA[<=]]> #{runningDate}
+            </if> -->
+	</select>
+	
+	
+	<resultMap id="retExtSigAndUrlMap" type="java.util.HashMap">
+	  <result property="EXTERNAL_SIGNATURE_MGT_YN" column="EXTERNAL_SIGNATURE_MGT_YN" javaType="java.lang.Integer"/>
+	  <result property="EXTERNAL_SIGNATURE_URL" column="EXTERNAL_SIGNATURE_URL" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<select id="retExtSigAndUrl" resultMap="retExtSigAndUrlMap">
+	 	SELECT EXTERNAL_SIGNATURE_MGT_YN, EXTERNAL_SIGNATURE_URL FROM PTH_CTRL
+	</select>
+	
+	<select id="countClassifiedCIF" parameterType="cifSC" resultType="int">
+		SELECT  COUNT(1)
+		FROM   TRS_MANUAL_CLASSIFY
+		WHERE  COMP_CODE    =  #{compCode}
+		 AND    CIF_NO      =  #{cif_no}
+		 AND    STATUS      IN ('E','P','U')
+	</select>
+
+
+
+<select id="retrieveProcProductParam" parameterType="commonLibSC" resultMap="PROC_PRODUCT_PARAM.BaseResultMap">
+	Select coalesce(REACTIVATE_YN, '0') REACTIVATE_YN, PRODUCT_CODE
+	  From PROC_PRODUCT_PARAM
+	 Where COMP_CODE = #{compCode}
+	   AND BRANCH_CODE = #{branchCode}
+	   <if test="productCodeArr!=null and productCodeArr.length > 0">
+	   AND PRODUCT_CODE in 
+	   <foreach collection="productCodeArr" item="eachCode" index="index" open="(" separator="," close=")" >
+	   		#{eachCode}
+	   </foreach>
+	   </if>
+</select>
+
+<select id="refreshDual" resultType="int" >
+	SELECT 1 FROM DUAL
+</select>
+
+<select id="getPassConfirmMsgYN" parameterType="int" resultType="String">
+		SELECT  CONFIRM_MESSAGE_YN
+		FROM   CTSMESSAGES
+		WHERE  CODE  =  #{msgCode}
+		
+</select>
+
+	<resultMap id="listCtstrsdetDetailsbyTrxMapper" type="trxMgntSC" >
+    	<result property="branchCode"   column="BRANCH_CODE"/>
+    	<result property="trsAcBr" 		column="AC_BR"/>
+    	<result property="trsAcCy" 		column="AC_CY"/>
+    	<result property="trsAcGl" 		column="AC_GL"/>
+    	<result property="trsAcCif" 	column="AC_CIF"/>
+    	<result property="trsAcSl" 		column="AC_SL"/>
+    	<result property="sign" 		column="TRS_SIGN"/>
+    	<result property="fcAmount" 	column="FC_AMOUNT"/>
+    	<result property="exchRate" 	column="EXCH_RATE"/>
+    	<result property="cvAmount" 	column="CV_AMOUNT"/>
+    	<result property="action" 		column="SYSTEM_GEN"/>
+    	<result property="flag" 		column="FLAG"/>
+    	<result property="trsDate" 		column="TRS_DATE"/>
+    	<result property="valueDate" 	column="VALUE_DATE"/>
+    	<result property="lineNo" 		column="LINE_NO"/>
+    	<result property="onOffBs" 		column="BS_CONTRA"/>
+    </resultMap>
+    
+    
+    <resultMap id="listCIFbyIDMapper" type="cifVO">
+    	<result property="CIF_NO" 			column="CIF_NO"/>
+    </resultMap>
+	
+	<select id="listCIFbyID" resultMap="listCIFbyIDMapper" parameterType="cifSC">	
+		SELECT CIF.CIF_NO
+		FROM CIF
+		WHERE (CIF.COMP_CODE = #{compCode, jdbcType=NUMERIC})
+		 AND (CIF.CIF_NO = #{cif_no, jdbcType=NUMERIC})
+		UNION
+		SELECT CIF_JOINT_DET.CIF_NO
+	    	FROM CIF_JOINT_DET
+		WHERE (CIF_JOINT_DET.COMP_CODE = #{compCode, jdbcType=NUMERIC})
+		AND (CIF_JOINT_DET.JOINT_CIF_NO = #{cif_no, jdbcType=NUMERIC})
+		UNION
+		SELECT CIF.CIF_NO
+		FROM CIF
+		WHERE (CIF.COMP_CODE = #{compCode, jdbcType=NUMERIC})
+		AND (CIF.ID_TYPE = #{idTypeCode, jdbcType=NUMERIC})		
+		AND (CIF.ID_NO = #{id_no, jdbcType=NUMERIC})
+
+	</select>
+	
+</mapper>

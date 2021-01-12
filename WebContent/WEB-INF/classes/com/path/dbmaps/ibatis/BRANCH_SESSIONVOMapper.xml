@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BRANCH_SESSION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.BRANCH_SESSIONVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DATE_OPENED" property="DATE_OPENED" />
+    <id column="STATUS" property="STATUS" />
+    <result column="DATE_CLOSED" property="DATE_CLOSED" />
+    <result column="SESSION_COUNTER" property="SESSION_COUNTER" />
+    <result column="OPENED_BY" property="OPENED_BY" />
+    <result column="CLOSED_BY" property="CLOSED_BY" />
+    <result column="IS_BRANCH" property="IS_BRANCH" />
+    <result column="REOPENED_BY" property="REOPENED_BY" />
+    <result column="DATE_REOPENED" property="DATE_REOPENED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DATE_OPENED, STATUS, DATE_CLOSED, SESSION_COUNTER, OPENED_BY, 
+    CLOSED_BY, IS_BRANCH, REOPENED_BY, DATE_REOPENED
+  </sql>
+  <select id="selectBRANCH_SESSION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.BRANCH_SESSIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from BRANCH_SESSION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DATE_OPENED = #{DATE_OPENED}
+      and STATUS = #{STATUS}
+  </select>
+  <delete id="deleteBRANCH_SESSION" parameterType="com.path.dbmaps.vo.BRANCH_SESSIONVOKey" >
+    delete from BRANCH_SESSION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DATE_OPENED = #{DATE_OPENED}
+      and STATUS = #{STATUS}
+  </delete>
+  <insert id="insertBRANCH_SESSION" parameterType="com.path.dbmaps.vo.BRANCH_SESSIONVO" >
+    insert into BRANCH_SESSION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DATE_OPENED != null" >
+        DATE_OPENED,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="DATE_CLOSED != null" >
+        DATE_CLOSED,
+      </if>
+      <if test="SESSION_COUNTER != null and SESSION_COUNTER != emptyBigDecimalValue" >
+        SESSION_COUNTER,
+      </if>
+      <if test="OPENED_BY != null" >
+        OPENED_BY,
+      </if>
+      <if test="CLOSED_BY != null" >
+        CLOSED_BY,
+      </if>
+      <if test="IS_BRANCH != null" >
+        IS_BRANCH,
+      </if>
+      <if test="REOPENED_BY != null" >
+        REOPENED_BY,
+      </if>
+      <if test="DATE_REOPENED != null" >
+        DATE_REOPENED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DATE_OPENED != null" >
+        #{DATE_OPENED},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="DATE_CLOSED != null" >
+        #{DATE_CLOSED},
+      </if>
+      <if test="SESSION_COUNTER != null and SESSION_COUNTER != emptyBigDecimalValue" >
+        #{SESSION_COUNTER},
+      </if>
+      <if test="OPENED_BY != null" >
+        #{OPENED_BY},
+      </if>
+      <if test="CLOSED_BY != null" >
+        #{CLOSED_BY},
+      </if>
+      <if test="IS_BRANCH != null" >
+        #{IS_BRANCH},
+      </if>
+      <if test="REOPENED_BY != null" >
+        #{REOPENED_BY},
+      </if>
+      <if test="DATE_REOPENED != null" >
+        #{DATE_REOPENED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateBRANCH_SESSION" >
+    update BRANCH_SESSION
+    <set >
+      <if test="DATE_CLOSED != null" >
+        DATE_CLOSED = #{DATE_CLOSED},
+      </if>
+      <if test="SESSION_COUNTER != null" >
+        <choose >
+          <when test="SESSION_COUNTER == emptyBigDecimalValue" >
+            SESSION_COUNTER = NULL ,
+          </when>
+          <otherwise >
+            SESSION_COUNTER = #{SESSION_COUNTER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OPENED_BY != null" >
+        OPENED_BY = #{OPENED_BY},
+      </if>
+      <if test="CLOSED_BY != null" >
+        CLOSED_BY = #{CLOSED_BY},
+      </if>
+      <if test="IS_BRANCH != null" >
+        IS_BRANCH = #{IS_BRANCH},
+      </if>
+      <if test="REOPENED_BY != null" >
+        REOPENED_BY = #{REOPENED_BY},
+      </if>
+      <if test="DATE_REOPENED != null" >
+        DATE_REOPENED = #{DATE_REOPENED},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DATE_OPENED = #{DATE_OPENED}
+      and STATUS = #{STATUS}
+  </sql>
+  <update id="updateBRANCH_SESSION" parameterType="com.path.dbmaps.vo.BRANCH_SESSIONVO" >
+    <include refid="sql_updateBRANCH_SESSION" />
+  </update>
+</mapper>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCHEQUEBOOK_LINKACC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCHEQUEBOOK_LINKACCVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="LNK_ACC_BR" property="LNK_ACC_BR" />
+    <result column="LNK_ACC_CY" property="LNK_ACC_CY" />
+    <result column="LNK_ACC_GL" property="LNK_ACC_GL" />
+    <result column="LNK_ACC_CIF" property="LNK_ACC_CIF" />
+    <result column="LNK_ACC_SL" property="LNK_ACC_SL" />
+    <result column="ACC_ADD_REF" property="ACC_ADD_REF" />
+    <result column="SELECTED_ACC" property="SELECTED_ACC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NO, LNK_ACC_BR, LNK_ACC_CY, LNK_ACC_GL, LNK_ACC_CIF, 
+    LNK_ACC_SL, ACC_ADD_REF, SELECTED_ACC
+  </sql>
+  <select id="selectCTSCHEQUEBOOK_LINKACC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_LINKACCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCHEQUEBOOK_LINKACC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSCHEQUEBOOK_LINKACC" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_LINKACCVOKey" >
+    delete from CTSCHEQUEBOOK_LINKACC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSCHEQUEBOOK_LINKACC" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_LINKACCVO" >
+    insert into CTSCHEQUEBOOK_LINKACC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="LNK_ACC_BR != null and LNK_ACC_BR != emptyBigDecimalValue" >
+        LNK_ACC_BR,
+      </if>
+      <if test="LNK_ACC_CY != null and LNK_ACC_CY != emptyBigDecimalValue" >
+        LNK_ACC_CY,
+      </if>
+      <if test="LNK_ACC_GL != null and LNK_ACC_GL != emptyBigDecimalValue" >
+        LNK_ACC_GL,
+      </if>
+      <if test="LNK_ACC_CIF != null and LNK_ACC_CIF != emptyBigDecimalValue" >
+        LNK_ACC_CIF,
+      </if>
+      <if test="LNK_ACC_SL != null and LNK_ACC_SL != emptyBigDecimalValue" >
+        LNK_ACC_SL,
+      </if>
+      <if test="ACC_ADD_REF != null" >
+        ACC_ADD_REF,
+      </if>
+      <if test="SELECTED_ACC != null" >
+        SELECTED_ACC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="LNK_ACC_BR != null and LNK_ACC_BR != emptyBigDecimalValue" >
+        #{LNK_ACC_BR},
+      </if>
+      <if test="LNK_ACC_CY != null and LNK_ACC_CY != emptyBigDecimalValue" >
+        #{LNK_ACC_CY},
+      </if>
+      <if test="LNK_ACC_GL != null and LNK_ACC_GL != emptyBigDecimalValue" >
+        #{LNK_ACC_GL},
+      </if>
+      <if test="LNK_ACC_CIF != null and LNK_ACC_CIF != emptyBigDecimalValue" >
+        #{LNK_ACC_CIF},
+      </if>
+      <if test="LNK_ACC_SL != null and LNK_ACC_SL != emptyBigDecimalValue" >
+        #{LNK_ACC_SL},
+      </if>
+      <if test="ACC_ADD_REF != null" >
+        #{ACC_ADD_REF},
+      </if>
+      <if test="SELECTED_ACC != null" >
+        #{SELECTED_ACC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCHEQUEBOOK_LINKACC" >
+    update CTSCHEQUEBOOK_LINKACC
+    <set >
+      <if test="LNK_ACC_BR != null" >
+        <choose >
+          <when test="LNK_ACC_BR == emptyBigDecimalValue" >
+            LNK_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            LNK_ACC_BR = #{LNK_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LNK_ACC_CY != null" >
+        <choose >
+          <when test="LNK_ACC_CY == emptyBigDecimalValue" >
+            LNK_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            LNK_ACC_CY = #{LNK_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LNK_ACC_GL != null" >
+        <choose >
+          <when test="LNK_ACC_GL == emptyBigDecimalValue" >
+            LNK_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            LNK_ACC_GL = #{LNK_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LNK_ACC_CIF != null" >
+        <choose >
+          <when test="LNK_ACC_CIF == emptyBigDecimalValue" >
+            LNK_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            LNK_ACC_CIF = #{LNK_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LNK_ACC_SL != null" >
+        <choose >
+          <when test="LNK_ACC_SL == emptyBigDecimalValue" >
+            LNK_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            LNK_ACC_SL = #{LNK_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_ADD_REF != null" >
+        ACC_ADD_REF = #{ACC_ADD_REF},
+      </if>
+      <if test="SELECTED_ACC != null" >
+        SELECTED_ACC = #{SELECTED_ACC},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSCHEQUEBOOK_LINKACC" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_LINKACCVO" >
+    <include refid="sql_updateCTSCHEQUEBOOK_LINKACC" />
+  </update>
+</mapper>

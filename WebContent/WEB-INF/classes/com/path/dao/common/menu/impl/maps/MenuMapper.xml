@@ -1,0 +1,2269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="Menu">
+
+<select id="checkOptAudit"  resultType="int" parameterType="auditRefCO">
+	 select count(1) FROM OPT 
+	 WHERE 	OPT.APP_NAME = #{appName}
+	 AND 	OPT.PROG_REF = #{progRef}
+	 AND (		OPT.AUDIT_SAVE   	= '1'
+	 		OR 	OPT.AUDIT_DELETE   	= '1'
+			OR 	OPT.AUDIT_RETRIEVE 	= '1')
+</select>
+
+<resultMap type="menuVO" id="menuReMap">
+  <result property="menuVar" column="PROG_REF"/>
+  <result property="menuName" column="MENU_TITLE"/>
+  <result property="leaf" column="children"/>
+  <result property="onLeafClick" column="onLeafClick"/>
+</resultMap>
+
+
+<sql id="accessMenuExist">
+             SELECT  
+			       OPT.PARENT_REF,
+			       OPT.DISP_ORDER
+				  FROM OPT
+				  WHERE OPT.APP_NAME     = #{appName}
+				  AND OPT.PARENT_REF   IS NOT NULL
+				  
+				   AND ( EXISTS  (  SELECT 1
+				              FROM   AXS
+				              WHERE AXS.USER_ID     = #{usrName}
+				              AND  AXS.COMP_CODE     = #{compCode}
+				              AND  AXS.BRANCH_CODE   = #{branchCode}
+				              AND  AXS.APP_NAME     = OPT.APP_NAME
+				              AND  AXS.PROG_REF    = OPT.PROG_REF
+				              AND  AXS.STATUS       = 'P'
+				              AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+				             )
+				    <!-- check if super user then no access checking is required -->
+			        <if test='appName == "SADS"'>
+			          OR( (SELECT PATH_STS FROM USR WHERE USER_ID = #{usrName} ) = '1')
+			         </if> 
+			      	)
+			      <!-- in case user is logged in a closed branch show only menu that has visible flag equal to 1, branchIsClosedUserLogged is either null or 1-->
+				  <if test="branchIsClosedUserLogged != null">
+				    AND OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN = #{branchIsClosedUserLogged}
+				  </if>
+			       <if test='profType == "1"'> 	
+				 	union
+					  SELECT OPT.PARENT_REF,
+					       OPT.DISP_ORDER
+					  FROM OPT
+							 WHERE OPT.APP_NAME     = #{appName}
+							  AND OPT.PARENT_REF  IS NOT NULL
+							  <!--   AND #{profType} = '1'-->
+							  AND EXISTS    (  SELECT 1
+							            FROM   S_APPROLUSR, S_ROLE_DETAIL
+							            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+							            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME  
+							            AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+							            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF 
+							            AND S_APPROLUSR.STATUS       = 'P'
+							            AND S_ROLE_DETAIL.STATUS     = 'P'
+							            AND S_APPROLUSR.USER_ID       = #{usrName}
+							            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+							            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+							            AND S_APPROLUSR.APP_NAME     = #{appName}
+							          )
+										    <!-- in case user is logged in a closed branch show only menu that has visible flag equal to 1, branchIsClosedUserLogged is either null or 1-->
+							  <if test="branchIsClosedUserLogged != null">
+							    AND OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN = #{branchIsClosedUserLogged}
+							  </if>        
+				 union
+				  SELECT OPT.PARENT_REF,
+				       OPT.DISP_ORDER
+				  FROM OPT
+				 WHERE OPT.APP_NAME     = #{appName}
+				  AND OPT.PARENT_REF   IS NOT NULL
+				  <!--  AND #{profType}     = '1'   -->           
+				  AND EXISTS
+                              (
+                                SELECT 1
+                                FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                                WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+                                AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+                                AND   S_GROUP_USER.USER_ID     = #{usrName}
+                                AND   S_GROUP_USER.STATUS       = 'P'
+                                AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                                
+                                AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+                                AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+                                AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+                                AND   S_GROUP_PROFILE.STATUS     = 'P'
+                                
+                                AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+                                AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+                                AND S_ROLE_DETAIL.PROG_REF      = OPT.PROG_REF
+                                AND S_ROLE_DETAIL.STATUS       = 'P'
+                                
+                                AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+                              ) 
+                                <!-- in case user is logged in a closed branch show only menu that has visible flag equal to 1, branchIsClosedUserLogged is either null or 1-->
+				 	 <if test="branchIsClosedUserLogged != null">
+				    	AND OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN = #{branchIsClosedUserLogged}
+				 	 </if>
+                  </if>            
+			
+</sql>
+
+<select id="returnMenuAccess" resultType="menuVO" parameterType="menuSC">
+	SELECT <if test="isSybase == 1">TOP 1</if> FINALTBL.* 
+	FROM
+	(
+	  <include refid="accessMenuExist"/>
+	) FINALTBL
+	<if test="isOracle == 1">
+	WHERE rownum = 1
+	</if>
+</select>
+
+<select id="getMenu" resultMap="menuReMap" parameterType="menuSC">
+ select MENU_TITLE,onLeafClick,PROG_REF,children from
+(
+ SELECT CASE WHEN usrAccOpts.MENU_TITLE IS NULL THEN usrAccOpts.PROG_DESC ELSE usrAccOpts.MENU_TITLE END MENU_TITLE
+      , 'addMenuTab('''||usrAccOpts.PROG_REF || ''','''||<choose><when test="isSybase == 1">STR_REPLACE</when><otherwise>REPLACE</otherwise></choose>(CASE WHEN usrAccOpts.MENU_TITLE IS NULL THEN usrAccOpts.PROG_DESC ELSE usrAccOpts.MENU_TITLE END,'''','\''')|| ''','''||#{appName}||''','''||usrAccOpts.PARENT_REF||'''<if test="checkRepReportsMenu == 1">,null,'''||#{appName}||'_'|| usrAccOpts.PROG_REF ||'_R00''</if>)' onLeafClick
+      , <if test="checkRepReportsMenu == 1">#{appName} || '_' ||</if>usrAccOpts.PROG_REF<if test="checkRepReportsMenu == 1">|| '_R00'</if> PROG_REF,
+        usrAccOpts.PROG_ORDER,
+        usrAccOpts.DYNAMIC_OPT,
+        usrAccOpts.DISP_ORDER,
+        usrAccOpts.PROG_TYPE,
+       CASE WHEN ( SELECT COUNT(1) FROM (
+       <include refid="accessMenuExist"/>
+        )ch 
+           WHERE ch.PARENT_REF = usrAccOpts.PROG_REF AND ch.DISP_ORDER IS NOT NULL) = 0 THEN 1 ELSE 0 END children    
+       
+      
+FROM 
+ (SELECT CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+       OPT.DYNAMIC_OPT,
+       OPT.PROG_DESC,
+       OPT.PROG_TYPE,
+       OPT.CATEG_ID,
+       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+  FROM OPT,REP_SPEC_APP_MENU_TEMP
+  WHERE OPT.APP_NAME     = #{appName}
+  AND OPT.PROG_REF = REP_SPEC_APP_MENU_TEMP.PROG_REF
+  AND OPT.PARENT_REF   IS NOT NULL
+  <if test='appName == "SADS"'>
+  AND OPT.HR_ADMIN_OPT_YN = (
+                             CASE 
+                                 WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                 THEN '1'
+                                 ELSE OPT.HR_ADMIN_OPT_YN
+                             END)                   
+   </if>
+  
+  AND ( EXISTS  (  SELECT 1
+              FROM   AXS
+              WHERE AXS.USER_ID     = #{usrName}
+              AND  AXS.COMP_CODE     = #{compCode}
+              AND  AXS.BRANCH_CODE   = #{branchCode}
+              AND  AXS.APP_NAME     = OPT.APP_NAME
+              AND  AXS.PROG_REF    = OPT.PROG_REF
+              AND  AXS.STATUS       = 'P'
+              AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+             ) 
+         <!-- check if super user then no access checking is required -->
+        <if test='appName == "SADS"'>
+          OR( (SELECT PATH_STS FROM USR WHERE USER_ID = #{usrName} ) = '1')
+         </if>
+      )
+<if test='profType == "1"'>
+union
+  SELECT  CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+       OPT.DYNAMIC_OPT,
+       OPT.PROG_DESC,
+       OPT.PROG_TYPE,
+       OPT.CATEG_ID,
+       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+  FROM OPT,REP_SPEC_APP_MENU_TEMP
+ WHERE OPT.APP_NAME     = #{appName}
+  AND OPT.PARENT_REF  IS NOT NULL
+  AND OPT.PROG_REF = REP_SPEC_APP_MENU_TEMP.PROG_REF
+  <if test='appName == "SADS"'>
+  AND OPT.HR_ADMIN_OPT_YN = (
+                             CASE 
+                                 WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                 THEN '1'
+                                 ELSE OPT.HR_ADMIN_OPT_YN
+                             END)                   
+  </if>  
+<!--  AND #{profType}     = '1'   -->           
+  AND EXISTS    (  SELECT 1
+            FROM   S_APPROLUSR, S_ROLE_DETAIL
+            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+            AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF
+            AND S_APPROLUSR.STATUS       = 'P'
+            AND S_ROLE_DETAIL.STATUS     = 'P'
+            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+            AND S_APPROLUSR.APP_NAME     = #{appName}
+            AND S_APPROLUSR.USER_ID       = #{usrName}
+          )  
+union
+  SELECT CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+       OPT.DYNAMIC_OPT,
+       OPT.PROG_DESC,
+       OPT.PROG_TYPE,
+       OPT.CATEG_ID,
+       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+  FROM OPT,REP_SPEC_APP_MENU_TEMP
+ WHERE OPT.APP_NAME     = #{appName}
+  AND OPT.PARENT_REF   IS NOT NULL
+  AND OPT.PROG_REF = REP_SPEC_APP_MENU_TEMP.PROG_REF
+  <if test='appName == "SADS"'>
+  AND OPT.HR_ADMIN_OPT_YN = (
+                             CASE 
+                                 WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                 THEN '1'
+                                 ELSE OPT.HR_ADMIN_OPT_YN
+                             END)                   
+  </if>  
+  <!-- AND #{profType}     = '1' -->        
+  AND EXISTS
+             (
+               SELECT 1
+               FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+               WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+               AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+               AND   S_GROUP_USER.USER_ID     = #{usrName}
+               AND   S_GROUP_USER.STATUS       = 'P'
+               AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+               
+               AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+               AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+               AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+               AND   S_GROUP_PROFILE.STATUS     = 'P'
+               
+               AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+               AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+               AND S_ROLE_DETAIL.PROG_REF      = OPT.PROG_REF
+               AND S_ROLE_DETAIL.STATUS       = 'P'
+               
+               AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+             )
+ </if> 
+) usrAccOpts
+<!-- 
+	**coming from reporting application under REPORTs Menu and if not REP application under Reports menu
+	<if test="checkRepReportsMenu == 1">
+	,<choose><when test="isSybase == 1">#REP_SPEC_APP_MENU_TEMP</when><otherwise>REP_SPEC_APP_MENU_TEMP</otherwise></choose> RAMTmp
+	</if>
+ -->
+<!-- check if application is BOTH and the menu is FLAT to filter OPTS that related to Categories not for WEB-->
+<if test="webPbVersion == 2 and categId == null" >
+ , OPT_CATEGORY CAT
+</if>
+WHERE 
+  <choose>
+  <when test="progGateg != null">
+	usrAccOpts.CATEG_ID = #{progGateg}
+	AND usrAccOpts.PARENT_REF = 'ROOT'
+  </when>
+  <!-- 
+	  <when test="checkRepReportsMenu == 1">
+	  	RAMTmp.PROG_REF = usrAccOpts.PROG_REF
+	  </when>
+  -->
+  <otherwise>
+   usrAccOpts.PARENT_REF = #{progRef}
+  </otherwise>
+  </choose>
+  <if test="webPbVersion == 2">
+    <choose>
+     <!-- If Menu is not categorised then include only menus whose categories is Web related -->
+     <when test="categId == null">AND (usrAccOpts.CATEG_ID = CAT.CATEG_ID AND CAT.IS_WEB_YN = 1)</when>
+     <!-- If Menu is categorised then exclude Categories with categ_id = 0-->
+     <otherwise> AND (usrAccOpts.CATEG_ID <![CDATA[<>]]> 0 OR usrAccOpts.CATEG_ID IS NULL)</otherwise>
+    </choose>
+  </if>
+  <!-- in case user is logged in a closed branch show only menu that has visible flag equal to 1, branchIsClosedUserLogged is either null or 1-->
+  <if test="branchIsClosedUserLogged != null">
+    AND usrAccOpts.IS_VISIBLE_AFTER_BR_CLOSURE_YN = #{branchIsClosedUserLogged}
+  </if>
+  
+  AND usrAccOpts.DISP_ORDER IS NOT NULL
+
+) theTbl
+/*where (theTbl.children = 1  and theTbl.PROG_TYPE = 'P' )
+OR (theTbl.children = 0  and theTbl.PROG_TYPE = 'R')
+*/
+<choose>
+		<when test='reportOrdering == "1"'>
+			ORDER BY UPPER(theTbl.MENU_TITLE) ASC
+		</when>
+		<otherwise>
+			ORDER BY theTbl.DISP_ORDER ASC
+		</otherwise>
+</choose>
+</select>
+
+<sql id="menuSybaseProgRefCond">
+	<choose>
+		<when test="progGateg != null">
+			AND OPT.CATEG_ID = #{progGateg}
+			AND OPT.PARENT_REF = 'ROOT'
+		</when>
+		<when test="checkRepReportsMenu == 1">
+			AND RAMTmp.PROG_REF = OPT.PROG_REF
+		</when>
+		<otherwise>
+			AND OPT.PARENT_REF = #{progRef}
+		</otherwise>
+	</choose>
+</sql>
+<select id="getMenuSybasePrepare" parameterType="menuSC">
+
+
+<choose>
+<when test="isSQLServer == 1">
+  insert into #MENU_MAIN_LEVEL( MENU_TITLE,
+								PARENT_REF,
+								PROG_REF,
+								PROG_ORDER,
+								DISP_ORDER,
+								DYNAMIC_OPT,
+								PROG_DESC,
+								PROG_TYPE,
+								CATEG_ID,
+								IS_VISIBLE_AFTER_BR_CLOSURE_YN
+								) 
+  SELECT 
+   CASE
+         WHEN mainLevelMenu.MENU_TITLE IS NULL THEN
+          mainLevelMenu.PROG_DESC
+         ELSE
+          mainLevelMenu.MENU_TITLE
+       END MENU_TITLE,
+       mainLevelMenu.PARENT_REF,
+       mainLevelMenu.PROG_REF,
+       mainLevelMenu.PROG_ORDER,
+       mainLevelMenu.DISP_ORDER,
+       mainLevelMenu.DYNAMIC_OPT,
+       mainLevelMenu.PROG_DESC,
+       mainLevelMenu.PROG_TYPE,
+       mainLevelMenu.CATEG_ID,
+       mainLevelMenu.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+ 
+</when>
+<otherwise>
+select CASE WHEN mainLevelMenu.MENU_TITLE IS NULL THEN  mainLevelMenu.PROG_DESC ELSE mainLevelMenu.MENU_TITLE END MENU_TITLE,
+					   mainLevelMenu.PARENT_REF,
+                       mainLevelMenu.PROG_REF,
+                       mainLevelMenu.PROG_ORDER,
+                       mainLevelMenu.DISP_ORDER,
+                       mainLevelMenu.DYNAMIC_OPT,
+                       mainLevelMenu.PROG_DESC,
+                       mainLevelMenu.PROG_TYPE,
+                       mainLevelMenu.CATEG_ID,
+                       mainLevelMenu.IS_VISIBLE_AFTER_BR_CLOSURE_YN 
+into #MENU_MAIN_LEVEL 
+ </otherwise>
+</choose> 
+from (SELECT CASE #{language}
+                         WHEN 'AR' THEN
+                          OPT.MENU_TITLE_ARAB
+                         WHEN 'FR' THEN
+                          OPT.MENU_TITLE_FR
+                         ELSE
+                          OPT.MENU_TITLE_ENG
+                       END MENU_TITLE,
+                       OPT.PARENT_REF,
+                       OPT.PROG_REF,
+                       OPT.PROG_ORDER,
+                       OPT.DISP_ORDER,
+                       OPT.DYNAMIC_OPT,
+                       OPT.PROG_DESC,
+                       OPT.PROG_TYPE,
+                       OPT.CATEG_ID,
+                       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+                  FROM OPT
+					,#REP_SPEC_APP_MENU_TEMP RAMTmp
+                  WHERE OPT.APP_NAME = #{appName}
+                   AND OPT.PROG_REF = RAMTmp.PROG_REF
+				   AND OPT.DISP_ORDER IS NOT NULL
+				   <if test='appName == "SADS"'>
+                   AND OPT.HR_ADMIN_OPT_YN = (
+                                               CASE 
+                                                   WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                                   THEN
+                                                        '1'
+                                                   ELSE
+                                                        OPT.HR_ADMIN_OPT_YN
+                                                END)                   
+				   </if>
+				   <include refid="menuSybaseProgRefCond"></include>
+                   AND (EXISTS (SELECT 1
+                                  FROM AXS
+                                 WHERE AXS.USER_ID = #{usrName}
+                                   AND AXS.COMP_CODE = #{compCode}
+                                   AND AXS.BRANCH_CODE = #{branchCode}
+                                   AND AXS.APP_NAME = OPT.APP_NAME
+                                   AND AXS.PROG_REF = OPT.PROG_REF
+                                   AND AXS.STATUS = 'P'
+                                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                                   )
+                      <!-- check if super user of SADS then no access checking is required -->
+			        <if test='appName == "SADS"'>
+			          OR( (SELECT PATH_STS FROM USR WHERE USER_ID = #{usrName} ) = '1')
+			         </if>               
+                        )
+                <if test='profType == "1"'>                   
+                union
+                SELECT CASE #{language}  WHEN 'AR' THEN
+                          OPT.MENU_TITLE_ARAB
+                         WHEN 'FR' THEN
+                          OPT.MENU_TITLE_FR
+                         ELSE
+                          OPT.MENU_TITLE_ENG
+                       END MENU_TITLE,
+                       OPT.PARENT_REF,
+                       OPT.PROG_REF,
+                       OPT.PROG_ORDER,
+                       OPT.DISP_ORDER,
+                       OPT.DYNAMIC_OPT,
+                       OPT.PROG_DESC,
+                       OPT.PROG_TYPE,
+                       OPT.CATEG_ID,
+                       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+                  FROM OPT
+					,#REP_SPEC_APP_MENU_TEMP RAMTmp
+                   WHERE OPT.APP_NAME = #{appName}
+                   AND OPT.PROG_REF = RAMTmp.PROG_REF 
+				   AND OPT.DISP_ORDER IS NOT NULL
+				   <if test='appName == "SADS"'>
+                   AND OPT.HR_ADMIN_OPT_YN = (
+                                               CASE 
+                                                   WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                                   THEN
+                                                        '1'
+                                                   ELSE
+                                                        OPT.HR_ADMIN_OPT_YN
+                                                END)                   
+				   </if>				   
+				   <include refid="menuSybaseProgRefCond"></include>
+                   AND EXISTS
+                 (SELECT 1
+                          FROM S_APPROLUSR, S_ROLE_DETAIL
+                         WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                           AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+                           AND S_ROLE_DETAIL.APP_NAME = OPT.APP_NAME
+                           AND S_ROLE_DETAIL.PROG_REF = OPT.PROG_REF
+                           AND S_APPROLUSR.STATUS = 'P'
+                           AND S_ROLE_DETAIL.STATUS = 'P'
+                           AND S_APPROLUSR.COMP_CODE = #{compCode}
+                           AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+                           AND S_APPROLUSR.APP_NAME = #{appName}
+                           AND S_APPROLUSR.USER_ID = #{usrName})
+                union
+                SELECT CASE #{language}  WHEN 'AR' THEN
+                          OPT.MENU_TITLE_ARAB
+                         WHEN 'FR' THEN
+                          OPT.MENU_TITLE_FR
+                         ELSE
+                          OPT.MENU_TITLE_ENG
+                       END MENU_TITLE,
+                       OPT.PARENT_REF,
+                       OPT.PROG_REF,
+                       OPT.PROG_ORDER,
+                       OPT.DISP_ORDER,
+                       OPT.DYNAMIC_OPT,
+                       OPT.PROG_DESC,
+                       OPT.PROG_TYPE,
+                       OPT.CATEG_ID,
+                       OPT.IS_VISIBLE_AFTER_BR_CLOSURE_YN
+                  FROM OPT
+					,#REP_SPEC_APP_MENU_TEMP RAMTmp
+                 WHERE OPT.APP_NAME = #{appName}
+                   AND OPT.PROG_REF = RAMTmp.PROG_REF
+				   AND OPT.DISP_ORDER IS NOT NULL
+				   <if test='appName == "SADS"'>
+                   AND OPT.HR_ADMIN_OPT_YN = (
+                                               CASE 
+                                                   WHEN '1' = (SELECT USR.HR_ADMIN_YN FROM USR WHERE USER_ID = #{usrName}) 
+                                                   THEN
+                                                        '1'
+                                                   ELSE
+                                                        OPT.HR_ADMIN_OPT_YN
+                                                END)                   
+				   </if>				   
+				   <include refid="menuSybaseProgRefCond"></include>
+                   AND EXISTS
+                 (SELECT 1
+                          FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                         WHERE (S_GROUP_USER.COMP_CODE = #{compCode} OR
+                               S_GROUP_USER.COMP_CODE = 0)
+                           AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR
+                               S_GROUP_USER.BRANCH_CODE = 0)
+                           AND S_GROUP_USER.USER_ID = #{usrName}
+                           AND S_GROUP_USER.STATUS = 'P'
+                           AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                           
+                           AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+                           AND S_GROUP_PROFILE.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                           AND S_GROUP_PROFILE.APP_NAME = #{appName}
+                           AND S_GROUP_PROFILE.STATUS = 'P'
+                           AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                           AND S_ROLE_DETAIL.APP_NAME = OPT.APP_NAME
+                           AND S_ROLE_DETAIL.PROG_REF = OPT.PROG_REF
+                           AND S_ROLE_DETAIL.STATUS = 'P'
+                           
+                           AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+                           )
+                     </if>      
+                  ) mainLevelMenu
+		 <!-- check if application is BOTH and the menu is FLAT to filter OPTS that related to Categories not for WEB-->
+		 <if test="webPbVersion == 2 and categId == null" >
+		 , OPT_CATEGORY CAT
+		</if>
+ <where>
+  <if test="webPbVersion == 2">
+    <choose>
+     <!-- If Menu is not categorised then include only menus whose categories is Web related -->
+     <when test="categId == null"> mainLevelMenu.CATEG_ID = CAT.CATEG_ID AND CAT.IS_WEB_YN = 1</when>
+     <!-- If Menu is categorised then exclude Categories with categ_id = 0-->
+     <otherwise> mainLevelMenu.CATEG_ID <![CDATA[<>]]> 0 OR mainLevelMenu.CATEG_ID IS NULL</otherwise>
+    </choose>
+  </if>
+  <!-- in case user is logged in a closed branch show only menu that has visible flag equal to 1, branchIsClosedUserLogged is either null or 1-->
+  <if test="branchIsClosedUserLogged != null">
+  	<if test="webPbVersion == 2"> AND </if>
+     mainLevelMenu.IS_VISIBLE_AFTER_BR_CLOSURE_YN = #{branchIsClosedUserLogged}
+  </if>
+  </where>            
+  
+  <!-- inserting to temp table if each menu in root has children or not-->
+  
+  <choose>
+<when test="isSQLServer == 1">
+INSERT INTO
+           #MENU_CHILDREN(PARENT_REF)
+		   SELECT childAccOpts.PARENT_REF
+</when>
+<otherwise>
+   select * into #MENU_CHILDREN
+</otherwise>
+</choose>
+  from (SELECT OPT.PARENT_REF PARENT_REF
+                       
+                  FROM OPT,#MENU_MAIN_LEVEL
+                  WHERE OPT.APP_NAME = #{appName}
+				   AND OPT.PARENT_REF = #MENU_MAIN_LEVEL.PROG_REF
+				   AND OPT.DISP_ORDER IS NOT NULL				  
+                   AND (EXISTS (SELECT 1
+                                  FROM AXS
+                                 WHERE AXS.USER_ID = #{usrName}
+                                   AND AXS.COMP_CODE = #{compCode}
+                                   AND AXS.BRANCH_CODE = #{branchCode}
+                                   AND AXS.APP_NAME = OPT.APP_NAME
+                                   AND AXS.PROG_REF = OPT.PROG_REF
+                                   AND AXS.STATUS = 'P'
+                                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                                   )
+                     <!-- check if super user of SADS then no access checking is required -->
+			        <if test='appName == "SADS"'>
+			          OR( (SELECT PATH_STS FROM USR WHERE USER_ID = #{usrName} ) = '1')
+			         </if>
+			         )
+                union
+                SELECT          OPT.PARENT_REF PARENT_REF
+                       
+                  FROM OPT,#MENU_MAIN_LEVEL
+                  WHERE OPT.APP_NAME = #{appName}
+				   AND OPT.PARENT_REF = #MENU_MAIN_LEVEL.PROG_REF
+				   AND OPT.DISP_ORDER IS NOT NULL	
+                   AND EXISTS
+                 (SELECT 1
+                          FROM S_APPROLUSR, S_ROLE_DETAIL
+                         WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                           AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+                           AND S_ROLE_DETAIL.APP_NAME = OPT.APP_NAME
+                           AND S_ROLE_DETAIL.PROG_REF = OPT.PROG_REF
+                           AND S_APPROLUSR.STATUS = 'P'
+                           AND S_ROLE_DETAIL.STATUS = 'P'
+                           AND S_APPROLUSR.COMP_CODE = #{compCode}
+                           AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+                           AND S_APPROLUSR.APP_NAME = #{appName}
+                           AND S_APPROLUSR.USER_ID = #{usrName})
+                union
+                SELECT          OPT.PARENT_REF PARENT_REF
+                       
+                  FROM OPT,#MENU_MAIN_LEVEL
+                  WHERE OPT.APP_NAME = #{appName}
+				   AND OPT.PARENT_REF = #MENU_MAIN_LEVEL.PROG_REF
+				   AND OPT.DISP_ORDER IS NOT NULL	
+                   AND EXISTS
+                 (SELECT 1
+                          FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                         WHERE (S_GROUP_USER.COMP_CODE = #{compCode} OR
+                               S_GROUP_USER.COMP_CODE = 0)
+                           AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR
+                               S_GROUP_USER.BRANCH_CODE = 0)
+                           AND S_GROUP_USER.USER_ID = #{usrName}
+                           AND S_GROUP_USER.STATUS = 'P'
+                           AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                           
+                           AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+                           AND S_GROUP_PROFILE.APP_NAME = S_ROLE_DETAIL.APP_NAME
+                           AND S_GROUP_PROFILE.APP_NAME = #{appName}
+                           AND S_GROUP_PROFILE.STATUS = 'P'
+                           AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                           AND S_ROLE_DETAIL.APP_NAME = OPT.APP_NAME
+                           AND S_ROLE_DETAIL.PROG_REF = OPT.PROG_REF
+                           AND S_ROLE_DETAIL.STATUS = 'P'
+                           
+                           AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+                           
+                           )) childAccOpts 
+                         
+</select>
+<select id="getMenuSybase" resultMap="menuReMap" parameterType="menuSC">
+   SELECT CASE  WHEN #MENU_MAIN_LEVEL.MENU_TITLE IS NULL THEN
+                  #MENU_MAIN_LEVEL.PROG_DESC
+                 ELSE
+                  #MENU_MAIN_LEVEL.MENU_TITLE
+               END MENU_TITLE
+               <choose>
+	<when test="isSQLServer == 1">
+	, 'addMenuTab('''+#MENU_MAIN_LEVEL.PROG_REF + ''','''+REPLACE(CASE WHEN #MENU_MAIN_LEVEL.MENU_TITLE IS NULL THEN #MENU_MAIN_LEVEL.PROG_DESC ELSE #MENU_MAIN_LEVEL.MENU_TITLE END,'''','\''')+ ''','''+#{appName}+''','''+#MENU_MAIN_LEVEL.PARENT_REF+'''<if test="checkRepReportsMenu == 1">,null,'''+#{appName}+'_'+ #MENU_MAIN_LEVEL.PROG_REF +'_R00''</if>)' onLeafClick
+      			, <if test="checkRepReportsMenu == 1">#{appName} + '_' +</if>#MENU_MAIN_LEVEL.PROG_REF<if test="checkRepReportsMenu == 1">+ '_R00'</if> PROG_REF,
+	
+	</when>
+	<otherwise>
+	, 'addMenuTab('''||#MENU_MAIN_LEVEL.PROG_REF || ''','''||STR_REPLACE(CASE WHEN #MENU_MAIN_LEVEL.MENU_TITLE IS NULL THEN #MENU_MAIN_LEVEL.PROG_DESC ELSE #MENU_MAIN_LEVEL.MENU_TITLE END,'''','\''')|| ''','''||#{appName}||''','''||#MENU_MAIN_LEVEL.PARENT_REF||'''<if test="checkRepReportsMenu == 1">,null,'''||#{appName}||'_'|| #MENU_MAIN_LEVEL.PROG_REF ||'_R00''</if>)' onLeafClick
+      			, <if test="checkRepReportsMenu == 1">#{appName} || '_' ||</if>#MENU_MAIN_LEVEL.PROG_REF<if test="checkRepReportsMenu == 1">|| '_R00'</if> PROG_REF,
+	</otherwise>
+	</choose>
+               
+               CASE WHEN (SELECT COUNT(1) FROM #MENU_CHILDREN 
+           WHERE #MENU_MAIN_LEVEL.PROG_REF = #MENU_CHILDREN.PARENT_REF) = 0 THEN  1   ELSE  0 END children
+		 FROM #MENU_MAIN_LEVEL 
+         <choose>
+		   <when test='reportOrdering == "1"'>
+		     ORDER BY UPPER(#MENU_MAIN_LEVEL.MENU_TITLE)
+		   </when>
+		   <otherwise>
+		     ORDER BY #MENU_MAIN_LEVEL.DISP_ORDER
+		   </otherwise>
+		 </choose>                    
+</select>
+<update id="dropMENU_TEMP">
+	IF OBJECT_ID(<choose><when test="isSQLServer == 1">'tempdb..#MENU_MAIN_LEVEL'</when><otherwise>'#MENU_MAIN_LEVEL'</otherwise></choose>) IS NOT NULL
+	BEGIN
+	DROP TABLE #MENU_MAIN_LEVEL
+	END
+	
+	IF OBJECT_ID(<choose><when test="isSQLServer == 1">'tempdb..#MENU_CHILDREN'</when><otherwise>'#MENU_CHILDREN'</otherwise></choose>) IS NOT NULL
+	BEGIN
+	DROP TABLE #MENU_CHILDREN
+	END
+</update>
+<select id="returnReportsApps" resultMap="menuReMap"> 
+ SELECT DISTINCT R.APP_NAME MENU_TITLE ,
+                 '' onLeafClick,
+                 R.APP_NAME<choose><when test="isSQLServer == 1"> + </when> <otherwise> || </otherwise></choose>'_R00' PROG_REF,
+                 0 children
+   FROM OPT O, IRP_AD_HOC_REPORT R, OPT_EXTENDED OE
+   WHERE R.PROG_REF = O.PROG_REF
+   AND R.APP_NAME = O.APP_NAME
+   AND OE.APP_NAME = O.APP_NAME
+   AND OE.PROG_REF = O.PROG_REF
+   AND ( EXISTS  (  SELECT 1
+					  FROM   AXS
+					  WHERE AXS.USER_ID     = #{usrName}
+					  AND  AXS.COMP_CODE    = #{compCode}
+					  AND  AXS.BRANCH_CODE  = #{branchCode}
+					  AND  AXS.APP_NAME     = O.APP_NAME
+					  AND  AXS.PROG_REF    = O.PROG_REF
+					  AND  AXS.STATUS       = 'P'
+					  AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+				 ) 
+ <if test='profType == "1"'>				  
+		OR EXISTS  (SELECT 1
+							FROM   S_APPROLUSR, S_ROLE_DETAIL
+							WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+							AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+							AND S_ROLE_DETAIL.APP_NAME     = O.APP_NAME
+							AND S_ROLE_DETAIL.PROG_REF    = O.PROG_REF
+							AND S_APPROLUSR.STATUS       = 'P'
+							AND S_ROLE_DETAIL.STATUS     = 'P'
+							AND S_APPROLUSR.COMP_CODE     = #{compCode} 
+							AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+							AND S_APPROLUSR.APP_NAME     = R.APP_NAME
+							AND S_APPROLUSR.USER_ID       = #{usrName}
+						  )  
+		  OR EXISTS
+						 (
+						   SELECT 1
+						   FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+						   WHERE S_GROUP_USER.COMP_CODE   = #{compCode} 
+						   AND S_GROUP_USER.BRANCH_CODE   = #{branchCode}
+						   AND   S_GROUP_USER.USER_ID     = #{usrName}
+						   AND   S_GROUP_USER.STATUS       = 'P'
+						   AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+						   
+						   AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+						   AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+						   AND   S_GROUP_PROFILE.APP_NAME   = R.APP_NAME
+						   AND   S_GROUP_PROFILE.STATUS     = 'P'
+						   
+						   AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+						   AND S_ROLE_DETAIL.APP_NAME     = O.APP_NAME
+						   AND S_ROLE_DETAIL.PROG_REF      = O.PROG_REF
+						   AND S_ROLE_DETAIL.STATUS       = 'P'
+						   
+						   AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+						 )
+ 	</if>
+	   )
+	UNION
+	 SELECT DISTINCT R.APP_NAME MENU_TITLE ,
+                 '' onLeafClick,
+                 R.APP_NAME<choose> <when test="isSQLServer == 1"> + </when> <otherwise> || </otherwise> </choose>'_R00' PROG_REF,
+                 0 children
+   FROM OPT O, IRP_AD_HOC_REPORT R, OPT_EXTENDED OE
+   WHERE R.PROG_REF = O.PROG_REF
+   AND R.APP_NAME = O.APP_NAME
+   AND OE.APP_NAME = O.APP_NAME
+   AND OE.PROG_REF = O.PROG_REF
+   AND ( EXISTS  (  SELECT 1
+					  FROM   AXS
+					  WHERE AXS.USER_ID     = #{usrName}
+					  AND  AXS.COMP_CODE    = 0 
+					  AND AXS.BRANCH_CODE = 0
+					  AND  AXS.APP_NAME     = O.APP_NAME
+					  AND  AXS.PROG_REF    = O.PROG_REF
+					  AND  AXS.STATUS       = 'P'
+					  AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+				 ) 
+ <if test='profType == "1"'>				  
+		OR EXISTS  (SELECT 1
+							FROM   S_APPROLUSR, S_ROLE_DETAIL
+							WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+							AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+							AND S_ROLE_DETAIL.APP_NAME     = O.APP_NAME
+							AND S_ROLE_DETAIL.PROG_REF    = O.PROG_REF
+							AND S_APPROLUSR.STATUS       = 'P'
+							AND S_ROLE_DETAIL.STATUS     = 'P'
+							AND S_APPROLUSR.COMP_CODE     = 0 
+							AND S_APPROLUSR.BRANCH_CODE   = 0
+							AND S_APPROLUSR.APP_NAME     = R.APP_NAME
+							AND S_APPROLUSR.USER_ID       = #{usrName}
+						  )  
+		  OR EXISTS
+						 (
+						   SELECT 1
+						   FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+						   WHERE S_GROUP_USER.COMP_CODE   = 0 
+						   AND S_GROUP_USER.BRANCH_CODE   = 0
+						   AND   S_GROUP_USER.USER_ID     = #{usrName}
+						   AND   S_GROUP_USER.STATUS       = 'P'
+						   AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+						   
+						   AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+						   AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+						   AND   S_GROUP_PROFILE.APP_NAME   = R.APP_NAME
+						   AND   S_GROUP_PROFILE.STATUS     = 'P'
+						   
+						   AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+						   AND S_ROLE_DETAIL.APP_NAME     = O.APP_NAME
+						   AND S_ROLE_DETAIL.PROG_REF      = O.PROG_REF
+						   AND S_ROLE_DETAIL.STATUS       = 'P'
+						   
+						   AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+						   
+						 )
+ 	</if>
+	   )
+</select>
+
+<!-- temporary menuCAtegory hardcoded as the case in PB -->
+<select id="returnCategMenuAndOpts" resultMap="menuReMap" parameterType="menuSC">
+SELECT CASE WHEN AVAIL_CAT.CATEG_DESC IS NULL THEN 'UNDEFINED' ELSE AVAIL_CAT.CATEG_DESC END MENU_TITLE
+  ,
+    <choose>
+	<when test="isSQLServer == 1">
+	 'addMenuTab('''+
+	  AVAIL_CAT.CATEG_ID
+	  + ''','''+AVAIL_CAT.CATEG_DESC+ ''','''+#{appName}+''',''ROOT'')' onLeafClick
+	  ,AVAIL_CAT.CATEG_ID PROG_REF
+	  ,0 children
+	  ,AVAIL_CAT.DISPLAY_ORDER
+	FROM
+	(
+	  SELECT DISTINCT '_CATEG_'+
+	</when>
+	<otherwise>
+	  'addMenuTab('''||
+	  AVAIL_CAT.CATEG_ID
+	  || ''','''||AVAIL_CAT.CATEG_DESC|| ''','''||#{appName}||''',''ROOT'')' onLeafClick
+	  ,AVAIL_CAT.CATEG_ID PROG_REF
+	  ,0 children
+	  ,AVAIL_CAT.DISPLAY_ORDER
+	FROM
+	(
+	  SELECT DISTINCT '_CATEG_'||
+  </otherwise>
+  </choose>
+  <choose><when test="isSybase == 1">CONVERT(VARCHAR, CAT.CATEG_ID)</when><otherwise>CAT.CATEG_ID</otherwise></choose> CATEG_ID,
+  <choose>
+  <when test="language == 'AR'">CAT.CATEG_DESC_AR</when>
+  <when test="language == 'FR'">CAT.CATEG_DESC_FR</when>
+  <when test="language == 'RU'">CAT.CATEG_DESC_RU</when>
+  <when test="language == 'TK'">CAT.CATEG_DESC_TK</when>
+  <when test="language == 'FA'">CAT.CATEG_DESC_FA</when>
+  <otherwise>CAT.CATEG_DESC_ENG</otherwise>
+  </choose> CATEG_DESC, CAT.DISPLAY_ORDER
+  FROM OPT_CATEGORY CAT , OPT O
+  WHERE CAT.CATEG_ID = O.CATEG_ID
+  AND O.PARENT_REF = 'ROOT'
+  <if test="branchIsClosedUserLogged != null">
+    AND O.IS_VISIBLE_AFTER_BR_CLOSURE_YN = 1
+  </if>
+  <!-- return categories that Marked for Web Only in case the application is BOTH PB and WEB otherwise ALL Categories -->
+  AND ( (CAT.IS_WEB_YN = 1 AND  #{webPbVersion} = 2) OR #{webPbVersion} = 1)
+  AND O.APP_NAME = #{appName}
+      AND(
+          ( EXISTS  (  SELECT 1
+                FROM   AXS
+                WHERE AXS.USER_ID     = #{usrName}
+                AND  AXS.COMP_CODE     = #{compCode}
+                AND  AXS.BRANCH_CODE   = #{branchCode}
+                AND  AXS.APP_NAME     = #{appName}
+                AND  AXS.PROG_REF    = O.PROG_REF
+                AND  AXS.STATUS       = 'P'
+                AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+              ) 
+        )
+         <!-- check if super user of SADS then no access checking is required -->
+        <if test='appName == "SADS"'>
+          OR( (SELECT PATH_STS FROM USR WHERE USER_ID = #{usrName} ) = '1')
+         </if>
+    <if test='profType == "1"'>
+      OR
+      ( EXISTS    (  SELECT 1
+              FROM   S_APPROLUSR, S_ROLE_DETAIL
+              WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+              AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+              AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+              AND S_ROLE_DETAIL.PROG_REF    = O.PROG_REF
+              AND S_APPROLUSR.STATUS       = 'P'
+              AND S_ROLE_DETAIL.STATUS     = 'P'
+              AND S_APPROLUSR.COMP_CODE     = #{compCode}
+              AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+              AND S_APPROLUSR.APP_NAME     = #{appName}
+              AND S_APPROLUSR.USER_ID       = #{usrName}
+            )    
+    )
+    OR
+    (
+      EXISTS
+               (
+                 SELECT 1
+                 FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                 WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+                 AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+                 AND   S_GROUP_USER.USER_ID     = #{usrName}
+                 AND   S_GROUP_USER.STATUS       = 'P'
+                 AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                 
+                 AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+                 AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+                 AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+                 AND   S_GROUP_PROFILE.STATUS     = 'P'
+                 
+                 AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+                 AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+                 AND S_ROLE_DETAIL.PROG_REF      = O.PROG_REF
+                 AND S_ROLE_DETAIL.STATUS       = 'P'
+                 AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+               )
+    )
+    </if>
+  )
+)AVAIL_CAT
+ORDER BY AVAIL_CAT.DISPLAY_ORDER
+</select>
+
+<!-- Comments for menuCAtegory Translation to Different Language and per User, Other tables than PB
+
+<select id="returnCategMenuAndOpts" resultMap="menuReMap" parameterType="menuSC">
+SELECT MENU_TITLE,onLeafClick,PROG_REF, children, DISP_ORDER
+FROM
+(
+ 
+SELECT AVAIL_CAT.CATEG_DESC MENU_TITLE
+	,'addMenuTab('''||
+	<choose> 
+	<when test="isSybase == 1">
+	 CONVERT ( VARCHAR,AVAIL_CAT.CATEG_ID)
+	</when>
+	<otherwise>AVAIL_CAT.CATEG_ID</otherwise>
+	</choose>
+	|| ''','''||AVAIL_CAT.CATEG_DESC|| ''','''||#{appName}||''')' onLeafClick
+	,AVAIL_CAT.CATEG_ID PROG_REF
+	,0 children
+	,0 DISP_ORDER
+FROM
+(
+	SELECT '_CATEG_'|| 
+	<choose> 
+	<when test="isSybase == 1">
+	 CONVERT ( VARCHAR,PREV_CAT.CATEG_ID)
+	</when>
+	<otherwise>PREV_CAT.CATEG_ID</otherwise>
+	</choose>  CATEG_ID 
+	 ,CASE WHEN CATTRANS.CATEG_DESC IS NULL THEN PREV_CAT.CATEG_DESC ELSE CATTRANS.CATEG_DESC END CATEG_DESC
+	 
+	FROM 
+	(
+	SELECT DISTINCT CAT.CATEG_ID,  CAT.CATEG_DESC
+	FROM OPT_CATEGORY_LK_USR USRCAT,OPT_CATEGORY_MASTER CAT 
+		,OPT_CATEGORY_LK_OPT CATOPT			 
+	WHERE USER_ID = #{usrName}
+	AND CAT.CATEG_ID = USRCAT.CATEG_ID
+	AND CAT.PARENT_CATEG_ID
+	<choose>
+	<when test="categId == null"> IS NULL</when>
+	<otherwise> = #{categId}</otherwise>
+	</choose>
+	AND CATOPT.APP_NAME = #{appName}
+	AND CATOPT.CATEG_ID = CAT.CATEG_ID 
+	AND 
+	(   ( EXISTS  (  SELECT 1
+	              FROM   AXS
+	              WHERE AXS.USER_ID     = #{usrName}
+	              AND  AXS.COMP_CODE     = #{compCode}
+	              AND  AXS.BRANCH_CODE   = #{branchCode}
+	              AND  AXS.APP_NAME     = #{appName}
+	              AND  AXS.PROG_REF    = CATOPT.PROG_REF
+	              AND  AXS.STATUS       = 'P'
+	            ) 
+	      )
+	  <if test='profType == "1"'>
+	    OR
+	    ( EXISTS    (  SELECT 1
+	            FROM   S_APPROLUSR, S_ROLE_DETAIL
+	            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+	            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+	            AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+	            AND S_ROLE_DETAIL.PROG_REF    = CATOPT.PROG_REF
+	            AND S_APPROLUSR.STATUS       = 'P'
+	            AND S_ROLE_DETAIL.STATUS     = 'P'
+	            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+	            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+	            AND S_APPROLUSR.APP_NAME     = #{appName}
+	            AND S_APPROLUSR.USER_ID       = #{usrName}
+	          )    
+		)
+		OR
+		(
+			EXISTS
+	             (
+	               SELECT 1
+	               FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	               WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+	               AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+	               AND   S_GROUP_USER.USER_ID     = #{usrName}
+	               AND   S_GROUP_USER.STATUS       = 'P'
+	               
+	               AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+	               AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+	               AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+	               AND   S_GROUP_PROFILE.STATUS     = 'P'
+	               
+	               AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+	               AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+	               AND S_ROLE_DETAIL.PROG_REF      = CATOPT.PROG_REF
+	               AND S_ROLE_DETAIL.STATUS       = 'P'
+	             )
+		)
+	  </if>
+	)
+	) PREV_CAT LEFT OUTER JOIN OPT_CATEGORY_MASTER_TRANS CATTRANS
+				 ON PREV_CAT.CATEG_ID = CATTRANS.CATEG_ID AND CATTRANS.LANG_CODE = #{language}
+
+)AVAIL_CAT
+< ! - - if not Root menu then need to select the OPTs related to Category - - >
+<if test='progRef != "ROOT" '>
+UNION
+ ( SELECT
+    MENU_TITLE,
+    'addMenuTab('''||PROG_REF || ''','''||MENU_TITLE || ''','''||#{appName}||''')' onLeafClick
+    ,PROG_REF
+    ,CASE WHEN (SELECT COUNT(1) 
+             FROM (SELECT  
+			       OPT.PARENT_REF,
+			       OPT.DISP_ORDER
+				  FROM OPT
+				  WHERE OPT.APP_NAME     = #{appName}
+				  AND OPT.PARENT_REF   IS NOT NULL
+				  
+				   AND ( EXISTS  (  SELECT 1
+				              FROM   AXS
+				              WHERE AXS.USER_ID     = #{usrName}
+				              AND  AXS.COMP_CODE     = #{compCode}
+				              AND  AXS.BRANCH_CODE   = #{branchCode}
+				              AND  AXS.APP_NAME     = OPT.APP_NAME
+				              AND  AXS.PROG_REF    = OPT.PROG_REF
+				              AND  AXS.STATUS       = 'P'
+				              
+				             ) 
+			      	)
+			       <if test='profType == "1"'> 	
+				 	union
+					  SELECT OPT.PARENT_REF,
+					       OPT.DISP_ORDER
+					  FROM OPT
+							 WHERE OPT.APP_NAME     = #{appName}
+							  AND OPT.PARENT_REF  IS NOT NULL
+							  AND EXISTS    (  SELECT 1
+							            FROM   S_APPROLUSR, S_ROLE_DETAIL
+							            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+							            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME  
+							            AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+							            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF 
+							            AND S_APPROLUSR.STATUS       = 'P'
+							            AND S_ROLE_DETAIL.STATUS     = 'P'
+							            AND S_APPROLUSR.USER_ID       = #{usrName}
+							            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+							            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+							            AND S_APPROLUSR.APP_NAME     = #{appName}
+							          )
+				 union
+				  SELECT OPT.PARENT_REF,
+				       OPT.DISP_ORDER
+				  FROM OPT
+				 WHERE OPT.APP_NAME     = #{appName}
+				  AND OPT.PARENT_REF   IS NOT NULL
+				  AND EXISTS
+                              (
+                                SELECT 1
+                                FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                                WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+                                AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+                                AND   S_GROUP_USER.USER_ID     = #{usrName}
+                                AND   S_GROUP_USER.STATUS       = 'P'
+                                
+                                AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+                                AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+                                AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+                                AND   S_GROUP_PROFILE.STATUS     = 'P'
+                                
+                                AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+                                AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+                                AND S_ROLE_DETAIL.PROG_REF      = OPT.PROG_REF
+                                AND S_ROLE_DETAIL.STATUS       = 'P'
+                              ) 
+                  </if>            
+			 ) 
+             ch 
+             WHERE ch.PARENT_REF = CAT_OPTS.PROG_REF AND ch.DISP_ORDER IS NOT NULL) = 0 THEN 1 ELSE 0 END children 
+    , DISP_ORDER
+  FROM
+  (
+   SELECT   CASE #{language} WHEN 'AR' THEN O.MENU_TITLE_ARAB
+					 WHEN 'FR' THEN O.MENU_TITLE_FR
+					ELSE (CASE WHEN O.MENU_TITLE_ENG IS NULL THEN O.PROG_DESC ELSE O.MENU_TITLE_ENG END) END MENU_TITLE
+   ,O.PROG_REF
+   ,O.DISP_ORDER					
+   FROM OPT_CATEGORY_LK_USR USRCAT,OPT_CATEGORY_MASTER CAT 
+	,OPT_CATEGORY_LK_OPT CATOPT	, OPT O	
+  WHERE USER_ID = #{usrName}
+	AND CAT.CATEG_ID = USRCAT.CATEG_ID
+	AND CAT.CATEG_ID = #{categId}
+	AND O.APP_NAME = CATOPT.APP_NAME
+    AND O.PROG_REF = CATOPT.PROG_REF
+	AND CATOPT.APP_NAME = #{appName}
+	AND CATOPT.CATEG_ID = CAT.CATEG_ID 
+	AND 
+	(   ( EXISTS  (  SELECT 1
+	              FROM   AXS
+	              WHERE AXS.USER_ID     = #{usrName}
+	              AND  AXS.COMP_CODE     = #{compCode}
+	              AND  AXS.BRANCH_CODE   = #{branchCode}
+	              AND  AXS.APP_NAME     = #{appName}
+	              AND  AXS.PROG_REF    = CATOPT.PROG_REF
+	              AND  AXS.STATUS       = 'P'
+	            ) 
+	      )
+	  <if test='profType == "1"'>
+	    OR
+	    ( EXISTS    (  SELECT 1
+	            FROM   S_APPROLUSR, S_ROLE_DETAIL
+	            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+	            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+	            AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+	            AND S_ROLE_DETAIL.PROG_REF    = CATOPT.PROG_REF
+	            AND S_APPROLUSR.STATUS       = 'P'
+	            AND S_ROLE_DETAIL.STATUS     = 'P'
+	            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+	            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+	            AND S_APPROLUSR.APP_NAME     = #{appName}
+	            AND S_APPROLUSR.USER_ID       = #{usrName}
+	          )    
+		)
+		OR
+		(
+			EXISTS
+	             (
+	               SELECT 1
+	               FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	               WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+	               AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+	               AND   S_GROUP_USER.USER_ID     = #{usrName}
+	               AND   S_GROUP_USER.STATUS       = 'P'
+	               
+	               AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+	               AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+	               AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+	               AND   S_GROUP_PROFILE.STATUS     = 'P'
+	               
+	               AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+	               AND S_ROLE_DETAIL.APP_NAME     = #{appName}
+	               AND S_ROLE_DETAIL.PROG_REF      = CATOPT.PROG_REF
+	               AND S_ROLE_DETAIL.STATUS       = 'P'
+	             )
+		)
+	  </if>
+	 )
+	) CAT_OPTS
+ )
+</if>
+) ALL_TBL
+ORDER BY DISP_ORDER ASC
+</select>
+ -->
+<resultMap type="menuVO" id="menuFullReMap">
+  <result property="menuVar" column="PROG_REF"/>
+  <result property="menuName" column="MENU_TITLE"/>
+  <result property="onLeafClick" column="onLeafClick"/>
+</resultMap>
+<select id="getFullMenu" resultMap="menuFullReMap" parameterType="menuSC"> 
+ SELECT CASE WHEN usrAccOpts.MENU_TITLE IS NULL THEN usrAccOpts.PROG_DESC ELSE usrAccOpts.MENU_TITLE END MENU_TITLE
+      , 'addMenuTab('''||usrAccOpts.PROG_REF || ''','''||REPLACE(CASE WHEN usrAccOpts.MENU_TITLE IS NULL THEN usrAccOpts.PROG_DESC ELSE usrAccOpts.MENU_TITLE END,'''','\''')|| ''','''||#{appName}||''')' onLeafClick
+      , usrAccOpts.PROG_REF,
+        usrAccOpts.PROG_ORDER,
+        usrAccOpts.DYNAMIC_OPT,
+        usrAccOpts.DISP_ORDER,
+        usrAccOpts.PROG_TYPE,
+        usrAccOpts.PARENT_REF
+      
+      
+FROM 
+ (SELECT CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+       OPT.DYNAMIC_OPT,
+       OPT.PROG_DESC,
+       OPT.PROG_TYPE,
+       OPT.PARENT_REF
+  FROM OPT
+  WHERE OPT.APP_NAME     = #{appName}
+  AND OPT.PARENT_REF 	IS NOT NULL AND OPT.PARENT_REF <![CDATA[<>]]> ''
+  AND OPT.PROG_ORDER IS NOT NULL AND OPT.PROG_ORDER > 0
+   AND ( EXISTS  (  SELECT 1
+              FROM   AXS
+              WHERE AXS.USER_ID     = #{usrName}
+              AND  AXS.COMP_CODE     = #{compCode}
+              AND  AXS.BRANCH_CODE   = #{branchCode}
+              AND  AXS.APP_NAME     = OPT.APP_NAME
+              AND  AXS.PROG_REF    = OPT.PROG_REF
+              AND  AXS.STATUS       = 'P'
+              AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+             ) 
+      )
+<if test='profType == "1"'>
+union
+  SELECT  CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+     OPT.DYNAMIC_OPT,
+     OPT.PROG_DESC,
+      OPT.PROG_TYPE,
+       OPT.PARENT_REF
+  FROM OPT
+ WHERE OPT.APP_NAME     = #{appName}
+AND OPT.PARENT_REF 	IS NOT NULL AND OPT.PARENT_REF <![CDATA[<>]]> ''
+  AND OPT.PROG_ORDER IS NOT NULL AND OPT.PROG_ORDER > 0
+<!--  AND #{profType}     = '1'   -->           
+  AND EXISTS    (  SELECT 1
+            FROM   S_APPROLUSR, S_ROLE_DETAIL
+            WHERE S_APPROLUSR.APP_NAME = S_ROLE_DETAIL.APP_NAME
+            AND S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME   
+            AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF
+            AND S_APPROLUSR.STATUS       = 'P'
+            AND S_ROLE_DETAIL.STATUS     = 'P'
+            AND S_APPROLUSR.COMP_CODE     = #{compCode}
+            AND S_APPROLUSR.BRANCH_CODE   = #{branchCode}
+            AND S_APPROLUSR.APP_NAME     = #{appName}
+            AND S_APPROLUSR.USER_ID       = #{usrName}
+          )  
+    
+union
+  SELECT CASE #{language}  WHEN  'AR' THEN OPT.MENU_TITLE_ARAB
+                   WHEN 'FR' THEN OPT.MENU_TITLE_FR
+                   ELSE OPT.MENU_TITLE_ENG END MENU_TITLE,
+       OPT.PARENT_REF,
+       OPT.PROG_REF,
+       OPT.PROG_ORDER,
+       OPT.DISP_ORDER,
+     OPT.DYNAMIC_OPT,
+     OPT.PROG_DESC,
+      OPT.PROG_TYPE,
+       OPT.PARENT_REF
+  FROM OPT
+ WHERE OPT.APP_NAME     = #{appName}
+  AND OPT.PARENT_REF 	IS NOT NULL AND OPT.PARENT_REF <![CDATA[<>]]> ''
+  AND OPT.PROG_ORDER IS NOT NULL AND OPT.PROG_ORDER > 0
+    <!-- AND #{profType}     = '1' -->        
+  AND EXISTS
+             (
+               SELECT 1
+               FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+               WHERE (S_GROUP_USER.COMP_CODE   = #{compCode} OR S_GROUP_USER.COMP_CODE   = 0)
+               AND   (S_GROUP_USER.BRANCH_CODE   = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+               AND   S_GROUP_USER.USER_ID     = #{usrName}
+               AND   S_GROUP_USER.STATUS       = 'P'
+               AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+               
+               AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+               AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+               AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+               AND   S_GROUP_PROFILE.STATUS     = 'P'
+               
+               AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+               AND S_ROLE_DETAIL.APP_NAME     = OPT.APP_NAME
+               AND S_ROLE_DETAIL.PROG_REF      = OPT.PROG_REF
+               AND S_ROLE_DETAIL.STATUS       = 'P'
+               AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+             )
+ </if> 
+) usrAccOpts
+ORDER BY PROG_REF,PARENT_REF,DISP_ORDER	
+</select>
+<resultMap id="returnMenuListMap" type="OPTVO">
+   <id     column="theKey"         property="theKey" />
+   <result column="parentKey"      property="parentKey" />
+   <result column="PROG_REF"       property="PROG_REF" />
+   <result column="MENU_TITLE_ENG" property="MENU_TITLE_ENG" />
+   <result column="DISP_ORDER"     property="DISP_ORDER" />
+   <result column="APP_NAME"       property="APP_NAME"/>
+   <result column="PROG_ORDER"     property="level" />
+   <result column="PARENT_REF"     property="parent" />
+   <result column="ISLEAF"         property="isLeaf" />
+   
+</resultMap>
+<sql id="treeGridFirstLevel">
+<if test="profileId == null">
+	SELECT APP_NAME  as theKey
+	      ,''        as parentKey
+	      ,APP_NAME  as PROG_REF
+	      ,(CASE #{langCode}
+	           WHEN 'AR' THEN LONG_DESC_AR
+	           WHEN 'FR' THEN LONG_DESC_FR
+	           ELSE LONG_DESC
+	        END
+	       )as MENU_TITLE_ENG
+	      ,'1'       as DISP_ORDER
+	      ,APP_NAME  as APP_NAME
+	      ,'1'       as PROG_ORDER
+	      ,'APP'     as PARENT_REF
+	      ,'false'   as ISLEAF
+	  FROM S_APP
+	 WHERE EXISTS
+	         (SELECT 1
+	            FROM AXS, OPT_EXTENDED
+	           WHERE AXS.APP_NAME    = OPT_EXTENDED.APP_NAME
+	             AND AXS.PROG_REF    = OPT_EXTENDED.PROG_REF
+	             AND AXS.APP_NAME    = S_APP.APP_NAME
+	             AND AXS.STATUS      = 'P'
+	             AND AXS.USER_ID     = #{userId}
+	             AND AXS.COMP_CODE   = #{compCode}
+	             AND AXS.BRANCH_CODE = #{branchCode}
+	             AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	             )
+	   AND IS_WEB_YN IN (1, 2)
+	UNION
+</if>
+SELECT APP_NAME  as theKey
+      ,''        as parentKey
+      ,APP_NAME  as PROG_REF
+      ,(CASE #{langCode}
+           WHEN 'AR' THEN LONG_DESC_AR
+           WHEN 'FR' THEN LONG_DESC_FR
+           ELSE LONG_DESC
+        END
+       )as MENU_TITLE_ENG
+      ,'1'       as DISP_ORDER
+      ,APP_NAME  as APP_NAME
+      ,'1'       as PROG_ORDER
+      ,'APP'     as PARENT_REF
+      ,'false'   as ISLEAF
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM 
+                 <if test="profileId == null">
+                 S_APPROLUSR,
+                 </if>
+                 S_ROLE_DETAIL, OPT_EXTENDED
+           WHERE S_ROLE_DETAIL.APP_NAME  = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME  = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF  = OPT_EXTENDED.PROG_REF
+             <choose>
+               <when test="profileId == null">
+	             AND S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+	             AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	             AND S_APPROLUSR.STATUS      = 'P'
+	             AND S_APPROLUSR.USER_ID     = #{userId}
+	             AND S_APPROLUSR.COMP_CODE   = #{compCode}
+	             AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+               </when>
+               <otherwise>
+                 AND S_ROLE_DETAIL.ROLE_NAME = #{profileId}
+               </otherwise>
+             </choose>
+             AND S_ROLE_DETAIL.STATUS    = 'P')
+   AND IS_WEB_YN IN (1, 2)
+UNION   
+SELECT APP_NAME  as theKey
+      ,''        as parentKey
+      ,APP_NAME  as PROG_REF
+      ,(CASE #{langCode}
+           WHEN 'AR' THEN LONG_DESC_AR
+           WHEN 'FR' THEN LONG_DESC_FR
+           ELSE LONG_DESC
+        END
+       )as MENU_TITLE_ENG
+      ,'1'       as DISP_ORDER
+      ,APP_NAME  as APP_NAME
+      ,'1'       as PROG_ORDER
+      ,'APP'     as PARENT_REF
+      ,'false'   as ISLEAF
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM 
+                 <if test="profileId == null">
+                 S_GROUP_USER,
+                 </if> 
+                 S_GROUP_PROFILE, S_ROLE_DETAIL,OPT_EXTENDED
+           WHERE S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+             AND S_GROUP_PROFILE.APP_NAME  = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF    = OPT_EXTENDED.PROG_REF
+             <choose>
+               <when test="profileId == null">
+	             AND S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+	             AND S_GROUP_USER.STATUS       = 'P'
+	             AND S_GROUP_USER.USER_ID      = #{userId}
+	             AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+	             AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+	             AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	             AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                  WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                        AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                        AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                        AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                        AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                  ) 
+               </when>
+               <otherwise>
+                 AND S_ROLE_DETAIL.ROLE_NAME = #{profileId} 
+               </otherwise>
+             </choose>
+             AND S_GROUP_PROFILE.STATUS    = 'P'
+             AND S_ROLE_DETAIL.STATUS      = 'P')
+   AND IS_WEB_YN IN (1, 2)
+</sql>
+<sql id="treeGridOtherLevels">
+SELECT tbl.*
+      ,(CASE WHEN tbl.MENU_TITLE IS NULL 
+             THEN tbl.PROG_DESC 
+             ELSE tbl.MENU_TITLE END) MENU_TITLE_ENG 
+  FROM
+(
+<if test="profileId == null">
+	SELECT 
+	<choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+	      ,PROG_REF
+	      ,(CASE #{langCode} 
+	             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+	             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+	             ELSE OPT.MENU_TITLE_ENG 
+	         END) as MENU_TITLE
+	      ,PROG_DESC 
+	      ,DISP_ORDER
+	      ,APP_NAME
+	      ,#{n_level}+1 as PROG_ORDER
+	      ,(CASE
+	           WHEN PARENT_REF = 'ROOT'
+	           THEN APP_NAME
+	           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+	        END) as PARENT_REF
+	      ,(CASE
+	         WHEN NOT EXISTS(SELECT 1 
+	                           FROM OPT opt1 
+	                          WHERE opt1.PARENT_REF = OPT.PROG_REF 
+	                            AND opt1.APP_NAME = #{appName}
+	                            AND (opt1.DISP_ORDER IS NOT NULL)) 
+	         THEN
+	          'true'
+	         ELSE
+	          'false'
+	        END) ISLEAF
+	  FROM OPT
+	 WHERE EXISTS
+	        (SELECT 1
+	           FROM AXS
+	          WHERE AXS.APP_NAME    = OPT.APP_NAME
+	            AND AXS.PROG_REF    = OPT.PROG_REF
+	            AND AXS.USER_ID     = #{userId}
+	            AND AXS.COMP_CODE   = #{compCode}
+	            AND AXS.BRANCH_CODE = #{branchCode}
+	            AND AXS.STATUS      = 'P'
+	            AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	            )
+	   AND NOT EXISTS(SELECT 1
+		                FROM USER_FAVORITES
+		               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+		                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+		                 AND USER_FAVORITES.USER_ID  = #{userId})
+       AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+             AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+             OR
+             EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+           )
+	   AND OPT.APP_NAME   = #{appName}
+	   AND OPT.PARENT_REF = #{progRef}
+	UNION
+</if>
+SELECT 	
+<choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+      ,PROG_REF
+      ,(CASE #{langCode} 
+             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+             ELSE OPT.MENU_TITLE_ENG 
+         END) as MENU_TITLE
+      ,PROG_DESC
+      ,DISP_ORDER
+      ,APP_NAME
+      ,#{n_level}+1 as PROG_ORDER
+      ,(CASE
+           WHEN PARENT_REF = 'ROOT'
+           THEN APP_NAME
+           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+        END) as PARENT_REF
+      ,(CASE
+         WHEN NOT EXISTS(SELECT 1 
+                           FROM OPT opt1 
+                          WHERE opt1.PARENT_REF = OPT.PROG_REF 
+                            AND opt1.APP_NAME = #{appName}
+                            AND (opt1.DISP_ORDER IS NOT NULL)) 
+         THEN
+          'true'
+         ELSE
+          'false'
+        END) ISLEAF
+  FROM OPT
+ WHERE EXISTS
+        (SELECT 1
+           FROM 
+                <if test="profileId == null">
+                S_APPROLUSR, 
+                </if>
+                S_ROLE_DETAIL
+          WHERE S_ROLE_DETAIL.APP_NAME  = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF  = OPT.PROG_REF
+            <choose>
+              <when test="profileId == null">
+	            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	            AND S_APPROLUSR.APP_NAME    = OPT.APP_NAME
+	            AND S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+	            AND S_APPROLUSR.USER_ID     = #{userId}
+	            AND S_APPROLUSR.STATUS      = 'P'
+	            AND S_APPROLUSR.COMP_CODE   = #{compCode}
+	            AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+              </when>
+              <otherwise>
+                AND S_ROLE_DETAIL.ROLE_NAME = #{profileId}
+              </otherwise>
+            </choose>
+            AND S_ROLE_DETAIL.STATUS    = 'P')
+	<if test="profileId == null">
+   AND NOT EXISTS(SELECT 1
+	                FROM USER_FAVORITES
+	               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+	                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+	                 AND USER_FAVORITES.USER_ID  = #{userId})
+	</if>
+   AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+         AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+         OR
+         EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+       )
+   AND OPT.APP_NAME   = #{appName}
+   AND OPT.PARENT_REF = #{progRef}
+UNION
+SELECT 	
+<choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+      ,PROG_REF
+      ,(CASE #{langCode} 
+             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+             ELSE OPT.MENU_TITLE_ENG 
+         END) as MENU_TITLE
+      ,PROG_DESC
+      ,DISP_ORDER
+      ,APP_NAME
+      ,#{n_level}+1 as PROG_ORDER
+      ,(CASE
+           WHEN PARENT_REF = 'ROOT'
+           THEN APP_NAME
+           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+        END) as PARENT_REF
+      ,(CASE
+         WHEN NOT EXISTS(SELECT 1 
+                           FROM OPT opt1 
+                          WHERE opt1.PARENT_REF = OPT.PROG_REF 
+                            AND opt1.APP_NAME = #{appName}
+                            AND (opt1.DISP_ORDER IS NOT NULL)) 
+         THEN
+          'true'
+         ELSE
+          'false'
+        END) ISLEAF
+  FROM OPT
+ WHERE EXISTS
+        (SELECT 1
+           FROM 
+                <if test="profileId == null">
+                S_GROUP_USER, 
+                </if>
+                S_GROUP_PROFILE, S_ROLE_DETAIL
+          WHERE S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+            AND S_GROUP_PROFILE.APP_NAME  = OPT.APP_NAME
+            AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+            AND S_ROLE_DETAIL.APP_NAME    = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF
+            <choose>
+              <when test="profileId == null">
+	            AND S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID  
+	            AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+	            AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+	            AND S_GROUP_USER.USER_ID      = #{userId}
+	            AND S_GROUP_USER.STATUS       = 'P'
+	            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                  WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                        AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                        AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                        AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                        AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                  ) 
+	            
+              </when>
+              <otherwise>
+                AND S_ROLE_DETAIL.ROLE_NAME = #{profileId}
+              </otherwise>
+            </choose>
+	        AND S_GROUP_PROFILE.STATUS    = 'P'
+            AND S_ROLE_DETAIL.STATUS      = 'P')
+	<if test="profileId == null">
+   AND NOT EXISTS(SELECT 1
+	                FROM USER_FAVORITES
+	               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+	                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+	                 AND USER_FAVORITES.USER_ID  = #{userId})
+	</if>
+   AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+         AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+         OR
+         EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+       )
+   AND OPT.APP_NAME   = #{appName}
+   AND OPT.PARENT_REF = #{progRef}
+   
+)tbl
+WHERE 1 = 
+		(CASE WHEN tbl.ISLEAF = 'true' 
+		      THEN (SELECT 1 
+		              FROM OPT_EXTENDED 
+		             WHERE OPT_EXTENDED.APP_NAME = tbl.APP_NAME 
+		               AND OPT_EXTENDED.PROG_REF = tbl.PROG_REF)
+		      ELSE 1
+		 END
+		)
+ORDER BY tbl.DISP_ORDER ASC
+</sql>
+<select id="returnMenuList" parameterType="treeMenuSC" resultMap="returnMenuListMap">
+<choose>
+     <when test="saveAsParent == 1">
+     
+      <choose>
+     <when test="progRef == null">
+        <if test="appName !=null and appName!='IBIS'">
+         select * from 
+         (
+        </if>
+            <include refid="Menu.treeGridProgFirstLevel"/>
+        <if test="appName != null and appName!='IBIS'">
+         )TBL
+         WHERE TBL.PROG_REF = #{appName}
+        </if>
+     </when>
+     <otherwise>
+        <include refid="Menu.treeGridProgOtherLevels"/>
+     </otherwise>
+  </choose>
+     </when>
+     <otherwise>
+  <choose>
+     <when test="progRef == null">
+       <if test="appName !=null and appName!='IBIS'">
+       select * from 
+       (
+       </if>
+        <include refid="Menu.treeGridFirstLevel"/>
+       <if test="appName != null and appName!='IBIS'">
+        )TBL
+        WHERE TBL.PROG_REF = #{appName}
+       </if>
+
+     </when>
+     <otherwise>
+        <include refid="Menu.treeGridOtherLevels"/>
+     </otherwise>
+  </choose>     
+     </otherwise>
+</choose>
+
+</select>
+
+
+<sql id="treeGridProgFirstLevel">
+SELECT APP_NAME  as theKey
+      ,''        as parentKey
+      ,APP_NAME  as PROG_REF
+      ,(CASE #{langCode}
+           WHEN 'AR' THEN LONG_DESC_AR
+           WHEN 'FR' THEN LONG_DESC_FR
+           ELSE LONG_DESC
+        END
+       )as MENU_TITLE_ENG
+      ,'1'       as DISP_ORDER
+      ,APP_NAME  as APP_NAME
+      ,'1'       as PROG_ORDER
+      ,'APP'     as PARENT_REF
+      ,'false'   as ISLEAF
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM AXS, OPT_EXTENDED
+           WHERE AXS.APP_NAME    = OPT_EXTENDED.APP_NAME
+             AND AXS.PROG_REF    = OPT_EXTENDED.PROG_REF
+             AND AXS.APP_NAME    = S_APP.APP_NAME
+             AND AXS.STATUS      = 'P'
+             AND AXS.USER_ID     = #{userId}
+             AND AXS.COMP_CODE   = #{compCode}
+             AND AXS.BRANCH_CODE = #{branchCode}
+	      	 AND AXS.APP_NAME = #{appName}
+	      	 AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	      	 )
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+UNION
+SELECT APP_NAME  as theKey
+      ,''        as parentKey
+      ,APP_NAME  as PROG_REF
+      ,(CASE #{langCode}
+           WHEN 'AR' THEN LONG_DESC_AR
+           WHEN 'FR' THEN LONG_DESC_FR
+           ELSE LONG_DESC
+        END
+       )as MENU_TITLE_ENG
+      ,'1'       as DISP_ORDER
+      ,APP_NAME  as APP_NAME
+      ,'1'       as PROG_ORDER
+      ,'APP'     as PARENT_REF
+      ,'false'   as ISLEAF
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM S_APPROLUSR, S_ROLE_DETAIL, OPT_EXTENDED
+           WHERE S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+             AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+             AND S_ROLE_DETAIL.APP_NAME  = S_APP.APP_NAME
+             AND S_APPROLUSR.APP_NAME    = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME  = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF  = OPT_EXTENDED.PROG_REF
+             AND S_APPROLUSR.STATUS      = 'P'
+             AND S_ROLE_DETAIL.STATUS    = 'P'
+             AND S_APPROLUSR.USER_ID     = #{userId}
+             AND S_APPROLUSR.COMP_CODE   = #{compCode}
+             AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+	      	 AND S_APPROLUSR.APP_NAME = #{appName})
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+UNION   
+SELECT APP_NAME  as theKey
+      ,''        as parentKey
+      ,APP_NAME  as PROG_REF
+      ,(CASE #{langCode}
+           WHEN 'AR' THEN LONG_DESC_AR
+           WHEN 'FR' THEN LONG_DESC_FR
+           ELSE LONG_DESC
+        END
+       )as MENU_TITLE_ENG
+      ,'1'       as DISP_ORDER
+      ,APP_NAME  as APP_NAME
+      ,'1'       as PROG_ORDER
+      ,'APP'     as PARENT_REF
+      ,'false'   as ISLEAF
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL,OPT_EXTENDED
+           WHERE S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+             AND S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+             AND S_GROUP_PROFILE.APP_NAME  = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF    = OPT_EXTENDED.PROG_REF
+             AND S_GROUP_USER.STATUS       = 'P'
+             AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+             
+             AND S_GROUP_PROFILE.STATUS    = 'P'
+             AND S_ROLE_DETAIL.STATUS      = 'P'
+             AND S_GROUP_USER.USER_ID      = #{userId}
+             AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+             AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+             
+             AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+             
+             )
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+</sql>
+<sql id="treeGridProgOtherLevels">
+SELECT tbl.*
+      ,(CASE WHEN tbl.MENU_TITLE IS NULL 
+             THEN tbl.PROG_DESC 
+             ELSE tbl.MENU_TITLE END) MENU_TITLE_ENG 
+  FROM
+(
+SELECT <choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+      ,PROG_REF
+      ,(CASE #{langCode} 
+             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+             ELSE OPT.MENU_TITLE_ENG 
+         END) as MENU_TITLE
+      ,PROG_DESC 
+      ,DISP_ORDER
+      ,APP_NAME
+      ,#{n_level}+1 as PROG_ORDER
+      ,(CASE
+           WHEN PARENT_REF = 'ROOT'
+           THEN APP_NAME
+           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+        END) as PARENT_REF
+      ,(CASE
+         WHEN NOT EXISTS(SELECT 1 
+                           FROM OPT opt1 
+                          WHERE opt1.PARENT_REF IN (select distinct OPT2.PROG_REF 
+													  FROM OPT OPT2 WHERE OPT2.PARENT_REF = OPT.PROG_REF 
+													   AND NOT EXISTS (SELECT 1 FROM OPT OPT3 
+													                    WHERE OPT3.PARENT_REF = OPT2. PROG_REF 
+														                  AND (OPT2.DISP_ORDER IS NOT NULL)))
+                            AND opt1.APP_NAME = #{appName}) 
+         THEN
+          'true'
+         ELSE
+          'false'
+        END) ISLEAF
+  FROM OPT
+ WHERE EXISTS
+        (SELECT 1
+           FROM AXS
+          WHERE AXS.APP_NAME    = OPT.APP_NAME
+            AND AXS.PROG_REF    = OPT.PROG_REF
+            AND AXS.USER_ID     = #{userId}
+            AND AXS.COMP_CODE   = #{compCode}
+            AND AXS.BRANCH_CODE = #{branchCode}
+            AND AXS.STATUS      = 'P'
+            AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+            )
+   AND NOT EXISTS(SELECT 1
+	                FROM USER_FAVORITES
+	               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+	                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+	                 AND USER_FAVORITES.USER_ID  = #{userId})
+   AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+         AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+         OR
+         EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+       )
+   AND OPT.APP_NAME   = #{appName}
+   AND OPT.PARENT_REF = #{progRef}
+	<if test="parentid!=null">
+	AND (OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+                          FROM OPT 
+                         WHERE OPT.PROG_REF IN (SELECT PROG_REF 
+                                                  FROM OPT_EXTENDED 
+                                                 WHERE OPT_REFERENCE IN (SELECT PROG_REF 
+                                                                           FROM OPT 
+                                                                          WHERE PARENT_REF IN (SELECT PARENT_REF 
+                                                                                                 FROM OPT 
+                                                                                                WHERE PROG_REF  = #{parentid} 
+                                                                                                  AND APP_NAME = #{appName}))))
+		OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+		                     FROM OPT         
+		                    WHERE OPT.PROG_REF  = #{parentid} 
+		                      AND OPT.APP_NAME = #{appName})
+		OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+		                     FROM OPT         
+		                    WHERE OPT.PROG_REF IN (SELECT OPTD.PROG_REF 
+		                                             FROM OPT_EXTENDED OPTD
+		                                            WHERE OPTD.OPT_REFERENCE = #{parentid}  
+		                                              AND OPTD.APP_NAME = #{appName}
+		                                               OR OPTD.OPT_REFERENCE IN (SELECT OPTE.OPT_REFERENCE
+		                                                                           FROM OPT_EXTENDED OPTE
+		                                                                          WHERE OPTE.PROG_REF = #{parentid}
+		                                                                            AND OPTE.APP_NAME = #{appName})
+		                                              AND OPTD.OPT_URL = 'SAVED_AS')
+		                      AND  OPT.APP_NAME = #{appName})
+		OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+		                     FROM OPT
+		                    WHERE  OPT.PROG_REF  IN (SELECT OPTE.OPT_REFERENCE
+		                                               FROM OPT_EXTENDED OPTE
+		                                              WHERE OPTE.PROG_REF = #{parentid}
+		                                               AND APP_NAME = #{appName}))
+        )
+   </if>
+UNION
+SELECT<choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+      ,PROG_REF
+      ,(CASE #{langCode} 
+             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+             ELSE OPT.MENU_TITLE_ENG 
+         END) as MENU_TITLE
+      ,PROG_DESC
+      ,DISP_ORDER
+      ,APP_NAME
+      ,#{n_level}+1 as PROG_ORDER
+      ,(CASE
+           WHEN PARENT_REF = 'ROOT'
+           THEN APP_NAME
+           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+        END) as PARENT_REF
+      ,(CASE
+         WHEN NOT EXISTS(SELECT 1 
+                           FROM OPT opt1 
+                          WHERE opt1.PARENT_REF IN (SELECT distinct OPT2.PROG_REF 
+													  FROM OPT OPT2 WHERE OPT2.PARENT_REF = OPT.PROG_REF 
+													   AND NOT EXISTS (SELECT 1 FROM OPT OPT3 
+													                    WHERE OPT3.PARENT_REF = OPT2. PROG_REF 
+													                      AND (OPT2.DISP_ORDER IS NOT NULL)))
+                            AND opt1.APP_NAME = #{appName}) 
+         THEN
+          'true'
+         ELSE
+          'false'
+        END) ISLEAF
+  FROM OPT
+ WHERE EXISTS
+        (SELECT 1
+           FROM S_APPROLUSR, S_ROLE_DETAIL
+          WHERE S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+            AND S_ROLE_DETAIL.APP_NAME  = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF  = OPT.PROG_REF
+            AND S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+            AND S_APPROLUSR.APP_NAME    = OPT.APP_NAME
+            AND S_APPROLUSR.USER_ID     = #{userId}
+            AND S_APPROLUSR.STATUS      = 'P'
+            AND S_ROLE_DETAIL.STATUS    = 'P'
+            AND S_APPROLUSR.COMP_CODE   = #{compCode}
+            AND S_APPROLUSR.BRANCH_CODE = #{branchCode})
+   AND NOT EXISTS(SELECT 1
+	                FROM USER_FAVORITES
+	               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+	                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+	                 AND USER_FAVORITES.USER_ID  = #{userId})
+   AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+         AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+         OR
+         EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+       )
+   AND OPT.APP_NAME   = #{appName}
+   AND OPT.PARENT_REF = #{progRef}
+	<if test="parentid!=null">
+	AND (OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+					      FROM OPT 
+					     WHERE OPT.PROG_REF IN (SELECT PROG_REF 
+					                              FROM OPT_EXTENDED 
+					                             WHERE OPT_REFERENCE IN (SELECT PROG_REF 
+					                                                       FROM OPT 
+					                                                      WHERE PARENT_REF IN (SELECT PARENT_REF 
+					                                                                             FROM OPT 
+					                                                                            WHERE PROG_REF = #{parentid} 
+					                                                                              AND APP_NAME = #{appName}))))
+		 OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+							  FROM OPT         
+							 WHERE OPT.PROG_REF = #{parentid} 
+							   AND OPT.APP_NAME = #{appName})
+         OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+						      FROM OPT         
+						     WHERE OPT.PROG_REF IN (SELECT OPTD.PROG_REF 
+						                              FROM OPT_EXTENDED OPTD
+						                             WHERE OPTD.OPT_REFERENCE = #{parentid}  
+						                               AND OPTD.APP_NAME      = #{appName}
+						                                OR OPTD.OPT_REFERENCE IN (SELECT OPTE.OPT_REFERENCE
+						                                                            FROM OPT_EXTENDED OPTE
+						                                                           WHERE OPTE.PROG_REF = #{parentid}
+						                                                             AND OPTE.APP_NAME = #{appName})
+						                               AND OPTD.OPT_URL = 'SAVED_AS')
+						          AND    OPT.APP_NAME = #{appName})
+         OR OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+						      FROM OPT
+						     WHERE OPT.PROG_REF IN (SELECT OPTE.OPT_REFERENCE
+						                              FROM OPT_EXTENDED OPTE
+						                             WHERE OPTE.PROG_REF = #{parentid}
+						                               AND APP_NAME      = #{appName}))
+        )
+   </if>
+UNION
+SELECT <choose>
+	<when test="isSQLServer == 1"> APP_NAME+'_'+PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME+'_'+#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose> 
+	</when> 
+	<otherwise> APP_NAME||'_'||PROG_REF as theKey
+	      <choose>
+	         <when test="progRef!='ROOT'">
+	           ,APP_NAME||'_'||#{progRef}
+	         </when>
+	         <otherwise>
+	           ,APP_NAME
+	         </otherwise>
+	      </choose>
+	</otherwise>
+	</choose> as parentKey
+      ,PROG_REF
+      ,(CASE #{langCode} 
+             WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+             WHEN 'FR' THEN OPT.MENU_TITLE_FR
+             ELSE OPT.MENU_TITLE_ENG 
+         END) as MENU_TITLE
+      ,PROG_DESC
+      ,DISP_ORDER
+      ,APP_NAME
+      ,#{n_level}+1 as PROG_ORDER
+      ,(CASE
+           WHEN PARENT_REF = 'ROOT'
+           THEN APP_NAME
+           ELSE APP_NAME<choose><when test="isSQLServer == 1">+'_'+</when><otherwise>||'_'||</otherwise></choose>PARENT_REF 
+        END) as PARENT_REF
+      ,(CASE
+         WHEN NOT EXISTS(SELECT 1 
+                           FROM OPT opt1 
+                          WHERE opt1.PARENT_REF IN (SELECT distinct OPT2.PROG_REF 
+													  FROM OPT OPT2 WHERE OPT2.PARENT_REF = OPT.PROG_REF 
+													   AND NOT EXISTS (SELECT 1 FROM OPT OPT3 
+													                    WHERE OPT3.PARENT_REF = OPT2. PROG_REF 
+													                      AND (OPT2.DISP_ORDER IS NOT NULL)))
+                            AND opt1.APP_NAME = #{appName}) 
+         THEN
+          'true'
+         ELSE
+          'false'
+        END) ISLEAF
+  FROM OPT
+ WHERE EXISTS
+        (SELECT 1
+           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+          WHERE S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+            AND S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+            AND S_GROUP_PROFILE.APP_NAME  = OPT.APP_NAME
+            AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+            AND S_ROLE_DETAIL.APP_NAME    = OPT.APP_NAME
+            AND S_ROLE_DETAIL.PROG_REF    = OPT.PROG_REF
+            AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+            AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+            AND S_GROUP_USER.USER_ID      = #{userId}
+            AND S_GROUP_USER.STATUS       = 'P'
+            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+            
+            AND S_GROUP_PROFILE.STATUS    = 'P'
+            AND S_ROLE_DETAIL.STATUS      = 'P'
+            
+            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+            
+            )
+   AND NOT EXISTS(SELECT 1
+	                FROM USER_FAVORITES
+	               WHERE USER_FAVORITES.PROG_REF = OPT.PROG_REF
+	                 AND USER_FAVORITES.APP_NAME = OPT.APP_NAME
+	                 AND USER_FAVORITES.USER_ID  = #{userId})
+   AND ((NOT EXISTS (SELECT 1 FROM OPT_CATEGORY OC where OC.CATEG_ID = OPT.CATEG_ID AND OC.IS_WEB_YN = 0)
+         AND EXISTS (SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 2))
+         OR
+         EXISTS(SELECT 1 FROM S_APP WHERE S_APP.APP_NAME = OPT.APP_NAME AND S_APP.IS_WEB_YN = 1)
+       )
+   AND OPT.APP_NAME   = #{appName}
+   AND OPT.PARENT_REF = #{progRef}
+   <if test="parentid!=null">
+	AND (OPT.PROG_REF IN(SELECT OPT.PARENT_REF 
+                           FROM OPT 
+                          WHERE OPT.PROG_REF IN (SELECT PROG_REF 
+                                                   FROM OPT_EXTENDED 
+                                                  WHERE OPT_REFERENCE IN (SELECT PROG_REF 
+                                                                            FROM OPT 
+                                                                           WHERE PARENT_REF IN (SELECT PARENT_REF 
+                                                                                                  FROM OPT 
+                                                                                                 WHERE PROG_REF = #{parentid} 
+                                                                                                   AND APP_NAME = #{appName}))))
+		OR OPT.PROG_REF IN (SELECT OPT.PARENT_REF 
+		                      FROM OPT         
+		                     WHERE OPT.PROG_REF  = #{parentid} 
+		                       AND OPT.APP_NAME = #{appName})
+		OR OPT.PROG_REF IN (SELECT OPT.PARENT_REF 
+		                      FROM OPT         
+		                     WHERE OPT.PROG_REF IN (SELECT OPTD.PROG_REF 
+		                                              FROM OPT_EXTENDED OPTD
+		                                             WHERE OPTD.OPT_REFERENCE = #{parentid}  
+		                                               AND OPTD.APP_NAME      = #{appName}
+		                                                OR OPTD.OPT_REFERENCE IN (SELECT OPTE.OPT_REFERENCE
+		                                                                            FROM OPT_EXTENDED OPTE
+		                                                                           WHERE OPTE.PROG_REF = #{parentid}
+		                                                                             AND OPTE.APP_NAME = #{appName})
+		                                               AND OPTD.OPT_URL = 'SAVED_AS')
+		                       AND OPT.APP_NAME = #{appName})
+		OR OPT.PROG_REF IN (SELECT OPT.PARENT_REF 
+					          FROM OPT
+					         WHERE OPT.PROG_REF  IN (SELECT OPTE.OPT_REFERENCE
+					                                   FROM OPT_EXTENDED OPTE
+					                                  WHERE OPTE.PROG_REF = #{parentid}
+					                                    AND APP_NAME      = #{appName}))
+        )
+   </if>
+)tbl
+ORDER By tbl.DISP_ORDER ASC
+</sql>
+<select id="returnParent" resultType="String" parameterType="treeMenuSC">
+	SELECT PARENT_REF 
+	FROM OPT
+	WHERE APP_NAME = #{appName}
+	AND PROG_REF = #{progRef}
+</select>
+</mapper>

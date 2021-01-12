@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="audit">
+	<select id="getAuditMax"  resultType="int" parameterType="auditVO">
+		SELECT	CASE WHEN MAX(LINE_NUMBER)is null THEN 0 ELSE MAX(LINE_NUMBER) END MAX_NBR
+		FROM	S_AUDIT_ACTION_DTL 
+		WHERE	S_AUDIT_ACTION_DTL.APP_NAME  = #{APP_NAME}
+		AND		S_AUDIT_ACTION_DTL.PROG_REF  = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		AND		S_AUDIT_ACTION_DTL.TRX_NUMBER  = #{TRX_NBR}
+		AND		S_AUDIT_ACTION_DTL.ACTION_DATE = #{ACTION_DATE}
+	</select>
+		 
+	<resultMap id="sAuditActionsMap" type="AuditReportCO">
+		<id column="APP_NAME"            property="APP_NAME" />
+		<id column="PROG_REF"            property="PROG_REF" />
+		<id column="TRX_NBR"             property="TRX_NBR" />
+		<result column="APP_NAME"        property="APP_NAME" />
+		<result column="PROG_REF"        property="PROG_REF" />
+		<result column="TRX_NBR"         property="TRX_NBR" />
+		<result column="ACTION_DATE"     property="ACTION_DATE" />
+		<result column="ACTION_TYPE_LOV" property="ACTION_TYPE" />
+		<result column="ACTION_TYPE"     property="ACTION_TYPE_HIDDEN" />
+		<result column="USER_ID"         property="USER_ID" />
+		<result column="USER_NAME"       property="USER_NAME" />
+		<result column="MACHINE_ID"      property="MACHINE_ID" />
+
+	</resultMap>
+
+	<sql id="sAuditActionsListCommon">
+	<![CDATA[
+		
+		SELECT
+	   		S_AUDIT_ACTIONS.APP_NAME,
+	      	S_AUDIT_ACTIONS.PROG_REF,
+	      	S_AUDIT_ACTIONS.TRX_NBR,
+	      	S_AUDIT_ACTIONS.ACTION_DATE,
+	      	(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = S_AUDIT_ACTIONS.ACTION_TYPE AND LOV_TYPE_ID = 9 AND LANG_CODE = #{langCode})  
+			ACTION_TYPE_LOV,
+			ACTION_TYPE,
+	      	S_AUDIT_ACTIONS.USER_ID,
+	      	(SELECT CASE  
+			          WHEN #{langCode} = 'AR'
+			          THEN USR.FIRST_NAME_ARABIC]]><choose><when test="isOracle == 1">||</when><otherwise>+</otherwise></choose><![CDATA[' ']]><choose><when test="isOracle == 1">||</when><otherwise>+</otherwise></choose><![CDATA[USR.LAST_NAME_ARABIC
+			          ELSE USR.FIRST_NAME]]><choose><when test="isOracle == 1">||</when><otherwise>+</otherwise></choose><![CDATA[' ']]><choose><when test="isOracle == 1">||</when><otherwise>+</otherwise></choose><![CDATA[USR.LAST_NAME
+			        END   
+			   FROM USR WHERE USR.USER_ID LIKE S_AUDIT_ACTIONS.USER_ID
+			) AS USER_NAME, 
+	      	S_AUDIT_ACTIONS.MACHINE_ID
+ 		FROM S_AUDIT_ACTIONS
+		WHERE (S_AUDIT_ACTIONS.APP_NAME = #{appName})
+			AND (S_AUDIT_ACTIONS.PROG_REF =  (SELECT ]]> <include refid="repAdditionalParentRef" /> 
+			<![CDATA[FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{progRef}
+		AND OPT.APP_NAME = #{appName}))   
+			AND (S_AUDIT_ACTIONS.TRX_NBR = #{trxNbr})
+	]]>
+	</sql>
+
+
+	<select id="getSAuditActionsList" resultMap="sAuditActionsMap"
+		parameterType="auditReportSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="sAuditActionsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="getSAuditActionsCount" resultType="int"
+		parameterType="auditReportSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="sAuditActionsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="sAuditActionDtlMap" type="AuditReportCO">
+		<id column="APP_NAME" property="APP_NAME" />
+		<id column="PROG_REF" property="PROG_REF" />
+		<id column="TRX_NUMBER" property="TRX_NUMBER" />
+		<id column="ACTION_DATE" property="ACTION_DATE" />
+		<result column="APP_NAME" property="APP_NAME" />
+		<result column="PROG_REF" property="PROG_REF" />
+		<result column="ACTION_DATE" property="ACTION_DATE" />
+		<result column="LINE_NUMBER" property="LINE_NUMBER" />
+		<result column="FIELD_NAME" property="FIELD_NAME" />
+		<result column="OLD_VALUE" property="OLD_VALUE" />
+		<result column="NEW_VALUE" property="NEW_VALUE" />
+		<result column="RUNNING_DATE" property="RUNNING_DATE" />
+		<result column="TRX_NUMBER" property="TRX_NUMBER" />
+		<result column="ADDITIONAL_FIELD_TYPE" property="additionalFieldByTypeDesc" />
+	</resultMap>
+
+
+	<sql id="sAuditActionDtlListCommon">	
+	 SELECT CASE WHEN SAD.ADDITIONAL_FIELD_TYPE IS NULL THEN #{ordinaryFieldType} ELSE(SELECT VALUE_DESC 
+                 FROM SYS_PARAM_LOV_TRANS 
+                 WHERE LOV_TYPE_ID = #{lovTypeId}
+                 AND LANG_CODE = #{preferredLanguage}
+                 AND VALUE_CODE = 
+                 <if test="isSybase == 1">CONVERT(VARCHAR,</if>
+                 SAD.ADDITIONAL_FIELD_TYPE
+                 <if test="isSybase == 1">)</if>) END ADDITIONAL_FIELD_TYPE,
+          SAD.APP_NAME,
+            SAD.PROG_REF,
+            SAD.ACTION_DATE,
+            SAD.LINE_NUMBER,
+           <choose>
+			   <when test="isStandAlone == 1">
+			   		 SAD.FIELD_NAME,
+			   </when>
+			   <otherwise>
+			   		(CASE WHEN SAD.ADD_FIELD_CODE IS NOT NULL AND SAD.ADD_FIELD_BY_TYPE_COLUMN_NBR IS NOT NULL 
+			   		THEN (SELECT COALESCE(CAF.FIELD_LABEL, SAD.FIELD_NAME) FROM CTS_ADD_FIELDS CAF WHERE CAF.COMP_CODE = #{compCode}
+			   		AND CAF.CODE = SAD.ADD_FIELD_CODE
+			   		AND CAF.COLUMN_NUMBER = SAD.ADD_FIELD_BY_TYPE_COLUMN_NBR) ELSE SAD.FIELD_NAME END) FIELD_NAME,
+			   </otherwise>
+		  </choose>
+		  <!-- Check whether there are fields to be masked or not -->
+		  <choose>
+		  <when test="maskTheName ==1 || maskTheSalary==1 || maskAll==1">
+			<!-- Mask the OLD_VALUE column -->
+		  CASE (SELECT CASE WHEN ((MASK.CATEGORY = 'N' AND #{maskTheName}=1) OR (MASK.CATEGORY = 'S' AND #{maskTheSalary}=1) OR (MASK.CATEGORY = 'A' AND #{maskAll}=1)) THEN 'MASK' END
+			FROM S_AUDIT_MASK_FIELDS MASK, SYS_PARAM_SCREEN_ELEMENTS SPSE, FIELD_TECH_DETAILS FTD
+			WHERE MASK.APP_NAME = SPSE.APP_NAME
+			AND MASK.PROG_REF = SPSE.PROG_REF
+			AND MASK.FIELD_IDENTIFIER = SPSE.FLD_IDENTIFIER
+			AND SAD.APP_NAME = MASK.APP_NAME
+			AND SAD.PROG_REF = MASK.PROG_REF
+			AND MASK.FIELD_IDENTIFIER = FTD.FLD_IDENTIFIER
+			AND SAD.ELEMENT_NAME = FTD.ELEMENT_NAME) WHEN 'MASK' THEN '*******' ELSE SAD.OLD_VALUE END OLD_VALUE,
+			<!-- Mask the NEW_VALUE column -->
+			CASE (SELECT CASE WHEN ((MASK.CATEGORY = 'N' AND #{maskTheName}=1) OR (MASK.CATEGORY = 'S' AND #{maskTheSalary}=1) OR (MASK.CATEGORY = 'A' AND #{maskAll}=1)) THEN 'MASK' END
+			FROM S_AUDIT_MASK_FIELDS MASK, SYS_PARAM_SCREEN_ELEMENTS SPSE, FIELD_TECH_DETAILS FTD
+			WHERE MASK.APP_NAME = SPSE.APP_NAME
+			AND MASK.PROG_REF = SPSE.PROG_REF
+			AND MASK.FIELD_IDENTIFIER = SPSE.FLD_IDENTIFIER
+			AND SAD.APP_NAME = MASK.APP_NAME
+			AND SAD.PROG_REF = MASK.PROG_REF
+			AND MASK.FIELD_IDENTIFIER = FTD.FLD_IDENTIFIER
+			AND SAD.ELEMENT_NAME = FTD.ELEMENT_NAME) WHEN 'MASK' THEN '*******' ELSE SAD.NEW_VALUE END NEW_VALUE,
+		  </when>
+		  <otherwise>
+            SAD.OLD_VALUE,
+            SAD.NEW_VALUE,
+		  </otherwise>
+		  </choose>
+            SAD.RUNNING_DATE,
+            SAD.TRX_NUMBER
+     FROM S_AUDIT_ACTION_DTL SAD
+		WHERE (SAD.APP_NAME = #{appName})
+		  AND (SAD.PROG_REF =  #{progRef})   
+		  AND (SAD.TRX_NUMBER = #{trxNbr})
+		  AND (SAD.ACTION_DATE = <choose><when test="isSQLServer == 1">CONVERT(DATETIME, #{actionDate})</when><otherwise>#{actionDate}</otherwise></choose>)
+	</sql>
+
+
+	<select id="getSAuditActionDtlList" resultMap="sAuditActionDtlMap"
+		parameterType="auditReportSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="sAuditActionDtlListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<delete id="deleteAuditAction" parameterType="auditVO">
+		DELETE FROM
+		
+		S_AUDIT_ACTIONS
+		
+		WHERE APP_NAME = #{APP_NAME}
+		
+		AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		
+		AND TRX_NBR = #{TRX_NBR}
+		
+		AND ACTION_DATE = #{ACTION_DATE}
+	</delete>
+
+  <insert id="insertAuditAction" parameterType="auditVO" >
+    insert into S_AUDIT_ACTIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="FIELD_AUDIT_YN != null" >
+        FIELD_AUDIT_YN,
+      </if>
+      <if test="TRX_DESC != null" >
+        TRX_DESC,
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+    </trim>
+select
+	<trim suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="PROG_REF != null" >
+        <include refid="additionalParentRef" />,
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="FIELD_AUDIT_YN != null" >
+        #{FIELD_AUDIT_YN},
+      </if>
+      <if test="TRX_DESC != null" >
+        #{TRX_DESC},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      </trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+	WHERE OPT.PROG_REF =#{PROG_REF} AND OPT.APP_NAME = #{APP_NAME}
+   </insert>
+
+    <delete id="deleteActionDetails" parameterType="auditDtlVO">
+		DELETE FROM
+		
+		S_AUDIT_ACTION_DTL
+		
+		WHERE APP_NAME = #{APP_NAME}
+		
+		AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		
+		AND TRX_NUMBER = #{TRX_NUMBER}
+		
+		AND ACTION_DATE = #{ACTION_DATE}
+		
+		AND LINE_NUMBER = #{LINE_NUMBER}
+	</delete>
+    
+<insert id="insertActionDetails" parameterType="auditDtlVO" >
+    insert into S_AUDIT_ACTION_DTL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="LINE_NUMBER != null" >
+        LINE_NUMBER,
+      </if>      
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NUMBER != null" >
+        TRX_NUMBER,
+      </if>
+      <if test="FIELD_NAME != null" >
+        FIELD_NAME,
+      </if>
+      <if test="OLD_VALUE != null" >
+        OLD_VALUE,
+      </if>
+      <if test="NEW_VALUE != null" >
+        NEW_VALUE,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="ELEMENT_NAME != null" >
+        ELEMENT_NAME,
+      </if>
+      <if test="ELEMENT_TYPE != null" >
+        ELEMENT_TYPE,
+      </if>
+    </trim>
+select
+    <trim suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="LINE_NUMBER != null" >
+        #{LINE_NUMBER},
+      </if>      
+      <if test="PROG_REF != null" >
+         <include refid="additionalParentRef" />,
+      </if>
+      <if test="TRX_NUMBER != null" >
+        #{TRX_NUMBER},
+      </if>
+      <if test="FIELD_NAME != null" >
+        #{FIELD_NAME},
+      </if>
+      <if test="OLD_VALUE != null" >
+        #{OLD_VALUE},
+      </if>
+      <if test="NEW_VALUE != null" >
+        #{NEW_VALUE},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="ELEMENT_NAME != null" >
+        #{ELEMENT_NAME},
+      </if>
+      <if test="ELEMENT_TYPE != null" >
+        #{ELEMENT_TYPE},
+      </if>
+    </trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME}
+  </insert>
+  
+	
+	<delete id="deleteAuditActionOC" parameterType="auditVO">
+		DELETE FROM
+		
+		S_AUDIT_ACTIONS
+		
+		WHERE APP_NAME = #{APP_NAME}
+		
+		AND PROG_REF = #{PROG_REF}
+		
+		AND TRX_NBR = #{TRX_NBR}
+		
+		AND ACTION_DATE = #{ACTION_DATE}
+	</delete>
+
+  <insert id="insertAuditActionOC" parameterType="auditVO" >
+    insert into S_AUDIT_ACTIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="FIELD_AUDIT_YN != null" >
+        FIELD_AUDIT_YN,
+      </if>
+      <if test="TRX_DESC != null" >
+        TRX_DESC,
+      </if>
+      <if test="SESSION_ID != null" >
+        SESSION_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="PROG_REF != null" >
+		#{PROG_REF},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="FIELD_AUDIT_YN != null" >
+        #{FIELD_AUDIT_YN},
+      </if>
+      <if test="TRX_DESC != null" >
+        #{TRX_DESC},
+      </if>
+      <if test="SESSION_ID != null" >
+        #{SESSION_ID},
+      </if>
+      </trim>
+   </insert>
+
+
+	<insert id="insertAuditOCExtended" parameterType="com.path.dbmaps.vo.OC_S_AUDIT_ACTIONS_EXTENDEDVO">
+		insert into OC_S_AUDIT_ACTIONS_EXTENDED
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ACTION_DATE != null">
+				ACTION_DATE,
+			</if>
+			<if test="APP_CHNL_ID != null and APP_CHNL_ID != emptyBigDecimalValue">
+				APP_CHNL_ID,
+			</if>
+			<if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)">
+				APP_NAME,
+			</if>
+			<if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue">
+				COMP_CODE,
+			</if>
+			<if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)">
+				PROG_REF,
+			</if>
+			<if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)">
+				TRX_NBR,
+			</if>
+			<if test="USR_ID != null and USR_ID != emptyBigDecimalValue">
+				USR_ID,
+			</if>
+			<if test="OPER_ID != null and OPER_ID != emptyBigDecimalValue">
+				OPER_ID,
+			</if>
+			<if test="STATUS != null and !&quot;&quot;.equals(STATUS)">
+				STATUS,
+			</if>
+			<if
+				test="REMOTE_HOST_NAME != null and !&quot;&quot;.equals(REMOTE_HOST_NAME)">
+				REMOTE_HOST_NAME,
+			</if>
+			<if
+				test="REMOTE_HOST_OPERATING_SYSTEM != null and !&quot;&quot;.equals(REMOTE_HOST_OPERATING_SYSTEM)">
+				REMOTE_HOST_OPERATING_SYSTEM,
+			</if>
+			<if
+				test="OMNI_REFERENCE != null and OMNI_REFERENCE != emptyBigDecimalValue">
+				OMNI_REFERENCE,
+			</if>
+			<if test="CORE_REFERENCE != null and !&quot;&quot;.equals(CORE_REFERENCE)">
+				CORE_REFERENCE,
+			</if>
+			<if test="BRANCHES_ID != null and BRANCHES_ID != emptyBigDecimalValue">
+				BRANCHES_ID,
+			</if>
+			<if test="KEY_LABEL_CODE != null and !&quot;&quot;.equals(KEY_LABEL_CODE)">
+				KEY_LABEL_CODE,
+			</if>
+			<if test="KEY_DATA != null and !&quot;&quot;.equals(KEY_DATA)">
+				KEY_DATA,
+			</if>
+		</trim>
+    	<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="ACTION_DATE != null">
+				#{ACTION_DATE},
+			</if>
+			<if test="APP_CHNL_ID != null and APP_CHNL_ID != emptyBigDecimalValue">
+				#{APP_CHNL_ID},
+			</if>
+			<if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)">
+				#{APP_NAME},
+			</if>
+			<if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue">
+				#{COMP_CODE},
+			</if>
+			<if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)">
+				#{PROG_REF},
+			</if>
+			<if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)">
+				#{TRX_NBR},
+			</if>
+			<if test="USR_ID != null and USR_ID != emptyBigDecimalValue">
+				#{USR_ID},
+			</if>
+			<if test="OPER_ID != null and OPER_ID != emptyBigDecimalValue">
+				#{OPER_ID},
+			</if>
+			<if test="STATUS != null and !&quot;&quot;.equals(STATUS)">
+				#{STATUS},
+			</if>
+			<if
+				test="REMOTE_HOST_NAME != null and !&quot;&quot;.equals(REMOTE_HOST_NAME)">
+				#{REMOTE_HOST_NAME},
+			</if>
+			<if
+				test="REMOTE_HOST_OPERATING_SYSTEM != null and !&quot;&quot;.equals(REMOTE_HOST_OPERATING_SYSTEM)">
+				#{REMOTE_HOST_OPERATING_SYSTEM},
+			</if>
+			<if
+				test="OMNI_REFERENCE != null and OMNI_REFERENCE != emptyBigDecimalValue">
+				#{OMNI_REFERENCE},
+			</if>
+			<if test="CORE_REFERENCE != null and !&quot;&quot;.equals(CORE_REFERENCE)">
+				#{CORE_REFERENCE},
+			</if>
+			<if test="BRANCHES_ID != null and BRANCHES_ID != emptyBigDecimalValue">
+				#{BRANCHES_ID},
+			</if>
+			<if test="KEY_LABEL_CODE != null and !&quot;&quot;.equals(KEY_LABEL_CODE)">
+				#{KEY_LABEL_CODE},
+			</if>
+			<if test="KEY_DATA != null and !&quot;&quot;.equals(KEY_DATA)">
+				#{KEY_DATA},
+			</if>
+		</trim>
+	</insert>
+	
+    <delete id="deleteActionDetailsOC" parameterType="auditDtlVO">
+		DELETE FROM
+		
+		S_AUDIT_ACTION_DTL
+		
+		WHERE APP_NAME = #{APP_NAME}
+		
+		AND PROG_REF = #{PROG_REF}
+		
+		AND TRX_NUMBER = #{TRX_NUMBER}
+		
+		AND ACTION_DATE = #{ACTION_DATE}
+		
+		AND LINE_NUMBER = #{LINE_NUMBER}
+	</delete>
+    
+<insert id="insertActionDetailsOC" parameterType="auditDtlVO" >
+    insert into S_AUDIT_ACTION_DTL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="LINE_NUMBER != null" >
+        LINE_NUMBER,
+      </if>      
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NUMBER != null" >
+        TRX_NUMBER,
+      </if>
+      <if test="FIELD_NAME != null" >
+        FIELD_NAME,
+      </if>
+      <if test="OLD_VALUE != null" >
+        OLD_VALUE,
+      </if>
+      <if test="NEW_VALUE != null" >
+        NEW_VALUE,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="ELEMENT_NAME != null" >
+        ELEMENT_NAME,
+      </if>
+      <if test="ELEMENT_TYPE != null" >
+        ELEMENT_TYPE,
+      </if>
+    </trim>
+
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="LINE_NUMBER != null" >
+        #{LINE_NUMBER},
+      </if>      
+      <if test="PROG_REF != null" >
+         #{PROG_REF},
+      </if>
+      <if test="TRX_NUMBER != null" >
+        #{TRX_NUMBER},
+      </if>
+      <if test="FIELD_NAME != null" >
+        #{FIELD_NAME},
+      </if>
+      <if test="OLD_VALUE != null" >
+        #{OLD_VALUE},
+      </if>
+      <if test="NEW_VALUE != null" >
+        #{NEW_VALUE},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="ELEMENT_NAME != null" >
+        #{ELEMENT_NAME},
+      </if>
+      <if test="ELEMENT_TYPE != null" >
+        #{ELEMENT_TYPE},
+      </if>
+    </trim>
+  </insert>
+  
+	<!-- getAdditionalParentRef -->
+	<sql id="additionalParentRef">
+	  <choose>
+	      <when test="isSybase == 1">
+			<![CDATA[
+				CASE WHEN #{PROG_REF} = 'ROOT' THEN 'ROOT' ELSE (CASE WHEN (OPTE.ADDITIONAL_PARENT_REF IS NOT NULL AND OPTE.ADDITIONAL_PARENT_REF!='') THEN OPTE.ADDITIONAL_PARENT_REF
+				ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF!='ROOT' THEN
+				OPT.PARENT_REF ELSE OPT.PROG_REF END) END) END
+				]]>	      
+	      </when>
+	      <otherwise>
+			<![CDATA[
+				CASE WHEN #{PROG_REF} = 'ROOT' THEN 'ROOT' ELSE (CASE WHEN (OPTE.ADDITIONAL_PARENT_REF IS NOT NULL AND LENGTH(TRIM(OPTE.ADDITIONAL_PARENT_REF))!= 0) THEN OPTE.ADDITIONAL_PARENT_REF
+				ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF!='ROOT' THEN
+				OPT.PARENT_REF ELSE OPT.PROG_REF END) END) END
+				]]>	         
+	      </otherwise>
+	  </choose>
+	</sql>
+	<sql id="repAdditionalParentRef">
+	   <choose>
+	        <when test="isSybase == 1">
+			<![CDATA[
+					CASE WHEN #{progRef} = 'ROOT' THEN 'ROOT' ELSE (CASE WHEN (OPTE.ADDITIONAL_PARENT_REF IS NOT NULL AND OPTE.ADDITIONAL_PARENT_REF!='') THEN OPTE.ADDITIONAL_PARENT_REF
+				    ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF!='ROOT' THEN
+				    OPT.PARENT_REF ELSE OPT.PROG_REF END) END) END
+					]]>
+	        </when>
+	        <otherwise>
+			<![CDATA[
+					CASE WHEN #{progRef} = 'ROOT' THEN 'ROOT' ELSE (CASE WHEN (OPTE.ADDITIONAL_PARENT_REF IS NOT NULL AND LENGTH(TRIM(OPTE.ADDITIONAL_PARENT_REF))!= 0) THEN OPTE.ADDITIONAL_PARENT_REF
+				    ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF!='ROOT' THEN
+				    OPT.PARENT_REF ELSE OPT.PROG_REF END) END) END
+					]]>	        
+	        </otherwise>
+	   </choose>
+	</sql>	
+	<select id="returnAdditionalParentRef" parameterType="auditReportSC" resultType="String">
+	SELECT <include refid="repAdditionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{progRef}
+		AND OPT.APP_NAME = #{appName}
+	</select>
+<!-- Query to delete track changes master and details -->
+	<delete id="deleteTrackChanges" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO">
+	begin
+	DELETE FROM TRACK_CHANGES_DETAILS
+	WHERE APP_NAME = #{APP_NAME}
+	AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+	AND TRX_NBR = #{TRX_NBR}<if test="isOracle == 1">;</if>
+	
+	DELETE FROM TRACK_CHANGES_MASTER
+	WHERE APP_NAME = #{APP_NAME}
+	AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+	AND TRX_NBR = #{TRX_NBR}<if test="isOracle == 1">;</if>
+	end<if test="isOracle == 1">;</if>
+	</delete>
+
+<!-- Query to insert track changes master record -->
+  <insert id="insertTRACK_CHANGES_MASTER" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO" >
+    insert into TRACK_CHANGES_MASTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="ACTION_TYPE != null" >
+        ACTION_TYPE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+    </trim>
+select
+	<trim suffixOverrides="," >
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="PROG_REF != null" >
+         <include refid="additionalParentRef" />,
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="ACTION_TYPE != null" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+      </trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+	WHERE OPT.PROG_REF =#{PROG_REF} AND OPT.APP_NAME = #{APP_NAME}
+   </insert>
+   
+   	<!-- query to check existence of track master record -->
+	<select id="trackChangesCount" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO"
+		resultType="int">
+		 SELECT COUNT(1)
+		  FROM TRACK_CHANGES_MASTER 
+		 WHERE APP_NAME = #{APP_NAME}
+		 AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		 AND TRX_NBR = #{TRX_NBR}
+	</select>
+	
+<!-- Query to insert track changes details records -->
+<insert id="insertTRACK_CHANGES_DETAILS" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_DETAILSVO" >
+    insert into TRACK_CHANGES_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="LINE_NUMBER != null" >
+        LINE_NUMBER,
+      </if>      
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="FIELD_NAME != null" >
+        FIELD_NAME,
+      </if>
+      <if test="OLD_VALUE != null" >
+        OLD_VALUE,
+      </if>
+      <if test="NEW_VALUE != null" >
+        NEW_VALUE,
+      </if>
+      <if test="FIELD_TECH_REFERENCE != null" >
+        FIELD_TECH_REFERENCE,
+      </if>
+      <if test="ADDITIONAL_FIELD_TYPE != null" >
+        ADDITIONAL_FIELD_TYPE,
+      </if>
+      <if test="ADD_FIELD_USED_FROM != null" >
+        ADD_FIELD_USED_FROM,
+      </if>
+      <if test="ADD_FIELD_CODE != null" >
+        ADD_FIELD_CODE,
+      </if>
+      <if test="ADD_FIELD_BY_TYPE_ENTITY != null" >
+        ADD_FIELD_BY_TYPE_ENTITY,
+      </if>
+      <if test="ADD_FIELD_BY_TYPE_COLUMN_NBR != null" >
+        ADD_FIELD_BY_TYPE_COLUMN_NBR,
+      </if>
+    </trim>
+select
+    <trim suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="LINE_NUMBER != null" >
+        #{LINE_NUMBER},
+      </if>      
+      <if test="PROG_REF != null" >
+         <include refid="additionalParentRef" />,
+      </if>
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="FIELD_NAME != null" >
+        #{FIELD_NAME},
+      </if>
+      <if test="OLD_VALUE != null" >
+        #{OLD_VALUE},
+      </if>
+      <if test="NEW_VALUE != null" >
+        #{NEW_VALUE},
+      </if>
+      <if test="FIELD_TECH_REFERENCE != null" >
+        #{FIELD_TECH_REFERENCE},
+      </if>
+      <if test="ADDITIONAL_FIELD_TYPE != null" >
+        #{ADDITIONAL_FIELD_TYPE},
+      </if>
+      <if test="ADD_FIELD_USED_FROM != null" >
+        #{ADD_FIELD_USED_FROM},
+      </if>
+      <if test="ADD_FIELD_CODE != null" >
+        #{ADD_FIELD_CODE},
+      </if>
+      <if test="ADD_FIELD_BY_TYPE_ENTITY != null" >
+        #{ADD_FIELD_BY_TYPE_ENTITY},
+      </if>
+      <if test="ADD_FIELD_BY_TYPE_COLUMN_NBR != null" >
+        #{ADD_FIELD_BY_TYPE_COLUMN_NBR},
+      </if>
+    </trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME}
+  </insert>
+	
+    
+	<!-- Query to delete track changes master record -->
+    <delete id="deleteTRACK_CHANGES_MASTER" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_MASTERVO">
+		DELETE FROM
+		
+		TRACK_CHANGES_MASTER
+		
+		WHERE APP_NAME = #{APP_NAME}
+		AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		AND TRX_NBR = #{TRX_NBR}
+		AND ACTION_DATE = #{ACTION_DATE}
+	</delete> 
+	
+	<!-- Query to delete track changes details records -->
+    <delete id="deleteTRACK_CHANGES_DETAILS" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_DETAILSVO">
+		DELETE FROM
+		
+		TRACK_CHANGES_DETAILS
+		
+		WHERE APP_NAME = #{APP_NAME}
+		
+		AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		AND TRX_NBR = #{TRX_NBR}
+		AND ACTION_DATE = #{ACTION_DATE}
+		AND LINE_NUMBER = #{LINE_NUMBER}
+	</delete>
+	
+	<resultMap type="hashmap" id="changesHighlightsMap">
+   		<result property="OLD_VALUE"         	column="OLD_VALUE"  javaType="string"/>
+ 	</resultMap>
+
+	<select id="returnChangesHighlights"  resultMap="changesHighlightsMap" parameterType="com.path.dbmaps.vo.TRACK_CHANGES_DETAILSVO">
+	SELECT TDN.FIELD_TECH_REFERENCE, TDN.OLD_VALUE
+	FROM TRACK_CHANGES_DETAILS TDN
+	INNER JOIN
+	    ( SELECT MIN(TD.ACTION_DATE) AS MIN_ACT_DATE,
+	      TD.FIELD_TECH_REFERENCE
+	      FROM TRACK_CHANGES_DETAILS TD, TRACK_CHANGES_MASTER TM
+	      WHERE 
+	      TD.APP_NAME = TM.APP_NAME AND
+	      TD.PROG_REF = TM.PROG_REF AND
+	      TD.TRX_NBR = TD.TRX_NBR AND
+	      TD.ACTION_DATE = TM.ACTION_DATE AND
+	      TD.APP_NAME = #{APP_NAME} AND
+	      TD.PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME}) AND
+	      TD.TRX_NBR = #{TRX_NBR}
+	      GROUP BY
+	      TD.FIELD_TECH_REFERENCE) GTDN
+	ON TDN.FIELD_TECH_REFERENCE = GTDN.FIELD_TECH_REFERENCE
+	AND TDN.ACTION_DATE = GTDN.MIN_ACT_DATE
+	</select>
+
+	<update id="beginTrans">
+		BEGIN TRANSACTION
+	</update>
+	<update id="dropTRACK_CHANGES_TEMP">
+			IF NULLIF(object_id('#TRACK_CHANGES_TEMP'), 0) IS NOT NULL DROP TABLE #TRACK_CHANGES_TEMP
+	</update>
+	<update id="createTRACK_CHANGES_TEMP" parameterType="auditReportSC">
+			CREATE TABLE #TRACK_CHANGES_TEMP(
+			FIELD_LOCATION varchar(500) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			FIELD_LABEL varchar(250) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			OLD_VALUE TEXT <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			NEW_VALUE TEXT <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL)
+	</update>
+	
+	<resultMap id="trackChangesMap" type="com.path.vo.common.audit.TrackReportCO">
+		<result property="fieldLocation"    column="FIELD_LOCATION"/>
+		<result property="fieldLabel"  		column="FIELD_LABEL"/>
+		<result property="oldValue"        	column="OLD_VALUE"/>
+		<result property="newValue"       	column="NEW_VALUE"/>
+	</resultMap>
+	
+	
+	<select id="returnTrackChangesRep"  resultMap="trackChangesMap" parameterType="auditReportSC">
+		SELECT * FROM 
+		<choose>
+		<when test="isSybase == 1">#TRACK_CHANGES_TEMP</when>
+		<otherwise>TRACK_CHANGES_TEMP</otherwise>
+		</choose>
+	</select>
+	
+	<select id="callTrackChangesRep" parameterType="auditReportSC" statementType="CALLABLE">
+		{
+		CALL P_TRACK_CHANGES 
+		(
+		#{appName, mode=IN, jdbcType=VARCHAR},
+		#{progRef, mode=IN, jdbcType=VARCHAR},
+		#{trxNbr, mode=IN, jdbcType=VARCHAR},
+		#{companyCode, mode=IN, jdbcType=VARCHAR},
+		#{trackOP, mode=IN, jdbcType=VARCHAR},
+		#{custPageRef, mode=IN, jdbcType=VARCHAR}
+		)
+		}
+	</select>
+
+   
+   	<!-- query to check existence of audit master record -->
+	<select id="auditActionsKeyCount" parameterType="auditVO"
+		resultType="int">
+		 SELECT COUNT(1)
+		  FROM S_AUDIT_ACTIONS 
+		 WHERE APP_NAME = #{APP_NAME}
+		 AND PROG_REF = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		 AND TRX_NBR = #{PROG_REF}
+		 AND ACTION_DATE = #{ACTION_DATE}
+	</select>
+	
+	<resultMap id="maskedFieldsMap" type="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO">
+		<id column="APP_NAME"            	property="APP_NAME" />
+		<id column="PROG_REF"            	property="PROG_REF" />
+		<id column="FIELD_IDENTIFIER"    	property="FIELD_IDENTIFIER" />
+		<result column="APP_NAME"        	property="APP_NAME" />
+		<result column="PROG_REF"        	property="PROG_REF" />
+		<result column="FIELD_IDENTIFIER"	property="FIELD_IDENTIFIER" />
+		<result column="CATEGORY"			property="CATEGORY" />
+	</resultMap>
+	
+	<select id="returnMaskedFields" resultMap="maskedFieldsMap" parameterType="auditReportSC">
+		SELECT APP_NAME, PROG_REF, FIELD_IDENTIFIER, CATEGORY
+		FROM S_AUDIT_MASK_FIELDS
+		WHERE	APP_NAME = #{appName}
+		AND		PROG_REF = (SELECT <include refid="repAdditionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{progRef}
+		AND OPT.APP_NAME = #{appName})
+
+	</select>
+	
+	<resultMap id="screenCIFsMap" type="com.path.dbmaps.vo.SYS_PARAM_SCREEN_CIFSVO">
+		<result column="ELEMENT_ID"        	property="ELEMENT_ID" />
+		<result column="VO_CO_REFERENCE"       property="VO_CO_REFERENCE" />
+		<result column="JS_FUNCTION"		property="JS_FUNCTION" />
+	</resultMap>
+	
+	<select id="returnScreenCIFs" resultMap="screenCIFsMap" parameterType="auditReportSC">
+		SELECT ELEMENT_ID, VO_CO_REFERENCE, JS_FUNCTION
+		FROM SYS_PARAM_SCREEN_CIFS
+		WHERE	APP_NAME = #{appName}
+		AND		PROG_REF = (SELECT <include refid="repAdditionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{progRef}
+		AND OPT.APP_NAME = #{appName})
+
+	</select>
+
+	<insert id="insertS_AUDIT_ACTIONS_CIF" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO">
+		insert into S_AUDIT_ACTIONS_CIF
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ACTION_DATE != null">
+				ACTION_DATE,
+			</if>
+			<if test="APP_NAME != null">
+				APP_NAME,
+			</if>
+			<if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue">
+				CIF_LINE_NO,
+			</if>
+			<if test="PROG_REF != null">
+				PROG_REF,
+			</if>
+			<if test="TRX_NBR != null">
+				TRX_NBR,
+			</if>
+			<if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue">
+				CIF_NO,
+			</if>
+		</trim>
+		Select 
+		<trim suffixOverrides=",">
+			<if test="ACTION_DATE != null">
+				#{ACTION_DATE},
+			</if>
+			<if test="APP_NAME != null">
+				#{APP_NAME},
+			</if>
+			<if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue">
+				#{CIF_LINE_NO},
+			</if>
+			<if test="PROG_REF != null">
+				 <include refid="additionalParentRef" />,
+
+			</if>
+			<if test="TRX_NBR != null">
+				#{TRX_NBR},
+			</if>
+			<if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue">
+				#{CIF_NO},
+			</if>
+		</trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME}
+	</insert>
+
+	<insert id="insertS_AUDIT_ACTION_DTL_CIF" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTION_DTL_CIFVO">
+		insert into S_AUDIT_ACTION_DTL_CIF
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ACTION_DATE != null">
+				ACTION_DATE,
+			</if>
+			<if test="APP_NAME != null">
+				APP_NAME,
+			</if>
+			<if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue">
+				CIF_LINE_NO,
+			</if>
+			<if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+				LINE_NUMBER,
+			</if>
+			<if test="PROG_REF != null">
+				PROG_REF,
+			</if>
+			<if test="TRX_NUMBER != null">
+				TRX_NUMBER,
+			</if>
+			<if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue">
+				CIF_NO,
+			</if>
+		</trim>
+select
+		<trim suffixOverrides=",">
+			<if test="ACTION_DATE != null">
+				#{ACTION_DATE},
+			</if>
+			<if test="APP_NAME != null">
+				#{APP_NAME},
+			</if>
+			<if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue">
+				#{CIF_LINE_NO},
+			</if>
+			<if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+				#{LINE_NUMBER},
+			</if>
+			<if test="PROG_REF != null">
+				 <include refid="additionalParentRef" />,
+
+			</if>
+			<if test="TRX_NUMBER != null">
+				#{TRX_NUMBER},
+			</if>
+			<if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue">
+				#{CIF_NO},
+			</if>
+		</trim>
+	FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME}
+	</insert>
+
+	<select id="getAuditDetailCIFMax"  resultType="int" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTION_DTL_CIFVO">
+		SELECT	CASE WHEN MAX(CIF_LINE_NO)is null THEN 0 ELSE MAX(CIF_LINE_NO) END MAX_NBR
+		FROM	S_AUDIT_ACTION_DTL_CIF 
+		WHERE	S_AUDIT_ACTION_DTL_CIF.APP_NAME  = #{APP_NAME}
+		AND		S_AUDIT_ACTION_DTL_CIF.PROG_REF  = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		AND		S_AUDIT_ACTION_DTL_CIF.TRX_NUMBER  = #{TRX_NUMBER}
+		AND		S_AUDIT_ACTION_DTL_CIF.ACTION_DATE = #{ACTION_DATE}
+		AND		S_AUDIT_ACTION_DTL_CIF.LINE_NUMBER = #{LINE_NUMBER}
+	</select>
+	
+	<select id="getAuditMasterCIFMax"  resultType="int" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO">
+		SELECT	CASE WHEN MAX(CIF_LINE_NO)is null THEN 0 ELSE MAX(CIF_LINE_NO) END MAX_NBR
+		FROM	S_AUDIT_ACTIONS_CIF 
+		WHERE	S_AUDIT_ACTIONS_CIF.APP_NAME  = #{APP_NAME}
+		AND		S_AUDIT_ACTIONS_CIF.PROG_REF  = (SELECT <include refid="additionalParentRef" />
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF = #{PROG_REF}
+		AND OPT.APP_NAME = #{APP_NAME})
+		AND		S_AUDIT_ACTIONS_CIF.TRX_NBR  = #{TRX_NBR}
+		AND		S_AUDIT_ACTIONS_CIF.ACTION_DATE = #{ACTION_DATE}
+	</select>
+
+</mapper>

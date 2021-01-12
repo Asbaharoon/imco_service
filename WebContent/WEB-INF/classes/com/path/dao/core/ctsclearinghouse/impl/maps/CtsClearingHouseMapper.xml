@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ctsClearingHouseMapper">
+	
+	<sql id="ctsClearingHouseListCommon">
+	<![CDATA[
+	 SELECT T1.CODE,
+			T2.CY_CODE,
+			T1.BRIEF_NAME_ENG,
+			T1.LONG_NAME_ENG,
+			T1.BRIEF_NAME_ARAB,
+			T1.LONG_NAME_ARAB,
+			T2.CLEARING_DAYS
+	  FROM  CTSCLEARINGHOUSE T1 , CTSCLEARINGHOUSE T2
+     WHERE T1.COMP_CODE  = #{compCode} AND
+			T1.LINE_NO    = 0   AND
+			T1.COMP_CODE = T2.COMP_CODE AND
+			T1.CODE      = T2.CODE      AND
+			T2.LINE_NO    >= 1   AND
+			T2.CY_CODE  = CASE WHEN #{currencyCode} = 0 THEN T2.CY_CODE ELSE #{currencyCode} END
+	]]>
+	</sql>
+	
+	<sql id="clearingHouseByCompLkp_Sql">
+	SELECT CTSCLEARINGHOUSE.CODE,
+	       CTSCLEARINGHOUSE.BRIEF_NAME_ENG,
+	       CTSCLEARINGHOUSE.LONG_NAME_ENG,
+	       CTSCLEARINGHOUSE.BRIEF_NAME_ARAB,
+	       CTSCLEARINGHOUSE.LONG_NAME_ARAB
+	  FROM CTSCLEARINGHOUSE
+	 WHERE (CTSCLEARINGHOUSE.COMP_CODE = #{compCode})
+	   AND (CTSCLEARINGHOUSE.LINE_NO = 0)
+	</sql>
+	
+	<select id="returnCtsClearingHouse" parameterType="ctsClearingHouseSC" resultType="ctsClearingHouseVO" >
+		SELECT CTSCLEARINGHOUSE.ACC_ON_BR, 
+			   CTSCLEARINGHOUSE.ACC_ON_GL,   
+			   CTSCLEARINGHOUSE.ACC_ON_CIF,   
+			   CTSCLEARINGHOUSE.ACC_ON_SL  
+		  FROM CTSCLEARINGHOUSE  
+		 WHERE CTSCLEARINGHOUSE.COMP_CODE = #{compCode}
+		   AND CTSCLEARINGHOUSE.CODE = #{clearingHouseCode}
+		   AND CTSCLEARINGHOUSE.CY_CODE = #{currencyCode}
+		   AND CTSCLEARINGHOUSE.LINE_NO > 0 
+	</select>
+
+	<resultMap id="ctsClearingHouseList_ResMap" type="ctsClearingHouseVO" >
+	    <id column="CODE" property="CODE" />
+	    <result column="CY_CODE" property="CY_CODE" />
+	    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+	    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+	    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+	    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+	    <result column="CLEARING_DAYS" property="CLEARING_DAYS" />
+	</resultMap>
+	
+	<select id="ctsClearingHouseList" resultMap="ctsClearingHouseList_ResMap" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="ctsClearingHouseListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="ctsClearingHouseListCount" resultType="int" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="ctsClearingHouseListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="ctsClearingHouseById" resultMap="ctsClearingHouseList_ResMap" parameterType="ctsClearingHouseSC">
+		 SELECT <if test="isSybase == 1">TOP 1 </if>
+		 <![CDATA[
+		 		T1.CODE,
+				T2.CY_CODE,
+				T1.BRIEF_NAME_ENG,
+				T1.LONG_NAME_ENG,
+				T1.BRIEF_NAME_ARAB,
+				T1.LONG_NAME_ARAB,
+				T2.CLEARING_DAYS
+		  FROM  CTSCLEARINGHOUSE T1 , CTSCLEARINGHOUSE T2
+	     WHERE  T1.COMP_CODE  = #{compCode} AND
+				T1.LINE_NO    = 0   AND
+				T1.COMP_CODE = T2.COMP_CODE AND
+				T1.CODE      = T2.CODE      AND
+				T2.LINE_NO    >= 1   AND
+				T2.CY_CODE  = CASE WHEN #{currencyCode} = 0 THEN T2.CY_CODE ELSE #{currencyCode} END
+		  AND   T1.CODE = #{clearingHouseCode}
+		]]><if test="isOracle == 1"> AND ROWNUM = 1</if>
+	</select>
+	
+	
+	
+	<sql id="ctsClearingHouseGridList">
+	<![CDATA[
+		SELECT
+			 CTSCLEARINGHOUSE.COMP_CODE,
+			 CTSCLEARINGHOUSE.CODE,
+			 CTSCLEARINGHOUSE.LINE_NO,
+			 CTSCLEARINGHOUSE.CY_CODE,
+			 CTSCLEARINGHOUSE.BRIEF_NAME_ENG,
+			 CTSCLEARINGHOUSE.LONG_NAME_ENG,
+			 CTSCLEARINGHOUSE.BRIEF_NAME_ARAB,
+			 CTSCLEARINGHOUSE.LONG_NAME_ARAB,
+			 CTSCLEARINGHOUSE.CLEARING_DAYS,
+			 CTSCLEARINGHOUSE.ACC_ON_GL,
+			 CTSCLEARINGHOUSE.ACC_ON_CIF,
+			 CTSCLEARINGHOUSE.ACC_ON_SL,
+			 CTSCLEARINGHOUSE.ACC_OFF_GL,
+			 CTSCLEARINGHOUSE.ACC_OFF_CIF,
+			 CTSCLEARINGHOUSE.ACC_OFF_SL,
+		   (    SELECT  BRIEF_NAME_ENG 
+				 FROM  AMF 
+				 WHERE	COMP_CODE  = CTSCLEARINGHOUSE.COMP_CODE
+				 AND	BRANCH_CODE  = CTSCLEARINGHOUSE.ACC_ON_BR
+				 AND	CURRENCY_CODE  = CTSCLEARINGHOUSE.CY_CODE
+				 AND	GL_CODE  = CTSCLEARINGHOUSE.ACC_ON_GL
+				 AND	CIF_SUB_NO  = CTSCLEARINGHOUSE.ACC_ON_CIF
+				 AND	SL_NO  = CTSCLEARINGHOUSE.ACC_ON_SL
+				 AND	AMF.ACC_BC  <> 'S'
+			  )ACC_ON_NAME,
+			 (   SELECT  BRIEF_NAME_ENG 
+				 FROM  AMF 
+				 WHERE	COMP_CODE  = CTSCLEARINGHOUSE.COMP_CODE
+				 AND	BRANCH_CODE  = CTSCLEARINGHOUSE.ACC_OFF_BR
+				 AND	CURRENCY_CODE  = CTSCLEARINGHOUSE.CY_CODE
+				 AND	GL_CODE  = CTSCLEARINGHOUSE.ACC_OFF_GL
+				 AND	CIF_SUB_NO  = CTSCLEARINGHOUSE.ACC_OFF_CIF
+				 AND	SL_NO  = CTSCLEARINGHOUSE.ACC_OFF_SL
+				 AND	AMF.ACC_BC  <> 'S'
+			  ) ACC_OFF_NAME,
+			 (SELECT CURRENCIES.BRIEF_DESC_ENG  
+			  FROM  CURRENCIES 
+			  WHERE	CURRENCIES.COMP_CODE  = CTSCLEARINGHOUSE.COMP_CODE 
+			  AND	CURRENCIES.CURRENCY_CODE  =  CTSCLEARINGHOUSE.CY_CODE)  CY_DESC ,
+			CTSCLEARINGHOUSE.ACC_ON_BR,
+			CTSCLEARINGHOUSE.ACC_OFF_BR 
+	FROM  CTSCLEARINGHOUSE 
+	WHERE	 (CTSCLEARINGHOUSE.COMP_CODE  = #{compCode})
+	 AND	(CTSCLEARINGHOUSE.CODE  =  #{clearingHouseCode})
+	 AND	(CTSCLEARINGHOUSE.LINE_NO  > 0)
+	]]>
+	</sql>
+	
+	<resultMap id="ctsClearingMap" type="ctsClearingHouseCO" >
+	 	 <result property="ctsClearingHouseVO.CODE" column="CODE" />
+	     <result property="ctsClearingHouseVO.COMP_CODE" column="COMP_CODE" />
+	    <result property="ctsClearingHouseVO.LINE_NO" column="LINE_NO" />
+	    <result property="ctsClearingHouseVO.CY_CODE" column="CY_CODE" />
+	    <result property="ctsClearingHouseVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	    <result property="ctsClearingHouseVO.LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	    <result property="ctsClearingHouseVO.BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	    <result property="ctsClearingHouseVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	    <result property="ctsClearingHouseVO.CLEARING_DAYS" column="CLEARING_DAYS" />
+	    <result property="ctsClearingHouseVO.ACC_ON_GL" column="ACC_ON_GL" />
+	    <result property="ctsClearingHouseVO.ACC_ON_CIF" column="ACC_ON_CIF" />
+	    <result property="ctsClearingHouseVO.ACC_ON_SL" column="ACC_ON_SL" />
+	    <result property="ctsClearingHouseVO.ACC_OFF_GL" column="ACC_OFF_GL" />
+	    <result property="ctsClearingHouseVO.ACC_OFF_CIF" column="ACC_OFF_CIF" />
+	    <result property="ctsClearingHouseVO.ACC_OFF_SL" column="ACC_OFF_SL" />
+	    <result property="ACC_ON_NAME" column="ACC_ON_NAME" />
+	    <result property="ACC_OFF_NAME" column="ACC_OFF_NAME" />
+	    <result property="CY_DESC" column="CY_DESC" />
+	    <result property="ctsClearingHouseVO.ACC_ON_BR" column="ACC_ON_BR" />
+	    <result property="ctsClearingHouseVO.ACC_OFF_BR" column="ACC_OFF_BR" />
+	</resultMap>
+	
+	<select id="ctsClearingHouseListGrid" resultMap="ctsClearingMap" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="ctsClearingHouseGridList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="ctsClearingHouseListGridCount" resultType="int" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="ctsClearingHouseGridList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+
+	<select id="clearingHouseByCompLkpCount" resultType="int" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="clearingHouseByCompLkp_Sql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="clearingHouseByCompLkpList" resultMap="ctsClearingMap" parameterType="ctsClearingHouseSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="clearingHouseByCompLkp_Sql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="clearingHouseDepByCode" resultType="ctsClearingHouseVO" parameterType="ctsClearingHouseSC">
+		<include refid="clearingHouseByCompLkp_Sql" />
+		AND	CTSCLEARINGHOUSE.CODE  		= #{clearingHouseCode}
+	</select>
+	
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USR_PWDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USR_PWDSVO" >
+    <id column="PWD_DATE" property="PWD_DATE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="PWD_FORWARD" property="PWD_FORWARD" />
+    <result column="PWD_REVERSE" property="PWD_REVERSE" />
+    <result column="PASS_FINAL" property="PASS_FINAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PWD_DATE, USER_ID, PWD_FORWARD, PWD_REVERSE, PASS_FINAL
+  </sql>
+  <select id="selectUSR_PWDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USR_PWDSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from USR_PWDS
+    where PWD_DATE = #{PWD_DATE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteUSR_PWDS" parameterType="com.path.dbmaps.vo.USR_PWDSVOKey" >
+    delete from USR_PWDS
+    where PWD_DATE = #{PWD_DATE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertUSR_PWDS" parameterType="com.path.dbmaps.vo.USR_PWDSVO" >
+    insert into USR_PWDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="PWD_DATE != null" >
+        PWD_DATE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="PWD_FORWARD != null and PWD_FORWARD != emptyBigDecimalValue" >
+        PWD_FORWARD,
+      </if>
+      <if test="PWD_REVERSE != null and PWD_REVERSE != emptyBigDecimalValue" >
+        PWD_REVERSE,
+      </if>
+      <if test="PASS_FINAL != null" >
+        PASS_FINAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="PWD_DATE != null" >
+        #{PWD_DATE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="PWD_FORWARD != null and PWD_FORWARD != emptyBigDecimalValue" >
+        #{PWD_FORWARD},
+      </if>
+      <if test="PWD_REVERSE != null and PWD_REVERSE != emptyBigDecimalValue" >
+        #{PWD_REVERSE},
+      </if>
+      <if test="PASS_FINAL != null" >
+        #{PASS_FINAL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSR_PWDS" >
+    update USR_PWDS
+    <set >
+      <if test="PWD_FORWARD != null" >
+        <choose >
+          <when test="PWD_FORWARD == emptyBigDecimalValue" >
+            PWD_FORWARD = NULL ,
+          </when>
+          <otherwise >
+            PWD_FORWARD = #{PWD_FORWARD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PWD_REVERSE != null" >
+        <choose >
+          <when test="PWD_REVERSE == emptyBigDecimalValue" >
+            PWD_REVERSE = NULL ,
+          </when>
+          <otherwise >
+            PWD_REVERSE = #{PWD_REVERSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PASS_FINAL != null" >
+        PASS_FINAL = #{PASS_FINAL},
+      </if>
+    </set>
+    where PWD_DATE = #{PWD_DATE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateUSR_PWDS" parameterType="com.path.dbmaps.vo.USR_PWDSVO" >
+    <include refid="sql_updateUSR_PWDS" />
+  </update>
+</mapper>

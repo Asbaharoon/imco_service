@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOMMITTEEUSR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOMMITTEEUSRVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="HIERARCHY" property="HIERARCHY" />
+    <result column="APPROVAL_BRANCH" property="APPROVAL_BRANCH" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, USER_ID, HIERARCHY, APPROVAL_BRANCH
+  </sql>
+  <select id="selectFMSCOMMITTEEUSR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEUSRVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOMMITTEEUSR
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSCOMMITTEEUSR" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEUSRVOKey" >
+    delete from FMSCOMMITTEEUSR
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSCOMMITTEEUSR" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEUSRVO" >
+    insert into FMSCOMMITTEEUSR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        USER_ID,
+      </if>
+      <if test="HIERARCHY != null and HIERARCHY != emptyBigDecimalValue" >
+        HIERARCHY,
+      </if>
+      <if test="APPROVAL_BRANCH != null and APPROVAL_BRANCH != emptyBigDecimalValue" >
+        APPROVAL_BRANCH,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        #{USER_ID},
+      </if>
+      <if test="HIERARCHY != null and HIERARCHY != emptyBigDecimalValue" >
+        #{HIERARCHY},
+      </if>
+      <if test="APPROVAL_BRANCH != null and APPROVAL_BRANCH != emptyBigDecimalValue" >
+        #{APPROVAL_BRANCH},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOMMITTEEUSR" >
+    update FMSCOMMITTEEUSR
+    <set >
+      <if test="USER_ID != null" >
+        <choose >
+          <when test="USER_ID.equals(&quot;&quot;)" >
+            USER_ID = NULL ,
+          </when>
+          <otherwise >
+            USER_ID = #{USER_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HIERARCHY != null" >
+        <choose >
+          <when test="HIERARCHY == emptyBigDecimalValue" >
+            HIERARCHY = NULL ,
+          </when>
+          <otherwise >
+            HIERARCHY = #{HIERARCHY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVAL_BRANCH != null" >
+        <choose >
+          <when test="APPROVAL_BRANCH == emptyBigDecimalValue" >
+            APPROVAL_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            APPROVAL_BRANCH = #{APPROVAL_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSCOMMITTEEUSR" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEUSRVO" >
+    <include refid="sql_updateFMSCOMMITTEEUSR" />
+  </update>
+</mapper>

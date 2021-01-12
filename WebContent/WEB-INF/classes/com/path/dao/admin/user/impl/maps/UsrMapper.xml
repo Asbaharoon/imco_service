@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="user">
+
+  
+   <resultMap id="getUserList_ResMap" type="usrVO" >
+    <id column="USER_ID" property="USER_ID" />
+  
+    <result column="USER_GRP_ID" property="USER_GRP_ID" />
+    <!--result column="USR_VALID_DATE" property="USR_VALID_DATE" />
+    <result column="ADD_REF" property="ADD_REF" />
+    <result column="PWD_CHANGE_FREQ" property="PWD_CHANGE_FREQ" />
+    <result column="FIRST_NAME" property="FIRST_NAME" />
+    <result column="MIDDLE_NAME" property="MIDDLE_NAME" />
+    <result column="LAST_NAME" property="LAST_NAME" />
+    <result column="MIDDLE_NAME_ARAB" property="MIDDLE_NAME_ARAB" />
+    <result column="LAST_NAME_ARABIC" property="LAST_NAME_ARABIC" /-->    
+  </resultMap>
+  
+<sql id="userListCommon" >
+	select USER_ID  , USER_GRP_ID
+  <![CDATA[
+	
+	     /*, USR_OCCUP, USR_VALID_DATE, ADD_REF, PWD_CHANGE_FREQ,  
+	    FIRST_NAME, MIDDLE_NAME, LAST_NAME, MIDDLE_NAME_ARAB, LAST_NAME_ARABIC*/
+	     from USR
+	]]>	 
+</sql>
+ <select id="getUserList"  resultMap="getUserList_ResMap" parameterType="usrSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="userListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="getUserCount"  resultType="int" parameterType="usrSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+ 
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+<select id="getUserDetails"  resultType="usrVO" parameterType="usrSC" > 
+<![CDATA[
+SELECT USR.USER_ID,   
+         USR.USER_GRP_ID,   
+         USR.USER_GRP_DESC,   
+         USR.PASSWD_CHG_FRQ,   
+         USR.USER_VALID_DT,   
+         USR.USER_STS,    
+         USR.PASS_FORWARD,    
+         USR.PASS_REVERSE,   
+         USR.PATH_STS,   
+         USR.EMAIL_ID,    
+         USR.SHOW_ALLOPTION,   
+         USR.MENU_PREFERENCE,   
+         USR.CREATED_BY,   
+         USR.AUTHORIZED_BY,   
+         USR.DATE_AUTHORIZED,   
+         USR.TREE_COLOR,   
+         USR.TEXT_COLOR,   
+         USR.MDI_COLOR,   
+         USR.SHEET_COLOR,    
+         USR.PITCH,   
+         USR.STYLE,   
+         USR.TRACE,   
+         USR.AUTO_HIDE,   
+         USR.IDLE,   
+         USR.IDLE_ACT,   
+         USR.IDLE_CHG,   
+         USR.LINKTO_DBACC,   
+         USR.DB_ACC,   
+         USR.LOG_DIFF_PCS,   
+         USR.MACHINE_ID,   
+         USR.TRACK_HIST_PWD,   
+         USR.NO_PWD_TRACK,   
+         USR.OFFICE_NUMBER,   
+         USR.OFFICE_EXTENSION,   
+         USR.MOBILE_PHONE,   
+         USR.HOME_PHONE,   
+         USR.PAGER_NUMBER,   
+         USR.FIRST_NAME,   
+         USR.MIDDLE_NAME,   
+         USR.LAST_NAME,   
+         USR.PASSWD_CHG_DT,   
+         USR.USER_CREATE_DT,   
+         USR.EMAIL_SERVER,   
+         USR.EMAIL_PASSWD,   
+         USR.PORT,   
+         USR.SEQ,   
+         USR.TERMINAL,   
+         USR.PREFERED_LANGUAGE,   
+         USR.TODO_X,   
+         USR.TODO_Y,   
+         USR.TODO_WIDTH,   
+         USR.TODO_HEIGHT,   
+         USR.TODO_PITCH,   
+         USR.TODO_STYLE,   
+         USR.TODO_COLOR_BACKGROUND,   
+         USR.TODO_COLOR_TEXT,   
+         USR.TODO_REFRESH_TIME,   
+         USR.TODO_SHOW_STATUS,   
+         USR.SUSPEND_PERIOD,   
+         USR.DB_PWD,
+			USR.SIGNATURE_SHOW_CY,
+			USR.SIGNATURE_SHOW_AMOUNT,
+			USR.SIGNATURE_CAN_SCAN,
+			USR.SIGNATURE_SHOW_SCAN_TYPE,
+			USR.GRANT_ALL_LOCATION,
+			USR.ALERT_PER_ONCE,
+			USR.EMP_COMP_CODE,
+			USR.EMP_BRANCH_CODE,
+			USR.EMPLOYEE_ID,
+			 00 AS TIMER_HR,
+          00 AS TIMER_MIN,
+			 00 AS TIMER_SEC,
+			''  EMP_NAME	,
+			USR.CONTACTLIST_ID,
+			DISABLE_PRINTSCR ,
+			APPROVE_OWN_TRX,
+			FIRST_NAME_ARABIC ,
+			MIDDLE_NAME_ARABIC ,
+			LAST_NAME_ARABIC,
+			USR.FREQ_NBR,
+			USR.CIF_NO,
+			'' CIF_NAME,
+			USR.ACCESS_RESTRICTED ,
+			USR.GL_PERMISSION,
+			USR.ADDITIONAL_REFERENCE,
+			USR.UNIT_CODE,
+			USR.DIVISION_CODE,
+			USR.DEPT_CODE,
+			USR.EXE_UPDATE,
+			USR.SHOW_CIF,
+			USR.OCCUPATION,
+			USR.MODIFIED_BY,
+			USR.MODIFIED_DATE,
+			USR.SHOW_ONLY_SUSPEND_SYS, 
+			USR.WINDOWS_USER
+			
+    FROM USR  
+  WHERE (USR.USER_ID = #{user_id} AND 0 = 0 AND USR.PATH_STS > '1' AND
+       (('R' = 'P' AND    ( (USR.USER_STS = 'N' AND  USR.DATE_AUTHORIZED IS NULL) OR (USR.USER_STS = 'A' AND  USR.DATE_AUTHORIZED IS NULL) 
+OR (USR.USER_STS = 'S' AND  USR.DATE_AUTHORIZED IS NULL) )
+       AND     (('SYSADM' = 'PATH') OR ('SYSADM' <> CASE WHEN USR.MODIFIED_BY IS NULL THEN USR.CREATED_BY ELSE USR.MODIFIED_BY END ))) OR
+       (CASE WHEN 'R' IS NULL THEN 'R' ELSE 'R' END <> 'P')
+       
+       ))
+    OR
+      
+       ((USR.USER_ID =
+       (SELECT MIN(USR.USER_ID)
+            FROM USR
+           WHERE USR.USER_ID > LTRIM(#{user_id})
+             AND (('R' = 'P' AND
+                ( (USR.USER_STS = 'N' AND  USR.DATE_AUTHORIZED IS NULL) OR (USR.USER_STS = 'A' AND  USR.DATE_AUTHORIZED IS NULL) 
+					OR (USR.USER_STS = 'S' AND  USR.DATE_AUTHORIZED IS NULL)  )
+						AND
+                 (('SYSADM' = 'PATH') OR ('SYSADM' <> CASE WHEN USR.MODIFIED_BY IS NULL THEN USR.CREATED_BY ELSE USR.MODIFIED_BY END )
+                 
+                 )) OR (CASE WHEN 'R' IS NULL THEN 'R' ELSE 'R'
+                  END <> 'P'))
+             AND (USR.PATH_STS > '1'))
+       
+       ) AND 0 = 2
+       
+       )
+    OR
+      
+       ((USR.USER_ID =
+       (SELECT MAX(USR.USER_ID)
+          
+            FROM USR
+           WHERE USR.USER_ID < LTRIM(#{user_id})
+             AND
+                
+                 (('R' = 'P'  AND
+                ( (USR.USER_STS = 'N' AND  USR.DATE_AUTHORIZED IS NULL) OR (USR.USER_STS = 'A' AND  USR.DATE_AUTHORIZED IS NULL) 
+				OR (USR.USER_STS = 'S' AND  USR.DATE_AUTHORIZED IS NULL) ) AND
+                 
+                 (
+                 
+      
+					   ('SYSADM' <> CASE WHEN USR.MODIFIED_BY IS NULL THEN USR.CREATED_BY ELSE USR.MODIFIED_BY END )
+                 
+                 )) OR (CASE WHEN 'R' IS NULL THEN 'R' ELSE 'R'
+                  END <> 'P'))
+             AND (USR.PATH_STS > '1')) AND 0 = 1))
+]]>	              
+</select>
+
+<sql id="userValidate" >
+<![CDATA[
+SELECT COUNT(1)
+  FROM USR
+ WHERE USER_ID =  #{user_id}
+]]>
+</sql>
+<select id="userValidate"  resultType="int" parameterType="usrSC"> 
+	<include refid="userValidate"/>
+</select>
+
+<!-- *************************Query to populate the User List (Data Window : w_lookup_user)-************************************** -->
+<sql id="userDetailsListCommonFor_w_lookup_user" >
+ SELECT
+  DISTINCT 
+   USR.USER_ID,
+   USR.USER_GRP_ID,
+   USR.USER_GRP_DESC,  
+   USR.USER_VALID_DT, 
+   USR.USER_STS,
+   DATE_AUTHORIZED,
+   USR.FIRST_NAME, 
+   USR.MIDDLE_NAME, 
+  USR.LAST_NAME,
+   <choose>
+		<when test='lovTypeId != null and lovTypeId != emptyBigDecimalValue and preferredLanguage != null'>
+		 (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID =#{lovTypeId} AND 
+   					LANG_CODE = #{preferredLanguage} AND VALUE_CODE =USR.USER_STS) AS status_desc 
+	</when>
+	<otherwise>
+		USR.USER_STS status_desc
+	</otherwise>
+ </choose>
+   
+ FROM   USR
+ 
+  <if test="fromDealerScreen == '0' ">
+  ,LOC 
+   </if>
+   
+ 
+ WHERE
+  <if test="fromDealerScreen == '1' ">
+   	 USR.USER_STS <![CDATA[  <> ]]>	 'S' 	
+	 AND	USR.PATH_STS  = '2' AND
+  </if>
+  
+  <if test="fromDealerScreen == '0' ">
+  
+  LOC.COMP_CODE = #{compCode}
+ AND  LOC.USER_ID = USR.USER_ID
+ AND  USR.USER_STS IN ('N','A','L')
+ AND
+  </if>
+  
+   USR.USER_ID  IS NOT NULL
+ 
+ AND    DATE_AUTHORIZED IS NOT NULL 
+ 
+ <if test='user_id != null'>
+ AND  USR.USER_ID  = #{user_id}
+ </if>
+ <if test='portletCode != null'>
+  AND NOT EXISTS (SELECT 1 
+                    FROM USER_PORTLETS 
+                   WHERE USER_PORTLETS.USER_ID = USR.USER_ID
+                     AND USER_PORTLETS.PORTLET_CODE = #{portletCode})
+ </if>
+</sql>
+
+  <select id="getUserListFor_w_lookup_user"  resultMap="USRResultMap" parameterType="usrSC">
+ <include refid="servicesCommon.commonGridWrpBefFlip"/>
+ <include refid="userDetailsListCommonFor_w_lookup_user"/>
+ <include refid="servicesCommon.commonGridWrpAftFlip"/>
+ <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<!-- TP#258985;roshin ;09/01/2014 -->
+  <resultMap id="USRResultMap" type="usrCO" >
+    <result column="USER_ID" property="USER_ID" />
+    <result column="USER_GRP_ID" property="USER_GRP_ID" />
+    <result column="USER_VALID_DT" property="USER_VALID_DT" />
+    <result column="USER_STS" property="USER_STS" />
+    <result column="DATE_AUTHORIZED" property="DATE_AUTHORIZED" />
+    <result column="FIRST_NAME" property="FIRST_NAME" />
+    <result column="MIDDLE_NAME" property="MIDDLE_NAME" />
+    <result column="LAST_NAME" property="LAST_NAME" />
+    <result column="status_desc" property="status_desc" />
+  </resultMap>  
+  <!-- TP#258985;roshin ;09/01/2014 -->
+  
+<select id="getUserCountFor_w_lookup_user"  resultType="int" parameterType="usrSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userDetailsListCommonFor_w_lookup_user"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+ 	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+<select id="getUserDetailsFor_w_lookup_user"  resultType="usrVO" parameterType="usrSC" > 
+	<include refid="userDetailsListCommonFor_w_lookup_user"/>
+</select>
+
+<!-- ***************************				***************************					******************* -->  
+
+
+<select id="validateAndReturnUserIdForCardsManagementScreen" parameterType="usrSC" resultType="string">
+  		SELECT 	USER_ID
+		FROM  	USR 
+		WHERE	USER_ID = #{user_id}
+		AND 	USER_STS IN ('N','A','L')
+		AND   	DATE_AUTHORIZED IS NOT NULL
+</select>
+
+
+  <resultMap id="portletResultMap" type="usrVO" >
+    <result column="USER_ID" property="USER_ID" />
+  </resultMap>
+  
+	<select id="returnPortletUsersList" parameterType="usrSC" resultMap="portletResultMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectPortletAssignedUsers" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnPortletUsersListCount" parameterType="usrSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectPortletAssignedUsers"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+<sql id="selectPortletAssignedUsers">
+  SELECT USR.USER_ID
+  FROM  	USR
+	WHERE	USR.USER_STS IN ('N','A','L')
+	AND   	USR.DATE_AUTHORIZED IS NOT NULL
+  AND <if test="userListFlag != null and userListFlag != ''">NOT</if> EXISTS (SELECT 1 FROM USER_PORTLETS WHERE USER_ID = USR.USER_ID AND PORTLET_CODE = #{portletCode})
+</sql>
+<sql id="selectReportsSql">
+   SELECT R.REPORT_ID,
+          R.REPORT_NAME,
+          R.PROG_REF
+     FROM IRP_AD_HOC_REPORT R, OPT OPT
+    WHERE OPT.APP_NAME = R.APP_NAME 
+      AND OPT.PROG_REF = R.PROG_REF 
+      AND OPT.PARENT_REF IS NOT NULL
+      AND EXISTS( SELECT 1
+                    FROM (<include refid="commonLibMapper.select_Common_Priveleges"/>)ACCESSTBL
+                   WHERE ACCESSTBL.PROG_REF = OPT.PROG_REF)
+      <if test="appName != null">
+      AND R.APP_NAME = #{appName}
+      </if>
+      <if test="reportRef != null">
+      AND R.PROG_REF = #{reportRef}
+      </if>
+  </sql>
+	<resultMap id="getReportsListByUsrResultMap" type="usrCO">
+	  <result property="REPORT_ID"       column="REPORT_ID"/>
+	  <result property="REPORT_NAME"     column="REPORT_NAME"/>
+	  <result property="REPORT_PROG_REF" column="PROG_REF"/>
+	</resultMap>  
+	<select id="getUsrReportsList"  resultMap="getReportsListByUsrResultMap" parameterType="usrSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="user.selectReportsSql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="getUsrReportsCount"  resultType="int" parameterType="usrSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="user.selectReportsSql"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+<!-- added by Marie-Joe for tp#339545-->
+<select id="getUserEmailDetails"  resultType="usrVO" parameterType="usrSC" > 
+	<include refid="userEmailDetailsList"/>
+</select>
+
+<sql id="userEmailDetailsList" >
+ SELECT  <if test="isSybase == 1">TOP 1</if> 
+   USR.USER_ID,
+   USR.EMAIL_ID
+ FROM   USR
+ <if test='user_id != null'>
+  WHERE   UPPER(USR.USER_ID)  = UPPER(#{user_id})
+ </if>
+  <if test='email_id != null'>
+  WHERE   UPPER(USR.EMAIL_ID)  = UPPER(#{email_id})
+ </if>
+ <if test="isOracle == 1">
+   AND ROWNUM=1
+   </if> 
+</sql>
+<!-- end Marie-Joe tp#339545-->
+
+<select id="returnWindowsUserCount" parameterType="usrSC" resultType="int">
+	SELECT COUNT(1) FROM USR WHERE upper(WINDOWS_USER) = upper(#{windowsUser})
+</select>
+
+<delete id="deleteUser" parameterType="usrSC">
+	BEGIN
+		
+		DELETE FROM S_LOC WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+		DELETE FROM S_APPLOG WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+		DELETE FROM S_APPROLUSR WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+		DELETE FROM S_AXS WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+		
+		DELETE FROM S_GROUP_USER WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+		DELETE FROM USR_SHIFTS WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+			
+		DELETE FROM MSNGR_CONTACTLIST_DT WHERE USERID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+					
+		DELETE FROM USR_SHIFTS_TEMPLATE WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+	END
+	<choose><when test="isSybase == 0">;</when></choose>
+
+		DELETE FROM USR WHERE USER_ID = #{user_id}
+		<choose><when test="isSybase == 0">;</when></choose>
+		
+</delete>
+
+	<select id="returnAppLogUserCount" parameterType="usrSC" resultType="int">
+		SELECT COUNT(1) FROM S_APPLOG WHERE USER_STS = 'L' AND USER_ID = #{user_id}
+	</select>
+	<select id="returnUserTellerCount" parameterType="usrSC" resultType="int">
+		SELECT COUNT(1) FROM CTSTELLER WHERE STATUS != 'D' AND USER_ID = #{user_id} 
+	</select>
+
+<!-- End Mark Ayoub -->
+</mapper>

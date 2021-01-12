@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCLEARINGHOUSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCLEARINGHOUSEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CY_CODE" property="CY_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="CLEARING_DAYS" property="CLEARING_DAYS" />
+    <result column="ACC_ON_GL" property="ACC_ON_GL" />
+    <result column="ACC_ON_CIF" property="ACC_ON_CIF" />
+    <result column="ACC_ON_SL" property="ACC_ON_SL" />
+    <result column="ACC_OFF_GL" property="ACC_OFF_GL" />
+    <result column="ACC_OFF_CIF" property="ACC_OFF_CIF" />
+    <result column="ACC_OFF_SL" property="ACC_OFF_SL" />
+    <result column="COUNTRY" property="COUNTRY" />
+    <result column="REGION" property="REGION" />
+    <result column="ACC_ON_BR" property="ACC_ON_BR" />
+    <result column="ACC_OFF_BR" property="ACC_OFF_BR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, CY_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, 
+    LONG_NAME_ARAB, CLEARING_DAYS, ACC_ON_GL, ACC_ON_CIF, ACC_ON_SL, ACC_OFF_GL, ACC_OFF_CIF, 
+    ACC_OFF_SL, COUNTRY, REGION, ACC_ON_BR, ACC_OFF_BR
+  </sql>
+  <select id="selectCTSCLEARINGHOUSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCLEARINGHOUSEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCLEARINGHOUSE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSCLEARINGHOUSE" parameterType="com.path.dbmaps.vo.CTSCLEARINGHOUSEVOKey" >
+    delete from CTSCLEARINGHOUSE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSCLEARINGHOUSE" parameterType="com.path.dbmaps.vo.CTSCLEARINGHOUSEVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT MAX(COMP_CODE)+1 FROM CTSCLEARINGHOUSE
+    </selectKey>
+    insert into CTSCLEARINGHOUSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      COMP_CODE,
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="CLEARING_DAYS != null and CLEARING_DAYS != emptyBigDecimalValue" >
+        CLEARING_DAYS,
+      </if>
+      <if test="ACC_ON_GL != null and ACC_ON_GL != emptyBigDecimalValue" >
+        ACC_ON_GL,
+      </if>
+      <if test="ACC_ON_CIF != null and ACC_ON_CIF != emptyBigDecimalValue" >
+        ACC_ON_CIF,
+      </if>
+      <if test="ACC_ON_SL != null and ACC_ON_SL != emptyBigDecimalValue" >
+        ACC_ON_SL,
+      </if>
+      <if test="ACC_OFF_GL != null and ACC_OFF_GL != emptyBigDecimalValue" >
+        ACC_OFF_GL,
+      </if>
+      <if test="ACC_OFF_CIF != null and ACC_OFF_CIF != emptyBigDecimalValue" >
+        ACC_OFF_CIF,
+      </if>
+      <if test="ACC_OFF_SL != null and ACC_OFF_SL != emptyBigDecimalValue" >
+        ACC_OFF_SL,
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        COUNTRY,
+      </if>
+      <if test="REGION != null and REGION != emptyBigDecimalValue" >
+        REGION,
+      </if>
+      <if test="ACC_ON_BR != null and ACC_ON_BR != emptyBigDecimalValue" >
+        ACC_ON_BR,
+      </if>
+      <if test="ACC_OFF_BR != null and ACC_OFF_BR != emptyBigDecimalValue" >
+        ACC_OFF_BR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      #{COMP_CODE},
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="CLEARING_DAYS != null and CLEARING_DAYS != emptyBigDecimalValue" >
+        #{CLEARING_DAYS},
+      </if>
+      <if test="ACC_ON_GL != null and ACC_ON_GL != emptyBigDecimalValue" >
+        #{ACC_ON_GL},
+      </if>
+      <if test="ACC_ON_CIF != null and ACC_ON_CIF != emptyBigDecimalValue" >
+        #{ACC_ON_CIF},
+      </if>
+      <if test="ACC_ON_SL != null and ACC_ON_SL != emptyBigDecimalValue" >
+        #{ACC_ON_SL},
+      </if>
+      <if test="ACC_OFF_GL != null and ACC_OFF_GL != emptyBigDecimalValue" >
+        #{ACC_OFF_GL},
+      </if>
+      <if test="ACC_OFF_CIF != null and ACC_OFF_CIF != emptyBigDecimalValue" >
+        #{ACC_OFF_CIF},
+      </if>
+      <if test="ACC_OFF_SL != null and ACC_OFF_SL != emptyBigDecimalValue" >
+        #{ACC_OFF_SL},
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        #{COUNTRY},
+      </if>
+      <if test="REGION != null and REGION != emptyBigDecimalValue" >
+        #{REGION},
+      </if>
+      <if test="ACC_ON_BR != null and ACC_ON_BR != emptyBigDecimalValue" >
+        #{ACC_ON_BR},
+      </if>
+      <if test="ACC_OFF_BR != null and ACC_OFF_BR != emptyBigDecimalValue" >
+        #{ACC_OFF_BR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCLEARINGHOUSE" >
+    update CTSCLEARINGHOUSE
+    <set >
+      <if test="CY_CODE != null" >
+        <choose >
+          <when test="CY_CODE == emptyBigDecimalValue" >
+            CY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CY_CODE = #{CY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="CLEARING_DAYS != null" >
+        <choose >
+          <when test="CLEARING_DAYS == emptyBigDecimalValue" >
+            CLEARING_DAYS = NULL ,
+          </when>
+          <otherwise >
+            CLEARING_DAYS = #{CLEARING_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_ON_GL != null" >
+        <choose >
+          <when test="ACC_ON_GL == emptyBigDecimalValue" >
+            ACC_ON_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_ON_GL = #{ACC_ON_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_ON_CIF != null" >
+        <choose >
+          <when test="ACC_ON_CIF == emptyBigDecimalValue" >
+            ACC_ON_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_ON_CIF = #{ACC_ON_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_ON_SL != null" >
+        <choose >
+          <when test="ACC_ON_SL == emptyBigDecimalValue" >
+            ACC_ON_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_ON_SL = #{ACC_ON_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_OFF_GL != null" >
+        <choose >
+          <when test="ACC_OFF_GL == emptyBigDecimalValue" >
+            ACC_OFF_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_OFF_GL = #{ACC_OFF_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_OFF_CIF != null" >
+        <choose >
+          <when test="ACC_OFF_CIF == emptyBigDecimalValue" >
+            ACC_OFF_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_OFF_CIF = #{ACC_OFF_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_OFF_SL != null" >
+        <choose >
+          <when test="ACC_OFF_SL == emptyBigDecimalValue" >
+            ACC_OFF_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_OFF_SL = #{ACC_OFF_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COUNTRY != null" >
+        <choose >
+          <when test="COUNTRY == emptyBigDecimalValue" >
+            COUNTRY = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY = #{COUNTRY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REGION != null" >
+        <choose >
+          <when test="REGION == emptyBigDecimalValue" >
+            REGION = NULL ,
+          </when>
+          <otherwise >
+            REGION = #{REGION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_ON_BR != null" >
+        <choose >
+          <when test="ACC_ON_BR == emptyBigDecimalValue" >
+            ACC_ON_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_ON_BR = #{ACC_ON_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_OFF_BR != null" >
+        <choose >
+          <when test="ACC_OFF_BR == emptyBigDecimalValue" >
+            ACC_OFF_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_OFF_BR = #{ACC_OFF_BR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSCLEARINGHOUSE" parameterType="com.path.dbmaps.vo.CTSCLEARINGHOUSEVO" >
+    <include refid="sql_updateCTSCLEARINGHOUSE" />
+  </update>
+</mapper>

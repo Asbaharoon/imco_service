@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackSourceMapper">
+
+ <sql id="blacksourceListCommon" >
+	<![CDATA[
+		SELECT
+			 	MOSBLACKSOURCE.CODE,
+			 	MOSBLACKSOURCE.BRIEF_DESC_ENG,
+			 	MOSBLACKSOURCE.LONG_DESC_ENG,
+			 	MOSBLACKSOURCE.BRIEF_DESC_ARAB,
+			 	MOSBLACKSOURCE.LONG_DESC_ARAB,
+			 	MOSBLACKSOURCE.CIF_NO
+		FROM  	MOSBLACKSOURCE 
+		WHERE	MOSBLACKSOURCE.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+
+ <select id="blacksourceList" resultMap="MOSBLACKSOURCE.BaseResultMap" parameterType="blacksourceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="blacksourceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="blacksourceListCount" resultType="int" parameterType="blacksourceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="blacksourceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnBlackSourceById" parameterType="blacksourceSC" resultType="blacksourceVO">
+  		SELECT
+			  MOSBLACKSOURCE.CODE,
+			  CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG			  
+		FROM  MOSBLACKSOURCE 
+		WHERE (MOSBLACKSOURCE.COMP_CODE  = #{compCode} or MOSBLACKSOURCE.COMP_CODE  = -#{compCode}) <!-- added by nour for 885556 -->
+		AND   MOSBLACKSOURCE.CODE    	= #{code}
+  </select>
+ 
+</mapper>

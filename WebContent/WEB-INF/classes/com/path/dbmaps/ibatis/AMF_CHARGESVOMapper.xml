@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AMF_CHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AMF_CHARGESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_SUB_NO" property="CIF_SUB_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="GL_CODE" property="GL_CODE" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <id column="SL_NO" property="SL_NO" />
+    <result column="CHARGES_SCHEMA" property="CHARGES_SCHEMA" />
+    <result column="MINIMIUM_AMOUNT" property="MINIMIUM_AMOUNT" />
+    <result column="MAXIMIUM_AMOUNT" property="MAXIMIUM_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_SUB_NO, COMP_CODE, CURRENCY_CODE, GL_CODE, LINE_NUMBER, SL_NO, CHARGES_SCHEMA, 
+    MINIMIUM_AMOUNT, MAXIMIUM_AMOUNT
+  </sql>
+  <select id="selectAMF_CHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AMF_CHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from AMF_CHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and SL_NO = #{SL_NO}
+  </select>
+  <delete id="deleteAMF_CHARGES" parameterType="com.path.dbmaps.vo.AMF_CHARGESVOKey" >
+    delete from AMF_CHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and SL_NO = #{SL_NO}
+  </delete>
+  <insert id="insertAMF_CHARGES" parameterType="com.path.dbmaps.vo.AMF_CHARGESVO" >
+    insert into AMF_CHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        CIF_SUB_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        LINE_NUMBER,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        CHARGES_SCHEMA,
+      </if>
+      <if test="MINIMIUM_AMOUNT != null and MINIMIUM_AMOUNT != emptyBigDecimalValue" >
+        MINIMIUM_AMOUNT,
+      </if>
+      <if test="MAXIMIUM_AMOUNT != null and MAXIMIUM_AMOUNT != emptyBigDecimalValue" >
+        MAXIMIUM_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CIF_SUB_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        #{LINE_NUMBER},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        #{CHARGES_SCHEMA},
+      </if>
+      <if test="MINIMIUM_AMOUNT != null and MINIMIUM_AMOUNT != emptyBigDecimalValue" >
+        #{MINIMIUM_AMOUNT},
+      </if>
+      <if test="MAXIMIUM_AMOUNT != null and MAXIMIUM_AMOUNT != emptyBigDecimalValue" >
+        #{MAXIMIUM_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAMF_CHARGES" >
+    update AMF_CHARGES
+    <set >
+      <if test="CHARGES_SCHEMA != null" >
+        <choose >
+          <when test="CHARGES_SCHEMA == emptyBigDecimalValue" >
+            CHARGES_SCHEMA = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_SCHEMA = #{CHARGES_SCHEMA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MINIMIUM_AMOUNT != null" >
+        <choose >
+          <when test="MINIMIUM_AMOUNT == emptyBigDecimalValue" >
+            MINIMIUM_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            MINIMIUM_AMOUNT = #{MINIMIUM_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAXIMIUM_AMOUNT != null" >
+        <choose >
+          <when test="MAXIMIUM_AMOUNT == emptyBigDecimalValue" >
+            MAXIMIUM_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            MAXIMIUM_AMOUNT = #{MAXIMIUM_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and SL_NO = #{SL_NO}
+  </sql>
+  <update id="updateAMF_CHARGES" parameterType="com.path.dbmaps.vo.AMF_CHARGESVO" >
+    <include refid="sql_updateAMF_CHARGES" />
+  </update>
+</mapper>

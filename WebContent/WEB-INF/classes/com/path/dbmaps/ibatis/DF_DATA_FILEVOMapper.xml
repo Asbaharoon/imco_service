@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_DATA_FILE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_DATA_FILEVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <result column="FILE_DESC" property="FILE_DESC" />
+    <result column="STRUCT_CODE" property="STRUCT_CODE" />
+    <result column="SOURCE_SQL_NO" property="SOURCE_SQL_NO" />
+    <result column="FILE_LOCATION" property="FILE_LOCATION" />
+    <result column="FILE_NAME" property="FILE_NAME" />
+    <result column="INCLUDE_HEADER" property="INCLUDE_HEADER" />
+    <result column="EXCLUDE_FOOTER_YN" property="EXCLUDE_FOOTER_YN" />
+    <result column="APPL_NAME" property="APPL_NAME" />
+    <result column="ALLOW_FILE_NAME_CHG" property="ALLOW_FILE_NAME_CHG" />
+    <result column="ALLOW_FILE_LOC_CHG" property="ALLOW_FILE_LOC_CHG" />
+    <result column="RUN_SCRIPT" property="RUN_SCRIPT" />
+    <result column="COMMIT_EACH_SELECT" property="COMMIT_EACH_SELECT" />
+    <result column="SHOW_SCRIPT" property="SHOW_SCRIPT" />
+    <result column="UPDATE_SCRIPT" property="UPDATE_SCRIPT" />
+    <result column="ALLOW_FILE_LOC_CHQ" property="ALLOW_FILE_LOC_CHQ" />
+    <result column="FILE_TYPE" property="FILE_TYPE" />
+    <result column="CATEGORY" property="CATEGORY" />
+    <result column="LINK" property="LINK" />
+    <result column="LINK_LABEL" property="LINK_LABEL" />
+    <result column="TYPE" property="TYPE" />
+    <result column="HEADER" property="HEADER" />
+    <result column="DETAILS" property="DETAILS" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.DF_DATA_FILEVO" extends="BaseResultMap" >
+    <result column="FILE_NAME_SQL" property="FILE_NAME_SQL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, FILE_DESC, STRUCT_CODE, SOURCE_SQL_NO, FILE_LOCATION, FILE_NAME, INCLUDE_HEADER,EXCLUDE_FOOTER_YN,
+    APPL_NAME, ALLOW_FILE_NAME_CHG, ALLOW_FILE_LOC_CHG, RUN_SCRIPT, COMMIT_EACH_SELECT, 
+    SHOW_SCRIPT, UPDATE_SCRIPT, ALLOW_FILE_LOC_CHQ, FILE_TYPE, CATEGORY, LINK, LINK_LABEL, TYPE, HEADER, DETAILS
+  </sql>
+  <sql id="Blob_Column_List" >
+    FILE_NAME_SQL
+  </sql>
+  <select id="selectDF_DATA_FILE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.DF_DATA_FILEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from DF_DATA_FILE
+    where FILE_CODE = #{FILE_CODE}
+  </select>
+  <delete id="deleteDF_DATA_FILE" parameterType="com.path.dbmaps.vo.DF_DATA_FILEVO" >
+    delete from DF_DATA_FILE
+    where FILE_CODE = #{FILE_CODE}
+  </delete>
+  <insert id="insertDF_DATA_FILE" parameterType="com.path.dbmaps.vo.DF_DATA_FILEVO" >
+    insert into DF_DATA_FILE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="FILE_DESC != null" >
+        FILE_DESC,
+      </if>
+      <if test="STRUCT_CODE != null" >
+        STRUCT_CODE,
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        SOURCE_SQL_NO,
+      </if>
+      <if test="FILE_LOCATION != null" >
+        FILE_LOCATION,
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME,
+      </if>
+      <if test="INCLUDE_HEADER != null" >
+        INCLUDE_HEADER,
+      </if>
+      <if test="EXCLUDE_FOOTER_YN != null" >
+        EXCLUDE_FOOTER_YN,
+      </if>
+      <if test="APPL_NAME != null" >
+        APPL_NAME,
+      </if>
+      <if test="ALLOW_FILE_NAME_CHG != null" >
+        ALLOW_FILE_NAME_CHG,
+      </if>
+      <if test="ALLOW_FILE_LOC_CHG != null" >
+        ALLOW_FILE_LOC_CHG,
+      </if>
+      <if test="RUN_SCRIPT != null" >
+        RUN_SCRIPT,
+      </if>
+      <if test="COMMIT_EACH_SELECT != null" >
+        COMMIT_EACH_SELECT,
+      </if>
+      <if test="SHOW_SCRIPT != null" >
+        SHOW_SCRIPT,
+      </if>
+      <if test="UPDATE_SCRIPT != null" >
+        UPDATE_SCRIPT,
+      </if>
+      <if test="ALLOW_FILE_LOC_CHQ != null" >
+        ALLOW_FILE_LOC_CHQ,
+      </if>
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE,
+      </if>
+      <if test="FILE_NAME_SQL != null" >
+        FILE_NAME_SQL,
+      </if>
+      <if test="CATEGORY != null" >
+        CATEGORY,
+      </if>
+      <if test="LINK != null" >
+        LINK,
+      </if>
+      <if test="LINK_LABEL != null" >
+        LINK_LABEL,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+      <if test="HEADER != null" >
+        HEADER,
+      </if>
+      <if test="DETAILS != null" >
+        DETAILS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="FILE_DESC != null" >
+        #{FILE_DESC},
+      </if>
+      <if test="STRUCT_CODE != null" >
+        #{STRUCT_CODE},
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        #{SOURCE_SQL_NO},
+      </if>
+      <if test="FILE_LOCATION != null" >
+        #{FILE_LOCATION},
+      </if>
+      <if test="FILE_NAME != null" >
+        #{FILE_NAME},
+      </if>
+      <if test="INCLUDE_HEADER != null" >
+        #{INCLUDE_HEADER},
+      </if>
+      <if test="EXCLUDE_FOOTER_YN != null" >
+        #{EXCLUDE_FOOTER_YN},
+      </if>
+      <if test="APPL_NAME != null" >
+        #{APPL_NAME},
+      </if>
+      <if test="ALLOW_FILE_NAME_CHG != null" >
+        #{ALLOW_FILE_NAME_CHG},
+      </if>
+      <if test="ALLOW_FILE_LOC_CHG != null" >
+        #{ALLOW_FILE_LOC_CHG},
+      </if>
+      <if test="RUN_SCRIPT != null" >
+        #{RUN_SCRIPT},
+      </if>
+      <if test="COMMIT_EACH_SELECT != null" >
+        #{COMMIT_EACH_SELECT},
+      </if>
+      <if test="SHOW_SCRIPT != null" >
+        #{SHOW_SCRIPT},
+      </if>
+      <if test="UPDATE_SCRIPT != null" >
+        #{UPDATE_SCRIPT},
+      </if>
+      <if test="ALLOW_FILE_LOC_CHQ != null" >
+        #{ALLOW_FILE_LOC_CHQ},
+      </if>
+      <if test="FILE_TYPE != null" >
+        #{FILE_TYPE},
+      </if>
+      <if test="FILE_NAME_SQL != null" >
+        #{FILE_NAME_SQL},
+      </if>
+      <if test="CATEGORY != null" >
+        #{CATEGORY},
+      </if>
+      <if test="LINK != null" >
+        #{LINK},
+      </if>
+      <if test="LINK_LABEL != null" >
+        #{LINK_LABEL},
+      </if>
+      <if test="TYPE != null" >
+        #{TYPE},
+      </if>
+      <if test="HEADER != null" >
+        #{HEADER},
+      </if>
+      <if test="DETAILS != null" >
+        #{DETAILS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_DATA_FILE" >
+    update DF_DATA_FILE
+    <set >
+      <if test="FILE_DESC != null" >
+        FILE_DESC = #{FILE_DESC},
+      </if>
+      <if test="STRUCT_CODE != null" >
+        STRUCT_CODE = #{STRUCT_CODE},
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        SOURCE_SQL_NO = #{SOURCE_SQL_NO},
+      </if>
+      <if test="FILE_LOCATION != null" >
+        FILE_LOCATION = #{FILE_LOCATION},
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME = #{FILE_NAME},
+      </if>
+      <if test="INCLUDE_HEADER != null" >
+        INCLUDE_HEADER = #{INCLUDE_HEADER},
+      </if>
+      <if test="EXCLUDE_FOOTER_YN != null" >
+        EXCLUDE_FOOTER_YN = #{EXCLUDE_FOOTER_YN},
+      </if>
+      <if test="APPL_NAME != null" >
+        APPL_NAME = #{APPL_NAME},
+      </if>
+      <if test="ALLOW_FILE_NAME_CHG != null" >
+        ALLOW_FILE_NAME_CHG = #{ALLOW_FILE_NAME_CHG},
+      </if>
+      <if test="ALLOW_FILE_LOC_CHG != null" >
+        ALLOW_FILE_LOC_CHG = #{ALLOW_FILE_LOC_CHG},
+      </if>
+      <if test="RUN_SCRIPT != null" >
+        RUN_SCRIPT = #{RUN_SCRIPT},
+      </if>
+      <if test="COMMIT_EACH_SELECT != null" >
+        COMMIT_EACH_SELECT = #{COMMIT_EACH_SELECT},
+      </if>
+      <if test="SHOW_SCRIPT != null" >
+        SHOW_SCRIPT = #{SHOW_SCRIPT},
+      </if>
+      <if test="UPDATE_SCRIPT != null" >
+        UPDATE_SCRIPT = #{UPDATE_SCRIPT},
+      </if>
+      <if test="ALLOW_FILE_LOC_CHQ != null" >
+        ALLOW_FILE_LOC_CHQ = #{ALLOW_FILE_LOC_CHQ},
+      </if>
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE = #{FILE_TYPE},
+      </if>
+      <if test="FILE_NAME_SQL != null" >
+        FILE_NAME_SQL = #{FILE_NAME_SQL},
+      </if>
+      <if test="CATEGORY != null" >
+        CATEGORY = #{CATEGORY},
+      </if>
+      <if test="LINK != null" >
+        LINK = #{LINK},
+      </if>
+      <if test="LINK_LABEL != null" >
+        LINK_LABEL = #{LINK_LABEL},
+      </if>
+      <if test="TYPE != null" >
+        TYPE = #{TYPE},
+      </if>
+      <if test="HEADER != null" >
+        HEADER = #{HEADER},
+      </if>
+      <if test="DETAILS != null" >
+        DETAILS = #{DETAILS},
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+  </sql>
+  <update id="updateDF_DATA_FILE" parameterType="com.path.dbmaps.vo.DF_DATA_FILEVO" >
+    <include refid="sql_updateDF_DATA_FILE" />
+  </update>
+</mapper>

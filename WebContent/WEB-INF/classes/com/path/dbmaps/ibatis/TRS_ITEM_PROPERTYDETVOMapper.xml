@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_ITEM_PROPERTYDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PROPERTY_CODE" property="PROPERTY_CODE" />
+    <result column="PROPERTY_VALUE" property="PROPERTY_VALUE" />
+    <result column="PROPERTY_VALUE_A" property="PROPERTY_VALUE_A" />
+    <result column="ALLOW_DUPLICATE_VALUE" property="ALLOW_DUPLICATE_VALUE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, PROPERTY_CODE, PROPERTY_VALUE, PROPERTY_VALUE_A, ALLOW_DUPLICATE_VALUE
+  </sql>
+  <select id="selectTRS_ITEM_PROPERTYDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_ITEM_PROPERTYDET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </select>
+  <delete id="deleteTRS_ITEM_PROPERTYDET" parameterType="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVOKey" >
+    delete from TRS_ITEM_PROPERTYDET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </delete>
+  <insert id="insertTRS_ITEM_PROPERTYDET" parameterType="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVO" >
+    insert into TRS_ITEM_PROPERTYDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PROPERTY_CODE != null and PROPERTY_CODE != emptyBigDecimalValue" >
+        PROPERTY_CODE,
+      </if>
+      <if test="PROPERTY_VALUE != null" >
+        PROPERTY_VALUE,
+      </if>
+      <if test="PROPERTY_VALUE_A != null" >
+        PROPERTY_VALUE_A,
+      </if>
+      <if test="ALLOW_DUPLICATE_VALUE != null" >
+        ALLOW_DUPLICATE_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PROPERTY_CODE != null and PROPERTY_CODE != emptyBigDecimalValue" >
+        #{PROPERTY_CODE},
+      </if>
+      <if test="PROPERTY_VALUE != null" >
+        #{PROPERTY_VALUE},
+      </if>
+      <if test="PROPERTY_VALUE_A != null" >
+        #{PROPERTY_VALUE_A},
+      </if>
+      <if test="ALLOW_DUPLICATE_VALUE != null" >
+        #{ALLOW_DUPLICATE_VALUE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_ITEM_PROPERTYDET" >
+    update TRS_ITEM_PROPERTYDET
+    <set >
+      <if test="PROPERTY_VALUE != null" >
+        PROPERTY_VALUE = #{PROPERTY_VALUE},
+      </if>
+      <if test="PROPERTY_VALUE_A != null" >
+        PROPERTY_VALUE_A = #{PROPERTY_VALUE_A},
+      </if>
+      <if test="ALLOW_DUPLICATE_VALUE != null" >
+        ALLOW_DUPLICATE_VALUE = #{ALLOW_DUPLICATE_VALUE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </sql>
+  <update id="updateTRS_ITEM_PROPERTYDET" parameterType="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVO" >
+    <include refid="sql_updateTRS_ITEM_PROPERTYDET" />
+  </update>
+</mapper>

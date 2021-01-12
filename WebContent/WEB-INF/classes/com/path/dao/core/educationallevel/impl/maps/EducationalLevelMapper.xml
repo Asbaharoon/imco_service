@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="educationalLevelMapper">
+
+ <sql id="educationalLevelListCommon">
+	<![CDATA[
+			 SELECT CODE ,           
+			 BRIEF_DESC_ENG	, 
+			 BRIEF_DESC_ARAB	,
+			 LONG_DESC_ENG	, 
+			 LONG_DESC_ARAB	
+	FROM  EDUC_DEGREE 
+	WHERE	COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ <sql id="select_educationalLevelDependency">
+ 	AND CODE = #{code}
+ </sql>
+ 
+ <resultMap id="educationalLevelList_ResMap" type="educationalLevelVO">
+	<id property="CODE" column="CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="educationalLevelList" resultMap="educationalLevelList_ResMap" parameterType="educationalLevelSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="educationalLevelListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="educationalLevelListCount" resultType="int" parameterType="educationalLevelSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="educationalLevelListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="educationalLevelDependency" resultMap="educationalLevelList_ResMap" parameterType="educationalLevelSC" >
+ 	SELECT 	CODE,  
+ 		   	CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG	         
+	FROM   	EDUC_DEGREE 
+	WHERE	COMP_CODE  	= #{compCode}
+	AND 	CODE 		= #{code}
+ </select>
+
+</mapper>

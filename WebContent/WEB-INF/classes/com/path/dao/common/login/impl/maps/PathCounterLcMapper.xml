@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="pathCounterLcMapper">
+<update id="lockLicensesTables" parameterType="pathCounterLcCO">
+	<choose>
+		<when test="isSybase == 1">
+			BEGIN
+			
+			UPDATE S_ADD_DET1
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime}
+			
+			UPDATE S_ADD_DET2
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime}
+			
+			UPDATE S_ADD_DET3
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime}
+			END
+		
+		</when>
+		<otherwise>
+			BEGIN
+			UPDATE S_ADD_DET1
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime};
+			
+			UPDATE S_ADD_DET2
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime};
+			
+			UPDATE S_ADD_DET3
+			   SET FIELD7 = FIELD7
+			 WHERE FIELD1 = #{compCode}
+			   AND FIELD2 = #{branchCode}
+			   AND FIELD3 = #{appName}
+			   AND FIELD4 = #{serverDateTime};
+			
+			END;
+		</otherwise>
+	</choose>
+</update>
+<resultMap id="returnCounterMap" type="pathCounterLcCO">
+  <result property="compCode"   column="FIELD1"/>
+  <result property="branchCode" column="FIELD2"/>
+  <result property="appName"    column="FIELD3"/>
+  <result property="field5"     column="FIELD5"/>
+</resultMap>
+<select id="returnCounter" parameterType="pathCounterLcSC" resultMap="returnCounterMap">
+SELECT FIELD1
+      ,FIELD2
+      ,FIELD3
+      ,FIELD5
+  FROM S_ADD_DET
+ WHERE FIELD1 = #{compCode}
+   AND FIELD2 = #{branchCode}
+   AND FIELD3 = #{appName}
+</select>
+<resultMap id="returnDetListMap" type="pathCounterLcCO">
+  <result property="field7"    column="FIELD7"/>
+  <result property="tableSeq" column="tableSeq"/>
+</resultMap>
+<select id="returnDetList" parameterType="pathCounterLcSC" resultMap="returnDetListMap">
+	SELECT FIELD7, 1 as tableSeq          
+	FROM S_ADD_DET1
+	WHERE FIELD1 = #{compCode}
+	AND   FIELD2 = #{branchCode}
+	AND   FIELD3 = #{appName} 
+	AND   FIELD4 = #{ldToday}
+	
+	UNION ALL
+	
+	SELECT FIELD7, 2 as tableSeq
+	FROM S_ADD_DET2
+	WHERE FIELD1 = #{compCode}
+	AND   FIELD2 = #{branchCode}
+	AND   FIELD3 = #{appName} 
+	AND   FIELD4 = #{ldToday}
+	
+	UNION ALL
+	
+	SELECT FIELD7, 3 as tableSeq
+	FROM S_ADD_DET3
+	WHERE FIELD1 = #{compCode}
+	AND   FIELD2 = #{branchCode}
+	AND   FIELD3 = #{appName} 
+	AND   FIELD4 = #{ldToday}
+</select>
+<select id="returnNumberOfConcurrentUsers" parameterType="pathCounterLcSC" resultType="int">
+SELECT count(1)
+  FROM S_APPLOG SA
+ WHERE SA.COMP_CODE   = #{compCode}
+   AND SA.APP_NAME    = #{appName}
+   AND (
+        (SA.USER_STS_WEB = 'A' AND 2 = (SELECT IS_WEB_YN FROM S_APP WHERE APP_NAME = #{appName}))
+        OR 
+        (SA.USER_STS = 'A' AND 1 = (SELECT IS_WEB_YN FROM S_APP WHERE APP_NAME = #{appName}))
+       )
+</select>
+<insert id="saveCounter" parameterType="pathCounterLcCO">
+INSERT INTO S_ADD_DET (FIELD1, FIELD2, FIELD3,FIELD5) 
+VALUES (#{compCode},#{branchCode},#{appName},#{lsCounter})
+</insert>
+<update id="updateCounter" parameterType="pathCounterLcCO">
+UPDATE S_ADD_DET SET FIELD5 = #{lsCounter}
+ WHERE FIELD1 = #{compCode}
+   AND FIELD2 = #{branchCode}
+   AND FIELD3 = #{appName}
+</update>
+<update id="updateTableData" parameterType="pathCounterLcCO">
+UPDATE ${tableName} 
+   SET FIELD7 = #{dataStr},
+	   FIELD6 = #{lsTime}
+ WHERE FIELD1 = #{compCode}
+   AND FIELD2 = #{branchCode}
+   AND FIELD3 = #{appName} 
+   AND FIELD4 = #{ldtDateObj}
+</update>
+<insert id="insertNewRecord" parameterType="pathCounterLcCO">
+INSERT INTO ${tableName}
+	(FIELD1,
+	 FIELD2,
+	 FIELD3, 
+	 FIELD4,
+	 FIELD6,
+	 FIELD7
+	 )
+ VALUES
+	(#{compCode},
+	 #{branchCode},
+	 #{appName},
+	 #{ldtDateObj},
+	 #{lsTime},
+	 #{encryptedData}
+	 )
+</insert>
+<select id="returnIds" parameterType="pathCounterLcSC" statementType="CALLABLE">
+{call P_ADD_DET(#{databaseName, mode=IN,jdbcType=VARCHAR}
+                 ,#{tableName1, mode=IN,jdbcType=VARCHAR}
+                 ,#{tableName2, mode=IN,jdbcType=VARCHAR}
+                 ,#{tableName3, mode=IN,jdbcType=VARCHAR}
+                 ,#{dataBaseId, mode=OUT,jdbcType=NUMERIC}
+                 ,#{tableId1,mode=OUT,jdbcType=NUMERIC}
+                 ,#{tableId2,mode=OUT,jdbcType=NUMERIC}
+                 ,#{tableId3,mode=OUT,jdbcType=NUMERIC}
+                 ,#{serverDate,mode=OUT,jdbcType=TIMESTAMP, javaType=DATE}
+                 ,#{errorCode,mode=OUT,jdbcType=NUMERIC})}
+</select>
+<update id="lockTheCounter" parameterType="pathCounterLcSC">
+UPDATE S_ADD_DET
+SET FIELD5=FIELD5
+WHERE FIELD1 = #{compCode}
+AND   FIELD2 = #{branchCode}
+AND   FIELD3 = #{appName}
+</update>
+<select id="returnDataBaseName" parameterType="pathCounterLcSC" resultType="string">
+   <choose>
+		<when test="isSybase == 1">
+		    select db_name(0)
+		</when>
+		<otherwise>
+		    SELECT SYS_CONTEXT ('USERENV', 'SESSION_USER')  FROM DUAL
+		</otherwise>
+   </choose>		
+</select>
+<insert id="insertDetData" parameterType="pathCounterDetCO">
+   BEGIN
+   <choose>
+      <when test="isSybase == 1">
+	          <foreach collection="insertList" item="PathCounterLcCO">
+				INSERT INTO ${PathCounterLcCO.tableName}
+					(FIELD1,
+					 FIELD2,
+					 FIELD3, 
+					 FIELD4,
+					 FIELD6,
+					 FIELD7
+					 )
+				 VALUES
+					(#{PathCounterLcCO.compCode},
+					 #{PathCounterLcCO.branchCode},
+					 #{PathCounterLcCO.appName},
+					 #{PathCounterLcCO.ldtDateObj},
+					 #{PathCounterLcCO.lsTime},
+					 #{PathCounterLcCO.encryptedData}
+					 )            
+	          </foreach>
+	          END
+      </when>
+      <otherwise>
+	          <foreach collection="insertList" item="PathCounterLcCO">
+				INSERT INTO ${PathCounterLcCO.tableName}
+					(FIELD1,
+					 FIELD2,
+					 FIELD3, 
+					 FIELD4,
+					 FIELD6,
+					 FIELD7
+					 )
+				 VALUES
+					(#{PathCounterLcCO.compCode},
+					 #{PathCounterLcCO.branchCode},
+					 #{PathCounterLcCO.appName},
+					 #{PathCounterLcCO.ldtDateObj},
+					 #{PathCounterLcCO.lsTime},
+					 #{PathCounterLcCO.encryptedData}
+					 );            
+	          </foreach>
+	          END;
+      </otherwise>
+   </choose>
+
+</insert>
+<update id="updateDetData" parameterType="pathCounterDetCO">
+   BEGIN
+   <choose>
+      <when test="isSybase == 1">
+	          <foreach collection="updateList" item="PathCounterLcCO">
+				UPDATE ${PathCounterLcCO.tableName} 
+				   SET FIELD7 = #{PathCounterLcCO.dataStr},
+					   FIELD6 = #{PathCounterLcCO.lsTime}
+				 WHERE FIELD1 = #{PathCounterLcCO.compCode}
+				   AND FIELD2 = #{PathCounterLcCO.branchCode}
+				   AND FIELD3 = #{PathCounterLcCO.appName} 
+				   AND FIELD4 = #{PathCounterLcCO.ldtDateObj}
+	          </foreach>
+	          END
+      </when>
+      <otherwise>
+	          <foreach collection="updateList" item="PathCounterLcCO">
+				UPDATE ${PathCounterLcCO.tableName} 
+				   SET FIELD7 = #{PathCounterLcCO.dataStr},
+					   FIELD6 = #{PathCounterLcCO.lsTime}
+				 WHERE FIELD1 = #{PathCounterLcCO.compCode}
+				   AND FIELD2 = #{PathCounterLcCO.branchCode}
+				   AND FIELD3 = #{PathCounterLcCO.appName} 
+				   AND FIELD4 = #{PathCounterLcCO.ldtDateObj};
+	          </foreach>
+	          END;
+      </otherwise>
+   </choose>
+</update>
+</mapper>

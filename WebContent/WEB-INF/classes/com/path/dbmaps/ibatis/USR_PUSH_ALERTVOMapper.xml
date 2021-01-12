@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USR_PUSH_ALERT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USR_PUSH_ALERTVO" >
+    <id column="USER_ID" property="USER_ID" />
+    <result column="DEFAULT_REFRESH_TME" property="DEFAULT_REFRESH_TME" />
+    <result column="NEXT_PUSH_DATE" property="NEXT_PUSH_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, DEFAULT_REFRESH_TME, NEXT_PUSH_DATE
+  </sql>
+  <select id="selectUSR_PUSH_ALERT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USR_PUSH_ALERTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from USR_PUSH_ALERT
+    where USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteUSR_PUSH_ALERT" parameterType="com.path.dbmaps.vo.USR_PUSH_ALERTVO" >
+    delete from USR_PUSH_ALERT
+    where USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertUSR_PUSH_ALERT" parameterType="com.path.dbmaps.vo.USR_PUSH_ALERTVO" >
+    insert into USR_PUSH_ALERT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DEFAULT_REFRESH_TME != null" >
+        DEFAULT_REFRESH_TME,
+      </if>
+      <if test="NEXT_PUSH_DATE != null" >
+        NEXT_PUSH_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DEFAULT_REFRESH_TME != null" >
+        #{DEFAULT_REFRESH_TME},
+      </if>
+      <if test="NEXT_PUSH_DATE != null" >
+        #{NEXT_PUSH_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSR_PUSH_ALERT" >
+    update USR_PUSH_ALERT
+    <set >
+      <if test="DEFAULT_REFRESH_TME != null" >
+        DEFAULT_REFRESH_TME = #{DEFAULT_REFRESH_TME},
+      </if>
+      <if test="NEXT_PUSH_DATE != null" >
+        NEXT_PUSH_DATE = #{NEXT_PUSH_DATE},
+      </if>
+    </set>
+    where USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateUSR_PUSH_ALERT" parameterType="com.path.dbmaps.vo.USR_PUSH_ALERTVO" >
+    <include refid="sql_updateUSR_PUSH_ALERT" />
+  </update>
+</mapper>

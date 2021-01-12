@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFATD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFATDVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CY_CODE" property="CY_CODE" />
+    <id column="DET_IND" property="DET_IND" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="ALLOW_CHANGE_HOLD_AMOUNT" property="ALLOW_CHANGE_HOLD_AMOUNT" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="HOLD_REASON" property="HOLD_REASON" />
+    <result column="PERIODICITY" property="PERIODICITY" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="CHARGES_SCHEMA" property="CHARGES_SCHEMA" />
+    <result column="HOF_HOLD_TYPE" property="HOF_HOLD_TYPE" />
+    <result column="HOF_AMOUNT_PERCENTAGE" property="HOF_AMOUNT_PERCENTAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CY_CODE, DET_IND, TYPE_CODE, AMOUNT, ALLOW_CHANGE_HOLD_AMOUNT, TRX_TYPE, 
+    HOLD_REASON, PERIODICITY, PERIODICITY_TYPE, CHARGES_SCHEMA, HOF_HOLD_TYPE, HOF_AMOUNT_PERCENTAGE
+  </sql>
+  <select id="selectRIFATD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFATDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFATD
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and DET_IND = #{DET_IND}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteRIFATD" parameterType="com.path.dbmaps.vo.RIFATDVOKey" >
+    delete from RIFATD
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and DET_IND = #{DET_IND}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertRIFATD" parameterType="com.path.dbmaps.vo.RIFATDVO" >
+    insert into RIFATD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="DET_IND != null and DET_IND != emptyBigDecimalValue" >
+        DET_IND,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="ALLOW_CHANGE_HOLD_AMOUNT != null" >
+        ALLOW_CHANGE_HOLD_AMOUNT,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="HOLD_REASON != null" >
+        HOLD_REASON,
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        PERIODICITY,
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE,
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        CHARGES_SCHEMA,
+      </if>      
+      <if test="HOF_HOLD_TYPE != null" >
+        HOF_HOLD_TYPE,
+      </if>
+      <if test="HOF_AMOUNT_PERCENTAGE != null and HOF_AMOUNT_PERCENTAGE != emptyBigDecimalValue" >
+        HOF_AMOUNT_PERCENTAGE,
+      </if>     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="DET_IND != null and DET_IND != emptyBigDecimalValue" >
+        #{DET_IND},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="ALLOW_CHANGE_HOLD_AMOUNT != null" >
+        #{ALLOW_CHANGE_HOLD_AMOUNT},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="HOLD_REASON != null" >
+        #{HOLD_REASON},
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        #{PERIODICITY},
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        #{PERIODICITY_TYPE},
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        #{CHARGES_SCHEMA},
+      </if>
+      <if test="HOF_HOLD_TYPE != null" >
+        #{HOF_HOLD_TYPE},
+      </if>
+      <if test="HOF_AMOUNT_PERCENTAGE != null and HOF_AMOUNT_PERCENTAGE != emptyBigDecimalValue" >
+        #{HOF_AMOUNT_PERCENTAGE},
+      </if>      
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFATD" >
+    update RIFATD
+    <set >
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALLOW_CHANGE_HOLD_AMOUNT != null" >
+        ALLOW_CHANGE_HOLD_AMOUNT = #{ALLOW_CHANGE_HOLD_AMOUNT},
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HOLD_REASON != null" >
+        HOLD_REASON = #{HOLD_REASON},
+      </if>
+      <if test="PERIODICITY != null" >
+        <choose >
+          <when test="PERIODICITY == emptyBigDecimalValue" >
+            PERIODICITY = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY = #{PERIODICITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE = #{PERIODICITY_TYPE},
+      </if>
+      <if test="CHARGES_SCHEMA != null" >
+        <choose >
+          <when test="CHARGES_SCHEMA == emptyBigDecimalValue" >
+            CHARGES_SCHEMA = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_SCHEMA = #{CHARGES_SCHEMA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HOF_HOLD_TYPE != null" >
+        HOF_HOLD_TYPE = #{HOF_HOLD_TYPE},
+      </if>
+      <if test="HOF_AMOUNT_PERCENTAGE != null" >
+        <choose >
+          <when test="HOF_AMOUNT_PERCENTAGE == emptyBigDecimalValue" >
+            HOF_AMOUNT_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            HOF_AMOUNT_PERCENTAGE = #{HOF_AMOUNT_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>      
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+      and DET_IND = #{DET_IND}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateRIFATD" parameterType="com.path.dbmaps.vo.RIFATDVO" >
+    <include refid="sql_updateRIFATD" />
+  </update>
+</mapper>

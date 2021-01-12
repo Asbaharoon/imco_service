@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_RED_HIST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_RED_HISTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="SUB_LINE_NBR" property="SUB_LINE_NBR" />
+    <result column="TYPE" property="TYPE" />
+    <result column="DATE_1" property="DATE_1" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="DRAWING_POWER" property="DRAWING_POWER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NBR, SUB_LINE_NBR, TYPE, DATE_1, AMOUNT, DRAWING_POWER
+  </sql>
+  <select id="selectFMS_RED_HIST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_RED_HISTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_RED_HIST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </select>
+  <delete id="deleteFMS_RED_HIST" parameterType="com.path.dbmaps.vo.FMS_RED_HISTVOKey" >
+    delete from FMS_RED_HIST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </delete>
+  <insert id="insertFMS_RED_HIST" parameterType="com.path.dbmaps.vo.FMS_RED_HISTVO" >
+    insert into FMS_RED_HIST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="SUB_LINE_NBR != null and SUB_LINE_NBR != emptyBigDecimalValue" >
+        SUB_LINE_NBR,
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        TYPE,
+      </if>
+      <if test="DATE_1 != null" >
+        DATE_1,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="DRAWING_POWER != null and DRAWING_POWER != emptyBigDecimalValue" >
+        DRAWING_POWER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="SUB_LINE_NBR != null and SUB_LINE_NBR != emptyBigDecimalValue" >
+        #{SUB_LINE_NBR},
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        #{TYPE},
+      </if>
+      <if test="DATE_1 != null" >
+        #{DATE_1},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="DRAWING_POWER != null and DRAWING_POWER != emptyBigDecimalValue" >
+        #{DRAWING_POWER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_RED_HIST" >
+    update FMS_RED_HIST
+    <set >
+      <if test="TYPE != null" >
+        <choose >
+          <when test="TYPE.equals(&quot;&quot;)" >
+            TYPE = NULL ,
+          </when>
+          <otherwise >
+            TYPE = #{TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_1 != null" >
+        DATE_1 = #{DATE_1},
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DRAWING_POWER != null" >
+        <choose >
+          <when test="DRAWING_POWER == emptyBigDecimalValue" >
+            DRAWING_POWER = NULL ,
+          </when>
+          <otherwise >
+            DRAWING_POWER = #{DRAWING_POWER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </sql>
+  <update id="updateFMS_RED_HIST" parameterType="com.path.dbmaps.vo.FMS_RED_HISTVO" >
+    <include refid="sql_updateFMS_RED_HIST" />
+  </update>
+</mapper>

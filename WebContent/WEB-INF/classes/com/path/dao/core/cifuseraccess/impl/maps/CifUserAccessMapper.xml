@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="cifUserAccessMapper">
+    
+	 <resultMap id="cifUserAccessMap" type="cifUserAccessVO" >
+			<result property="ACCESS_CODE" column="ACCESS_CODE" />
+			<result property="ACCESS_DESC" column="ACCESS_DESC" />
+			<result property="ACCESS_TYPE" column="ACCESS_TYPE" />
+			<result property="ACCESS_ALLOWED" column="ACCESS_ALLOWED" />
+	 </resultMap>
+	 
+	 
+	 <select id="selectCifUserAccessList" parameterType="cifUserAccessSC"	resultMap="cifUserAccessMap">
+			SELECT
+			ACCESS_CODE,
+		    ACCESS_DESC,
+			ACCESS_TYPE,
+			CASE WHEN #{allowToModifyCif} = 'Y'  THEN ACCESS_ALLOWED ELSE 'N'  END   ACCESS_ALLOWED 
+			FROM  CTSTELLER_AXS 
+			WHERE	 CTSTELLER_AXS.COMP_CODE  =#{ctsTellerAxsVO.COMP_CODE,jdbcType=NUMERIC}
+			AND	CTSTELLER_AXS.BRANCH_CODE  = #{ctsTellerAxsVO.BRANCH_CODE,jdbcType=NUMERIC}
+			AND	CTSTELLER_AXS.TELLER_CODE  =#{ctsTellerAxsVO.TELLER_CODE,jdbcType=NUMERIC}
+			AND	CTSTELLER_AXS.ACCESS_TYPE  = #{ctsTellerAxsVO.ACCESS_TYPE,jdbcType=VARCHAR}
+	 </select> 
+   
+ </mapper>       
+        
+        
+        
+        
+        
+        

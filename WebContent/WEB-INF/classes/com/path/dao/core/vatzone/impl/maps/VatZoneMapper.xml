@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="vatZoneListMapper">
+
+	<sql id="vatZoneListCommon">
+
+		SELECT
+		CTS_VAT_ZONE.ZONE_CODE,
+		CTS_VAT_ZONE.BRIEF_DESC_ENG,
+		CTS_VAT_ZONE.LONG_DESC_ENG
+		FROM CTS_VAT_ZONE
+		WHERE CTS_VAT_ZONE.COMP_CODE = #{compCode}
+
+	</sql>
+
+	<resultMap id="vatZoneListMap" type="com.path.dbmaps.vo.CTS_VAT_ZONEVO">
+		<id property="ZONE_CODE" column="ZONE_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	</resultMap>
+
+	<select id="vatZoneList" resultMap="vatZoneListMap"
+		parameterType="com.path.vo.core.vatzone.VatZoneSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="vatZoneListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="vatZoneListCount" resultType="int"
+		parameterType="com.path.vo.core.vatzone.VatZoneSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="vatZoneListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnZoneCodeById" parameterType="com.path.vo.core.vatzone.VatZoneSC"
+		resultType="com.path.dbmaps.vo.CTS_VAT_ZONEVO">
+		SELECT
+		CTS_VAT_ZONE.ZONE_CODE,
+		CTS_VAT_ZONE.BRIEF_DESC_ENG,
+		CTS_VAT_ZONE.LONG_DESC_ENG
+		FROM CTS_VAT_ZONE
+		WHERE
+		CTS_VAT_ZONE.COMP_CODE = #{compCode}
+		AND CTS_VAT_ZONE.ZONE_CODE = #{zoneCode}
+	</select>
+</mapper>

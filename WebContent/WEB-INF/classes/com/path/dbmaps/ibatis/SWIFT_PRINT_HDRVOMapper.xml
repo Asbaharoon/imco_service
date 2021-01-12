@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_PRINT_HDR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_PRINT_HDRVO" >
+    <id column="MODULE" property="MODULE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="PROG_TYPE" property="PROG_TYPE" />
+    <result column="REP_ID" property="REP_ID" />
+    <result column="TABLE_NAME" property="TABLE_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MODULE, PROG_REF, PROG_TYPE, REP_ID, TABLE_NAME
+  </sql>
+  <select id="selectSWIFT_PRINT_HDR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_HDRVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_PRINT_HDR
+    where MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </select>
+  <delete id="deleteSWIFT_PRINT_HDR" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_HDRVOKey" >
+    delete from SWIFT_PRINT_HDR
+    where MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </delete>
+  <insert id="insertSWIFT_PRINT_HDR" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_HDRVO" >
+    insert into SWIFT_PRINT_HDR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="PROG_TYPE != null" >
+        PROG_TYPE,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="TABLE_NAME != null" >
+        TABLE_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="PROG_TYPE != null" >
+        #{PROG_TYPE},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="TABLE_NAME != null" >
+        #{TABLE_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_PRINT_HDR" >
+    update SWIFT_PRINT_HDR
+    <set >
+      <if test="REP_ID != null" >
+        <choose >
+          <when test="REP_ID == emptyBigDecimalValue" >
+            REP_ID = NULL ,
+          </when>
+          <otherwise >
+            REP_ID = #{REP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TABLE_NAME != null" >
+        TABLE_NAME = #{TABLE_NAME},
+      </if>
+    </set>
+    where MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </sql>
+  <update id="updateSWIFT_PRINT_HDR" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_HDRVO" >
+    <include refid="sql_updateSWIFT_PRINT_HDR" />
+  </update>
+</mapper>

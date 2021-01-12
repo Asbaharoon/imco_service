@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="billCollectionMapper">
+
+<sql id="select_BillCollection">
+ 
+SELECT TFSBILL.COMP_CODE,
+ 	   TFSBILL.BRANCH,
+	   TFSBILL.BILL_TYPE,
+       TFSBILL.BILL_NBR,
+       TFSBILL.BILL_DATE ,
+       TFSBILL.PARTY_BANK_CIF,
+       (SELECT CIF.SHORT_NAME_ENG
+          FROM CIF
+         WHERE TFSBILL.COMP_CODE = CIF.COMP_CODE
+           AND TFSBILL.BANK_DEF_CIF = CIF.CIF_NO) bankName,
+       TFSBILL.CUSTOMER_CIF,
+       (SELECT CIF.SHORT_NAME_ENG
+          FROM CIF
+         WHERE TFSBILL.COMP_CODE = CIF.COMP_CODE
+           AND TFSBILL.CUSTOMER_CIF = CIF.CIF_NO) customerName,
+       TFSBILL.PAY_METHOD,
+       TFSBILL.PAY_FACILITY_NO,
+       TFSBILL.CURRENCY,
+       TFSBILL.STATUS,
+        (SELECT VALUE_DESC 
+             FROM SYS_PARAM_LOV_TRANS 
+              WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+              AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+              AND VALUE_CODE = TFSBILL.STATUS) billStatusDesc,
+       
+       TFSBILL.BANK_DEF_CIF,
+       
+       
+       (SELECT CURRENCIES.BRIEF_DESC_ENG
+          FROM CURRENCIES
+         WHERE TFSBILL.COMP_CODE = CURRENCIES.COMP_CODE
+           AND TFSBILL.CURRENCY = CURRENCIES.CURRENCY_CODE) cyBriefDesc,
+           
+  	 (SELECT CURRENCIES.DECIMAL_POINTS
+          FROM CURRENCIES
+         WHERE TFSBILL.COMP_CODE = CURRENCIES.COMP_CODE
+           AND TFSBILL.CURRENCY = CURRENCIES.CURRENCY_CODE) cyDecimalPt,
+           
+       TFSBILL.DOC_NUMBER,
+       TFSBILL.DOC_YEAR,
+       TFSBILL.AMOUNT,
+       TFSBILL.MANUAL_REFERENCE,
+       ( SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS 
+	          WHERE LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	          AND VALUE_CODE = TFSBILL.BILL_SETL_TYPE 
+	          AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		) billSetlTypeDesc,
+       
+        (SELECT TFSDOCTYPE.BRIEF_NAME_ENG
+    	FROM TFSDOCTYPE
+   		WHERE TFSDOCTYPE.COMP_CODE =  TFSBILL.COMP_CODE
+   		AND TFSDOCTYPE.DOC_TYPE  =  TFSBILL.BILL_TYPE
+        AND TFSDOCTYPE.CODE  = TFSBILL.TYPE) tfsDocTypeDesc
+       
+       
+    FROM TFSBILL 
+   WHERE TFSBILL.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+     AND TFSBILL.BRANCH    = #{branchCode,jdbcType=NUMERIC}
+     AND TFSBILL.BILL_TYPE = #{billType,jdbcType=VARCHAR}
+     
+  
+     <if test='creditAvailable!=null and "1".equals(creditAvailable)'>
+ 	 	AND TFSBILL.BILL_SETL_TYPE IN ('T', 'M', 'G'))
+     </if>
+     
+     <if test="status!=null">
+  		AND TFSBILL.STATUS = #{status,jdbcType=VARCHAR}
+  	</if>
+  	
+  	<if test="statusInclude!=null">
+  		AND TFSBILL.STATUS in (${statusInclude})
+  	</if>
+     
+    <if test="statusInclude!=null">
+  		AND TFSBILL.STATUS in (${statusInclude})
+  	</if>
+	 
+	</sql>
+	
+	<select id="selectBillCollectionLookupList"
+	        resultMap="resultBillCollectionLookupMap" 
+	        parameterType="tfsBillSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="billCollectionMapper.select_BillCollection"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="selectBillCollectionLookupCount"  resultType="int" parameterType="tfsBillSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="billCollectionMapper.select_BillCollection"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<resultMap id="resultBillCollectionLookupMap" type="tfsBillCO">
+		<result property="tfsBillVO.COMP_CODE" 		 	column="COMP_CODE" />
+		<result property="tfsBillVO.BRANCH" 		 	column="BRANCH" />
+		<result property="tfsBillVO.BILL_TYPE" 			column="BILL_TYPE" />
+		<result property="tfsBillVO.BILL_NBR" 			column="BILL_NBR" />
+		<result property="tfsBillVO.BILL_DATE" 			column="BILL_DATE" />
+		<result property="tfsBillVO.PARTY_BANK_CIF" 	column="PARTY_BANK_CIF" />
+		<result property="bankName" 					column="bankName" />
+		<result property="tfsBillVO.CUSTOMER_CIF" 		column="CUSTOMER_CIF" />
+		<result property="customerName" 				column="customerName" />
+		<result property="tfsBillVO.PAY_METHOD" 		column="PAY_METHOD" />
+		<result property="tfsBillVO.PAY_FACILITY_NO" 	column="PAY_FACILITY_NO" />
+		<result property="tfsBillVO.CURRENCY" 			column="CURRENCY" />
+		<result property="tfsBillVO.STATUS" 			column="STATUS" />
+		<result property="tfsBillVO.BANK_DEF_CIF" 		column="BANK_DEF_CIF" />
+		<result property="cyBriefDesc"  				column="cyBriefDesc" />
+		<result property="tfsBillVO.DOC_NUMBER" 		column="DOC_NUMBER" />
+		<result property="tfsBillVO.DOC_YEAR" 			column="DOC_YEAR" />
+     	<result property="tfsBillVO.AMOUNT" 		 	column="AMOUNT" />
+		<result property="tfsBillVO.MANUAL_REFERENCE" 	column="MANUAL_REFERENCE" />
+		<result property="billSetlTypeDesc" 			column="billSetlTypeDesc" />
+		<result property="tfsDocTypeDesc" 				column="tfsDocTypeDesc" />
+		<result property="billStatusDesc" 				column="billStatusDesc" />
+		<result property="cyDecimalPt" 				    column="cyDecimalPt" />
+		
+	</resultMap>
+	
+	<resultMap id="checkBillCollectionValidationMap" type="tfsBillCO">
+		<result property="tfsBillVO.BILL_TYPE" 		 	column="BILL_TYPE" />
+		<result property="tfsBillVO.BILL_NBR" 		 	column="BILL_NBR" />
+		<result property="tfsBillVO.STATUS" 			column="STATUS" />
+		<result property="tfsBillVO.CHARGES_BORNE_BY" 	column="CHARGES_BORNE_BY" />
+		<result property="tfsBillVO.PAY_ACC_BR" 		column="PAY_ACC_BR" />
+		<result property="tfsBillVO.PAY_ACC_CY" 		column="PAY_ACC_CY" />
+		<result property="tfsBillVO.PAY_ACC_GL" 		column="PAY_ACC_GL" />
+		<result property="tfsBillVO.PAY_ACC_CIF" 		column="PAY_ACC_CIF" />
+		<result property="tfsBillVO.PAY_ACC_SL" 		column="PAY_ACC_SL" />
+		<result property="tfsBillVO.PARTY_BANK_BR" 		column="PARTY_BANK_BR" />
+		<result property="tfsBillVO.PARTY_BANK_CY" 		column="PARTY_BANK_CY" />
+		<result property="tfsBillVO.PARTY_BANK_GL" 		column="PARTY_BANK_GL" />
+		<result property="tfsBillVO.PARTY_BANK_CIF" 	column="PARTY_BANK_CIF" />
+		<result property="tfsBillVO.PARTY_BANK_SL" 		column="PARTY_BANK_SL" />
+     	<result property="tfsBillVO.CURRENCY" 		 	column="CURRENCY" />
+		<result property="tfsBillVO.FC_AMENDED_AMOUNT" 	column="FC_AMENDED_AMOUNT" />
+		<result property="tfsBillVO.CV_AMENDED_AMOUNT"  column="CV_AMENDED_AMOUNT" />
+		<result property="tfsBillVO.BILL_DATE" 			column="BILL_DATE" />
+		<result property="tfsBillVO.BILL_DUE_DATE" 		column="BILL_DUE_DATE" />
+		
+		<result property="outstandingMarginAmount" 		column="outstandingMarginAmount" />
+		
+	</resultMap>
+ 
+ 
+  <select id="checkBillCollectionValidation" parameterType="tfsBillSC" resultType="tfsBillVO">
+	 SELECT TFSBILL.BILL_TYPE,
+         TFSBILL.BILL_NBR ,
+         TFSBILL.STATUS,
+         TFSBILL.CHARGES_BORNE_BY,
+         PAY_ACC_BR,
+		PAY_ACC_CY,
+		PAY_ACC_GL,
+		PAY_ACC_CIF,
+		PAY_ACC_SL,
+		PARTY_BANK_BR,
+		PARTY_BANK_CY,
+		PARTY_BANK_GL,
+		PARTY_BANK_CIF,
+		PARTY_BANK_SL,
+		CURRENCY,
+		FC_AMENDED_AMOUNT,
+		CV_AMENDED_AMOUNT,
+		BILL_DATE,
+		BILL_DUE_DATE,
+		
+		-- kaldanaf - ABAR130110 - obtaining the needed amounts for provision, non-provision modification
+     	(CASE WHEN TOTAL_MARGIN_AMOUNT IS NULL THEN 0 ELSE TOTAL_MARGIN_AMOUNT END) - 
+     	(CASE WHEN CLOSED_AUTO_MARGIN IS NULL THEN 0 ELSE CLOSED_AUTO_MARGIN END) - 
+     	(CASE WHEN CLOSED_AUTO_MARGIN_TRANS IS NULL THEN 0 ELSE CLOSED_AUTO_MARGIN_TRANS END) - 
+     	(CASE WHEN CLOSED_MARGIN_BS IS NULL THEN 0 ELSE CLOSED_MARGIN_BS END) MARGIN_AMT_CY2, /** kaldanaf - saving the outstanding margin amount in MARGIN_AMT_CY2 in order not to restructure the query and the used map **/
+		MARGIN_AMOUNT,
+		CROSS_RATE,
+	    CROSS_MULT_DIV,
+	    NOSTRO_MARGIN_CY,
+	    AUTO_MARGIN_ACC_CY,
+	    AMOUNT - (CASE WHEN TFSBILL.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TFSBILL.SETTLEMENT_AMOUNT END) SETTLEMENT_AMOUNT /** kaldanaf - saving the outstanding amount in SETTLEMENT_AMOUNT in order not to restructure the query and the used map **/
+		
+    FROM TFSBILL 
+   WHERE TFSBILL.COMP_CODE = #{compCode}
+     AND TFSBILL.BRANCH    = #{branchCode}
+     AND TFSBILL.BILL_TYPE = #{billType}
+     AND TFSBILL.BILL_NBR  = #{billNbr}
+     AND TFSBILL.STATUS = #{status}
+  </select>  
+  
+	<resultMap id="acceptanceLkpListMap" type="tfsBillCO">
+		<result property="tfsTrxVO.TRX_NBR"         column="TRX_NBR"/>
+		<result property="tfsTrxVO.LC_AMEND_NO"     column="LC_AMEND_NO"/>
+		<result property="tfsTrxVO.STATUS"          column="STATUS"/>
+		<result property="tfsBillVO.BANK_DEF_CIF"	column="BANK_DEF_CIF"/>
+		<result property="bankName"     		    column="bankName"/>
+		<result property="tfsBillVO.CUSTOMER_CIF"   column="CUSTOMER_CIF"/>
+		<result property="tfsBillVO.BILL_DATE"     	column="BILL_DATE"/>
+		<result property="customerName"     		column="customerName"/>
+		<result property="cyBriefDesc"     			column="cyBriefDesc"/>
+		<result property="tfsTrxVO.SHIPMENT_AMOUNT" column="SHIPMENT_AMOUNT"/>
+		<result property="tfsTrxVO.CV_AMOUNT"     	column="CV_AMOUNT"/>
+		<result property="tfsBillVO.TYPE"     		column="TYPE"/>
+		<result property="cyDecimalPt" 				column="cyDecimalPt" />
+	</resultMap>
+  
+  <sql id="acceptanceLkpSql">
+	SELECT TFSBILL.BILL_TYPE,
+	       TFSTRX.LC_NBR,
+	       TFSBILL.BILL_DATE,
+	       TFSBILL.PARTY_BANK_CIF,
+	       A.SHORT_NAME_ENG bankName,
+	       TFSBILL.CUSTOMER_CIF,
+	       B.SHORT_NAME_ENG customerName,
+	       TFSBILL.PAY_METHOD,
+	       TFSBILL.PAY_FACILITY_NO,
+	       TFSBILL.CURRENCY,
+	       (SELECT VALUE_DESC 
+			      FROM SYS_PARAM_LOV_TRANS 
+			       WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+			       AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+			       AND VALUE_CODE = TFSTRX.STATUS)STATUS,
+	       TFSBILL.BANK_DEF_CIF,
+	       <choose>  
+            <when test="isRTLDir==1">CURRENCIES.BRIEF_DESC_ARAB</when>
+            <otherwise>CURRENCIES.BRIEF_DESC_ENG</otherwise>
+           </choose>cyBriefDesc,
+	       TFSTRX.CV_AMOUNT,
+	       TFSTRX.TRX_NBR,
+	       TFSTRX.SHIPMENT_AMOUNT,
+	       TFSTRX.LC_AMEND_NO,
+	       TFSBILL.TYPE,
+	      (SELECT CURRENCIES.DECIMAL_POINTS
+          	FROM CURRENCIES
+         	WHERE TFSBILL.COMP_CODE = CURRENCIES.COMP_CODE
+            AND TFSBILL.CURRENCY = CURRENCIES.CURRENCY_CODE) cyDecimalPt
+	  FROM TFSTRX, CURRENCIES, TFSBILL
+	  LEFT OUTER JOIN CIF A ON (TFSBILL.COMP_CODE = A.COMP_CODE)
+	                       AND (TFSBILL.BANK_DEF_CIF = A.CIF_NO)
+	  LEFT OUTER JOIN CIF B ON (TFSBILL.COMP_CODE = B.COMP_CODE)
+	                       AND (TFSBILL.CUSTOMER_CIF = B.CIF_NO)
+	  WHERE (TFSBILL.COMP_CODE = #{compCode,jdbcType=NUMERIC} AND
+	       TFSBILL.BRANCH = #{branchCode,jdbcType=NUMERIC} AND
+	       ((TFSBILL.STATUS IN ('P', 'Z') AND
+	       TFSBILL.BILL_SETL_TYPE IN ('T', 'G')) OR
+	       (TFSBILL.STATUS IN ('P') AND
+	       TFSBILL.BILL_SETL_TYPE NOT IN ('T', 'G'))) AND
+	       TFSBILL.BILL_NBR =
+	 <choose>
+	  <when test="billNbr == emptyBigDecimalValue">
+		TFSBILL.BILL_NBR 
+	  </when>
+	  <otherwise>
+		#{billNbr,jdbcType=NUMERIC} 
+      </otherwise>
+     </choose>
+	   AND  TFSBILL.BILL_TYPE = #{billType,jdbcType=VARCHAR})
+	   AND TFSBILL.COMP_CODE = TFSTRX.COMP_CODE
+	   AND TFSBILL.BRANCH = TFSTRX.BRANCH
+	   AND TFSBILL.BILL_NBR = TFSTRX.LC_NBR
+	   AND TFSBILL.BILL_TYPE = TFSTRX.LC_TYPE
+	   AND TFSTRX.TRX_TYPE = #{trxType,jdbcType=NUMERIC} 
+	   AND CASE WHEN TFSTRX.SETTLED IS NULL THEN 0 ELSE TFSTRX.SETTLED END <![CDATA[<>]]> 1
+	   AND
+	     (
+	     <choose>
+	      <when test="alwaysClosedAcceptance == 1"> 
+	        TFSTRX.STATUS IN ('Z')
+	      </when>
+	      <otherwise>
+	       ((SELECT TFSCTRL1.AUTO_ACC_CLOSURE
+	                FROM TFSCTRL1
+	               WHERE TFSCTRL1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	                 AND TFSCTRL1.BRANCH = #{branchCode,jdbcType=NUMERIC}) = '0' AND
+	       TFSTRX.STATUS IN ('Z')) OR
+	       ((SELECT TFSCTRL1.AUTO_ACC_CLOSURE
+	                FROM TFSCTRL1
+	               WHERE TFSCTRL1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	                 AND TFSCTRL1.BRANCH = #{branchCode,jdbcType=NUMERIC}) IN ('1','2') AND
+	       TFSTRX.STATUS IN ('P', 'Z'))
+	       </otherwise>
+	      </choose>
+	       )
+	   AND TFSBILL.COMP_CODE = CURRENCIES.COMP_CODE
+	   AND TFSBILL.CURRENCY = CURRENCIES.CURRENCY_CODE
+  </sql>
+  
+	<select id="returnAcceptanceLkpCount" resultType="int"	parameterType="tfsBillSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="acceptanceLkpSql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnAcceptanceLkpList" resultMap="acceptanceLkpListMap" parameterType="tfsBillSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="acceptanceLkpSql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<resultMap id="acceptanceAmendLkpListMap" type="tfsBillCO">
+		<result property="tfsTrxVO.TRX_NBR"         column="TRX_NBR"/>
+		<result property="tfsTrxVO.LC_AMEND_NO"     column="LC_AMEND_NO"/>
+		<result property="tfsTrxVO.STATUS"          column="STATUS"/>
+		<result property="tfsBillVO.BANK_DEF_CIF"	column="BANK_DEF_CIF"/>
+		<result property="bankName"     		    column="bankName"/>
+		<result property="tfsBillVO.CUSTOMER_CIF"   column="CUSTOMER_CIF"/>
+		<result property="tfsBillVO.BILL_DATE"     	column="BILL_DATE"/>
+		<result property="customerName"     		column="customerName"/>
+		<result property="cyBriefDesc"     			column="cyBriefDesc"/>
+		<result property="tfsTrxVO.SHIPMENT_AMOUNT" column="SHIPMENT_AMOUNT"/>
+		<result property="tfsTrxVO.CV_AMOUNT"     	column="CV_AMOUNT"/>
+		<result property="tfsBillVO.TYPE"     		column="TYPE"/>
+		<result property="cyDecimalPt" 				column="cyDecimalPt" />
+		<result property="billDate" 				column="billDate" />
+	</resultMap>
+  
+  <sql id="acceptanceAmendLkpSql">
+  SELECT TFSBILL.BILL_TYPE,
+       TFSTRX.LC_NBR,
+
+       <choose>
+			<when test="isSybase == 1">
+			CONVERT(VARCHAR,TFSBILL.BILL_DATE,103 ) billDate,
+			</when>
+			<otherwise >
+			to_char(TFSBILL.BILL_DATE, 'dd/mm/yyyy') billDate,
+			</otherwise>
+	   </choose>
+			
+       TFSBILL.PARTY_BANK_CIF,
+       A.SHORT_NAME_ENG bankName,
+       TFSBILL.CUSTOMER_CIF,
+       B.SHORT_NAME_ENG customerName,
+       TFSBILL.PAY_METHOD,
+       TFSBILL.PAY_FACILITY_NO,
+       (SELECT VALUE_DESC 
+			      FROM SYS_PARAM_LOV_TRANS 
+			       WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+			       AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+			       AND VALUE_CODE = TFSTRX.STATUS)STATUS,
+       TFSBILL.BANK_DEF_CIF,
+        <choose>  
+          <when test="isRTLDir==1">CURRENCIES.BRIEF_DESC_ARAB</when>
+          <otherwise>CURRENCIES.BRIEF_DESC_ENG</otherwise>
+        </choose>cyBriefDesc,
+       TFSTRX.CV_AMOUNT,
+       TFSTRX.TRX_NBR,
+       TFSTRX.SHIPMENT_AMOUNT,
+       TFSTRX.LC_AMEND_NO
+  FROM TFSTRX, CURRENCIES, TFSBILL
+  LEFT OUTER JOIN CIF A ON (TFSBILL.COMP_CODE = A.COMP_CODE)
+                       AND (TFSBILL.BANK_DEF_CIF = A.CIF_NO)
+  LEFT OUTER JOIN CIF B ON (TFSBILL.COMP_CODE = B.COMP_CODE)
+                       AND (TFSBILL.CUSTOMER_CIF = B.CIF_NO)
+  WHERE TFSBILL.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+        AND TFSBILL.BRANCH = #{branchCode,jdbcType=NUMERIC}  
+        AND TFSBILL.STATUS = 'P'
+        AND TFSBILL.BILL_NBR = <choose>
+	                            <when test="billNbr == emptyBigDecimalValue">
+	                        	 TFSBILL.BILL_NBR 
+	                            </when>
+	                            <otherwise>
+		                         #{billNbr,jdbcType=NUMERIC} 
+                                </otherwise>
+                               </choose>
+       AND TFSBILL.BILL_TYPE =#{billType,jdbcType=VARCHAR}
+   AND TFSBILL.COMP_CODE = TFSTRX.COMP_CODE
+   AND TFSBILL.BRANCH = TFSTRX.BRANCH
+   AND TFSBILL.BILL_NBR = TFSTRX.LC_NBR
+   AND TFSBILL.BILL_TYPE = TFSTRX.LC_TYPE
+   AND (TFSTRX.TRX_TYPE = #{trxType,jdbcType=NUMERIC}) 
+   AND TFSTRX.STATUS IN (CASE WHEN #{billSetlType,jdbcType=VARCHAR}
+        IN ('T', 'M') THEN 'Z' ELSE 'P' END, 'P')
+   AND TFSBILL.COMP_CODE = CURRENCIES.COMP_CODE
+   AND TFSBILL.CURRENCY = CURRENCIES.CURRENCY_CODE
+  </sql>
+  
+	<select id="returnAcceptanceAmendLkpCount" resultType="int"	parameterType="tfsBillSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="acceptanceAmendLkpSql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnAcceptanceAmendLkpList" resultMap="acceptanceAmendLkpListMap" parameterType="tfsBillSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="acceptanceAmendLkpSql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+  
+</mapper>
+
+ 

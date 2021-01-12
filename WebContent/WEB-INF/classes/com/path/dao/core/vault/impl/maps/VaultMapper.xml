@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="vaultMapper">
+	<sql id="vaultListQuery">
+		SELECT CTSTELLER.CODE ,
+		CTSTELLER.BRIEF_NAME_ENG ,
+		CTSTELLER.LONG_NAME_ENG ,
+		CTSTELLER.BRIEF_NAME_ARAB ,
+		CTSTELLER.LONG_NAME_ARAB ,
+		CTSTELLER.STATUS ,
+		CTSTELLER.USER_ID ,
+		CTSTELLER.TELLER_TYPE ,
+		CTSTELLER.PRIVILEGE_LEVEL ,
+		CTSTELLER.DIVISION_CODE ,
+		CTSTELLER.DEPT_CODE ,
+		CTSTELLER.ROLE_CODE
+
+		FROM CTSTELLER LEFT OUTER JOIN CTSCONTROL ON CTSTELLER.COMP_CODE =
+		CTSCONTROL.COMP_CODE
+		AND CTSTELLER.BRANCH_CODE = CTSCONTROL.BRANCH_CODE
+
+		WHERE ( CTSTELLER.COMP_CODE = #{compCode})
+		<choose>
+			<when test='((isHoBranch != null and "H".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "1".equals(operationNature)) and fromVaultCode != null)
+			or ((isHoBranch != null and "B".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)) and fromVaultCode != null)'>
+			AND ( CTSTELLER.BRANCH_CODE = #{vaultBranch} )
+			</when>
+			<otherwise> 
+			AND ( CTSTELLER.BRANCH_CODE = #{branchCode} )
+		    </otherwise>
+	    </choose>
+	    <if test='(fromTransferCashVaultToVault != null and "false".equals(fromTransferCashVaultToVault)) or (isTransferOfFund != null and "1".equals(isTransferOfFund))	or ((isHoBranch != null and "H".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "true".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "1".equals(operationNature)))
+		or ((isHoBranch != null and "H".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)))
+		or ((isHoBranch != null and "B".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "1".equals(operationNature)))
+		or ((isHoBranch != null and "B".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "true".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)))' >
+		AND ( USER_IS_BRANCH_MANAGER = '1')
+		</if>
+		<if test='((dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (isHoBranch != null and "H".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (operationNature != null and "1".equals(operationNature)))
+		or ((isHoBranch != null and "H".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "true".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)))
+		or ((isHoBranch != null and "B".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "true".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "1".equals(operationNature)))
+		or ((isHoBranch != null and "B".equals(isHoBranch))	and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)))'>
+		AND ( IS_TRANSIT_VAULT_YN = '1')
+		</if>
+		<if test='((isHoBranch != null and "H".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)) and fromVaultCode != null)'>
+ 		 AND  CTSTELLER.CODE IN (select CTSTELLER_LINKED_VAULT.TELLER_CODE 
+ 		 from CTSTELLER_LINKED_VAULT
+		 where CTSTELLER_LINKED_VAULT.COMP_CODE= #{compCode, jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.VAULT_BRANCH= #{branchCode, jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.VAULT_CODE = #{fromVaultCode,jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC})			
+		</if>
+		<if test='((isHoBranch != null and "H".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "1".equals(operationNature)) and fromVaultCode != null)
+		or ((isHoBranch != null and "B".equals(isHoBranch)) and (fromTransferCashVaultToVault != null and "true".equals(fromTransferCashVaultToVault)) and (dependencyOfFromVaultBranch != null and "false".equals(dependencyOfFromVaultBranch)) and (operationNature != null and "2".equals(operationNature)) and fromVaultCode != null)'>
+ 		 AND  CTSTELLER.CODE IN (select CTSTELLER_LINKED_VAULT.VAULT_CODE 
+ 		 from CTSTELLER_LINKED_VAULT
+		 where CTSTELLER_LINKED_VAULT.COMP_CODE= #{compCode, jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.VAULT_BRANCH = #{vaultBranch, jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.TELLER_CODE = #{fromVaultCode,jdbcType=NUMERIC}
+		 and CTSTELLER_LINKED_VAULT.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC})			
+		</if>
+		AND (
+		(#{privilege} = 0 ) OR
+		(#{privilege} <![CDATA[ <> ]]> 0 AND CASE WHEN CTSTELLER.PRIVILEGE_LEVEL IS NULL THEN 0 ELSE
+		CTSTELLER.PRIVILEGE_LEVEL END = #{privilege} )
+		)
+		AND (CTSTELLER.STATUS =
+		(
+		CASE
+		WHEN #{status} = 'P' THEN 'I'
+		WHEN #{status} = 'R' THEN CTSTELLER.STATUS
+		WHEN #{status} = 'S' THEN 'I'
+		WHEN #{status} = 'A' THEN 'S'
+		WHEN #{status} = 'T' THEN 'A'
+		ELSE CTSTELLER.STATUS END
+		)
+		)
+		AND (
+		(CASE WHEN #{vaultType} IS NULL THEN 'X' ELSE #{vaultType} END = 'X'
+		) OR
+		(CASE WHEN CTSTELLER.TELLER_TYPE IS NULL THEN 0 ELSE CTSTELLER.TELLER_TYPE
+		END = 0 ) OR
+		(CASE WHEN #{vaultType} IS NULL THEN 'X' ELSE #{vaultType} END = 'T'
+		AND CTSTELLER.TELLER_TYPE <![CDATA[ <> ]]> CASE WHEN CTSCONTROL.VAULT_TYPE IS NULL
+		THEN 0 ELSE CTSCONTROL.VAULT_TYPE END ) OR
+		(CASE WHEN #{vaultType} IS NULL THEN 'X' ELSE #{vaultType} END = 'V'
+		AND CTSTELLER.TELLER_TYPE = CASE WHEN CTSCONTROL.VAULT_TYPE IS NULL
+		THEN 0 ELSE CTSCONTROL.VAULT_TYPE END )
+		) 
+		<if test=' "1".equals(separateVaultNo) and "C".equals(tabTransferType) ' >
+		AND ( CTSTELLER.VAULT_TYPE ='C' OR  CTSTELLER.VAULT_TYPE ='B')
+		</if> 
+		<if test=' "1".equals(separateVaultNo) and ("R".equals(tabTransferType) or "H".equals(tabTransferType) )' >
+		AND ( CTSTELLER.VAULT_TYPE = 'R' OR  CTSTELLER.VAULT_TYPE ='B')
+		</if> 
+		<if test = '"L0VV".equals(reference) and "1".equals(forbidTransferToMain) and "TO".equals(vaultDirection) and  !vaultBranch.equals(alBranchCode)'>
+		    AND ( CTSTELLER.USER_IS_BRANCH_MANAGER = '0')
+		 </if>
+	</sql>
+	<resultMap id="vaultListMap" type="com.path.dbmaps.vo.CTSTELLERVO">
+		<result property="CODE" column="CODE" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		<result property="STATUS" column="STATUS" />
+		<result property="USER_ID" column="USER_ID" />
+		<result property="PRIVILEGE_LEVEL" column="PRIVILEGE_LEVEL" />
+		<result property="DIVISION_CODE" column="DIVISION_CODE" />
+		<result property="DEPT_CODE" column="DEPT_CODE" />
+		<result property="ROLE_CODE" column="ROLE_CODE" />
+	</resultMap>
+	
+	<select id="returnVaultLookupData" resultMap="vaultListMap"
+		parameterType="com.path.vo.core.vault.VaultSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="vaultListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnVaultLookupCount" resultType="int"
+		parameterType="com.path.vo.core.vault.VaultSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="vaultListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+</mapper>

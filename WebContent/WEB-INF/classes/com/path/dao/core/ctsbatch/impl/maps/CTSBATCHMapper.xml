@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSBATCHMapper">
+
+
+<sql id="batchLookup_sql">
+SELECT DISTINCT CTSBATCH.BATCH_NO,
+                CTSBATCH.BRIEF_DESC_ENG,
+                CTSBATCH.BRIEF_DESC_ARAB
+  FROM CTSBATCH
+ WHERE CTSBATCH.COMP_CODE = #{compCode}
+   AND CTSBATCH.BRANCH_CODE = #{branchCode}
+</sql>
+
+
+<select id="batchLookupList"  resultType="ctsBatchVO" parameterType="ctsBatchSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="batchLookup_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="batchLookupCount"  resultType="int" parameterType="ctsBatchSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="batchLookup_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+</mapper>

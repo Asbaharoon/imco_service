@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTRXTYPE_LINK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTRXTYPE_LINKVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="TRX_TYPE_CODE" property="TRX_TYPE_CODE" />
+    <result column="LINKED_TRX" property="LINKED_TRX" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NBR, TRX_TYPE_CODE, LINKED_TRX
+  </sql>
+  <select id="selectCTSTRXTYPE_LINK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTRXTYPE_LINKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTRXTYPE_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </select>
+  <delete id="deleteCTSTRXTYPE_LINK" parameterType="com.path.dbmaps.vo.CTSTRXTYPE_LINKVOKey" >
+    delete from CTSTRXTYPE_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </delete>
+  <insert id="insertCTSTRXTYPE_LINK" parameterType="com.path.dbmaps.vo.CTSTRXTYPE_LINKVO" >
+    insert into CTSTRXTYPE_LINK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        TRX_TYPE_CODE,
+      </if>
+      <if test="LINKED_TRX != null and LINKED_TRX != emptyBigDecimalValue" >
+        LINKED_TRX,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        #{TRX_TYPE_CODE},
+      </if>
+      <if test="LINKED_TRX != null and LINKED_TRX != emptyBigDecimalValue" >
+        #{LINKED_TRX},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTRXTYPE_LINK" >
+    update CTSTRXTYPE_LINK
+    <set >
+      <if test="LINKED_TRX != null" >
+        <choose >
+          <when test="LINKED_TRX == emptyBigDecimalValue" >
+            LINKED_TRX = NULL ,
+          </when>
+          <otherwise >
+            LINKED_TRX = #{LINKED_TRX},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </sql>
+  <update id="updateCTSTRXTYPE_LINK" parameterType="com.path.dbmaps.vo.CTSTRXTYPE_LINKVO" >
+    <include refid="sql_updateCTSTRXTYPE_LINK" />
+  </update>
+</mapper>

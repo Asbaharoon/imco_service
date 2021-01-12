@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_BATCH_APPLICATIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_BATCH_APPLICATIONSVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="BATCH_CODE" property="BATCH_CODE" />
+  </resultMap>
+  <delete id="deleteEOD_BATCH_APPLICATIONS" parameterType="com.path.dbmaps.vo.EOD_BATCH_APPLICATIONSVO" >
+    delete from EOD_BATCH_APPLICATIONS
+    where APP_NAME = #{APP_NAME}
+      and BATCH_CODE = #{BATCH_CODE}
+  </delete>
+  <insert id="insertEOD_BATCH_APPLICATIONS" parameterType="com.path.dbmaps.vo.EOD_BATCH_APPLICATIONSVO" >
+    insert into EOD_BATCH_APPLICATIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        BATCH_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        #{BATCH_CODE},
+      </if>
+    </trim>
+  </insert>
+</mapper>

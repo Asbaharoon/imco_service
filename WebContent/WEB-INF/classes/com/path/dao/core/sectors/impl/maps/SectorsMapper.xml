@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="sectorsMapper">
+
+ <sql id="sectorsListCommon" >
+	<![CDATA[
+		SELECT SECTORS.FETCH_KEY,
+	       SECTORS.COUNTRY_CODE,
+	       SECTORS.REGION_CODE,
+	       SECTORS.CITY_CODE,
+	       SECTORS.SECTOR_CODE,
+	       SECTORS.BRIEF_DESC_ENG,
+	       SECTORS.LONG_DESC_ENG,
+	       SECTORS.BRIEF_DESC_ARAB,
+	       SECTORS.LONG_DESC_ARAB,
+	       SECTORS.ADDITIONAL_REFERENCE
+  		FROM SECTORS
+ 		WHERE SECTORS.COMP_CODE  = #{compCode}
+   		AND SECTORS.COUNTRY_CODE = (CASE WHEN #{country_code} = -1 THEN SECTORS.COUNTRY_CODE ELSE #{country_code} END)
+  		AND SECTORS.REGION_CODE  = (CASE WHEN #{region_code}  = -1 THEN SECTORS.REGION_CODE ELSE #{region_code} END)
+   		AND SECTORS.CITY_CODE    = (CASE WHEN #{city_code} 	  = -1 THEN SECTORS.CITY_CODE ELSE #{city_code} END)
+	]]>	 
+ </sql>
+ 
+
+ <resultMap id="sectorsListMap" type="sectorsVO">
+	<id property="SECTOR_CODE" column="SECTOR_CODE" />
+	<result property="FETCH_KEY" column="FETCH_KEY" />
+	<result property="CITY_CODE" column="CITY_CODE" />
+	<result property="COUNTRY_CODE" column="COUNTRY_CODE" />
+	<result property="REGION_CODE" column="REGION_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="sectorsList" resultMap="sectorsListMap" parameterType="sectorsSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="sectorsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="sectorsListCount" resultType="int" parameterType="sectorsSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="sectorsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnSectorsById" parameterType="sectorsSC" resultType="sectorsVO">
+  		SELECT
+			 SECTOR_CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  SECTORS
+		WHERE SECTORS.COMP_CODE       = #{compCode}
+		AND   SECTORS.COUNTRY_CODE    = #{country_code}
+		AND   SECTORS.REGION_CODE     = #{region_code}
+		AND   SECTORS.CITY_CODE       = #{city_code}
+		AND   SECTORS.SECTOR_CODE       = #{sector_code}
+ </select>
+
+</mapper>

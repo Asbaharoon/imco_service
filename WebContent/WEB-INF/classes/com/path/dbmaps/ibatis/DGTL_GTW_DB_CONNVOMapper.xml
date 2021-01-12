@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_GTW_DB_CONN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_GTW_DB_CONNVO" >
+    <id column="CONN_ID" property="CONN_ID" />
+    <result column="CONN_DESC" property="CONN_DESC" />
+    <result column="DBMS" property="DBMS" />
+    <result column="URL" property="URL" />
+    <result column="DB_PASS" property="DB_PASS" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="UPDATED_DATE" property="UPDATED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONN_ID, CONN_DESC, DBMS, URL, DB_PASS, USER_ID, DATE_UPDATED, CREATED_BY, UPDATED_BY, 
+    CREATED_DATE, UPDATED_DATE
+  </sql>
+  <select id="selectDGTL_GTW_DB_CONN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DGTL_GTW_DB_CONNVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DGTL_GTW_DB_CONN
+    where CONN_ID = #{CONN_ID}
+  </select>
+  <delete id="deleteDGTL_GTW_DB_CONN" parameterType="com.path.dbmaps.vo.DGTL_GTW_DB_CONNVO" >
+    delete from DGTL_GTW_DB_CONN
+    where CONN_ID = #{CONN_ID}
+  </delete>
+  <insert id="insertDGTL_GTW_DB_CONN" parameterType="com.path.dbmaps.vo.DGTL_GTW_DB_CONNVO" >
+    insert into DGTL_GTW_DB_CONN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CONN_ID != null" >
+        CONN_ID,
+      </if>
+      <if test="CONN_DESC != null and !&quot;&quot;.equals(CONN_DESC)" >
+        CONN_DESC,
+      </if>
+      <if test="DBMS != null and !&quot;&quot;.equals(DBMS)" >
+        DBMS,
+      </if>
+      <if test="URL != null and !&quot;&quot;.equals(URL)" >
+        URL,
+      </if>
+      <if test="DB_PASS != null and !&quot;&quot;.equals(DB_PASS)" >
+        DB_PASS,
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        USER_ID,
+      </if>
+      DATE_UPDATED,
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="UPDATED_DATE != null" >
+        UPDATED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CONN_ID != null" >
+        #{CONN_ID},
+      </if>
+      <if test="CONN_DESC != null and !&quot;&quot;.equals(CONN_DESC)" >
+        #{CONN_DESC},
+      </if>
+      <if test="DBMS != null and !&quot;&quot;.equals(DBMS)" >
+        #{DBMS},
+      </if>
+      <if test="URL != null and !&quot;&quot;.equals(URL)" >
+        #{URL},
+      </if>
+      <if test="DB_PASS != null and !&quot;&quot;.equals(DB_PASS)" >
+        #{DB_PASS},
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        #{USER_ID},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="UPDATED_DATE != null" >
+        #{UPDATED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_GTW_DB_CONN" >
+    update DGTL_GTW_DB_CONN
+    <set >
+      <if test="CONN_DESC != null" >
+        <choose >
+          <when test="CONN_DESC.equals(&quot;&quot;)" >
+            CONN_DESC = NULL ,
+          </when>
+          <otherwise >
+            CONN_DESC = #{CONN_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DBMS != null" >
+        <choose >
+          <when test="DBMS.equals(&quot;&quot;)" >
+            DBMS = NULL ,
+          </when>
+          <otherwise >
+            DBMS = #{DBMS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="URL != null" >
+        <choose >
+          <when test="URL.equals(&quot;&quot;)" >
+            URL = NULL ,
+          </when>
+          <otherwise >
+            URL = #{URL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DB_PASS != null" >
+        <choose >
+          <when test="DB_PASS.equals(&quot;&quot;)" >
+            DB_PASS = NULL ,
+          </when>
+          <otherwise >
+            DB_PASS = #{DB_PASS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_ID != null" >
+        <choose >
+          <when test="USER_ID.equals(&quot;&quot;)" >
+            USER_ID = NULL ,
+          </when>
+          <otherwise >
+            USER_ID = #{USER_ID},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="UPDATED_DATE != null" >
+        UPDATED_DATE = #{UPDATED_DATE},
+      </if>
+    </set>
+    where CONN_ID = #{CONN_ID}
+  </sql>
+  <update id="updateDGTL_GTW_DB_CONN" parameterType="com.path.dbmaps.vo.DGTL_GTW_DB_CONNVO" >
+    <include refid="sql_updateDGTL_GTW_DB_CONN" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

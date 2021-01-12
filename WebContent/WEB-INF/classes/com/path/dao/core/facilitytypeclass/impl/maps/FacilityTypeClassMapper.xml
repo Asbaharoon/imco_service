@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="facilityTypeClassMapper">
+
+	<!-- Branches - Result Map -->
+	<resultMap id="facilityTypeClassListMap" type="facilityTypeClassCO">
+	 	<result column="COMP_CODE"     	 		 	property="viewDrawDownClassVO.COMP_CODE" />
+		<result column= "BRANCH"   		 	 		property="viewDrawDownClassVO.BRANCH" />
+		<result column="CODE"   					property="viewDrawDownClassVO.CODE" />
+		
+		<result column="LINE_NBR"    				property="viewDrawDownClassVO.LINE_NBR" />
+		<result column= "CLASS"   	 				property="viewDrawDownClassVO.CLASS" />
+		<result column="CATEGORY"    			 	property="viewDrawDownClassVO.CATEGORY" />
+		
+		<result column="FACILITY_VALUE"     		property="viewDrawDownClassVO.FACILITY_VALUE" />
+		<result column= "GENERAL_FACILITY_TYPE"   	property="viewDrawDownClassVO.GENERAL_FACILITY_TYPE" />
+		<result column="BRIEF_NAME_ENG"    			property="viewDrawDownClassVO.BRIEF_NAME_ENG" />
+		<result column="DEAL_YIELD"    				property="viewDrawDownClassVO.DEAL_YIELD" />
+		<result column="DECIMAL_POINTS"    			property="viewDrawDownClassVO.DECIMAL_POINTS" />
+								
+	</resultMap>
+	
+	<select id="facilityTypeClassList" resultMap="facilityTypeClassListMap" parameterType="facilityTypeClassSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="facilityTypeClassListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="facilityTypeClassListCount" resultType="int" parameterType="facilityTypeClassSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="facilityTypeClassListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<!-- Draw Down Search Lookup -->
+	<sql id="facilityTypeClassListCommon" >
+			<![CDATA[
+									
+				SELECT V_DRAWDOWN_CLASS.COMP_CODE,
+			 V_DRAWDOWN_CLASS.BRANCH,
+			 V_DRAWDOWN_CLASS.CODE,
+			 V_DRAWDOWN_CLASS.LINE_NBR,
+			 V_DRAWDOWN_CLASS.CLASS,
+			 V_DRAWDOWN_CLASS.CATEGORY,
+			 V_DRAWDOWN_CLASS.FACILITY_VALUE,
+			 V_DRAWDOWN_CLASS.GENERAL_FACILITY_TYPE,
+			 V_DRAWDOWN_CLASS.BRIEF_NAME_ENG  BRIEF_NAME_ENG,
+			 V_DRAWDOWN_CLASS.DECIMAL_POINTS,
+			 V_DRAWDOWN_CLASS.DEAL_YIELD
+	 FROM  V_DRAWDOWN_CLASS
+ 
+	 WHERE (V_DRAWDOWN_CLASS.COMP_CODE    = #{compCode})
+		AND (V_DRAWDOWN_CLASS.BRANCH       = #{branchCode})
+		AND (V_DRAWDOWN_CLASS.CODE         = #{facilityCode})
+	
+		]]>	
+	</sql>
+
+	
+	<resultMap id="facilityTypeClassTFAListMap" type="facilityTypeClassCO">
+	 	<result column="COMP_CODE"     	 		property="compCode" />
+	 	<result column="BRANCH"     	 		property="branch" />
+	 	<result column="CODE"     	 		 	property="code" />
+	 	<result column="LINE_NBR"     	 		property="lineNbr" />
+	 	<result column="CLASS"     	 			property="productClass" />
+	 	
+	 	<result column="CATEGORY"     	 		property="category" />
+	 	<result column="DEAL_YIELD"     	 	property="dealYield" />
+	 	<result column="MATURITY_DATE"     	 	property="maturityDate" />
+	 	<result column="CLASS_TYPE"     	 	property="classtype" />
+	 	<result column="FACILITY_VALUE"     	property="facilityValue" />
+	 	
+	 	<result column="GENERAL_FACILITY_TYPE"   property="generalFacilityType" />
+	 	<result column="BRIEF_NAME_ENG_CLASS"    property="briefNameClass" />
+	 	<result column="BRIEF_NAME_ENG_CATEGOTY" property="briefNameCategory" />	 	
+	 	<result column="BRIEF_NAME_ENG_DOCTYPE"  property="briefNameDocType" />	 									
+	</resultMap>
+	
+	<select id="facilityTypeClassTFAList" resultMap="facilityTypeClassTFAListMap" parameterType="facilityTypeClassSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="facilityTypeClassTFAListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="facilityTypeClassTFAListCount" resultType="int" parameterType="facilityTypeClassSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="facilityTypeClassTFAListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<!-- Draw Down Search Lookup -->
+	<sql id="facilityTypeClassTFAListCommon" >
+	
+		SELECT 
+			FMSFACILITYDET.COMP_CODE ,
+			FMSFACILITYDET.BRANCH,
+			FMSFACILITYDET.CODE,
+			FMSFACILITYDET.LINE_NBR,
+			FMSFACILITYDET.CLASS,
+			FMSFACILITYDET.CATEGORY,
+			FMSFACILITYDET.DEAL_YIELD,
+			FMSFACILITYDET.MATURITY_DATE,
+			FMSFACILITYDET.CLASS_TYPE,
+			FMSFACILITYDET.FACILITY_VALUE,
+			(SELECT VALUE_DESC 
+		        FROM SYS_PARAM_LOV_TRANS 
+		        WHERE LOV_TYPE_ID = #{generalFacTypeLovType,jdbcType=NUMERIC}
+		        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		        AND VALUE_CODE = CASE WHEN FMSFACILITYDET.GENERAL_FACILITY_TYPE = 'C' THEN 'I' ELSE FMSFACILITYDET.GENERAL_FACILITY_TYPE END ) GENERAL_FACILITY_TYPE,
+			TRSCLASS.BRIEF_NAME_ENG BRIEF_NAME_ENG_CLASS,
+			TRSCATEGORY.DESC_ENG BRIEF_NAME_ENG_CATEGOTY,
+			TFSDOCTYPE.BRIEF_NAME_ENG BRIEF_NAME_ENG_DOCTYPE
+		FROM 
+			FMSFACILITYDET 
+		LEFT OUTER JOIN 
+			TRSCLASS 
+		LEFT OUTER JOIN TRSCATEGORY ON 
+			TRSCLASS.CATEGORY 						= TRSCATEGORY.CATEGORY_CODE AND
+		    TRSCLASS.APP_NAME 						= TRSCATEGORY.APP_NAME ON 
+		    FMSFACILITYDET.COMP_CODE 				= TRSCLASS.COMP_CODE AND
+		    FMSFACILITYDET.CLASS 					= TRSCLASS.CODE
+		LEFT OUTER JOIN TFSDOCTYPE ON 
+			FMSFACILITYDET.COMP_CODE 				= TFSDOCTYPE.COMP_CODE AND
+		    FMSFACILITYDET.CLASS_TYPE 				= TFSDOCTYPE.CODE AND
+		    FMSFACILITYDET.GENERAL_FACILITY_TYPE 	= TFSDOCTYPE.DOC_TYPE AND
+			FMSFACILITYDET.GENERAL_FACILITY_TYPE 	= TFSDOCTYPE.DOC_TYPE
+		WHERE 
+			 ( FMSFACILITYDET.COMP_CODE     = #{compCode,jdbcType=NUMERIC}   ) AND  
+   			 ( FMSFACILITYDET.BRANCH        = #{branchCode,jdbcType=NUMERIC}     ) AND  
+   			 ( FMSFACILITYDET.CODE          = #{facilityCode,jdbcType=NUMERIC}    ) AND 
+   			 ( ( FMSFACILITYDET.CLASS > 0 AND #{classType,jdbcType=VARCHAR} = '1' ) OR
+				( ( FMSFACILITYDET.CLASS IS NULL OR FMSFACILITYDET.CLASS = 0 ) AND #{classType,jdbcType=VARCHAR} = '2' ) OR
+				( #{classType,jdbcType=VARCHAR} = '3'  ) ) AND 
+			( FMSFACILITYDET.APP_TYPE  				= #{appType,jdbcType=VARCHAR}		 	) AND
+			( FMSFACILITYDET.GENERAL_FACILITY_TYPE  = #{facilityType,jdbcType=VARCHAR})
+	
+	</sql>
+ 	
+	
+</mapper>

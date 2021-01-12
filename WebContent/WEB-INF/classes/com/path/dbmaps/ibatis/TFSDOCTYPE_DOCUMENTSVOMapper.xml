@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSDOCTYPE_DOCUMENTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSDOCTYPE_DOCUMENTSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOCTYPE" property="DOCTYPE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="DOC_GROUP" property="DOC_GROUP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DOCTYPE, DOC_CODE, TYPE_CODE, DOC_GROUP
+  </sql>
+  <select id="selectTFSDOCTYPE_DOCUMENTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSDOCTYPE_DOCUMENTSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSDOCTYPE_DOCUMENTS
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and DOC_CODE = #{DOC_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteTFSDOCTYPE_DOCUMENTS" parameterType="com.path.dbmaps.vo.TFSDOCTYPE_DOCUMENTSVO" >
+    delete from TFSDOCTYPE_DOCUMENTS
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and DOC_CODE = #{DOC_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertTFSDOCTYPE_DOCUMENTS" parameterType="com.path.dbmaps.vo.TFSDOCTYPE_DOCUMENTSVO" >
+    insert into TFSDOCTYPE_DOCUMENTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOCTYPE != null" >
+        DOCTYPE,
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        DOC_CODE,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="DOC_GROUP != null" >
+        DOC_GROUP,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOCTYPE != null" >
+        #{DOCTYPE},
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        #{DOC_CODE},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="DOC_GROUP != null" >
+        #{DOC_GROUP},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSDOCTYPE_DOCUMENTS" >
+    update TFSDOCTYPE_DOCUMENTS
+    <set >
+      <if test="DOC_GROUP != null" >
+        DOC_GROUP = #{DOC_GROUP},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and DOC_CODE = #{DOC_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateTFSDOCTYPE_DOCUMENTS" parameterType="com.path.dbmaps.vo.TFSDOCTYPE_DOCUMENTSVO" >
+    <include refid="sql_updateTFSDOCTYPE_DOCUMENTS" />
+  </update>
+</mapper>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_DEV_LIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_DEV_LIMITVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEV_CIF" property="DEV_CIF" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="PROJECT_DESC" property="PROJECT_DESC" />
+    <result column="CURRENCY" property="CURRENCY" />
+    <result column="LIMIT" property="LIMIT" />
+    <result column="UTILIZED" property="UTILIZED" />
+    <result column="REMAINING" property="REMAINING" />
+    <result column="AREA_TYPE" property="AREA_TYPE" />
+    <result column="YIELD" property="YIELD" />
+    <result column="SECTOR" property="SECTOR" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DEV_CIF, LINE_NBR, PROJECT_DESC, CURRENCY, LIMIT, UTILIZED, REMAINING, 
+    AREA_TYPE, YIELD, SECTOR, DATE_UPDATED, UPDATED_BY
+  </sql>
+  <select id="selectFMS_DEV_LIMIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_DEV_LIMITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_DEV_LIMIT
+    where COMP_CODE = #{COMP_CODE}
+      and DEV_CIF = #{DEV_CIF}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMS_DEV_LIMIT" parameterType="com.path.dbmaps.vo.FMS_DEV_LIMITVOKey" >
+    delete from FMS_DEV_LIMIT
+    where COMP_CODE = #{COMP_CODE}
+      and DEV_CIF = #{DEV_CIF}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMS_DEV_LIMIT" parameterType="com.path.dbmaps.vo.FMS_DEV_LIMITVO" >
+    insert into FMS_DEV_LIMIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEV_CIF != null and DEV_CIF != emptyBigDecimalValue" >
+        DEV_CIF,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="PROJECT_DESC != null and !&quot;&quot;.equals(PROJECT_DESC)" >
+        PROJECT_DESC,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        LIMIT,
+      </if>
+      <if test="UTILIZED != null and UTILIZED != emptyBigDecimalValue" >
+        UTILIZED,
+      </if>
+      <if test="REMAINING != null and REMAINING != emptyBigDecimalValue" >
+        REMAINING,
+      </if>
+      <if test="AREA_TYPE != null and !&quot;&quot;.equals(AREA_TYPE)" >
+        AREA_TYPE,
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        YIELD,
+      </if>
+      <if test="SECTOR != null and !&quot;&quot;.equals(SECTOR)" >
+        SECTOR,
+      </if>
+      DATE_UPDATED,
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEV_CIF != null and DEV_CIF != emptyBigDecimalValue" >
+        #{DEV_CIF},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="PROJECT_DESC != null and !&quot;&quot;.equals(PROJECT_DESC)" >
+        #{PROJECT_DESC},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        #{LIMIT},
+      </if>
+      <if test="UTILIZED != null and UTILIZED != emptyBigDecimalValue" >
+        #{UTILIZED},
+      </if>
+      <if test="REMAINING != null and REMAINING != emptyBigDecimalValue" >
+        #{REMAINING},
+      </if>
+      <if test="AREA_TYPE != null and !&quot;&quot;.equals(AREA_TYPE)" >
+        #{AREA_TYPE},
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        #{YIELD},
+      </if>
+      <if test="SECTOR != null and !&quot;&quot;.equals(SECTOR)" >
+        #{SECTOR},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_DEV_LIMIT" >
+    update FMS_DEV_LIMIT
+    <set >
+      <if test="PROJECT_DESC != null" >
+        <choose >
+          <when test="PROJECT_DESC.equals(&quot;&quot;)" >
+            PROJECT_DESC = NULL ,
+          </when>
+          <otherwise >
+            PROJECT_DESC = #{PROJECT_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CURRENCY != null" >
+        <choose >
+          <when test="CURRENCY == emptyBigDecimalValue" >
+            CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY = #{CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LIMIT != null" >
+        <choose >
+          <when test="LIMIT == emptyBigDecimalValue" >
+            LIMIT = NULL ,
+          </when>
+          <otherwise >
+            LIMIT = #{LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTILIZED != null" >
+        <choose >
+          <when test="UTILIZED == emptyBigDecimalValue" >
+            UTILIZED = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED = #{UTILIZED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REMAINING != null" >
+        <choose >
+          <when test="REMAINING == emptyBigDecimalValue" >
+            REMAINING = NULL ,
+          </when>
+          <otherwise >
+            REMAINING = #{REMAINING},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AREA_TYPE != null" >
+        <choose >
+          <when test="AREA_TYPE.equals(&quot;&quot;)" >
+            AREA_TYPE = NULL ,
+          </when>
+          <otherwise >
+            AREA_TYPE = #{AREA_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="YIELD != null" >
+        <choose >
+          <when test="YIELD == emptyBigDecimalValue" >
+            YIELD = NULL ,
+          </when>
+          <otherwise >
+            YIELD = #{YIELD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SECTOR != null" >
+        <choose >
+          <when test="SECTOR.equals(&quot;&quot;)" >
+            SECTOR = NULL ,
+          </when>
+          <otherwise >
+            SECTOR = #{SECTOR},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DEV_CIF = #{DEV_CIF}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMS_DEV_LIMIT" parameterType="com.path.dbmaps.vo.FMS_DEV_LIMITVO" >
+    <include refid="sql_updateFMS_DEV_LIMIT" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_KYC_AUDIT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_KYC_AUDIT_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIF_NAME" property="CIF_NAME" />
+    <result column="CIF_TYPE" property="CIF_TYPE" />
+    <result column="KYC_PREV_STATUS" property="KYC_PREV_STATUS" />
+    <result column="KYC_CURR_STATUS" property="KYC_CURR_STATUS" />
+    <result column="KYC_CHANGED_FIELD_NAME" property="KYC_CHANGED_FIELD_NAME" />
+    <result column="KYC_OLD_VALUE" property="KYC_OLD_VALUE" />
+    <result column="KYC_NEW_VALUE" property="KYC_NEW_VALUE" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="APPROVAL_USER_ID" property="APPROVAL_USER_ID" />
+    <result column="DATE_OF_CHANGE" property="DATE_OF_CHANGE" />
+    <result column="SEQ_NO" property="SEQ_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, LINE_NO, CIF_NAME, CIF_TYPE, KYC_PREV_STATUS, KYC_CURR_STATUS, KYC_CHANGED_FIELD_NAME, 
+    KYC_OLD_VALUE, KYC_NEW_VALUE, USER_ID, APPROVAL_USER_ID, DATE_OF_CHANGE, SEQ_NO
+  </sql>
+  <select id="selectCIF_KYC_AUDIT_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_KYC_AUDIT_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_KYC_AUDIT_DET
+    where CIF_NO = #{CIF_NO}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_KYC_AUDIT_DET" parameterType="com.path.dbmaps.vo.CIF_KYC_AUDIT_DETVO" >
+    delete from CIF_KYC_AUDIT_DET
+    where CIF_NO = #{CIF_NO}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_KYC_AUDIT_DET" parameterType="com.path.dbmaps.vo.CIF_KYC_AUDIT_DETVO" >
+    insert into CIF_KYC_AUDIT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_NAME != null" >
+        CIF_NAME,
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        CIF_TYPE,
+      </if>
+      <if test="KYC_PREV_STATUS != null" >
+        KYC_PREV_STATUS,
+      </if>
+      <if test="KYC_CURR_STATUS != null" >
+        KYC_CURR_STATUS,
+      </if>
+      <if test="KYC_CHANGED_FIELD_NAME != null" >
+        KYC_CHANGED_FIELD_NAME,
+      </if>
+      <if test="KYC_OLD_VALUE != null" >
+        KYC_OLD_VALUE,
+      </if>
+      <if test="KYC_NEW_VALUE != null" >
+        KYC_NEW_VALUE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="APPROVAL_USER_ID != null" >
+        APPROVAL_USER_ID,
+      </if>
+      <if test="DATE_OF_CHANGE != null" >
+        DATE_OF_CHANGE,
+      </if>
+      <if test="SEQ_NO != null and SEQ_NO != emptyBigDecimalValue" >
+        SEQ_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_NAME != null" >
+        #{CIF_NAME},
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        #{CIF_TYPE},
+      </if>
+      <if test="KYC_PREV_STATUS != null" >
+        #{KYC_PREV_STATUS},
+      </if>
+      <if test="KYC_CURR_STATUS != null" >
+        #{KYC_CURR_STATUS},
+      </if>
+      <if test="KYC_CHANGED_FIELD_NAME != null" >
+        #{KYC_CHANGED_FIELD_NAME},
+      </if>
+      <if test="KYC_OLD_VALUE != null" >
+        #{KYC_OLD_VALUE},
+      </if>
+      <if test="KYC_NEW_VALUE != null" >
+        #{KYC_NEW_VALUE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="APPROVAL_USER_ID != null" >
+        #{APPROVAL_USER_ID},
+      </if>
+      <if test="DATE_OF_CHANGE != null" >
+        #{DATE_OF_CHANGE},
+      </if>
+      <if test="SEQ_NO != null and SEQ_NO != emptyBigDecimalValue" >
+        #{SEQ_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_KYC_AUDIT_DET" >
+    update CIF_KYC_AUDIT_DET
+    <set >
+      <if test="CIF_NAME != null" >
+        CIF_NAME = #{CIF_NAME},
+      </if>
+      <if test="CIF_TYPE != null" >
+        <choose >
+          <when test="CIF_TYPE == emptyBigDecimalValue" >
+            CIF_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CIF_TYPE = #{CIF_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="KYC_PREV_STATUS != null" >
+        KYC_PREV_STATUS = #{KYC_PREV_STATUS},
+      </if>
+      <if test="KYC_CURR_STATUS != null" >
+        KYC_CURR_STATUS = #{KYC_CURR_STATUS},
+      </if>
+      <if test="KYC_CHANGED_FIELD_NAME != null" >
+        KYC_CHANGED_FIELD_NAME = #{KYC_CHANGED_FIELD_NAME},
+      </if>
+      <if test="KYC_OLD_VALUE != null" >
+        KYC_OLD_VALUE = #{KYC_OLD_VALUE},
+      </if>
+      <if test="KYC_NEW_VALUE != null" >
+        KYC_NEW_VALUE = #{KYC_NEW_VALUE},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="APPROVAL_USER_ID != null" >
+        APPROVAL_USER_ID = #{APPROVAL_USER_ID},
+      </if>
+      <if test="DATE_OF_CHANGE != null" >
+        DATE_OF_CHANGE = #{DATE_OF_CHANGE},
+      </if>
+      <if test="SEQ_NO != null" >
+        <choose >
+          <when test="SEQ_NO == emptyBigDecimalValue" >
+            SEQ_NO = NULL ,
+          </when>
+          <otherwise >
+            SEQ_NO = #{SEQ_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_KYC_AUDIT_DET" parameterType="com.path.dbmaps.vo.CIF_KYC_AUDIT_DETVO" >
+    <include refid="sql_updateCIF_KYC_AUDIT_DET" />
+  </update>
+</mapper>

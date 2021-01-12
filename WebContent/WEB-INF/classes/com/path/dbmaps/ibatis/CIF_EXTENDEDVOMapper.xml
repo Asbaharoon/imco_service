@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_EXTENDED" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_EXTENDEDVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="COUNTRY_OF_ISSUANCE" property="COUNTRY_OF_ISSUANCE" />
+    <result column="JOINT_COUNTRY_OF_ISSUANCE" property="JOINT_COUNTRY_OF_ISSUANCE" />
+    <result column="SIGN_COUNTRY_OF_ISSUANCE" property="SIGN_COUNTRY_OF_ISSUANCE" />
+    <result column="MASK_NAME_YN" property="MASK_NAME_YN" />
+    <result column="FILER_OPTION" property="FILER_OPTION" />
+    <result column="FULL_NAME_ARAB" property="FULL_NAME_ARAB" />
+    <result column="FULL_NAME_ENG" property="FULL_NAME_ENG" />
+    <result column="SEGMENT_CODE" property="SEGMENT_CODE" />
+    <result column="CIF_LIMIT_CAP" property="CIF_LIMIT_CAP" />
+    <result column="EXEMPT_FULL_CHARGE_WAIVER_YN" property="EXEMPT_FULL_CHARGE_WAIVER_YN" />
+    <result column="ALLOW_TO_EXCEED_ONE_OBLIGOR_YN" property="ALLOW_TO_EXCEED_ONE_OBLIGOR_YN" />
+    <result column="REGION_OF_BIRTH" property="REGION_OF_BIRTH" />
+    <result column="CITY_OF_BIRTH" property="CITY_OF_BIRTH" />
+    <result column="MOBILE_WALLET_REGISTERED_YN" property="MOBILE_WALLET_REGISTERED_YN" />
+    <result column="AGENT" property="AGENT" />
+    <result column="EXEMPTED_FROM_FILER_EXPIRY_DTE" property="EXEMPTED_FROM_FILER_EXPIRY_DTE" />
+    <result column="EXEMPTED_FROM_FILER_REASON" property="EXEMPTED_FROM_FILER_REASON" />
+    <result column="EXEMPTED_FROM_FILER_TAX_YN" property="EXEMPTED_FROM_FILER_TAX_YN" />
+    <result column="EXEMPTED_FROM_ZAKAT_YN" property="EXEMPTED_FROM_ZAKAT_YN" />
+    <result column="ZAKAT_EXEMPTION_REASON" property="ZAKAT_EXEMPTION_REASON" />
+    <result column="EXEMPTED_FROM_VAT_YN" property="EXEMPTED_FROM_VAT_YN" />
+    <result column="MODIFY_EXEMPTED_FROM_VAT_YN" property="MODIFY_EXEMPTED_FROM_VAT_YN" />
+    <result column="VAT_ZONE" property="VAT_ZONE" />
+	<result column="EMPLOYMENT_STATUS_CODE" property="EMPLOYMENT_STATUS_CODE" />
+    <result column="PROOF_OCCUPATION_CODE" property="PROOF_OCCUPATION_CODE" />
+    <result column="SOURCE_FUNDS_CODE" property="SOURCE_FUNDS_CODE" />
+    <result column="SOURCE_FUNDS_DESC" property="SOURCE_FUNDS_DESC" />
+    <result column="CARD_READER_SRL" property="CARD_READER_SRL" />
+    <result column="DATA_ORIGIN" property="DATA_ORIGIN" />
+    <result column="STATUS_REASON" property="STATUS_REASON" />
+    <result column="DRAFTED_BY" property="DRAFTED_BY" />
+    <result column="DATE_DRAFTED" property="DATE_DRAFTED" />
+    <result column="ECO_AGENT" property="ECO_AGENT" />
+   	<result column="PROFESSION_SEGMENT" property="PROFESSION_SEGMENT" />
+   	<result column="PROFESSION" property="PROFESSION" />
+   	<result column="PROFESSION_CATEGORY" property="PROFESSION_CATEGORY" />
+    <result column="CONSOLIDATE_SAME_REF_ENTRY_YN" property="CONSOLIDATE_SAME_REF_ENTRY_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, BRANCH_CODE, COUNTRY_OF_ISSUANCE, JOINT_COUNTRY_OF_ISSUANCE, SIGN_COUNTRY_OF_ISSUANCE, MASK_NAME_YN, FILER_OPTION
+    , FULL_NAME_ARAB, FULL_NAME_ENG, SEGMENT_CODE, CIF_LIMIT_CAP,EXEMPT_FULL_CHARGE_WAIVER_YN, ALLOW_TO_EXCEED_ONE_OBLIGOR_YN,
+    REGION_OF_BIRTH,CITY_OF_BIRTH,MOBILE_WALLET_REGISTERED_YN, AGENT, EXEMPTED_FROM_FILER_EXPIRY_DTE, EXEMPTED_FROM_FILER_REASON, 
+    EXEMPTED_FROM_FILER_TAX_YN, EXEMPTED_FROM_ZAKAT_YN,ZAKAT_EXEMPTION_REASON,EXEMPTED_FROM_VAT_YN,MODIFY_EXEMPTED_FROM_VAT_YN,
+    CARD_READER_SRL, VAT_ZONE,EMPLOYMENT_STATUS_CODE, PROOF_OCCUPATION_CODE,  SOURCE_FUNDS_CODE, SOURCE_FUNDS_DESC,
+    DATA_ORIGIN, STATUS_REASON,ECO_AGENT,PROFESSION,PROFESSION_SEGMENT,PROFESSION_CATEGORY, CONSOLIDATE_SAME_REF_ENTRY_YN,
+	DRAFTED_BY, DATE_DRAFTED
+  </sql>
+  <select id="selectCIF_EXTENDED" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_EXTENDEDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_EXTENDED
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIF_EXTENDED" parameterType="com.path.dbmaps.vo.CIF_EXTENDEDVOKey" >
+    delete from CIF_EXTENDED
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIF_EXTENDED" parameterType="com.path.dbmaps.vo.CIF_EXTENDEDVO" >
+    insert into CIF_EXTENDED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        COUNTRY_OF_ISSUANCE,
+      </if>
+      <if test="JOINT_COUNTRY_OF_ISSUANCE != null and JOINT_COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        JOINT_COUNTRY_OF_ISSUANCE,
+      </if>
+      <if test="SIGN_COUNTRY_OF_ISSUANCE != null and SIGN_COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        SIGN_COUNTRY_OF_ISSUANCE,
+      </if>
+      <if test="MASK_NAME_YN != null" >
+        MASK_NAME_YN,
+      </if>
+      <if test="FILER_OPTION != null" >
+        FILER_OPTION,
+      </if>
+      <if test="FULL_NAME_ARAB != null" >
+        FULL_NAME_ARAB,
+      </if>
+      <if test="FULL_NAME_ENG != null" >
+        FULL_NAME_ENG,
+      </if>
+      <if test="SEGMENT_CODE != null and SEGMENT_CODE != emptyBigDecimalValue" >
+        SEGMENT_CODE,
+      </if>
+      <if test="CIF_LIMIT_CAP != null and CIF_LIMIT_CAP != emptyBigDecimalValue" >
+        CIF_LIMIT_CAP,
+      </if>
+      <if test="EXEMPT_FULL_CHARGE_WAIVER_YN != null">
+        EXEMPT_FULL_CHARGE_WAIVER_YN,
+      </if>
+      <if test="ALLOW_TO_EXCEED_ONE_OBLIGOR_YN != null and ALLOW_TO_EXCEED_ONE_OBLIGOR_YN != emptyBigDecimalValue" >
+        ALLOW_TO_EXCEED_ONE_OBLIGOR_YN,
+      </if>
+      <if test="REGION_OF_BIRTH != null and REGION_OF_BIRTH != emptyBigDecimalValue" >
+        REGION_OF_BIRTH,
+      </if>
+      <if test="CITY_OF_BIRTH != null and CITY_OF_BIRTH != emptyBigDecimalValue" >
+        CITY_OF_BIRTH,
+      </if>
+      <if test="MOBILE_WALLET_REGISTERED_YN != null and MOBILE_WALLET_REGISTERED_YN != emptyBigDecimalValue" >
+        MOBILE_WALLET_REGISTERED_YN,
+      </if>
+      <if test="AGENT != null and AGENT != emptyBigDecimalValue" >
+        AGENT,
+      </if>
+      <if test="EXEMPTED_FROM_FILER_EXPIRY_DTE != null" >
+        EXEMPTED_FROM_FILER_EXPIRY_DTE,
+      </if>
+      <if test="EXEMPTED_FROM_FILER_REASON != null and EXEMPTED_FROM_FILER_REASON != emptyBigDecimalValue" >
+        EXEMPTED_FROM_FILER_REASON,
+      </if>
+      <if test="EXEMPTED_FROM_FILER_TAX_YN != null and !&quot;&quot;.equals(EXEMPTED_FROM_FILER_TAX_YN)" >
+        EXEMPTED_FROM_FILER_TAX_YN,
+      </if>
+      <if test="EXEMPTED_FROM_ZAKAT_YN != null">
+        EXEMPTED_FROM_ZAKAT_YN,
+      </if>
+      <if test="ZAKAT_EXEMPTION_REASON != null and ZAKAT_EXEMPTION_REASON != emptyBigDecimalValue" >
+        ZAKAT_EXEMPTION_REASON,
+      </if>
+      <if test="EXEMPTED_FROM_VAT_YN != null" >
+        EXEMPTED_FROM_VAT_YN,
+      </if>
+      <if test="MODIFY_EXEMPTED_FROM_VAT_YN != null" >
+        MODIFY_EXEMPTED_FROM_VAT_YN,
+      </if>
+      <if test="CARD_READER_SRL != null">
+        CARD_READER_SRL,
+      </if>
+      <if test="VAT_ZONE != null and VAT_ZONE != emptyBigDecimalValue" >
+        VAT_ZONE,
+      </if>
+	  <if test="EMPLOYMENT_STATUS_CODE != null and EMPLOYMENT_STATUS_CODE != emptyBigDecimalValue">
+        EMPLOYMENT_STATUS_CODE,
+      </if>
+      <if test="PROOF_OCCUPATION_CODE != null and PROOF_OCCUPATION_CODE != emptyBigDecimalValue">
+        PROOF_OCCUPATION_CODE,
+      </if>
+      <if test="SOURCE_FUNDS_CODE != null">
+        SOURCE_FUNDS_CODE,
+      </if>
+      <if test="SOURCE_FUNDS_DESC != null">
+        SOURCE_FUNDS_DESC,
+      </if>
+      <if test="DATA_ORIGIN != null" >
+        DATA_ORIGIN,
+      </if>
+      <if test="STATUS_REASON != null" >
+        STATUS_REASON,
+      </if>
+      <if test="DRAFTED_BY != null" >
+        DRAFTED_BY,
+      </if>
+      <if test="DATE_DRAFTED != null" >
+        DATE_DRAFTED,
+      </if>
+      <if test="ECO_AGENT != null and ECO_AGENT != emptyBigDecimalValue" >
+        ECO_AGENT,
+      </if>    
+      <if test="PROFESSION_SEGMENT != null and PROFESSION_SEGMENT != emptyBigDecimalValue" >
+        PROFESSION_SEGMENT,
+      </if>  
+      <if test="PROFESSION != null and PROFESSION != emptyBigDecimalValue" >
+        PROFESSION,
+      </if>  
+      <if test="PROFESSION_CATEGORY != null and PROFESSION_CATEGORY != emptyBigDecimalValue" >
+        PROFESSION_CATEGORY,
+      </if>        
+	  <if test="CONSOLIDATE_SAME_REF_ENTRY_YN != null and !&quot;&quot;.equals(CONSOLIDATE_SAME_REF_ENTRY_YN)" >
+        CONSOLIDATE_SAME_REF_ENTRY_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{COUNTRY_OF_ISSUANCE},
+      </if>
+      <if test="JOINT_COUNTRY_OF_ISSUANCE != null and JOINT_COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{JOINT_COUNTRY_OF_ISSUANCE},
+      </if>
+      <if test="SIGN_COUNTRY_OF_ISSUANCE != null and SIGN_COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{SIGN_COUNTRY_OF_ISSUANCE},
+      </if>
+      <if test="MASK_NAME_YN != null" >
+        #{MASK_NAME_YN},
+      </if>
+      <if test="FILER_OPTION != null" >
+        #{FILER_OPTION},
+      </if>
+      <if test="FULL_NAME_ARAB != null" >
+        #{FULL_NAME_ARAB},
+      </if>
+      <if test="FULL_NAME_ENG != null" >
+        #{FULL_NAME_ENG},
+      </if>
+       <if test="SEGMENT_CODE != null and SEGMENT_CODE != emptyBigDecimalValue" >
+        #{SEGMENT_CODE},
+      </if>
+      <if test="CIF_LIMIT_CAP != null and CIF_LIMIT_CAP != emptyBigDecimalValue" >
+        #{CIF_LIMIT_CAP},
+      </if>
+      <if test="EXEMPT_FULL_CHARGE_WAIVER_YN != null" >
+        #{EXEMPT_FULL_CHARGE_WAIVER_YN},
+      </if>
+      <if test="ALLOW_TO_EXCEED_ONE_OBLIGOR_YN != null and ALLOW_TO_EXCEED_ONE_OBLIGOR_YN != emptyBigDecimalValue" >
+        #{ALLOW_TO_EXCEED_ONE_OBLIGOR_YN},
+      </if>
+      <if test="REGION_OF_BIRTH != null and REGION_OF_BIRTH != emptyBigDecimalValue" >
+        #{REGION_OF_BIRTH},
+      </if>
+      <if test="CITY_OF_BIRTH != null and CITY_OF_BIRTH != emptyBigDecimalValue" >
+        #{CITY_OF_BIRTH},
+      </if>
+      <if test="MOBILE_WALLET_REGISTERED_YN != null and MOBILE_WALLET_REGISTERED_YN != emptyBigDecimalValue" >
+        #{MOBILE_WALLET_REGISTERED_YN},
+      </if>
+      <if test="AGENT != null and AGENT != emptyBigDecimalValue" >
+        #{AGENT},
+      </if>
+      <if test="EXEMPTED_FROM_FILER_EXPIRY_DTE != null" >
+        #{EXEMPTED_FROM_FILER_EXPIRY_DTE},
+      </if>
+      <if test="EXEMPTED_FROM_FILER_REASON != null and EXEMPTED_FROM_FILER_REASON != emptyBigDecimalValue" >
+        #{EXEMPTED_FROM_FILER_REASON},
+      </if>
+      <if test="EXEMPTED_FROM_FILER_TAX_YN != null and !&quot;&quot;.equals(EXEMPTED_FROM_FILER_TAX_YN)" >
+        #{EXEMPTED_FROM_FILER_TAX_YN},
+      </if>
+      <if test="EXEMPTED_FROM_ZAKAT_YN != null">
+        #{EXEMPTED_FROM_ZAKAT_YN},
+      </if>
+      <if test="ZAKAT_EXEMPTION_REASON != null and ZAKAT_EXEMPTION_REASON != emptyBigDecimalValue" >
+        #{ZAKAT_EXEMPTION_REASON},
+      </if>
+      <if test="EXEMPTED_FROM_VAT_YN != null" >
+        #{EXEMPTED_FROM_VAT_YN},
+      </if>
+      <if test="MODIFY_EXEMPTED_FROM_VAT_YN != null" >
+        #{MODIFY_EXEMPTED_FROM_VAT_YN},
+      </if>
+      <if test="CARD_READER_SRL != null" >
+        #{CARD_READER_SRL},
+      </if>
+      <if test="VAT_ZONE != null and VAT_ZONE != emptyBigDecimalValue" >
+        #{VAT_ZONE},
+      </if>
+	  <if test="EMPLOYMENT_STATUS_CODE != null and EMPLOYMENT_STATUS_CODE != emptyBigDecimalValue" >
+        #{EMPLOYMENT_STATUS_CODE},
+      </if>
+     <if test="PROOF_OCCUPATION_CODE != null and PROOF_OCCUPATION_CODE != emptyBigDecimalValue" >
+        #{PROOF_OCCUPATION_CODE},
+      </if>
+     <if test="SOURCE_FUNDS_CODE != null" >
+        #{SOURCE_FUNDS_CODE},
+      </if>
+     <if test="SOURCE_FUNDS_DESC != null" >
+        #{SOURCE_FUNDS_DESC},
+     </if>
+      <if test="DATA_ORIGIN != null" >
+        #{DATA_ORIGIN},
+      </if>
+      <if test="STATUS_REASON != null" >
+        #{STATUS_REASON},
+      </if>
+      <if test="DRAFTED_BY != null" >
+        #{DRAFTED_BY},
+      </if>
+      <if test="DATE_DRAFTED != null" >
+        #{DATE_DRAFTED},
+      </if>
+      <if test="ECO_AGENT != null and ECO_AGENT != emptyBigDecimalValue" >
+        #{ECO_AGENT},
+      </if>
+      <if test="PROFESSION_SEGMENT != null and PROFESSION_SEGMENT != emptyBigDecimalValue" >
+        #{PROFESSION_SEGMENT},
+      </if>
+      <if test="PROFESSION != null and PROFESSION != emptyBigDecimalValue" >
+        #{PROFESSION},
+      </if>
+      <if test="PROFESSION_CATEGORY != null and PROFESSION_CATEGORY != emptyBigDecimalValue" >
+        #{PROFESSION_CATEGORY},
+      </if>  
+	  <if test="CONSOLIDATE_SAME_REF_ENTRY_YN != null and !&quot;&quot;.equals(CONSOLIDATE_SAME_REF_ENTRY_YN)" >
+        #{CONSOLIDATE_SAME_REF_ENTRY_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_EXTENDED" >
+    update CIF_EXTENDED
+    <set >
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_OF_ISSUANCE = #{COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="JOINT_COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="JOINT_COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            JOINT_COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            JOINT_COUNTRY_OF_ISSUANCE = #{JOINT_COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SIGN_COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="SIGN_COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            SIGN_COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            SIGN_COUNTRY_OF_ISSUANCE = #{SIGN_COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MASK_NAME_YN != null" >
+      	MASK_NAME_YN = #{MASK_NAME_YN},
+      </if>
+      <if test="FILER_OPTION != null" >
+      	FILER_OPTION = #{FILER_OPTION},
+      </if>
+      <if test="FULL_NAME_ARAB != null" >
+        FULL_NAME_ARAB = #{FULL_NAME_ARAB},
+      </if>
+      <if test="FULL_NAME_ENG != null" >
+        FULL_NAME_ENG = #{FULL_NAME_ENG},
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        <choose >
+          <when test="SEGMENT_CODE == emptyBigDecimalValue" >
+            SEGMENT_CODE = NULL ,
+          </when>
+          <otherwise >
+            SEGMENT_CODE = #{SEGMENT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_LIMIT_CAP != null" >
+        <choose >
+          <when test="CIF_LIMIT_CAP == emptyBigDecimalValue" >
+            CIF_LIMIT_CAP = NULL ,
+          </when>
+          <otherwise >
+            CIF_LIMIT_CAP = #{CIF_LIMIT_CAP},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="EXEMPT_FULL_CHARGE_WAIVER_YN != null" >
+        EXEMPT_FULL_CHARGE_WAIVER_YN = #{EXEMPT_FULL_CHARGE_WAIVER_YN},
+      </if>
+      <if test="ALLOW_TO_EXCEED_ONE_OBLIGOR_YN != null" >
+        ALLOW_TO_EXCEED_ONE_OBLIGOR_YN = #{ALLOW_TO_EXCEED_ONE_OBLIGOR_YN},
+      </if>
+      <if test="REGION_OF_BIRTH != null" >
+        REGION_OF_BIRTH = #{REGION_OF_BIRTH},
+      </if>
+      <if test="CITY_OF_BIRTH != null" >
+        CITY_OF_BIRTH = #{CITY_OF_BIRTH},
+      </if>
+      <if test="MOBILE_WALLET_REGISTERED_YN != null" >
+        MOBILE_WALLET_REGISTERED_YN = #{MOBILE_WALLET_REGISTERED_YN},
+      </if>
+      <if test="AGENT != null" >
+        <choose >
+          <when test="AGENT == emptyBigDecimalValue" >
+            AGENT = NULL ,
+          </when>
+          <otherwise >
+            AGENT = #{AGENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXEMPTED_FROM_FILER_EXPIRY_DTE != null" >
+        EXEMPTED_FROM_FILER_EXPIRY_DTE = #{EXEMPTED_FROM_FILER_EXPIRY_DTE},
+      </if>
+      <if test="EXEMPTED_FROM_FILER_REASON != null" >
+        <choose >
+          <when test="EXEMPTED_FROM_FILER_REASON == emptyBigDecimalValue" >
+            EXEMPTED_FROM_FILER_REASON = NULL ,
+          </when>
+          <otherwise >
+            EXEMPTED_FROM_FILER_REASON = #{EXEMPTED_FROM_FILER_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXEMPTED_FROM_FILER_TAX_YN != null" >
+        <choose >
+          <when test="EXEMPTED_FROM_FILER_TAX_YN.equals(&quot;&quot;)" >
+            EXEMPTED_FROM_FILER_TAX_YN = NULL ,
+          </when>
+          <otherwise >
+            EXEMPTED_FROM_FILER_TAX_YN = #{EXEMPTED_FROM_FILER_TAX_YN},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="EXEMPTED_FROM_ZAKAT_YN != null">
+        EXEMPTED_FROM_ZAKAT_YN = #{EXEMPTED_FROM_ZAKAT_YN},
+      </if>
+      <if test="ZAKAT_EXEMPTION_REASON != null" >
+        <choose >
+          <when test="ZAKAT_EXEMPTION_REASON == emptyBigDecimalValue" >
+            ZAKAT_EXEMPTION_REASON = NULL ,
+          </when>
+          <otherwise >
+            ZAKAT_EXEMPTION_REASON = #{ZAKAT_EXEMPTION_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXEMPTED_FROM_VAT_YN != null" >
+        EXEMPTED_FROM_VAT_YN = #{EXEMPTED_FROM_VAT_YN},
+      </if>
+      <if test="MODIFY_EXEMPTED_FROM_VAT_YN != null" >
+        MODIFY_EXEMPTED_FROM_VAT_YN = #{MODIFY_EXEMPTED_FROM_VAT_YN},
+      </if>
+      <if test="CARD_READER_SRL != null" >
+      	CARD_READER_SRL = #{CARD_READER_SRL},
+      </if>
+      <if test="VAT_ZONE != null" >
+        <choose >
+          <when test="VAT_ZONE == emptyBigDecimalValue" >
+            VAT_ZONE = NULL ,
+          </when>
+          <otherwise >
+            VAT_ZONE = #{VAT_ZONE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EMPLOYMENT_STATUS_CODE != null" >
+        <choose >
+          <when test="EMPLOYMENT_STATUS_CODE == emptyBigDecimalValue" >
+            EMPLOYMENT_STATUS_CODE = NULL ,
+          </when>
+          <otherwise >
+            EMPLOYMENT_STATUS_CODE = #{EMPLOYMENT_STATUS_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    <if test="PROOF_OCCUPATION_CODE != null" >
+        <choose >
+          <when test="PROOF_OCCUPATION_CODE == emptyBigDecimalValue" >
+            PROOF_OCCUPATION_CODE = NULL ,
+          </when>
+          <otherwise >
+            PROOF_OCCUPATION_CODE = #{PROOF_OCCUPATION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    <if test="SOURCE_FUNDS_CODE != null" >
+		SOURCE_FUNDS_CODE = #{SOURCE_FUNDS_CODE},
+      </if>
+     <if test="SOURCE_FUNDS_DESC != null" >
+      	SOURCE_FUNDS_DESC = #{SOURCE_FUNDS_DESC},
+      </if>
+      <if test="DATA_ORIGIN != null" >
+      	DATA_ORIGIN = #{DATA_ORIGIN},
+      </if>
+      <if test="STATUS_REASON != null" >
+        STATUS_REASON = #{STATUS_REASON},
+      </if>
+      <if test="ECO_AGENT != null" >
+        <choose >
+          <when test="ECO_AGENT == emptyBigDecimalValue" >
+            ECO_AGENT = NULL ,
+          </when>
+          <otherwise >
+            ECO_AGENT = #{ECO_AGENT},
+          </otherwise>
+        </choose>
+      </if>   
+      <if test="PROFESSION_SEGMENT != null" >
+        <choose >
+          <when test="PROFESSION_SEGMENT == emptyBigDecimalValue" >
+            PROFESSION_SEGMENT = NULL ,
+          </when>
+          <otherwise >
+            PROFESSION_SEGMENT = #{PROFESSION_SEGMENT},
+          </otherwise>
+        </choose>
+      </if>   
+      <if test="PROFESSION != null" >
+        <choose >
+          <when test="PROFESSION == emptyBigDecimalValue" >
+            PROFESSION = NULL ,
+          </when>
+          <otherwise >
+            PROFESSION = #{PROFESSION},
+          </otherwise>
+        </choose>
+      </if>   
+      <if test="PROFESSION_CATEGORY != null" >
+        <choose >
+          <when test="PROFESSION_CATEGORY == emptyBigDecimalValue" >
+            PROFESSION_CATEGORY = NULL ,
+          </when>
+          <otherwise >
+            PROFESSION_CATEGORY = #{PROFESSION_CATEGORY},
+          </otherwise>
+        </choose>
+      </if>   
+	  <if test="CONSOLIDATE_SAME_REF_ENTRY_YN != null and !&quot;&quot;.equals(CONSOLIDATE_SAME_REF_ENTRY_YN)" >
+	  	CONSOLIDATE_SAME_REF_ENTRY_YN = #{CONSOLIDATE_SAME_REF_ENTRY_YN},
+      </if>
+      <if test="DRAFTED_BY != null" >
+      	DRAFTED_BY = #{DRAFTED_BY},
+      </if>
+      <if test="DATE_DRAFTED != null" >
+      	DATE_DRAFTED = #{DATE_DRAFTED},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_EXTENDED" parameterType="com.path.dbmaps.vo.CIF_EXTENDEDVO" >
+    <include refid="sql_updateCIF_EXTENDED" />
+  </update>
+</mapper>

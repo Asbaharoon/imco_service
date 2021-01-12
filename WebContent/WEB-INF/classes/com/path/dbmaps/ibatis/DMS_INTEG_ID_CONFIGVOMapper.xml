@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DMS_INTEG_ID_CONFIG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DMS_INTEG_ID_CONFIGVO" >
+    <id column="INTEGRATION_ID" property="INTEGRATION_ID" />
+    <result column="INTEGRATION_BRIEF_NAME" property="INTEGRATION_BRIEF_NAME" />
+    <result column="DW_APPLICATION_ID" property="DW_APPLICATION_ID" />
+    <result column="DW_WINDOW_ID" property="DW_WINDOW_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INTEGRATION_ID, INTEGRATION_BRIEF_NAME, DW_APPLICATION_ID, DW_WINDOW_ID
+  </sql>
+  <select id="selectDMS_INTEG_ID_CONFIG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DMS_INTEG_ID_CONFIGVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DMS_INTEG_ID_CONFIG
+    where INTEGRATION_ID = #{INTEGRATION_ID}
+  </select>
+  <delete id="deleteDMS_INTEG_ID_CONFIG" parameterType="com.path.dbmaps.vo.DMS_INTEG_ID_CONFIGVO" >
+    delete from DMS_INTEG_ID_CONFIG
+    where INTEGRATION_ID = #{INTEGRATION_ID}
+  </delete>
+  <insert id="insertDMS_INTEG_ID_CONFIG" parameterType="com.path.dbmaps.vo.DMS_INTEG_ID_CONFIGVO" >
+    insert into DMS_INTEG_ID_CONFIG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="INTEGRATION_ID != null and INTEGRATION_ID != emptyBigDecimalValue" >
+        INTEGRATION_ID,
+      </if>
+      <if test="INTEGRATION_BRIEF_NAME != null" >
+        INTEGRATION_BRIEF_NAME,
+      </if>
+      <if test="DW_APPLICATION_ID != null" >
+        DW_APPLICATION_ID,
+      </if>
+      <if test="DW_WINDOW_ID != null" >
+        DW_WINDOW_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="INTEGRATION_ID != null and INTEGRATION_ID != emptyBigDecimalValue" >
+        #{INTEGRATION_ID},
+      </if>
+      <if test="INTEGRATION_BRIEF_NAME != null" >
+        #{INTEGRATION_BRIEF_NAME},
+      </if>
+      <if test="DW_APPLICATION_ID != null" >
+        #{DW_APPLICATION_ID},
+      </if>
+      <if test="DW_WINDOW_ID != null" >
+        #{DW_WINDOW_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDMS_INTEG_ID_CONFIG" >
+    update DMS_INTEG_ID_CONFIG
+    <set >
+      <if test="INTEGRATION_BRIEF_NAME != null" >
+        INTEGRATION_BRIEF_NAME = #{INTEGRATION_BRIEF_NAME},
+      </if>
+      <if test="DW_APPLICATION_ID != null" >
+        DW_APPLICATION_ID = #{DW_APPLICATION_ID},
+      </if>
+      <if test="DW_WINDOW_ID != null" >
+        DW_WINDOW_ID = #{DW_WINDOW_ID},
+      </if>
+    </set>
+    where INTEGRATION_ID = #{INTEGRATION_ID}
+  </sql>
+  <update id="updateDMS_INTEG_ID_CONFIG" parameterType="com.path.dbmaps.vo.DMS_INTEG_ID_CONFIGVO" >
+    <include refid="sql_updateDMS_INTEG_ID_CONFIG" />
+  </update>
+</mapper>

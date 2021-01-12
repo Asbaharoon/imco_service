@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cardIntegrationMapper">
+
+<sql id="select_debitCardTypes">
+	 	SELECT
+		CTSCARDS.CODE ,        
+		CTSCARDS.BRIEF_NAME_ENG    ,
+		CTSCARDS.LONG_NAME_ENG     ,  
+		CTSCARDS.BRIEF_NAME_ARAB   ,
+		CTSCARDS.LONG_NAME_ARAB 
+	FROM  CTSCARDS 
+	WHERE	 CTSCARDS.COMP_CODE  = #{compCode}
+	AND CTSCARDS.CARD_TYPE = 'D'
+ </sql>
+ 
+ 
+ <select id="returnMaxRequestCode" parameterType="cardIntegrationSC" resultType="BigDecimal" >
+	SELECT MAX(REQUEST_CODE)
+	FROM CTS_DB_CARD_AUTOMATION
+	WHERE COMP_CODE 		=#{compCode}
+	AND BRANCH_CODE		=	#{branchCode}
+</select>
+ 
+<resultMap id="debitCardTypeLkpMap" type="cardIntegrationCO">
+ 	<result property="ctsCardsVO.CODE"       		column="CODE"/>
+	<result property="ctsCardsVO.BRIEF_NAME_ENG"  	column="BRIEF_NAME_ENG"/>
+	<result property="ctsCardsVO.LONG_NAME_ENG"    	column="LONG_NAME_ENG"/>
+	<result property="ctsCardsVO.BRIEF_NAME_ARAB"   column="BRIEF_NAME_ARAB"/>
+	<result property="ctsCardsVO.LONG_NAME_ARAB"    column="LONG_NAME_ARAB"/>
+ </resultMap>
+ 
+  <select id="debitCardTypeLkpRecords"   resultMap="debitCardTypeLkpMap"   parameterType="cardIntegrationSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="select_debitCardTypes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+ </select>
+ 
+<select id="debitCardTypeLkpCount"  resultType="int" parameterType="cardIntegrationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="select_debitCardTypes"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+
+
+</mapper>	

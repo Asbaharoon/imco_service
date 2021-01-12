@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ctsReportArgMapper">
+
+ <sql id="ctsReportArgListCommon">
+	<![CDATA[
+		SELECT
+			 CTS_REP_ARG.COMP_CODE,
+			 CTS_REP_ARG.APP_NAME,
+			 CTS_REP_ARG.TRX_TYPE,
+			 CTS_REP_ARG.CODE,
+			 CTS_REP_ARG.FIELD1,
+			 CTS_REP_ARG.FIELD2,
+			 CTS_REP_ARG.FIELD3,
+			 CTS_REP_ARG.FIELD4,
+			 CTS_REP_ARG.FIELD5,
+			 CTS_REP_ARG.FIELD6,
+			 CTS_REP_ARG.FIELD7,
+			 CTS_REP_ARG.FIELD8,
+			 CTS_REP_ARG.FIELD9,
+			 CTS_REP_ARG.FIELD10,
+			 CTS_REP_ARG.FIELD11
+	FROM  CTS_REP_ARG 
+	WHERE	 (COMP_CODE  = #{compCode})
+	AND		 (APP_NAME   = #{appName})
+	AND		 (TRX_TYPE   = #{trxType})
+	]]>	 
+ </sql>
+ <sql id="ctsReportArgCommonUnique">
+  	<![CDATA[
+  		AND   	CODE   =  #{argCode}
+  	]]>	 
+ </sql>
+
+  <select id="ctsReportArgList" resultMap="CTS_REP_ARG.BaseResultMap" parameterType="ctsReportArgSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="ctsReportArgListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="ctsReportArgListCount" resultType="int" parameterType="ctsReportArgSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="ctsReportArgListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="ctsReportArgById" parameterType="ctsReportArgSC" resultType="ctsReportArgVO">
+  	<include refid="ctsReportArgListCommon"/>
+  	<include refid="ctsReportArgCommonUnique"/>
+ </select>
+  
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DMS_USER_MAP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DMS_USER_MAPVO" >
+    <id column="USER_ID" property="USER_ID" />
+    <result column="DMS_USER_ID" property="DMS_USER_ID" />
+    <result column="DMS_USER_PWD" property="DMS_USER_PWD" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="NAME_ARABIC" property="NAME_ARABIC" />
+    <result column="NAME_ENGLISH" property="NAME_ENGLISH" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, DMS_USER_ID, DMS_USER_PWD,DATE_UPDATED,NAME_ARABIC,NAME_ENGLISH
+  </sql>
+  <select id="selectDMS_USER_MAP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DMS_USER_MAPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DMS_USER_MAP
+    where USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteDMS_USER_MAP" parameterType="com.path.dbmaps.vo.DMS_USER_MAPVOKey" >
+    delete from DMS_USER_MAP
+    where USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertDMS_USER_MAP" parameterType="com.path.dbmaps.vo.DMS_USER_MAPVO" >
+    insert into DMS_USER_MAP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DMS_USER_ID != null" >
+        DMS_USER_ID,
+      </if>
+      <if test="DMS_USER_PWD != null" >
+        DMS_USER_PWD,
+      </if>
+      <if test="NAME_ARABIC != null and !&quot;&quot;.equals(NAME_ARABIC)" >
+        NAME_ARABIC,
+      </if>
+      <if test="NAME_ENGLISH != null and !&quot;&quot;.equals(NAME_ENGLISH)" >
+        NAME_ENGLISH,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DMS_USER_ID != null" >
+        #{DMS_USER_ID},
+      </if>
+      <if test="DMS_USER_PWD != null" >
+        #{DMS_USER_PWD},
+      </if>
+      <if test="NAME_ARABIC != null and !&quot;&quot;.equals(NAME_ARABIC)" >
+        #{NAME_ARABIC},
+      </if>
+      <if test="NAME_ENGLISH != null and !&quot;&quot;.equals(NAME_ENGLISH)" >
+        #{NAME_ENGLISH},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+
+    </trim>
+  </insert>
+  <sql id="sql_updateDMS_USER_MAP" >
+    update DMS_USER_MAP
+    <set >
+      <if test="DMS_USER_ID != null" >
+        DMS_USER_ID = #{DMS_USER_ID},
+      </if>
+      <if test="DMS_USER_PWD != null" >
+        DMS_USER_PWD = #{DMS_USER_PWD},
+      </if>
+      <if test="NAME_ARABIC != null" >
+        <choose >
+          <when test="NAME_ARABIC.equals(&quot;&quot;)" >
+            NAME_ARABIC = NULL ,
+          </when>
+          <otherwise >
+            NAME_ARABIC = #{NAME_ARABIC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NAME_ENGLISH != null" >
+        <choose >
+          <when test="NAME_ENGLISH.equals(&quot;&quot;)" >
+            NAME_ENGLISH = NULL ,
+          </when>
+          <otherwise >
+            NAME_ENGLISH = #{NAME_ENGLISH},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateDMS_USER_MAP" parameterType="com.path.dbmaps.vo.DMS_USER_MAPVO" >
+    <include refid="sql_updateDMS_USER_MAP" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+  </update>
+</mapper>

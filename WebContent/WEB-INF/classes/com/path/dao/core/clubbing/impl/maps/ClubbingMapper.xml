@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="clubbingMapper">
+	<resultMap id="resClubbingLookupMap" type="com.path.vo.core.clubbing.ClubbingCO">
+		<result property="accClubGrpVO.CLUBBING_CODE" column="CLUBBING_CODE"/>
+		<result property="accClubGrpVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG"/>
+		<result property="accClubGrpVO.LONG_DESC_ENG" column="LONG_DESC_ENG"/>
+		<result property="accClubGrpVO.BRIEF_DESC_AR" column="BRIEF_DESC_AR"/>
+		<result property="accClubGrpVO.LONG_DESC_AR" column="LONG_DESC_AR"/>
+	</resultMap>
+	<select id="returnClubbingLookup" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultMap="resClubbingLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryClubbingLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnClubbingLookupCount" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryClubbingLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryClubbingLkpSQL">
+		SELECT CLUBBING_CODE, BRIEF_DESC_ENG	 ,LONG_DESC_ENG	,BRIEF_DESC_AR,LONG_DESC_AR	
+		FROM ACC_CLUBBING_GROUP
+		WHERE COMP_CODE= #{compCode, jdbcType=NUMERIC}
+	</sql>
+
+	<resultMap id="resDepForClubbingMap" type="com.path.vo.core.clubbing.ClubbingCO">
+		<result property="accClubGrpVO.CLUBBING_CODE" column="CLUBBING_CODE"/>
+		<result property="accClubGrpVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG"/>
+		<result property="accClubGrpVO.LONG_DESC_ENG" column="LONG_DESC_ENG"/>
+		<result property="accClubGrpVO.CLUBBING_OVERDRAFT_ACC" column="CLUBBING_OVERDRAFT_ACC"/>
+		<result property="accClubGrpVO.DEBIT_RATE_GROUP_DEPOSIT_YN" column="DEBIT_RATE_GROUP_DEPOSIT_YN"/>
+	</resultMap>
+	<select id="dependencyForClubbing" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultMap="resDepForClubbingMap">
+		SELECT CLUBBING_CODE, BRIEF_DESC_ENG, CLUBBING_OVERDRAFT_ACC ,DEBIT_RATE_GROUP_DEPOSIT_YN
+		FROM ACC_CLUBBING_GROUP
+		WHERE COMP_CODE= #{compCode, jdbcType=NUMERIC}
+		AND CLUBBING_CODE=#{groupCode, jdbcType=NUMERIC}
+	</select>
+	<resultMap id="resDepForClubbedMap" type="com.path.vo.core.clubbing.ClubbingCO">
+		<result property="ctsClubbedAccVO.CODE" column="CODE"/>
+		<result property="ctsClubbedAccVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+	</resultMap>
+	<select id="dependencyForClubbedAcc" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultMap="resDepForClubbedMap">
+		SELECT CODE, BRIEF_NAME_ENG 
+		FROM CTS_CLUBBED_ACC
+		WHERE COMP_CODE= #{compCode, jdbcType=NUMERIC}
+		 AND CODE=#{clubbedAccCode, jdbcType=NUMERIC} 
+		 AND CODE IN (SELECT CLUBBING_CODE
+                  FROM ACC_CLUBBING_GROUP
+                 WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC}	
+                   AND CLUBBING_OVERDRAFT_ACC = '0')
+	</select>
+	<resultMap id="resClubbedAccLookupMap" type="com.path.vo.core.clubbing.ClubbingCO">
+		<result property="ctsClubbedAccVO.CODE" column="CODE"/>
+		<result property="ctsClubbedAccVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+		<result property="ctsClubbedAccVO.LONG_NAME_ENG" column="LONG_NAME_ENG"/>
+		<result property="ctsClubbedAccVO.BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB"/>
+		<result property="ctsClubbedAccVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB"/>
+	</resultMap>
+	<select id="returnClubbedAccLookup" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultMap="resClubbedAccLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryClubbedAccLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnClubbedAccLookupCount" parameterType="com.path.vo.core.clubbing.ClubbingSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryClubbedAccLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryClubbedAccLkpSQL">
+		SELECT CODE, BRIEF_NAME_ENG	 ,LONG_NAME_ENG	,BRIEF_NAME_ARAB ,LONG_NAME_ARAB  	
+		FROM CTS_CLUBBED_ACC
+		WHERE COMP_CODE= #{compCode, jdbcType=NUMERIC}	
+		 AND CODE IN (SELECT CLUBBING_CODE
+                  FROM ACC_CLUBBING_GROUP
+                 WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC}	
+                   AND CLUBBING_OVERDRAFT_ACC = '0')
+	</sql>
+</mapper>

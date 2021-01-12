@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ATM_ENG_ACTION_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ATM_ENG_ACTION_LOGVO" >
+    <id column="ATM_ENG_ACTION_LOG_ID" property="ATM_ENG_ACTION_LOG_ID" />
+    <result column="INTERFACE_CODE" property="INTERFACE_CODE" />
+    <result column="ATM_ENG_ACTION" property="ATM_ENG_ACTION" />
+    <result column="START_TIME" property="START_TIME" />
+    <result column="END_TIME" property="END_TIME" />
+    <result column="MESSAGE" property="MESSAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATM_ENG_ACTION_LOG_ID, INTERFACE_CODE, ATM_ENG_ACTION, START_TIME, END_TIME, MESSAGE
+  </sql>
+  <select id="selectATM_ENG_ACTION_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ATM_ENG_ACTION_LOGVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from ATM_ENG_ACTION_LOG
+    where ATM_ENG_ACTION_LOG_ID = #{ATM_ENG_ACTION_LOG_ID}
+  </select>
+  <delete id="deleteATM_ENG_ACTION_LOG" parameterType="com.path.dbmaps.vo.ATM_ENG_ACTION_LOGVO" >
+    delete from ATM_ENG_ACTION_LOG
+    where ATM_ENG_ACTION_LOG_ID = #{ATM_ENG_ACTION_LOG_ID}
+  </delete>
+  <insert id="insertATM_ENG_ACTION_LOG" parameterType="com.path.dbmaps.vo.ATM_ENG_ACTION_LOGVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="ATM_ENG_ACTION_LOG_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(ATM_ENG_ACTION_LOG_ID),0)+1</when><otherwise>NVL(MAX(ATM_ENG_ACTION_LOG_ID),0)+1</otherwise></choose> FROM ATM_ENG_ACTION_LOG
+    </selectKey>
+    insert into ATM_ENG_ACTION_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      ATM_ENG_ACTION_LOG_ID,
+      <if test="INTERFACE_CODE != null and INTERFACE_CODE != emptyBigDecimalValue" >
+        INTERFACE_CODE,
+      </if>
+      <if test="ATM_ENG_ACTION != null and !&quot;&quot;.equals(ATM_ENG_ACTION)" >
+        ATM_ENG_ACTION,
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME,
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME,
+      </if>
+      <if test="MESSAGE != null and !&quot;&quot;.equals(MESSAGE)" >
+        MESSAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{ATM_ENG_ACTION_LOG_ID},
+      <if test="INTERFACE_CODE != null and INTERFACE_CODE != emptyBigDecimalValue" >
+        #{INTERFACE_CODE},
+      </if>
+      <if test="ATM_ENG_ACTION != null and !&quot;&quot;.equals(ATM_ENG_ACTION)" >
+        #{ATM_ENG_ACTION},
+      </if>
+      <if test="START_TIME != null" >
+        #{START_TIME},
+      </if>
+      <if test="END_TIME != null" >
+        #{END_TIME},
+      </if>
+      <if test="MESSAGE != null and !&quot;&quot;.equals(MESSAGE)" >
+        #{MESSAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateATM_ENG_ACTION_LOG" >
+    update ATM_ENG_ACTION_LOG
+    <set >
+      <if test="INTERFACE_CODE != null" >
+        <choose >
+          <when test="INTERFACE_CODE == emptyBigDecimalValue" >
+            INTERFACE_CODE = NULL ,
+          </when>
+          <otherwise >
+            INTERFACE_CODE = #{INTERFACE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ATM_ENG_ACTION != null" >
+        <choose >
+          <when test="ATM_ENG_ACTION.equals(&quot;&quot;)" >
+            ATM_ENG_ACTION = NULL ,
+          </when>
+          <otherwise >
+            ATM_ENG_ACTION = #{ATM_ENG_ACTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME = #{START_TIME},
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME = #{END_TIME},
+      </if>
+      <if test="MESSAGE != null" >
+        <choose >
+          <when test="MESSAGE.equals(&quot;&quot;)" >
+            MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            MESSAGE = #{MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ATM_ENG_ACTION_LOG_ID = #{ATM_ENG_ACTION_LOG_ID}
+  </sql>
+  <update id="updateATM_ENG_ACTION_LOG" parameterType="com.path.dbmaps.vo.ATM_ENG_ACTION_LOGVO" >
+    <include refid="sql_updateATM_ENG_ACTION_LOG" />
+  </update>
+</mapper>

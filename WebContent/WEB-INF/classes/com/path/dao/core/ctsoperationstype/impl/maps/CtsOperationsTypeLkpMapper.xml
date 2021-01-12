@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ctsOperationsTypeLkpMapper">
+
+	<resultMap id="returnOperationTypeLookupMap" type="com.path.dbmaps.vo.CTS_OPERATIONS_TYPEVO">
+		<result property="COMP_CODE" 		column="COMP_CODE"/>
+		<result property="CODE" 			column="CODE"/>
+		<result property="BRIEF_DESC_ENG" 	column="BRIEF_DESC_ENG"/>		
+	</resultMap>
+	
+	<select id="returnOperationTypeLookupList" parameterType="com.path.vo.core.ctsoperationstype.CtsOperationsTypeLkpSC" resultMap="returnOperationTypeLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="operationTypeLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnOperationTypeLookupCount" parameterType="com.path.vo.core.ctsoperationstype.CtsOperationsTypeLkpSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="operationTypeLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="operationTypeLookupQuery">
+		SELECT CODE,
+		       BRIEF_DESC_ENG,
+		       BRIEF_DESC_ARAB
+		  FROM CTS_OPERATIONS_TYPE
+		  WHERE COMP_CODE = #{compCode}  
+	</sql>
+	
+	<select id="returnOperationTypeByCode" parameterType="com.path.vo.core.ctsoperationstype.CtsOperationsTypeLkpSC" resultType="com.path.dbmaps.vo.CTS_OPERATIONS_TYPEVO" >
+		<include refid="operationTypeLookupQuery"/>
+		 AND CODE = #{operationTypeCode}
+	</select>
+	
+</mapper>

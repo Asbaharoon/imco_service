@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="divisionListMapper">
+
+ <sql id="divisionListCommon">
+	<![CDATA[
+			SELECT
+			 COMP_CODE,
+			 DIVISION_CODE,
+			 BRIEF_DESC_ENG,
+			 LONG_DESC_ENG,
+			 BRIEF_DESC_ARAB,
+			 LONG_DESC_ARAB
+	FROM  DIVISIONS 
+	WHERE	 DIVISIONS.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ 
+ <resultMap id="divisionList_ResMap" type="divisionVO">
+	<id property="DIVISION_CODE" column="DIVISION_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	 <result property="COMP_CODE" column="COMP_CODE"/>
+ </resultMap>
+ 
+ <select id="divisionList" resultMap="divisionList_ResMap" parameterType="divisionSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="divisionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="divisionListCount" resultType="int" parameterType="divisionSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="divisionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <select id="returnDivisionById" parameterType="divisionSC" resultType="divisionVO">
+  		SELECT
+			 DIVISION_CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  DIVISIONS 
+		WHERE DIVISIONS.DIVISION_CODE = #{divisionCode} 
+		AND   DIVISIONS.COMP_CODE  = #{compCode}		
+ </select>
+</mapper>

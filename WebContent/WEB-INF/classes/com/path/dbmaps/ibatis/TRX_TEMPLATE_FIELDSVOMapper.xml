@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRX_TEMPLATE_FIELDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRX_TEMPLATE_FIELDSVO" >
+    <id column="CODE_FIELD" property="CODE_FIELD" />
+    <result column="LABEL_FIELD" property="LABEL_FIELD" />
+    <result column="VALUE_FIELD" property="VALUE_FIELD" />
+    <result column="APP_NAME" property="APP_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE_FIELD, LABEL_FIELD, VALUE_FIELD, APP_NAME
+  </sql>
+  <select id="selectTRX_TEMPLATE_FIELDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRX_TEMPLATE_FIELDSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRX_TEMPLATE_FIELDS
+    where CODE_FIELD = #{CODE_FIELD}
+  </select>
+  <delete id="deleteTRX_TEMPLATE_FIELDS" parameterType="com.path.dbmaps.vo.TRX_TEMPLATE_FIELDSVO" >
+    delete from TRX_TEMPLATE_FIELDS
+    where CODE_FIELD = #{CODE_FIELD}
+  </delete>
+  <insert id="insertTRX_TEMPLATE_FIELDS" parameterType="com.path.dbmaps.vo.TRX_TEMPLATE_FIELDSVO" >
+    insert into TRX_TEMPLATE_FIELDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE_FIELD != null and CODE_FIELD != emptyBigDecimalValue" >
+        CODE_FIELD,
+      </if>
+      <if test="LABEL_FIELD != null" >
+        LABEL_FIELD,
+      </if>
+      <if test="VALUE_FIELD != null" >
+        VALUE_FIELD,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE_FIELD != null and CODE_FIELD != emptyBigDecimalValue" >
+        #{CODE_FIELD},
+      </if>
+      <if test="LABEL_FIELD != null" >
+        #{LABEL_FIELD},
+      </if>
+      <if test="VALUE_FIELD != null" >
+        #{VALUE_FIELD},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRX_TEMPLATE_FIELDS" >
+    update TRX_TEMPLATE_FIELDS
+    <set >
+      <if test="LABEL_FIELD != null" >
+        LABEL_FIELD = #{LABEL_FIELD},
+      </if>
+      <if test="VALUE_FIELD != null" >
+        VALUE_FIELD = #{VALUE_FIELD},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+    </set>
+    where CODE_FIELD = #{CODE_FIELD}
+  </sql>
+  <update id="updateTRX_TEMPLATE_FIELDS" parameterType="com.path.dbmaps.vo.TRX_TEMPLATE_FIELDSVO" >
+    <include refid="sql_updateTRX_TEMPLATE_FIELDS" />
+  </update>
+</mapper>

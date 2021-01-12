@@ -1,0 +1,2475 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customizationMapper" >
+ <resultMap id="retElemCustResuMap" type="customizationCO" >
+    <result property="screenDispVO.ELEMENT_NAME"     column="ELEMENT_NAME" />
+    <result property="screenDispVO.VO_PROPERTY_NAME" column="VO_PROPERTY_NAME" />
+    <result property="screenDispVO.VO_CO_REFERENCE"  column="VO_CO_REFERENCE" />
+    <result property="screenDispVO.PROG_REF"         column="PROG_REF" />
+    <result property="screenDispVO.IS_MANDATORY"     column="IS_MANDATORY" />
+    <result property="screenDispVO.IS_VISIBLE"       column="IS_VISIBLE" />
+    <result property="screenDispVO.IS_READONLY"      column="IS_READONLY" />
+    <result property="screenDispVO.ARABIC_DEPENDANT" column="ARABIC_DEPENDANT" />
+    <result property="screenDispVO.MESSAGE_CODE"     column="MESSAGE_CODE" />
+    <result property="screenDispVO.ZERO_NOT_ALLOWED" column="ZERO_NOT_ALLOWED" />
+    <result property="screenDispVO.TRIM_STRING"      column="TRIM_STRING" />
+    <result property="screenDispVO.LABEL_KEY"        column="LABEL_KEY" />
+    <result property="screenDispVO.MAX_LENGTH"       column="MAX_LENGTH" />
+    <result property="screenDispVO.FLD_IDENTIFIER"   column="FLD_IDENTIFIER" />
+    <result property="screenDispVO.BUS_RELATED"      column="BUS_RELATED" />
+    <result property="screenDispVO.VISIBILITY_EXPR"  column="VISIBILITY_EXPR" />
+    <result property="screenDispVO.READONLY_EXPR"    column="READONLY_EXPR" />
+    <result property="screenDispVO.MANDATORY_EXPR"   column="MANDATORY_EXPR" />
+    <result property="screenDispVO.LABEL_KEY_EXPR"   column="LABEL_KEY_EXPR" />
+    <result property="screenDispVO.ZERO_NOT_ALLOWED_EXPR" column="ZERO_NOT_ALLOWED_EXPR" />
+    <result property="screenDispVO.VALUE_VALID_EXPR" column="VALUE_VALID_EXPR" />
+    <result property="screenDispVO.KEYBOARD_SHORTCUT_KEY"  column="KEYBOARD_SHORTCUT_KEY" />
+    <result property="screenDispVO.DEFAULT_VALUE"  	 column="DEFAULT_VALUE" />
+    <result property="screenDispVO.ACTIVITY_TYPE"  	 column="ACTIVITY_TYPE" />
+    <result property="screenDispVO.ACTIVITY_ID"  	 column="ACTIVITY_ID" />
+    <result property="screenDispVO.SCREEN_WIDTH"  	 column="SCREEN_WIDTH" />
+    <result property="screenDispVO.SCREEN_HEIGHT"  	 column="SCREEN_HEIGHT" />
+    <result property="screenDispVO.IS_ADM_CUST_DIS_YN" column="IS_ADM_CUST_DIS_YN" />					
+    <result property="screenDispVO.ENABLE_FIELD_AUDIT_YN" column="ENABLE_FIELD_AUDIT_YN" />					
+    <result property="labelKeyDesc"                  column="LABEL_DESC" />
+    <result property="activityDesc"                  column="ACTIVITY_DESC" />
+    <result property="screenDispVO.MIN_LENGTH"  	 column="MIN_LENGTH" />
+    <result property="screenDispVO.DEFAULT_VALUE_EXPR" column="DEFAULT_VALUE_EXPR" />
+    <result property="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN" column="DFLT_VAL_EXPR_PRIORITY_YN" />
+    <result property="screenDispVO.BACKGROUND_COLOR" column="BACKGROUND_COLOR" />
+    <result property="screenDispVO.BACKGROUND_COLOR_EXPR" column="BACKGROUND_COLOR_EXPR" />
+    <result property="dateUpdated" column="DATE_UPDATED" />
+</resultMap> 
+<select id="returnElemCustomization"  parameterType="requiredFieldsSC" resultMap="retElemCustResuMap">
+SELECT D.ELEMENT_NAME
+     , D.VO_PROPERTY_NAME
+     , D.VO_CO_REFERENCE
+     , SP.PROG_REF
+     , SP.IS_MANDATORY
+     , SP.IS_VISIBLE
+     , SP.IS_READONLY
+     , SP.ARABIC_DEPENDANT
+     , SP.MESSAGE_CODE
+     , SP.ZERO_NOT_ALLOWED
+     , SP.TRIM_STRING
+     , SP.LABEL_KEY
+     , SP.MAX_LENGTH
+     , SP.FLD_IDENTIFIER
+     , SP.BUS_RELATED
+     , SP.VISIBILITY_EXPR
+     , SP.READONLY_EXPR
+     , SP.MANDATORY_EXPR
+     , SP.LABEL_KEY_EXPR
+     , SP.ZERO_NOT_ALLOWED_EXPR
+     , SP.VALUE_VALID_EXPR
+     , SP.KEYBOARD_SHORTCUT_KEY
+     , SP.DEFAULT_VALUE
+     , SP.ACTIVITY_TYPE
+     , SP.ACTIVITY_ID
+     , SP.SCREEN_WIDTH
+     , SP.SCREEN_HEIGHT																					
+     , SP.IS_ADM_CUST_DIS_YN															
+     , SP.ENABLE_FIELD_AUDIT_YN
+     , SP.MIN_LENGTH
+     , SP.DEFAULT_VALUE_EXPR
+     , SP.DFLT_VAL_EXPR_PRIORITY_YN		
+     , SP.BACKGROUND_COLOR		
+     , SP.BACKGROUND_COLOR_EXPR
+   <choose>
+      <when test='"1".equals(readFromMir)'>
+        ,DATE_UPDATED
+      </when>
+      <otherwise>
+   		,NULL AS DATE_UPDATED 
+      </otherwise>
+   </choose> 
+     		
+     ,(CASE 
+     		WHEN SP.ACTIVITY_TYPE = '1' THEN ( SELECT DYN_SCREEN_DESC FROM SYS_DYN_SCREEN_DEF WHERE DYN_SCREEN_ID = SP.ACTIVITY_ID )  
+     		WHEN SP.ACTIVITY_TYPE = '2' OR SP.ACTIVITY_TYPE = '3' THEN ( SELECT DESCRIPTION FROM SYS_PARAM_BTN_CUST WHERE BTN_ID = SP.ACTIVITY_ID )
+     		ELSE ''
+       END)ACTIVITY_DESC
+     ,(CASE
+	       WHEN
+	           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+	             FROM SYS_PARAM_KEY_LABEL KL 
+	            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+	            AND KL.APP_NAME =#{appName}
+	            AND KL.PROG_REF =#{progRef}) IS NOT NULL
+	       THEN
+	           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+	              FROM SYS_PARAM_KEY_LABEL KL 
+	             WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+	               AND KL.APP_NAME =#{appName}
+	               AND KL.PROG_REF =#{progRef})
+	       WHEN
+	           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+	             FROM SYS_PARAM_KEY_LABEL KL 
+	            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+	            AND KL.APP_NAME =#{appName}
+	            AND KL.PROG_REF ='ROOT') IS NOT NULL       
+	       THEN
+	           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+	             FROM SYS_PARAM_KEY_LABEL KL 
+	            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+	            AND KL.APP_NAME =#{appName}
+	            AND KL.PROG_REF ='ROOT')
+	       ELSE
+	           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+	             FROM SYS_PARAM_KEY_LABEL KL 
+	            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+	            AND KL.APP_NAME =#{defaultAppName}
+	            AND KL.PROG_REF = 'ROOT')
+	   END)  AS LABEL_DESC
+       FROM
+       <choose>
+          <when test='"1".equals(readFromMir)'>
+            SYS_PARAM_SCREEN_DISPLAY_MIR SP
+          </when>
+          <otherwise>
+       		SYS_PARAM_SCREEN_DISPLAY SP 
+          </otherwise>
+       </choose> 
+       ,FIELD_TECH_DETAILS D, OPT O
+       WHERE SP.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+       AND SP.PROG_REF  = O.PARENT_REF 
+       AND SP.APP_NAME  = O.APP_NAME
+       <choose>
+         <when test="originalProgRef!=null">
+		   AND (
+		         (O.PROG_REF = #{progRef} 
+		          AND 
+		          NOT EXISTS(SELECT 1
+		                        FROM 
+							       <choose>
+							          <when test='"1".equals(readFromMir)'>
+							            SYS_PARAM_SCREEN_DISPLAY_MIR SP2
+							          </when>
+							          <otherwise>
+							       		SYS_PARAM_SCREEN_DISPLAY SP2 
+							          </otherwise>
+							       </choose> 
+		                        , OPT O2
+		                       WHERE SP2.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+		                         AND SP2.PROG_REF       = O2.PARENT_REF
+		                         AND SP2.APP_NAME       = O2.APP_NAME
+		                         AND SP2.COMP_CODE      = SP.COMP_CODE
+		                         AND SP2.BUS_RELATED    = 1
+		                         AND SP2.APP_NAME       = #{appName}
+		                         AND O2 .PROG_REF       = #{originalProgRef})
+		         )
+		         OR
+		         (O.PROG_REF = #{originalProgRef}
+		           AND EXISTS(SELECT 1
+		                        FROM
+							       <choose>
+							          <when test='"1".equals(readFromMir)'>
+							            SYS_PARAM_SCREEN_DISPLAY_MIR SP2
+							          </when>
+							          <otherwise>
+							       		SYS_PARAM_SCREEN_DISPLAY SP2 
+							          </otherwise>
+							       </choose> 
+		                       WHERE SP2.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+		                         AND SP2.PROG_REF       = O.PARENT_REF
+		                         AND SP2.APP_NAME       = O.APP_NAME
+		                         AND SP2.COMP_CODE      = SP.COMP_CODE
+		                         AND SP2.BUS_RELATED    = 1
+		                         AND SP2.APP_NAME       = #{appName})
+		         )
+		       )
+         </when>
+         <otherwise>
+           AND O.PROG_REF = #{progRef}
+         </otherwise>
+       </choose>
+       AND SP.COMP_CODE = 0
+       AND SP.APP_NAME = #{appName}
+       AND D.ELEMENT_NAME = #{elementName}
+       AND NOT EXISTS(SELECT 1 
+                        FROM
+					       <choose>
+					          <when test='"1".equals(readFromMir)'>
+					            SYS_PARAM_SCREEN_DISPLAY_MIR I
+					          </when>
+					          <otherwise>
+					       		SYS_PARAM_SCREEN_DISPLAY I 
+					          </otherwise>
+					       </choose> 
+                       WHERE I.COMP_CODE = SP.COMP_CODE
+                         AND D.FLD_IDENTIFIER = I.FLD_IDENTIFIER
+                         AND I.APP_NAME = O.APP_NAME
+                         AND I.PROG_REF = O.PROG_REF
+                       <if test="originalProgRef!=null">
+                         AND (I.BUS_RELATED = SP.BUS_RELATED OR I.BUS_RELATED = 1)
+                       </if>  
+                     )
+UNION ALL
+    SELECT D.ELEMENT_NAME
+         , D.VO_PROPERTY_NAME
+         , D.VO_CO_REFERENCE
+         , SP.PROG_REF
+         , SP.IS_MANDATORY
+         , SP.IS_VISIBLE
+         , SP.IS_READONLY
+         , SP.ARABIC_DEPENDANT
+         , SP.MESSAGE_CODE
+         , SP.ZERO_NOT_ALLOWED
+         , SP.TRIM_STRING
+         , SP.LABEL_KEY
+         , SP.MAX_LENGTH
+         , SP.FLD_IDENTIFIER
+         , SP.BUS_RELATED
+         , SP.VISIBILITY_EXPR
+         , SP.READONLY_EXPR
+         , SP.MANDATORY_EXPR
+	     , SP.LABEL_KEY_EXPR
+	     , SP.ZERO_NOT_ALLOWED_EXPR
+	     , SP.VALUE_VALID_EXPR
+	     , SP.KEYBOARD_SHORTCUT_KEY
+	     , SP.DEFAULT_VALUE
+	     , SP.ACTIVITY_TYPE
+	     , SP.ACTIVITY_ID
+	     , SP.SCREEN_WIDTH
+     	 , SP.SCREEN_HEIGHT
+	     , SP.IS_ADM_CUST_DIS_YN		
+		 , SP.ENABLE_FIELD_AUDIT_YN																					
+	     , SP.MIN_LENGTH
+         , SP.DEFAULT_VALUE_EXPR
+         , SP.DFLT_VAL_EXPR_PRIORITY_YN
+         , SP.BACKGROUND_COLOR
+         , SP.BACKGROUND_COLOR_EXPR
+	   <choose>
+	      <when test='"1".equals(readFromMir)'>
+	        ,DATE_UPDATED
+	      </when>
+	      <otherwise>
+	   		,NULL AS DATE_UPDATED 
+	      </otherwise>
+	   </choose> 
+	     ,(CASE 
+     		WHEN SP.ACTIVITY_TYPE = '1' THEN ( SELECT DYN_SCREEN_DESC FROM SYS_DYN_SCREEN_DEF WHERE DYN_SCREEN_ID = SP.ACTIVITY_ID )  
+     		WHEN SP.ACTIVITY_TYPE = '2' THEN ( SELECT DESCRIPTION FROM SYS_PARAM_BTN_CUST WHERE BTN_ID = SP.ACTIVITY_ID )
+     		ELSE ''
+       	   END)ACTIVITY_DESC
+		 ,(CASE
+		       WHEN
+		           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+		             FROM SYS_PARAM_KEY_LABEL KL 
+		            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+		            AND KL.APP_NAME =#{appName}
+		            AND KL.PROG_REF =#{progRef}) IS NOT NULL
+		       THEN
+		           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+		              FROM SYS_PARAM_KEY_LABEL KL 
+		             WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+		               AND KL.APP_NAME =#{appName}
+		               AND KL.PROG_REF =#{progRef})
+		       WHEN
+		           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+		             FROM SYS_PARAM_KEY_LABEL KL 
+		            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+		            AND KL.APP_NAME =#{appName}
+		            AND KL.PROG_REF ='ROOT') IS NOT NULL       
+		       THEN
+		           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+		             FROM SYS_PARAM_KEY_LABEL KL 
+		            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+		            AND KL.APP_NAME =#{appName}
+		            AND KL.PROG_REF ='ROOT')
+		       ELSE
+		           (SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>KL.KEY_LABEL_DESC<if test="isSybase == 1">)</if> 
+		             FROM SYS_PARAM_KEY_LABEL KL 
+		            WHERE KL.KEY_LABEL_CODE = SP.LABEL_KEY
+		            AND KL.APP_NAME =#{defaultAppName}
+		            AND KL.PROG_REF = 'ROOT')
+       END)  AS LABEL_DESC
+       FROM 
+       <choose>
+          <when test='"1".equals(readFromMir)'>
+            SYS_PARAM_SCREEN_DISPLAY_MIR SP
+          </when>
+          <otherwise>
+       		SYS_PARAM_SCREEN_DISPLAY SP 
+          </otherwise>
+       </choose> 
+      ,FIELD_TECH_DETAILS D
+       WHERE SP.FLD_IDENTIFIER = D.FLD_IDENTIFIER       
+       /*AND D.ENTITY_TYPE IS NULL
+       AND D.PB_FIELD_NAME IS NULL
+       */
+       <choose>
+          <when test="originalProgRef!=null">
+			   AND (
+			         (SP.PROG_REF = #{progRef} 
+			          AND
+			          NOT EXISTS(SELECT 1
+			                       FROM
+								       <choose>
+								          <when test='"1".equals(readFromMir)'>
+								            SYS_PARAM_SCREEN_DISPLAY_MIR SP1
+								          </when>
+								          <otherwise>
+								       		SYS_PARAM_SCREEN_DISPLAY SP1 
+								          </otherwise>
+								       </choose> 
+			                      WHERE SP1.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+			                        AND SP1.COMP_CODE   = 0
+			                        AND SP1.APP_NAME    = #{appName}
+			                        AND SP1.BUS_RELATED = 1
+			                        AND SP1.PROG_REF    = #{originalProgRef})
+			         )
+			         OR
+			         (SP.PROG_REF = #{originalProgRef} 
+			          AND EXISTS(SELECT 1
+			                       FROM 
+								       <choose>
+								          <when test='"1".equals(readFromMir)'>
+								            SYS_PARAM_SCREEN_DISPLAY_MIR SP1
+								          </when>
+								          <otherwise>
+								       		SYS_PARAM_SCREEN_DISPLAY SP1 
+								          </otherwise>
+								       </choose> 
+			                      WHERE SP1.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+			                        AND SP1.COMP_CODE   = 0
+			                        AND SP1.APP_NAME    = #{appName}
+			                        AND SP1.BUS_RELATED = 1
+			                        AND SP1.PROG_REF    = #{originalProgRef}))
+			       )            
+          </when>
+          <otherwise>
+            AND SP.PROG_REF = #{progRef}
+          </otherwise>
+       </choose>
+       AND SP.COMP_CODE = 0
+       AND SP.APP_NAME = #{appName}
+       AND D.ELEMENT_NAME = #{elementName}
+</select>
+<update id="updateScreenDisplay" parameterType="customizationCO">
+    update 
+    <choose>
+       <when test='actionType.equals("R")'>
+          SYS_PARAM_SCREEN_DISPLAY_MIR
+       </when>
+       <otherwise>
+          SYS_PARAM_SCREEN_DISPLAY
+       </otherwise>
+    </choose>
+    <set >
+      <if test="screenDispVO.IS_MANDATORY != null" >
+        <choose >
+          <when test="screenDispVO.IS_MANDATORY == emptyBigDecimalValue" >
+            IS_MANDATORY = NULL ,
+          </when>
+          <otherwise >
+            IS_MANDATORY = #{screenDispVO.IS_MANDATORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.IS_VISIBLE != null" >
+        <choose >
+          <when test="screenDispVO.IS_VISIBLE == emptyBigDecimalValue" >
+            IS_VISIBLE = NULL ,
+          </when>
+          <otherwise >
+            IS_VISIBLE = #{screenDispVO.IS_VISIBLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.IS_READONLY != null" >
+        <choose >
+          <when test="screenDispVO.IS_READONLY == emptyBigDecimalValue" >
+            IS_READONLY = NULL ,
+          </when>
+          <otherwise >
+            IS_READONLY = #{screenDispVO.IS_READONLY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.ARABIC_DEPENDANT != null" >
+        <choose >
+          <when test="screenDispVO.ARABIC_DEPENDANT == emptyBigDecimalValue" >
+            ARABIC_DEPENDANT = NULL ,
+          </when>
+          <otherwise >
+            ARABIC_DEPENDANT = #{screenDispVO.ARABIC_DEPENDANT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.MESSAGE_CODE != null" >
+        <choose >
+          <when test="screenDispVO.MESSAGE_CODE == emptyBigDecimalValue" >
+            MESSAGE_CODE = NULL ,
+          </when>
+          <otherwise >
+            MESSAGE_CODE = #{screenDispVO.MESSAGE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.ZERO_NOT_ALLOWED != null" >
+        <choose >
+          <when test="screenDispVO.ZERO_NOT_ALLOWED == emptyBigDecimalValue" >
+            ZERO_NOT_ALLOWED = NULL ,
+          </when>
+          <otherwise >
+            ZERO_NOT_ALLOWED = #{screenDispVO.ZERO_NOT_ALLOWED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.TRIM_STRING != null" >
+        <choose >
+          <when test="screenDispVO.TRIM_STRING == emptyBigDecimalValue" >
+            TRIM_STRING = NULL ,
+          </when>
+          <otherwise >
+            TRIM_STRING = #{screenDispVO.TRIM_STRING},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.LABEL_KEY != null" >
+        LABEL_KEY = #{screenDispVO.LABEL_KEY},
+      </if>
+        <choose >
+          <when test="screenDispVO.MAX_LENGTH == emptyBigDecimalValue ||screenDispVO.MAX_LENGTH == null " >
+            MAX_LENGTH = NULL ,
+          </when>
+          <otherwise >
+            MAX_LENGTH = #{screenDispVO.MAX_LENGTH},
+          </otherwise>
+        </choose>
+      <if test="screenDispVO.VISIBILITY_EXPR != null" >
+        VISIBILITY_EXPR = #{screenDispVO.VISIBILITY_EXPR},
+      </if>
+      <if test="screenDispVO.READONLY_EXPR != null" >
+        READONLY_EXPR = #{screenDispVO.READONLY_EXPR},
+      </if>
+      <if test="screenDispVO.MANDATORY_EXPR != null" >
+        MANDATORY_EXPR = #{screenDispVO.MANDATORY_EXPR},
+      </if>
+      <if test="screenDispVO.LABEL_KEY_EXPR != null" >
+        LABEL_KEY_EXPR = #{screenDispVO.LABEL_KEY_EXPR}, 
+      </if>
+      <if test="screenDispVO.ZERO_NOT_ALLOWED_EXPR != null" >
+        ZERO_NOT_ALLOWED_EXPR = #{screenDispVO.ZERO_NOT_ALLOWED_EXPR},
+      </if>
+      <if test="screenDispVO.VALUE_VALID_EXPR != null" >
+        VALUE_VALID_EXPR = #{screenDispVO.VALUE_VALID_EXPR},
+      </if>
+      <if test="screenDispVO.KEYBOARD_SHORTCUT_KEY != null" >
+        KEYBOARD_SHORTCUT_KEY = #{screenDispVO.KEYBOARD_SHORTCUT_KEY},
+      </if>
+      <if test="screenDispVO.DEFAULT_VALUE != null" >
+        DEFAULT_VALUE = #{screenDispVO.DEFAULT_VALUE},
+      </if>
+      <if test="screenDispVO.ACTIVITY_TYPE != null" >
+        ACTIVITY_TYPE = #{screenDispVO.ACTIVITY_TYPE},
+      </if>
+      <if test="screenDispVO.ACTIVITY_ID != null" >
+        <choose >
+          <when test="screenDispVO.ACTIVITY_ID == emptyBigDecimalValue" >
+            ACTIVITY_ID = NULL ,
+          </when>
+          <otherwise >
+            ACTIVITY_ID = #{screenDispVO.ACTIVITY_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.SCREEN_WIDTH != null" >
+        <choose >
+          <when test="screenDispVO.SCREEN_WIDTH == emptyBigDecimalValue" >
+            SCREEN_WIDTH = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_WIDTH = #{screenDispVO.SCREEN_WIDTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.SCREEN_HEIGHT != null" >
+        <choose >
+          <when test="screenDispVO.SCREEN_HEIGHT == emptyBigDecimalValue" >
+            SCREEN_HEIGHT = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_HEIGHT = #{screenDispVO.SCREEN_HEIGHT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="screenDispVO.IS_ADM_CUST_DIS_YN != null" >											
+        IS_ADM_CUST_DIS_YN = #{screenDispVO.IS_ADM_CUST_DIS_YN},
+      </if>
+      <if test="screenDispVO.ENABLE_FIELD_AUDIT_YN != null" >
+        ENABLE_FIELD_AUDIT_YN = #{screenDispVO.ENABLE_FIELD_AUDIT_YN},
+      </if>
+        <choose>
+          <when test="screenDispVO.MIN_LENGTH == emptyBigDecimalValue || screenDispVO.MIN_LENGTH == null" >
+            MIN_LENGTH = NULL,
+          </when>
+          <otherwise>
+            MIN_LENGTH = #{screenDispVO.MIN_LENGTH},
+          </otherwise>
+        </choose>
+	  <if test="screenDispVO.DEFAULT_VALUE_EXPR != null" >
+        DEFAULT_VALUE_EXPR = #{screenDispVO.DEFAULT_VALUE_EXPR},
+      </if>	 
+	  <if test="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null">
+	 	DFLT_VAL_EXPR_PRIORITY_YN = #{screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN},
+	  </if>
+	  <if test="screenDispVO.BACKGROUND_COLOR != null">
+	 	BACKGROUND_COLOR = #{screenDispVO.BACKGROUND_COLOR},
+	  </if>
+	  <if test="screenDispVO.BACKGROUND_COLOR_EXPR != null">
+	 	BACKGROUND_COLOR_EXPR = #{screenDispVO.BACKGROUND_COLOR_EXPR},
+	  </if>
+	  <if test='"R".equals(actionType)'>
+	    <choose>
+	       <when test="isSybase == 1">
+	          DATE_UPDATED  = GETDATE(),
+	          DATE_MODIFIED = GETDATE(),
+	       </when>
+	       <otherwise>
+	          DATE_UPDATED = SYSDATE,
+	          DATE_MODIFIED = SYSDATE,
+	       </otherwise>
+	    </choose>
+	    MODIFIED_BY = #{userId}, 
+	  </if>
+    </set>
+    where APP_NAME = #{screenDispVO.APP_NAME}
+      and COMP_CODE = #{screenDispVO.COMP_CODE}
+      <choose>
+      <when test="specificFlag">
+      and PROG_REF = #{screenDispVO.PROG_REF}
+      </when>
+      <otherwise>
+           and PROG_REF = (SELECT (
+                                   CASE WHEN PARENT_REF = 'ROOT'
+                                        THEN PROG_REF
+                                        ELSE PARENT_REF
+                                    END
+                                   ) 
+		                     FROM OPT 
+		                    WHERE APP_NAME = #{screenDispVO.APP_NAME} 
+		                      AND PROG_REF = #{screenDispVO.PROG_REF})
+      </otherwise>
+      </choose>
+      AND FLD_IDENTIFIER = #{screenDispVO.FLD_IDENTIFIER}
+	  <if test='"R".equals(actionType) and dateUpdated!=null'>
+	  AND DATE_UPDATED = #{dateUpdated}
+	  </if>      
+</update>
+<update id="updateTechFieldDetails" parameterType="customizationCO">
+   update FIELD_TECH_DETAILS SET
+   <if test="screenDispVO.VO_PROPERTY_NAME != null">
+     VO_PROPERTY_NAME = #{screenDispVO.VO_PROPERTY_NAME}
+   </if> 
+   <if test="screenDispVO.VO_CO_REFERENCE != null">
+     ,VO_CO_REFERENCE = #{screenDispVO.VO_CO_REFERENCE}
+   </if> 
+   WHERE FLD_IDENTIFIER = #{screenDispVO.FLD_IDENTIFIER}
+</update>
+<select id="returnExistFldIdent" parameterType="customizationCO" resultType="java.math.BigDecimal">
+  SELECT  FLD_IDENTIFIER 
+  FROM FIELD_TECH_DETAILS SP
+  WHERE  SP.ELEMENT_NAME = #{screenDispVO.ELEMENT_NAME}
+  AND SP.VO_PROPERTY_NAME = #{screenDispVO.VO_PROPERTY_NAME}
+  AND SP.VO_CO_REFERENCE = #{screenDispVO.VO_CO_REFERENCE}
+  /*AND SP.ENTITY_TYPE IS NULL
+  AND SP.PB_FIELD_NAME IS NULL
+  */
+</select>
+<select id="returnMaxFldIdent" parameterType="customizationCO" resultType="java.math.BigDecimal">
+  SELECT MAX(T.FLD_IDENTIFIER)FROM FIELD_TECH_DETAILS T
+</select>
+<update id="insertScreenDisplay" parameterType="customizationCO">
+ <choose>
+ <when test="isSybase == 1">
+	BEGIN
+		DECLARE @V_MAX 						NUMERIC(6)
+		DECLARE @V_EXISTING_FLD_IDENTIFIER	NUMERIC(6)
+		DECLARE @PARENT_PROG_REF VARCHAR(15)
+	
+		SELECT @V_MAX = MAX(T.FLD_IDENTIFIER)FROM FIELD_TECH_DETAILS T
+	    IF @V_MAX IS NULL
+		BEGIN
+		 SELECT @V_MAX = 0
+		END
+       
+    	SELECT @V_MAX = @V_MAX + 1
+    
+	    SELECT @V_EXISTING_FLD_IDENTIFIER = FLD_IDENTIFIER 
+	        FROM FIELD_TECH_DETAILS SP
+	        WHERE  SP.ELEMENT_NAME = #{screenDispVO.ELEMENT_NAME}
+	        AND SP.VO_PROPERTY_NAME = #{screenDispVO.VO_PROPERTY_NAME}
+	        AND SP.VO_CO_REFERENCE = #{screenDispVO.VO_CO_REFERENCE}
+	        /*AND SP.ENTITY_TYPE IS NULL
+	        AND SP.PB_FIELD_NAME IS NULL
+	        */
+		
+		IF @V_EXISTING_FLD_IDENTIFIER IS NULL 
+		  BEGIN
+		   INSERT INTO FIELD_TECH_DETAILS
+			 (FLD_IDENTIFIER,
+			  ENTITY_TYPE,
+			  PB_FIELD_NAME,
+			  ELEMENT_NAME,
+			  ELEMENT_ID
+			   <if test="screenDispVO.VO_PROPERTY_NAME != null">
+				 , VO_PROPERTY_NAME
+			   </if>
+			   <if test="screenDispVO.VO_CO_REFERENCE != null">
+				 , VO_CO_REFERENCE
+			   </if>
+			  )
+		   VALUES
+			 (@V_MAX,
+			  NULL,
+			  NULL,
+			  #{screenDispVO.ELEMENT_NAME},
+			  NULL
+			  <if test="screenDispVO.VO_PROPERTY_NAME != null">
+				,#{screenDispVO.VO_PROPERTY_NAME}
+			  </if>
+			  <if test="screenDispVO.VO_CO_REFERENCE != null">
+				 , #{screenDispVO.VO_CO_REFERENCE}
+			   </if>
+			  )
+		  END 
+		ELSE
+		BEGIN
+			SELECT @V_MAX = @V_EXISTING_FLD_IDENTIFIER
+		END	  
+	<choose>	
+	<when test="specificFlag">
+		SELECT @PARENT_PROG_REF = #{cutomizationPROG_REF}
+	</when>	
+	<otherwise>
+		SELECT @PARENT_PROG_REF = (
+							       CASE WHEN PARENT_REF = 'ROOT'
+							            THEN PROG_REF
+							            ELSE PARENT_REF
+							       END
+							       )
+		FROM OPT WHERE APP_NAME =#{screenDispVO.APP_NAME} AND PROG_REF = #{cutomizationPROG_REF}
+	</otherwise>
+	</choose>
+	
+	if not exists( SELECT 1 
+	                 FROM 
+	                 <choose>
+				       <when test='actionType.equals("R")'>
+				          SYS_PARAM_SCREEN_DISPLAY_MIR S
+				       </when>
+				       <otherwise>
+				          SYS_PARAM_SCREEN_DISPLAY S
+				       </otherwise>
+				     </choose>  	                  
+	                WHERE S.COMP_CODE = #{screenDispVO.COMP_CODE} AND S.PROG_REF = @PARENT_PROG_REF AND S.APP_NAME = #{screenDispVO.APP_NAME} AND S.FLD_IDENTIFIER = @V_MAX )
+	BEGIN 
+	 INSERT INTO 
+    <choose>
+       <when test='actionType.equals("R")'>
+          SYS_PARAM_SCREEN_DISPLAY_MIR
+       </when>
+       <otherwise>
+          SYS_PARAM_SCREEN_DISPLAY
+       </otherwise>
+    </choose>
+	 ( COMP_CODE, PROG_REF, APP_NAME
+	 <if test="screenDispVO.IS_MANDATORY != null">
+	 , IS_MANDATORY
+	 </if>
+	 <if test="screenDispVO.IS_VISIBLE != null">
+	 , IS_VISIBLE
+	 </if>
+	 <if test="screenDispVO.IS_READONLY != null">
+	 , IS_READONLY
+	 </if>
+	 <if test="screenDispVO.ARABIC_DEPENDANT != null">
+	 , ARABIC_DEPENDANT
+	 </if>
+	  <if test="screenDispVO.MESSAGE_CODE != null and screenDispVO.MESSAGE_CODE != emptyBigDecimalValue">
+	 , MESSAGE_CODE
+	  </if>
+	  <if test="screenDispVO.ZERO_NOT_ALLOWED != null">
+	 , ZERO_NOT_ALLOWED
+	  </if>
+	 <if test="screenDispVO.TRIM_STRING != null">
+	 , TRIM_STRING
+	 </if>
+	  <if test="screenDispVO.LABEL_KEY != null">
+	 , LABEL_KEY
+	 </if>
+	 <if test="screenDispVO.MAX_LENGTH != null and screenDispVO.MAX_LENGTH != emptyBigDecimalValue">
+	  , MAX_LENGTH
+	 </if>
+	 <if test="screenDispVO.VISIBILITY_EXPR != null" >
+      , VISIBILITY_EXPR
+     </if>
+	 <if test="screenDispVO.READONLY_EXPR != null" >
+      , READONLY_EXPR
+     </if>
+	 <if test="screenDispVO.MANDATORY_EXPR != null" >
+      , MANDATORY_EXPR
+     </if>
+	 <if test="screenDispVO.ZERO_NOT_ALLOWED_EXPR != null" >
+      , ZERO_NOT_ALLOWED_EXPR
+     </if>
+     <if test="screenDispVO.VALUE_VALID_EXPR != null" >
+      , VALUE_VALID_EXPR
+     </if>
+     <if test="screenDispVO.KEYBOARD_SHORTCUT_KEY != null" >
+      , KEYBOARD_SHORTCUT_KEY
+     </if>
+     <if test="screenDispVO.DEFAULT_VALUE != null" >
+      , DEFAULT_VALUE
+     </if>
+     <if test="screenDispVO.ACTIVITY_TYPE != null" >
+      , ACTIVITY_TYPE
+     </if>
+     <if test="screenDispVO.ACTIVITY_ID != null and screenDispVO.ACTIVITY_ID != emptyBigDecimalValue">
+	  , ACTIVITY_ID
+	 </if>
+	 <if test="screenDispVO.SCREEN_WIDTH != null and screenDispVO.SCREEN_WIDTH != emptyBigDecimalValue">
+	  , SCREEN_WIDTH
+	 </if>
+	 <if test="screenDispVO.SCREEN_HEIGHT != null and screenDispVO.SCREEN_HEIGHT != emptyBigDecimalValue">
+	  , SCREEN_HEIGHT
+	 </if>
+	 <if test="screenDispVO.LABEL_KEY_EXPR != null" >
+      , LABEL_KEY_EXPR
+     </if>
+	 , FLD_IDENTIFIER
+	  <if test="screenDispVO.IS_ADM_CUST_DIS_YN != null">										
+	 	,IS_ADM_CUST_DIS_YN
+	 </if>
+	 <if test="screenDispVO.ENABLE_FIELD_AUDIT_YN != null">										
+	 	,ENABLE_FIELD_AUDIT_YN
+	 </if>
+	 <if test="screenDispVO.MIN_LENGTH != null and screenDispVO.MIN_LENGTH != emptyBigDecimalValue">
+	  , MIN_LENGTH
+	 </if>
+	 <if test="screenDispVO.DEFAULT_VALUE_EXPR != null" >
+      , DEFAULT_VALUE_EXPR
+     </if>	 
+	 <if test="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null">										
+	 	,DFLT_VAL_EXPR_PRIORITY_YN
+	 </if>
+	 <if test="screenDispVO.BACKGROUND_COLOR != null">										
+	 	,BACKGROUND_COLOR
+	 </if>
+	 <if test="screenDispVO.BACKGROUND_COLOR_EXPR != null">										
+	 	,BACKGROUND_COLOR_EXPR
+	 </if>
+	 <if test='actionType.equals("R")'>
+	    ,DATE_UPDATED
+	    ,DATE_CREATED
+	    ,CREATED_BY	    
+	 </if>
+	 )	
+	 values(#{screenDispVO.COMP_CODE},@PARENT_PROG_REF,#{screenDispVO.APP_NAME}
+	 <if test="screenDispVO.IS_MANDATORY != null">
+	 ,#{screenDispVO.IS_MANDATORY}
+	 </if>
+	 <if test="screenDispVO.IS_VISIBLE != null">
+	 ,#{screenDispVO.IS_VISIBLE}
+	 </if>
+	 <if test="screenDispVO.IS_READONLY != null">
+	 ,#{screenDispVO.IS_READONLY}
+	 </if>
+	 <if test="screenDispVO.ARABIC_DEPENDANT != null">
+	 ,#{screenDispVO.ARABIC_DEPENDANT}
+	 </if>
+	  <if test="screenDispVO.MESSAGE_CODE != null and screenDispVO.MESSAGE_CODE != emptyBigDecimalValue">
+	  ,#{screenDispVO.MESSAGE_CODE}
+	  </if>
+	  <if test="screenDispVO.ZERO_NOT_ALLOWED != null">
+	 ,#{screenDispVO.ZERO_NOT_ALLOWED}
+	  </if>
+	  <if test="screenDispVO.TRIM_STRING != null">
+	 ,#{screenDispVO.TRIM_STRING}
+	  </if>
+	 <if test="screenDispVO.LABEL_KEY != null">
+	 ,#{screenDispVO.LABEL_KEY}
+	 </if>
+	 <if test="screenDispVO.MAX_LENGTH != null and screenDispVO.MAX_LENGTH != emptyBigDecimalValue">
+	 ,#{screenDispVO.MAX_LENGTH}
+	 </if>
+	 <if test="screenDispVO.VISIBILITY_EXPR != null" >
+      ,#{screenDispVO.VISIBILITY_EXPR}
+     </if>
+	 <if test="screenDispVO.READONLY_EXPR != null" >
+      ,#{screenDispVO.READONLY_EXPR}
+     </if>
+	 <if test="screenDispVO.MANDATORY_EXPR != null" >
+      ,#{screenDispVO.MANDATORY_EXPR}
+     </if>
+	 <if test="screenDispVO.ZERO_NOT_ALLOWED_EXPR != null" >
+      ,#{screenDispVO.ZERO_NOT_ALLOWED_EXPR}
+     </if>
+     <if test="screenDispVO.VALUE_VALID_EXPR != null" >
+      ,#{screenDispVO.VALUE_VALID_EXPR}
+     </if>
+     <if test="screenDispVO.KEYBOARD_SHORTCUT_KEY != null" >
+      ,#{screenDispVO.KEYBOARD_SHORTCUT_KEY}
+     </if>
+     <if test="screenDispVO.DEFAULT_VALUE != null" >
+      ,#{screenDispVO.DEFAULT_VALUE}
+     </if>
+     <if test="screenDispVO.ACTIVITY_TYPE != null" >
+      ,#{screenDispVO.ACTIVITY_TYPE}
+     </if>
+     <if test="screenDispVO.ACTIVITY_ID != null and screenDispVO.ACTIVITY_ID != emptyBigDecimalValue">
+	  ,#{screenDispVO.ACTIVITY_ID}
+	 </if>
+	 <if test="screenDispVO.SCREEN_WIDTH != null and screenDispVO.SCREEN_WIDTH != emptyBigDecimalValue">
+	  ,#{screenDispVO.SCREEN_WIDTH}
+	 </if>
+	 <if test="screenDispVO.SCREEN_HEIGHT != null and screenDispVO.SCREEN_HEIGHT != emptyBigDecimalValue">
+	  ,#{screenDispVO.SCREEN_HEIGHT}
+	 </if>
+	 <if test="screenDispVO.LABEL_KEY_EXPR != null" >
+      ,#{screenDispVO.LABEL_KEY_EXPR}
+     </if>
+	 ,@V_MAX
+	 <if test="screenDispVO.IS_ADM_CUST_DIS_YN != null">													
+	 	,#{screenDispVO.IS_ADM_CUST_DIS_YN}
+	 </if>
+	 <if test="screenDispVO.ENABLE_FIELD_AUDIT_YN != null">
+	 	,#{screenDispVO.ENABLE_FIELD_AUDIT_YN}
+	 </if>
+	 <if test="screenDispVO.MIN_LENGTH != null and screenDispVO.MIN_LENGTH != emptyBigDecimalValue">
+	  ,#{screenDispVO.MIN_LENGTH}
+	 </if>
+	 <if test="screenDispVO.DEFAULT_VALUE_EXPR != null">
+	  ,#{screenDispVO.DEFAULT_VALUE_EXPR}
+	 </if>
+	 <if test="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null">
+	  ,#{screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN}
+	 </if>	 
+	 <if test="screenDispVO.BACKGROUND_COLOR != null">
+	  ,#{screenDispVO.BACKGROUND_COLOR}
+	 </if>	 
+	 <if test="screenDispVO.BACKGROUND_COLOR_EXPR != null">
+	  ,#{screenDispVO.BACKGROUND_COLOR_EXPR}
+	 </if>
+	 <if test='actionType.equals("R")'>
+	   <choose>
+	        <when test="isSybase == 1" >
+	           ,GETDATE()
+	           ,GETDATE()
+	        </when>
+	        <otherwise >
+	           ,SYSDATE
+	           ,SYSDATE
+	        </otherwise>
+	   </choose>
+         ,#{userId}	 
+	 </if>	 
+	 )
+	 END
+END
+ 
+ </when>
+ <otherwise>
+   
+  declare
+   	v_max number;
+   	v_exists_fld_identifier number;
+   	LL_COUNT number;
+	begin
+	select nvl (max(T.FLD_IDENTIFIER),0) + 1
+                 into v_max
+                 from FIELD_TECH_DETAILS T;
+
+	BEGIN  
+		SELECT FLD_IDENTIFIER INTO v_exists_fld_identifier
+  		FROM FIELD_TECH_DETAILS SP 
+ 		WHERE SP.ELEMENT_NAME = #{screenDispVO.ELEMENT_NAME} 
+   		AND SP.VO_PROPERTY_NAME =  #{screenDispVO.VO_PROPERTY_NAME}
+   		AND SP.VO_CO_REFERENCE = #{screenDispVO.VO_CO_REFERENCE}
+   		/*AND SP.ENTITY_TYPE IS NULL 
+   		AND SP.PB_FIELD_NAME IS NULL
+   		*/; 
+	EXCEPTION WHEN NO_DATA_FOUND THEN
+  		v_exists_fld_identifier := null;
+	END;
+
+	IF v_exists_fld_identifier IS NULL THEN 
+	 INSERT INTO FIELD_TECH_DETAILS (FLD_IDENTIFIER		
+		, ENTITY_TYPE		
+		, PB_FIELD_NAME		
+		, ELEMENT_NAME		
+		, ELEMENT_ID		
+		<if test="screenDispVO.VO_PROPERTY_NAME != null">
+		 , VO_PROPERTY_NAME
+	   </if>
+	   <if test="screenDispVO.VO_CO_REFERENCE != null">
+		 , VO_CO_REFERENCE
+	   </if>
+	   )
+	VALUES(v_max		
+		, NULL		
+		, NULL		
+		,#{screenDispVO.ELEMENT_NAME} 
+		, NULL		
+		<if test="screenDispVO.VO_PROPERTY_NAME != null">
+			,#{screenDispVO.VO_PROPERTY_NAME}
+	  	</if>
+	  	<if test="screenDispVO.VO_CO_REFERENCE != null">
+		 , #{screenDispVO.VO_CO_REFERENCE}
+	   	</if>
+	  ) ;
+  ELSE 
+   v_max := v_exists_fld_identifier;
+  END IF;
+  
+	SELECT COUNT(1) INTO LL_COUNT 
+	  FROM 
+    <choose>
+       <when test='actionType.equals("R")'>
+          SYS_PARAM_SCREEN_DISPLAY_MIR
+       </when>
+       <otherwise>
+          SYS_PARAM_SCREEN_DISPLAY
+       </otherwise>
+    </choose>
+	 WHERE COMP_CODE = #{screenDispVO.COMP_CODE} AND PROG_REF= 
+	<choose>	
+		<when test="specificFlag">
+		  #{cutomizationPROG_REF}
+		</when>
+		<otherwise>
+		  (<include refid="returnSysParamDisplayProgRefCommon"></include>)
+		</otherwise>
+	</choose>
+	AND APP_NAME = #{screenDispVO.APP_NAME} AND FLD_IDENTIFIER = v_max;
+  	IF LL_COUNT = 0 THEN  
+	 INSERT INTO 
+    <choose>
+       <when test='actionType.equals("R")'>
+          SYS_PARAM_SCREEN_DISPLAY_MIR
+       </when>
+       <otherwise>
+          SYS_PARAM_SCREEN_DISPLAY
+       </otherwise>
+    </choose>
+	( COMP_CODE		
+	, PROG_REF		
+	, APP_NAME	
+	<if test="screenDispVO.IS_MANDATORY != null">
+	  ,IS_MANDATORY
+	 </if>
+	 <if test="screenDispVO.IS_VISIBLE != null">
+	  ,IS_VISIBLE
+	 </if>
+	 <if test="screenDispVO.IS_READONLY != null">
+	  ,IS_READONLY
+	 </if>
+	 <if test="screenDispVO.ARABIC_DEPENDANT != null">
+	  ,ARABIC_DEPENDANT
+	 </if>	
+	 <if test="screenDispVO.MESSAGE_CODE != null and screenDispVO.MESSAGE_CODE != emptyBigDecimalValue">
+	 , MESSAGE_CODE
+	  </if>
+	  <if test="screenDispVO.ZERO_NOT_ALLOWED != null">
+	  ,ZERO_NOT_ALLOWED
+	 </if>
+	 <if test="screenDispVO.TRIM_STRING != null">
+	  ,TRIM_STRING
+	 </if>
+	  <if test="screenDispVO.LABEL_KEY != null">
+	 , LABEL_KEY
+	 </if>
+	 <if test="screenDispVO.MAX_LENGTH != null and screenDispVO.MAX_LENGTH != emptyBigDecimalValue">
+	  , MAX_LENGTH
+	 </if>
+	 <if test="screenDispVO.VISIBILITY_EXPR != null" >
+      , VISIBILITY_EXPR
+     </if>		
+	 <if test="screenDispVO.READONLY_EXPR != null" >
+      , READONLY_EXPR
+     </if>		
+	 <if test="screenDispVO.MANDATORY_EXPR != null" >
+      , MANDATORY_EXPR
+     </if>
+	 <if test="screenDispVO.ZERO_NOT_ALLOWED_EXPR != null" >
+      , ZERO_NOT_ALLOWED_EXPR
+     </if>
+     <if test="screenDispVO.VALUE_VALID_EXPR != null" >
+      , VALUE_VALID_EXPR
+     </if>
+     <if test="screenDispVO.KEYBOARD_SHORTCUT_KEY != null" >
+      , KEYBOARD_SHORTCUT_KEY
+     </if>
+     <if test="screenDispVO.DEFAULT_VALUE != null" >
+      , DEFAULT_VALUE
+     </if>
+     <if test="screenDispVO.ACTIVITY_TYPE != null" >
+      , ACTIVITY_TYPE
+     </if>
+     <if test="screenDispVO.ACTIVITY_ID != null and screenDispVO.ACTIVITY_ID != emptyBigDecimalValue">
+	  , ACTIVITY_ID
+	 </if>
+	 <if test="screenDispVO.SCREEN_WIDTH != null and screenDispVO.SCREEN_WIDTH != emptyBigDecimalValue">
+	  , SCREEN_WIDTH
+	 </if>
+	 <if test="screenDispVO.SCREEN_HEIGHT != null and screenDispVO.SCREEN_HEIGHT != emptyBigDecimalValue">
+	  , SCREEN_HEIGHT
+	 </if>
+	 <if test="screenDispVO.LABEL_KEY_EXPR != null" >
+      , LABEL_KEY_EXPR
+     </if>
+	  , FLD_IDENTIFIER
+	 <if test="screenDispVO.IS_ADM_CUST_DIS_YN != null">														
+	  ,IS_ADM_CUST_DIS_YN
+	 </if>
+	 <if test="screenDispVO.ENABLE_FIELD_AUDIT_YN != null">
+	  ,ENABLE_FIELD_AUDIT_YN
+	 </if>
+	 <if test="screenDispVO.MIN_LENGTH != null and screenDispVO.MIN_LENGTH != emptyBigDecimalValue">
+	  , MIN_LENGTH
+	 </if>
+	 <if test="screenDispVO.DEFAULT_VALUE_EXPR != null" >
+      , DEFAULT_VALUE_EXPR
+     </if>	 
+	 <if test="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null">
+	  , DFLT_VAL_EXPR_PRIORITY_YN
+	 </if>	
+	  <if test="screenDispVO.BACKGROUND_COLOR != null">
+	  , BACKGROUND_COLOR
+	 </if> 
+	  <if test="screenDispVO.BACKGROUND_COLOR_EXPR != null">
+	  , BACKGROUND_COLOR_EXPR
+	 </if>
+	 <if test='actionType.equals("R")'>
+	    ,DATE_UPDATED
+	    ,DATE_CREATED
+	    ,CREATED_BY
+	 </if>
+	 )	
+	VALUES(#{screenDispVO.COMP_CODE}
+	<choose>	
+	<when test="specificFlag">
+	  ,#{cutomizationPROG_REF}
+	</when>
+	<otherwise>
+	  ,(<include refid="returnSysParamDisplayProgRefCommon"></include>)
+	</otherwise>
+	</choose>
+	  ,#{screenDispVO.APP_NAME}
+	 <if test="screenDispVO.IS_MANDATORY != null">
+	  ,#{screenDispVO.IS_MANDATORY}
+	 </if>
+	 <if test="screenDispVO.IS_VISIBLE != null">
+	  ,#{screenDispVO.IS_VISIBLE}
+	 </if>
+	 <if test="screenDispVO.IS_READONLY != null">
+	  ,#{screenDispVO.IS_READONLY}
+	 </if>
+	 <if test="screenDispVO.ARABIC_DEPENDANT != null">
+	  ,#{screenDispVO.ARABIC_DEPENDANT}
+	 </if>
+	 <if test="screenDispVO.MESSAGE_CODE != null and screenDispVO.MESSAGE_CODE != emptyBigDecimalValue">
+	  ,#{screenDispVO.MESSAGE_CODE}
+	 </if>
+	 <if test="screenDispVO.ZERO_NOT_ALLOWED != null">
+	  ,#{screenDispVO.ZERO_NOT_ALLOWED}
+	 </if>
+	 <if test="screenDispVO.TRIM_STRING != null">
+	  ,#{screenDispVO.TRIM_STRING}
+	 </if>
+	 <if test="screenDispVO.LABEL_KEY != null">
+	  ,#{screenDispVO.LABEL_KEY}
+	 </if>
+	 <if test="screenDispVO.MAX_LENGTH != null and screenDispVO.MAX_LENGTH != emptyBigDecimalValue">
+	  ,#{screenDispVO.MAX_LENGTH}
+	 </if>
+	 <if test="screenDispVO.VISIBILITY_EXPR != null" >
+      ,#{screenDispVO.VISIBILITY_EXPR}
+     </if>	
+	 <if test="screenDispVO.READONLY_EXPR != null" >
+      ,#{screenDispVO.READONLY_EXPR}
+     </if>	
+	 <if test="screenDispVO.MANDATORY_EXPR != null" >
+      ,#{screenDispVO.MANDATORY_EXPR}
+     </if>
+	 <if test="screenDispVO.ZERO_NOT_ALLOWED_EXPR != null" >
+      ,#{screenDispVO.ZERO_NOT_ALLOWED_EXPR}
+     </if>
+     <if test="screenDispVO.VALUE_VALID_EXPR != null" >
+      ,#{screenDispVO.VALUE_VALID_EXPR}
+     </if>
+     <if test="screenDispVO.KEYBOARD_SHORTCUT_KEY != null" >
+      ,#{screenDispVO.KEYBOARD_SHORTCUT_KEY}
+     </if>
+     <if test="screenDispVO.DEFAULT_VALUE != null" >
+      ,#{screenDispVO.DEFAULT_VALUE}
+     </if>
+     <if test="screenDispVO.ACTIVITY_TYPE != null" >
+      ,#{screenDispVO.ACTIVITY_TYPE}
+     </if>
+     <if test="screenDispVO.ACTIVITY_ID != null and screenDispVO.ACTIVITY_ID != emptyBigDecimalValue">
+	  ,#{screenDispVO.ACTIVITY_ID}
+	 </if>
+	 <if test="screenDispVO.SCREEN_WIDTH != null and screenDispVO.SCREEN_WIDTH != emptyBigDecimalValue">
+	  ,#{screenDispVO.SCREEN_WIDTH}
+	 </if>
+	 <if test="screenDispVO.SCREEN_HEIGHT != null and screenDispVO.SCREEN_HEIGHT != emptyBigDecimalValue">
+	  ,#{screenDispVO.SCREEN_HEIGHT}
+	 </if>
+	 <if test="screenDispVO.LABEL_KEY_EXPR != null" >
+      ,#{screenDispVO.LABEL_KEY_EXPR}
+     </if>
+	  ,v_max
+	 <if test="screenDispVO.IS_ADM_CUST_DIS_YN != null">									
+	 	,#{screenDispVO.IS_ADM_CUST_DIS_YN}
+	 </if>
+	 <if test="screenDispVO.ENABLE_FIELD_AUDIT_YN != null">
+	 	,#{screenDispVO.ENABLE_FIELD_AUDIT_YN}
+	 </if>
+	 <if test="screenDispVO.MIN_LENGTH != null and screenDispVO.MIN_LENGTH != emptyBigDecimalValue">
+	  ,#{screenDispVO.MIN_LENGTH}
+	 </if>
+	 <if test="screenDispVO.DEFAULT_VALUE_EXPR != null" >
+      ,#{screenDispVO.DEFAULT_VALUE_EXPR}
+     </if>	 
+	 <if test="screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null">
+	  ,#{screenDispVO.DFLT_VAL_EXPR_PRIORITY_YN}
+	 </if>	
+	 <if test="screenDispVO.BACKGROUND_COLOR != null">
+	  ,#{screenDispVO.BACKGROUND_COLOR}
+	 </if> 	 
+	 <if test="screenDispVO.BACKGROUND_COLOR_EXPR != null">
+	  ,#{screenDispVO.BACKGROUND_COLOR_EXPR}
+	 </if>
+	 <if test='actionType.equals("R")'>
+	   <choose>
+	        <when test="isSybase == 1" >
+	           ,GETDATE()
+	           ,GETDATE()
+	        </when>
+	        <otherwise >
+	           ,SYSDATE
+	           ,SYSDATE
+	        </otherwise>
+	   </choose>
+       ,#{userId}
+	 </if>	  	 
+	 ); 
+	 END IF;
+  END;
+ </otherwise>
+ </choose>
+ <selectKey resultType="java.math.BigDecimal" keyProperty="screenDispVO.FLD_IDENTIFIER" order="AFTER" >
+     SELECT FLD_IDENTIFIER 
+  	 FROM FIELD_TECH_DETAILS SP 
+ 	 WHERE SP.ELEMENT_NAME = #{screenDispVO.ELEMENT_NAME} 
+   	 AND SP.VO_PROPERTY_NAME =  #{screenDispVO.VO_PROPERTY_NAME}
+   	 AND SP.VO_CO_REFERENCE = #{screenDispVO.VO_CO_REFERENCE}
+ </selectKey>
+
+</update>
+
+<sql id="returnSysParamDisplayProgRefCommon">
+	SELECT (CASE WHEN PARENT_REF = 'ROOT' THEN PROG_REF ELSE PARENT_REF END) FROM OPT WHERE APP_NAME = #{screenDispVO.APP_NAME} AND PROG_REF = #{cutomizationPROG_REF}
+</sql>
+
+<select id="returnSysParamDisplayProgRef" parameterType="customizationCO" resultType="java.lang.String">
+	<include refid="returnSysParamDisplayProgRefCommon"></include> 
+</select>
+
+<select id="returnFieldTechDetails" parameterType="requiredFieldsSC" resultType="com.path.dbmaps.vo.FIELD_TECH_DETAILSVO">
+SELECT FLD_IDENTIFIER, VO_PROPERTY_NAME,VO_CO_REFERENCE
+FROM FIELD_TECH_DETAILS SP 
+WHERE SP.ELEMENT_NAME = #{elementName} 
+/*AND SP.ENTITY_TYPE IS NULL 
+AND SP.PB_FIELD_NAME IS NULL
+*/
+</select>
+<insert id="inserFieldTechDetails" parameterType="customizationCO">
+
+ INSERT INTO FIELD_TECH_DETAILS (FLD_IDENTIFIER		
+		, ENTITY_TYPE		
+		, PB_FIELD_NAME		
+		, ELEMENT_NAME		
+		, ELEMENT_ID		
+		<if test="screenDispVO.VO_PROPERTY_NAME != null">
+		 , VO_PROPERTY_NAME
+	   </if>
+	   <if test="screenDispVO.VO_CO_REFERENCE != null">
+		 , VO_CO_REFERENCE
+	   </if>
+	   )
+	VALUES(#{screenDispVO.FLD_IDENTIFIER} 		
+		, NULL		
+		, NULL		
+		,#{screenDispVO.ELEMENT_NAME} 
+		, NULL		
+		<if test="screenDispVO.VO_PROPERTY_NAME != null">
+			,#{screenDispVO.VO_PROPERTY_NAME}
+	  	</if>
+	  	<if test="screenDispVO.VO_CO_REFERENCE != null">
+		 , #{screenDispVO.VO_CO_REFERENCE}
+	   	</if>
+	  ) 
+	  </insert>
+<sql id="select_BusTransList">
+SELECT LANG_TBL.LANG_CODE,(SELECT LANG_NAME FROM SYS_PARAM_LANGUAGES WHERE LANG_CODE = LANG_TBL.LANG_CODE) LANG_NAME,
+ (SELECT TOOLTIP_VALUE FROM SYS_PARAM_FIELD_BUS_TRANS R_TRS 
+		 WHERE R_TRS.APP_NAME = #{appName} 
+		 AND R_TRS.PROG_REF = 'ROOT'
+		 AND R_TRS.FLD_IDENTIFIER = LANG_TBL.FLD_IDENTIFIER
+		 AND R_TRS.LANG_CODE = LANG_TBL.LANG_CODE)  GLOBAL_TOOLTIP_VALUE 
+	,(SELECT TOOLTIP_VALUE FROM SYS_PARAM_FIELD_BUS_TRANS TRS 
+		 WHERE TRS.APP_NAME = #{appName} 
+		 AND TRS.PROG_REF = #{pageRef} 
+		 AND TRS.FLD_IDENTIFIER = LANG_TBL.FLD_IDENTIFIER
+		 AND TRS.LANG_CODE = LANG_TBL.LANG_CODE)  TOOLTIP_VALUE
+FROM
+(
+SELECT DISTINCT LANG_CODE , SPFBT.FLD_IDENTIFIER
+FROM SYS_PARAM_FIELD_BUS_TRANS SPFBT
+ <if test="fldIdent == null or fldIdent == emptyBigDecimalValue">
+		   ,FIELD_TECH_DETAILS FTD
+		  </if>
+		  
+WHERE   <choose>
+		 <when test="fldIdent != null and fldIdent != emptyBigDecimalValue">
+		   SPFBT.FLD_IDENTIFIER = #{fldIdent}
+		  </when>
+		  <otherwise>
+		  SPFBT.FLD_IDENTIFIER = FTD.FLD_IDENTIFIER
+		  AND FTD.ELEMENT_NAME = #{elemntName} 
+   		  AND FTD.VO_PROPERTY_NAME =  #{voPropName}
+   		  AND FTD.VO_CO_REFERENCE = #{voCoRef}
+   		 /* 
+   		  AND FTD.ENTITY_TYPE IS NULL 
+   		  AND FTD.PB_FIELD_NAME IS NULL
+   		  */
+		  </otherwise>
+		 </choose> 
+AND (PROG_REF = #{pageRef} OR PROG_REF = 'ROOT')
+AND  APP_NAME = #{appName}
+) LANG_TBL
+</sql>
+<resultMap type="busTransCO" id="busTransResMap">
+     <result property="langCode" column="LANG_CODE"/>
+	 <result property="langDesc" column="LANG_NAME"/>
+	 <result property="toolTip"  column="TOOLTIP_VALUE"/>
+	 <result property="globalToolTip"  column="GLOBAL_TOOLTIP_VALUE"/>
+</resultMap>
+<select id="returnBusTranList" parameterType="busTransSC" resultMap="busTransResMap">
+       <include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="customizationMapper.select_BusTransList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<update id="updateSaveAsChanges" parameterType="customizationCO">
+<if test="isOracle == 1">BEGIN</if>
+ <!-- ADD New Parent if Duplicate Parent, DYNAMIC_OPT=3 just to distinguish that comes from Save As -->
+  <if test='dupParentFlag.equals("1")'>
+    INSERT INTO OPT(PROG_REF
+                   ,PROG_DESC
+                   ,APP_NAME
+                   ,PARENT_REF
+                   ,MENU_TITLE_ENG
+                   ,PROG_TYPE
+                   ,DISP_ORDER
+                   ,DYNAMIC_OPT
+                   <if test="catergoryId !=null">
+                   ,CATEG_ID  
+                   </if>
+                   ,IS_VISIBLE_AFTER_BR_CLOSURE_YN
+                   )
+    VALUES(#{screenParentRef},#{screenParentName},#{screenDispVO.APP_NAME}
+ ,#{parentOfScreenParentRef}
+ ,#{screenParentName},'R',#{screenParentDispOrder},'3'
+<if test="catergoryId !=null">
+ ,#{catergoryId} 
+ </if>
+ ,#{isVisibleAfterBrClosureYn} 
+ )<if test="isOracle == 1">;</if>
+  </if>
+  
+<if test="isSybase == 1">
+     DECLARE @PARENTREF VARCHAR(15)
+     <choose>
+     <when test="saveAsParentRef != null and saveAsParentRef != ''">
+     SELECT @PARENTREF = #{saveAsParentRef}
+     </when>
+     <otherwise>SELECT @PARENTREF = T.PARENT_REF FROM OPT T WHERE T.APP_NAME = #{screenDispVO.APP_NAME} AND T.PROG_REF = #{cutomizationPROG_REF}
+     </otherwise>
+     </choose>
+</if>
+
+<!-- New OPT Adding -->
+ INSERT INTO OPT(PROG_REF,PROG_DESC,APP_NAME,PARENT_REF,MENU_TITLE_ENG,PROG_TYPE,DISP_ORDER
+                 <if test="catergoryId !=null">
+                 ,CATEG_ID  
+                 </if>
+                 ,DYNAMIC_OPT
+                 ,IS_VISIBLE_AFTER_BR_CLOSURE_YN
+ )
+ VALUES(#{screenRef},#{screenName},#{screenDispVO.APP_NAME} 
+ ,
+ <choose>
+	 <when test='dupParentFlag.equals("1")'>
+	  #{screenParentRef}
+	 </when>
+	 <otherwise>
+	   <choose>
+	     <when test="isSybase == 1">
+	      @PARENTREF
+	     </when>
+	     <otherwise>
+	            <choose>
+			     <when test="saveAsParentRef != null and saveAsParentRef != ''">#{saveAsParentRef}</when>
+			     <otherwise>(SELECT T.PARENT_REF FROM OPT T WHERE T.APP_NAME = #{screenDispVO.APP_NAME} AND T.PROG_REF = #{cutomizationPROG_REF})</otherwise>
+			     </choose>
+	     </otherwise>
+	  </choose>
+	 
+	 </otherwise>
+ </choose>
+ ,#{screenName},'P',#{screenDispOrder}
+ <if test="catergoryId !=null">
+ ,#{catergoryId} 
+ </if>
+ ,'3'
+ ,#{isVisibleAfterBrClosureYn}
+ )<if test="isOracle == 1">;</if>
+
+
+<!-- OPT EXTENDED Similar to source OTP --> 
+ INSERT INTO OPT_EXTENDED(APP_NAME,PROG_REF,OPT_URL,IV_CRUD,OPT_REFERENCE
+ 	<if test="FROM_SERIES_PROG_REF != null">
+ 		,FOR_SERIES_PROG_REF
+ 	</if>
+ 	)
+ VALUES(#{screenDispVO.APP_NAME},#{screenRef},'SAVED_AS',NULL,#{originScreenRef}
+ <if test="FROM_SERIES_PROG_REF != null">
+ 		,#{FROM_SERIES_PROG_REF}
+ 	</if>
+ 	)
+ 	
+<if test="isOracle == 1">;</if>
+ 
+  <!-- GRANT ACCESS rights to the parent of New OPT for logged in User --> 
+ <if test='dupParentFlag.equals("1")'>
+ INSERT INTO AXS(USER_ID,COMP_CODE,BRANCH_CODE,APP_NAME,PROG_REF,CREATED_BY,AUTHORIZED_BY,STATUS,DATE_CREATED,DATE_AUTHORIZED)
+ VALUES(#{userId},#{compCode},#{branchCode},#{screenDispVO.APP_NAME},#{screenParentRef},#{userId},#{userId},'P'
+ ,<include refid="commonLibMapper.systemDate"/>,<include refid="commonLibMapper.systemDate"/>)<if test="isOracle == 1">;</if>
+ </if>
+ 
+ <!-- GRANT ACCESS rights to the New OPT for logged in User --> 
+ INSERT INTO AXS(USER_ID,COMP_CODE,BRANCH_CODE,APP_NAME,PROG_REF,CREATED_BY,AUTHORIZED_BY,STATUS,DATE_CREATED,DATE_AUTHORIZED)
+ SELECT
+        #{userId}
+       ,#{compCode}
+       ,#{branchCode}
+       ,#{screenDispVO.APP_NAME}
+       ,#{screenRef}
+       ,#{userId}
+       ,#{userId}
+       ,'P'
+       ,<include refid="commonLibMapper.systemDate"/>
+       ,<include refid="commonLibMapper.systemDate"/>  
+   FROM AXS
+  WHERE USER_ID	    = #{userId}	
+    AND COMP_CODE	= #{compCode} 		
+    AND BRANCH_CODE	= #{branchCode}		
+    AND PROG_REF    = #{originScreenRef}		
+    AND APP_NAME    = #{screenDispVO.APP_NAME}
+    AND STATUS      = 'P'
+    AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )			   
+ <if test="isOracle == 1">; END;</if>
+</update>
+
+
+<select id="returnAllowDuplicate" parameterType="commonLibSC" resultType="string">
+	SELECT ALLOW_DUPLICATE_YN  FROM OPT WHERE APP_NAME = #{appName} AND PROG_REF = #{progRef}
+</select>
+
+<select id="checkSaveAsSeries" resultType="string">
+	SELECT DISTINCT PROG_REF FROM OPT_SERIES 
+	WHERE PROG_REF = #{progRef}
+	AND APP_NAME = #{appName}
+</select>
+<sql id="seriesOptsQuery">
+	SELECT OP.PROG_REF, OS.SUFFIX theKey, OP.MENU_TITLE_ENG, OP.DISP_ORDER  
+	FROM OPT_SERIES OS, OPT OP
+	WHERE OS.APP_NAME = #{screenDispVO.APP_NAME}
+	AND OS.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE APP_NAME = #{screenDispVO.APP_NAME} AND PROG_REF = #{cutomizationPROG_REF})
+	AND OP.PROG_REF = ((CASE WHEN OS.PREFIX IS NOT NULL THEN OS.PREFIX ELSE OS.PROG_REF END) || OS.SUFFIX)
+	AND OS.APP_NAME = OP.APP_NAME
+	AND OS.PROG_REF = OP.PARENT_REF
+</sql>
+<select id="returnSeriesOpts" parameterType="customizationCO" resultType="com.path.dbmaps.vo.OPTVO">
+	<include refid="customizationMapper.seriesOptsQuery"/>
+</select>
+
+<resultMap id="seriesOptListMap" type="com.path.dbmaps.vo.OPTVO">
+   <result property="PROG_REF"       column="PROG_REF"/>
+   <result property="MENU_TITLE_ENG" column="MENU_TITLE_ENG"/>
+</resultMap>
+<select id="returnSeriesOptsListRecords" resultMap="seriesOptListMap" parameterType="customizationSC">
+ 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="customizationMapper.seriesOptsQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+<select id="returnSeriesOptsListCount"  resultType="int" parameterType="customizationSC"> 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="customizationMapper.seriesOptsQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+<select id="checkOptExsisting" parameterType="commonLibSC" resultType="int">
+select <if test="isSybase == 1">TOP 1</if> 1 
+  from OPT 
+ where PROG_REF in 
+               <foreach item="OPTVO" index="index" open="(" close=")" separator="," collection="seriesLst" > 
+                 #{progRef}||#{OPTVO.theKey}
+               </foreach> 
+   and APP_NAME = #{appName}
+   <if test="isOracle == 1">
+   AND ROWNUM=1
+   </if> 
+</select>
+
+
+<resultMap id="usrPrntrListMap" type="com.path.dbmaps.vo.USER_PRINTERSVO">
+   <result property="PRINTER_NAME" column="PRINTER_NAME"/>
+</resultMap>
+<select id="returnUsrPrntrList" resultMap="usrPrntrListMap" parameterType="customizationSC"> 
+SELECT PRINTER_NAME
+FROM USER_PRINTERS
+WHERE USER_ID = #{userId}
+</select>
+<select id="checkCustomizationDisabling" resultType="int" parameterType="commonLibSC">
+  SELECT <if test="isSybase == 1">TOP 1</if> 1
+    FROM OPT o
+   WHERE (o.PROG_REF = #{progRef} OR o.PROG_REF = (SELECT parent.PARENT_REF 
+                                                   FROM OPT parent
+                                                  WHERE parent.PROG_REF = #{progRef} 
+                                                    AND parent.APP_NAME = #{appName}))
+     AND o.APP_NAME = #{appName}
+     AND o.DISABLE_CUSTOMIZATION_YN = '1'
+   <if test="isOracle == 1">
+     AND ROWNUM=1
+   </if> 
+</select>
+
+	<!-- saved screens LIST -->
+	 <sql id="savedScreensListCommon" >
+		 <![CDATA[
+			SELECT OT.PROG_REF, LTRIM(RTRIM(OT.PROG_DESC)) AS PROG_DESC, OT.PARENT_REF, OT.APP_NAME 
+			FROM OPT OT, OPT_EXTENDED OTE
+			WHERE OT.APP_NAME = OTE.APP_NAME
+			AND OT.PROG_REF = OTE.PROG_REF
+			AND	OT.APP_NAME = #{appName}
+			AND OT.DYNAMIC_OPT = #{dynamicOpt}
+			AND	OTE.OPT_URL = #{optUrl}
+			]]>	
+	</sql>
+	
+	 <resultMap id="returnSavedScreensList_ResMap" type="OPTVO" >
+		<result column="PROG_REF" property="PROG_REF" />
+		<result column="PROG_DESC" property="PROG_DESC" />
+		<result column="PARENT_REF" property="PARENT_REF" />
+	 </resultMap>
+	 
+	 <select id="returnSavedScreensList"  resultMap="returnSavedScreensList_ResMap" parameterType="customizationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="savedScreensListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>			
+	</select>
+	
+	<select id="returnSavedScreensCount"  resultType="int" parameterType="customizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="savedScreensListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+
+
+	<select id="returnSavedScreensOfProgRefParentCount"  resultType="int" parameterType="customizationSC" > 
+			SELECT count(1)
+			FROM OPT 
+			WHERE PARENT_REF = (SELECT PARENT_REF FROM OPT 
+								WHERE PROG_REF = #{cutomizationPROG_REF}
+								AND APP_NAME = #{appName})						
+	</select>
+
+
+	<select id="doesProgRefHaveDuplicateParent"  resultType="int" parameterType="customizationSC" > 
+			SELECT 1 
+			FROM OPT 
+			WHERE APP_NAME = #{appName} 
+			AND   PROG_REF = (SELECT PARENT_REF FROM OPT 
+								WHERE PROG_REF = #{cutomizationPROG_REF}
+								AND APP_NAME = #{appName})			
+			AND DYNAMIC_OPT = #{dynamicOpt}			
+	</select>	
+	
+	
+	<select id="returnSuffixList" parameterType="customizationSC" resultType="com.path.dbmaps.vo.OPT_SERIESVO">
+		SELECT SUFFIX 
+			FROM OPT_SERIES 
+				WHERE PROG_REF = #{cutomizationPROG_REF}
+					AND APP_NAME = #{appName}
+	</select>
+	
+	
+	<delete id="deleteActualProgRefSeriesExcludingProgRef" parameterType="customizationSC" >
+		BEGIN
+				DELETE FROM S_ROLE_DETAIL
+						WHERE PROG_REF IN 
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+						AND APP_NAME = #{appName} <if test="isOracle==1">;</if>
+						
+				DELETE FROM SYS_PARAM_SCREEN_DISPLAY
+						WHERE PROG_REF IN 
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+						AND APP_NAME = #{appName} 	<if test="isOracle==1">;</if>				
+						
+				DELETE FROM AXS
+						WHERE PROG_REF IN
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+						AND APP_NAME = #{appName} <if test="isOracle==1">;</if>		
+		
+				DELETE FROM OPT_EXTENDED
+						WHERE PROG_REF IN 
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+						AND APP_NAME = #{appName}  <if test="isOracle==1">;</if>
+		
+				DELETE FROM OPT 
+						WHERE PROG_REF IN 
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+						AND APP_NAME = #{appName} <if test="isOracle==1">;</if>									 
+		END <if test="isOracle==1">;</if> 
+	</delete> 
+
+
+	<select id="returnActualProgRefSeriesExcludingProgRefCount" parameterType="customizationSC" resultType="int">
+		SELECT count(1) 
+			FROM OPT 
+				WHERE PROG_REF IN
+						<foreach item="item" index="index" collection="seriesProgRefList"
+									 open="(" separator="," close=")">
+								#{item}
+						</foreach>
+				AND APP_NAME = #{appName}
+	</select>
+
+
+	<delete id="deleteDuplicateParent" parameterType="customizationSC" >
+			<include refid="deleteProgRefCommon"></include>
+	</delete> 
+	
+	<sql id="deleteProgRefCommon">
+			BEGIN		
+				DELETE FROM S_ROLE_DETAIL 
+						WHERE PROG_REF = #{cutomizationPROG_REF}					
+							AND APP_NAME = #{appName} <if test="isOracle==1">;</if>	
+							
+				DELETE FROM SYS_PARAM_SCREEN_DISPLAY 
+						WHERE PROG_REF = #{cutomizationPROG_REF}					
+							AND APP_NAME = #{appName} <if test="isOracle==1">;</if>			
+				
+				DELETE FROM AXS 
+						WHERE PROG_REF = #{cutomizationPROG_REF}					
+							AND APP_NAME = #{appName} <if test="isOracle==1">;</if>	
+							
+				DELETE FROM OPT 
+						WHERE PROG_REF = #{cutomizationPROG_REF}					
+							AND APP_NAME = #{appName} <if test="isOracle==1">;</if>										 
+		END <if test="isOracle==1">;</if> 
+	</sql>
+	
+	<delete id="deletePageRefScreen" parameterType="customizationSC" >
+		BEGIN		
+				DELETE FROM OPT_EXTENDED 
+						WHERE PROG_REF = #{cutomizationPROG_REF}					
+							AND APP_NAME = #{appName} <if test="isOracle==1">;</if>		
+			<include refid="deleteProgRefCommon"></include>	
+							 
+		END <if test="isOracle==1">;</if> 
+	</delete> 
+
+
+<select id="returnCustExp" resultMap="returnCustExpListMap"
+	parameterType="customizationSC">
+	<include refid="returnCustomizationExport" />
+</select>
+
+<select id="returnCustExpCount" resultType="int"
+	parameterType="customizationSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="returnCustomizationExport" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<resultMap id="returnCustExpListMap" type="customizationCO">
+
+<result property="screenDispVO.COMP_CODE" column="COMP_CODE"/>
+<result property="screenDispVO.PROG_REF" column="PROG_REF"/>
+<result property="screenDispVO.APP_NAME" column="APP_NAME"/>
+<result property="screenDispVO.IS_MANDATORY" column="IS_MANDATORY"/>
+<result property="screenDispVO.IS_VISIBLE" column="IS_VISIBLE"/>
+<result property="screenDispVO.IS_READONLY" column="IS_READONLY"/>
+<result property="screenDispVO.ARABIC_DEPENDANT" column="ARABIC_DEPENDANT"/>
+<result property="screenDispVO.MESSAGE_CODE" column="MESSAGE_CODE"/>
+<result property="screenDispVO.ZERO_NOT_ALLOWED" column="ZERO_NOT_ALLOWED"/>
+<result property="screenDispVO.TRIM_STRING" column="TRIM_STRING"/>
+<result property="screenDispVO.LABEL_KEY" column="LABEL_KEY"/>
+<result property="screenDispVO.MAX_LENGTH" column="MAX_LENGTH"/>
+<result property="screenDispVO.FLD_IDENTIFIER" column="SPSD_FLD_IDENTIFIER"/>
+<result property="screenDispVO.BUS_RELATED" column="BUS_RELATED"/>
+<result property="screenDispVO.MANDATORY_EXPR" column="MANDATORY_EXPR"/>
+<result property="screenDispVO.VISIBILITY_EXPR" column="VISIBILITY_EXPR"/>
+<result property="screenDispVO.READONLY_EXPR" column="READONLY_EXPR"/>
+<result property="screenDispVO.ZERO_NOT_ALLOWED_EXPR" column="ZERO_NOT_ALLOWED_EXPR"/>
+<result property="screenDispVO.LABEL_KEY_EXPR" column="LABEL_KEY_EXPR"/>
+<result property="screenDispVO.VALUE_VALID_EXPR" column="VALUE_VALID_EXPR"/>
+<result property="screenDispVO.KEYBOARD_SHORTCUT_KEY" column="KEYBOARD_SHORTCUT_KEY"/>
+<result property="screenDispVO.DEFAULT_VALUE" column="DEFAULT_VALUE"/>
+<result property="screenDispVO.ACTIVITY_TYPE" column="ACTIVITY_TYPE"/>
+<result property="screenDispVO.ACTIVITY_ID" column="ACTIVITY_ID"/>
+<result property="screenDispVO.SCREEN_WIDTH" column="SCREEN_WIDTH"/>
+<result property="screenDispVO.SCREEN_HEIGHT" column="SCREEN_HEIGHT"/>
+<result property="screenDispVO.ENTITY_TYPE" column="SPSD_ENTITY_TYPE"/>
+<result property="screenDispVO.ENTITY_CODE" column="ENTITY_CODE"/>
+<result property="screenDispVO.MIN_LENGTH"  	 column="MIN_LENGTH" />
+<result property="screenDispVO.BACKGROUND_COLOR"  	 column="BACKGROUND_COLOR" />
+<result property="screenDispVO.BACKGROUND_COLOR_EXPR"  	 column="BACKGROUND_COLOR_EXPR" />
+<result property="fieldTechDetailsVO.FLD_IDENTIFIER" column="FTD_FLD_IDENTIFIER"/>
+<result property="fieldTechDetailsVO.ENTITY_TYPE" column="FTD_ENTITY_TYPE"/>
+<result property="fieldTechDetailsVO.PB_FIELD_NAME" column="PB_FIELD_NAME"/>
+<result property="fieldTechDetailsVO.ELEMENT_NAME" column="ELEMENT_NAME"/>
+<result property="fieldTechDetailsVO.ELEMENT_ID" column="ELEMENT_ID"/>
+<result property="fieldTechDetailsVO.VO_PROPERTY_NAME" column="VO_PROPERTY_NAME"/>
+<result property="fieldTechDetailsVO.VO_CO_REFERENCE" column="VO_CO_REFERENCE"/>
+</resultMap>
+
+<sql id="returnCustomizationExport">
+	SELECT 
+	SPSD.COMP_CODE,
+	SPSD.PROG_REF,
+	SPSD.APP_NAME,
+	SPSD.IS_MANDATORY,
+	SPSD.IS_VISIBLE,
+	SPSD.IS_READONLY,
+	SPSD.ARABIC_DEPENDANT,
+	SPSD.MESSAGE_CODE,
+	SPSD.ZERO_NOT_ALLOWED,
+	SPSD.TRIM_STRING,
+	SPSD.LABEL_KEY,
+	SPSD.MAX_LENGTH,
+	SPSD.FLD_IDENTIFIER SPSD_FLD_IDENTIFIER,
+	SPSD.BUS_RELATED,
+	SPSD.ENTITY_CODE,
+	SPSD.ENTITY_TYPE SPSD_ENTITY_TYPE,
+	SPSD.MANDATORY_EXPR,
+	SPSD.VISIBILITY_EXPR,
+	SPSD.READONLY_EXPR,
+	SPSD.ZERO_NOT_ALLOWED_EXPR,
+	SPSD.LABEL_KEY_EXPR,
+	SPSD.VALUE_VALID_EXPR,
+	SPSD.KEYBOARD_SHORTCUT_KEY,
+	SPSD.DEFAULT_VALUE,
+	SPSD.ACTIVITY_TYPE,
+	SPSD.ACTIVITY_ID,
+	SPSD.IS_ADM_CUST_DIS_YN,
+	SPSD.ENABLE_FIELD_AUDIT_YN,
+	SPSD.MIN_LENGTH,
+	SPSD.SCREEN_WIDTH,
+	SPSD.SCREEN_HEIGHT,
+	SPSD.BACKGROUND_COLOR,
+	SPSD.BACKGROUND_COLOR_EXPR
+	, FTD.FLD_IDENTIFIER FTD_FLD_IDENTIFIER
+	, FTD.ENTITY_TYPE FTD_ENTITY_TYPE
+	, FTD.PB_FIELD_NAME
+	, FTD.ELEMENT_NAME
+	, FTD.ELEMENT_ID
+	, FTD.VO_PROPERTY_NAME
+	, FTD.VO_CO_REFERENCE
+	FROM SYS_PARAM_SCREEN_DISPLAY SPSD, FIELD_TECH_DETAILS FTD
+	WHERE SPSD.FLD_IDENTIFIER = FTD.FLD_IDENTIFIER
+	AND SPSD.COMP_CODE = 0
+	AND SPSD.PROG_REF = #{cutomizationPROG_REF}
+	AND SPSD.APP_NAME = #{appName}
+	<if test="exportCustType == 'field'">
+	AND SPSD.FLD_IDENTIFIER = #{screenDispVO.FLD_IDENTIFIER}
+	</if>
+	AND SPSD.BUS_RELATED != 1
+</sql>
+
+<insert id="insertCustomizationImport" parameterType="customizationSC">
+	BEGIN
+	<choose>
+		<when test="isSybase == 1">
+			 declare @v_max int
+			<foreach collection="custCoList" item="CustomizationCO">
+				begin
+
+				select @v_max = (select
+				ISNULL(MAX(FTDMAX.FLD_IDENTIFIER),0)+1 FROM
+				FIELD_TECH_DETAILS FTDMAX)
+
+				INSERT INTO FIELD_TECH_DETAILS (FLD_IDENTIFIER, ENTITY_TYPE,
+				PB_FIELD_NAME, ELEMENT_NAME, ELEMENT_ID, VO_PROPERTY_NAME,
+				VO_CO_REFERENCE)
+				SELECT @v_max,
+				#{CustomizationCO.fieldTechDetailsVO.ENTITY_TYPE,jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.PB_FIELD_NAME,jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME},
+				#{CustomizationCO.fieldTechDetailsVO.ELEMENT_ID, jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME},
+				#{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE} FROM DUAL
+				WHERE NOT EXISTS (SELECT 1 FROM FIELD_TECH_DETAILS FTDEXIST
+				WHERE FTDEXIST.ELEMENT_NAME = #{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME}
+				AND	FTDEXIST.VO_PROPERTY_NAME = #{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME}
+				AND	FTDEXIST.VO_CO_REFERENCE = #{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE})
+				
+				<if test="CustomizationCO.addFieldTechDetailsOnly == false">
+					
+					select @v_max = ( SELECT ISNULL(MAX(FTDID.FLD_IDENTIFIER),0) FROM
+					FIELD_TECH_DETAILS FTDID
+					WHERE FTDID.ELEMENT_NAME = #{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME}
+					AND	FTDID.VO_PROPERTY_NAME = #{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME}
+					AND	FTDID.VO_CO_REFERENCE =	#{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE})
+	
+					<if test="overrideCustImport == 'true'">
+						DELETE FROM SYS_PARAM_SCREEN_DISPLAY
+						WHERE COMP_CODE = #{CustomizationCO.screenDispVO.COMP_CODE}
+						AND PROG_REF = #{CustomizationCO.screenDispVO.PROG_REF}
+						AND APP_NAME = #{CustomizationCO.screenDispVO.APP_NAME}
+						AND FLD_IDENTIFIER = @v_max
+						AND ENTITY_CODE = #{CustomizationCO.screenDispVO.ENTITY_CODE}
+						AND	ENTITY_TYPE = #{CustomizationCO.screenDispVO.ENTITY_TYPE}
+					</if>
+	
+					INSERT INTO SYS_PARAM_SCREEN_DISPLAY
+					(COMP_CODE,
+					PROG_REF,
+					APP_NAME,
+					IS_MANDATORY,
+					IS_VISIBLE,
+					IS_READONLY,
+					ARABIC_DEPENDANT,
+					MESSAGE_CODE,
+					ZERO_NOT_ALLOWED,
+					TRIM_STRING,
+					LABEL_KEY,
+					MAX_LENGTH,
+					FLD_IDENTIFIER,
+					BUS_RELATED,
+					ENTITY_CODE,
+					ENTITY_TYPE,
+					MANDATORY_EXPR,
+					VISIBILITY_EXPR,
+					READONLY_EXPR,
+					ZERO_NOT_ALLOWED_EXPR,
+					LABEL_KEY_EXPR,
+					VALUE_VALID_EXPR,
+					KEYBOARD_SHORTCUT_KEY,
+					DEFAULT_VALUE,
+					ACTIVITY_TYPE,
+					ACTIVITY_ID,
+					SCREEN_WIDTH,
+					SCREEN_HEIGHT,
+					IS_ADM_CUST_DIS_YN,
+					ENABLE_FIELD_AUDIT_YN,
+					SPSD.MIN_LENGTH,
+					BACKGROUND_COLOR,
+					BACKGROUND_COLOR_EXPR)
+					SELECT
+					#{CustomizationCO.screenDispVO.COMP_CODE},
+					#{CustomizationCO.screenDispVO.PROG_REF},
+					#{CustomizationCO.screenDispVO.APP_NAME},
+					#{CustomizationCO.screenDispVO.IS_MANDATORY, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_VISIBLE, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_READONLY, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ARABIC_DEPENDANT, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.MESSAGE_CODE, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ZERO_NOT_ALLOWED, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.TRIM_STRING, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.LABEL_KEY, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.MAX_LENGTH, jdbcType=NUMERIC},
+					@v_max,
+					#{CustomizationCO.screenDispVO.BUS_RELATED,	jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ENTITY_CODE},
+					#{CustomizationCO.screenDispVO.ENTITY_TYPE},
+					#{CustomizationCO.screenDispVO.MANDATORY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.READONLY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ZERO_NOT_ALLOWED_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.LABEL_KEY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.VALUE_VALID_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.KEYBOARD_SHORTCUT_KEY, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.DEFAULT_VALUE, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ACTIVITY_TYPE, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ACTIVITY_ID, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.SCREEN_WIDTH, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.SCREEN_HEIGHT, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_ADM_CUST_DIS_YN, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ENABLE_FIELD_AUDIT_YN, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.MIN_LENGTH, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.BACKGROUND_COLOR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.BACKGROUND_COLOR_EXPR, jdbcType=VARCHAR}
+					FROM DUAL
+					WHERE NOT EXISTS (SELECT 1 FROM
+					SYS_PARAM_SCREEN_DISPLAY SPSDEXIST
+					WHERE SPSDEXIST.COMP_CODE = #{CustomizationCO.screenDispVO.COMP_CODE}
+					AND SPSDEXIST.PROG_REF = #{CustomizationCO.screenDispVO.PROG_REF}
+					AND SPSDEXIST.APP_NAME = #{CustomizationCO.screenDispVO.APP_NAME}
+					AND SPSDEXIST.FLD_IDENTIFIER = @v_max
+					AND SPSDEXIST.ENTITY_CODE = #{CustomizationCO.screenDispVO.ENTITY_CODE}
+					AND SPSDEXIST.ENTITY_TYPE = #{CustomizationCO.screenDispVO.ENTITY_TYPE})
+				</if>
+				END
+			</foreach>
+			END
+		</when>
+		<otherwise>
+			DECLARE V_MAX NUMBER;
+			BEGIN
+			<foreach collection="custCoList" item="CustomizationCO">
+				BEGIN
+				INSERT INTO FIELD_TECH_DETAILS (FLD_IDENTIFIER, ENTITY_TYPE,
+				PB_FIELD_NAME, ELEMENT_NAME, ELEMENT_ID, VO_PROPERTY_NAME,
+				VO_CO_REFERENCE)
+				SELECT (SELECT nvl(max(FTDMAX.FLD_IDENTIFIER)+1, 0)
+				FROM FIELD_TECH_DETAILS FTDMAX),
+				#{CustomizationCO.fieldTechDetailsVO.ENTITY_TYPE, jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.PB_FIELD_NAME,	jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME},
+				#{CustomizationCO.fieldTechDetailsVO.ELEMENT_ID, jdbcType=VARCHAR},
+				#{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME},
+				#{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE}
+				FROM DUAL
+				WHERE NOT EXISTS (SELECT 1 FROM FIELD_TECH_DETAILS FTDEXIST
+				WHERE FTDEXIST.ELEMENT_NAME = #{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME}
+				AND	FTDEXIST.VO_PROPERTY_NAME =	#{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME}
+				AND	FTDEXIST.VO_CO_REFERENCE = #{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE});
+
+				<if test="CustomizationCO.addFieldTechDetailsOnly == false">
+
+					SELECT nvl(max(FTDID.FLD_IDENTIFIER), 0) into V_MAX FROM
+					FIELD_TECH_DETAILS	FTDID
+					WHERE FTDID.ELEMENT_NAME = #{CustomizationCO.fieldTechDetailsVO.ELEMENT_NAME}
+					AND	FTDID.VO_PROPERTY_NAME = #{CustomizationCO.fieldTechDetailsVO.VO_PROPERTY_NAME}
+					AND	FTDID.VO_CO_REFERENCE =	#{CustomizationCO.fieldTechDetailsVO.VO_CO_REFERENCE};
+	
+					<if test="overrideCustImport == 'true'">
+						DELETE FROM SYS_PARAM_SCREEN_DISPLAY SPDDEL
+						WHERE SPDDEL.COMP_CODE = #{CustomizationCO.screenDispVO.COMP_CODE}
+						AND	SPDDEL.PROG_REF = #{CustomizationCO.screenDispVO.PROG_REF}
+						AND	SPDDEL.APP_NAME = #{CustomizationCO.screenDispVO.APP_NAME}
+						AND	SPDDEL.FLD_IDENTIFIER = V_MAX
+						AND SPDDEL.ENTITY_CODE = #{CustomizationCO.screenDispVO.ENTITY_CODE}
+						AND SPDDEL.ENTITY_TYPE = #{CustomizationCO.screenDispVO.ENTITY_TYPE};
+					</if>
+	
+					INSERT INTO SYS_PARAM_SCREEN_DISPLAY
+					(COMP_CODE,
+					PROG_REF,
+					APP_NAME,
+					IS_MANDATORY,
+					IS_VISIBLE,
+					IS_READONLY,
+					ARABIC_DEPENDANT,
+					MESSAGE_CODE,
+					ZERO_NOT_ALLOWED,
+					TRIM_STRING,
+					LABEL_KEY,
+					MAX_LENGTH,
+					FLD_IDENTIFIER,
+					BUS_RELATED,
+					ENTITY_CODE,
+					ENTITY_TYPE,
+					MANDATORY_EXPR,
+					VISIBILITY_EXPR,
+					READONLY_EXPR,
+					ZERO_NOT_ALLOWED_EXPR,
+					LABEL_KEY_EXPR,
+					VALUE_VALID_EXPR,
+					KEYBOARD_SHORTCUT_KEY,
+					DEFAULT_VALUE,
+					ACTIVITY_TYPE,
+					ACTIVITY_ID,
+					SCREEN_WIDTH,
+					SCREEN_HEIGHT,
+					IS_ADM_CUST_DIS_YN,
+					ENABLE_FIELD_AUDIT_YN,
+					MIN_LENGTH,
+					BACKGROUND_COLOR,
+					BACKGROUND_COLOR_EXPR)
+					SELECT
+					#{CustomizationCO.screenDispVO.COMP_CODE},
+					#{CustomizationCO.screenDispVO.PROG_REF},
+					#{CustomizationCO.screenDispVO.APP_NAME},
+					#{CustomizationCO.screenDispVO.IS_MANDATORY, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_VISIBLE, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_READONLY, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ARABIC_DEPENDANT, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.MESSAGE_CODE, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ZERO_NOT_ALLOWED, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.TRIM_STRING, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.LABEL_KEY, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.MAX_LENGTH, jdbcType=NUMERIC},
+					V_MAX,
+					#{CustomizationCO.screenDispVO.BUS_RELATED, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ENTITY_CODE},
+					#{CustomizationCO.screenDispVO.ENTITY_TYPE},
+					#{CustomizationCO.screenDispVO.MANDATORY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.READONLY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ZERO_NOT_ALLOWED_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.LABEL_KEY_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.VALUE_VALID_EXPR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.KEYBOARD_SHORTCUT_KEY, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.DEFAULT_VALUE, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ACTIVITY_TYPE, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.ACTIVITY_ID,	jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.SCREEN_WIDTH,	jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.SCREEN_HEIGHT,	jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.IS_ADM_CUST_DIS_YN, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.ENABLE_FIELD_AUDIT_YN, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.MIN_LENGTH, jdbcType=NUMERIC},
+					#{CustomizationCO.screenDispVO.BACKGROUND_COLOR, jdbcType=VARCHAR},
+					#{CustomizationCO.screenDispVO.BACKGROUND_COLOR_EXPR, jdbcType=VARCHAR}
+					FROM DUAL
+					WHERE NOT EXISTS (SELECT 1 FROM
+					SYS_PARAM_SCREEN_DISPLAY SPSDEXIST
+					WHERE SPSDEXIST.COMP_CODE =	#{CustomizationCO.screenDispVO.COMP_CODE}
+					AND SPSDEXIST.PROG_REF = #{CustomizationCO.screenDispVO.PROG_REF}
+					AND SPSDEXIST.APP_NAME = #{CustomizationCO.screenDispVO.APP_NAME}
+					AND	SPSDEXIST.FLD_IDENTIFIER = V_MAX
+					AND SPSDEXIST.ENTITY_CODE =	#{CustomizationCO.screenDispVO.ENTITY_CODE}
+					AND	SPSDEXIST.ENTITY_TYPE =	#{CustomizationCO.screenDispVO.ENTITY_TYPE});
+				</if>
+				END;
+			</foreach>
+			END;
+			END;
+		</otherwise>
+	</choose>
+
+</insert>
+
+<select id="returnElementActivitiesList" resultMap="returnElementActivitiesListResultMap" parameterType="com.path.vo.common.customization.CustomElementActivitiesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="customizationMapper.returnElementActivitiesListQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+  </select>
+  
+  <select id="returnElementActivitiesCount"  resultType="int" parameterType="com.path.vo.common.customization.CustomElementActivitiesSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="customizationMapper.returnElementActivitiesListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+  
+  <resultMap id="returnElementActivitiesListResultMap" type="com.path.vo.common.customization.CustomElementActivitiesSC">
+	   <result property="sysParamElemActivitiesVO.APP_NAME"         						column="APP_NAME"/>
+	   <result property="sysParamElemActivitiesVO.PROG_REF"         						column="PROG_REF"/>
+	   <result property="sysParamElemActivitiesVO.FLD_IDENTIFIER"         					column="FLD_IDENTIFIER"/>
+	   <result property="sysParamElemActivitiesVO.SEQUENCE_ID"         						column="SEQUENCE_ID"/>
+	   <result property="sysParamElemActivitiesVO.ACTIVITY_TYPE"         					column="ACTIVITY_TYPE"/>
+	   <result property="sysParamElemActivitiesVO.ACTIVITY_ID"         						column="ACTIVITY_ID"/>
+	   <result property="sysParamElemActivitiesVO.DESCRIPTION"         						column="DESCRIPTION"/>
+	   <result property="sysParamElemActivitiesVO.PROCEED_ON_FAIL"         					column="PROCEED_ON_FAIL"/>
+	   <result property="sysParamElemActivitiesVO.ACTIVITY_ENABLE_YN"         				column="ACTIVITY_ENABLE_YN"/>
+	   <result property="sysParamElemActivitiesVO.PROCEED_ON_EXPRESSION"      				column="PROCEED_ON_EXPRESSION"/>
+	   <result property="sysParamElemActivitiesVO.CREATED_BY"      							column="CREATED_BY"/>
+	   <result property="sysParamElemActivitiesVO.CREATED_DATE"      						column="CREATED_DATE"/>
+	   <result property="sysParamElemActivitiesVO.MODIFIED_BY"      						column="MODIFIED_BY"/>
+	   <result property="sysParamElemActivitiesVO.MODIFIED_DATE"      						column="MODIFIED_DATE"/>
+	   <result property="sysParamElemActivitiesVO.SCREEN_WIDTH"      						column="SCREEN_WIDTH"/>
+	   <result property="sysParamElemActivitiesVO.SCREEN_HEIGHT"      						column="SCREEN_HEIGHT"/>
+	   <result property="sysParamElemActivitiesVO.SCREEN_TITLE"      						column="SCREEN_TITLE"/>
+	   <result property="activityDescription"      											column="ACTIVITY_DESCRIPTION"/>
+	   <result property="gridColumnName"      												column="GRID_COLUMN_NAME"/>
+	   <result property="compCode"      												    column="COMP_CODE"/>
+	</resultMap>
+	
+  <sql id="returnElementActivitiesListQuery">
+   <if test='fromObjDisplay == null or fromObjDisplay != "true"'>
+	 SELECT
+		S.APP_NAME,
+		S.PROG_REF,
+		S.FLD_IDENTIFIER,
+		S.SEQUENCE_ID,
+		S.ACTIVITY_TYPE,
+		S.ACTIVITY_ID,
+		S.DESCRIPTION,
+		S.PROCEED_ON_FAIL,
+		S.ACTIVITY_ENABLE_YN,
+		S.PROCEED_ON_EXPRESSION,
+		S.CREATED_BY,
+		S.CREATED_DATE,
+		S.MODIFIED_BY,
+		S.MODIFIED_DATE,
+		S.SCREEN_WIDTH,
+		S.SCREEN_HEIGHT,
+		S.SCREEN_TITLE,
+		(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		         FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = S.ACTIVITY_TYPE
+		         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		         AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ACTIVITY_DESCRIPTION,
+		NULL GRID_COLUMN_NAME,
+		NULL COMP_CODE
+	 FROM SYS_PARAM_ELEM_ACTIVITIES S
+	 WHERE 
+	 
+	<if test="allScreenActivities == null">
+	 FLD_IDENTIFIER = #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC} AND 
+	 </if>
+	 APP_NAME = #{sysParamElemActivitiesVO.APP_NAME}
+	 AND PROG_REF=	(SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{sysParamElemActivitiesVO.PROG_REF} AND APP_NAME = #{sysParamElemActivitiesVO.APP_NAME} AND PARENT_REF IS NOT NULL)
+	 AND 
+     NOT EXISTS(SELECT 1
+                FROM SYS_PARAM_ELEM_ACTIVITIES
+                  	WHERE FLD_IDENTIFIER = #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC}
+					AND APP_NAME = #{sysParamElemActivitiesVO.APP_NAME}
+					AND PROG_REF=	#{sysParamElemActivitiesVO.PROG_REF}
+		)
+	<if test="sysParamElemActivitiesVO.ACTIVITY_ENABLE_YN != null">
+	AND S.ACTIVITY_ENABLE_YN = #{sysParamElemActivitiesVO.ACTIVITY_ENABLE_YN}
+	</if>	
+		UNION ALL
+		 
+   </if>		
+		SELECT
+		S.APP_NAME,
+		S.PROG_REF,
+		S.FLD_IDENTIFIER,
+		S.SEQUENCE_ID,
+		S.ACTIVITY_TYPE,
+		S.ACTIVITY_ID,
+		S.DESCRIPTION,
+		S.PROCEED_ON_FAIL,
+		S.ACTIVITY_ENABLE_YN,
+		S.PROCEED_ON_EXPRESSION,
+		S.CREATED_BY,
+		S.CREATED_DATE,
+		S.MODIFIED_BY,
+		S.MODIFIED_DATE,
+		S.SCREEN_WIDTH,
+		S.SCREEN_HEIGHT,
+		S.SCREEN_TITLE,
+		(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		         FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = S.ACTIVITY_TYPE
+		         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		         AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) ACTIVITY_DESCRIPTION
+		<choose>
+			<when test='fromObjDisplay != null and fromObjDisplay == "true" '>
+				,(SELECT FTD.ELEMENT_NAME FROM FIELD_TECH_DETAILS FTD WHERE FTD.FLD_IDENTIFIER = S.FLD_IDENTIFIER) GRID_COLUMN_NAME,
+				(SELECT COMP_CODE FROM SYS_PARAM_BTN_CUST SPBC WHERE SPBC.BTN_ID = S.ACTIVITY_ID) COMP_CODE
+			</when>
+			<otherwise>
+				,NULL GRID_COLUMN_NAME
+				,NULL COMP_CODE
+			</otherwise>
+		</choose>
+	 FROM SYS_PARAM_ELEM_ACTIVITIES S
+	 WHERE
+	 <choose>	
+		<when test='fromObjDisplay != null and fromObjDisplay == "true" '>
+		 OBJ_DISPLAY_ID = #{sysParamElemActivitiesVO.OBJ_DISPLAY_ID,jdbcType=NUMERIC}
+		</when>
+		<otherwise>
+		 <if test="allScreenActivities == null">
+		 FLD_IDENTIFIER = #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC} AND
+	 	 </if>
+	 	  APP_NAME = #{sysParamElemActivitiesVO.APP_NAME}
+	 	 AND PROG_REF=	#{sysParamElemActivitiesVO.PROG_REF}
+		</otherwise>
+		 </choose>
+	 <if test="sysParamElemActivitiesVO.ACTIVITY_ENABLE_YN != null">
+		AND S.ACTIVITY_ENABLE_YN = #{sysParamElemActivitiesVO.ACTIVITY_ENABLE_YN}
+	 </if>
+	<if test="activityTypes != null">
+		AND S.ACTIVITY_TYPE IN
+		<foreach item="item" index="index" open="(" close=")" separator="," collection="activityTypes" >
+			#{item}
+		</foreach>
+	 </if>
+  </sql>
+ 
+  <delete id="deleteActivityParams" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELEM_ACTIVITIESVO" >
+  
+	  <choose>	
+		<when test='!ACTIVITY_TYPE.equals("1")'>
+			DELETE FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP
+   			WHERE EXISTS (SELECT 1
+            FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP S,SYS_PARAM_ELEM_ACTIVITIES E 
+            WHERE S.ELEM_SEQUENCE_ID = E.SEQUENCE_ID
+            <if test = 'FLD_IDENTIFIER != emptyBigDecimalValue'>
+            AND S.ELEM_FLD_IDENTIFIER = #{FLD_IDENTIFIER,jdbcType=NUMERIC}
+            </if>
+            AND S.APP_NAME = #{APP_NAME}
+            AND E.PROG_REF = #{PROG_REF}
+            AND S.BTN_ID = #{ACTIVITY_ID,jdbcType=NUMERIC}
+            AND S.ELEM_SEQUENCE_ID = #{SEQUENCE_ID,jdbcType=NUMERIC}
+            AND S.MAP_ID = SYS_PARAM_GLOBAL_ACT_ARG_MAP.MAP_ID)
+		</when>
+		<otherwise>
+			BEGIN
+				
+				DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID IN (
+		   		SELECT ELEMENT_MAP_ID FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE APP_NAME  = #{APP_NAME}
+		   		AND PROG_REF = #{PROG_REF}
+		   		AND ELEMENT_IDENTIFIER = #{FLD_IDENTIFIER,jdbcType=NUMERIC}
+		   		AND MAP_ELEMENT_TYPE IN ('2','3')
+				AND ELEMENT_OP_ID  = #{ACTIVITY_ID,jdbcType=NUMERIC}
+		   		)<if test="isOracle == 1">;</if>
+		   		
+		   		DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE APP_NAME  = #{APP_NAME}
+		   		AND PROG_REF = #{PROG_REF}
+		   		AND ELEMENT_IDENTIFIER = #{FLD_IDENTIFIER,jdbcType=NUMERIC}
+		   		AND MAP_ELEMENT_TYPE IN ('2','3')
+				AND ELEMENT_OP_ID  = #{ACTIVITY_ID,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+	   		
+	   		END <if test="isOracle == 1">;</if>
+		</otherwise>
+	  </choose>
+		
+ </delete> 
+ 
+  <delete id="deleteUnsavedActivityParams" parameterType="com.path.vo.common.customization.CustomElementActivitiesSC" >
+  BEGIN
+		DELETE FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP WHERE
+		APP_NAME = #{sysParamElemActivitiesVO.APP_NAME}
+		<if test = 'sysParamElemActivitiesVO.FLD_IDENTIFIER != emptyBigDecimalValue'> 
+		AND ELEM_FLD_IDENTIFIER =  #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC}
+		</if>
+		AND PROG_REF = #{sysParamElemActivitiesVO.PROG_REF}
+		<if test='!fromScreen.equals("1")'>  
+			AND BTN_ID  NOT IN
+	   		<foreach item="item" index="index" open="(" close=")" separator="," collection="activityIds" > 
+	   		${item} 
+	   		</foreach>
+   		</if><if test="isOracle == 1">;</if>
+   		
+	   		DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET WHERE ELEMENT_MAP_ID IN (
+	   		SELECT ELEMENT_MAP_ID FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE APP_NAME  = #{sysParamElemActivitiesVO.APP_NAME}
+	   		AND PROG_REF = #{sysParamElemActivitiesVO.PROG_REF}
+	   		AND ELEMENT_IDENTIFIER = #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC}
+	   		AND MAP_ELEMENT_TYPE IN ('2','3')
+	   		<if test='fromScreen.equals("1")'> 
+			AND ELEMENT_OP_ID  NOT IN
+	   		<foreach item="item" index="index" open="(" close=")" separator="," collection="activityIds" > 
+	   		${item} 
+	   		</foreach>
+   			</if>
+	   		)<if test="isOracle == 1">;</if>
+	   		
+	   		DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP WHERE APP_NAME  = #{sysParamElemActivitiesVO.APP_NAME}
+	   		AND PROG_REF = #{sysParamElemActivitiesVO.PROG_REF}
+	   		AND ELEMENT_IDENTIFIER = #{sysParamElemActivitiesVO.FLD_IDENTIFIER,jdbcType=NUMERIC}
+	   		AND MAP_ELEMENT_TYPE IN ('2','3')
+	   		<if test='fromScreen.equals("1")'>  
+			AND ELEMENT_OP_ID  NOT IN
+	   		<foreach item="item" index="index" open="(" close=")" separator="," collection="activityIds" > 
+	   		${item} 
+	   		</foreach>
+   		</if><if test="isOracle == 1">;</if>
+   		
+   		END <if test="isOracle == 1">;</if>
+ </delete> 
+
+<insert id="insertOrUpdateElemActivity" parameterType="com.path.dbmaps.vo.SYS_PARAM_ELEM_ACTIVITIESVO">
+	<if test="isOracle==1">
+	DECLARE SEQID NUMBER;
+	BEGIN
+	BEGIN
+	SELECT SEQUENCE_ID INTO SEQID FROM SYS_PARAM_ELEM_ACTIVITIES S  WHERE S.APP_NAME = #{APP_NAME} AND  S.FLD_IDENTIFIER = #{FLD_IDENTIFIER}
+   	AND S.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL);
+   	EXCEPTION WHEN NO_DATA_FOUND THEN 
+    SEQID := NULL;
+   	END;
+   	IF SEQID IS NOT NULL THEN
+   	</if>
+   	<if test="isSybase==1">
+   	DECLARE @SEQID NUMERIC(6)
+   	DECLARE @PARENT_REF VARCHAR(15)
+	SELECT @SEQID = SEQUENCE_ID FROM SYS_PARAM_ELEM_ACTIVITIES S  WHERE S.APP_NAME = #{APP_NAME} AND  S.FLD_IDENTIFIER = #{FLD_IDENTIFIER}
+   	AND S.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL)
+   	SELECT @PARENT_REF = PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL
+   	if(@SEQID IS NOT NULL)
+   	BEGIN
+   	</if>
+   	
+ 	DELETE FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP WHERE
+ 		APP_NAME = #{APP_NAME}
+ 		<if test = 'FLD_IDENTIFIER != emptyBigDecimalValue'> 
+		AND ELEM_FLD_IDENTIFIER =  #{FLD_IDENTIFIER,jdbcType=NUMERIC}
+		</if>
+		AND PROG_REF = <choose><when test="isSybase == 1">@PARENT_REF </when><otherwise>
+       (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL);
+     </otherwise></choose>
+        
+   	 update SYS_PARAM_ELEM_ACTIVITIES
+    <set >
+      <if test="SEQUENCE_ID != null" >
+        SEQUENCE_ID = #{SEQUENCE_ID},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF = <choose><when test="isSybase == 1">@PARENT_REF, </when><otherwise>
+         (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL),
+         </otherwise></choose> 
+      </if>
+      <if test="FLD_IDENTIFIER != null" >
+        <choose >
+          <when test="FLD_IDENTIFIER == emptyBigDecimalValue" >
+            FLD_IDENTIFIER = NULL ,
+          </when>
+          <otherwise >
+            FLD_IDENTIFIER = #{FLD_IDENTIFIER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTIVITY_TYPE != null" >
+        ACTIVITY_TYPE = #{ACTIVITY_TYPE},
+      </if>
+      <if test="ACTIVITY_ID != null" >
+        <choose >
+          <when test="ACTIVITY_ID == emptyBigDecimalValue" >
+            ACTIVITY_ID = NULL ,
+          </when>
+          <otherwise >
+            ACTIVITY_ID = #{ACTIVITY_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="PROCEED_ON_FAIL != null" >
+        PROCEED_ON_FAIL = #{PROCEED_ON_FAIL},
+      </if>
+      <if test="ACTIVITY_ENABLE_YN != null">
+		<choose>
+			<when test="ACTIVITY_ENABLE_YN.equals(&quot;&quot;)">
+				ACTIVITY_ENABLE_YN = NULL ,
+			</when>
+			<otherwise>
+				ACTIVITY_ENABLE_YN = #{ACTIVITY_ENABLE_YN},
+			</otherwise>
+		</choose>
+	</if>
+      <if test="SCREEN_WIDTH != null" >
+        <choose >
+          <when test="SCREEN_WIDTH == emptyBigDecimalValue" >
+            SCREEN_WIDTH = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_WIDTH = #{SCREEN_WIDTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCREEN_HEIGHT != null" >
+        <choose >
+          <when test="SCREEN_HEIGHT == emptyBigDecimalValue" >
+            SCREEN_HEIGHT = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_HEIGHT = #{SCREEN_HEIGHT},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="SCREEN_TITLE != null" >
+        SCREEN_TITLE = #{SCREEN_TITLE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="PROCEED_ON_EXPRESSION != null" >
+        PROCEED_ON_EXPRESSION = #{PROCEED_ON_EXPRESSION},
+      </if>
+    </set>
+    where SEQUENCE_ID = <choose><when test="isSybase == 1">@SEQID </when><otherwise> SEQID ;</otherwise></choose> 
+    
+	<choose><when test="isSybase == 1">END ELSE BEGIN</when><otherwise>ELSE</otherwise></choose> 		
+   	<selectKey resultType="java.math.BigDecimal" keyProperty="SEQUENCE_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(SEQUENCE_ID),0)+1</when><otherwise>NVL(MAX(SEQUENCE_ID),0)+1</otherwise></choose> FROM SYS_PARAM_ELEM_ACTIVITIES
+    </selectKey>
+    insert into SYS_PARAM_ELEM_ACTIVITIES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      SEQUENCE_ID,
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="FLD_IDENTIFIER != null and FLD_IDENTIFIER != emptyBigDecimalValue" >
+        FLD_IDENTIFIER,
+      </if>
+      <if test="ACTIVITY_TYPE != null" >
+        ACTIVITY_TYPE,
+      </if>
+      <if test="ACTIVITY_ID != null and ACTIVITY_ID != emptyBigDecimalValue" >
+        ACTIVITY_ID,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="PROCEED_ON_FAIL != null" >
+        PROCEED_ON_FAIL,
+      </if>
+      <if test="ACTIVITY_ENABLE_YN != null and !&quot;&quot;.equals(ACTIVITY_ENABLE_YN)" >
+        ACTIVITY_ENABLE_YN,
+      </if>
+      <if test="SCREEN_WIDTH != null and SCREEN_WIDTH != emptyBigDecimalValue" >
+        SCREEN_WIDTH,
+      </if>
+      <if test="SCREEN_HEIGHT != null and SCREEN_HEIGHT != emptyBigDecimalValue" >
+        SCREEN_HEIGHT,
+      </if>
+      <if test="SCREEN_TITLE != null" >
+        SCREEN_TITLE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="PROCEED_ON_EXPRESSION != null" >
+        PROCEED_ON_EXPRESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{SEQUENCE_ID},
+        #{APP_NAME},
+        <choose><when test="isSybase == 1">@PARENT_REF, </when><otherwise>
+         (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME} AND PARENT_REF IS NOT NULL),
+         </otherwise></choose>
+        #{FLD_IDENTIFIER},
+      <if test="ACTIVITY_TYPE != null" >
+        #{ACTIVITY_TYPE},
+      </if>
+      <if test="ACTIVITY_ID != null and ACTIVITY_ID != emptyBigDecimalValue" >
+        #{ACTIVITY_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="PROCEED_ON_FAIL != null" >
+        #{PROCEED_ON_FAIL},
+      </if>
+       <if test="ACTIVITY_ENABLE_YN != null and !&quot;&quot;.equals(ACTIVITY_ENABLE_YN)" >
+        ACTIVITY_ENABLE_YN,
+      </if>
+      <if test="SCREEN_WIDTH != null and SCREEN_WIDTH != emptyBigDecimalValue" >
+        #{SCREEN_WIDTH},
+      </if>
+      <if test="SCREEN_HEIGHT != null and SCREEN_HEIGHT != emptyBigDecimalValue" >
+        #{SCREEN_HEIGHT},
+      </if>
+      <if test="SCREEN_TITLE != null" >
+        #{SCREEN_TITLE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="PROCEED_ON_EXPRESSION != null" >
+        #{PROCEED_ON_EXPRESSION},
+      </if>
+    </trim>
+    <choose><when test="isSybase == 1">END</when><otherwise> ; END IF; 	END;</otherwise></choose> 	
+</insert>
+<delete id="delScreenDisplayMirData" parameterType="customizationCO">
+   DELETE 
+     FROM SYS_PARAM_SCREEN_DISPLAY_MIR 
+    WHERE COMP_CODE=#{screenDispVO.COMP_CODE}
+      <choose>
+      <when test="specificFlag">
+         AND PROG_REF = #{screenDispVO.PROG_REF}
+      </when>
+      <otherwise>
+         AND PROG_REF = (SELECT (
+                                   CASE WHEN PARENT_REF = 'ROOT'
+                                        THEN PROG_REF
+                                        ELSE PARENT_REF
+                                    END
+                                   ) 
+		                     FROM OPT 
+		                    WHERE APP_NAME = #{screenDispVO.APP_NAME} 
+		                      AND PROG_REF = #{screenDispVO.PROG_REF})
+      </otherwise>
+      </choose>
+      AND APP_NAME= #{screenDispVO.APP_NAME}
+      AND FLD_IDENTIFIER= #{screenDispVO.FLD_IDENTIFIER}
+      <if test="screenDispVO.ENTITY_CODE !=null">
+      AND ENTITY_CODE= #{screenDispVO.ENTITY_CODE}
+      </if>
+      <if test="screenDispVO.ENTITY_TYPE !=null">
+      AND ENTITY_TYPE= #{screenDispVO.ENTITY_TYPE}
+      </if>
+</delete>
+<select id="checkScreenDisplayMirData" parameterType="customizationCO" resultType="int">
+SELECT count(1)
+  FROM SYS_PARAM_SCREEN_DISPLAY_MIR M,FIELD_TECH_DETAILS F 
+ WHERE M.FLD_IDENTIFIER = F.FLD_IDENTIFIER
+   AND F.ELEMENT_NAME = #{screenDispVO.ELEMENT_NAME} 
+   AND M.COMP_CODE = 0
+   AND (
+        M.PROG_REF = #{cutomizationPROG_REF}
+        OR
+        M.PROG_REF = (SELECT OPT.PARENT_REF FROM OPT where OPT.PROG_REF = #{cutomizationPROG_REF} AND OPT.APP_NAME = #{screenDispVO.APP_NAME}) 
+       )
+   AND M.APP_NAME  = #{screenDispVO.APP_NAME}
+   <if test="screenDispVO.ENTITY_CODE !=null">
+   AND M.ENTITY_CODE= #{screenDispVO.ENTITY_CODE}
+   </if>
+   <if test="screenDispVO.ENTITY_TYPE !=null">
+   AND M.ENTITY_TYPE= #{screenDispVO.ENTITY_TYPE}
+   </if>
+</select>
+<select id="checkTableAvailablity" parameterType="com.path.struts2.lib.common.BaseObject" resultType="int">
+   <choose>
+      <when test="isSybase == 1">
+         SELECT COUNT(1) FROM sysobjects WHERE name = 'SYS_PARAM_SCREEN_DISPLAY_MIR' and type = 'U'
+      </when>
+      <otherwise>
+         SELECT COUNT(1) FROM USER_TABLES WHERE TABLE_NAME = 'SYS_PARAM_SCREEN_DISPLAY_MIR'
+      </otherwise>
+   </choose>
+</select>
+</mapper>

@@ -1,0 +1,2427 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="signatureMapper">
+ <select id="selectSignatureList" resultMap="returnSignaturesListMap" parameterType="signatureSC"> 
+	<include refid="returnAllSignaturesList" />
+ </select>
+<select id="selectSignatureListCount" resultType="int" parameterType="signatureSC"> 
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="returnAllSignaturesList" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+ </select>
+ 
+ 
+ 
+ 
+ <sql id="returnAllSignaturesList" >
+ <choose>
+    <when test='signMode.equals("1")'>  
+ 	  SELECT S_SIGN_MODIF.TO_BE_AMOUNT AMOUNT , 
+		<choose>
+		  <when test='preferredLanguage.equals("A")'>
+			CURRENCIES.BRIEF_DESC_ARAB	CURRENCYDESC,
+		  </when>
+		  <otherwise>
+			CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+		  </otherwise>
+		</choose> 
+		<if test="trsNo!= null and trsNo != emptyBigDecimalValue">
+          (
+           <choose>
+	    			<when test='trsNo > 0 '  >     
+	           SELECT 1 FROM CTSTRS_SIGNATURE,CTSTRS
+	           WHERE CTSTRS_SIGNATURE.COMP_CODE = S_SIGN_MODIF.COMP_CODE   
+	           AND  CTSTRS_SIGNATURE.COMP_CODE = CTSTRS.COMP_CODE
+	           AND CTSTRS_SIGNATURE.BRANCH_CODE = CTSTRS.BRANCH_CODE
+	           AND CTSTRS_SIGNATURE.TRS_NO =CTSTRS.TRS_NO
+	           AND CTSTRS_SIGNATURE.TRS_TYPE =CTSTRS.TRS_TYPE
+	           AND CTSTRS_SIGNATURE.CB_IND = CTSTRS.CB_IND 
+	                </when>
+	             <otherwise>    <!-- From Batch before processing the trs no will be negative -->
+	             SELECT 1 FROM CTSTRS_SIGNATURE
+	             WHERE CTSTRS_SIGNATURE.COMP_CODE = S_SIGN_MODIF.COMP_CODE   
+	             
+	             </otherwise>    
+	       </choose>          
+            <choose>
+	    			<when test='signatureTp.equals("C")'>    				 
+	    				AND CTSTRS_SIGNATURE.ACC_CIF = S_SIGN_MODIF.ACC_CIF
+	    			</when>
+	    			<otherwise>    		
+	    			   AND CTSTRS_SIGNATURE.ACC_BR = S_SIGN_MODIF.BRANCH_CODE
+			           AND CTSTRS_SIGNATURE.ACC_CY = S_SIGN_MODIF.ACC_CY
+			           AND CTSTRS_SIGNATURE.ACC_GL = S_SIGN_MODIF.ACC_GL
+			           AND CTSTRS_SIGNATURE.ACC_CIF = S_SIGN_MODIF.ACC_CIF
+			           AND CTSTRS_SIGNATURE.ACC_SL = S_SIGN_MODIF.ACC_SL		
+	    			</otherwise>
+    	    </choose> 
+	        AND CTSTRS_SIGNATURE.OBJECT_CODE = S_SIGN_MODIF.OBJECT_CODE
+            AND CTSTRS_SIGNATURE.TRS_NO = #{trsNo}
+            AND CTSTRS_SIGNATURE.TRS_TYPE = #{trsType}
+            AND CTSTRS_SIGNATURE.CB_IND = #{cbInd}
+       	 ) CHECKED,
+       	 </if>
+         '1' ORIGIN,
+         S_SIGN_MODIF.OBJECT_CODE  OBJECT_CODE,
+		 S_SIGN_MODIF.TO_BE_DESCRIPTION  DESCRIPTION ,
+		 S_SIGN_MODIF.TO_BE_SIGN_INSTRUCTIONS SIGN_INSTRUCTIONS,
+		 (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = S_SIGN_MODIF.TO_BE_SIGN_INSTRUCTIONS AND LOV_TYPE_ID = 988 AND LANG_CODE = #{langCode}) instructionsDesc,
+         S_SIGN_MODIF.TO_BE_GROUP_ID  GROUP_ID,
+         S_SIGN_MODIF.TO_BE_EXP_DATE  EXP_DATE,   
+         S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED  DEFAULT_UNLIMITED,   
+         S_SIGN_MODIF.TO_BE_ANNOTATION   ANNOTATION,
+         S_SIGN_MODIF.OBJECT_SEQ OBJECT_SEQ,
+         S_SIGN_MODIF.ACC_CY  ACC_CY ,  
+         S_SIGN_MODIF.ACC_CIF ACC_CIF,  
+         S_SIGN_MODIF.ACC_GL ACC_GL ,  
+		 S_SIGN_MODIF.ACC_SL  ACC_SL,
+		(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = S_SIGN_MODIF.TO_BE_STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) statusDesc,
+		(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = S_SIGN_MODIF.TO_BE_STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) toBeStatusDesc,
+		 S_SIGN_MODIF.TO_BE_STATUS STATUS,
+		 S_SIGN_MODIF.TO_BE_STATUS TO_BE_STATUS,
+		 S_SIGN_MODIF.ORIGIN_CODE ORIGIN_CODE,
+		 S_SIGN_MODIF.BRANCH_CODE BRANCH_CODE,
+		  CURRENCIES.DECIMAL_POINTS,
+		  '' SIGN_PROTECTED_YN,
+		 S_SIGN_MODIF.TO_BE_INST_OTHER_VALUE,
+		 S_SIGN_ANN.ANNOTATION GENERALNOTE	            
+  		 FROM  S_SIGN_MODIF
+  		 LEFT JOIN S_SIGN_ANN ON 
+				S_SIGN_ANN.BRANCH_CODE 		    = S_SIGN_MODIF.BRANCH_CODE			 
+				AND S_SIGN_ANN.OBJECT_CODE 		= S_SIGN_MODIF.OBJECT_CODE
+				AND S_SIGN_ANN.COMP_CODE 		= S_SIGN_MODIF.COMP_CODE,
+		CURRENCIES  
+   		 WHERE  
+   		 ( S_SIGN_MODIF.COMP_CODE = CURRENCIES.COMP_CODE ) AND  
+         		( CURRENCIES.CURRENCY_CODE = S_SIGN_MODIF.TO_BE_AMOUNT_CY ) AND  
+         		(S_SIGN_MODIF.COMP_CODE = #{compCode}) AND        
+         		(#{branchCode} = 0 OR S_SIGN_MODIF.BRANCH_CODE = #{branchCode}) AND  
+         		(S_SIGN_MODIF.TO_BE_OBJECT_TYPE =  #{objType}) AND            					 
+        		 <![CDATA[(S_SIGN_MODIF.TO_BE_STATUS <>'D' OR S_SIGN_MODIF.TO_BE_STATUS IS NULL ) ]]>
+         		 <choose>
+    				<when test='signatureTp.equals("C")'>
+    					AND (S_SIGN_MODIF.ACC_CIF = #{cifNo}) AND (S_SIGN_MODIF.ACC_GL = 0)   
+    				</when>
+    				<otherwise>
+    		 			AND (S_SIGN_MODIF.ACC_CY =  #{currencyCode}) AND  
+         				(S_SIGN_MODIF.ACC_CIF = #{cifNo}) AND  
+         				(S_SIGN_MODIF.ACC_GL = #{glCode}) AND  
+		         		(S_SIGN_MODIF.ACC_SL = #{slNo})        
+    				</otherwise>
+    	 		</choose>             
+    	 	 <if test='filterSign != null and !"".equals(filterSign) and validationDate != null' >
+    	 	  AND ((#{filterSign}= '1' AND ((S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED = 0 AND S_SIGN_MODIF.TO_BE_EXP_DATE >= #{validationDate,jdbcType=DATE}) OR S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED = 1))
+				  OR #{filterSign} = '0')
+			</if>	
+         
+		UNION ALL
+   </when>
+</choose>
+     SELECT CIFOBJECT.AMOUNT AMOUNT,    
+        <choose>
+		  <when test='preferredLanguage.equals("A")'>
+			CURRENCIES.BRIEF_DESC_ARAB	CURRENCYDESC,
+		  </when>
+		  <otherwise>
+			CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+		  </otherwise>
+		</choose> 
+		<if test="trsNo != null and trsNo != emptyBigDecimalValue">
+         (
+	        <choose>
+            <when test='trsNo > 0 '  >     
+             SELECT 1 FROM CTSTRS_SIGNATURE,CTSTRS
+             WHERE CTSTRS_SIGNATURE.COMP_CODE =CIFOBJECT.COMP_CODE   
+             AND  CTSTRS_SIGNATURE.COMP_CODE = CTSTRS.COMP_CODE
+             AND CTSTRS_SIGNATURE.BRANCH_CODE = CTSTRS.BRANCH_CODE
+             AND CTSTRS_SIGNATURE.TRS_NO =CTSTRS.TRS_NO
+             AND CTSTRS_SIGNATURE.TRS_TYPE =CTSTRS.TRS_TYPE
+             AND CTSTRS_SIGNATURE.CB_IND = CTSTRS.CB_IND 
+                  </when>
+               <otherwise> <!-- From Batch before processing the trs no will be negative -->
+               SELECT 1 FROM CTSTRS_SIGNATURE
+               WHERE CTSTRS_SIGNATURE.COMP_CODE = CIFOBJECT.COMP_CODE   
+               
+               </otherwise>    
+         </choose> 
+	           <choose>
+	    			<when test='signatureTp.equals("C")'>    				 
+	    				AND CTSTRS_SIGNATURE.ACC_CIF = CIFOBJECT.CIF_NO
+	    			</when>
+	    			<otherwise>    		
+	    			   AND CTSTRS_SIGNATURE.ACC_BR = CIFOBJECT.BRANCH_CODE
+			           AND CTSTRS_SIGNATURE.ACC_CY = CIFOBJECT.ACC_CY
+			           AND CTSTRS_SIGNATURE.ACC_GL = CIFOBJECT.ACC_GL
+			           AND CTSTRS_SIGNATURE.ACC_CIF = CIFOBJECT.ACC_CIF
+			           AND CTSTRS_SIGNATURE.ACC_SL = CIFOBJECT.ACC_SL		
+	    			</otherwise>
+    	    	</choose> 
+	           AND CTSTRS_SIGNATURE.OBJECT_CODE = CIFOBJECT.OBJECT_CODE
+	           AND CTSTRS_SIGNATURE.TRS_NO = #{trsNo}
+	           AND CTSTRS_SIGNATURE.TRS_TYPE = #{trsType}
+	           AND CTSTRS_SIGNATURE.CB_IND = #{cbInd}
+       	 ) CHECKED, 
+       	 </if>
+        '2' ORIGIN,
+         CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+         S_SCAN.DESCRIPTION DESCRIPTION, 
+         S_SCAN.SIGN_INSTRUCTIONS SIGN_INSTRUCTIONS,
+         (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE =  S_SCAN.SIGN_INSTRUCTIONS AND LOV_TYPE_ID = 988 AND LANG_CODE = #{langCode}) instructionsDesc,
+         CIFOBJECT.GROUP_ID GROUP_ID,   
+         S_SCAN.EXP_DATE EXP_DATE,   
+         S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+		S_SCAN.ANNOTATION ANNOTATION ,
+        CIFOBJECT.OBJECT_SEQ OBJECT_SEQ ,
+        CIFOBJECT.ACC_CY ACC_CY,
+        CIFOBJECT.ACC_CIF ACC_CIF,  
+        CIFOBJECT.ACC_GL ACC_GL,
+        CIFOBJECT.ACC_SL ACC_SL,
+        (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = CIFOBJECT.STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) statusDesc,
+		(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE =  CIFOBJECT.TO_BE_STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) toBeStatusDesc,
+		CIFOBJECT.STATUS STATUS,
+		CIFOBJECT.TO_BE_STATUS TO_BE_STATUS,
+        null ORIGIN_CODE,
+        CIFOBJECT.BRANCH_CODE BRANCH_CODE,
+        CURRENCIES.DECIMAL_POINTS,
+        CIFOBJECT.SIGN_PROTECTED_YN,  
+        S_SCAN.INST_OTHER_VALUE,
+	  	S_SIGN_ANN.ANNOTATION GENERALNOTE	            
+  		FROM  CIFOBJECT
+  		LEFT JOIN S_SIGN_ANN ON 
+				S_SIGN_ANN.BRANCH_CODE 		    = CIFOBJECT.BRANCH_CODE			 
+				AND S_SIGN_ANN.OBJECT_CODE 		= CIFOBJECT.OBJECT_CODE
+				AND S_SIGN_ANN.COMP_CODE 		= CIFOBJECT.COMP_CODE  
+				, CURRENCIES , S_SCAN
+   	WHERE ( S_SCAN.CODE = CIFOBJECT.OBJECT_CODE ) and  
+         ( S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE ) and  
+         ( S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE ) and         
+         ( CIFOBJECT.COMP_CODE = CURRENCIES.COMP_CODE ) and  
+         ( CURRENCIES.CURRENCY_CODE = CIFOBJECT.AMOUNT_CY ) and  
+         (CIFOBJECT.COMP_CODE = #{compCode}) AND  
+         (#{branchCode} = 0 OR  
+         (CIFOBJECT.BRANCH_CODE = #{branchCode})) AND 
+         (CIFOBJECT.OBJECT_TYPE = #{objType}) AND
+          <![CDATA[(CIFOBJECT.STATUS <> 'D')   ]]>          
+          <if test='status != null and !status.equals("")' >
+    	 		AND CIFOBJECT.STATUS =  #{status}
+    	  </if>
+        <choose>
+    			<when test='signatureTp.equals("C")'>    				 
+    				AND CIFOBJECT.ACC_GL = 0
+    				AND CIFOBJECT.CIF_NO = #{cifNo}
+    			</when>
+    			<otherwise>    				
+    				AND CIFOBJECT.ACC_CY = #{currencyCode}
+					AND CIFOBJECT.ACC_CIF = #{cifNo}
+					AND CIFOBJECT.ACC_GL = #{glCode}
+					AND CIFOBJECT.ACC_SL = #{slNo}
+    			</otherwise>
+    		</choose> 
+           <choose>
+    		<when test='signMode.equals("1")'>    
+        			AND CIFOBJECT.OBJECT_CODE NOT IN 
+         			(SELECT  CASE WHEN   S_SIGN_MODIF.ORIGIN_CODE IS NULL THEN -1 ELSE S_SIGN_MODIF.ORIGIN_CODE END
+                      FROM S_SIGN_MODIF  WHERE   S_SIGN_MODIF.COMP_CODE = #{compCode} AND 
+                                                  S_SIGN_MODIF.BRANCH_CODE = #{branchCode} 
+                                                 <choose>
+    												<when test='signatureTp.equals("C")'>
+    													AND (S_SIGN_MODIF.ACC_CIF = #{cifNo}) AND (S_SIGN_MODIF.ACC_GL = 0)   
+    												</when>
+    												<otherwise>
+    		 											AND (S_SIGN_MODIF.ACC_CY =  #{currencyCode}) AND  
+         												(S_SIGN_MODIF.ACC_CIF = #{cifNo}) AND  
+         												(S_SIGN_MODIF.ACC_GL = #{glCode}) AND  
+         												(S_SIGN_MODIF.ACC_SL = #{slNo})        
+    												</otherwise>
+    	 										</choose>        )
+                                               
+		    </when>
+		  </choose>
+		  <if test='filterSign != null and !"".equals(filterSign) and validationDate != null' >
+		  AND (( #{filterSign} = '1' AND ((S_SCAN.DEFAULT_UNLIMITED = 0 AND S_SCAN.EXP_DATE >= #{validationDate,jdbcType=DATE}) OR S_SCAN.DEFAULT_UNLIMITED = 1))
+				OR #{filterSign} = '0')
+		 </if>
+		  <if test='excludedStatuses != null and !"".equals(excludedStatuses)' >
+		 	AND CIFOBJECT.STATUS not in (${excludedStatuses})
+		 </if>
+ </sql>
+
+
+
+
+	
+	<resultMap id="returnSignaturesListMap" type="signatureCO">
+		<result property="cifObjectVO.AMOUNT"			column="AMOUNT"/>
+		<result property="cifObjectVO.AMOUNT_CY"		column="AMOUNT_CY"/>
+		<result property="currenciesVO.BRIEF_DESC_ENG"	column="BRIEF_DESC_ENG"/>
+		<result property="currenciesVO.BRIEF_DESC_ARAB"	column="BRIEF_DESC_ARAB"/>
+		<result property="currDecPoints"	column="DECIMAL_POINTS"/>		
+		<result property="cifObjectVO.OBJECT_CODE"	 	column="OBJECT_CODE"/>
+		<result property="cifObjectVO.OBJECT_SEQ"	 	column="OBJECT_SEQ"/>
+		<result property="cifObjectVO.OBJECT_TYPE"	 	column="DOC_TYPE"/>
+		<result property="scanVO.DESCRIPTION"			column="DESCRIPTION"/>
+		<result property="cifObjectVO.GROUP_ID"			column="GROUP_ID"/>
+		<result property="cifObjectVO.TO_BE_STATUS"		column="TO_BE_STATUS"/>
+		<result property="cifObjectVO.STATUS"			column="STATUS"/>
+		<result property="cifObjectVO.TO_BE_STATUS"		column="TO_BE_STATUS"/>
+		<result property="viewedAnn"					column="VIEWED_ANN"/>
+		<result property="showAnn"						column="SHOW_ANN"/>   
+		<result property="scanVO.EXP_DATE"				column="EXP_DATE"/>
+		<result property="scanVO.DEFAULT_UNLIMITED"		column="DEFAULT_UNLIMITED"/>
+		<result property="scanVO.ANNOTATION"			column="ANNOTATION"/>
+		<result property="scanVO.SC_WIDTH"				column="WIDTH"/>
+		<result property="scanVO.SC_HEIGHT"				column="HEIGHT"/>
+		<result property="scanVO.COMP_CODE"				column="COMP_CODE"/>
+		<result property="scanVO.BRANCH_CODE"			column="BRANCH_CODE"/>
+		<result property="scanVO.SC_FORMAT"				column="FORMAT"/>
+		<result property="scanVO.DOC_TYPE"				column="DOC_TYPE"/>
+		<result property="origin"						column="ORIGIN"/>
+		<result property="originObjectCode"				column="ORIGIN_CODE"/>
+		<result property="originObjectSeq"		        column="ORIGIN_SEQ"/>
+		<result property="currencyDesc"					column="CURRENCYDESC"/>
+		<result property="cifObjectVO.CIF_NO"			column="CIF_NO"/>
+		<result property="cifObjectVO.ACC_CY"			column="ACC_CY"/>
+		<result property="cifObjectVO.ACC_CIF"			column="ACC_CIF"/>
+		<result property="cifObjectVO.ACC_SL"			column="ACC_SL"/>
+		<result property="cifObjectVO.ACC_GL"			column="ACC_GL"/>
+		<result property="defaultUnlimitedFlag"			column="DEFAULT_UNLIMITED_FLAG"/>
+		<result property="signatureAnnotationVO.ANNOTATION"			column="GENERALNOTE"/>
+		<result property="signObjectVO.OLE_OBJECT"			column="OLE_OBJECT"/>
+		<result property="statusDesc"			column="statusDesc"/>
+		<result property="toBeStatusDesc"			column="toBeStatusDesc"/>
+		<result property="cifObjectVO.BRANCH_CODE"			column="BRANCH_CODE"/>
+		<result property="scanVO.SIGN_INSTRUCTIONS"	column="SIGN_INSTRUCTIONS"/>
+		<result property="scanVO.INST_OTHER_VALUE"	column="INST_OTHER_VALUE"/>
+		<result property="instructionsDesc"			column="instructionsDesc"/>
+		<result property="scanVO.ID_NO"	column="ID_NO"/>
+		<result property="scanVO.ID_TYPE"	column="ID_TYPE"/>
+		<result property="idTypeDesc"	column="idTypeDesc"/>		
+		<result property="checked"						column="CHECKED"/>
+		<result property="cifObjectVO.SIGN_PROTECTED_YN"	column="SIGN_PROTECTED_YN"/>
+		<result property="cifObjectVO.AUTH_CIF_NO"	column="AUTH_CIF_NO"/>
+		<result property="authCifDesc"	column="authCifDesc"/>
+		<result property="cifObjectVO.COMP_CODE"	column="COMP_CODE"/>
+		<result property="cifObjectVO.CREATED_BY"	column="CREATED_BY"/>
+		<result property="cifObjectVO.DATE_AUTHORISED"	column="DATE_AUTHORISED"/>
+		<result property="cifObjectVO.DATE_CREATED"	column="DATE_CREATED"/>
+		<result property="cifObjectVO.DATE_MODIFIED"	column="DATE_MODIFIED"/>
+		<result property="cifObjectVO.MODIFIED_BY"	column="MODIFIED_BY"/>
+		
+	</resultMap>
+	
+	
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<select id="returnSignatureAccessRightsList" parameterType="signatureSC" resultType ="java.lang.String">
+		SELECT TBL.PROG_REF FROM  (
+			<include refid="commonLibMapper.select_Common_Priveleges" />)TBL
+		 	WHERE TBL.PROG_REF IN ('SIGN001','SIGN002','SIGN002A','SIGN002D','SIGN002R','SIGN002C','SIGN002P','SIGN002CP','SIGN002PA','SIGN001L', 'SIGNAUD' )
+	</select>
+	
+	<select id="returnDocumentAccessRightsList" parameterType="signatureSC" resultType ="java.lang.String">
+		SELECT TBL.PROG_REF FROM  (
+			<include refid="commonLibMapper.select_Common_Priveleges" />)TBL
+			 WHERE TBL.PROG_REF IN ('DOC001','DOC002','DOC002A','DOC002D','DOC002R','DOC002P' )
+	</select>
+	
+	<select id="returnPhotoAccessRightsList" parameterType="signatureSC" resultType ="java.lang.String">
+		SELECT TBL.PROG_REF FROM  (
+			<include refid="commonLibMapper.select_Common_Priveleges" />)TBL
+			 WHERE TBL.PROG_REF IN ('PHO001','PHO002','PHO002A','PHO002D','PHO002R','PHO002P' )
+	</select>
+	
+	
+	<select id="returnSignaturesList" resultMap="returnSignaturesListMap" parameterType="signatureSC">
+	<![CDATA[
+		SELECT CIFOBJECT.AMOUNT,
+			CIFOBJECT.GROUP_ID,
+			CIFOBJECT.OBJECT_CODE,
+			CIFOBJECT.TO_BE_STATUS,
+			CURRENCIES.BRIEF_DESC_ENG,
+			CURRENCIES.BRIEF_DESC_ARAB,
+			S_SCAN.DESCRIPTION,
+			S_SCAN.SC_FORMAT,
+			S_SCAN.ANNOTATION,
+			S_SCAN.EXP_DATE,
+			S_SCAN.DEFAULT_UNLIMITED
+		FROM CIFOBJECT,
+			S_SCAN,
+			CURRENCIES
+		WHERE S_SCAN.CODE = CIFOBJECT.OBJECT_CODE 
+			AND S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE
+			AND S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+			AND CIFOBJECT.COMP_CODE = CURRENCIES.COMP_CODE
+			AND CURRENCIES.CURRENCY_CODE = CIFOBJECT.AMOUNT_CY
+			AND CIFOBJECT.COMP_CODE = #{compCode}
+			AND CIFOBJECT.OBJECT_TYPE = #{objType}
+			
+			<choose>
+				<when test="insUpdDelApprRejSel == 'S'">
+					AND CIFOBJECT.STATUS = 'P'
+				</when>
+				<when test="insUpdDelApprRejSel == 'A'">
+					AND (CIFOBJECT.STATUS = 'A'
+					OR (CIFOBJECT.STATUS = 'P' AND CIFOBJECT.TO_BE_STATUS IS NOT NULL))
+				</when>
+				<when test="insUpdDelApprRejSel == 'D'">
+					AND CIFOBJECT.STATUS <> 'D'   
+         			AND (CIFOBJECT.TO_BE_STATUS <> 'D' OR CIFOBJECT.TO_BE_STATUS IS NULL)
+				</when>
+			</choose>
+			<choose>
+ 				<when test="cifAcc == 'C'" >
+    				AND (#{branchCode} = 0 OR CIFOBJECT.BRANCH_CODE = #{branchCode})
+					AND CIFOBJECT.CIF_NO = #{cifNo}
+					AND CIFOBJECT.ACC_GL = 0
+ 				</when>
+ 				<otherwise>
+    				AND CIFOBJECT.BRANCH_CODE = #{branchCode}
+					AND CIFOBJECT.ACC_CY = #{currencyCode}
+					AND CIFOBJECT.ACC_GL = #{glCode}
+					AND CIFOBJECT.ACC_CIF = #{cifNo}
+					AND CIFOBJECT.ACC_SL = #{slNo}
+				</otherwise>
+			</choose>
+			
+		ORDER BY CIFOBJECT.GROUP_ID
+	]]>
+	</select>
+	
+	<select id="returnDocumentsPhotosList" resultMap="returnDocumentsPhotosListMap" parameterType="signatureSC">
+	<![CDATA[
+		SELECT CIFOBJECT.OBJECT_CODE,   
+			S_SCAN.DESCRIPTION,   
+			S_SCAN.SC_FORMAT,
+			CIFOBJECT.DEFAULT_PHOTO,
+			CIFOBJECT.TO_BE_STATUS
+		FROM CIFOBJECT, 
+			S_SCAN  
+		WHERE S_SCAN.CODE = CIFOBJECT.OBJECT_CODE
+			AND S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE
+			AND S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+			AND CIFOBJECT.COMP_CODE = #{compCode}
+			AND CIFOBJECT.OBJECT_TYPE = #{objType}
+			<choose >
+ 				<when test="signatureTp == 'C'" >
+    				AND (#{branchCode} = 0 OR CIFOBJECT.BRANCH_CODE = #{branchCode}) 
+					AND CIFOBJECT.CIF_NO = #{cifNo}
+					AND CIFOBJECT.ACC_GL = 0 
+ 				</when>
+ 				<otherwise >
+    				AND CIFOBJECT.BRANCH_CODE = #{branchCode}
+    				AND CIFOBJECT.ACC_CY = #{currencyCode}
+    				AND CIFOBJECT.ACC_GL = #{glCode}
+			        AND CIFOBJECT.ACC_CIF = #{cifNo}
+			        AND CIFOBJECT.ACC_SL = #{slNo}
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="insUpdDelApprRejSel == 'A'">
+					AND (CIFOBJECT.STATUS = 'A' 
+					OR (CIFOBJECT.STATUS = 'P' AND CIFOBJECT.TO_BE_STATUS IS NOT NULL)) 
+				</when>
+				<when test="insUpdDelApprRejSel == 'D'">
+					AND CIFOBJECT.STATUS <> 'D'   
+         			AND (CIFOBJECT.TO_BE_STATUS <> 'D' OR CIFOBJECT.TO_BE_STATUS IS NULL)
+				</when>
+				<otherwise>
+					AND CIFOBJECT.STATUS = 'P'
+				</otherwise>
+			</choose>
+	]]>
+	</select>
+	
+	<resultMap id="returnDocumentsPhotosListMap" type="signatureCO">
+		<result property="cifObjectVO.OBJECT_CODE"	 	column="OBJECT_CODE"/>
+		<result property="scanVO.DESCRIPTION"			column="DESCRIPTION"/>
+		<result property="scanVO.SC_FORMAT"			column="SC_FORMAT"/>
+		<result property="cifObjectVO.DEFAULT_PHOTO" 	column="DEFAULT_PHOTO"/>
+		<result property="cifObjectVO.TO_BE_STATUS" 	column="TO_BE_STATUS"/>
+	</resultMap>
+	
+	<select id="returnMaxCifObjSeqValue" resultType="int" parameterType="signatureCO">
+		SELECT MAX(OBJECT_SEQ) SEQ
+		FROM CIFOBJECT		 
+		WHERE COMP_CODE = #{cifObjectVO.COMP_CODE,jdbcType=NUMERIC} 
+			AND BRANCH_CODE = #{cifObjectVO.BRANCH_CODE,jdbcType=NUMERIC}
+			AND CIF_NO = #{cifObjectVO.CIF_NO,jdbcType=NUMERIC}
+			AND ACC_CY = #{cifObjectVO.ACC_CY,jdbcType=NUMERIC}
+			AND ACC_GL = #{cifObjectVO.ACC_GL,jdbcType=NUMERIC}
+			AND ACC_CIF = #{cifObjectVO.ACC_CIF,jdbcType=NUMERIC}
+			AND ACC_SL = #{cifObjectVO.ACC_SL,jdbcType=NUMERIC}
+	</select>
+	
+	
+		 
+	<select id="returnMaxSignModifSeqValue" resultType="int" parameterType="signatureCO">
+		SELECT MAX(OBJECT_SEQ) SEQ
+		FROM S_SIGN_MODIF			 
+		WHERE COMP_CODE = #{cifObjectVO.COMP_CODE}
+			AND BRANCH_CODE = #{cifObjectVO.BRANCH_CODE}
+			AND CIF_NO = #{cifObjectVO.CIF_NO}
+			AND ACC_CY = #{cifObjectVO.ACC_CY}
+			AND ACC_GL = #{cifObjectVO.ACC_GL}
+			AND ACC_CIF = #{cifObjectVO.ACC_CIF}
+			AND ACC_SL = #{cifObjectVO.ACC_SL}
+	</select>
+	
+	
+	<insert id="insertCIFOBJECT" parameterType="signatureSC">
+		INSERT INTO CIFOBJECT  
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			COMP_CODE, 
+			BRANCH_CODE, 
+			CIF_NO, 
+			OBJECT_SEQ, 
+			ACC_CY, 
+			ACC_GL, 
+			ACC_CIF, 
+			ACC_SL, 
+			OBJECT_CODE, 
+			DATE_CREATED, 
+			OBJECT_TYPE, 
+			STATUS,
+			<if test="objType == 'S'">
+				AMOUNT_CY, 
+				AMOUNT, 
+				GROUP_ID,
+			</if>
+			CREATED_BY,
+			<if test="status == 'P' || insUpdDelApprRejSel == 'A'">
+				DATE_AUTHORISED,
+				AUTHORISED_BY,
+			</if> 
+			<if test="objType == 'P'">
+				DEFAULT_PHOTO,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{compCode}, 
+			#{branchCode}, 
+			#{cifNo}, 
+			#{objSeq}, 
+			#{currencyCode}, 
+			#{glCode}, 
+			#{cifNo}, 
+			#{slNo}, 
+			#{lastNumber}, 
+			#{systemDate}, 
+			#{objType},
+			#{status},
+			<if test="objType == 'S'">
+				#{baseCurrencyCode}, 
+				#{amount}, 
+				#{group}, 
+			</if>
+			#{userId},   
+			<if test="status == 'P' || insUpdDelApprRejSel == 'A'">
+				#{systemDate},
+				#{userId},
+			</if>
+			<if test="objType == 'P'">
+				#{defaultPhoto},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insertSSignAnn" parameterType="signatureSC">
+		INSERT INTO
+		<choose>
+			<when test="isTemp == true">
+				S_SIGN_ANN_TEMP
+			</when>
+			<otherwise>
+				S_SIGN_ANN
+			</otherwise>
+		</choose>
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			COMP_CODE , 
+			BRANCH_CODE,
+			CURRENCY_CODE,
+			GL_CODE ,
+			CIF_SUB_NO,
+			SL_NO,
+			<choose>
+				<when test="isTemp == true">
+					TO_BE_ANNOTATION,
+				</when>
+				<otherwise>
+					ANNOTATION,
+				</otherwise>
+			</choose>
+			OBJECT_CODE,
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{compCode}, 
+			#{branchCode}, 
+			#{currencyCode}, 
+			#{glCode}, 
+			#{cifNo}, 
+			#{slNo}, 
+			#{genNote},
+			#{lastNumber},
+		</trim>
+	</insert>
+	
+	<insert id="insertSScan" parameterType="signatureSC">
+		INSERT INTO S_SCAN
+		<trim prefix="(" suffix=")" suffixOverrides=",">  
+			CODE, 
+			COMP_CODE,
+			BRANCH_CODE,
+			SC_WIDTH,
+			SC_HEIGHT, 
+			SC_FORMAT, 
+			DOC_TYPE, 
+			DESCRIPTION,
+			<if test="objType == 'S'">
+				ANNOTATION,
+				EXP_DATE,
+				DEFAULT_UNLIMITED,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{lastNumber}, 
+			#{compCode}, 
+			#{branchCode},
+			#{width}, 
+			#{height}, 
+			#{format}, 
+			#{objType}, 
+			#{description},
+			<if test="objType == 'S'">
+				#{genNote},
+				#{expiryDate},
+				#{unlimited},
+			</if>
+		</trim>
+	</insert>
+	
+	<insert id="insertSObject" parameterType="signatureSC">
+		INSERT INTO S_OBJECT    
+			(CODE,
+			COMP_CODE,
+			BRANCH_CODE)  
+		VALUES 
+			(#{lastNumber},
+			#{compCode}, 
+			#{branchCode})
+	</insert>
+	
+	<select id="returnSignatureBLOB" resultMap="returnSignatureBLOBMap" parameterType="signatureCO">
+		SELECT OLE_OBJECT 
+		FROM 
+		<choose> 
+			<when test="isCIFObject == true">
+				CIFOBJECT
+			</when>
+			<when test="insUpdDelApprRejSel == 'D'">
+				S_OBJECT
+			</when>
+			<otherwise>
+				S_SIGN_MODIF
+			</otherwise>
+		</choose>
+		WHERE 
+			<choose>
+				<when test="isCIFObject == true OR insUpdDelApprRejSel == 'D'">
+					CODE = #{lastNumber}
+				</when>
+				<otherwise>
+					OBJECT_CODE = #{lastNumber} 
+				</otherwise>
+			</choose>
+			AND COMP_CODE = #{compCode} 
+			AND BRANCH_CODE = #{branchCode}
+			<if test="insUpdDelApprRejSel == 'A'">
+				AND CIF_NO = #{cifNo} 
+				AND ACC_CY = #{currencyCode} 
+				AND ACC_GL = #{glCode}
+				AND ACC_CIF = #{cifNo} 
+				AND ACC_SL = #{slNo}
+				AND OBJECT_SEQ = #{objSeq}
+			</if>
+	</select>
+	
+	<resultMap id="returnSignatureBLOBMap" type="signatureSC">
+		<result column="image" property="OLE_OBJECT" />
+	</resultMap>
+	
+	<insert id="insertSSignModif" parameterType="signatureCO">
+		INSERT INTO S_SIGN_MODIF   
+		<trim prefix="(" suffix=")" suffixOverrides=","> 
+			COMP_CODE , 
+			BRANCH_CODE , 
+			CIF_NO , 
+			OBJECT_SEQ , 
+			ACC_CY , 
+			ACC_GL , 
+			ACC_CIF , 
+			ACC_SL , 
+			OBJECT_CODE , 
+			TO_BE_DATE_CREATED , 
+			TO_BE_AMOUNT_CY , 
+			TO_BE_AMOUNT , 
+			TO_BE_OBJECT_TYPE , 
+			TO_BE_GROUP_ID , 
+			TO_BE_STATUS,
+			TO_BE_CREATED_BY,
+			TO_BE_DATE_AUTHORISED,
+			TO_BE_AUTHORISED_BY,
+			TO_BE_SC_WIDTH , 
+			TO_BE_SC_HEIGHT , 
+			TO_BE_SC_FORMAT ,  
+			TO_BE_DESCRIPTION,
+			TO_BE_ANNOTATION,
+			TO_BE_EXP_DATE,
+			TO_BE_DEFAULT_UNLIMITED,
+			<if test="insUpdDelApprRejSel == 'D'">
+				ORIGIN_CODE,
+				ORIGIN_SEQ,
+			</if>
+		</trim>
+		<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+			#{COMP_CODE}, 
+			#{BRANCH_CODE},
+			#{CIF_NO}, 
+			#{OBJECT_SEQ}, 
+			#{ACC_CY}, 
+			#{ACC_GL}, 
+			#{ACC_CIF}, 
+			#{ACC_SL}, 
+			#{OBJECT_CODE}, 
+			#{TO_BE_DATE_CREATED},
+			#{TO_BE_AMOUNT_CY}, 
+			#{TO_BE_AMOUNT}, 
+			#{TO_BE_OBJECT_TYPE}, 
+			#{TO_BE_GROUP_ID}, 
+			#{TO_BE_STATUS},
+			#{TO_BE_CREATED_BY}, 
+			#{TO_BE_DATE_CREATED},
+			#{TO_BE_AUTHORISED_BY},
+			#{TO_BE_SC_WIDTH}, 
+			#{TO_BE_SC_HEIGHT}, 
+			#{TO_BE_SC_FORMAT}, 
+			#{TO_BE_DESCRIPTION},
+			#{TO_BE_ANNOTATION},
+			#{TO_BE_EXP_DATE},
+			#{TO_BE_DEFAULT_UNLIMITED},
+			<if test="insUpdDelApprRejSel == 'D'">
+				#{objCode},
+				#{objSeq},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateObjectBlob" parameterType="signatureSC">
+		UPDATE 
+		<choose>
+			<when test="isCIFObject == true AND insUpdDelApprRejSel != 'A'">
+				CIFOBJECT
+			</when>
+			<when test="objType = 'S' AND (insUpdDelApprRejSel == 'A' OR insUpdDelApprRejSel == 'D')">
+				S_SIGN_MODIF
+			</when>
+			<when test="objType == 'D' OR objType == 'P' OR (objType = 'S' AND (insUpdDelApprRejSel == 'I' OR insUpdDelApprRejSel == 'A'))">
+				S_OBJECT
+			</when>
+		</choose>
+		<set>
+			<if test="image != null">
+				OLE_OBJECT = #{image}
+     		</if>
+     	</set>
+		WHERE 
+			<choose>
+				<when test="objType == 'D' OR objType == 'P' OR (objType = 'S' AND (insUpdDelApprRejSel == 'I' OR insUpdDelApprRejSel == 'A'))">
+					CODE = #{lastNumber}
+				</when>
+				<otherwise>
+					OBJECT_CODE = #{lastNumber}
+				</otherwise>
+			</choose>
+			AND COMP_CODE = #{compCode}
+			AND BRANCH_CODE = #{branchCode}
+	</update>
+	
+	<update id="updateCIFOBJECT" parameterType="signatureSC">
+		UPDATE CIFOBJECT 
+		SET 
+			<if test="insUpdDelApprRejSel == 'D'">
+				DELETED_BY = #{userId},
+				DATE_DELETED = #{systemDate},
+			</if>
+			<if test="insUpdDelApprRejSel == 'A' OR insUpdDelApprRejSel == 'R' OR (insUpdDelApprRejSel == 'D' AND isAutoApprove == true)">
+				DATE_AUTHORISED = #{systemDate},
+				AUTHORISED_BY = #{userId},
+			</if>
+			<if test="insUpdDelApprRejSel == 'A' OR insUpdDelApprRejSel == 'R'">
+				TO_BE_STATUS = NULL,
+			</if>
+			<if test="status == 'P' AND insUpdDelApprRejSel == 'A' AND objType == 'S'">
+				AMOUNT = #{amount},
+				GROUP_ID = #{groupId},
+			</if>
+			<choose>
+				<when test="insUpdDelApprRejSel == 'D' AND isAutoApprove == false">
+					TO_BE_STATUS = #{status}
+				</when>
+				<when test="insUpdDelApprRejSel == 'A' OR (insUpdDelApprRejSel == 'D' AND isAutoApprove == true)">
+					STATUS = #{status}
+				</when>
+			</choose>
+		WHERE OBJECT_CODE = #{objCode}
+			AND COMP_CODE = #{compCode}
+			AND BRANCH_CODE = #{branchCode}
+			AND CIF_NO = #{cifNo}
+			AND ACC_CY = #{currencyCode}
+			AND	ACC_GL = #{glCode}
+			AND ACC_CIF = #{cifNo}
+			AND ACC_SL = #{slNo}
+			AND OBJECT_TYPE = #{objType}
+	</update>
+	<!-- Abdo TP332909 09/10/2015 
+	<update id="updateSSignModif" parameterType="signatureSC">
+		UPDATE S_SIGN_MODIF 
+		SET TO_BE_STATUS = #{status},
+			TO_BE_DATE_DELETED = #{systemDate},
+			TO_BE_DELETED_BY = #{userId}
+		WHERE OBJECT_CODE = #{objCode}
+			AND COMP_CODE = #{compCode}
+			AND BRANCH_CODE = #{branchCode}
+			AND CIF_NO = #{cifNo}
+			AND ACC_CY = #{currencyCode}
+			AND	ACC_GL = #{glCode}
+			AND ACC_CIF = #{cifNo}
+			AND ACC_SL = #{slNo}
+			AND OBJECT_SEQ = #{objSeq}
+			AND TO_BE_OBJECT_TYPE = #{objType}
+	</update>
+	-->
+	 <!-- Abdo TP332909 09/10/2015 -->
+   <sql id="sql_updateS_SIGN_MODIF" >
+    update S_SIGN_MODIF
+    <set >
+      <if test="TO_BE_AMOUNT != null" >
+        <choose >
+          <when test="TO_BE_AMOUNT == emptyBigDecimalValue" >
+            TO_BE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_AMOUNT = #{TO_BE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_GROUP_ID != null" >
+        TO_BE_GROUP_ID = #{TO_BE_GROUP_ID},
+      </if>
+      <if test="TO_BE_DESCRIPTION != null" >
+        TO_BE_DESCRIPTION = #{TO_BE_DESCRIPTION},
+      </if>            
+     <!--   <choose>
+		  <when test="TO_BE_EXP_DATE == null ">
+					TO_BE_EXP_DATE = NULL ,
+          </when>
+				<otherwise>
+					TO_BE_EXP_DATE = #{TO_BE_EXP_DATE},
+          </otherwise>
+	 </choose>-->
+	 	TO_BE_EXP_DATE = #{TO_BE_EXP_DATE,jdbcType=DATE},
+      <if test="TO_BE_DEFAULT_UNLIMITED != null" >
+        <choose >
+          <when test="TO_BE_DEFAULT_UNLIMITED == emptyBigDecimalValue" >
+            TO_BE_DEFAULT_UNLIMITED = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_DEFAULT_UNLIMITED = #{TO_BE_DEFAULT_UNLIMITED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_ANNOTATION != null" >
+        TO_BE_ANNOTATION = #{TO_BE_ANNOTATION},
+      </if>
+      <if test="TO_BE_STATUS != null" >
+        TO_BE_STATUS = #{TO_BE_STATUS},
+      </if>
+      <if test="TO_BE_AMOUNT_CY != null" >
+        <choose >
+          <when test="TO_BE_AMOUNT_CY == emptyBigDecimalValue" >
+            TO_BE_AMOUNT_CY = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_AMOUNT_CY = #{TO_BE_AMOUNT_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_OBJECT_TYPE != null" >
+        TO_BE_OBJECT_TYPE = #{TO_BE_OBJECT_TYPE},
+      </if>
+      <if test="TO_BE_DATE_CREATED != null" >
+        TO_BE_DATE_CREATED = #{TO_BE_DATE_CREATED},
+      </if>
+      <if test="TO_BE_CREATED_BY != null" >
+        TO_BE_CREATED_BY = #{TO_BE_CREATED_BY},
+      </if>
+      <if test="TO_BE_DATE_AUTHORISED != null" >
+        TO_BE_DATE_AUTHORISED = #{TO_BE_DATE_AUTHORISED},
+      </if>
+      <if test="TO_BE_AUTHORISED_BY != null" >
+        TO_BE_AUTHORISED_BY = #{TO_BE_AUTHORISED_BY},
+      </if>
+      <if test="TO_BE_SC_WIDTH != null" >
+        <choose >
+          <when test="TO_BE_SC_WIDTH == emptyBigDecimalValue" >
+            TO_BE_SC_WIDTH = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_SC_WIDTH = #{TO_BE_SC_WIDTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_SC_HEIGHT != null" >
+        <choose >
+          <when test="TO_BE_SC_HEIGHT == emptyBigDecimalValue" >
+            TO_BE_SC_HEIGHT = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_SC_HEIGHT = #{TO_BE_SC_HEIGHT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_SC_FORMAT != null" >
+        TO_BE_SC_FORMAT = #{TO_BE_SC_FORMAT},
+      </if>
+      <if test="TO_BE_DATE_DELETED != null" >
+        TO_BE_DATE_DELETED = #{TO_BE_DATE_DELETED},
+      </if>
+      <if test="TO_BE_DELETED_BY != null" >
+        TO_BE_DELETED_BY = #{TO_BE_DELETED_BY},
+      </if>
+      <if test="ORIGIN_CODE != null" >
+        <choose >
+          <when test="ORIGIN_CODE == emptyBigDecimalValue" >
+            ORIGIN_CODE = NULL ,
+          </when>
+          <otherwise >
+            ORIGIN_CODE = #{ORIGIN_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORIGIN_SEQ != null" >
+        <choose >
+          <when test="ORIGIN_SEQ == emptyBigDecimalValue" >
+            ORIGIN_SEQ = NULL ,
+          </when>
+          <otherwise >
+            ORIGIN_SEQ = #{ORIGIN_SEQ},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_DATE_MODIFIED != null" >
+        TO_BE_DATE_MODIFIED = #{TO_BE_DATE_MODIFIED},
+      </if>
+      <if test="TO_BE_MODIFIED_BY != null" >
+        TO_BE_MODIFIED_BY = #{TO_BE_MODIFIED_BY},
+      </if>
+      <if test="TO_BE_DEFAULT_PHOTO != null" >
+        <choose >
+          <when test="TO_BE_DEFAULT_PHOTO == emptyBigDecimalValue" >
+            TO_BE_DEFAULT_PHOTO = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_DEFAULT_PHOTO = #{TO_BE_DEFAULT_PHOTO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OLE_OBJECT != null" >
+        OLE_OBJECT = #{OLE_OBJECT},
+      </if>
+      <if test="TO_BE_SIGN_INSTRUCTIONS != null" >
+        TO_BE_SIGN_INSTRUCTIONS = #{TO_BE_SIGN_INSTRUCTIONS},
+      </if>
+      <if test="TO_BE_INST_OTHER_VALUE != null" >
+        TO_BE_INST_OTHER_VALUE = #{TO_BE_INST_OTHER_VALUE},
+      </if>
+    </set>
+    where ACC_CIF = #{ACC_CIF}
+      and ACC_CY = #{ACC_CY}
+      and ACC_GL = #{ACC_GL}
+      and ACC_SL = #{ACC_SL}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and OBJECT_CODE = #{OBJECT_CODE}
+      and OBJECT_SEQ = #{OBJECT_SEQ}
+  </sql>
+  
+  <update id="updateSSignModif" parameterType="com.path.dbmaps.vo.S_SIGN_MODIFVO" >
+    <include refid="sql_updateS_SIGN_MODIF" />
+  </update>
+  <!-- end Abdo -->
+	
+	<select id="returnSignaturesTempDeleteList" resultMap="returnSignaturesListMap" parameterType="signatureSC">
+	<![CDATA[
+		SELECT S_SIGN_MODIF.TO_BE_AMOUNT AMOUNT,
+			CURRENCIES.BRIEF_DESC_ENG BRIEF_DESC_ENG,     
+	 		CURRENCIES.BRIEF_DESC_ARAB BRIEF_DESC_ARAB, 
+	        '1' ORIGIN,
+	        S_SIGN_MODIF.OBJECT_CODE OBJECT_CODE,
+			S_SIGN_MODIF.TO_BE_DESCRIPTION DESCRIPTION,
+	        S_SIGN_MODIF.TO_BE_GROUP_ID GROUP_ID,
+	        S_SIGN_MODIF.TO_BE_EXP_DATE EXP_DATE,   
+	        S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED DEFAULT_UNLIMITED,   
+	        S_SIGN_MODIF.TO_BE_ANNOTATION ANNOTATION,
+	        S_SIGN_MODIF.OBJECT_SEQ OBJECT_SEQ 
+		FROM  S_SIGN_MODIF,
+			CURRENCIES 
+	   	WHERE S_SIGN_MODIF.COMP_CODE = CURRENCIES.COMP_CODE
+	   		AND CURRENCIES.CURRENCY_CODE = S_SIGN_MODIF.TO_BE_AMOUNT_CY
+	   		AND S_SIGN_MODIF.COMP_CODE = #{compCode}
+	   		AND (#{branchCode} = 0 OR S_SIGN_MODIF.BRANCH_CODE = #{branchCode}) 
+	   		AND S_SIGN_MODIF.TO_BE_OBJECT_TYPE = #{objType}
+	   		<choose>
+	   			<when test="signatureTp == 'C'">
+	   				AND S_SIGN_MODIF.CIF_NO = #{cifNo}
+	   				AND S_SIGN_MODIF.ACC_GL = 0
+	   			</when>
+	   			<otherwise>
+	   				AND S_SIGN_MODIF.ACC_CY = #{currencyCode}   
+         			AND S_SIGN_MODIF.ACC_CIF = #{cifNo}
+         			AND S_SIGN_MODIF.ACC_GL = #{glCode}
+         			AND S_SIGN_MODIF.ACC_SL = #{slNo}
+	   			</otherwise>
+	   		</choose>
+	   		AND S_SIGN_MODIF.TO_BE_STATUS <> 'D' 
+	
+		UNION
+	
+	  	SELECT CIFOBJECT.AMOUNT AMOUNT,   
+	    	CURRENCIES.BRIEF_DESC_ENG BRIEF_DESC_ENG,   
+			CURRENCIES.BRIEF_DESC_ARAB BRIEF_DESC_ARAB,
+	        '2' ORIGIN,    
+	        CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+	        S_SCAN.DESCRIPTION DESCRIPTION,   
+	        CIFOBJECT.GROUP_ID GROUP_ID,    
+	        S_SCAN.EXP_DATE EXP_DATE,   
+	        S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+			S_SCAN.ANNOTATION ANNOTATION,
+	        CIFOBJECT.OBJECT_SEQ OBJECT_SEQ 
+	    FROM CIFOBJECT,   
+	    	S_SCAN,   
+	        CURRENCIES  
+	   	WHERE S_SCAN.CODE = CIFOBJECT.OBJECT_CODE
+	   		AND S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE
+	   		AND S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+	   		AND CIFOBJECT.COMP_CODE = CURRENCIES.COMP_CODE
+	   		AND CURRENCIES.CURRENCY_CODE = CIFOBJECT.AMOUNT_CY
+	   		AND CIFOBJECT.COMP_CODE = #{compCode}
+	   		AND CIFOBJECT.OBJECT_TYPE = #{objType}
+	   		<choose>
+	   			<when test="signatureTp == 'C'">
+	   				AND (#{branchCode} = 0 OR CIFOBJECT.BRANCH_CODE = #{branchCode})
+	   				AND CIFOBJECT.CIF_NO = #{cifNo}
+	   				AND CIFOBJECT.ACC_GL = 0
+	   			</when>
+	   			<otherwise>
+	   				AND CIFOBJECT.BRANCH_CODE = #{branchCode}
+	   				AND CIFOBJECT.ACC_CY = #{currencyCode}   
+         			AND CIFOBJECT.ACC_CIF = #{cifNo}
+         			AND CIFOBJECT.ACC_GL = #{glCode}
+         			AND CIFOBJECT.ACC_SL = #{slNo}
+	   			</otherwise>
+
+	   		AND CIFOBJECT.STATUS <> 'D' 
+	   		AND (CIFOBJECT.TO_BE_STATUS <> 'D' OR CIFOBJECT.TO_BE_STATUS IS NULL) 
+	   		AND CIFOBJECT.OBJECT_CODE NOT IN (SELECT CASE WHEN S_SIGN_MODIF.ORIGIN_CODE IS NULL THEN -1 ELSE S_SIGN_MODIF.ORIGIN_CODE END
+	   										FROM S_SIGN_MODIF
+	                                        WHERE S_SIGN_MODIF.COMP_CODE = #{compCode}
+	                                        	AND S_SIGN_MODIF.BRANCH_CODE = #{branchCode}
+	                                        	AND S_SIGN_MODIF.ACC_CIF = #{cifNo}
+	                                        	AND S_SIGN_MODIF.ACC_GL = 0)
+	]]>
+	</select>
+	
+	<select id="returnAnnotation" resultType="java.lang.String" parameterType="signatureSC">
+		SELECT 
+			<choose>
+				<when test="isTemp == false">
+					ANNOTATION
+				</when>
+				<otherwise>
+					TO_BE_ANNOTATION
+				</otherwise>
+			</choose> 
+		FROM 
+			<choose>
+				<when test="isTemp == false">
+					S_SIGN_ANN
+				</when>
+				<otherwise>
+					S_SIGN_ANN_TEMP
+				</otherwise>
+			</choose> 
+		WHERE  OBJECT_CODE = #{objCode}	
+			AND COMP_CODE = #{compCode}
+			AND BRANCH_CODE	= #{branchCode} 		
+			AND CIF_SUB_NO = #{cifNo}			
+			AND CURRENCY_CODE = #{currencyCode}	
+			AND SL_NO = #{slNo}			
+			AND GL_CODE = #{glCode}	
+	</select>
+	
+	<select id="returnSignaturesTempApproveList" resultMap="returnSignaturesListMap" parameterType="signatureSC">
+		SELECT S_SIGN_MODIF.TO_BE_AMOUNT AMOUNT, 
+			CURRENCIES.BRIEF_DESC_ENG,   
+			CURRENCIES.BRIEF_DESC_ARAB, 
+			S_SIGN_MODIF.OBJECT_CODE,
+			S_SIGN_MODIF.OBJECT_SEQ,
+			S_SIGN_MODIF.TO_BE_DESCRIPTION DESCRIPTION,
+			S_SIGN_MODIF.TO_BE_GROUP_ID GROUP_ID,
+			S_SIGN_MODIF.TO_BE_STATUS STATUS,
+			S_SIGN_MODIF.TO_BE_EXP_DATE EXP_DATE,   
+			S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED DEFAULT_UNLIMITED,   
+			S_SIGN_MODIF.TO_BE_ANNOTATION ANNOTATION,
+			S_SIGN_MODIF.TO_BE_SC_WIDTH WIDTH,
+			S_SIGN_MODIF.TO_BE_SC_HEIGHT HEIGHT,
+			S_SIGN_MODIF.TO_BE_SC_FORMAT FORMAT,
+			S_SIGN_MODIF.ORIGIN_CODE,
+			S_SIGN_MODIF.ORIGIN_SEQ
+		FROM S_SIGN_MODIF, 
+			CURRENCIES 
+		WHERE S_SIGN_MODIF.COMP_CODE = CURRENCIES.COMP_CODE
+			AND CURRENCIES.CURRENCY_CODE = S_SIGN_MODIF.TO_BE_AMOUNT_CY
+			AND S_SIGN_MODIF.COMP_CODE = #{compCode}
+			AND (#{branchCode = 0 OR S_SIGN_MODIF.BRANCH_CODE = #{branchCode}) 
+			AND S_SIGN_MODIF.TO_BE_OBJECT_TYPE = #{objType}
+			<choose>
+				<when test="signatureTp == 'C'">
+					AND S_SIGN_MODIF.CIF_NO = #{cifNo}
+					AND S_SIGN_MODIF.ACC_GL = 0 
+				</when>
+				<otherwise>
+					AND S_SIGN_MODIF.ACC_CY = #{currencyCode}
+         			AND S_SIGN_MODIF.ACC_CIF = #{cifNo}
+         			AND S_SIGN_MODIF.ACC_GL = #{glCode}
+         			AND S_SIGN_MODIF.ACC_SL = #{slNo}
+				</otherwise>
+			</choose>
+			AND (S_SIGN_MODIF.TO_BE_STATUS = 'A' OR S_SIGN_MODIF.TO_BE_STATUS IS NOT NULL)   
+		ORDER BY S_SIGN_MODIF.TO_BE_GROUP_ID
+	</select>
+	
+	<update id="updateSScan" parameterType="scanVO">
+		update S_SCAN
+		<set>
+			<if test="SC_RESOLUTION != null">
+				<choose>
+					<when test="SC_RESOLUTION == emptyBigDecimalValue">
+						SC_RESOLUTION = NULL ,
+	          </when>
+					<otherwise>
+						SC_RESOLUTION = #{SC_RESOLUTION},
+	          </otherwise>
+				</choose>
+			</if>
+			<if test="SC_LEFT != null">
+				<choose>
+					<when test="SC_LEFT == emptyBigDecimalValue">
+						SC_LEFT = NULL ,
+	          </when>
+					<otherwise>
+						SC_LEFT = #{SC_LEFT},
+	          </otherwise>
+				</choose>
+			</if>
+			<if test="SC_TOP != null">
+				<choose>
+					<when test="SC_TOP == emptyBigDecimalValue">
+						SC_TOP = NULL ,
+	          </when>
+					<otherwise>
+						SC_TOP = #{SC_TOP},
+	          </otherwise>
+				</choose>
+			</if>
+			<if test="SC_WIDTH != null">
+				<choose>
+					<when test="SC_WIDTH == emptyBigDecimalValue">
+						SC_WIDTH = NULL ,
+	          </when>
+					<otherwise>
+						SC_WIDTH = #{SC_WIDTH},
+	          </otherwise>
+				</choose>
+			</if>
+			<if test="SC_HEIGHT != null">
+				<choose>
+					<when test="SC_HEIGHT == emptyBigDecimalValue">
+						SC_HEIGHT = NULL ,
+	          </when>
+					<otherwise>
+						SC_HEIGHT = #{SC_HEIGHT},
+	          </otherwise>
+				</choose>
+			</if>
+			<if test="SC_FORMAT != null">
+				SC_FORMAT = #{SC_FORMAT},
+	      </if>
+			<if test="DESCRIPTION != null">
+				DESCRIPTION = #{DESCRIPTION},
+	      </if>
+			<if test="ANNOTATION != null">
+				ANNOTATION = #{ANNOTATION},
+	      </if>
+	      <choose>
+					<when test="EXP_DATE == null ">
+						EXP_DATE = NULL ,
+	          </when>
+					<otherwise>
+						EXP_DATE = #{EXP_DATE},
+	          </otherwise>
+		 </choose>  
+			
+			<if test="DEFAULT_UNLIMITED != null">
+				<choose>
+					<when test="DEFAULT_UNLIMITED == emptyBigDecimalValue">
+						DEFAULT_UNLIMITED = NULL ,
+	          </when>
+					<otherwise>
+						DEFAULT_UNLIMITED = #{DEFAULT_UNLIMITED},
+	          </otherwise>
+				</choose>
+			</if>
+		  <if test="INST_OTHER_VALUE != null">
+				INST_OTHER_VALUE = #{INST_OTHER_VALUE},
+	      </if>
+	       <if test="SIGN_INSTRUCTIONS != null">
+				SIGN_INSTRUCTIONS = #{SIGN_INSTRUCTIONS},
+	      </if>
+		</set>
+		where BRANCH_CODE = #{BRANCH_CODE}
+		and CODE = #{CODE}
+		and COMP_CODE = #{COMP_CODE}
+		and DOC_TYPE = #{DOC_TYPE}
+	</update>
+	  
+	
+	
+	<update id="updateSSignAnn" parameterType="signatureSC">
+		UPDATE S_SIGN_ANN
+		SET	ANNOTATION = #{genNote} 
+		WHERE OBJECT_CODE = #{objCode} 			
+			AND COMP_CODE = #{compCode} 		
+			AND BRANCH_CODE	= #{branchCode} 		
+			AND CURRENCY_CODE = #{currencyCode}
+			AND GL_CODE	= #{glCode}
+			AND CIF_SUB_NO = #{cifNo}	
+			AND SL_NO = #{slNo}
+	</update>
+	
+	<delete id="deleteSSignAnn" parameterType="signatureSC">
+		DELETE
+		FROM 
+		<choose>
+			<when test="isTemp == false">
+				S_SIGN_ANN
+			</when>
+			<otherwise>
+				S_SIGN_ANN_TEMP
+			</otherwise>
+		</choose> 
+		WHERE OBJECT_CODE = #{objCode}
+			AND COMP_CODE = #{compCode}
+			AND BRANCH_CODE = #{branchCode}
+			AND CURRENCY_CODE = #{currencyCode}
+			AND GL_CODE = #{glCode}
+			AND CIF_SUB_NO = #{cifNo}
+			AND SL_NO = #{slNo}
+	</delete>
+	
+	<delete id="deleteSSignModif" parameterType="signatureSC">
+		DELETE 
+		FROM S_SIGN_MODIF  
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH_CODE	= #{branchCode}
+		AND OBJECT_CODE = #{objCode}
+		AND CIF_NO = #{cifNo}
+		AND ACC_CY = #{currencyCode}	
+		AND ACC_GL = #{glCode}
+		AND ACC_CIF = #{cifNo}			
+		AND ACC_SL = #{slNo}
+	</delete>
+
+	<update id="updateCIFOBJECTPhoto" parameterType="signatureSC">
+	<![CDATA[
+		UPDATE CIFOBJECT 
+		SET DEFAULT_PHOTO = 0
+		WHERE OBJECT_SEQ <> #{objSeq}            
+			AND COMP_CODE = #{compCode} 		
+			AND BRANCH_CODE = #{branchCode} 		
+			AND CIF_NO = #{cifNo}	
+			AND ACC_CY = #{currencyCode}	
+			AND ACC_GL = #{glCode}		
+			AND ACC_CIF	= #{cifNo}			
+			AND ACC_SL = #{slNo}			
+			AND OBJECT_TYPE = #{objType}
+	]]>
+	</update>
+	
+
+	
+<!--************************************************************************************************************************************************-->
+	
+	
+	<sql id="returnAllSignaturesListOld" >
+		SELECT CIFOBJECT.OBJECT_SEQ,CIFOBJECT.AMOUNT,    
+			<choose>
+				<when test='preferredLanguage.equals("A")'>
+					CURRENCIES.BRIEF_DESC_ARAB	CURRENCYDESC,
+				</when>
+				<otherwise>
+					CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+				</otherwise>
+			</choose> 
+			CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+         	S_SCAN.DESCRIPTION DESCRIPTION,   
+         	CIFOBJECT.GROUP_ID GROUP_ID,
+         	'1' VIEWED_ANN ,
+			'0' SHOW_ANN ,
+			S_SCAN.EXP_DATE EXP_DATE,   
+         	S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+			S_SCAN.ANNOTATION ANNOTATION,
+         	S_SCAN.SC_FORMAT FORMAT,
+         	CIFOBJECT.CIF_NO CIF_NO,
+         	CIFOBJECT.ACC_CY ACC_CY,
+         	CIFOBJECT.ACC_CIF ACC_CIF,
+         	CIFOBJECT.ACC_SL ACC_SL,
+         	CIFOBJECT.ACC_GL ACC_GL,
+         	CIFOBJECT.AMOUNT_CY,
+         	CASE WHEN DEFAULT_UNLIMITED = 1 THEN 'Y' ELSE 'N' END DEFAULT_UNLIMITED_FLAG
+    	FROM CIFOBJECT,   
+        	S_SCAN,   
+         	CURRENCIES, 
+         	S_SIGN_ANN   
+		WHERE CIFOBJECT.COMP_CODE = S_SIGN_ANN.COMP_CODE
+			AND CIFOBJECT.BRANCH_CODE = S_SIGN_ANN.BRANCH_CODE
+			AND CIFOBJECT.ACC_CY = S_SIGN_ANN.CURRENCY_CODE
+			AND CIFOBJECT.ACC_GL = S_SIGN_ANN.GL_CODE
+			AND CIFOBJECT.ACC_SL = S_SIGN_ANN.SL_NO
+			AND CIFOBJECT.ACC_CIF = S_SIGN_ANN.CIF_SUB_NO
+			AND CIFOBJECT.OBJECT_CODE = S_SIGN_ANN.OBJECT_CODE
+			AND S_SCAN.CODE = CIFOBJECT.OBJECT_CODE  
+	 		AND S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE
+    		AND S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+	 		AND CIFOBJECT.COMP_CODE  = CURRENCIES.COMP_CODE
+	 		AND CURRENCIES.CURRENCY_CODE  = CIFOBJECT.AMOUNT_CY
+	 		AND CIFOBJECT.COMP_CODE = #{compCode}
+    		AND ((#{signatureTp} = 'C' AND #{branchCode} = 0) OR CIFOBJECT.BRANCH_CODE = #{branchCode})
+    		<choose>
+    			<when test='signatureTp.equals("C")'>
+    				AND CIFOBJECT.OBJECT_TYPE = #{objType}
+    				AND CIFOBJECT.ACC_GL = 0
+    				AND CIFOBJECT.CIF_NO = #{cifNo}
+    			</when>
+    			<otherwise>
+    				AND	S_SCAN.DOC_TYPE = #{objType}
+    				AND CIFOBJECT.ACC_CY = #{currencyCode}
+					AND CIFOBJECT.ACC_CIF = #{cifNo}
+					AND CIFOBJECT.ACC_GL = #{glNo}
+					AND CIFOBJECT.ACC_SL = #{slNo}
+    			</otherwise>
+    		</choose>
+    		<choose>
+				<when test='(details!= null and edit!= null and changeAmount!= null and "Details".equals(details) and "Edit".equals(edit) and "ChangeAmount".equals(changeAmount))'>
+					<![CDATA[AND CIFOBJECT.STATUS <> 'D']]>
+				</when>
+				<otherwise>
+					AND CIFOBJECT.STATUS = 'P'    
+				</otherwise>
+			</choose> 
+    		AND ((#{filterSign}= '1' AND ((S_SCAN.DEFAULT_UNLIMITED = 0 AND S_SCAN.EXP_DATE >= #{validationDate,jdbcType=DATE}) OR S_SCAN.DEFAULT_UNLIMITED = 1))
+				OR #{filterSign} = '0')
+		
+		UNION
+		
+		SELECT CIFOBJECT.OBJECT_SEQ,CIFOBJECT.AMOUNT,    
+			<choose>
+				<when test='preferredLanguage.equals("A")'>
+					CURRENCIES.BRIEF_DESC_ARAB	CURRENCYDESC,
+				</when>
+				<otherwise>
+					CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+				</otherwise>
+			</choose> 
+			CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+         	S_SCAN.DESCRIPTION DESCRIPTION,   
+         	CIFOBJECT.GROUP_ID GROUP_ID ,   
+			'1' VIEWED_ANN ,
+			'0' SHOW_ANN ,   
+			S_SCAN.EXP_DATE EXP_DATE,   
+         	S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+			S_SCAN.ANNOTATION ANNOTATION,
+         	S_SCAN.SC_FORMAT FORMAT,
+         	CIFOBJECT.CIF_NO CIF_NO,
+         	CIFOBJECT.ACC_CY ACC_CY,
+         	CIFOBJECT.ACC_CIF ACC_CIF,
+         	CIFOBJECT.ACC_SL ACC_SL,
+         	CIFOBJECT.ACC_GL ACC_GL,
+         	CIFOBJECT.AMOUNT_CY,
+         	CASE WHEN DEFAULT_UNLIMITED = 1 THEN 'Y' ELSE 'N' END DEFAULT_UNLIMITED_FLAG
+    	FROM CIFOBJECT,
+        	S_SCAN,
+         	CURRENCIES
+		WHERE S_SCAN.CODE  = CIFOBJECT.OBJECT_CODE  
+	 		AND S_SCAN. COMP_CODE = CIFOBJECT.COMP_CODE
+    		AND S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+	 		AND CIFOBJECT.COMP_CODE  = CURRENCIES.COMP_CODE
+	 		AND CURRENCIES.CURRENCY_CODE  = CIFOBJECT.AMOUNT_CY
+	 		AND CIFOBJECT.COMP_CODE = #{compCode}
+    		AND ((#{signatureTp} = 'C' AND #{branchCode} = 0) OR CIFOBJECT.BRANCH_CODE = #{branchCode})   
+    		<choose>
+    			<when test='signatureTp.equals("C")'>
+    				AND CIFOBJECT.OBJECT_TYPE = #{objType}
+    				AND CIFOBJECT.ACC_GL = 0
+    				AND CIFOBJECT.CIF_NO = #{cifNo}
+    			</when>
+    			<otherwise>
+    				AND	S_SCAN.DOC_TYPE = #{objType}
+    				AND CIFOBJECT.ACC_CY = #{currencyCode}
+					AND CIFOBJECT.ACC_CIF = #{cifNo}
+					AND CIFOBJECT.ACC_GL = #{glNo}
+					AND CIFOBJECT.ACC_SL = #{slNo}
+    			</otherwise>
+    		</choose>
+    		<choose>
+				<when test='(details!= null and edit!= null and changeAmount!= null and "Details".equals(details) and "Edit".equals(edit) and "ChangeAmount".equals(changeAmount))'>
+					<![CDATA[AND CIFOBJECT.STATUS <> 'D']]>
+				</when>
+				<otherwise>
+					AND CIFOBJECT.STATUS = 'P'    
+				</otherwise>
+			</choose>  
+  			AND ((#{filterSign} = '1' AND ((S_SCAN.DEFAULT_UNLIMITED = 0 AND S_SCAN.EXP_DATE >= #{validationDate,jdbcType=DATE}) OR S_SCAN.DEFAULT_UNLIMITED = 1))
+				OR #{filterSign} = '0')
+			AND NOT EXISTS (SELECT OBJECT_CODE 
+							FROM S_SIGN_ANN
+							WHERE CIFOBJECT.COMP_CODE = S_SIGN_ANN.COMP_CODE
+								AND CIFOBJECT.BRANCH_CODE = S_SIGN_ANN.BRANCH_CODE
+								AND CIFOBJECT.ACC_CY = S_SIGN_ANN.CURRENCY_CODE
+								AND CIFOBJECT.ACC_GL = S_SIGN_ANN.GL_CODE
+								AND CIFOBJECT.ACC_SL = S_SIGN_ANN.SL_NO
+								AND CIFOBJECT.ACC_CIF = S_SIGN_ANN.CIF_SUB_NO
+								AND CIFOBJECT.OBJECT_CODE = S_SIGN_ANN.OBJECT_CODE)
+		ORDER BY GROUP_ID
+	</sql>
+
+	
+	<select id="selectSignatureDetails" resultMap="returnSignaturesListMap" parameterType="signatureCO">
+		<include refid="fetchSignatureDetails" />
+	</select>
+	
+	<sql id="fetchSignatureDetails" >	
+		<choose>
+		 <when test='origin.equals("1")'>
+ 			 SELECT 
+				S_SIGN_MODIF.TO_BE_DESCRIPTION DESCRIPTION,
+				S_SIGN_MODIF.TO_BE_GROUP_ID GROUP_ID,
+				S_SIGN_MODIF.TO_BE_AMOUNT AMOUNT,
+				'1' ORIGIN,
+				CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+				S_SIGN_MODIF.OBJECT_CODE OBJECT_CODE,   
+				S_SIGN_MODIF.OBJECT_SEQ OBJECT_SEQ,
+				S_SIGN_MODIF.TO_BE_EXP_DATE EXP_DATE,   
+				S_SIGN_MODIF.TO_BE_ANNOTATION ANNOTATION,
+				S_SIGN_MODIF.TO_BE_DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+				S_SIGN_ANN_TEMP.TO_BE_ANNOTATION GENERALNOTE,
+				S_SIGN_MODIF.TO_BE_OBJECT_TYPE DOC_TYPE,				
+				S_SIGN_MODIF.ORIGIN_CODE ORIGIN_CODE, 
+				S_SIGN_MODIF.ORIGIN_SEQ ORIGIN_SEQ,
+				S_SIGN_MODIF.ACC_CY ACC_CY, 
+         		S_SIGN_MODIF.CIF_NO CIF_NO,
+         		S_SIGN_MODIF.CIF_NO ACC_CIF,   
+         		S_SIGN_MODIF.ACC_GL ACC_GL,    
+         		S_SIGN_MODIF.ACC_SL ACC_SL,
+         		S_SIGN_MODIF.TO_BE_AMOUNT_CY AMOUNT_CY ,  
+         		S_SIGN_MODIF.COMP_CODE COMP_CODE,
+         		S_SIGN_MODIF.BRANCH_CODE BRANCH_CODE,
+         		S_SIGN_MODIF.TO_BE_SIGN_INSTRUCTIONS SIGN_INSTRUCTIONS,
+         		S_SIGN_MODIF.TO_BE_INST_OTHER_VALUE INST_OTHER_VALUE
+         		
+         		<choose>
+				 <when test='fetchImg'>
+				  ,S_SIGN_MODIF.OLE_OBJECT OLE_OBJECT
+				 </when>
+				</choose>
+				,S_SIGN_MODIF.AUTH_CIF_NO,
+				(SELECT 
+				<choose>
+				  <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+					CIF.SHORT_NAME_ARAB
+				  </when>
+				  <otherwise>
+					CIF.SHORT_NAME_ENG
+				  </otherwise>
+				</choose> 
+		          FROM CIF
+		         WHERE CIF.COMP_CODE = S_SIGN_MODIF.COMP_CODE
+		           AND CIF.CIF_NO = S_SIGN_MODIF.AUTH_CIF_NO) authCifDesc
+				FROM S_SIGN_MODIF LEFT JOIN CURRENCIES ON			   
+					 CURRENCIES.CURRENCY_CODE  	= S_SIGN_MODIF.ACC_CY AND
+				     CURRENCIES.COMP_CODE  		= S_SIGN_MODIF.COMP_CODE 
+					 LEFT JOIN S_SIGN_ANN_TEMP ON 
+					 S_SIGN_ANN_TEMP.BRANCH_CODE    = S_SIGN_MODIF.BRANCH_CODE   AND 
+				     S_SIGN_ANN_TEMP.OBJECT_CODE 	= S_SIGN_MODIF.OBJECT_CODE   AND
+				     S_SIGN_ANN_TEMP.COMP_CODE 		= S_SIGN_MODIF.COMP_CODE
+				<choose>
+    				<when test='signatureTp.equals("C")'>
+    		 			AND (S_SIGN_ANN_TEMP.CIF_SUB_NO = #{cifObjectVO.ACC_CIF}) AND  (S_SIGN_ANN_TEMP.GL_CODE = 0)   
+    				</when>
+    				<otherwise>
+    					AND (S_SIGN_ANN_TEMP.CURRENCY_CODE =  #{cifObjectVO.ACC_CY}) AND  
+         				(S_SIGN_ANN_TEMP.CIF_SUB_NO = #{cifObjectVO.ACC_CIF}) AND  
+         				(S_SIGN_ANN_TEMP.GL_CODE  = #{cifObjectVO.ACC_GL}) AND  
+         				(S_SIGN_ANN_TEMP.SL_NO = #{cifObjectVO.ACC_SL})        
+    				</otherwise>
+    	 		</choose>    			   				  
+			WHERE 
+                
+				 S_SIGN_MODIF.BRANCH_CODE 		= #{cifObjectVO.BRANCH_CODE}		 	  	
+				AND S_SIGN_MODIF.OBJECT_CODE 		=#{cifObjectVO.OBJECT_CODE}
+				AND S_SIGN_MODIF.COMP_CODE 		=  #{cifObjectVO.COMP_CODE}
+				AND S_SIGN_MODIF.OBJECT_SEQ 		=  #{cifObjectVO.OBJECT_SEQ}
+				<choose>
+    				<when test='signatureTp.equals("C")'>
+    					AND (S_SIGN_MODIF.ACC_CIF = #{cifObjectVO.ACC_CIF}) AND (S_SIGN_MODIF.ACC_GL = 0)   
+    				</when>
+    				<otherwise>
+    		 			AND (S_SIGN_MODIF.ACC_CY =  #{cifObjectVO.ACC_CY}) AND  
+         				(S_SIGN_MODIF.ACC_CIF = #{cifObjectVO.ACC_CIF}) AND  
+         				(S_SIGN_MODIF.ACC_GL = #{cifObjectVO.ACC_GL}) AND  
+         				(S_SIGN_MODIF.ACC_SL = #{cifObjectVO.ACC_SL})        
+    				</otherwise>
+    	 		</choose>
+		 </when>
+		 <otherwise>
+		  
+		 	SELECT  CIFOBJECT.CIF_NO,
+					CIFOBJECT.ACC_CIF,
+					CIFOBJECT.ACC_CY,
+					CIFOBJECT.ACC_GL,
+					CIFOBJECT.ACC_SL,
+					CIFOBJECT.COMP_CODE,
+				S_SCAN.DESCRIPTION DESCRIPTION,
+				CIFOBJECT.GROUP_ID GROUP_ID,
+				CIFOBJECT.AMOUNT,
+				'2' ORIGIN,
+				CURRENCIES.BRIEF_DESC_ENG	CURRENCYDESC,
+				CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+				CIFOBJECT.OBJECT_SEQ OBJECT_SEQ,
+				S_SCAN.EXP_DATE EXP_DATE,   
+				S_SCAN.ANNOTATION ANNOTATION,
+				S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+				S_SIGN_ANN.ANNOTATION GENERALNOTE,
+				S_SCAN.DOC_TYPE DOC_TYPE,
+				S_SCAN.SIGN_INSTRUCTIONS SIGN_INSTRUCTIONS,
+				S_SCAN.INST_OTHER_VALUE INST_OTHER_VALUE,
+				CIFOBJECT.BRANCH_CODE,
+				S_SCAN.ID_TYPE ID_TYPE,
+				(SELECT DESC_ENG FROM ID_TYPES WHERE COMP_CODE = S_SCAN.COMP_CODE AND CODE = S_SCAN.ID_TYPE) idTypeDesc, 
+				S_SCAN.ID_NO ID_NO,
+				CIFOBJECT.AUTH_CIF_NO,
+				(SELECT 
+				<choose>
+				  <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+					CIF.SHORT_NAME_ARAB
+				  </when>
+				  <otherwise>
+					CIF.SHORT_NAME_ENG
+				  </otherwise>
+				</choose> 
+		          FROM CIF
+		         WHERE CIF.COMP_CODE = CIFOBJECT.COMP_CODE
+		           AND CIF.CIF_NO = CIFOBJECT.AUTH_CIF_NO) authCifDesc,
+		         CIFOBJECT.AMOUNT_CY,
+		         CIFOBJECT.CREATED_BY,
+		         CIFOBJECT.DATE_AUTHORISED,
+		         CIFOBJECT.DATE_CREATED,
+		         CIFOBJECT.DATE_MODIFIED,
+		         CIFOBJECT.MODIFIED_BY,
+		         CIFOBJECT.STATUS,
+		         CIFOBJECT.OBJECT_TYPE DOC_TYPE
+			FROM S_SCAN,
+			 	CIFOBJECT LEFT JOIN CURRENCIES ON				 
+				CURRENCIES.CURRENCY_CODE  	= CIFOBJECT.AMOUNT_CY
+				AND CURRENCIES.COMP_CODE  	= CIFOBJECT.COMP_CODE				 
+				LEFT JOIN S_SIGN_ANN ON 
+				S_SIGN_ANN.BRANCH_CODE 		    = #{cifObjectVO.BRANCH_CODE}			 
+				AND S_SIGN_ANN.OBJECT_CODE 		= #{cifObjectVO.OBJECT_CODE}
+				AND S_SIGN_ANN.COMP_CODE 		= #{cifObjectVO.COMP_CODE}
+				<choose>
+    				<when test='signatureTp.equals("C")'>
+    		 			AND (S_SIGN_ANN.CIF_SUB_NO =  #{cifObjectVO.ACC_CIF}) AND  
+         	 			(S_SIGN_ANN.GL_CODE	 = 0)   
+    				</when>
+    				<otherwise>
+    					AND (S_SIGN_ANN.CURRENCY_CODE = #{cifObjectVO.ACC_CY}) AND  
+         				(S_SIGN_ANN.CIF_SUB_NO = #{cifObjectVO.ACC_CIF}) AND  
+         				(S_SIGN_ANN.GL_CODE  = #{cifObjectVO.ACC_GL}) AND  
+         				(S_SIGN_ANN.SL_NO = #{cifObjectVO.ACC_SL})        
+    				</otherwise>
+    		  </choose>           	  
+			WHERE 	S_SCAN.CODE 				= CIFOBJECT.OBJECT_CODE  
+				AND S_SCAN.COMP_CODE 			= CIFOBJECT.COMP_CODE
+				AND S_SCAN.BRANCH_CODE 			= CIFOBJECT.BRANCH_CODE				
+				AND CIFOBJECT.BRANCH_CODE 		= #{cifObjectVO.BRANCH_CODE}			 	  	
+				AND CIFOBJECT.OBJECT_CODE 		= #{cifObjectVO.OBJECT_CODE}
+				AND CIFOBJECT.COMP_CODE 		= #{cifObjectVO.COMP_CODE}
+				AND CIFOBJECT.OBJECT_SEQ 		= #{cifObjectVO.OBJECT_SEQ}			 
+				<choose>
+    				<when test='signatureTp.equals("C")'>    			
+    					AND CIFOBJECT.ACC_GL = 0
+    					AND CIFOBJECT.CIF_NO =  #{cifObjectVO.ACC_CIF}
+    				</when>
+    				<otherwise>    				
+    					AND CIFOBJECT.ACC_CY = #{cifObjectVO.ACC_CY}
+						AND CIFOBJECT.ACC_CIF = #{cifObjectVO.ACC_CIF}
+						AND CIFOBJECT.ACC_GL = #{cifObjectVO.ACC_GL}
+						AND CIFOBJECT.ACC_SL = #{cifObjectVO.ACC_SL}
+    				</otherwise>
+    			</choose> 
+	 
+		 </otherwise>
+		</choose>
+		 
+		
+			
+	</sql>
+	
+	<!--
+		The map that returns the blob object for a defined signature for a specific account
+	-->
+	<resultMap id="signatureResultImage" type="signatureCO">
+		<result column="OLE_OBJECT" property="oleObject" />
+	</resultMap>
+	
+	
+ <select id="retrieveSignatureFormData" resultMap="signEditFormResultMap" parameterType="signatureCO">
+	<![CDATA[
+		SELECT CIFOBJECT.AMOUNT,    
+         CURRENCIES.BRIEF_DESC_ENG, 
+	      CURRENCIES.BRIEF_DESC_ARAB,    
+         ' ' CHECKED,   
+         CIFOBJECT.OBJECT_CODE,   
+         S_SCAN.DESCRIPTION,   
+         S_SCAN.ANNOTATION,   
+         CIFOBJECT.GROUP_ID,   
+         S_SCAN.EXP_DATE,   
+         S_SCAN.DEFAULT_UNLIMITED  
+    FROM CIFOBJECT,   
+         S_SCAN,   
+         CURRENCIES  
+   WHERE ( S_SCAN.CODE = CIFOBJECT.OBJECT_CODE ) and  
+         ( S_SCAN.COMP_CODE = CIFOBJECT.COMP_CODE ) and  
+         ( S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE ) and  
+         ( CIFOBJECT.COMP_CODE = CURRENCIES.COMP_CODE ) and  
+         ( CURRENCIES.CURRENCY_CODE = CIFOBJECT.AMOUNT_CY ) and  
+         (CIFOBJECT.COMP_CODE = cifObjectVO.COMP_CODE) AND  
+         (cifObjectVO.BRANCH_CODE = 0 OR  
+         (CIFOBJECT.BRANCH_CODE = #{cifObjectVO.BRANCH_CODE})) AND  
+         (CIFOBJECT.OBJECT_TYPE = 'S') AND  
+         (CIFOBJECT.CIF_NO = #{cifObjectVO.CIF_NO}) AND  
+         (CIFOBJECT.ACC_GL = #{cifObjectVO.ACC_GL}) AND  
+         (CIFOBJECT.STATUS <> 'D')   
+ORDER BY CIFOBJECT.GROUP_ID ASC   
+	]]>
+	</select>
+	<resultMap id="signEditFormResultMap" type="signatureCO" >
+		<result property="CIFOBJECT.AMOUNT"	column="CIFOBJECT.AMOUNT"/>
+		<result property="CURRENCIES.BRIEF_DESC_ENG"		column="CURRENCIES.BRIEF_DESC_ENG"/>
+		<result property="CURRENCIES.BRIEF_DESC_ARAB"		column="CURRENCIES.BRIEF_DESC_ARAB"/>
+		<result property="CIFOBJECT.OBJECT_CODE"		column="CIFOBJECT.OBJECT_CODE"/>
+		<result property="S_SCAN.DESCRIPTION"		column="S_SCAN.DESCRIPTION"/>
+		<result property="S_SCAN.ANNOTATION"		column="S_SCAN.ANNOTATION"/>
+		<result property="CIFOBJECT.GROUP_ID"		column="CIFOBJECT.GROUP_ID"/>
+		<result property="S_SCAN.EXP_DATE"		column="S_SCAN.EXP_DATE"/>
+		<result property="S_SCAN.DEFAULT_UNLIMITED"		column="S_SCAN.DEFAULT_UNLIMITED"/>
+		 
+	</resultMap>	
+	
+
+	
+	
+	<!--
+		THE FOLLOWING QUERIES AND STATEMENTS ARE BEING USED IN EDIT SECTION OF SIGNATURE
+	-->
+	<sql id="fetchSignatureImageSObject" > 
+		SELECT 
+				OLE_OBJECT 
+				FROM S_OBJECT 
+			WHERE
+				COMP_CODE 		= #{cifObjectVO.COMP_CODE}
+				AND BRANCH_CODE = #{cifObjectVO.BRANCH_CODE}
+				AND CODE  		= #{cifObjectVO.OBJECT_CODE}			
+				
+	</sql>
+	
+	<sql id="fetchSignatureImageSSignModif" > 
+		SELECT 
+				OLE_OBJECT 
+				FROM S_SIGN_MODIF 
+			WHERE
+				COMP_CODE 			= #{cifObjectVO.COMP_CODE}
+				AND BRANCH_CODE 	= #{cifObjectVO.BRANCH_CODE}
+				AND OBJECT_CODE  	= #{cifObjectVO.OBJECT_CODE}			
+				
+	</sql>
+	
+	<select id="selectSignatureImageSObject" parameterType="signatureCO" resultMap="signatureResultImage">
+		<include refid = "fetchSignatureImageSObject"/>
+	</select>
+	
+	<select id="selectSignatureImageSSignModif" parameterType="signatureCO" resultMap="signatureResultImage">
+		<include refid = "fetchSignatureImageSSignModif"/>
+	</select>
+
+	<sql id="signViewAllBaseQuery" >
+	 SELECT CIFOBJECT.OBJECT_CODE,   
+         	S_SCAN.DESCRIPTION,  	     
+			CIFOBJECT.GROUP_ID,
+            S_SCAN.DEFAULT_UNLIMITED,
+            S_SCAN.EXP_DATE,
+            S_SCAN.SC_FORMAT
+    		FROM CIFOBJECT,S_SCAN,CURRENCIES  
+			
+	</sql>	
+	<sql id="signViewAllForCIFWhereClause">	
+		WHERE S_SCAN.CODE  = CIFOBJECT.OBJECT_CODE
+			AND   S_SCAN. COMP_CODE = CIFOBJECT.COMP_CODE
+    		AND   S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+	 		AND	  CIFOBJECT.COMP_CODE  = CURRENCIES.COMP_CODE
+	 		AND	  CURRENCIES.CURRENCY_CODE  = CIFOBJECT.AMOUNT_CY
+	 		AND	  CIFOBJECT.COMP_CODE  = #{cifObjectVO.COMP_CODE}
+			AND  (#{cifObjectVO.BRANCH_CODE} = 0 OR  
+         	(CIFOBJECT.BRANCH_CODE = #{cifObjectVO.BRANCH_CODE}))  
+	 		AND	S_SCAN.DOC_TYPE  = 'S'
+	 		AND CIFOBJECT.CIF_NO = #{cifObjectVO.CIF_NO}
+      		AND  CIFOBJECT.ACC_GL = 0
+      		AND CIFOBJECT.STATUS = 'P'
+			ORDER BY CIFOBJECT.OBJECT_CODE	
+	
+	</sql>
+	
+	<sql id="signViewAllForAccWhereClause">	
+		WHERE	S_SCAN.CODE  = CIFOBJECT.OBJECT_CODE
+			 AND  S_SCAN. COMP_CODE = CIFOBJECT.COMP_CODE
+        	 AND  S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE
+	 		 AND  CIFOBJECT.COMP_CODE  = CURRENCIES.COMP_CODE
+	         AND  CURRENCIES.CURRENCY_CODE  = CIFOBJECT.AMOUNT_CY
+	 		 AND  CIFOBJECT.COMP_CODE  = #{cifObjectVO.COMP_CODE}
+	 		 AND  CIFOBJECT.BRANCH_CODE  = #{ cifObjectVO.BRANCH_CODE}
+	 		 AND  S_SCAN.DOC_TYPE  = 'S'
+	 		 AND  CIFOBJECT.ACC_CY  = #{cifObjectVO.ACC_CY}
+	 		 AND  CIFOBJECT.ACC_CIF  = #{cifObjectVO.ACC_CIF}
+	 		 AND  CIFOBJECT.ACC_GL  =#{cifObjectVO.ACC_GL}
+	 		 AND  CIFOBJECT.ACC_SL  = #{cifObjectVO.ACC_SL}
+	 		 AND  CIFOBJECT.STATUS  = 'P'
+			 ORDER BY CIFOBJECT.OBJECT_CODE	
+	</sql>
+	
+	
+	<select id="selectSignatureViewAllForCIF" parameterType="signatureCO" resultMap="returnSignaturesListMap">
+		<include refid = "signViewAllBaseQuery"/>
+		<include refid = "signViewAllForCIFWhereClause"/>
+	</select>
+	
+	<select id="selectSignatureViewAllForAcc" parameterType="signatureCO" resultMap="returnSignaturesListMap">
+		<include refid = "signViewAllBaseQuery"/>
+		<include refid = "signViewAllForAccWhereClause"/>
+	</select>
+	
+ 
+	
+
+	
+	
+	<sql id="fetchSignatureAnnotation" >
+		<![CDATA[
+			SELECT S_SIGN_ANN.COMP_CODE,   
+        	 	S_SIGN_ANN.BRANCH_CODE,   
+         		S_SIGN_ANN.CURRENCY_CODE,   
+         		S_SIGN_ANN.GL_CODE,   
+         		S_SIGN_ANN.CIF_SUB_NO,   
+         		S_SIGN_ANN.SL_NO,   
+         		S_SIGN_ANN.ANNOTATION,   
+         		S_SIGN_ANN.OBJECT_CODE  
+    		FROM S_SIGN_ANN  
+   			WHERE 
+   				( S_SIGN_ANN.COMP_CODE 		= 	#{cifObjectVO.COMP_CODE}) 	AND  
+         		( S_SIGN_ANN.BRANCH_CODE 	= 	#{cifObjectVO.BRANCH_CODE}) AND  
+         		( S_SIGN_ANN.CURRENCY_CODE 	= 	#{cifObjectVO.ACC_CY}) 		AND  
+         		( S_SIGN_ANN.GL_CODE 		= 	#{cifObjectVO.ACC_GL}) 		AND  
+         		( S_SIGN_ANN.CIF_SUB_NO 	= 	#{cifObjectVO.CIF_NO}) 		AND  
+         		( S_SIGN_ANN.SL_NO 			= 	#{cifObjectVO.ACC_SL}) 		AND
+				(S_SIGN_ANN.OBJECT_CODE  	=	#{cifObjectVO.OBJECT_CODE})    
+		]]>
+	</sql>
+	
+	<select id="selectSignatureAnnotation" parameterType="signatureCO" resultMap="S_SIGN_ANN.BaseResultMap">
+		<include refid = "fetchSignatureAnnotation"/>
+	</select>
+	
+	<update id="updateSignatureAnnotation" parameterType="signatureCO">
+		UPDATE  S_SIGN_ANN SET ANNOTATION = #{signatureAnnotationVO.ANNOTATION},
+		WHERE  
+				OBJECT_CODE 	= #{cifObjectVO.OBJECT_CODE})	AND
+				COMP_CODE 		= #{cifObjectVO.COMP_CODE}) 	AND
+				BRANCH_CODE		= #{cifObjectVO.BRANCH_CODE}) 	AND
+				CIF_SUB_NO		= #{cifObjectVO.CIF_NO})		AND
+				CURRENCY_CODE	= #{cifObjectVO.ACC_CY}) 		AND
+				SL_NO			= #{cifObjectVO.ACC_SL}) 		AND
+				GL_CODE			= #{cifObjectVO.ACC_GL})
+	</update>
+	
+	
+	<delete id="deleteSignatureAnnotation" parameterType="signatureCO">
+		DELETE FROM
+				S_SIGN_ANN
+		WHERE  
+				OBJECT_CODE 	= #{cifObjectVO.OBJECT_CODE})	AND
+				COMP_CODE 		= #{cifObjectVO.COMP_CODE}) 	AND
+				BRANCH_CODE		= #{cifObjectVO.BRANCH_CODE}) 	AND
+				CIF_SUB_NO		= #{cifObjectVO.CIF_NO})		AND
+				CURRENCY_CODE	= #{cifObjectVO.ACC_CY}) 		AND
+				SL_NO			= #{cifObjectVO.ACC_SL}) 		AND
+				GL_CODE			= #{cifObjectVO.ACC_GL})
+	</delete>
+	
+	<insert id="insertSignatureAnnotation" parameterType="signatureCO">
+		INSERT INTO 
+			S_SIGN_ANN
+			(	COMP_CODE , 
+				BRANCH_CODE,
+				CURRENCY_CODE,
+				GL_CODE ,
+				CIF_SUB_NO,
+				SL_NO,
+				ANNOTATION,
+				OBJECT_CODE
+			)
+			VALUES
+			(
+				#{cifObjectVO.COMP_CODE}) ,
+				#{cifObjectVO.BRANCH_CODE}), 
+				#{cifObjectVO.ACC_CY}),
+				#{cifObjectVO.ACC_GL}),
+				#{cifObjectVO.CIF_NO}),
+				#{cifObjectVO.ACC_SL}), 
+				#{signatureAnnotationVO.ANNOTATION},
+				#{cifObjectVO.OBJECT_CODE})
+			)
+	</insert>
+	
+	<update id="updateSignatureStatusAndGroup" parameterType="signatureCO">
+		<include refid = "updateSignatureStatusAndGroupStmt"/>
+	</update>	
+	<sql id="updateSignatureStatusAndGroupStmt" >
+		<![CDATA[
+			UPDATE  CIFOBJECT SET   
+				<when test='(editType!= null and "Edit".equals(editType))'>
+					GROUP_ID 		= 	#{cifObjectVO.GROUP_ID}),
+				</when>
+				<otherwise>
+					AMOUNT 			= 	#{cifObjectVO.AMOUNT}),
+				</otherwise>
+				STATUS 				= 	#{cifObjectVO.STATUS}),
+				DATE_MODIFIED		= 	#{runningDate},
+				MODIFIED_BY			=	#{userId}
+				<when test='(autoApprove!= null and "P".equals(autoApprove))'>
+					,DATE_AUTHORISED= 	#{runningDate}, 
+					AUTHORISED_BY	=	#{userId}
+				</when>
+			WHERE  
+				OBJECT_CODE  		= 	#{cifObjectVO.OBJECT_CODE})		AND
+				COMP_CODE 			= 	#{cifObjectVO.COMP_CODE}) 		AND
+				BRANCH_CODE			= 	#{cifObjectVO.BRANCH_CODE}) 	AND
+				CIF_NO				= 	#{cifObjectVO.CIF_NO})			AND
+				ACC_CY				= 	#{cifObjectVO.ACC_CY}) 			AND
+				ACC_GL				= 	#{cifObjectVO.ACC_GL})			AND
+				ACC_CIF				= 	#{cifObjectVO.CIF_NO})			AND
+				ACC_SL				= 	#{cifObjectVO.ACC_SL}) 			AND
+				OBJECT_TYPE    		= 	'S'
+		]]>
+	</sql>
+	
+	
+	<update id="updateCounterForLocking" parameterType="signatureCO">
+		<include refid = "updateCounterForLockingStmt"/>
+	</update>	
+	<sql id="updateCounterForLockingStmt" >
+		<![CDATA[
+			UPDATE  COUNTER SET	
+				LAST_NUMBER  	=  LAST_NUMBER 
+			WHERE  
+				COMP_CODE   	= #{cifObjectVO.COMP_CODE}		AND	
+				BRANCH_CODE  	= #{cifObjectVO.BRANCH_CODE}	AND
+				TRX_TYPE  		= 900 	
+		]]>
+	</sql>
+	<select id="selectMaxObjectSequenceForSignature" parameterType="signatureCO" resultType="java.lang.Long">
+		<include refid = "selectMaxObjectSequenceForSignatureStmt"/>
+	</select>
+		
+	<sql id="selectMaxObjectSequenceForSignatureStmt" >
+		<![CDATA[
+			SELECT  CASE WHEN MAX(OBJECT_SEQ) IS NULL THEN 1 ELSE MAX(OBJECT_SEQ) + 1 END
+				FROM  CIFOBJECT 
+				WHERE	 CIFOBJECT.COMP_CODE  	= #{cifObjectVO.COMP_CODE}
+				 AND	CIFOBJECT.BRANCH_CODE  	= #{cifObjectVO.BRANCH_CODE}
+				 AND	CIFOBJECT.CIF_NO  		= #{cifObjectVO.CIF_NO}
+				 AND	CIFOBJECT.ACC_CY  		= #{cifObjectVO.ACC_CY}
+				 AND	CIFOBJECT.ACC_GL  		= #{cifObjectVO.ACC_GL}
+				 AND	CIFOBJECT.ACC_CIF  		= #{cifObjectVO.CIF_NO}
+				 AND	CIFOBJECT.ACC_SL  		= #{cifObjectVO.ACC_SL}
+		]]>
+	</sql>
+	
+	<!--
+		================THE ABOVE QUERIES AND STATEMENTS ARE BEING USED IN EDIT SECTION OF SIGNATURE=================================
+	-->
+	
+<!--**************************************************************************************************************************************************-->
+ 
+ 
+ <select id="selectCountS_SIGN_ANN" parameterType="com.path.dbmaps.vo.S_SIGN_ANNVO" resultType="java.lang.Integer">
+  <include refid = "sqlCountS_SIGN_ANN"/> 
+ </select>
+  <sql id="sqlCountS_SIGN_ANN">
+   <![CDATA[
+		 SELECT COUNT(1) FROM S_SIGN_ANN WHERE			  
+				OBJECT_CODE     = #{OBJECT_CODE} 	 AND
+				COMP_CODE 		= #{COMP_CODE} 	 AND
+				BRANCH_CODE		= #{BRANCH_CODE}   AND
+				CIF_SUB_NO		= #{CIF_SUB_NO} 	 AND
+				CURRENCY_CODE	= #{CURRENCY_CODE} AND
+				SL_NO			= #{SL_NO} 		 AND
+				GL_CODE			= #{GL_CODE} 
+		]]>
+   
+   </sql>
+   
+ <select id="selectCountS_SIGN_ANN_TEMP" parameterType="com.path.dbmaps.vo.S_SIGN_ANN_TEMPVO" resultType="java.lang.Integer">
+  <include refid = "sqlCountS_SIGN_ANN_TEMP"/> 
+ </select>
+  <sql id="sqlCountS_SIGN_ANN_TEMP">
+   <![CDATA[
+		 SELECT COUNT(1) FROM S_SIGN_ANN_TEMP WHERE			  
+				OBJECT_CODE     = #{OBJECT_CODE} 	 AND
+				COMP_CODE 		= #{COMP_CODE} 	 AND
+				BRANCH_CODE		= #{BRANCH_CODE}   AND
+				CIF_SUB_NO		= #{CIF_SUB_NO} 	 AND
+				CURRENCY_CODE	= #{CURRENCY_CODE} AND
+				SL_NO			= #{SL_NO} 		 AND
+				GL_CODE			= #{GL_CODE} 
+		]]>
+   
+   </sql>
+ 
+	<update id="updateS_SIGN_ANN" parameterType="signatureCO">
+		<include refid = "updateStatementS_SIGN_ANN"/>
+	</update>	
+	<sql id="updateStatementS_SIGN_ANN" >
+		<![CDATA[
+			UPDATE  S_SIGN_ANN    
+				SET	ANNOTATION  = #{signatureAnnotationVO.ANNOTATION}  WHERE  
+				OBJECT_CODE     = #{signatureAnnotationVO.OBJECT_CODE} 	 AND
+				COMP_CODE 		= #{signatureAnnotationVO.COMP_CODE} 	 AND
+				BRANCH_CODE		= #{signatureAnnotationVO.BRANCH_CODE}   AND
+				CIF_SUB_NO		= #{signatureAnnotationVO.CIF_SUB_NO} 	 AND
+				CURRENCY_CODE	= #{signatureAnnotationVO.CURRENCY_CODE} AND
+				SL_NO			= #{signatureAnnotationVO.SL_NO} 		 AND
+				GL_CODE			= #{signatureAnnotationVO.GL_CODE} 
+		]]>
+	</sql>
+ 
+	<update id="deleteS_SIGN_ANN" parameterType="signatureCO">
+		<include refid = "deleteStatementS_SIGN_ANN"/>
+	</update>	
+	<sql id="deleteStatementS_SIGN_ANN" >
+		<![CDATA[
+			DELETE  S_SIGN_ANN  WHERE  
+				OBJECT_CODE     = #{signatureAnnotationVO.OBJECT_CODE} 	 AND
+				COMP_CODE 		= #{signatureAnnotationVO.COMP_CODE} 	 AND
+				BRANCH_CODE		= #{signatureAnnotationVO.BRANCH_CODE}   AND
+				CIF_SUB_NO		= #{signatureAnnotationVO.CIF_SUB_NO} 	 AND
+				CURRENCY_CODE	= #{signatureAnnotationVO.CURRENCY_CODE} AND
+				SL_NO			= #{signatureAnnotationVO.SL_NO} 		 AND
+				GL_CODE			= #{signatureAnnotationVO.GL_CODE} 
+		]]>
+	</sql>
+	
+	
+	   
+ <select id="populateSignatureCO" parameterType="signatureCO" resultMap="returnSignatureCOMap">
+  <include refid = "sqlPopulateSignatureCO"/> 
+ </select>
+	
+	<sql id="sqlPopulateSignatureCO">
+		SELECT S_SCAN.*,S_OBJECT.*,CIFOBJECT.*,S_SIGN_ANN.ANNOTATION GENNOTE
+		FROM S_SCAN,S_OBJECT,CIFOBJECT LEFT JOIN S_SIGN_ANN ON
+				S_SIGN_ANN.COMP_CODE	= CIFOBJECT.COMP_CODE AND S_SIGN_ANN.BRANCH_CODE=CIFOBJECT.BRANCH_CODE AND
+				S_SIGN_ANN.CURRENCY_CODE= CIFOBJECT.ACC_CY  AND S_SIGN_ANN.GL_CODE= CIFOBJECT.ACC_GL AND
+				S_SIGN_ANN.CIF_SUB_NO	= CIFOBJECT.ACC_CIF  AND  S_SIGN_ANN.SL_NO = CIFOBJECT.ACC_SL AND
+				S_SIGN_ANN.OBJECT_CODE  = CIFOBJECT.OBJECT_CODE
+		WHERE CIFOBJECT.OBJECT_CODE = S_SCAN.CODE
+		AND CIFOBJECT.COMP_CODE 	= S_SCAN.COMP_CODE
+		AND CIFOBJECT.BRANCH_CODE 	= S_SCAN.BRANCH_CODE
+		AND S_SCAN.CODE 			= S_OBJECT.CODE
+		AND S_SCAN.COMP_CODE 		= S_OBJECT.COMP_CODE
+		AND S_SCAN.BRANCH_CODE 		= S_OBJECT.BRANCH_CODE AND
+		CIFOBJECT.COMP_CODE  	= #{cifObjectVO.COMP_CODE}	 AND	CIFOBJECT.BRANCH_CODE  	  = #{cifObjectVO.BRANCH_CODE} AND
+		CIFOBJECT.ACC_CY  		= #{cifObjectVO.ACC_CY}	 	 AND	CIFOBJECT.ACC_GL  		  = #{cifObjectVO.ACC_GL}	   AND	
+		CIFOBJECT.ACC_CIF  		= #{cifObjectVO.ACC_CIF }	 AND	CIFOBJECT.ACC_SL  		  = #{cifObjectVO.ACC_SL}      AND
+		CIFOBJECT.OBJECT_CODE   = #{cifObjectVO.OBJECT_CODE} AND    CIFOBJECT.OBJECT_SEQ      = #{cifObjectVO.OBJECT_SEQ}			
+
+	
+	</sql>
+	
+	 <select id="selectDocumentList" resultMap="returnSignatureCOMap" parameterType="signatureSC">
+		SELECT CIFOBJECT.OBJECT_CODE OBJECT_CODE,S_SCAN.DESCRIPTION  DESCRIPTION ,
+		        CIFOBJECT.OBJECT_SEQ OBJECT_SEQ ,
+        		CIFOBJECT.ACC_CY ACC_CY,
+        		CIFOBJECT.ACC_CIF ACC_CIF,  
+        		CIFOBJECT.ACC_GL ACC_GL,
+      		    CIFOBJECT.ACC_SL ACC_SL,
+      		    (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = CIFOBJECT.STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) statusDesc,
+				(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE =  CIFOBJECT.TO_BE_STATUS AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}) toBeStatusDesc,
+      		    CIFOBJECT.STATUS STATUS,
+      		    CIFOBJECT.TO_BE_STATUS TO_BE_STATUS,
+      		    CIFOBJECT.BRANCH_CODE BRANCH_CODE
+    		FROM CIFOBJECT,S_SCAN  
+				WHERE	(S_SCAN.CODE  = CIFOBJECT.OBJECT_CODE)  
+					AND (S_SCAN. COMP_CODE = CIFOBJECT.COMP_CODE)
+    				AND (S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE)
+	 				AND	((CIFOBJECT.COMP_CODE  = #{compCode})
+					AND	(CIFOBJECT.BRANCH_CODE  = #{branchCode})
+	 				AND	(S_SCAN.DOC_TYPE  = #{docType})
+	 		<choose>
+    			<when test='signatureTp.equals("C")'>
+    				AND (CIFOBJECT.ACC_CIF  = #{cifNo}) AND 	(CIFOBJECT.ACC_GL  = 0)  
+    			</when>
+    			<otherwise>
+    		 		AND	(CIFOBJECT.ACC_CY  = #{currencyCode})
+	 				AND	(CIFOBJECT.ACC_CIF  = #{cifNo})
+	 				AND	(CIFOBJECT.ACC_GL  = #{glCode})
+	 				AND	(CIFOBJECT.ACC_SL  = #{slNo}) 
+    				</otherwise>
+    	 		</choose>	 				
+	 				AND	(CIFOBJECT.STATUS  != 'D'))		 
+	 </select>
+	 
+	 
+	  
+	 <select id="selectDocumentDetails" resultMap="returnSignatureCOMap" parameterType="signatureCO">
+		SELECT CIFOBJECT.OBJECT_CODE OBJECT_CODE,
+				S_SCAN.DESCRIPTION  DESCRIPTION ,
+				S_SCAN.DOC_TYPE DOC_TYPE,
+		        CIFOBJECT.OBJECT_SEQ OBJECT_SEQ ,
+        		CIFOBJECT.ACC_CY ACC_CY,
+        		CIFOBJECT.ACC_CIF ACC_CIF,  
+        		CIFOBJECT.ACC_GL ACC_GL,
+      		    CIFOBJECT.ACC_SL ACC_SL,
+      		    CIFOBJECT.DEFAULT_PHOTO DEFAULT_PHOTO 
+    		FROM CIFOBJECT,S_SCAN  
+				WHERE	(S_SCAN.CODE  = CIFOBJECT.OBJECT_CODE)  
+					AND (S_SCAN. COMP_CODE = CIFOBJECT.COMP_CODE)
+    				AND (S_SCAN.BRANCH_CODE = CIFOBJECT.BRANCH_CODE)
+	 				AND	(CIFOBJECT.COMP_CODE  = #{cifObjectVO.COMP_CODE})
+					AND	(CIFOBJECT.BRANCH_CODE  = #{cifObjectVO.BRANCH_CODE})
+	 				AND	(S_SCAN.DOC_TYPE  = #{scanVO.DOC_TYPE})
+	 		<choose>
+    			<when test='signatureTp.equals("C")'>
+    				AND (CIFOBJECT.ACC_CIF  = #{cifObjectVO.ACC_CIF}) AND 	(CIFOBJECT.ACC_GL  = 0) 
+    			</when>
+    			<otherwise>
+    		 		AND	(CIFOBJECT.ACC_CY  = #{cifObjectVO.ACC_CY})
+	 				AND	(CIFOBJECT.ACC_CIF  = #{cifObjectVO.ACC_CIF})
+	 				AND	(CIFOBJECT.ACC_GL  = #{cifObjectVO.ACC_GL})
+	 				AND	(CIFOBJECT.ACC_SL  = #{cifObjectVO.ACC_SL}) 
+    				</otherwise>
+    	 		</choose>	 				
+	 				 AND (CIFOBJECT.OBJECT_CODE=#{cifObjectVO.OBJECT_CODE}) AND  (CIFOBJECT.OBJECT_SEQ=#{cifObjectVO.OBJECT_SEQ})
+	 </select>
+	 
+	  <select id="retrieveSignatureAccounts" resultMap="returnSignatureAccountMap" parameterType="signatureSC">
+			SELECT DISTINCT   BRANCH_CODE, ACC_CY, ACC_GL, ACC_CIF, ACC_SL, 'false' ISLEAF, '0' PROG_ORDER,'-1' PARENT_REF  
+			FROM CIFOBJECT
+			WHERE COMP_CODE = #{compCode} AND OBJECT_TYPE = 'S' AND CIF_NO =#{cifNo}  
+  			<![CDATA[                                                           
+			AND (CIFOBJECT.STATUS <>'D') 
+			AND (CIFOBJECT.TO_BE_STATUS <> 'D' OR        CIFOBJECT.TO_BE_STATUS IS NULL) AND (ACC_CY <> 0 AND ACC_GL <>0 ) ]]>
+				AND NOT EXISTS ( SELECT 1 FROM CIFOBJECT C
+                                                                                WHERE CIFOBJECT.COMP_CODE       = C.COMP_CODE
+                                                                                AND  CIFOBJECT.BRANCH_CODE      = C.BRANCH_CODE
+                                                                                AND  CIFOBJECT.CIF_NO           = C.CIF_NO
+                                                                                AND  CIFOBJECT.OBJECT_SEQ    	= C.OBJECT_SEQ
+                                                                                AND  CIFOBJECT.ACC_CY           = C.ACC_CY
+                                                                                AND  CIFOBJECT.ACC_GL           = C.ACC_GL
+                                                                                AND  CIFOBJECT.ACC_CIF          = C.ACC_CIF
+                                                                                AND  CIFOBJECT.ACC_SL           = C.ACC_SL
+                                                                                AND C.ACC_CY 					= #{currencyCode}
+                                                                                AND C.ACC_GL                	= #{glCode}
+                                                                                AND C.ACC_CIF                   = #{cifNo}
+                                                                                AND C.ACC_SL 					= #{slNo}
+                                                                                AND C.BRANCH_CODE				=#{branchCode}
+                                                                )
+			
+	 </select>
+
+	<resultMap id="returnSignatureCOMap" type="signatureCO" >
+		<result property="cifObjectVO.AMOUNT"			column="AMOUNT"/>
+		<result property="cifObjectVO.AMOUNT_CY"		column="AMOUNT_CY"/>		
+		<result property="cifObjectVO.OBJECT_CODE"	 	column="OBJECT_CODE"/>
+		<result property="cifObjectVO.OBJECT_SEQ"	 	column="OBJECT_SEQ"/>		
+		<result property="cifObjectVO.GROUP_ID"			column="GROUP_ID"/>
+		<result property="cifObjectVO.STATUS"			column="STATUS"/>		
+		<result property="cifObjectVO.CIF_NO"			column="CIF_NO"/>
+		<result property="cifObjectVO.ACC_CY"			column="ACC_CY"/>
+		<result property="cifObjectVO.ACC_CIF"			column="ACC_CIF"/>
+		<result property="cifObjectVO.ACC_SL"			column="ACC_SL"/>
+		<result property="cifObjectVO.ACC_GL"			column="ACC_GL"/>
+		<result property="cifObjectVO.TO_BE_STATUS"		column="TO_BE_STATUS"/>
+		<result property="cifObjectVO.COMP_CODE"		column="COMP_CODE"/>
+		<result property="cifObjectVO.BRANCH_CODE"		column="BRANCH_CODE"/>
+		<result property="cifObjectVO.OBJECT_TYPE"		column="OBJECT_TYPE"/>	
+		<result property="cifObjectVO.TYPE"				column="TYPE"/>
+		<result property="cifObjectVO.DEFAULT_PHOTO"	column="DEFAULT_PHOTO"/>
+		
+		
+		<result property="scanVO.DESCRIPTION"			column="DESCRIPTION"/>   
+		<result property="scanVO.EXP_DATE"				column="EXP_DATE"/>
+		<result property="scanVO.DEFAULT_UNLIMITED"		column="DEFAULT_UNLIMITED"/>
+		<result property="scanVO.ANNOTATION"			column="ANNOTATION"/>
+		<result property="scanVO.SC_WIDTH"				column="WIDTH"/>
+		<result property="scanVO.SC_HEIGHT"				column="HEIGHT"/>
+		<result property="scanVO.SC_FORMAT"				column="FORMAT"/>
+		<result property="scanVO.DOC_TYPE"				column="DOC_TYPE"/>		
+		<result property="signObjectVO.OLE_OBJECT"		column="OLE_OBJECT"/>		
+		<result property="signatureAnnotationVO.ANNOTATION"		column="GENNOTE"/>		
+ 
+	</resultMap>	
+ 
+	
+	
+	<resultMap id="returnSignatureAccountMap" type="signatureCO" extends="returnSignatureCOMap" >
+		<result column="PROG_ORDER" property="level" />
+    	<result column="PARENT_REF" property="parent" />
+    	<result column="ISLEAF" property="isLeaf" />
+		
+	</resultMap>
+	
+	
+	<select id="retrieveCopySignatureList" resultMap="returnSignatureCOMap" parameterType="signatureCO" >
+			SELECT 				
+				CIFOBJECT.GROUP_ID GROUP_ID,
+				CIFOBJECT.AMOUNT AMOUNT,
+				CIFOBJECT.COMP_CODE COMP_CODE,   
+         		CIFOBJECT.BRANCH_CODE BRANCH_CODE,   
+         		CIFOBJECT.CIF_NO CIF_NO,        		   
+         		CIFOBJECT.OBJECT_TYPE OBJECT_TYPE,        		   			
+				CIFOBJECT.TYPE TYPE,   
+         		CIFOBJECT.AMOUNT_CY AMOUNT_CY,   
+         		CIFOBJECT.AMOUNT AMOUNT, 
+         		CIFOBJECT.ACC_CY ACC_CY,   
+         		CIFOBJECT.ACC_GL ACC_GL,   
+         		CIFOBJECT.ACC_CIF ACC_CIF,   
+         		CIFOBJECT.ACC_SL ACC_SL,   
+         		CIFOBJECT.GROUP_ID GROUP_ID,   
+         		CIFOBJECT.DEFAULT_PHOTO DEFAULT_PHOTO,    
+				CIFOBJECT.OBJECT_CODE OBJECT_CODE,   
+				CIFOBJECT.OBJECT_SEQ OBJECT_SEQ,
+				S_SCAN.DESCRIPTION DESCRIPTION,
+				S_SCAN.EXP_DATE EXP_DATE,   
+				S_SCAN.ANNOTATION ANNOTATION,
+				S_SCAN.DEFAULT_UNLIMITED DEFAULT_UNLIMITED,
+				S_SCAN.DOC_TYPE DOC_TYPE, 
+				S_SIGN_ANN.ANNOTATION GENERALNOTE,
+				S_OBJECT.OLE_OBJECT OLE_OBJECT			
+				FROM S_SCAN,
+			 	CIFOBJECT LEFT JOIN CURRENCIES ON				 
+				CURRENCIES.CURRENCY_CODE  	= CIFOBJECT.AMOUNT_CY
+				AND CURRENCIES.COMP_CODE  	= CIFOBJECT.COMP_CODE				 
+				LEFT JOIN S_SIGN_ANN ON 
+				S_SIGN_ANN.BRANCH_CODE 		    = CIFOBJECT.BRANCH_CODE			 
+				AND S_SIGN_ANN.OBJECT_CODE 		= CIFOBJECT.OBJECT_CODE
+				AND S_SIGN_ANN.COMP_CODE 		= CIFOBJECT.COMP_CODE
+				<choose>
+    				<when test='signatureTp.equals("C")'>
+    		 			AND (S_SIGN_ANN.CIF_SUB_NO =  #{cifObjectVO.ACC_CIF}) AND  
+         	 			(S_SIGN_ANN.GL_CODE	 = 0)   
+    				</when>
+    				<otherwise>
+    					AND (S_SIGN_ANN.CURRENCY_CODE = #{cifObjectVO.ACC_CY}) AND  
+         				(S_SIGN_ANN.CIF_SUB_NO = #{cifObjectVO.ACC_CIF}) AND  
+         				(S_SIGN_ANN.GL_CODE  = #{cifObjectVO.ACC_GL}) AND  
+         				(S_SIGN_ANN.SL_NO = #{cifObjectVO.ACC_SL})        
+    				</otherwise>
+    		  </choose>       
+    		  LEFT OUTER JOIN S_OBJECT ON 
+    		  	S_OBJECT.CODE 				= CIFOBJECT.OBJECT_CODE  
+				AND S_OBJECT.COMP_CODE 			= CIFOBJECT.COMP_CODE
+				AND S_OBJECT.BRANCH_CODE 		= CIFOBJECT.BRANCH_CODE			
+			    	  
+			WHERE 	S_SCAN.CODE 				= CIFOBJECT.OBJECT_CODE  
+				AND S_SCAN.COMP_CODE 			= CIFOBJECT.COMP_CODE
+				AND S_SCAN.BRANCH_CODE 			= CIFOBJECT.BRANCH_CODE		
+				AND CIFOBJECT.BRANCH_CODE 		= #{cifObjectVO.BRANCH_CODE}				
+				AND CIFOBJECT.COMP_CODE 		= #{cifObjectVO.COMP_CODE}							 
+				<choose>
+    				<when test='signatureTp.equals("C")'>    			
+    					AND CIFOBJECT.ACC_GL = 0
+    					AND CIFOBJECT.CIF_NO =  #{cifObjectVO.ACC_CIF}
+    				</when>
+    				<otherwise>    				
+    					AND CIFOBJECT.ACC_CY = #{cifObjectVO.ACC_CY}
+						AND CIFOBJECT.ACC_CIF = #{cifObjectVO.ACC_CIF}
+						AND CIFOBJECT.ACC_GL = #{cifObjectVO.ACC_GL}
+						AND CIFOBJECT.ACC_SL = #{cifObjectVO.ACC_SL}
+    				</otherwise>
+    			</choose> 
+	 
+	 
+		 
+	</select>
+	
+	<select id="selectCifObjectCount"  resultType="int" parameterType="signatureCO" >	
+		SELECT count(1)	 FROM	CIFOBJECT
+			WHERE 	CIFOBJECT.COMP_CODE  	 = #{cifObjectVO.COMP_CODE}
+			AND 	CIFOBJECT.BRANCH_CODE  	 = #{cifObjectVO.BRANCH_CODE}
+			AND 	CIFOBJECT.ACC_CY		 = #{cifObjectVO.ACC_CY}
+			AND 	CIFOBJECT.ACC_GL  	     = #{cifObjectVO.ACC_GL}
+			AND 	CIFOBJECT.ACC_CIF        = #{cifObjectVO.ACC_CIF}
+			AND 	CIFOBJECT.ACC_SL		 = #{cifObjectVO.ACC_SL}
+
+			AND		CIFOBJECT.OBJECT_TYPE    = 'S'
+			 <![CDATA[  
+			AND 	CIFOBJECT.STATUS <>'D' 
+			AND 	(CIFOBJECT.TO_BE_STATUS <> 'D' OR	CIFOBJECT.TO_BE_STATUS IS NULL) 
+			]]>
+
+			AND		CIFOBJECT.OBJECT_TYPE    = 'S'		
+			AND 	CIFOBJECT.STATUS  not in ('D') 
+	 	<if test='onlyStatus==null'>
+			AND 	(CIFOBJECT.TO_BE_STATUS not in ('D') OR	CIFOBJECT.TO_BE_STATUS IS NULL) 
+		</if>	
+		
+
+	</select>
+ 
+ 		
+	<select id="selectEnforceSignLimit"  resultType="String" parameterType="signatureCO" >	
+		SELECT ENFORCE_SIGN_LIMIT	
+			FROM AMF				 
+			WHERE COMP_CODE     = #{compCode}
+			AND	BRANCH_CODE   = #{branchCode}
+			AND	CURRENCY_CODE = #{currencyCode}
+			AND	GL_CODE       = #{glCode}
+			AND	CIF_SUB_NO    = #{cifNo}
+			AND	SL_NO         =  #{slNo}
+	</select>
+ 
+ 	<select id="checkAuthSignsInOriginalCIF"  resultMap="returnSignaturesListMap" parameterType="signatureCO">
+	 	SELECT CIF_NO,
+	 		   ACC_CIF
+		  FROM CIFOBJECT
+		 WHERE COMP_CODE = #{cifObjectVO.COMP_CODE}
+		   AND BRANCH_CODE = #{cifObjectVO.BRANCH_CODE}
+ <![CDATA[ AND CIF_NO <> #{cifObjectVO.CIF_NO}
+  		   AND ACC_CIF <> #{cifObjectVO.ACC_CIF}
+		  ]]>
+		   AND ACC_GL = #{cifObjectVO.ACC_GL}
+		   AND OBJECT_CODE = #{cifObjectVO.OBJECT_CODE}
+		   AND SIGN_PROTECTED_YN = '1'
+ 	</select>
+ 	
+ <update id="updateAuthorizedSignsInOrgCIF" parameterType="com.path.dbmaps.vo.CIFOBJECTVO">
+	UPDATE CIFOBJECT
+	<set>
+	  <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+	    <if test="AMOUNT_CY != null" >
+        <choose >
+          <when test="AMOUNT_CY == emptyBigDecimalValue" >
+            AMOUNT_CY = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_CY = #{AMOUNT_CY},
+          </otherwise>
+        </choose>
+      </if>
+	   <if test="GROUP_ID != null" >
+        GROUP_ID = #{GROUP_ID},
+      </if>
+	  <if test="DEFAULT_PHOTO != null" >
+        <choose >
+          <when test="DEFAULT_PHOTO == emptyBigDecimalValue" >
+            DEFAULT_PHOTO = NULL ,
+          </when>
+          <otherwise >
+            DEFAULT_PHOTO = #{DEFAULT_PHOTO},
+          </otherwise>
+        </choose>
+      </if>
+	  <if test="TYPE != null" >
+        TYPE = #{TYPE},
+      </if>
+	 </set>
+	 WHERE CIFOBJECT.COMP_CODE = #{COMP_CODE}
+	   AND CIFOBJECT.BRANCH_CODE = #{BRANCH_CODE}
+	   AND CIFOBJECT.ACC_CY = #{ACC_CY}
+	   AND CIFOBJECT.ACC_GL = #{ACC_GL}
+	   AND CIFOBJECT.CIF_NO = #{CIF_NO}
+	   AND CIFOBJECT.ACC_CIF = #{ACC_CIF}
+	   AND CIFOBJECT.ACC_SL = #{ACC_SL}
+	   AND CIFOBJECT.OBJECT_CODE = #{OBJECT_CODE}
+ </update>
+	
+	<select id="returnMaxAuditDetails" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >	
+		SELECT MAX(LINE_NUMBER)
+		  FROM S_AUDIT_ACTION_DTL 
+		 WHERE S_AUDIT_ACTION_DTL.APP_NAME = #{APP_NAME}
+		   AND S_AUDIT_ACTION_DTL.PROG_REF = #{PROG_REF}
+		   AND S_AUDIT_ACTION_DTL.TRX_NUMBER = #{TRX_NBR}
+		   AND S_AUDIT_ACTION_DTL.ACTION_DATE = #{ACTION_DATE}
+	</select>
+ 
+	<select id="checkIfExistIdNo"  resultType="int" parameterType="signatureCO" >	
+		
+		SELECT
+		(
+		(SELECT CASE WHEN  #{cifObjectVO.AUTH_CIF_NO, jdbcType=NUMERIC} IS NULL THEN COUNT(1) ELSE 0 END FROM CIF WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO}) 
+		+
+		(SELECT COUNT(1) FROM CIF 					WHERE COMP_CODE = #{compCode} AND ID_TYPE2 = #{scanVO.ID_TYPE} AND ID_NO2 = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM CIF_ID_DETAILS 		WHERE COMP_CODE = #{compCode} AND ID_TYPE_CODE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM CIF_PROXY_BENEF_DET  WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM CIF_AUTH_SIGNATORY   WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO}
+		AND CIF_NO <![CDATA[<>]]> CASE WHEN #{cifObjectVO.AUTH_CIF_NO, jdbcType=NUMERIC} IS NULL THEN 0 ELSE #{cifVO.CIF_NO, jdbcType=NUMERIC} END)
+		+
+		(SELECT COUNT(1)  FROM CIF_JOINT_DET 		WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM CIF_JOINT_DET 		WHERE COMP_CODE = #{compCode} AND ID_TYPE2 = #{scanVO.ID_TYPE} AND ID_NO2 = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM CTS_CIF_MEMBERS_ID   WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO})
+		+
+		(SELECT COUNT(1)  FROM S_SCAN 				WHERE COMP_CODE = #{compCode} AND ID_TYPE = #{scanVO.ID_TYPE} AND ID_NO = #{scanVO.ID_NO})
+		)
+		FROM DUAL
+	</select>
+	
+	<select id="checkIfCifHasAccounts" parameterType="signatureCO" resultType="int">
+			SELECT COUNT(1) 
+		 	FROM AMF, RIFATT
+		 	WHERE AMF.COMP_CODE = RIFATT.COMP_CODE
+		 	AND AMF.GL_CODE = RIFATT.TYPE_CODE
+		 	AND AMF.COMP_CODE = #{compCode}
+		 	AND AMF.CIF_SUB_NO = #{cifObjectVO.AUTH_CIF_NO}
+		 	AND (RIFATT.IS_ASAAN_ACC_YN = '0' OR (RIFATT.IS_ASAAN_ACC_YN = '1' AND STATUS NOT IN ('M', 'C')))
+    </select>
+</mapper>

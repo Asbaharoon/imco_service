@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<!-- we need to have this bean definition here in order to read values from property file  -->
+	<bean  parent="propertyPlaceholderConfigurer" />
+ 	
+	<bean id="commonLibBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.impl.CommonLibBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.CommonLibBO" />
+		<constructor-arg name="remoteServiceName" value="commonLibBOService" />
+		<property name="commonLibDAO" ref="commonLibDAO"></property>
+		<property name="servicesCommonDAO" ref="servicesCommonDAO"></property>
+		<property name="cifBO" ref="cifBO"></property>
+		<property name="emailSenderBO" ref="emailSenderBO"></property>
+		<property name="loginBO" ref="loginBO"></property>
+		<property name="iisCommonBO" ref="iisCommonBO"></property>
+		<property name="dynamicScreenBO" ref="dynamicScreenBO"></property>
+		<property name="customizationBO" ref="customizationBO"></property>
+		<property name="buttonCustomizationBO" ref="buttonCustomizationBO"></property>
+		<!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+		<property name="objectCustomizationBO" ref="objectCustomizationBO"></property>
+		<!--end: 953614-->
+	</bean>
+	<bean id="commonNonTransBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.impl.CommonNonTransBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.CommonNonTransBO" />
+		<constructor-arg name="remoteServiceName" value="commonNonTransBOService" />
+		<property name="commonLibDAO" ref="commonLibDAO"></property>
+	</bean>	
+	
+	<bean id="reportsCommonBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="retailBaseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.impl.ReportsCommonBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.ReportsCommonBO" />
+		<constructor-arg name="remoteServiceName" value="reportsCommonBOService" />
+		<property name="creditCardEncryptDecryptBO" ref="creditCardEncryptDecryptBO"></property>
+	</bean>	
+	
+	<bean id="loginBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.login.impl.LoginBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.login.LoginBO" />
+		<constructor-arg name="remoteServiceName" value="loginBOService" />
+		<property name="loginDAO" ref="loginDAO"></property>
+		<property name="companiesBO" ref="companiesBO"></property>
+		<property name="branchesBO" ref="branchesBO"></property>
+		<property name="pathCounterLcBO" ref="pathCounterLcBO"></property>
+		<property name="alertsBO" ref="alertsBO"></property>
+	</bean>
+		
+	<bean id="pathCounterLcBO" factory-bean="pathBeanFactory" factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.login.impl.PathCounterLcBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.login.PathCounterLcBO" />
+		<constructor-arg name="remoteServiceName" value="pathCounterLcBOService" />
+		<property name="pathCounterLcDAO" ref="pathCounterLcDAO"></property>
+	</bean>	
+	
+	<bean id="customizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.impl.CustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.CustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="customizationBOService" />
+		<property name="customizationDAO" ref="customizationDAO"></property>
+		<property name="dynamicScreenBO" ref="dynamicScreenBO"></property>
+		<property name="dynClientParamsBO" ref="dynClientParamsBO"></property>
+		<property name="buttonCustBO" ref="buttonCustomizationBO"></property>
+	</bean>
+	
+	<bean id="fileCustomizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.file.impl.FileCustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.file.FileCustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="fileCustomizationBOService" />
+	</bean>
+	
+	<bean id="objectCustomizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.object.impl.ObjectCustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.object.ObjectCustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="objectCustomizationBOService" />
+		<property name="objectCustomizationDAO" ref="objectCustomizationDAO"></property>
+		<property name="customizationBO"  ref="customizationBO"/>
+	</bean>
+	
+	<bean id="buttonCustomizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.button.impl.ButtonCustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.button.ButtonCustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="buttonCustomizationBOService" />
+		<property name="buttonCustomizationDAO" ref="buttonCustomizationDAO"></property>
+		<property name="customizationDAO" ref="customizationDAO"></property>
+		<property name="usrBO" ref="usrBO"></property>
+		<property name="dynamicScreenBO" ref="dynamicScreenBO"></property>
+		<property name="generatorBO" ref="generatorBO"></property>
+	</bean>
+	
+	<bean id="buttonCustomizationRmiCallerBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.button.impl.ButtonCustomizationRmiCallerBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.button.ButtonCustomizationRmiCallerBO" />
+		<constructor-arg name="remoteServiceName" value="buttonCustomizationRmiCallerBOService" />
+	</bean>
+	
+	<bean id="themeCustomizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.customization.impl.ThemeCustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.customization.ThemeCustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="themeCustomizationBOService" />
+		<property name="themeCustomizationDAO" ref="themeCustomizationDAO"></property>
+	</bean>
+	
+	<bean id="translationBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.translation.impl.TranslationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.translation.TranslationBO" />
+		<constructor-arg name="remoteServiceName" value="translationBOService" />
+		<property name="translationDAO" ref="translationDAO"></property>
+	</bean>
+
+	<bean id="alertsBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.alerts.impl.AlertsBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.alerts.AlertsBO" />
+		<constructor-arg name="remoteServiceName" value="alertsBOService" />
+		<property name="alertsDAO" ref="alertsDAO" ></property>
+		<property name="loginBO" ref="loginBO" ></property>
+  		<property name="coreCommonProcedureBO" ref="coreCommonProcedureBO"></property>
+	</bean>
+	
+	<!-- Alerts Engine -->
+	<bean id="alertsEngineBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.alerts.impl.AlertsEngineBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.alerts.AlertsEngineBO" />
+		<constructor-arg name="remoteServiceName" value="alertsEngineBOService" />
+		<property name="alertsDAO" ref="alertsDAO" ></property>
+  		<property name="alertsTopicJmsTemplateVM" ref="alertsTopicJmsTemplateVM"></property>
+  		<property name="alertsTopicJmsTemplateTCP" ref="alertsTopicJmsTemplateTCP"></property>
+  		<property name="alertsEnabled" value="${alert.enabled}"></property>
+  		<property name="alertByCompBranch" value="${alert.listener.compBranch}"></property>
+  		<property name="applicationName" value="${alert.engine.appName}"></property>
+  		<property name="alertsBrokerBO" ref="alertsBrokerBO"></property>
+  	</bean>	
+	
+	<bean id="menuBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.menu.impl.MenuBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.menu.MenuBO" />
+		<constructor-arg name="remoteServiceName" value="menuBOService" />
+		<property name="menuDAO" ref="menuDAO"></property>
+	</bean>	
+	
+	<bean id="auditBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.audit.impl.AuditBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.audit.AuditBO" />
+		<constructor-arg name="remoteServiceName" value="auditBOService" />
+		<property name="auditDAO" ref="auditDAO"></property>
+	</bean>	
+	
+	<bean id="recordLogsBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.recordlogs.impl.RecordLogsBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.recordlogs.RecordLogsBO" />
+		<constructor-arg name="remoteServiceName" value="recordLogsBOService" />
+		<property name="recordLogsDAO" ref="recordLogsDAO"></property>
+	</bean>	
+	
+	<bean id="smartBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.smart.impl.SmartBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.smart.SmartBO" />
+		<constructor-arg name="remoteServiceName" value="smartBOService" />
+		<property name="smartDAO" ref="smartDAO"></property>
+	</bean>
+	
+	
+		
+		
+	<bean id="hashTableBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.impl.HashTableBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.HashTableBO" />
+		<constructor-arg name="remoteServiceName" value="hashTableBOService" />
+		<property name="hashTableDAO" ref="hashTableDAO"></property>
+	</bean>	
+	
+	<bean id="additionalFieldsBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.additionalfields.impl.AdditionalFieldsBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.additionalfields.AdditionalFieldsBO" />
+		<constructor-arg name="remoteServiceName" value="additionalFieldsBOService" />
+		<property name="additionalFieldsDAO" ref="additionalFieldsDAO"></property>
+		<property name="loginBO" ref="loginBO"></property>
+		<property name="coreCommonServiceBO" ref="coreCommonServiceBO"></property>
+	</bean>
+	
+	<!-- HGhazal - SAFE Locking BO - TP#259473 - 11/06/2015 -->
+	<bean id="safeAccLockBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.safe.SafeAccLockBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.safe.SafeAccLockBO" />
+		<constructor-arg name="remoteServiceName" value="safeAccLockBOService" />
+		<property name="safeAccLockDAO" ref="safeAccLockDAO"></property>
+	</bean>	
+	
+	<bean id="emailSenderBO"  factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.email.impl.EmailSenderBOImpl"/>
+		<constructor-arg name="interfaceName" value="com.path.bo.common.email.EmailSenderBO"/>
+		<constructor-arg name="remoteServiceName" value="emailSenderBOService" />
+	</bean>	
+	
+	<bean id="expressionGlobalMethodsBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.expression.impl.ExpressionGlobalMethodsBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.expression.ExpressionGlobalMethodsBO" />
+		<constructor-arg name="remoteServiceName" value="expressionGlobalMethodsBO" />
+		<property name="swiftOutwardNonTransBO" ref="swiftOutwardNonTransBO"></property>
+	</bean>
+	
+	<bean id="statusCustomizationBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.statuscustomization.impl.StatusCustomizationBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.statuscustomization.StatusCustomizationBO" />
+		<constructor-arg name="remoteServiceName" value="statusCustomizationBOService" />
+		<property name="statusCustomizationDAO" ref="statusCustomizationDAO"></property>
+	</bean>
+	<bean id="screenGeneratorBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.screengenerator.impl.ScreenGeneratorBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.screengenerator.ScreenGeneratorBO" />
+		<constructor-arg name="remoteServiceName" value="screenGeneratorBOService" />
+		<property name="screenGeneratorDAO" ref="screenGeneratorDAO"></property>
+		<property name="buttonCustomizationBO" ref="buttonCustomizationBO"></property>
+	</bean>	
+	<bean id="generatorBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName"     value="com.path.bo.common.screengenerator.impl.GeneratorBOImpl" />
+		<constructor-arg name="interfaceName"     value="com.path.bo.common.screengenerator.GeneratorBO" />
+		<constructor-arg name="remoteServiceName" value="generatorBOService" />
+		<property name="generatorDAO" ref="generatorDAO"/>
+		<property name="dynamicScreenBO" ref="dynamicScreenBO"/>
+	</bean>	
+	<bean id="dynamicScreenBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName"     value="com.path.bo.common.dynamicscreen.impl.DynamicScreenBOImpl" />
+		<constructor-arg name="interfaceName"     value="com.path.bo.common.dynamicscreen.DynamicScreenBO" />
+		<constructor-arg name="remoteServiceName" value="dynamicScreenBOService" />
+		<property name="dynamicScreenDAO" ref="dynamicScreenDAO"/>
+		<property name="customizationBO"  ref="customizationBO"/>
+		<property name="generatorBO"  	  ref="generatorBO"/>
+	</bean>	
+		
+	<!-- BPM Engine -->	
+	<bean id="jbpmEngineBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.bpm.impl.JbpmEngineBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.bpm.BpmEngineBO" />
+		<constructor-arg name="remoteServiceName" value="jbpmEngineBOService" />
+	</bean>
+	
+	<!-- BPM Engine v7 -->	
+	<bean id="jbpmEngineBOv7" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.bpm.impl.JbpmEngineBOImplV7" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.bpm.BpmEngineBO" />
+		<constructor-arg name="remoteServiceName" value="jbpmEngineBOService" />
+	</bean>
+  	
+  	<bean id="bpmBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.bpm.impl.BpmBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.bpm.BpmBO" />
+		<constructor-arg name="remoteServiceName" value="bpmBOService" />
+		<property name="bpmEngineBO" ref="jbpmEngineBO" ></property>
+		<property name="bpmEngineBOv7" ref="jbpmEngineBOv7" ></property>
+		<property name="bpmDAO" ref="bpmDAO"></property>
+		<property name="customizationBO" ref="customizationBO"></property>
+		<property name="dynamicScreenBO" ref="dynamicScreenBO"></property>
+  	</bean>	
+  	
+  	<!-- Dynamic Client params-->
+	<bean id="dynClientParamsBO" factory-bean="pathBeanFactory"  factory-method="getInstance"  parent="baseBO">
+		<constructor-arg name="implClassName" value="com.path.bo.common.dynclientparams.impl.DynClientParamsBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.dynclientparams.DynClientParamsBO" />
+		<constructor-arg name="remoteServiceName" value="dynClientParamsBOService" />
+		<property name="dynClientParamsDAO" ref="dynClientParamsDAO"></property>
+	</bean>
+
+</beans>

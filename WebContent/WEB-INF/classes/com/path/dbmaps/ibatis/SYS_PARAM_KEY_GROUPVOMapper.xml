@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_KEY_GROUP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" >
+    <id column="KEY_GROUP_ID" property="KEY_GROUP_ID" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" extends="BaseResultMap" >
+    <result column="KEY_GROUP_DESC" property="KEY_GROUP_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    KEY_GROUP_ID
+  </sql>
+  <sql id="Blob_Column_List" >
+    KEY_GROUP_DESC
+  </sql>
+  <select id="selectSYS_PARAM_KEY_GROUP" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_KEY_GROUP
+    where KEY_GROUP_ID = #{KEY_GROUP_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_KEY_GROUP" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" >
+    delete from SYS_PARAM_KEY_GROUP
+    where KEY_GROUP_ID = #{KEY_GROUP_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_KEY_GROUP" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" >
+    insert into SYS_PARAM_KEY_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="KEY_GROUP_ID != null and KEY_GROUP_ID != emptyBigDecimalValue" >
+        KEY_GROUP_ID,
+      </if>
+      <if test="KEY_GROUP_DESC != null" >
+        KEY_GROUP_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="KEY_GROUP_ID != null and KEY_GROUP_ID != emptyBigDecimalValue" >
+        #{KEY_GROUP_ID},
+      </if>
+      <if test="KEY_GROUP_DESC != null" >
+        #{KEY_GROUP_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_KEY_GROUP" >
+    update SYS_PARAM_KEY_GROUP
+    <set >
+      <if test="KEY_GROUP_DESC != null" >
+        KEY_GROUP_DESC = #{KEY_GROUP_DESC},
+      </if>
+    </set>
+    where KEY_GROUP_ID = #{KEY_GROUP_ID}
+  </sql>
+  <update id="updateSYS_PARAM_KEY_GROUP" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_GROUPVO" >
+    <include refid="sql_updateSYS_PARAM_KEY_GROUP" />
+  </update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_FATCA_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_FATCA_DETAILSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="REASON_CODE" property="REASON_CODE" />
+    <result column="TIN" property="TIN" />
+    <result column="FATCA_DATE" property="FATCA_DATE" />
+    <result column="FATCA_STATUS" property="FATCA_STATUS" />
+    <result column="FATCA_PROCESS" property="FATCA_PROCESS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, REASON_CODE, TIN, FATCA_DATE, FATCA_STATUS, FATCA_PROCESS
+  </sql>
+  <select id="selectCIF_FATCA_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_FATCA_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_FATCA_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIF_FATCA_DETAILS" parameterType="com.path.dbmaps.vo.CIF_FATCA_DETAILSVOKey" >
+    delete from CIF_FATCA_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIF_FATCA_DETAILS" parameterType="com.path.dbmaps.vo.CIF_FATCA_DETAILSVO" >
+    insert into CIF_FATCA_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        REASON_CODE,
+      </if>
+      <if test="TIN != null" >
+        TIN,
+      </if>
+      <if test="FATCA_DATE != null" >
+        FATCA_DATE,
+      </if>
+      <if test="FATCA_STATUS != null" >
+        FATCA_STATUS,
+      </if>
+      <if test="FATCA_PROCESS != null" >
+        FATCA_PROCESS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        #{REASON_CODE},
+      </if>
+      <if test="TIN != null" >
+        #{TIN},
+      </if>
+      <if test="FATCA_DATE != null" >
+        #{FATCA_DATE},
+      </if>
+      <if test="FATCA_STATUS != null" >
+        #{FATCA_STATUS},
+      </if>
+      <if test="FATCA_PROCESS != null" >
+        #{FATCA_PROCESS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_FATCA_DETAILS" >
+    update CIF_FATCA_DETAILS
+    <set >
+      <if test="REASON_CODE != null" >
+        <choose >
+          <when test="REASON_CODE == emptyBigDecimalValue" >
+            REASON_CODE = NULL ,
+          </when>
+          <otherwise >
+            REASON_CODE = #{REASON_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TIN != null" >
+        TIN = #{TIN},
+      </if>
+      <if test="FATCA_DATE != null" >
+        FATCA_DATE = #{FATCA_DATE},
+      </if>
+      <if test="FATCA_STATUS != null" >
+        FATCA_STATUS = #{FATCA_STATUS},
+      </if>
+      <if test="FATCA_PROCESS != null" >
+        FATCA_PROCESS = #{FATCA_PROCESS},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_FATCA_DETAILS" parameterType="com.path.dbmaps.vo.CIF_FATCA_DETAILSVO" >
+    <include refid="sql_updateCIF_FATCA_DETAILS" />
+  </update>
+</mapper>

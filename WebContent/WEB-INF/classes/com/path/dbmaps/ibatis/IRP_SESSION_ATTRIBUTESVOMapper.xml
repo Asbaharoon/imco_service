@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IRP_SESSION_ATTRIBUTES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IRP_SESSION_ATTRIBUTESVO" >
+    <id column="ATTRIBUTE_NAME" property="ATTRIBUTE_NAME" />
+    <result column="ATTRIBUTE_TYPE" property="ATTRIBUTE_TYPE" />
+    <result column="TECHNICAL_NAME" property="TECHNICAL_NAME" />
+    <result column="LANG_INDEPENDENT_YN" property="LANG_INDEPENDENT_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATTRIBUTE_NAME, ATTRIBUTE_TYPE, TECHNICAL_NAME, LANG_INDEPENDENT_YN
+  </sql>
+  <select id="selectIRP_SESSION_ATTRIBUTES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.IRP_SESSION_ATTRIBUTESVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from IRP_SESSION_ATTRIBUTES
+    where ATTRIBUTE_NAME = #{ATTRIBUTE_NAME}
+  </select>
+  <delete id="deleteIRP_SESSION_ATTRIBUTES" parameterType="com.path.dbmaps.vo.IRP_SESSION_ATTRIBUTESVO" >
+    delete from IRP_SESSION_ATTRIBUTES
+    where ATTRIBUTE_NAME = #{ATTRIBUTE_NAME}
+  </delete>
+  <insert id="insertIRP_SESSION_ATTRIBUTES" parameterType="com.path.dbmaps.vo.IRP_SESSION_ATTRIBUTESVO" >
+    insert into IRP_SESSION_ATTRIBUTES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_NAME != null" >
+        ATTRIBUTE_NAME,
+      </if>
+      <if test="ATTRIBUTE_TYPE != null" >
+        ATTRIBUTE_TYPE,
+      </if>
+      <if test="TECHNICAL_NAME != null" >
+        TECHNICAL_NAME,
+      </if>
+      <if test="LANG_INDEPENDENT_YN != null" >
+        LANG_INDEPENDENT_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_NAME != null" >
+        #{ATTRIBUTE_NAME},
+      </if>
+      <if test="ATTRIBUTE_TYPE != null" >
+        #{ATTRIBUTE_TYPE},
+      </if>
+      <if test="TECHNICAL_NAME != null" >
+        #{TECHNICAL_NAME},
+      </if>
+      <if test="LANG_INDEPENDENT_YN != null" >
+        #{LANG_INDEPENDENT_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIRP_SESSION_ATTRIBUTES" >
+    update IRP_SESSION_ATTRIBUTES
+    <set >
+      <if test="ATTRIBUTE_TYPE != null" >
+        ATTRIBUTE_TYPE = #{ATTRIBUTE_TYPE},
+      </if>
+      <if test="TECHNICAL_NAME != null" >
+        TECHNICAL_NAME = #{TECHNICAL_NAME},
+      </if>
+      <if test="LANG_INDEPENDENT_YN != null" >
+        LANG_INDEPENDENT_YN = #{LANG_INDEPENDENT_YN},
+      </if>
+    </set>
+    where ATTRIBUTE_NAME = #{ATTRIBUTE_NAME}
+  </sql>
+  <update id="updateIRP_SESSION_ATTRIBUTES" parameterType="com.path.dbmaps.vo.IRP_SESSION_ATTRIBUTESVO" >
+    <include refid="sql_updateIRP_SESSION_ATTRIBUTES" />
+  </update>
+</mapper>

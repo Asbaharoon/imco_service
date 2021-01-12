@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dynClientParamsMapper">
+
+	<select id="returnGroupsList" resultMap="returnGroupsListMap"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllGroupsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnGroupsListCount" resultType="int"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllGroupsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnGroupsListMap" type="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVO">
+		<result property="GROUP_CODE" column="GROUP_CODE" />
+		<result property="GROUP_DESC" column="GROUP_DESC" />
+	</resultMap>
+
+	<sql id="returnAllGroupsList">
+		SELECT SDPG.GROUP_CODE,
+		SDPG.GROUP_DESC
+		FROM SYS_DYN_PARAM_GROUPS SDPG
+	</sql>
+
+
+	<select id="returnTablesList" resultMap="returnTablesListMap"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllTablesList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnTablesListCount" resultType="int"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllTablesList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnTablesListMap" type="com.path.dbmaps.vo.SYS_DYN_PARAM_TABLESVO">
+		<result property="GROUP_CODE" column="GROUP_CODE" />
+		<result property="TABLE_NAME" column="TABLE_NAME" />
+		<result property="TABLE_DESC" column="TABLE_DESC" />
+	</resultMap>
+
+	<sql id="returnAllTablesList">
+		SELECT SDPT.GROUP_CODE,
+		SDPT.TABLE_NAME,
+		SDPT.TABLE_DESC
+		FROM SYS_DYN_PARAM_TABLES SDPT
+		WHERE SDPT.GROUP_CODE = #{groupCode}
+	</sql>
+
+
+	<select id="returnColumnsList" resultMap="returnColumnsListMap"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllColumnsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnColumnsListCount" resultType="int"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllColumnsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnColumnsListMap"
+		type="com.path.vo.common.dynclientparams.DynClientParamsCO">
+		<result property="sysDynParamColumns.GROUP_CODE" column="GROUP_CODE" />
+		<result property="sysDynParamColumns.TABLE_NAME" column="TABLE_NAME" />
+		<result property="sysDynParamColumns.COLUMN_NAME" column="COLUMN_NAME" />
+		<result property="sysDynParamColumns.CONTROL_TYPE" column="CONTROL_TYPE" />
+		<result property="controlDesc" column="controlDesc" />
+		<result property="sysDynParamColumns.LOOKUP_EXPRESSION" column="LOOKUP_EXPRESSION" />
+		<result property="sysDynParamColumns.VALUE_FIELD" column="VALUE_FIELD" />
+		<result property="sysDynParamColumns.DISPLAY_FIELD" column="DISPLAY_FIELD" />
+		<result property="sysDynParamColumns.COMBO_LIST" column="COMBO_LIST" />
+		<result property="sysDynParamColumns.KEY_LABEL_CODE" column="KEY_LABEL_CODE" />
+		<result property="sysDynParamColumns.PK_YN" column="PK_YN" />
+	</resultMap>
+
+	<sql id="returnAllColumnsList">
+		SELECT SDPC.GROUP_CODE,
+		SDPC.TABLE_NAME,
+		SDPC.COLUMN_NAME,
+		SDPC.CONTROL_TYPE CONTROL_TYPE,
+		<choose>
+		<when test='lovTypeId != null and lovTypeId != emptyBigDecimalValue and preferredLanguage != null'>
+		 (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID =#{lovTypeId} AND 
+   					LANG_CODE = #{preferredLanguage} AND VALUE_CODE = SDPC.CONTROL_TYPE) AS controlDesc ,
+	</when>
+	<otherwise>
+		'' controlDesc,
+	</otherwise>
+	</choose>
+		SDPC.LOOKUP_EXPRESSION,
+		SDPC.VALUE_FIELD,
+		SDPC.DISPLAY_FIELD,
+		SDPC.COMBO_LIST,
+		SDPC.KEY_LABEL_CODE,
+		SDPC.PK_YN
+		FROM SYS_DYN_PARAM_COLUMNS SDPC
+		WHERE SDPC.GROUP_CODE = #{groupCode}
+		AND SDPC.TABLE_NAME = #{tableName}
+	</sql>
+
+
+
+	<resultMap id="dynamicQueryListMap"
+		type="com.path.vo.common.dynclientparams.DynClientParamsSC">
+	</resultMap>
+
+	<select id="returnDynClientParamsQueryList" resultType="java.util.LinkedHashMap"
+		parameterType="map">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnDynClientParamsQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnDynClientParamsQueryListCount" resultType="int"
+		parameterType="map">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnDynClientParamsQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<sql id="returnDynClientParamsQuery">
+		${dynamicQuery}
+ 	</sql>
+
+
+	<insert id="insertDynamicData"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		${dynamicQuery}
+	</insert>
+
+	<update id="updateDynamicData"
+		parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		${dynamicQuery}
+  </update>
+
+  <delete id="deleteDynamicData" parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC" >
+		${dynamicQuery}
+  </delete>
+<select id="returnTableID" parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC" resultType="String">
+	<choose>
+       <when test="isSybase == 1">
+       		select id from sysobjects  where name = #{tableName}
+	   </when>
+       <otherwise>
+       		select OBJECT_ID from user_objects where object_name = #{tableName}
+	   </otherwise>
+	</choose>
+</select>
+
+	<select id="runLookUpQuery" resultType="int" parameterType="com.path.vo.common.dynclientparams.DynClientParamsSC">
+		${dynamicQuery}
+ 	</select>
+
+	<insert id="insertDynClientParamsTblsColumns" parameterType="com.path.vo.common.dynclientparams.DynClientParamsCO">
+		insert into
+		SYS_DYN_PARAM_COLUMNS
+		(
+		GROUP_CODE,
+		TABLE_NAME,
+		COLUMN_NAME,
+		CONTROL_TYPE,
+		LOOKUP_EXPRESSION,
+		VALUE_FIELD,
+		DISPLAY_FIELD,
+		COMBO_LIST,
+		KEY_LABEL_CODE,
+		PK_YN,
+		CREATED_BY
+		)
+		values
+		(
+		#{sysDynParamColumns.GROUP_CODE},
+		#{sysDynParamColumns.TABLE_NAME},
+		#{sysDynParamColumns.COLUMN_NAME},
+		#{sysDynParamColumns.CONTROL_TYPE},
+		#{sysDynParamColumns.LOOKUP_EXPRESSION},
+		#{sysDynParamColumns.VALUE_FIELD},
+		#{sysDynParamColumns.DISPLAY_FIELD},
+		#{sysDynParamColumns.COMBO_LIST},
+		#{sysDynParamColumns.KEY_LABEL_CODE},
+		#{sysDynParamColumns.PK_YN},
+		#{sysDynParamColumns.CREATED_BY}
+		)	
+	</insert>
+</mapper>

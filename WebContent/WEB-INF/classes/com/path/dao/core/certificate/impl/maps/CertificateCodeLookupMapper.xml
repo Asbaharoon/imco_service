@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="certificateLookupMapper">
+	<resultMap id="resCertificateLookupMap" type="com.path.dbmaps.vo.CTSCERTIFICATEVO">
+		<result property="COMP_CODE" column="COMP_CODE"/>
+		<result property="CERTIFICATE_CODE" column="CERTIFICATE_CODE"/>
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+		<result property="BRANCH" column="BRANCH"/>				
+	</resultMap>
+	<select id="returnCertificateLookup" parameterType="com.path.vo.core.certificate.CertificateLookupSC" resultMap="resCertificateLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCertificateLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnCertificateLookupCount" parameterType="com.path.vo.core.certificate.CertificateLookupSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCertificateLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryCertificateLkpSQL">
+		SELECT CTSCERTIFICATE.COMP_CODE,
+		       CTSCERTIFICATE.CERTIFICATE_CODE,
+		       CTSCERTIFICATE.ADDITIONAL_REFERENCE,
+		       CTSCERTIFICATE.BRANCH
+		  FROM CTSCERTIFICATE, CTSCERTIFICATE_TYPE
+		 WHERE CTSCERTIFICATE.COMP_CODE = #{compCode}
+		   AND CTSCERTIFICATE.STATUS = 'P'
+		   AND CTSCERTIFICATE.COMP_CODE = CTSCERTIFICATE_TYPE.COMP_CODE
+		   AND CTSCERTIFICATE.CERTIFICATE_TYPE = CTSCERTIFICATE_TYPE.CODE
+		   AND CTSCERTIFICATE_TYPE.CERTIFICATE_TYPE = 'B'
+		   AND CTSCERTIFICATE.NUMBER_OF_BILLS >
+		       (SELECT COUNT(1)
+		          FROM CTSTRS, CTSTRS_EXTENDED
+		         WHERE CTSTRS.COMP_CODE = CTSCERTIFICATE.COMP_CODE
+		           AND CTSTRS.TRS_TYPE = 'R'
+		           AND CTSTRS.CB_IND = 'C'
+		           AND CTSTRS.COMP_CODE = CTSTRS_EXTENDED.COMP_CODE
+		           AND CTSTRS.BRANCH_CODE = CTSTRS_EXTENDED.BRANCH_CODE
+		           AND CTSTRS_EXTENDED.TRS_TYPE = 'R'
+		           AND CTSTRS_EXTENDED.CB_IND = 'C'
+		           AND CTSTRS.TRS_NO = CTSTRS_EXTENDED.TRS_NO
+		           AND CTSTRS_EXTENDED.CERTIFICATE_CODE = CTSCERTIFICATE.CERTIFICATE_CODE
+		           AND CTSTRS_EXTENDED.CERTIFICATE_BRANCH = CTSCERTIFICATE.BRANCH)  
+	</sql>
+
+	<resultMap id="resCertificateDependencyMap" type="com.path.vo.core.certificate.CertificateLookupCO">
+		<result property="ctscertificateVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctscertificateVO.CERTIFICATE_CODE" column="CERTIFICATE_CODE"/>
+		<result property="ctscertificateVO.NUMBER_OF_BILLS" column="NUMBER_OF_BILLS"/>
+		<result property="ctscertificateVO.TOTAL_AMOUNT_OF_BILLS" column="TOTAL_AMOUNT_OF_BILLS"/>
+		<result property="ctscertificateVO.BRANCH" column="BRANCH"/>				
+	</resultMap>
+
+	<select id="dependencyForCertificate" parameterType="com.path.vo.core.certificate.CertificateLookupSC" resultMap="resCertificateDependencyMap">
+		 SELECT CTSCERTIFICATE.COMP_CODE,
+		       CTSCERTIFICATE.CERTIFICATE_CODE,
+		       CTSCERTIFICATE.NUMBER_OF_BILLS - CASE WHEN 
+					(SELECT SUM(CTSTRS_EXTENDED.NUMBER_OF_BILLS)
+		            FROM CTSTRS, CTSTRS_EXTENDED
+		             WHERE CTSTRS.COMP_CODE = #{compCode}
+		               AND CTSTRS.TRS_TYPE = 'R'
+		               AND CTSTRS.CB_IND = 'C'
+		               AND CTSTRS.COMP_CODE = CTSTRS_EXTENDED.COMP_CODE
+		               AND CTSTRS.BRANCH_CODE = CTSTRS_EXTENDED.BRANCH_CODE
+		               AND CTSTRS_EXTENDED.TRS_TYPE = 'R'
+		               AND CTSTRS_EXTENDED.CB_IND = 'C'
+		               AND CTSTRS.TRS_NO = CTSTRS_EXTENDED.TRS_NO
+		               AND CTSTRS_EXTENDED.CERTIFICATE_BRANCH = #{certificateBranch}
+		               AND CTSTRS_EXTENDED.CERTIFICATE_CODE = #{certificateCode}) IS NULL THEN 0 
+		       		ELSE (SELECT SUM(CTSTRS_EXTENDED.NUMBER_OF_BILLS)
+			            FROM CTSTRS, CTSTRS_EXTENDED
+			             WHERE CTSTRS.COMP_CODE = #{compCode}
+			               AND CTSTRS.TRS_TYPE = 'R'
+			               AND CTSTRS.CB_IND = 'C'
+			               AND CTSTRS.COMP_CODE = CTSTRS_EXTENDED.COMP_CODE
+			               AND CTSTRS.BRANCH_CODE = CTSTRS_EXTENDED.BRANCH_CODE
+			               AND CTSTRS_EXTENDED.TRS_TYPE = 'R'
+			               AND CTSTRS_EXTENDED.CB_IND = 'C'
+			               AND CTSTRS.TRS_NO = CTSTRS_EXTENDED.TRS_NO
+			               AND CTSTRS_EXTENDED.CERTIFICATE_BRANCH = #{certificateBranch}
+			               AND CTSTRS_EXTENDED.CERTIFICATE_CODE = #{certificateCode}) 
+			               END NUMBER_OF_BILLS,
+	       	CTSCERTIFICATE.TOTAL_AMOUNT_OF_BILLS - CASE WHEN 
+					(SELECT SUM(CTSTRS_EXTENDED.TOTAL_AMOUNT_OF_BILLS)
+		              FROM CTSTRS, CTSTRS_EXTENDED
+		             WHERE CTSTRS.COMP_CODE = #{compCode}
+		               AND CTSTRS.TRS_TYPE = 'R'
+		               AND CTSTRS.CB_IND = 'C'
+		               AND CTSTRS.COMP_CODE = CTSTRS_EXTENDED.COMP_CODE
+		               AND CTSTRS.BRANCH_CODE = CTSTRS_EXTENDED.BRANCH_CODE
+		               AND CTSTRS_EXTENDED.TRS_TYPE = 'R'
+		               AND CTSTRS_EXTENDED.CB_IND = 'C'
+		               AND CTSTRS.TRS_NO = CTSTRS_EXTENDED.TRS_NO
+		               AND CTSTRS_EXTENDED.CERTIFICATE_BRANCH = #{certificateBranch}
+		               AND CTSTRS_EXTENDED.CERTIFICATE_CODE = #{certificateCode}) IS NULL THEN 0 
+	       			ELSE (SELECT SUM(CTSTRS_EXTENDED.TOTAL_AMOUNT_OF_BILLS)
+			              FROM CTSTRS, CTSTRS_EXTENDED
+			             WHERE CTSTRS.COMP_CODE = #{compCode}
+			               AND CTSTRS.TRS_TYPE = 'R'
+			               AND CTSTRS.CB_IND = 'C'
+			               AND CTSTRS.COMP_CODE = CTSTRS_EXTENDED.COMP_CODE
+			               AND CTSTRS.BRANCH_CODE = CTSTRS_EXTENDED.BRANCH_CODE
+			               AND CTSTRS_EXTENDED.TRS_TYPE = 'R'
+			               AND CTSTRS_EXTENDED.CB_IND = 'C'
+			               AND CTSTRS.TRS_NO = CTSTRS_EXTENDED.TRS_NO
+			               AND CTSTRS_EXTENDED.CERTIFICATE_BRANCH = #{certificateBranch}
+			               AND CTSTRS_EXTENDED.CERTIFICATE_CODE = #{certificateCode}) 
+			               END TOTAL_AMOUNT_OF_BILLS,
+		       CTSCERTIFICATE.BRANCH
+		  FROM CTSCERTIFICATE
+		  WHERE CTSCERTIFICATE.COMP_CODE = #{compCode}
+     	  AND CTSCERTIFICATE.BRANCH = #{certificateBranch}
+     	  AND CTSCERTIFICATE.CERTIFICATE_CODE = #{certificateCode}
+	</select>
+	
+	<select id="returnCreditAccFromCertificate" parameterType="com.path.vo.core.certificate.CertificateLookupSC" resultType="com.path.dbmaps.vo.CTSCERTIFICATEACCVO">
+ 		SELECT ACC_BR,
+		       ACC_CY,
+		       ACC_GL,
+		       ACC_CIF,
+		       ACC_SL,
+		       ACC_ADD_REF
+		FROM CTSCERTIFICATEACC
+		WHERE COMP_CODE =#{compCode}
+		AND BRANCH = #{branchCode}
+		AND CERTIFICATE_CODE = #{certificateCode}
+		AND CREDIT_ACCOUNT_YN = 'Y'
+	</select>
+</mapper>

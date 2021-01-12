@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SEG_CIF_EXEC_RESULT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULTVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CREATED_BY" property="CREATED_BY" />
+    <result column="RECOMMENED_SEGMENT" property="RECOMMENED_SEGMENT" />
+    <result column="CRITERIA" property="CRITERIA" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="NODIFIED_DATE" property="NODIFIED_DATE" />
+    <result column="SEGMENT_TYPE" property="SEGMENT_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, CREATED_BY, RECOMMENED_SEGMENT, CRITERIA, STATUS, CREATED_DATE, 
+    MODIFIED_BY, NODIFIED_DATE, SEGMENT_TYPE
+  </sql>
+  <select id="selectCTS_SEG_CIF_EXEC_RESULT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SEG_CIF_EXEC_RESULT
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CREATED_BY = #{CREATED_BY}
+  </select>
+  <delete id="deleteCTS_SEG_CIF_EXEC_RESULT" parameterType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULTVOKey" >
+    delete from CTS_SEG_CIF_EXEC_RESULT
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CREATED_BY = #{CREATED_BY}
+  </delete>
+  <insert id="insertCTS_SEG_CIF_EXEC_RESULT" parameterType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULTVO" >
+    insert into CTS_SEG_CIF_EXEC_RESULT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="RECOMMENED_SEGMENT != null and RECOMMENED_SEGMENT != emptyBigDecimalValue" >
+        RECOMMENED_SEGMENT,
+      </if>
+      <if test="CRITERIA != null and CRITERIA != emptyBigDecimalValue" >
+        CRITERIA,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="NODIFIED_DATE != null" >
+        NODIFIED_DATE,
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        SEGMENT_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="RECOMMENED_SEGMENT != null and RECOMMENED_SEGMENT != emptyBigDecimalValue" >
+        #{RECOMMENED_SEGMENT},
+      </if>
+      <if test="CRITERIA != null and CRITERIA != emptyBigDecimalValue" >
+        #{CRITERIA},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="NODIFIED_DATE != null" >
+        #{NODIFIED_DATE},
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        #{SEGMENT_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SEG_CIF_EXEC_RESULT" >
+    update CTS_SEG_CIF_EXEC_RESULT
+    <set >
+      <if test="RECOMMENED_SEGMENT != null" >
+        <choose >
+          <when test="RECOMMENED_SEGMENT == emptyBigDecimalValue" >
+            RECOMMENED_SEGMENT = NULL ,
+          </when>
+          <otherwise >
+            RECOMMENED_SEGMENT = #{RECOMMENED_SEGMENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA != null" >
+        <choose >
+          <when test="CRITERIA == emptyBigDecimalValue" >
+            CRITERIA = NULL ,
+          </when>
+          <otherwise >
+            CRITERIA = #{CRITERIA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="NODIFIED_DATE != null" >
+        NODIFIED_DATE = #{NODIFIED_DATE},
+      </if>
+      <if test="SEGMENT_TYPE != null" >
+        <choose >
+          <when test="SEGMENT_TYPE.equals(&quot;&quot;)" >
+            SEGMENT_TYPE = NULL ,
+          </when>
+          <otherwise >
+            SEGMENT_TYPE = #{SEGMENT_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CREATED_BY = #{CREATED_BY}
+  </sql>
+  <update id="updateCTS_SEG_CIF_EXEC_RESULT" parameterType="com.path.dbmaps.vo.CTS_SEG_CIF_EXEC_RESULTVO" >
+    <include refid="sql_updateCTS_SEG_CIF_EXEC_RESULT" />
+  </update>
+</mapper>

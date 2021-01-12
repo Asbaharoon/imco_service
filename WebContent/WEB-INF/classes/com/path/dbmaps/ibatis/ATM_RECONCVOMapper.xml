@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ATM_RECONC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ATM_RECONCVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CODE" property="CODE" />
+    <result column="ISO_INTERFACES" property="ISO_INTERFACES" />
+    <result column="MATCH_DATE" property="MATCH_DATE" />
+    <result column="MARGE_DATE" property="MARGE_DATE" />
+    <result column="MATCH_AMOUNT" property="MATCH_AMOUNT" />
+    <result column="MARGE_PERCT" property="MARGE_PERCT" />
+    <result column="OFF_TRANS_ATM" property="OFF_TRANS_ATM" />
+    <result column="OFF_TRANS_POS" property="OFF_TRANS_POS" />
+    <result column="REFUND_TRANS" property="REFUND_TRANS" />
+    <result column="CONSIDER_PFT" property="CONSIDER_PFT" />
+    <result column="VISA_ACC_BR" property="VISA_ACC_BR" />
+    <result column="VISA_ACC_CY" property="VISA_ACC_CY" />
+    <result column="VISA_ACC_GL" property="VISA_ACC_GL" />
+    <result column="VISA_ACC_CIF" property="VISA_ACC_CIF" />
+    <result column="VISA_ACC_SL" property="VISA_ACC_SL" />
+    <result column="PROCESS_DUP" property="PROCESS_DUP" />
+    <result column="ONLINE_TRX" property="ONLINE_TRX" />
+    <result column="PFT_ACC_BR" property="PFT_ACC_BR" />
+    <result column="PFT_ACC_CY" property="PFT_ACC_CY" />
+    <result column="PFT_ACC_GL" property="PFT_ACC_GL" />
+    <result column="PFT_ACC_CIF" property="PFT_ACC_CIF" />
+    <result column="PFT_ACC_SL" property="PFT_ACC_SL" />
+    <result column="LOSS_ACC_BR" property="LOSS_ACC_BR" />
+    <result column="LOSS_ACC_CY" property="LOSS_ACC_CY" />
+    <result column="LOSS_ACC_GL" property="LOSS_ACC_GL" />
+    <result column="LOSS_ACC_CIF" property="LOSS_ACC_CIF" />
+    <result column="LOSS_ACC_SL" property="LOSS_ACC_SL" />
+    <result column="CHARGE_ACC_BR" property="CHARGE_ACC_BR" />
+    <result column="CHARGE_ACC_CY" property="CHARGE_ACC_CY" />
+    <result column="CHARGE_ACC_GL" property="CHARGE_ACC_GL" />
+    <result column="CHARGE_ACC_CIF" property="CHARGE_ACC_CIF" />
+    <result column="CHARGE_ACC_SL" property="CHARGE_ACC_SL" />
+    <result column="ONLINE_TRANS_ATM" property="ONLINE_TRANS_ATM" />
+    <result column="ONLINE_TRANS_POS" property="ONLINE_TRANS_POS" />
+    <result column="EXPIRY_DAYS" property="EXPIRY_DAYS" />
+    <result column="APPLY_REV_ENTRIES_YN" property="APPLY_REV_ENTRIES_YN" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="DECIMAL_POINTS" property="DECIMAL_POINTS" />
+    <result column="EXCHANGE_RATE_FLAG" property="EXCHANGE_RATE_FLAG" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="FILE_NAME" property="FILE_NAME" />
+    <result column="TRX_DEFAULT_YN" property="TRX_DEFAULT_YN" />
+    <result column="TRX_ACCOUNT_FUNDING_YN" property="TRX_ACCOUNT_FUNDING_YN" />
+    <result column="TRX_ORIGINAL_CREDIT_YN" property="TRX_ORIGINAL_CREDIT_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, ISO_INTERFACES, MATCH_DATE, MARGE_DATE, MATCH_AMOUNT, MARGE_PERCT, OFF_TRANS_ATM, 
+    OFF_TRANS_POS, REFUND_TRANS, CONSIDER_PFT, VISA_ACC_BR, VISA_ACC_CY, VISA_ACC_GL, 
+    VISA_ACC_CIF, VISA_ACC_SL, PROCESS_DUP, ONLINE_TRX, PFT_ACC_BR, PFT_ACC_CY, PFT_ACC_GL, 
+    PFT_ACC_CIF, PFT_ACC_SL, LOSS_ACC_BR, LOSS_ACC_CY, LOSS_ACC_GL, LOSS_ACC_CIF, LOSS_ACC_SL, 
+    CHARGE_ACC_BR, CHARGE_ACC_CY, CHARGE_ACC_GL, CHARGE_ACC_CIF, CHARGE_ACC_SL, ONLINE_TRANS_ATM, 
+    ONLINE_TRANS_POS, EXPIRY_DAYS, APPLY_REV_ENTRIES_YN, BRIEF_NAME_ARAB, BRIEF_NAME_ENG, CODE, DECIMAL_POINTS, 
+    EXCHANGE_RATE_FLAG, LONG_NAME_ARAB, LONG_NAME_ENG, FILE_NAME, TRX_DEFAULT_YN, TRX_ACCOUNT_FUNDING_YN, TRX_ORIGINAL_CREDIT_YN
+  </sql>
+  <select id="selectATM_RECONC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ATM_RECONCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from ATM_RECONC
+    where COMP_CODE = #{COMP_CODE}
+    and CODE = #{CODE}
+  </select>
+  <delete id="deleteATM_RECONC" parameterType="com.path.dbmaps.vo.ATM_RECONCVOKey" >
+    delete from ATM_RECONC
+    where COMP_CODE = #{COMP_CODE}
+    and CODE = #{CODE}
+  </delete>
+  <insert id="insertATM_RECONC" parameterType="com.path.dbmaps.vo.ATM_RECONCVO" >
+    insert into ATM_RECONC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ISO_INTERFACES != null and ISO_INTERFACES != emptyBigDecimalValue" >
+        ISO_INTERFACES,
+      </if>
+      <if test="MATCH_DATE != null" >
+        MATCH_DATE,
+      </if>
+      <if test="MARGE_DATE != null and MARGE_DATE != emptyBigDecimalValue" >
+        MARGE_DATE,
+      </if>
+      <if test="MATCH_AMOUNT != null" >
+        MATCH_AMOUNT,
+      </if>
+      <if test="MARGE_PERCT != null and MARGE_PERCT != emptyBigDecimalValue" >
+        MARGE_PERCT,
+      </if>
+      <if test="OFF_TRANS_ATM != null and OFF_TRANS_ATM != emptyBigDecimalValue" >
+        OFF_TRANS_ATM,
+      </if>
+      <if test="OFF_TRANS_POS != null and OFF_TRANS_POS != emptyBigDecimalValue" >
+        OFF_TRANS_POS,
+      </if>
+      <if test="REFUND_TRANS != null and REFUND_TRANS != emptyBigDecimalValue" >
+        REFUND_TRANS,
+      </if>
+      <if test="CONSIDER_PFT != null" >
+        CONSIDER_PFT,
+      </if>
+      <if test="VISA_ACC_BR != null and VISA_ACC_BR != emptyBigDecimalValue" >
+        VISA_ACC_BR,
+      </if>
+      <if test="VISA_ACC_CY != null and VISA_ACC_CY != emptyBigDecimalValue" >
+        VISA_ACC_CY,
+      </if>
+      <if test="VISA_ACC_GL != null and VISA_ACC_GL != emptyBigDecimalValue" >
+        VISA_ACC_GL,
+      </if>
+      <if test="VISA_ACC_CIF != null and VISA_ACC_CIF != emptyBigDecimalValue" >
+        VISA_ACC_CIF,
+      </if>
+      <if test="VISA_ACC_SL != null and VISA_ACC_SL != emptyBigDecimalValue" >
+        VISA_ACC_SL,
+      </if>
+      <if test="PROCESS_DUP != null" >
+        PROCESS_DUP,
+      </if>
+      <if test="ONLINE_TRX != null" >
+        ONLINE_TRX,
+      </if>
+      <if test="PFT_ACC_BR != null and PFT_ACC_BR != emptyBigDecimalValue" >
+        PFT_ACC_BR,
+      </if>
+      <if test="PFT_ACC_CY != null and PFT_ACC_CY != emptyBigDecimalValue" >
+        PFT_ACC_CY,
+      </if>
+      <if test="PFT_ACC_GL != null and PFT_ACC_GL != emptyBigDecimalValue" >
+        PFT_ACC_GL,
+      </if>
+      <if test="PFT_ACC_CIF != null and PFT_ACC_CIF != emptyBigDecimalValue" >
+        PFT_ACC_CIF,
+      </if>
+      <if test="PFT_ACC_SL != null and PFT_ACC_SL != emptyBigDecimalValue" >
+        PFT_ACC_SL,
+      </if>
+      <if test="LOSS_ACC_BR != null and LOSS_ACC_BR != emptyBigDecimalValue" >
+        LOSS_ACC_BR,
+      </if>
+      <if test="LOSS_ACC_CY != null and LOSS_ACC_CY != emptyBigDecimalValue" >
+        LOSS_ACC_CY,
+      </if>
+      <if test="LOSS_ACC_GL != null and LOSS_ACC_GL != emptyBigDecimalValue" >
+        LOSS_ACC_GL,
+      </if>
+      <if test="LOSS_ACC_CIF != null and LOSS_ACC_CIF != emptyBigDecimalValue" >
+        LOSS_ACC_CIF,
+      </if>
+      <if test="LOSS_ACC_SL != null and LOSS_ACC_SL != emptyBigDecimalValue" >
+        LOSS_ACC_SL,
+      </if>
+      <if test="CHARGE_ACC_BR != null and CHARGE_ACC_BR != emptyBigDecimalValue" >
+        CHARGE_ACC_BR,
+      </if>
+      <if test="CHARGE_ACC_CY != null and CHARGE_ACC_CY != emptyBigDecimalValue" >
+        CHARGE_ACC_CY,
+      </if>
+      <if test="CHARGE_ACC_GL != null and CHARGE_ACC_GL != emptyBigDecimalValue" >
+        CHARGE_ACC_GL,
+      </if>
+      <if test="CHARGE_ACC_CIF != null and CHARGE_ACC_CIF != emptyBigDecimalValue" >
+        CHARGE_ACC_CIF,
+      </if>
+      <if test="CHARGE_ACC_SL != null and CHARGE_ACC_SL != emptyBigDecimalValue" >
+        CHARGE_ACC_SL,
+      </if>
+      <if test="ONLINE_TRANS_ATM != null and ONLINE_TRANS_ATM != emptyBigDecimalValue" >
+        ONLINE_TRANS_ATM,
+      </if>
+      <if test="ONLINE_TRANS_POS != null and ONLINE_TRANS_POS != emptyBigDecimalValue" >
+        ONLINE_TRANS_POS,
+      </if>
+      <if test="EXPIRY_DAYS != null and EXPIRY_DAYS != emptyBigDecimalValue" >
+        EXPIRY_DAYS,
+      </if>
+      <if test="APPLY_REV_ENTRIES_YN != null" >
+        APPLY_REV_ENTRIES_YN,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="DECIMAL_POINTS != null and DECIMAL_POINTS != emptyBigDecimalValue" >
+        DECIMAL_POINTS,
+      </if>
+      <if test="EXCHANGE_RATE_FLAG != null" >
+        EXCHANGE_RATE_FLAG,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME,
+      </if>
+      <if test="TRX_DEFAULT_YN != null" >
+        TRX_DEFAULT_YN,
+      </if>
+      <if test="TRX_ACCOUNT_FUNDING_YN != null" >
+        TRX_ACCOUNT_FUNDING_YN,
+      </if>
+      <if test="TRX_ORIGINAL_CREDIT_YN != null" >
+        TRX_ORIGINAL_CREDIT_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ISO_INTERFACES != null and ISO_INTERFACES != emptyBigDecimalValue" >
+        #{ISO_INTERFACES},
+      </if>
+      <if test="MATCH_DATE != null" >
+        #{MATCH_DATE},
+      </if>
+      <if test="MARGE_DATE != null and MARGE_DATE != emptyBigDecimalValue" >
+        #{MARGE_DATE},
+      </if>
+      <if test="MATCH_AMOUNT != null" >
+        #{MATCH_AMOUNT},
+      </if>
+      <if test="MARGE_PERCT != null and MARGE_PERCT != emptyBigDecimalValue" >
+        #{MARGE_PERCT},
+      </if>
+      <if test="OFF_TRANS_ATM != null and OFF_TRANS_ATM != emptyBigDecimalValue" >
+        #{OFF_TRANS_ATM},
+      </if>
+      <if test="OFF_TRANS_POS != null and OFF_TRANS_POS != emptyBigDecimalValue" >
+        #{OFF_TRANS_POS},
+      </if>
+      <if test="REFUND_TRANS != null and REFUND_TRANS != emptyBigDecimalValue" >
+        #{REFUND_TRANS},
+      </if>
+      <if test="CONSIDER_PFT != null" >
+        #{CONSIDER_PFT},
+      </if>
+      <if test="VISA_ACC_BR != null and VISA_ACC_BR != emptyBigDecimalValue" >
+        #{VISA_ACC_BR},
+      </if>
+      <if test="VISA_ACC_CY != null and VISA_ACC_CY != emptyBigDecimalValue" >
+        #{VISA_ACC_CY},
+      </if>
+      <if test="VISA_ACC_GL != null and VISA_ACC_GL != emptyBigDecimalValue" >
+        #{VISA_ACC_GL},
+      </if>
+      <if test="VISA_ACC_CIF != null and VISA_ACC_CIF != emptyBigDecimalValue" >
+        #{VISA_ACC_CIF},
+      </if>
+      <if test="VISA_ACC_SL != null and VISA_ACC_SL != emptyBigDecimalValue" >
+        #{VISA_ACC_SL},
+      </if>
+      <if test="PROCESS_DUP != null" >
+        #{PROCESS_DUP},
+      </if>
+      <if test="ONLINE_TRX != null" >
+        #{ONLINE_TRX},
+      </if>
+      <if test="PFT_ACC_BR != null and PFT_ACC_BR != emptyBigDecimalValue" >
+        #{PFT_ACC_BR},
+      </if>
+      <if test="PFT_ACC_CY != null and PFT_ACC_CY != emptyBigDecimalValue" >
+        #{PFT_ACC_CY},
+      </if>
+      <if test="PFT_ACC_GL != null and PFT_ACC_GL != emptyBigDecimalValue" >
+        #{PFT_ACC_GL},
+      </if>
+      <if test="PFT_ACC_CIF != null and PFT_ACC_CIF != emptyBigDecimalValue" >
+        #{PFT_ACC_CIF},
+      </if>
+      <if test="PFT_ACC_SL != null and PFT_ACC_SL != emptyBigDecimalValue" >
+        #{PFT_ACC_SL},
+      </if>
+      <if test="LOSS_ACC_BR != null and LOSS_ACC_BR != emptyBigDecimalValue" >
+        #{LOSS_ACC_BR},
+      </if>
+      <if test="LOSS_ACC_CY != null and LOSS_ACC_CY != emptyBigDecimalValue" >
+        #{LOSS_ACC_CY},
+      </if>
+      <if test="LOSS_ACC_GL != null and LOSS_ACC_GL != emptyBigDecimalValue" >
+        #{LOSS_ACC_GL},
+      </if>
+      <if test="LOSS_ACC_CIF != null and LOSS_ACC_CIF != emptyBigDecimalValue" >
+        #{LOSS_ACC_CIF},
+      </if>
+      <if test="LOSS_ACC_SL != null and LOSS_ACC_SL != emptyBigDecimalValue" >
+        #{LOSS_ACC_SL},
+      </if>
+      <if test="CHARGE_ACC_BR != null and CHARGE_ACC_BR != emptyBigDecimalValue" >
+        #{CHARGE_ACC_BR},
+      </if>
+      <if test="CHARGE_ACC_CY != null and CHARGE_ACC_CY != emptyBigDecimalValue" >
+        #{CHARGE_ACC_CY},
+      </if>
+      <if test="CHARGE_ACC_GL != null and CHARGE_ACC_GL != emptyBigDecimalValue" >
+        #{CHARGE_ACC_GL},
+      </if>
+      <if test="CHARGE_ACC_CIF != null and CHARGE_ACC_CIF != emptyBigDecimalValue" >
+        #{CHARGE_ACC_CIF},
+      </if>
+      <if test="CHARGE_ACC_SL != null and CHARGE_ACC_SL != emptyBigDecimalValue" >
+        #{CHARGE_ACC_SL},
+      </if>
+      <if test="ONLINE_TRANS_ATM != null and ONLINE_TRANS_ATM != emptyBigDecimalValue" >
+        #{ONLINE_TRANS_ATM},
+      </if>
+      <if test="ONLINE_TRANS_POS != null and ONLINE_TRANS_POS != emptyBigDecimalValue" >
+        #{ONLINE_TRANS_POS},
+      </if>
+      <if test="EXPIRY_DAYS != null and EXPIRY_DAYS != emptyBigDecimalValue" >
+        #{EXPIRY_DAYS},
+      </if>
+      <if test="APPLY_REV_ENTRIES_YN != null" >
+        #{APPLY_REV_ENTRIES_YN},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="DECIMAL_POINTS != null and DECIMAL_POINTS != emptyBigDecimalValue" >
+        #{DECIMAL_POINTS},
+      </if>
+      <if test="EXCHANGE_RATE_FLAG != null" >
+        #{EXCHANGE_RATE_FLAG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="FILE_NAME != null" >
+        #{FILE_NAME},
+      </if>
+      <if test="TRX_DEFAULT_YN != null" >
+        #{TRX_DEFAULT_YN},
+      </if>
+      <if test="TRX_ACCOUNT_FUNDING_YN != null" >
+        #{TRX_ACCOUNT_FUNDING_YN},
+      </if>
+      <if test="TRX_ORIGINAL_CREDIT_YN != null" >
+        #{TRX_ORIGINAL_CREDIT_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateATM_RECONC" >
+    update ATM_RECONC
+    <set >
+      <if test="ISO_INTERFACES != null" >
+        <choose >
+          <when test="ISO_INTERFACES == emptyBigDecimalValue" >
+            ISO_INTERFACES = NULL ,
+          </when>
+          <otherwise >
+            ISO_INTERFACES = #{ISO_INTERFACES},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MATCH_DATE != null" >
+        MATCH_DATE = #{MATCH_DATE},
+      </if>
+      <if test="MARGE_DATE != null" >
+        <choose >
+          <when test="MARGE_DATE == emptyBigDecimalValue" >
+            MARGE_DATE = NULL ,
+          </when>
+          <otherwise >
+            MARGE_DATE = #{MARGE_DATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MATCH_AMOUNT != null" >
+        MATCH_AMOUNT = #{MATCH_AMOUNT},
+      </if>
+      <if test="MARGE_PERCT != null" >
+        <choose >
+          <when test="MARGE_PERCT == emptyBigDecimalValue" >
+            MARGE_PERCT = NULL ,
+          </when>
+          <otherwise >
+            MARGE_PERCT = #{MARGE_PERCT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OFF_TRANS_ATM != null" >
+        <choose >
+          <when test="OFF_TRANS_ATM == emptyBigDecimalValue" >
+            OFF_TRANS_ATM = NULL ,
+          </when>
+          <otherwise >
+            OFF_TRANS_ATM = #{OFF_TRANS_ATM},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OFF_TRANS_POS != null" >
+        <choose >
+          <when test="OFF_TRANS_POS == emptyBigDecimalValue" >
+            OFF_TRANS_POS = NULL ,
+          </when>
+          <otherwise >
+            OFF_TRANS_POS = #{OFF_TRANS_POS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REFUND_TRANS != null" >
+        <choose >
+          <when test="REFUND_TRANS == emptyBigDecimalValue" >
+            REFUND_TRANS = NULL ,
+          </when>
+          <otherwise >
+            REFUND_TRANS = #{REFUND_TRANS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONSIDER_PFT != null" >
+        CONSIDER_PFT = #{CONSIDER_PFT},
+      </if>
+      <if test="VISA_ACC_BR != null" >
+        <choose >
+          <when test="VISA_ACC_BR == emptyBigDecimalValue" >
+            VISA_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            VISA_ACC_BR = #{VISA_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VISA_ACC_CY != null" >
+        <choose >
+          <when test="VISA_ACC_CY == emptyBigDecimalValue" >
+            VISA_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            VISA_ACC_CY = #{VISA_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VISA_ACC_GL != null" >
+        <choose >
+          <when test="VISA_ACC_GL == emptyBigDecimalValue" >
+            VISA_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            VISA_ACC_GL = #{VISA_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VISA_ACC_CIF != null" >
+        <choose >
+          <when test="VISA_ACC_CIF == emptyBigDecimalValue" >
+            VISA_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            VISA_ACC_CIF = #{VISA_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VISA_ACC_SL != null" >
+        <choose >
+          <when test="VISA_ACC_SL == emptyBigDecimalValue" >
+            VISA_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            VISA_ACC_SL = #{VISA_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROCESS_DUP != null" >
+        PROCESS_DUP = #{PROCESS_DUP},
+      </if>
+      <if test="ONLINE_TRX != null" >
+        ONLINE_TRX = #{ONLINE_TRX},
+      </if>
+      <if test="PFT_ACC_BR != null" >
+        <choose >
+          <when test="PFT_ACC_BR == emptyBigDecimalValue" >
+            PFT_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            PFT_ACC_BR = #{PFT_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PFT_ACC_CY != null" >
+        <choose >
+          <when test="PFT_ACC_CY == emptyBigDecimalValue" >
+            PFT_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            PFT_ACC_CY = #{PFT_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PFT_ACC_GL != null" >
+        <choose >
+          <when test="PFT_ACC_GL == emptyBigDecimalValue" >
+            PFT_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            PFT_ACC_GL = #{PFT_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PFT_ACC_CIF != null" >
+        <choose >
+          <when test="PFT_ACC_CIF == emptyBigDecimalValue" >
+            PFT_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            PFT_ACC_CIF = #{PFT_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PFT_ACC_SL != null" >
+        <choose >
+          <when test="PFT_ACC_SL == emptyBigDecimalValue" >
+            PFT_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            PFT_ACC_SL = #{PFT_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOSS_ACC_BR != null" >
+        <choose >
+          <when test="LOSS_ACC_BR == emptyBigDecimalValue" >
+            LOSS_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            LOSS_ACC_BR = #{LOSS_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOSS_ACC_CY != null" >
+        <choose >
+          <when test="LOSS_ACC_CY == emptyBigDecimalValue" >
+            LOSS_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            LOSS_ACC_CY = #{LOSS_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOSS_ACC_GL != null" >
+        <choose >
+          <when test="LOSS_ACC_GL == emptyBigDecimalValue" >
+            LOSS_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            LOSS_ACC_GL = #{LOSS_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOSS_ACC_CIF != null" >
+        <choose >
+          <when test="LOSS_ACC_CIF == emptyBigDecimalValue" >
+            LOSS_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            LOSS_ACC_CIF = #{LOSS_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOSS_ACC_SL != null" >
+        <choose >
+          <when test="LOSS_ACC_SL == emptyBigDecimalValue" >
+            LOSS_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            LOSS_ACC_SL = #{LOSS_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_ACC_BR != null" >
+        <choose >
+          <when test="CHARGE_ACC_BR == emptyBigDecimalValue" >
+            CHARGE_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_ACC_BR = #{CHARGE_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_ACC_CY != null" >
+        <choose >
+          <when test="CHARGE_ACC_CY == emptyBigDecimalValue" >
+            CHARGE_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_ACC_CY = #{CHARGE_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_ACC_GL != null" >
+        <choose >
+          <when test="CHARGE_ACC_GL == emptyBigDecimalValue" >
+            CHARGE_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_ACC_GL = #{CHARGE_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_ACC_CIF != null" >
+        <choose >
+          <when test="CHARGE_ACC_CIF == emptyBigDecimalValue" >
+            CHARGE_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_ACC_CIF = #{CHARGE_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_ACC_SL != null" >
+        <choose >
+          <when test="CHARGE_ACC_SL == emptyBigDecimalValue" >
+            CHARGE_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_ACC_SL = #{CHARGE_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ONLINE_TRANS_ATM != null" >
+        <choose >
+          <when test="ONLINE_TRANS_ATM == emptyBigDecimalValue" >
+            ONLINE_TRANS_ATM = NULL ,
+          </when>
+          <otherwise >
+            ONLINE_TRANS_ATM = #{ONLINE_TRANS_ATM},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ONLINE_TRANS_POS != null" >
+        <choose >
+          <when test="ONLINE_TRANS_POS == emptyBigDecimalValue" >
+            ONLINE_TRANS_POS = NULL ,
+          </when>
+          <otherwise >
+            ONLINE_TRANS_POS = #{ONLINE_TRANS_POS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXPIRY_DAYS != null" >
+        <choose >
+          <when test="EXPIRY_DAYS == emptyBigDecimalValue" >
+            EXPIRY_DAYS = NULL ,
+          </when>
+          <otherwise >
+            EXPIRY_DAYS = #{EXPIRY_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLY_REV_ENTRIES_YN != null" >
+        APPLY_REV_ENTRIES_YN = #{APPLY_REV_ENTRIES_YN},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="DECIMAL_POINTS != null" >
+        <choose >
+          <when test="DECIMAL_POINTS == DECIMAL_POINTS" >
+            DECIMAL_POINTS = NULL ,
+          </when>
+          <otherwise >
+            DECIMAL_POINTS = #{DECIMAL_POINTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXCHANGE_RATE_FLAG != null" >
+        EXCHANGE_RATE_FLAG = #{EXCHANGE_RATE_FLAG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME = #{FILE_NAME},
+      </if>
+      <if test="TRX_DEFAULT_YN != null" >
+        TRX_DEFAULT_YN = #{TRX_DEFAULT_YN},
+      </if>
+      <if test="TRX_ACCOUNT_FUNDING_YN != null" >
+        TRX_ACCOUNT_FUNDING_YN = #{TRX_ACCOUNT_FUNDING_YN},
+      </if>
+      <if test="TRX_ORIGINAL_CREDIT_YN != null" >
+        TRX_ORIGINAL_CREDIT_YN = #{TRX_ORIGINAL_CREDIT_YN},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+    and CODE = #{CODE}
+  </sql>
+  <update id="updateATM_RECONC" parameterType="com.path.dbmaps.vo.ATM_RECONCVO" >
+    <include refid="sql_updateATM_RECONC" />
+  </update>
+</mapper>

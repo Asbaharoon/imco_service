@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_BATCH_RUN_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_BATCH_RUN_LOGVO" >
+    <result column="BATCH_CODE" property="BATCH_CODE" />
+    <result column="RUNNING_DATE" property="RUNNING_DATE" />
+    <result column="CREATION_DATE" property="CREATION_DATE" />
+    <result column="MACHINE_ID" property="MACHINE_ID" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.EOD_BATCH_RUN_LOGVO" extends="BaseResultMap" >
+    <result column="ERROR_MESSAGE" property="ERROR_MESSAGE" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    ERROR_MESSAGE
+  </sql>
+  <insert id="insertEOD_BATCH_RUN_LOG" parameterType="com.path.dbmaps.vo.EOD_BATCH_RUN_LOGVO" >
+    insert into EOD_BATCH_RUN_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        BATCH_CODE,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="CREATION_DATE != null" >
+        CREATION_DATE,
+      </if>
+      <if test="MACHINE_ID != null" >
+        MACHINE_ID,
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        ERROR_MESSAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        #{BATCH_CODE},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="CREATION_DATE != null" >
+        #{CREATION_DATE},
+      </if>
+      <if test="MACHINE_ID != null" >
+        #{MACHINE_ID},
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        #{ERROR_MESSAGE},
+      </if>
+    </trim>
+  </insert>
+</mapper>

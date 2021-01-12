@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_ENTITY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_ENTITYVO" >
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <result column="ENTITY_NAME" property="ENTITY_NAME" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="BR_FIELD_NAME" property="BR_FIELD_NAME" />
+    <result column="REQUEST_API_CODE" property="REQUEST_API_CODE" />
+    <result column="RESPONSE_API_CODE" property="RESPONSE_API_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ENTITY_CODE, ENTITY_NAME, DESCRIPTION, BR_FIELD_NAME, REQUEST_API_CODE, RESPONSE_API_CODE
+  </sql>
+  <select id="selectSYNC_ENTITY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_ENTITYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_ENTITY
+    where ENTITY_CODE = #{ENTITY_CODE}
+  </select>
+  <delete id="deleteSYNC_ENTITY" parameterType="com.path.dbmaps.vo.SYNC_ENTITYVOKey" >
+    delete from SYNC_ENTITY
+    where ENTITY_CODE = #{ENTITY_CODE}
+  </delete>
+  <insert id="insertSYNC_ENTITY" parameterType="com.path.dbmaps.vo.SYNC_ENTITYVO" >
+    insert into SYNC_ENTITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        ENTITY_CODE,
+      </if>
+      <if test="ENTITY_NAME != null" >
+        ENTITY_NAME,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="BR_FIELD_NAME != null" >
+        BR_FIELD_NAME,
+      </if>
+      <if test="REQUEST_API_CODE != null and REQUEST_API_CODE != emptyBigDecimalValue" >
+        REQUEST_API_CODE,
+      </if>
+      <if test="RESPONSE_API_CODE != null and RESPONSE_API_CODE != emptyBigDecimalValue" >
+        RESPONSE_API_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="ENTITY_NAME != null" >
+        #{ENTITY_NAME},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="BR_FIELD_NAME != null" >
+        #{BR_FIELD_NAME},
+      </if>
+      <if test="REQUEST_API_CODE != null and REQUEST_API_CODE != emptyBigDecimalValue" >
+        #{REQUEST_API_CODE},
+      </if>
+      <if test="RESPONSE_API_CODE != null and RESPONSE_API_CODE != emptyBigDecimalValue" >
+        #{RESPONSE_API_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_ENTITY" >
+    update SYNC_ENTITY
+    <set >
+      <if test="ENTITY_NAME != null" >
+        ENTITY_NAME = #{ENTITY_NAME},
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="BR_FIELD_NAME != null" >
+        BR_FIELD_NAME = #{BR_FIELD_NAME},
+      </if>
+      <if test="REQUEST_API_CODE != null" >
+        <choose >
+          <when test="REQUEST_API_CODE == emptyBigDecimalValue" >
+            REQUEST_API_CODE = NULL ,
+          </when>
+          <otherwise >
+            REQUEST_API_CODE = #{REQUEST_API_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESPONSE_API_CODE != null" >
+        <choose >
+          <when test="RESPONSE_API_CODE == emptyBigDecimalValue" >
+            RESPONSE_API_CODE = NULL ,
+          </when>
+          <otherwise >
+            RESPONSE_API_CODE = #{RESPONSE_API_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ENTITY_CODE = #{ENTITY_CODE}
+  </sql>
+  <update id="updateSYNC_ENTITY" parameterType="com.path.dbmaps.vo.SYNC_ENTITYVO" >
+    <include refid="sql_updateSYNC_ENTITY" />
+  </update>
+</mapper>

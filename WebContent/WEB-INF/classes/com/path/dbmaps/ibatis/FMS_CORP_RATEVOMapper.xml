@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_CORP_RATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_CORP_RATEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CLASS" property="CLASS" />
+    <result column="RATE" property="RATE" />
+    <result column="GROUP_ID" property="GROUP_ID" />
+    <result column="RATE_TYPE" property="RATE_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, CLASS, RATE, GROUP_ID, RATE_TYPE
+  </sql>
+  <select id="selectFMS_CORP_RATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_CORP_RATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_CORP_RATE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMS_CORP_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_RATEVOKey" >
+    delete from FMS_CORP_RATE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMS_CORP_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_RATEVO" >
+    insert into FMS_CORP_RATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        CLASS,
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        RATE,
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        GROUP_ID,
+      </if>
+      <if test="RATE_TYPE != null and RATE_TYPE != emptyBigDecimalValue" >
+        RATE_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CLASS != null and CLASS != emptyBigDecimalValue" >
+        #{CLASS},
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        #{RATE},
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        #{GROUP_ID},
+      </if>
+      <if test="RATE_TYPE != null and RATE_TYPE != emptyBigDecimalValue" >
+        #{RATE_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_CORP_RATE" >
+    update FMS_CORP_RATE
+    <set >
+      <if test="CLASS != null" >
+        <choose >
+          <when test="CLASS == emptyBigDecimalValue" >
+            CLASS = NULL ,
+          </when>
+          <otherwise >
+            CLASS = #{CLASS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RATE != null" >
+        <choose >
+          <when test="RATE == emptyBigDecimalValue" >
+            RATE = NULL ,
+          </when>
+          <otherwise >
+            RATE = #{RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_ID != null" >
+        <choose >
+          <when test="GROUP_ID == emptyBigDecimalValue" >
+            GROUP_ID = NULL ,
+          </when>
+          <otherwise >
+            GROUP_ID = #{GROUP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RATE_TYPE != null" >
+        <choose >
+          <when test="RATE_TYPE == emptyBigDecimalValue" >
+            RATE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            RATE_TYPE = #{RATE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMS_CORP_RATE" parameterType="com.path.dbmaps.vo.FMS_CORP_RATEVO" >
+    <include refid="sql_updateFMS_CORP_RATE" />
+  </update>
+</mapper>

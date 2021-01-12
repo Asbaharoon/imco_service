@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="atmInterfaceMapper">
+	<!-- Code Starts For ATM Interface -->
+	<resultMap id="interfaceMap" type="atmInterfaceCO">
+		<id 	column="CODE" 					property="iso_INTERFACESVO.CODE" />
+	    <id 	column="COMP_CODE" 				property="iso_INTERFACESVO.COMP_CODE" />
+	    <result column="DESCRIPTION" 			property="iso_INTERFACESVO.DESCRIPTION" />
+	    <result column="ATM_LOG_800" 			property="iso_INTERFACESVO.ATM_LOG_800" />
+	    <result column="ATM_LOG_ECHO" 			property="iso_INTERFACESVO.ATM_LOG_ECHO" />
+	    <result column="ATM_LOG_REC_MSG" 		property="iso_INTERFACESVO.ATM_LOG_REC_MSG" />
+	    <result column="ATM_LOG_SENT_MSG" 		property="iso_INTERFACESVO.ATM_LOG_SENT_MSG" />
+	    <result column="ATM_LOG_FILE" 			property="iso_INTERFACESVO.ATM_LOG_FILE" />
+	    <result column="ATM_LOG_SENT_FILE" 		property="iso_INTERFACESVO.ATM_LOG_SENT_FILE" />
+	    <result column="ATM_LOG_REC_FILE" 		property="iso_INTERFACESVO.ATM_LOG_REC_FILE" />
+	    <result column="ATM_RECONNECT_TIME" 	property="iso_INTERFACESVO.ATM_RECONNECT_TIME" />
+	    <result column="MSG_SOURCE" 			property="iso_INTERFACESVO.MSG_SOURCE" />
+	    <result column="ATM_T_ID" 				property="iso_INTERFACESVO.ATM_T_ID" />
+	    <result column="INCLUD_LEN" 			property="iso_INTERFACESVO.INCLUD_LEN" />
+	    <result column="LOCK_ACC" 				property="iso_INTERFACESVO.LOCK_ACC" />
+	    <result column="BITMAP_TYPE" 			property="iso_INTERFACESVO.BITMAP_TYPE" />
+	    <result column="LENGTH_TYPE" 			property="iso_INTERFACESVO.LENGTH_TYPE" />
+	    <result column="CURRENT_DATE" 			property="iso_INTERFACESVO.CURRENT_DATE" />
+	    <result column="TCP_TYPE" 				property="iso_INTERFACESVO.TCP_TYPE" />
+	    <result column="AUTO_LOGON" 			property="iso_INTERFACESVO.AUTO_LOGON" />
+	    <result column="MSG_LENGTH" 			property="iso_INTERFACESVO.MSG_LENGTH" />
+	    <result column="HEADER_LENGTH" 			property="iso_INTERFACESVO.HEADER_LENGTH" />
+	    <result column="HEADER_DATA" 			property="iso_INTERFACESVO.HEADER_DATA" />
+	    <result column="ISO_PRESENT" 			property="iso_INTERFACESVO.ISO_PRESENT" />
+	    <result column="POS_IN_HEADER" 			property="iso_INTERFACESVO.POS_IN_HEADER" />
+	    <result column="ATM_SCRIPT_LOG_FILE" 	property="iso_INTERFACESVO.ATM_SCRIPT_LOG_FILE" />
+	    <result column="ATM_LOG_SCRIPT" 		property="iso_INTERFACESVO.ATM_LOG_SCRIPT" />
+	    <result column="PCI_COMPLY" 			property="iso_INTERFACESVO.PCI_COMPLY" />
+	    <result column="BAL_DOWNLOAD" 			property="iso_INTERFACESVO.BAL_DOWNLOAD" />
+	    <result column="SKIP_BITMAP" 			property="iso_INTERFACESVO.SKIP_BITMAP" />
+	    <result column="STATUS" 				property="iso_INTERFACESVO.STATUS" />
+	    <result column="CREATED_BY" 			property="iso_INTERFACESVO.CREATED_BY" />
+	    <result column="CREATED_DATE" 			property="iso_INTERFACESVO.CREATED_DATE" />
+	    <result column="MODIFIED_BY" 			property="iso_INTERFACESVO.MODIFIED_BY" />
+	    <result column="MODIFIED_DATE" 			property="iso_INTERFACESVO.MODIFIED_DATE" />
+	    <result column="APPROVED_BY" 			property="iso_INTERFACESVO.APPROVED_BY" />
+	    <result column="APPROVED_DATE" 			property="iso_INTERFACESVO.APPROVED_DATE" />
+	    <result column="DELETED_BY" 			property="iso_INTERFACESVO.DELETED_BY" />
+	    <result column="DELETED_DATE" 			property="iso_INTERFACESVO.DELETED_DATE" />
+	    <result column="SUSPENDED_BY" 			property="iso_INTERFACESVO.SUSPENDED_BY" />
+	    <result column="SUSPENDED_DATE" 		property="iso_INTERFACESVO.SUSPENDED_DATE" />
+	    <result column="REACTIVATED_BY" 		property="iso_INTERFACESVO.REACTIVATED_BY" />
+	    <result column="REACTIVATED_DATE" 		property="iso_INTERFACESVO.REACTIVATED_DATE" />
+	    <result column="STATUS_DESC" 			property="statusDesc" />
+	    <result column="tcpTypeDesc" 			property="tcpTypeDesc" />
+	</resultMap>
+
+	<select id="retInterfaceList" resultMap="interfaceMap" parameterType="atmInterfaceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="retInterfaceListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="retInterfaceListCount" parameterType="atmInterfaceSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="retInterfaceListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="retInterfaceByCode" resultMap="interfaceMap" parameterType="atmInterfaceSC">
+		<include refid="retInterfaceListSQL"/>
+		AND ii.CODE = #{interfaceId}
+	</select>
+			
+	<sql id="retInterfaceListSQL">
+		SELECT <include refid="DGTL_ATM_INTERFACES.Base_Column_List"/>
+		,(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	         FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = ii.STATUS 
+	         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	         AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+	    )STATUS_DESC
+		,(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	         FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = ii.TCP_TYPE 
+	         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{tcpTypeLovId,jdbcType=NUMERIC}
+	         AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+	    )tcpTypeDesc
+		FROM DGTL_ATM_INTERFACES ii 
+		<if test='crudMode!="R"'>
+			, SYS_PARAM_LOV_LK_OPT lovOpt
+		</if>
+		WHERE ii.COMP_CODE =  #{compCode}
+		<if test='crudMode!="R"'>
+			AND ii.STATUS = lovOpt.VALUE_CODE
+            AND lovOpt.LOV_TYPE_ID  = #{lovTypeId,jdbcType=NUMERIC}
+            AND lovOpt.PROG_REF     = #{pageRef,jdbcType=VARCHAR}
+            AND lovOpt.APP_NAME     = #{currAppName,jdbcType=VARCHAR}
+		</if>
+		
+	</sql>
+	<!-- Code Ends For ATM Interface -->
+	
+	<!-- Code Starts For ISO Messages -->
+	<resultMap  id="messagesMap" type="atmInterfaceCO">
+		<id 	column="COMP_CODE" 				property="iso_INT_MSGSVO.COMP_CODE" />
+	    <id 	column="INT_CODE" 				property="iso_INT_MSGSVO.INT_CODE" />
+	    <id 	column="MESSAGE_CODE" 			property="iso_INT_MSGSVO.MESSAGE_CODE" />
+	    <result column="REQUEST_MTI" 			property="iso_INT_MSGSVO.REQUEST_MTI" />
+	    <result column="REQUEST_BITMAP1" 		property="iso_INT_MSGSVO.REQUEST_BITMAP1" />
+	    <result column="REQUEST_BITMAP2" 		property="iso_INT_MSGSVO.REQUEST_BITMAP2" />
+	    <result column="REQUEST_DESCRIPTION" 	property="iso_INT_MSGSVO.REQUEST_DESCRIPTION" />
+	    <result column="RESPONSE_MTI" 			property="iso_INT_MSGSVO.RESPONSE_MTI" />
+    	<result column="RESPONSE_BITMAP1" 		property="iso_INT_MSGSVO.RESPONSE_BITMAP1" />
+    	<result column="RESPONSE_BITMAP2" 		property="iso_INT_MSGSVO.RESPONSE_BITMAP2" />
+    	<result column="RESPONSE_DESCRIPTION" 	property="iso_INT_MSGSVO.RESPONSE_DESCRIPTION" />
+	</resultMap>
+	
+	<select id="retMessagesList" resultMap="messagesMap" parameterType="atmInterfaceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="retMessagesListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="retMessagesListCount" parameterType="atmInterfaceSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="retMessagesListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="retMessagesListSQL">
+		SELECT <include refid="DGTL_ISO_MSGS.Base_Column_List"/>
+		FROM DGTL_ISO_MSGS dim
+		WHERE dim.COMP_CODE =  #{compCode}
+		AND dim.INT_CODE = #{interfaceId}
+	</sql>
+	<!-- Code Ends For ISO Messages -->
+	
+	<!-- Code Starts For ISO Updated Fields -->
+	<resultMap id="fieldsMap" type="atmInterfaceCO">
+	    <id column="FIELD_NO" 			property="iso_FIELDVO.ID" />
+	    <result column="FIELD_NAME" 	property="iso_FIELDVO.NAME" />
+	    <result column="FIELD_LENGTH" 	property="iso_FIELDVO.LENGTH" />
+	    <result column="FIELD_TYPE" 	property="iso_FIELDVO.FIELD_TYPE" />
+	    <result column="TYPE" 			property="TYPE" />
+	    <result column="IS_DECIMAL_YN" 	property="IS_DECIMAL_YN" />
+	    <result column="FIELD_LENL" 	property="FIELD_LENL" />
+	    <result column="TOTAL_MASK" 	property="TOTAL_MASK" />
+	    <result column="PARTIAL_MASK" 	property="PARTIAL_MASK" />
+	    <result column="EXPRESSION" 	property="EXPRESSION" />
+	</resultMap>
+	
+	<select id="retFieldsList" resultMap="fieldsMap" parameterType="atmInterfaceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="retFieldsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="retFieldsListCount" parameterType="atmInterfaceSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="retFieldsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="retFieldListByBitmap" resultMap="fieldsMap" parameterType="atmInterfaceSC">
+		<include refid="retFieldsSQL"/>
+		AND iif.FIELD_NO IN 
+		<foreach item="field" collection="bitMapFields" separator="," open="(" close=")">
+	        #{field}
+	    </foreach>
+	</select>
+	
+	<sql id="retFieldsSQL">
+		SELECT <include refid="DGTL_ISO_FLDS.Base_Column_List"/>, <include refid="DGTL_ISO_FLDS.Blob_Column_List"/>
+		, (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	         FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = iif.FIELD_TYPE 
+	         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{fieldTypeLovId,jdbcType=NUMERIC}
+	         AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+	    )TYPE
+		FROM DGTL_ISO_FLDS iif
+		WHERE iif.COMP_CODE =  #{compCode}
+		AND iif.INT_CODE = #{interfaceId}
+	</sql>
+	<!-- Code Ends For ISO Updated Fields -->
+	
+	<!-- Code Starts For ISO Static Fields -->
+	<resultMap id="isoFieldsMap" type="atmInterfaceCO">
+		<id 	column="ID" 		property="iso_FIELDVO.ID" />
+	    <result column="LENGTH" 	property="iso_FIELDVO.LENGTH" />
+	    <result column="NAME" 		property="iso_FIELDVO.NAME" />
+	    <result column="FIELD_TYPE" property="iso_FIELDVO.FIELD_TYPE" />
+	    <result column="TYPE" 		property="TYPE" />
+	</resultMap>
+	
+	<select id="retIsoFieldsList" resultMap="isoFieldsMap" parameterType="atmInterfaceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="retIsoFieldsListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="retIsoFieldsListCount" parameterType="atmInterfaceSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="retIsoFieldsListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="retIsoFieldsListSQL">
+		SELECT <include refid="SYS_PARAM_ISO_FLDS.Base_Column_List"/>
+		, (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	         FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = spif.FIELD_TYPE 
+	         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{fieldTypeLovId,jdbcType=NUMERIC}
+	         AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+	    )TYPE
+		FROM SYS_PARAM_ISO_FLDS spif WHERE ID > 0
+	</sql>
+	<!-- Code ends For ISO Static Fields -->
+	
+	<!-- ISO Sub Fields Starts -->
+	<resultMap id="isoSubFieldsMap" type="atmInterfaceCO" >
+	    <id 	column="COMP_CODE" 		property="sub_FLDSVO.COMP_CODE" />
+	    <id 	column="FIELD_NO" 		property="sub_FLDSVO.FIELD_NO" />
+	    <id 	column="INT_CODE" 		property="sub_FLDSVO.INT_CODE" />
+	    <id 	column="SUB_FLD_CODE" 	property="sub_FLDSVO.SUB_FLD_CODE" />
+	    <result column="SUB_FLD_NAME" 	property="sub_FLDSVO.SUB_FLD_NAME" />
+	    <result column="SUB_FLD_TYPE" 	property="sub_FLDSVO.SUB_FLD_TYPE" />
+	    <result column="SUB_FLD_LENGTH" property="sub_FLDSVO.SUB_FLD_LENGTH" />
+	    <result column="STATUS" 		property="STATUS" />
+  	</resultMap>
+  	
+  	<select id="retIsoSubFieldsList" resultMap="isoSubFieldsMap" parameterType="atmInterfaceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="retSubFieldsByParentId"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="retIsoSubFieldsListCount" parameterType="atmInterfaceSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="retSubFieldsByParentId"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+  	
+  	<sql id="retSubFieldsByParentId">
+  		SELECT <include refid="DGTL_ISO_SUB_FLDS.Base_Column_List"/>, 'A' STATUS
+  		FROM DGTL_ISO_SUB_FLDS 
+  		WHERE FIELD_NO = #{fieldCode}
+  		AND INT_CODE = #{interfaceId}
+  		AND COMP_CODE =  #{compCode}
+  	</sql>
+	<!-- ISO Sub Fields Ends -->
+	
+	<!-- Code To get New IDS -->
+	<select id="retNewInterfaceId" resultType="int">
+		<choose> 
+		 	<when test="isSybase == 1" >
+		        SELECT top 1 CODE+1 FROM DGTL_ATM_INTERFACES ORDER BY CODE DESC
+		    </when>
+		    <otherwise >
+		        SELECT CODE+1 FROM DGTL_ATM_INTERFACES ORDER BY CODE DESC LIMIT 1
+		    </otherwise>
+		</choose>
+	</select>
+	
+	<select id="retNewMessageCode" resultType="int">
+		<choose> 
+		 	<when test="isSybase == 1" >
+		        SELECT top 1 MESSAGE_CODE+1 FROM DGTL_ISO_MSGS ORDER BY MESSAGE_CODE DESC
+		    </when>
+		    <otherwise >
+		        SELECT MESSAGE_CODE+1 FROM DGTL_ISO_MSGS ORDER BY MESSAGE_CODE DESC LIMIT 1
+		    </otherwise>
+		</choose>
+	</select>
+	
+	<select id="retProgOrder" resultType="Integer">
+	   SELECT (CASE
+           WHEN COUNT(TB1.PROG_ORDER) = 0 THEN
+            1
+           ELSE
+            max(TB1.PROG_ORDER)
+           END) as PROG_ORDER
+       FROM (SELECT PROG_ORDER +1 as PROG_ORDER
+            FROM OPT
+            WHERE PROG_REF = 'ROOT'
+            AND APP_NAME ='FCSR') TB1  
+	</select>
+</mapper>

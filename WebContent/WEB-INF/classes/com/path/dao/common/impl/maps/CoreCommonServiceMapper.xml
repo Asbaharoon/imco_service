@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="coreCommonServiceMapper">
+
+  <select id="returnCountriesTelFormat" resultType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVO" parameterType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVO" >
+    SELECT COUNTRIES_TEL_FORMAT.*
+      FROM COUNTRIES_TEL_FORMAT
+     WHERE 1 = 1
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue">
+      	AND LINE_NO = #{LINE_NO,jdbcType=NUMERIC}
+      </if>
+      <if test="FORMAT_VALUE != null">
+      	AND FORMAT_VALUE = #{FORMAT_VALUE, jdbcType=VARCHAR}
+      </if>
+  </select>
+  
+  <select id="returnCntCtsRegBillType" parameterType="trxMgntSC" resultType="int">
+		SELECT COUNT(1)
+		  FROM CTS_REG_BILL_TYPE 
+		 WHERE COMP_CODE = #{compCode}
+		   AND CIF_NO = #{cif}
+		   AND CY_CODE = #{trsCy}
+		   AND TRX_TYPE = #{trxType}
+		    <if test="billType != null">
+		   AND BILL_TYPE = #{billType}
+		   </if>
+	</select>
+	
+	<select id="validateIdUniqueness" parameterType="nCifMaintenanceSC" resultType="int">
+	SELECT  MAX(tab.CIF_NO) CIF_NO
+ 	  FROM (<include refid="cifSimilarIdsRecordsCommon"/>) tab
+	</select> 
+
+ <resultMap id="fomDetailBaseMap" type="fomCO" >
+    <id column="CIF_NO" property="cifVO.CIF_NO" />
+     <result column="LONG_NAME_ENG" property="cifVO.LONG_NAME_ENG" />
+     <result column="LONG_NAME_ARAB" property="cifVO.LONG_NAME_ARAB" />
+ </resultMap>
+ 
+ <select id="similarIdsPopupListCommon" resultMap="fomDetailBaseMap" parameterType="fomSC" >
+ 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+ 	<include refid="cifSimilarIdsRecordsCommon" />
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <sql id="cifSimilarIdsRecordsCommon" >
+		SELECT CIF.CIF_NO, CIF.LONG_NAME_ENG, CIF.LONG_NAME_ARAB
+	 	FROM (SELECT CIF.COMP_CODE, CIF.CIF_NO
+	            FROM CIF
+	           WHERE CIF.COMP_CODE =
+				<choose>
+		   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+		   			<otherwise>#{compCode}</otherwise>
+				</choose>
+	            <if test='cifNo != null and cifNo != 0'> 
+	             AND CIF.CIF_NO <![CDATA[<>]]> #{cifNo, jdbcType=NUMERIC}
+	             </if>
+	             
+	             <if test='idType != null and idNo != null and fromValidationOfIdType2 != null and ("0").equals(fromValidationOfIdType2) '>AND (
+	             ( CIF.ID_TYPE = #{idType,jdbcType=NUMERIC} AND UPPER(CIF.ID_NO) =#{idNo, jdbcType=VARCHAR})
+	             OR (CIF.ID_TYPE2 = #{idType2, jdbcType=NUMERIC} AND UPPER(CIF.ID_NO2) = #{idNo2, jdbcType=VARCHAR})
+	             
+	             <if test='joinIdType != null and joinIdNo != null and joinIdNo != ""'>
+	             	OR (CIF.JOIN_ID_TYPE = #{joinIdType, jdbcType=NUMERIC} AND CIF.JOIN_ID_NO = #{joinIdNo, jdbcType=VARCHAR})
+	             </if>
+	             
+	             )</if>
+	             
+			    <if test='idType2 != null and idNo2 != null and fromValidationOfIdType2 != null and ("1").equals(fromValidationOfIdType2)'>AND ( 
+			       	 	 (CIF.ID_TYPE2 = #{idType2, jdbcType=NUMERIC} AND UPPER(CIF.ID_NO2) = #{idNo2, jdbcType=VARCHAR})
+			        	 OR(CIF.ID_TYPE = #{idType, jdbcType=NUMERIC} AND UPPER(CIF.ID_NO) = #{idNo, jdbcType=VARCHAR})
+			        	
+			        	<if test='joinIdType != null and joinIdNo != null and joinIdNo != ""'>
+			             	OR (CIF.JOIN_ID_TYPE = #{joinIdType, jdbcType=NUMERIC} AND CIF.JOIN_ID_NO = #{joinIdNo, jdbcType=VARCHAR})
+			             </if>
+			             
+			        	)</if> 
+			    <if test='enableUniquenessByCifTypeOnly == "1" and cifType != null and cifType != 0'>    	
+			    AND CIF.CIF_TYPE = #{cifType, jdbcType=NUMERIC} 
+			    </if>   	
+	        	AND COALESCE(CIF.STATUS, '') <![CDATA[<>]]> #{statusDeleted} AND (CIF.JOIN_ID_TYPE) IS NULL         	
+	           	
+	           UNION	        
+	         
+	           SELECT CIF_ID_DETAILS.COMP_CODE, CIF_ID_DETAILS.CIF_NO
+	         	 FROM CIF_ID_DETAILS
+	            WHERE CIF_ID_DETAILS.COMP_CODE = 
+			   		<choose>
+			   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+			   			<otherwise>#{compCode}</otherwise>
+			   		</choose>
+	 	         
+		           <if test="idType != null"> 
+			            AND CIF_ID_DETAILS.ID_TYPE_CODE = #{idType, jdbcType=NUMERIC}
+			       </if>
+			       <if test="idNo != null">     
+			            AND UPPER(CIF_ID_DETAILS.ID_NO) = #{idNo, jdbcType=VARCHAR}
+			       </if>
+			       <if test='cifNo != null and cifNo != 0'>
+		            AND CIF_ID_DETAILS.CIF_NO <![CDATA[<>]]> #{cifNo, jdbcType=NUMERIC}
+		           </if>
+				    <if test='enableUniquenessByCifTypeOnly == "1" and cifType != null and cifType != 0'>  	
+				    AND (SELECT CIF_TYPE FROM CIF WHERE CIF.COMP_CODE = CIF_ID_DETAILS.COMP_CODE AND CIF.CIF_NO = CIF_ID_DETAILS.CIF_NO) = #{cifType, jdbcType=NUMERIC} 
+				    </if>		             
+		             UNION
+		             
+		       SELECT CIF_AUTH_SIGNATORY.COMP_CODE , 
+		       COALESCE(CIF_AUTH_SIGNATORY.AUTH_CIF_NO,CIF_AUTH_SIGNATORY.CIF_NO) CIF_NO
+                   FROM CIF_AUTH_SIGNATORY
+                  WHERE CIF_AUTH_SIGNATORY.COMP_CODE=
+					<choose>
+			   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+			   			<otherwise>#{compCode}</otherwise>
+			   		</choose>
+                    <if test="idType != null"> 
+                   AND CIF_AUTH_SIGNATORY.ID_TYPE = #{idType, jdbcType=NUMERIC} 
+                   </if>
+                   <if test="idNo != null"> 
+                    AND UPPER(CIF_AUTH_SIGNATORY.ID_NO) = #{idNo, jdbcType=VARCHAR}
+                    </if>
+                    <if test='cifNo != null and cifNo != 0'>
+                    <choose>
+                    	<when test="isSybase == 1">AND ISNULL(CIF_AUTH_SIGNATORY.AUTH_CIF_NO,0) <![CDATA[<>]]> #{cifNo, jdbcType=NUMERIC} </when>
+                    	<otherwise>				   AND NVL(CIF_AUTH_SIGNATORY.AUTH_CIF_NO,0) <![CDATA[<>]]> #{cifNo, jdbcType=NUMERIC} </otherwise>
+                    </choose>
+                    </if>
+  					<if test='enableUniquenessByCifTypeOnly == "1" and cifType != null and cifType != 0'>  				  	
+				  	AND (SELECT CIF_TYPE FROM CIF WHERE CIF.COMP_CODE = CIF_AUTH_SIGNATORY.COMP_CODE AND CIF.CIF_NO = CIF_AUTH_SIGNATORY.AUTH_CIF_NO) = #{cifType, jdbcType=NUMERIC} 				  	
+				  	</if>                      
+                    AND COALESCE(CIF_AUTH_SIGNATORY.AUTH_CIF_NO, 0) <![CDATA[<>]]> 0                                                   
+          		) CIF_DET,
+				CIF,
+    			RIFCTT
+ 		WHERE CIF.COMP_CODE = CIF_DET.COMP_CODE
+	   	  AND CIF.CIF_NO    = CIF_DET.CIF_NO
+	      AND abs(CIF.COMP_CODE) = RIFCTT.COMP_CODE
+	      AND CIF.CIF_TYPE  = RIFCTT.TYPE_CODE
+	</sql>
+	
+	<select id="cifByIrisRecog" resultMap="cifByIrisResult_map" parameterType="cifSC" >
+		<include refid="cifByIris"/>
+	</select>
+	
+	<resultMap id="cifByIrisResult_map" type="cifVO" >
+	    <id column="CIF_NO" property="CIF_NO" />
+	    <result column="SHORT_NAME_ENG" property="SHORT_NAME_ENG" />
+	    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+	    <result column="SHORT_NAME_ARAB" property="SHORT_NAME_ARAB" />
+	    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+	  </resultMap>
+ 
+     <sql id="cifByIris">
+		<![CDATA[
+		SELECT CIF.CIF_NO,
+		CIF.SHORT_NAME_ENG,
+		CIF.LONG_NAME_ENG,
+		CIF.SHORT_NAME_ARAB,
+		CIF.LONG_NAME_ARAB
+		FROM CIF
+		WHERE (CIF.COMP_CODE = #{compCode, jdbcType=NUMERIC})
+		AND (CIF.CIF_NO = #{cif_no, jdbcType=NUMERIC})
+		UNION ALL 
+		SELECT CIF_JOINT_DET.CIF_NO,
+	    CIF_JOINT_DET.BRIEF_NAME_ENG,
+	    CIF_JOINT_DET.LONG_NAME_ENG,
+		CIF_JOINT_DET.BRIEF_NAME_ARAB,
+	    CIF_JOINT_DET.LONG_NAME_ARAB
+	    FROM CIF_JOINT_DET
+		WHERE (CIF_JOINT_DET.COMP_CODE = #{compCode, jdbcType=NUMERIC})
+		AND (CIF_JOINT_DET.JOINT_CIF_NO = #{cif_no, jdbcType=NUMERIC})
+	 	]]>
+	</sql>
+	
+	<select id="returnLastNumberCifType" parameterType="cifTypeParamDetvokey" resultType="cifTypeParamVO">
+	    SELECT  CIF_TYPE_PARAM.*
+		FROM   CIF_TYPE_PARAM ,  CIF_TYPE_PARAM_DET
+		WHERE	CIF_TYPE_PARAM.COMP_CODE  	= CIF_TYPE_PARAM_DET.COMP_CODE
+		AND	CIF_TYPE_PARAM.CODE  				= CIF_TYPE_PARAM_DET.CODE
+		AND	CIF_TYPE_PARAM_DET.CIF_TYPE  	= #{CIF_TYPE,jdbcType=NUMERIC}
+		AND	CIF_TYPE_PARAM.COMP_CODE  		= #{COMP_CODE,jdbcType=NUMERIC}
+	</select>
+	
+	<update id="updateDummyCIF_TYPE_PARAM" parameterType="cifTypeParamDetvokey" >
+	    UPDATE  CIF_TYPE_PARAM
+		SET    CIF_TYPE_PARAM.LAST_NUMBER = CIF_TYPE_PARAM.LAST_NUMBER
+		WHERE	CIF_TYPE_PARAM.COMP_CODE  	= #{COMP_CODE,jdbcType=NUMERIC}
+		AND	EXISTS (SELECT 1 FROM CIF_TYPE_PARAM_DET
+		            WHERE CIF_TYPE_PARAM_DET.COMP_CODE = CIF_TYPE_PARAM.COMP_CODE
+		             AND	CIF_TYPE_PARAM_DET.CODE  = CIF_TYPE_PARAM.CODE
+		             AND	CIF_TYPE_PARAM_DET.CIF_TYPE  	= #{CIF_TYPE,jdbcType=NUMERIC} )
+	</update>
+	
+	 <select id="returnCifNotReserved" parameterType="cifReservedVO" resultType="int"  >	
+		SELECT CASE WHEN MIN(TBL.CIF_NO) IS NULL THEN #{CIF_NO,jdbcType=NUMERIC} ELSE MIN(TBL.CIF_NO) END
+		FROM (SELECT CIF_NO + 1 CIF_NO
+		FROM CIF C
+		WHERE CIF_NO >=#{CIF_NO,jdbcType=NUMERIC}
+		 AND COMP_CODE = #{COMP_CODE,jdbcType=NUMERIC}
+		 AND EXISTS (SELECT 1 
+		     FROM CIF_RESERVED CR
+		     WHERE CR.COMP_CODE = #{COMP_CODE,jdbcType=NUMERIC}
+		         AND CR.CIF_NO > #{CIF_NO,jdbcType=NUMERIC} )) TBL LEFT OUTER JOIN CIF C2
+		 ON TBL.CIF_NO = C2.CIF_NO
+		WHERE C2.CIF_NO IS NULL
+  </select>	
+  
+  
+  <update id="updateDummyCTSCOUNTER" parameterType="com.path.dbmaps.vo.CIFCOUNTERVO">
+	UPDATE CIFCOUNTER
+       SET LAST_NUMBER = LAST_NUMBER
+     WHERE COMP_CODE = #{COMP_CODE}
+       AND BRANCH_CODE = #{BRANCH_CODE}
+  </update>
+  
+  <select id="returnMaxCIFNo" parameterType="nCifMaintenanceSC" resultType="BigDecimal">
+	 SELECT MAX(CIF_NO) MAX_CIF_NO
+	  FROM CIF
+	 WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	 <if test="null != firstCIFNo and null != lastCIFNo">
+	 	AND CIF_NO BETWEEN #{firstCIFNo,jdbcType=NUMERIC} AND #{lastCIFNo,jdbcType=NUMERIC}
+	 </if>
+	</select>
+	
+	<select id="returnTotalAmountBetweenFirstAndLastPeriod" parameterType="trxMgntSC" resultType="BigDecimal" >
+		SELECT CASE	WHEN (SUM(( CASE WHEN CTSTRSDET.CV_AMOUNT IS NULL THEN 0 
+								ELSE CTSTRSDET.CV_AMOUNT 
+								 END ))
+						  ) IS NULL THEN 0 
+			   ELSE SUM(CTSTRSDET.CV_AMOUNT)
+		 		END 
+		  FROM CTSTRS, CTSTRSDET
+		 WHERE CTSTRSDET.COMP_CODE = CTSTRS.COMP_CODE
+		   AND CTSTRSDET.BRANCH_CODE = CTSTRS.BRANCH_CODE
+		   AND CTSTRSDET.TRS_TYPE = CTSTRS.TRS_TYPE
+		   AND CTSTRSDET.CB_IND = CTSTRS.CB_IND
+		   AND CTSTRSDET.TRS_NO = CTSTRS.TRS_NO
+		   AND CTSTRSDET.AC_BR = CTSTRS.TRS_AC_BR
+		   AND CTSTRSDET.AC_CY = CTSTRS.TRS_AC_CY
+		   AND CTSTRSDET.AC_GL = CTSTRS.TRS_AC_GL
+		   AND CTSTRSDET.AC_CIF = CTSTRS.TRS_AC_CIF
+		   AND CTSTRSDET.AC_SL = CTSTRS.TRS_AC_SL
+		   AND CTSTRSDET.COMP_CODE = #{compCode}  
+		   AND CTSTRSDET.BRANCH_CODE = #{branchCode}
+		   AND CTSTRSDET.TRS_TYPE = 'R' <!-- For The Retail Trs  -->  
+		   AND CTSTRSDET.CB_IND = 'C' <!-- For The Client Indication -->
+		   AND CTSTRSDET.TRS_SIGN = #{drCrType,jdbcType=VARCHAR} <!-- For The Credit and Debit A/C -->
+		   AND CTSTRSDET.AC_CIF = #{cif} <!-- For The Trs A/C CIF -->
+		   AND CTSTRS.TRX_TYPE = #{trxType} <!-- For The Specified Type Of Trs -->
+		   AND CTSTRS.TRS_DATE BETWEEN #{firstPeriod, jdbcType=DATE} AND #{lastPeriod, jdbcType=DATE}
+	</select>
+	
+	<resultMap type="trxMgntCO" id="returnObjMlMapp">
+		<result property="periodType" column="PERIODICITY_TYPE"/>
+		<result property="period" column="PERIODICITY"/>
+		<result property="singleAmount" column="SINGLE_TRX_AMT"/>
+		<result property="totalAmount" column="TOTAL_TRX_AMT"/>
+	</resultMap>
+	
+	<select id="returnCtsTrxTypeMl" parameterType="trxMgntSC" resultMap="returnObjMlMapp" >
+		SELECT CTSTRXTYPE_ML.PERIODICITY_TYPE PERIODICITY_TYPE,   
+			   CTSTRXTYPE_ML.PERIODICITY PERIODICITY,
+			   0.0 SINGLE_TRX_AMT,
+			   CTSTRXTYPE_ML.LIMIT_CV TOTAL_TRX_AMT
+		  FROM CTSTRXTYPE_ML  
+		 WHERE CTSTRXTYPE_ML.COMP_CODE = #{compCode}
+		   AND CTSTRXTYPE_ML.CODE = #{trxType}
+		   AND CTSTRXTYPE_ML.CURRENCY_CODE = #{trsCy,jdbcType=NUMERIC}<!--tp#850157 ZB190001 - AML Currency Field -->
+	</select>
+	
+	<select id="returnCifTrxTrendsDet" parameterType="trxMgntSC" resultMap="returnObjMlMapp" >
+		SELECT CIF_TRX_TRENDS_DET.PERIODICITY_TYPE PERIODICITY_TYPE,   
+			   CIF_TRX_TRENDS_DET.PERIODICITY PERIODICITY,   
+			   CIF_TRX_TRENDS_DET.SINGLE_TRX_AMT SINGLE_TRX_AMT,   
+			   CIF_TRX_TRENDS_DET.TOTAL_TRX_AMT TOTAL_TRX_AMT
+		  FROM CIF_TRX_TRENDS_DET  
+		 WHERE CIF_TRX_TRENDS_DET.COMP_CODE	= #{compCode}
+		   AND CIF_TRX_TRENDS_DET.CIF_NO = #{cif}
+	 	   AND CIF_TRX_TRENDS_DET.CTSTRX_TYPE = #{trxType}
+	 	   AND CIF_TRX_TRENDS_DET.CURRENCY_CODE = #{trsCy,jdbcType=NUMERIC} <!--tp#850157 ZB190001 - AML Currency Field -->
+	</select>
+	
+	<select id="returnRifObtTrendsDet" parameterType="trxMgntSC" resultMap="returnObjMlMapp" >
+		SELECT RIFOBT_TRENDS_DET.PERIODICITY_TYPE PERIODICITY_TYPE,   
+			   RIFOBT_TRENDS_DET.PERIODICITY PERIODICITY,   
+			   RIFOBT_TRENDS_DET.SINGLE_TRX_AMT SINGLE_TRX_AMT,   
+			   RIFOBT_TRENDS_DET.TOTAL_TRX_AMT TOTAL_TRX_AMT
+		  FROM RIFOBT_TRENDS_DET,CIF  
+		 WHERE RIFOBT_TRENDS_DET.COMP_CODE = CIF.COMP_CODE 		
+		   AND RIFOBT_TRENDS_DET.OBLIGOR_CODE = CIF.ONE_OBLIGOR	
+		   AND RIFOBT_TRENDS_DET.COMP_CODE = #{compCode}
+		   AND RIFOBT_TRENDS_DET.CTSTRX_TYPE = #{trxType}
+		   AND CIF.CIF_NO = #{cif}
+		   AND RIFOBT_TRENDS_DET.CURRENCY_CODE = #{trsCy,jdbcType=NUMERIC}<!--tp#850157 ZB190001 - AML Currency Field -->
+	</select>
+	
+	<select id="returnCtsControlMl" parameterType="trxMgntSC" resultMap="returnObjMlMapp" >
+		SELECT CTSCONTROL_ML.PERIODICITY_TYPE PERIODICITY_TYPE,   
+			   CTSCONTROL_ML.PERIODICITY PERIODICITY,
+			   0.0 SINGLE_TRX_AMT,
+			   CTSCONTROL_ML.LIMIT TOTAL_TRX_AMT
+		  FROM CTSCONTROL_ML  
+		 WHERE CTSCONTROL_ML.COMP_CODE = #{compCode}
+		   AND CTSCONTROL_ML.BRANCH_CODE = #{branchCode}
+		   AND CTSCONTROL_ML.CURRENCY_CODE = #{trsCy,jdbcType=NUMERIC} <!--tp#850157 ZB190001 - AML Currency Field -->
+	</select>
+  
+   	<resultMap id="ConfMsgMap" type="com.path.dbmaps.vo.CTSTRS_CONF_MSGVO">
+		<result property="CONF_CODE" 		column="CONF_CODE"/> 
+		<result property="CONF_MSG" 		column="CONF_MSG"/> 
+		<result property="USER_ID" 			column="USER_ID"/> 
+		<result property="DB_SESSION_ID" 	column="DB_SESSION_ID"/> 
+	</resultMap>
+	
+    <select id="returncountConfMsg" parameterType="com.path.vo.core.trxmgnt.CtstrsConfMsgSC" resultType="int">
+	  SELECT count(1)
+	  FROM   CTSTRS_CONF_MSG
+	  WHERE	 USER_ID 		=  #{user_id}
+	  AND	 DB_SESSION_ID  =  #{sessionId}
+	</select>
+	
+	<select id="returnConfMsg" resultMap="ConfMsgMap" parameterType="com.path.vo.core.trxmgnt.CtstrsConfMsgSC">
+	  SELECT CONF_CODE,
+			 CONF_MSG,
+			 USER_ID,
+			 DB_SESSION_ID
+	  FROM   CTSTRS_CONF_MSG
+	  WHERE	 USER_ID 		=  #{user_id}
+	  AND	 DB_SESSION_ID  =  #{sessionId}
+	</select>
+	
+	<select id = "checkIfLimitationActionExists"  parameterType="com.path.vo.core.trxmgnt.CtstrsConfMsgSC" resultType="int">
+		SELECT  count(1)
+		<choose>
+			<when test="isSybase == 1">	
+				FROM tempdb..ACC_LIMIT_ACTION_TEMP		
+			</when>
+			<otherwise> 
+				FROM ACC_LIMIT_ACTION_TEMP	
+			</otherwise>
+		</choose>
+		WHERE	COMP_CODE  = #{compCode} 
+		AND		USER_ID	   = #{user_id}
+		AND		SESSION_ID = #{sessionId}
+		AND 	GL_CODE	  IN (#{fromAccType},#{toAccType})
+		AND		LIMIT_ACTION_TYPE IN ('PC','SP','MV')
+	</select>
+	<select id = "returnTierNo"  parameterType="com.path.vo.core.account.AccountSC" resultType="int">
+		SELECT COALESCE(MIN(CTS_ACC_LIMITS.ACC_LIMIT_TIER_NO),0)
+		FROM 	CTS_ACC_LIMITS,CTS_ACC_LIMITS_DET,CTS_ACC_LIMITS_ACC_TYPES,CTS_ACC_LIMITS_CIF_TYPES
+		WHERE 	CTS_ACC_LIMITS.COMP_CODE				= CTS_ACC_LIMITS_DET.COMP_CODE
+		AND		CTS_ACC_LIMITS.CODE						= CTS_ACC_LIMITS_DET.CODE
+		AND		CTS_ACC_LIMITS.COMP_CODE 				= CTS_ACC_LIMITS_ACC_TYPES.COMP_CODE
+		AND		CTS_ACC_LIMITS.CODE		 				= CTS_ACC_LIMITS_ACC_TYPES.CODE
+		AND		CTS_ACC_LIMITS_DET.COMP_CODE			= CTS_ACC_LIMITS_CIF_TYPES.COMP_CODE
+		AND		CTS_ACC_LIMITS_DET.CODE					= CTS_ACC_LIMITS_CIF_TYPES.CODE
+		AND		CTS_ACC_LIMITS_DET.ACC_LIMIT_LINE_NO	= CTS_ACC_LIMITS_CIF_TYPES.ACC_LIMIT_LINE_NO
+		AND		CTS_ACC_LIMITS_DET.ACC_LIMIT_MAX_MIN	= CTS_ACC_LIMITS_CIF_TYPES.ACC_LIMIT_MAX_MIN
+		AND 	CTS_ACC_LIMITS.COMP_CODE = #{compCode}
+		AND		CTS_ACC_LIMITS_DET.ACC_LIMIT_CY = #{currencyCode}
+		AND		CTS_ACC_LIMITS_ACC_TYPES.ACC_TYPE IN( 0,#{glCode})
+		AND 	CTS_ACC_LIMITS_CIF_TYPES.ACC_LIMIT_CIF_TYPE IN(0,#{cifTypeCode})
+		AND		CTS_ACC_LIMITS.STATUS = 'P'
+		AND		CTS_ACC_LIMITS.ACC_LIMIT_APPLY_TIER_YN = '1'
+	</select>
+	
+	 <select id="checkIfExistIdNo" parameterType="fomCO" resultType="int">
+		SELECT COUNT(1)  
+		FROM S_SCAN 
+		WHERE COMP_CODE = #{loginCompCode,jdbcType=NUMERIC}
+		AND SIGN_INSTRUCTIONS = 'M' 
+		AND ID_TYPE = #{idTypeValue,jdbcType=NUMERIC}  
+		AND ID_NO = #{civilCodeValue, jdbcType=VARCHAR}
+	</select>
+	
+
+	<resultMap id="idCheckDigitMap" type="com.path.dbmaps.vo.ID_CHECK_DIGITVO" >
+	<result column="COMP_CODE" property="COMP_CODE" />
+	<result column="ID_TYPE" property="ID_TYPE" />
+     <result column="LINE_NO" property="LINE_NO" />
+     <result column="FIELD1" property="FIELD1" />
+     <result column="FR_POS1" property="FR_POS1" />
+     <result column="TO_POS1" property="TO_POS1" />
+ 	</resultMap>
+ 	
+	 <select id="returnCheckIdDigitsData" resultMap="idCheckDigitMap" parameterType="com.path.dbmaps.vo.ID_CHECK_DIGITVO" >
+	 	<include refid="returnCheckIdDigitsData" />
+	 </select>
+	 
+	 <sql id="returnCheckIdDigitsData" >
+	 	SELECT COMP_CODE,
+	 		   ID_TYPE,
+	 		   LINE_NO,
+	 		   FIELD1,
+			   FR_POS1,
+			   TO_POS1
+	 	FROM ID_CHECK_DIGIT
+	 	WHERE COMP_CODE = #{COMP_CODE,jdbcType=NUMERIC}
+	 	AND ID_TYPE 	= #{ID_TYPE,jdbcType=NUMERIC}
+	 </sql>	 	
+
+	<resultMap id="idCheckDigitAllowMap" type="com.path.dbmaps.vo.ID_CHECK_DIGIT_ALLOWEDVO" >
+     <result column="FIELD" property="FIELD" />
+     <result column="FR_POS" property="FR_POS" />
+     <result column="TO_POS" property="TO_POS" />
+ 	</resultMap>
+ 	
+	 <select id="returnCheckIdDigitsAllowedData" resultMap="idCheckDigitAllowMap" parameterType="com.path.dbmaps.vo.ID_CHECK_DIGITVO" >
+	 	<include refid="returnCheckIdDigitsAllowedData" />
+	 </select>
+	 
+	 <sql id="returnCheckIdDigitsAllowedData" >
+	 	SELECT	FIELD,
+				FR_POS,
+				TO_POS
+	 	FROM ID_CHECK_DIGIT_ALLOWED
+	 	WHERE COMP_CODE = #{COMP_CODE,jdbcType=NUMERIC}
+	 	AND ID_TYPE 	= #{ID_TYPE,jdbcType=NUMERIC}
+	 	AND CHECK_DIGIT_LINE_NO 	= #{LINE_NO,jdbcType=NUMERIC}
+	 </sql>	 	 
+	
+	<delete id="deleteAccountLimitActionTemp" parameterType="trxMgntSC" >
+		delete from ACC_LIMIT_ACTION_TEMP
+		WHERE USER_ID = #{userId, jdbcType=VARCHAR}
+		AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	</delete>
+	
+	<select id="checkNegativeComp" parameterType="cifSC" resultType="int">
+	   SELECT 1
+	     FROM CIF
+	    WHERE COMP_CODE = -#{comp_code}
+	      AND CIF_NO = #{cif_no}
+	      and APPROVED_BY is not null
+	</select>
+
+	<select id="checkEligibility" parameterType="idTypeSC" resultType="int">
+	SELECT CASE WHEN (
+		SELECT COUNT(1) FROM ID_CHECK_DIGIT_ELIGIB_VAL 
+		WHERE ID_CHECK_DIGIT_ELIGIB_VAL.COMP_CODE = #{compCode}
+		AND ID_CHECK_DIGIT_ELIGIB_VAL.ID_TYPE = #{idTypeCode} ) = 0 THEN 1 
+		ELSE
+		(	SELECT COUNT(1) FROM ID_CHECK_DIGIT_ELIGIB_VAL 
+			WHERE ID_CHECK_DIGIT_ELIGIB_VAL.COMP_CODE = #{compCode}
+			AND ID_CHECK_DIGIT_ELIGIB_VAL.ID_TYPE = #{idTypeCode}
+			AND ID_CHECK_DIGIT_ELIGIB_VAL.VALUE = #{eligibility}
+		) END
+		FROM PTH_CTRL 
+	
+	</select>
+	 
+	<select id="returnSTodoDetByAlert" parameterType="alertsSC" resultType="int">		
+	  SELECT  COUNT(1)
+	    FROM S_TODO_DET
+	   WHERE  COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC} 
+		AND TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+		AND TODO_ALERT 			in (${todoAlert})
+		AND TODO_PARAM			=  #{todoParam,jdbcType=VARCHAR}
+		AND TODO_PROG_REF		=  #{progRef,jdbcType=VARCHAR}			
+	</select>	 
+</mapper>

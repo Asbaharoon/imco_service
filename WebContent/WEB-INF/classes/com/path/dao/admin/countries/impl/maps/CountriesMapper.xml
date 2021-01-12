@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="countriesMapper">
+
+ <sql id="countriesListCommon">
+	<![CDATA[
+	SELECT COUNTRY_CODE,
+			 BRIEF_DESC_ENG ,
+			 BRIEF_DESC_ARAB ,
+			 LONG_DESC_ENG ,
+			 LONG_DESC_ARAB,
+			 TELEPHONE_FORMAT,
+			 ISO_COUNTRY
+	FROM  COUNTRIES
+	WHERE	 (COUNTRIES.COMP_CODE  = #{compCode})
+	]]>
+	<if test='"1".equals(isoCountryNoNull)'>
+		<choose>
+			<when test="isSybase == 1">
+				AND COUNTRIES.ISO_COUNTRY != ''
+			</when>
+			<otherwise>
+				AND COUNTRIES.ISO_COUNTRY IS NOT NULL
+			</otherwise>
+		</choose>		
+	</if>	 
+ </sql>
+ 
+  <sql id="countriesListCommonOrder">
+	<![CDATA[
+     ORDER BY LONG_DESC_ENG, LONG_DESC_ARAB
+	]]>	 
+ </sql>
+ 
+ <resultMap id="countriesList_ResMap" type="countriesVO">
+	<id property="COUNTRY_CODE" column="COUNTRY_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="TELEPHONE_FORMAT" column="TELEPHONE_FORMAT" />
+	<result property="ISO_COUNTRY" column="ISO_COUNTRY" /><!-- TP 1038530;Libin;27/07/2020-->
+ </resultMap>
+ 
+ <select id="countriesList" resultMap="countriesList_ResMap" parameterType="countriesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="countriesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="countriesListCount" resultType="int" parameterType="countriesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="countriesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnCountryById" parameterType="countriesSC" resultType="countriesVO">
+		SELECT 
+			COUNTRY_CODE,
+			CASE WHEN #{preferredLanguage} = 'A' THEN LONG_DESC_ARAB ELSE LONG_DESC_ENG END LONG_DESC_ENG,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+			BLACK_LISTED,
+			TELEPHONE_CODE,
+			TELEPHONE_FORMAT,
+			ISO_COUNTRY
+		FROM  COUNTRIES
+		WHERE COUNTRIES.COUNTRY_CODE  = #{countryCode}
+		AND   COUNTRIES.COMP_CODE  = #{compCode}
+		<if test='"1".equals(isoCountryNoNull)'>
+		<choose>
+			<when test="isSybase == 1">
+				AND COUNTRIES.ISO_COUNTRY != ''
+			</when>
+			<otherwise>
+				AND COUNTRIES.ISO_COUNTRY IS NOT NULL
+			</otherwise>
+		</choose>		
+	</if>
+ </select>
+
+
+<sql id="countryProhibitedCurrency_sql">
+		SELECT * 
+		  FROM CTS_COUNTRY_PROHIBITED_CY 
+		 WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		  <choose>
+			   <when test="countryList != null and countryList.size() > 0">
+			   		 AND COUNTRY_CODE IN 
+		         	 <foreach item="item" index="index" open="(" close=")" separator="," collection="countryList" > 
+		         	 #{item} 
+		         	 </foreach>
+			   </when>
+			   <otherwise>
+			   		AND COUNTRY_CODE = #{countryCode,jdbcType=NUMERIC}
+			   </otherwise>
+		  </choose>
+		 AND (CURRENCY_CODE = #{trsCy,jdbcType=NUMERIC} OR CURRENCY_CODE = 0)
+</sql>
+
+
+<select id="returnCtsCountryProhibitedCurrency" resultType="java.lang.Integer" parameterType="countriesSC" >
+	select count(1) from (<include refid="countryProhibitedCurrency_sql"/>) tbl
+</select>
+
+
+<resultMap id="countryISO_map" type="com.path.vo.admin.countries.CountriesCO">
+	<association property="countriesVO"  javaType="countriesVO" >
+		<result property="COMP_CODE" column="COMP_CODE" />
+		<result property="COUNTRY_CODE" column="COUNTRY_CODE" />
+	</association>
+</resultMap>
+
+
+<select id="returnCountryByISO" resultMap="countryISO_map" parameterType="countriesSC" >
+select *
+  FROM COUNTRIES
+ WHERE COMP_CODE = #{compCode}
+   AND ISO_COUNTRY = #{codeISO}
+</select>
+
+</mapper>

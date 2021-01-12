@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="avaBeneficiariesLkpMapper">
+	<resultMap id="resAvaBeneficiariesLookupMap" type="com.path.vo.core.avabenef.AvaBeneficiariesDefCO">
+		<result property="avaBeneficiariesVO.LINE_NO" column="LINE_NO"/>
+		<result property="avaBeneficiariesVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="avaBeneficiariesVO.FILE_CODE" column="FILE_CODE"/>
+		<result property="avaBeneficiariesVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="avaBeneficiariesVO.CIF_NO" column="CIF_NO"/>
+		<result property="avaBeneficiariesVO.ID_TYPE" column="ID_TYPE"/>
+		<result property="idTypeDesc" column="idTypeDesc"/>
+		<result property="avaBeneficiariesVO.ID_NO" column="ID_NO"/>
+		<result property="avaBeneficiariesVO.SHORT_NAME" column="SHORT_NAME"/>
+		<result property="avaBeneficiariesVO.LONG_NAME" column="LONG_NAME"/>
+		<result property="avaBeneficiariesVO.OCCUPATION" column="OCCUPATION"/>
+		<result property="occupationDesc" column="occupationDesc"/>
+		<result property="avaBeneficiariesVO.OCCUP_POSITION" column="OCCUP_POSITION"/>
+		<result property="occupPositionDesc" column="occupPositionDesc"/>
+		<result property="avaBeneficiariesVO.JOINING_DATE" column="JOINING_DATE"/>
+		<result property="avaBeneficiariesVO.STATUS" column="STATUS"/>
+		<result property="statusDesc" column="statusDesc"/>	
+	</resultMap>
+	
+	<select id="returnAvaBeneficiariesLookup" parameterType="com.path.vo.core.avabenef.AvaBeneficiariesDefSC" resultMap="resAvaBeneficiariesLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryAvaBeneficiariesLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnAvaBeneficiariesLookupCount" parameterType="com.path.vo.core.avabenef.AvaBeneficiariesDefSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryAvaBeneficiariesLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+	<sql id="queryAvaBeneficiariesLkpSQL">
+		 SELECT B.COMP_CODE, 
+				B.FILE_CODE, 
+				B.LINE_NO, 
+				B.BRANCH_CODE, 
+				B.CIF_NO,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END) ID_TYPE,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN ID_TYPES.DESC_ARAB ELSE ID_TYPES.DESC_ENG END)
+				  FROM ID_TYPES
+				 WHERE ID_TYPES.COMP_CODE = B.COMP_CODE
+				   AND ID_TYPES.CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END)) idTypeDesc,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_NO ELSE B.ID_NO END) ID_NO,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.SHORT_NAME_ENG ELSE B.SHORT_NAME END) SHORT_NAME,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.LONG_NAME_ENG ELSE B.LONG_NAME END) LONG_NAME,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUPATION ELSE B.OCCUPATION END) OCCUPATION,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN OCCUPATIONS.BRIEF_DESC_ARAB ELSE OCCUPATIONS.BRIEF_DESC_ENG END)
+				  FROM OCCUPATIONS
+				 WHERE OCCUPATIONS.COMP_CODE = B.COMP_CODE
+				   AND OCCUPATIONS.OCCUPATION_CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUPATION ELSE B.OCCUPATION END)) occupationDesc,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUP_POSITION ELSE B.OCCUP_POSITION END) OCCUP_POSITION,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN POSITIONS.BRIEF_DESC_ARAB ELSE POSITIONS.BRIEF_DESC_ENG END)
+				   FROM POSITIONS
+				  WHERE POSITIONS.COMP_CODE = B.COMP_CODE
+				    AND POSITIONS.POSITION_CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUP_POSITION ELSE B.OCCUP_POSITION END)) occupPositionDesc,
+				B.JOINING_DATE,
+				B.STATUS,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC     
+              FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{benefStatusLov}
+         			AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}
+         			 AND VALUE_CODE = B.STATUS ) statusDesc
+		   FROM CTS_AVA_BENEFICIARIES B
+		         LEFT OUTER JOIN CIF C ON (C.COMP_CODE = B.COMP_CODE
+		                                 AND C.CIF_NO = B.CIF_NO)
+	      WHERE B.COMP_CODE = #{compCode}
+	      	<choose>
+		        <when test="cifno != null and cifno != emptyBigDecimalValue">
+		        	  AND EXISTS (SELECT 1 
+	                      FROM CTS_AVA_FILE F 
+	                      WHERE F.COMP_CODE = B.COMP_CODE
+	                      AND F.CIF_NO = #{cifno}
+	                      AND F.CODE = B.FILE_CODE
+	                      AND F.STATUS = 'A')
+	  			</when>
+	  			<otherwise>
+	  				 AND B.FILE_CODE = #{fileCode, jdbcType=NUMERIC}
+	  			</otherwise>
+  			</choose>	       
+	        AND B.STATUS = 'A'
+	        <if test="lineno != null and lineno != emptyBigDecimalValue" >
+      			AND B.LINE_NO = #{lineno}
+      		</if>
+	</sql>
+
+
+	<select id="dependencyForBeneficiariesLkp" parameterType="com.path.vo.core.avabenef.AvaBeneficiariesDefSC" resultMap="resAvaBeneficiariesLookupMap">
+		 SELECT B.COMP_CODE, 
+				B.FILE_CODE, 
+				B.LINE_NO, 
+				B.BRANCH_CODE, 
+				B.CIF_NO,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END) ID_TYPE,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN ID_TYPES.DESC_ARAB ELSE ID_TYPES.DESC_ENG END)
+				  FROM ID_TYPES
+				 WHERE ID_TYPES.COMP_CODE = B.COMP_CODE
+				   AND ID_TYPES.CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END)) idTypeDesc,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_NO ELSE B.ID_NO END) ID_NO,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.SHORT_NAME_ENG ELSE B.SHORT_NAME END) SHORT_NAME,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.LONG_NAME_ENG ELSE B.LONG_NAME END) LONG_NAME,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUPATION ELSE B.OCCUPATION END) OCCUPATION,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN OCCUPATIONS.BRIEF_DESC_ARAB ELSE OCCUPATIONS.BRIEF_DESC_ENG END)
+				  FROM OCCUPATIONS
+				 WHERE OCCUPATIONS.COMP_CODE = B.COMP_CODE
+				   AND OCCUPATIONS.OCCUPATION_CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUPATION ELSE B.OCCUPATION END)) occupationDesc,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUP_POSITION ELSE B.OCCUP_POSITION END) OCCUP_POSITION,
+				(SELECT (CASE WHEN #{preferredLanguage} = 'A' THEN POSITIONS.BRIEF_DESC_ARAB ELSE POSITIONS.BRIEF_DESC_ENG END)
+				   FROM POSITIONS
+				  WHERE POSITIONS.COMP_CODE = B.COMP_CODE
+				    AND POSITIONS.POSITION_CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.OCCUP_POSITION ELSE B.OCCUP_POSITION END)) occupPositionDesc,
+				B.JOINING_DATE,
+				B.STATUS,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC     
+              FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{benefStatusLov}
+         			AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}
+         			 AND VALUE_CODE = B.STATUS ) statusDesc
+		   FROM CTS_AVA_BENEFICIARIES B
+		         LEFT OUTER JOIN CIF C ON (C.COMP_CODE = B.COMP_CODE
+		                                 AND C.CIF_NO = B.CIF_NO)
+	      WHERE B.COMP_CODE = #{compCode}	      
+	      <choose>
+		        <when test="cifno != null and cifno != emptyBigDecimalValue">
+		        	  AND EXISTS (SELECT 1 
+	                      FROM CTS_AVA_FILE F 
+	                      WHERE F.COMP_CODE = B.COMP_CODE
+	                      AND F.CIF_NO = #{cifno}
+	                      AND F.CODE = B.FILE_CODE
+	                      AND F.STATUS = 'A')
+	  			</when>
+  			</choose> 
+  			AND B.FILE_CODE = #{fileCode, jdbcType=NUMERIC}
+	     	AND B.STATUS = 'A'
+	        AND B.LINE_NO = #{lineno}
+      		
+	</select>
+
+</mapper>

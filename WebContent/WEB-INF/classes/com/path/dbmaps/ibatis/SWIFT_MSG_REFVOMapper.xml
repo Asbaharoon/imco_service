@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_MSG_REF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_MSG_REFVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="MODULE" property="MODULE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <result column="TAG" property="TAG" />
+    <result column="IN_OUT" property="IN_OUT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, MODULE, MSG_CODE, TAG, IN_OUT
+  </sql>
+  <select id="selectSWIFT_MSG_REF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_MSG_REFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_MSG_REF
+    where COMP_CODE = #{COMP_CODE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+  </select>
+  <delete id="deleteSWIFT_MSG_REF" parameterType="com.path.dbmaps.vo.SWIFT_MSG_REFVOKey" >
+    delete from SWIFT_MSG_REF
+    where COMP_CODE = #{COMP_CODE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+  </delete>
+  <insert id="insertSWIFT_MSG_REF" parameterType="com.path.dbmaps.vo.SWIFT_MSG_REFVO" >
+    insert into SWIFT_MSG_REF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="MSG_CODE != null" >
+        MSG_CODE,
+      </if>
+      <if test="TAG != null" >
+        TAG,
+      </if>
+      <if test="IN_OUT != null" >
+        IN_OUT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="MSG_CODE != null" >
+        #{MSG_CODE},
+      </if>
+      <if test="TAG != null" >
+        #{TAG},
+      </if>
+      <if test="IN_OUT != null" >
+        #{IN_OUT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_MSG_REF" >
+    update SWIFT_MSG_REF
+    <set >
+      <if test="TAG != null" >
+        TAG = #{TAG},
+      </if>
+      <if test="IN_OUT != null" >
+        IN_OUT = #{IN_OUT},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+  </sql>
+  <update id="updateSWIFT_MSG_REF" parameterType="com.path.dbmaps.vo.SWIFT_MSG_REFVO" >
+    <include refid="sql_updateSWIFT_MSG_REF" />
+  </update>
+</mapper>

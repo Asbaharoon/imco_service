@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SWIFT_MSGMOD">
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_MSGMODVO">
+    <id column="MODULE" property="MODULE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="REP_ID" property="REP_ID" />
+    <result column="GENERATE_MESSAGE" property="GENERATE_MESSAGE" />
+    <result column="FOLDER_LOCATION" property="FOLDER_LOCATION" />
+    <result column="FILE_EXT" property="FILE_EXT" />
+     <result column="QUEUE_INT_YN" property="QUEUE_INT_YN" />
+    <result column="INCLUDE_ARABIC_YN" property="INCLUDE_ARABIC_YN" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    MODULE, MSG_CODE, TRX_TYPE, BRIEF_DESC_ENG, LONG_DESC_ENG, REP_ID, GENERATE_MESSAGE, 
+    FOLDER_LOCATION, FILE_EXT,QUEUE_INT_YN,INCLUDE_ARABIC_YN
+  </sql>
+  <select id="selectSWIFT_MSGMOD" parameterType="com.path.dbmaps.vo.SWIFT_MSGMODVOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_MSGMOD
+    where MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteSWIFT_MSGMOD" parameterType="com.path.dbmaps.vo.SWIFT_MSGMODVOKey">
+    delete from SWIFT_MSGMOD
+    where MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertSWIFT_MSGMOD" parameterType="com.path.dbmaps.vo.SWIFT_MSGMODVO">
+    insert into SWIFT_MSGMOD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="MODULE != null and !&quot;&quot;.equals(MODULE)" >
+        MODULE,
+      </if>
+      <if test="MSG_CODE != null and !&quot;&quot;.equals(MSG_CODE)" >
+        MSG_CODE,
+      </if>
+      <if test="TRX_TYPE != null and !&quot;&quot;.equals(TRX_TYPE)" >
+        TRX_TYPE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue">
+        REP_ID,
+      </if>
+      <if test="GENERATE_MESSAGE != null and GENERATE_MESSAGE != emptyBigDecimalValue">
+        GENERATE_MESSAGE,
+      </if>
+      <if test="FOLDER_LOCATION != null and !&quot;&quot;.equals(FOLDER_LOCATION)">
+        FOLDER_LOCATION,
+      </if>
+      <if test="FILE_EXT != null and !&quot;&quot;.equals(FILE_EXT)">
+        FILE_EXT,
+      </if>
+       <if test="QUEUE_INT_YN != null and QUEUE_INT_YN != emptyBigDecimalValue" >
+        QUEUE_INT_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="MODULE != null and !&quot;&quot;.equals(MODULE)">
+        #{MODULE},
+      </if>
+      <if test="MSG_CODE != null and !&quot;&quot;.equals(MSG_CODE)">
+        #{MSG_CODE},
+      </if>
+      <if test="TRX_TYPE != null and !&quot;&quot;.equals(TRX_TYPE)">
+        #{TRX_TYPE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)">
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)">
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue">
+        #{REP_ID},
+      </if>
+      <if test="GENERATE_MESSAGE != null and GENERATE_MESSAGE != emptyBigDecimalValue">
+        #{GENERATE_MESSAGE},
+      </if>
+      <if test="FOLDER_LOCATION != null and !&quot;&quot;.equals(FOLDER_LOCATION)">
+        #{FOLDER_LOCATION},
+      </if>
+      <if test="FILE_EXT != null and !&quot;&quot;.equals(FILE_EXT)">
+        #{FILE_EXT},
+      </if>
+      <if test="INCLUDE_ARABIC_YN != null  and INCLUDE_ARABIC_YN != emptyBigDecimalValue">
+        #{INCLUDE_ARABIC_YN},
+      </if>
+       <if test="QUEUE_INT_YN != null and QUEUE_INT_YN != emptyBigDecimalValue" >
+        #{QUEUE_INT_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_MSGMOD">
+    update SWIFT_MSGMOD
+    <set>
+      <if test="BRIEF_DESC_ENG != null">
+        <choose >
+          <when test="BRIEF_DESC_ENG.equals(&quot;&quot;)" >
+            BRIEF_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_DESC_ENG != null">
+        <choose >
+          <when test="LONG_DESC_ENG.equals(&quot;&quot;)" >
+            LONG_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_DESC_ENG = #{LONG_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_ID != null">
+        <choose>
+          <when test="REP_ID == emptyBigDecimalValue">
+            REP_ID = NULL ,
+          </when>
+          <otherwise>
+            REP_ID = #{REP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GENERATE_MESSAGE != null">
+        <choose>
+          <when test="GENERATE_MESSAGE == emptyBigDecimalValue">
+            GENERATE_MESSAGE = NULL ,
+          </when>
+          <otherwise>
+            GENERATE_MESSAGE = #{GENERATE_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FOLDER_LOCATION != null">
+        <choose >
+          <when test="FOLDER_LOCATION.equals(&quot;&quot;)" >
+            FOLDER_LOCATION = NULL ,
+          </when>
+          <otherwise >
+            FOLDER_LOCATION = #{FOLDER_LOCATION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INCLUDE_ARABIC_YN != null">
+        <choose>
+          <when test="INCLUDE_ARABIC_YN == emptyBigDecimalValue">
+            INCLUDE_ARABIC_YN = NULL ,
+          </when>
+          <otherwise>
+            INCLUDE_ARABIC_YN = #{INCLUDE_ARABIC_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FILE_EXT != null">
+        <choose >
+          <when test="FILE_EXT.equals(&quot;&quot;)" >
+            FILE_EXT = NULL ,
+          </when>
+          <otherwise >
+            FILE_EXT = #{FILE_EXT},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="QUEUE_INT_YN != null" >
+        <choose >
+          <when test="QUEUE_INT_YN == emptyBigDecimalValue" >
+            QUEUE_INT_YN = NULL ,
+          </when>
+          <otherwise >
+            QUEUE_INT_YN = #{QUEUE_INT_YN},
+          </otherwise>
+        </choose>
+      </if>
+      
+      <if test="LAU_SIGN_YN != null" >
+        <choose >
+          <when test="LAU_SIGN_YN == emptyBigDecimalValue" >
+            LAU_SIGN_YN = NULL ,
+          </when>
+          <otherwise >
+            LAU_SIGN_YN = #{LAU_SIGN_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateSWIFT_MSGMOD" parameterType="com.path.dbmaps.vo.SWIFT_MSGMODVO">
+    <include refid="sql_updateSWIFT_MSGMOD" />
+  </update>
+ 
+</mapper>

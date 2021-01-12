@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_PURPOSEFINANCE_CLASS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_PURPOSEFINANCE_CLASSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="PURPOSEFINANCE_CODE" property="PURPOSEFINANCE_CODE" />
+    <result column="PRODUCTCLASS" property="PRODUCTCLASS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NBR, PURPOSEFINANCE_CODE, PRODUCTCLASS
+  </sql>
+  <select id="selectFMS_PURPOSEFINANCE_CLASS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_PURPOSEFINANCE_CLASSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_PURPOSEFINANCE_CLASS
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PURPOSEFINANCE_CODE = #{PURPOSEFINANCE_CODE}
+  </select>
+  <delete id="deleteFMS_PURPOSEFINANCE_CLASS" parameterType="com.path.dbmaps.vo.FMS_PURPOSEFINANCE_CLASSVOKey" >
+    delete from FMS_PURPOSEFINANCE_CLASS
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PURPOSEFINANCE_CODE = #{PURPOSEFINANCE_CODE}
+  </delete>
+  <insert id="insertFMS_PURPOSEFINANCE_CLASS" parameterType="com.path.dbmaps.vo.FMS_PURPOSEFINANCE_CLASSVO" >
+    insert into FMS_PURPOSEFINANCE_CLASS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="PURPOSEFINANCE_CODE != null and PURPOSEFINANCE_CODE != emptyBigDecimalValue" >
+        PURPOSEFINANCE_CODE,
+      </if>
+      <if test="PRODUCTCLASS != null and PRODUCTCLASS != emptyBigDecimalValue" >
+        PRODUCTCLASS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="PURPOSEFINANCE_CODE != null and PURPOSEFINANCE_CODE != emptyBigDecimalValue" >
+        #{PURPOSEFINANCE_CODE},
+      </if>
+      <if test="PRODUCTCLASS != null and PRODUCTCLASS != emptyBigDecimalValue" >
+        #{PRODUCTCLASS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_PURPOSEFINANCE_CLASS" >
+    update FMS_PURPOSEFINANCE_CLASS
+    <set >
+      <if test="PRODUCTCLASS != null" >
+        <choose >
+          <when test="PRODUCTCLASS == emptyBigDecimalValue" >
+            PRODUCTCLASS = NULL ,
+          </when>
+          <otherwise >
+            PRODUCTCLASS = #{PRODUCTCLASS},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PURPOSEFINANCE_CODE = #{PURPOSEFINANCE_CODE}
+  </sql>
+  <update id="updateFMS_PURPOSEFINANCE_CLASS" parameterType="com.path.dbmaps.vo.FMS_PURPOSEFINANCE_CLASSVO" >
+    <include refid="sql_updateFMS_PURPOSEFINANCE_CLASS" />
+  </update>
+</mapper>

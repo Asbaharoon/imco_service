@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_FX_LINKED_UTILIZATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_FX_LINKED_UTILIZATIONVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <result column="AMOUNT_CV" property="AMOUNT_CV" />
+    <result column="UTILIZED_AMOUNT_CV" property="UTILIZED_AMOUNT_CV" />
+    <result column="AMOUNT_FC" property="AMOUNT_FC" />
+    <result column="UTILIZED_AMOUNT_FC" property="UTILIZED_AMOUNT_FC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, AMOUNT_CV, UTILIZED_AMOUNT_CV, AMOUNT_FC, UTILIZED_AMOUNT_FC
+  </sql>
+  <select id="selectTRS_FX_LINKED_UTILIZATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_FX_LINKED_UTILIZATIONVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_FX_LINKED_UTILIZATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </select>
+  <delete id="deleteTRS_FX_LINKED_UTILIZATION" parameterType="com.path.dbmaps.vo.TRS_FX_LINKED_UTILIZATIONVO" >
+    delete from TRS_FX_LINKED_UTILIZATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </delete>
+  <insert id="insertTRS_FX_LINKED_UTILIZATION" parameterType="com.path.dbmaps.vo.TRS_FX_LINKED_UTILIZATIONVO" >
+    insert into TRS_FX_LINKED_UTILIZATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        AMOUNT_CV,
+      </if>
+      <if test="UTILIZED_AMOUNT_CV != null and UTILIZED_AMOUNT_CV != emptyBigDecimalValue" >
+        UTILIZED_AMOUNT_CV,
+      </if>
+      <if test="AMOUNT_FC != null and AMOUNT_FC != emptyBigDecimalValue" >
+        AMOUNT_FC,
+      </if>
+      <if test="UTILIZED_AMOUNT_FC != null and UTILIZED_AMOUNT_FC != emptyBigDecimalValue" >
+        UTILIZED_AMOUNT_FC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        #{AMOUNT_CV},
+      </if>
+      <if test="UTILIZED_AMOUNT_CV != null and UTILIZED_AMOUNT_CV != emptyBigDecimalValue" >
+        #{UTILIZED_AMOUNT_CV},
+      </if>
+      <if test="AMOUNT_FC != null and AMOUNT_FC != emptyBigDecimalValue" >
+        #{AMOUNT_FC},
+      </if>
+      <if test="UTILIZED_AMOUNT_FC != null and UTILIZED_AMOUNT_FC != emptyBigDecimalValue" >
+        #{UTILIZED_AMOUNT_FC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_FX_LINKED_UTILIZATION" >
+    update TRS_FX_LINKED_UTILIZATION
+    <set >
+      <if test="AMOUNT_CV != null" >
+        <choose >
+          <when test="AMOUNT_CV == emptyBigDecimalValue" >
+            AMOUNT_CV = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_CV = #{AMOUNT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTILIZED_AMOUNT_CV != null" >
+        <choose >
+          <when test="UTILIZED_AMOUNT_CV == emptyBigDecimalValue" >
+            UTILIZED_AMOUNT_CV = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED_AMOUNT_CV = #{UTILIZED_AMOUNT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_FC != null" >
+        <choose >
+          <when test="AMOUNT_FC == emptyBigDecimalValue" >
+            AMOUNT_FC = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_FC = #{AMOUNT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTILIZED_AMOUNT_FC != null" >
+        <choose >
+          <when test="UTILIZED_AMOUNT_FC == emptyBigDecimalValue" >
+            UTILIZED_AMOUNT_FC = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED_AMOUNT_FC = #{UTILIZED_AMOUNT_FC},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </sql>
+  <update id="updateTRS_FX_LINKED_UTILIZATION" parameterType="com.path.dbmaps.vo.TRS_FX_LINKED_UTILIZATIONVO" >
+    <include refid="sql_updateTRS_FX_LINKED_UTILIZATION" />
+  </update>
+</mapper>

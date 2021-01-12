@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AML_PARAM_MAPPING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AML_PARAM_MAPPINGVO" >
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="BUSINESS_RULE_CODE" property="BUSINESS_RULE_CODE" />
+    <result column="CRITERIA_CODE" property="CRITERIA_CODE" />
+    <result column="PARAM_NAME" property="PARAM_NAME" />
+    <result column="PARAM_VALUE" property="PARAM_VALUE" />
+    <result column="QUERY_PARAM_ID" property="QUERY_PARAM_ID" />
+    <result column="PARAM_ENTITY_TYPE" property="PARAM_ENTITY_TYPE" />
+    <result column="GA_ARG_ID" property="GA_ARG_ID" />
+    <result column="PARAM_SESSION_ATTR" property="PARAM_SESSION_ATTR" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINE_NO, COMP_CODE, BRANCH_CODE, BUSINESS_RULE_CODE, CRITERIA_CODE, PARAM_NAME, PARAM_VALUE, QUERY_PARAM_ID, PARAM_ENTITY_TYPE,GA_ARG_ID,PARAM_SESSION_ATTR
+  </sql>
+  <select id="selectAML_PARAM_MAPPING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AML_PARAM_MAPPINGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from AML_PARAM_MAPPING
+    where LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteAML_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.AML_PARAM_MAPPINGVOKey" >
+    delete from AML_PARAM_MAPPING
+    where LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertAML_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.AML_PARAM_MAPPINGVO" >
+    insert into AML_PARAM_MAPPING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null" >
+        LINE_NO,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="BUSINESS_RULE_CODE != null" >
+        BUSINESS_RULE_CODE,
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        CRITERIA_CODE,
+      </if>
+      <if test="PARAM_NAME != null and !&quot;&quot;.equals(PARAM_NAME)" >
+        PARAM_NAME,
+      </if>
+      <if test="PARAM_VALUE != null and !&quot;&quot;.equals(PARAM_VALUE)" >
+        PARAM_VALUE,
+      </if>
+      <if test="QUERY_PARAM_ID != null" >
+        QUERY_PARAM_ID,
+      </if>
+      <if test="PARAM_ENTITY_TYPE != null and !&quot;&quot;.equals(PARAM_ENTITY_TYPE)" >
+        PARAM_ENTITY_TYPE,
+      </if>
+      <if test="GA_ARG_ID != null" >
+        GA_ARG_ID,
+      </if>
+      <if test="PARAM_SESSION_ATTR != null and !&quot;&quot;.equals(PARAM_SESSION_ATTR)" >
+        PARAM_SESSION_ATTR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null" >
+        #{LINE_NO},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="BUSINESS_RULE_CODE != null" >
+        #{BUSINESS_RULE_CODE},
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        #{CRITERIA_CODE},
+      </if>
+      <if test="PARAM_NAME != null and !&quot;&quot;.equals(PARAM_NAME)" >
+        #{PARAM_NAME},
+      </if>
+      <if test="PARAM_VALUE != null and !&quot;&quot;.equals(PARAM_VALUE)" >
+        #{PARAM_VALUE},
+      </if>
+      <if test="QUERY_PARAM_ID != null" >
+        #{QUERY_PARAM_ID},
+      </if>
+      <if test="PARAM_ENTITY_TYPE != null and !&quot;&quot;.equals(PARAM_ENTITY_TYPE)" >
+        #{PARAM_ENTITY_TYPE},
+      </if>
+      <if test="GA_ARG_ID != null" >
+        #{GA_ARG_ID},
+      </if>
+      <if test="PARAM_SESSION_ATTR != null and !&quot;&quot;.equals(PARAM_SESSION_ATTR)" >
+        #{PARAM_SESSION_ATTR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAML_PARAM_MAPPING" >
+    update AML_PARAM_MAPPING
+    <set >
+      <if test="COMP_CODE != null" >
+        COMP_CODE = #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE = #{BRANCH_CODE},
+      </if>
+      <if test="BUSINESS_RULE_CODE != null" >
+        BUSINESS_RULE_CODE = #{BUSINESS_RULE_CODE},
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        CRITERIA_CODE = #{CRITERIA_CODE},
+      </if>
+      <if test="PARAM_NAME != null" >
+        <choose >
+          <when test="PARAM_NAME.equals(&quot;&quot;)" >
+            PARAM_NAME = NULL ,
+          </when>
+          <otherwise >
+            PARAM_NAME = #{PARAM_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PARAM_VALUE != null" >
+        <choose >
+          <when test="PARAM_VALUE.equals(&quot;&quot;)" >
+            PARAM_VALUE = NULL ,
+          </when>
+          <otherwise >
+            PARAM_VALUE = #{PARAM_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="QUERY_PARAM_ID != null" >
+        QUERY_PARAM_ID = #{QUERY_PARAM_ID},
+      </if>
+      <if test="PARAM_ENTITY_TYPE != null" >
+        <choose >
+          <when test="PARAM_ENTITY_TYPE.equals(&quot;&quot;)" >
+            PARAM_ENTITY_TYPE = NULL ,
+          </when>
+          <otherwise >
+            PARAM_ENTITY_TYPE = #{PARAM_ENTITY_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="GA_ARG_ID != null" >
+        GA_ARG_ID = #{GA_ARG_ID},
+      </if>
+      <if test="PARAM_SESSION_ATTR != null" >
+        <choose >
+          <when test="PARAM_SESSION_ATTR.equals(&quot;&quot;)" >
+            PARAM_SESSION_ATTR = NULL ,
+          </when>
+          <otherwise >
+            PARAM_SESSION_ATTR = #{PARAM_SESSION_ATTR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateAML_PARAM_MAPPING" parameterType="com.path.dbmaps.vo.AML_PARAM_MAPPINGVO" >
+    <include refid="sql_updateAML_PARAM_MAPPING" />
+  </update>
+</mapper>

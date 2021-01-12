@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CRM_VISIT_PURPOSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CRM_VISIT_PURPOSEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PURPOSE_CODE" property="PURPOSE_CODE" />
+    <id column="VISIT_NO" property="VISIT_NO" />
+    <result column="PROCESSED" property="PROCESSED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PURPOSE_CODE, VISIT_NO, PROCESSED
+  </sql>
+  <select id="selectCRM_VISIT_PURPOSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CRM_VISIT_PURPOSEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CRM_VISIT_PURPOSE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PURPOSE_CODE = #{PURPOSE_CODE}
+      and VISIT_NO = #{VISIT_NO}
+  </select>
+  <delete id="deleteCRM_VISIT_PURPOSE" parameterType="com.path.dbmaps.vo.CRM_VISIT_PURPOSEVOKey" >
+    delete from CRM_VISIT_PURPOSE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PURPOSE_CODE = #{PURPOSE_CODE}
+      and VISIT_NO = #{VISIT_NO}
+  </delete>
+  <insert id="insertCRM_VISIT_PURPOSE" parameterType="com.path.dbmaps.vo.CRM_VISIT_PURPOSEVO" >
+    insert into CRM_VISIT_PURPOSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PURPOSE_CODE != null and PURPOSE_CODE != emptyBigDecimalValue" >
+        PURPOSE_CODE,
+      </if>
+      <if test="VISIT_NO != null and VISIT_NO != emptyBigDecimalValue" >
+        VISIT_NO,
+      </if>
+      <if test="PROCESSED != null" >
+        PROCESSED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PURPOSE_CODE != null and PURPOSE_CODE != emptyBigDecimalValue" >
+        #{PURPOSE_CODE},
+      </if>
+      <if test="VISIT_NO != null and VISIT_NO != emptyBigDecimalValue" >
+        #{VISIT_NO},
+      </if>
+      <if test="PROCESSED != null" >
+        #{PROCESSED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCRM_VISIT_PURPOSE" >
+    update CRM_VISIT_PURPOSE
+    <set >
+      <if test="PROCESSED != null" >
+        PROCESSED = #{PROCESSED},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PURPOSE_CODE = #{PURPOSE_CODE}
+      and VISIT_NO = #{VISIT_NO}
+  </sql>
+  <update id="updateCRM_VISIT_PURPOSE" parameterType="com.path.dbmaps.vo.CRM_VISIT_PURPOSEVO" >
+    <include refid="sql_updateCRM_VISIT_PURPOSE" />
+  </update>
+</mapper>

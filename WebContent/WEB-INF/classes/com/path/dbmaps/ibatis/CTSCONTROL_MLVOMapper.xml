@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCONTROL_ML" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCONTROL_MLVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="PERIODICITY" property="PERIODICITY" />
+    <result column="LIMIT" property="LIMIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, PERIODICITY_TYPE, PERIODICITY, LIMIT
+  </sql>
+  <select id="selectCTSCONTROL_ML" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCONTROL_MLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCONTROL_ML
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSCONTROL_ML" parameterType="com.path.dbmaps.vo.CTSCONTROL_MLVOKey" >
+    delete from CTSCONTROL_ML
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSCONTROL_ML" parameterType="com.path.dbmaps.vo.CTSCONTROL_MLVO" >
+    insert into CTSCONTROL_ML
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE,
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        PERIODICITY,
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        LIMIT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        #{PERIODICITY},
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        #{LIMIT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCONTROL_ML" >
+    update CTSCONTROL_ML
+    <set >
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE = #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null" >
+        <choose >
+          <when test="PERIODICITY == emptyBigDecimalValue" >
+            PERIODICITY = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY = #{PERIODICITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LIMIT != null" >
+        <choose >
+          <when test="LIMIT == emptyBigDecimalValue" >
+            LIMIT = NULL ,
+          </when>
+          <otherwise >
+            LIMIT = #{LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSCONTROL_ML" parameterType="com.path.dbmaps.vo.CTSCONTROL_MLVO" >
+    <include refid="sql_updateCTSCONTROL_ML" />
+  </update>
+</mapper>

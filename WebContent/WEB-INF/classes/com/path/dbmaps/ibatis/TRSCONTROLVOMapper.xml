@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCONTROL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCONTROLVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CHANGE_MULTDIV" property="CHANGE_MULTDIV" />
+    <result column="USE_TRX_REF" property="USE_TRX_REF" />
+    <result column="CONSIDER_EXCH_RAT" property="CONSIDER_EXCH_RAT" />
+    <result column="CHECK_REF" property="CHECK_REF" />
+    <result column="ACROSS_BR" property="ACROSS_BR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, CHANGE_MULTDIV, USE_TRX_REF, CONSIDER_EXCH_RAT, CHECK_REF, 
+    ACROSS_BR
+  </sql>
+  <select id="selectTRSCONTROL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCONTROLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCONTROL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTRSCONTROL" parameterType="com.path.dbmaps.vo.TRSCONTROLVOKey" >
+    delete from TRSCONTROL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTRSCONTROL" parameterType="com.path.dbmaps.vo.TRSCONTROLVO" >
+    insert into TRSCONTROL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CHANGE_MULTDIV != null" >
+        CHANGE_MULTDIV,
+      </if>
+      <if test="USE_TRX_REF != null" >
+        USE_TRX_REF,
+      </if>
+      <if test="CONSIDER_EXCH_RAT != null" >
+        CONSIDER_EXCH_RAT,
+      </if>
+      <if test="CHECK_REF != null" >
+        CHECK_REF,
+      </if>
+      <if test="ACROSS_BR != null" >
+        ACROSS_BR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CHANGE_MULTDIV != null" >
+        #{CHANGE_MULTDIV},
+      </if>
+      <if test="USE_TRX_REF != null" >
+        #{USE_TRX_REF},
+      </if>
+      <if test="CONSIDER_EXCH_RAT != null" >
+        #{CONSIDER_EXCH_RAT},
+      </if>
+      <if test="CHECK_REF != null" >
+        #{CHECK_REF},
+      </if>
+      <if test="ACROSS_BR != null" >
+        #{ACROSS_BR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCONTROL" >
+    update TRSCONTROL
+    <set >
+      <if test="CHANGE_MULTDIV != null" >
+        CHANGE_MULTDIV = #{CHANGE_MULTDIV},
+      </if>
+      <if test="USE_TRX_REF != null" >
+        USE_TRX_REF = #{USE_TRX_REF},
+      </if>
+      <if test="CONSIDER_EXCH_RAT != null" >
+        CONSIDER_EXCH_RAT = #{CONSIDER_EXCH_RAT},
+      </if>
+      <if test="CHECK_REF != null" >
+        CHECK_REF = #{CHECK_REF},
+      </if>
+      <if test="ACROSS_BR != null" >
+        ACROSS_BR = #{ACROSS_BR},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTRSCONTROL" parameterType="com.path.dbmaps.vo.TRSCONTROLVO" >
+    <include refid="sql_updateTRSCONTROL" />
+  </update>
+</mapper>

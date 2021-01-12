@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="departmentListMapper">
+
+ <sql id="departmentListCommon">
+	<![CDATA[
+				SELECT
+			 DEPT_CODE,
+			 BRIEF_DESC_ENG,
+			 BRIEF_DESC_ARAB,
+			 LONG_DESC_ENG,
+			 LONG_DESC_ARAB,
+			 COMP_CODE, 
+			 DIVISION_CODE
+	FROM  DEPARTMENTS 
+	WHERE	 DEPARTMENTS.COMP_CODE  = #{compCode}
+	 AND	DEPARTMENTS.DIVISION_CODE  = #{divisionCode}
+	]]>	 
+ </sql>
+ 
+ <resultMap id="departmentList_ResMap" type="departmentVO">
+	<id property="DEPT_CODE" column="DEPT_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	 <result property="COMP_CODE" column="COMP_CODE" />
+	  <result property="DIVISION_CODE" column="DIVISION_CODE" />
+ </resultMap>
+ 
+ <select id="departmentList" resultMap="departmentList_ResMap" parameterType="departmentSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="departmentListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="departmentListCount" resultType="int" parameterType="departmentSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="departmentListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ 
+ <select id="returnDepartmentById" parameterType="departmentSC" resultType="departmentVO">
+  		SELECT
+			 DEPT_CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  DEPARTMENTS 
+		WHERE DEPARTMENTS.COMP_CODE  = #{compCode}
+	    AND	  DEPARTMENTS.DIVISION_CODE  = #{divisionCode}
+	    AND   DEPARTMENTS.DEPT_CODE = #{departmentCode} 
+ </select>
+ 
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEALLINK_RESTRUCTURE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEALLINK_RESTRUCTUREVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="RESTRUCTURE_DEAL_NO" property="RESTRUCTURE_DEAL_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="RESTRUCTURE_DEAL_CY" property="RESTRUCTURE_DEAL_CY" />
+    <result column="RESTRUCTURE_DEAL_AMOUNT" property="RESTRUCTURE_DEAL_AMOUNT" />
+    <result column="RESTRUCTURE_VALUE_DATE" property="RESTRUCTURE_VALUE_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, RESTRUCTURE_DEAL_NO, SERIAL_NO, RESTRUCTURE_DEAL_CY, RESTRUCTURE_DEAL_AMOUNT, 
+    RESTRUCTURE_VALUE_DATE
+  </sql>
+  <select id="selectTRSDEALLINK_RESTRUCTURE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEALLINK_RESTRUCTUREVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEALLINK_RESTRUCTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_DEAL_NO = #{RESTRUCTURE_DEAL_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEALLINK_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEALLINK_RESTRUCTUREVOKey" >
+    delete from TRSDEALLINK_RESTRUCTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_DEAL_NO = #{RESTRUCTURE_DEAL_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEALLINK_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEALLINK_RESTRUCTUREVO" >
+    insert into TRSDEALLINK_RESTRUCTURE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="RESTRUCTURE_DEAL_NO != null and RESTRUCTURE_DEAL_NO != emptyBigDecimalValue" >
+        RESTRUCTURE_DEAL_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="RESTRUCTURE_DEAL_CY != null and RESTRUCTURE_DEAL_CY != emptyBigDecimalValue" >
+        RESTRUCTURE_DEAL_CY,
+      </if>
+      <if test="RESTRUCTURE_DEAL_AMOUNT != null and RESTRUCTURE_DEAL_AMOUNT != emptyBigDecimalValue" >
+        RESTRUCTURE_DEAL_AMOUNT,
+      </if>
+      <if test="RESTRUCTURE_VALUE_DATE != null" >
+        RESTRUCTURE_VALUE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="RESTRUCTURE_DEAL_NO != null and RESTRUCTURE_DEAL_NO != emptyBigDecimalValue" >
+        #{RESTRUCTURE_DEAL_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="RESTRUCTURE_DEAL_CY != null and RESTRUCTURE_DEAL_CY != emptyBigDecimalValue" >
+        #{RESTRUCTURE_DEAL_CY},
+      </if>
+      <if test="RESTRUCTURE_DEAL_AMOUNT != null and RESTRUCTURE_DEAL_AMOUNT != emptyBigDecimalValue" >
+        #{RESTRUCTURE_DEAL_AMOUNT},
+      </if>
+      <if test="RESTRUCTURE_VALUE_DATE != null" >
+        #{RESTRUCTURE_VALUE_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEALLINK_RESTRUCTURE" >
+    update TRSDEALLINK_RESTRUCTURE
+    <set >
+      <if test="RESTRUCTURE_DEAL_CY != null" >
+        <choose >
+          <when test="RESTRUCTURE_DEAL_CY == emptyBigDecimalValue" >
+            RESTRUCTURE_DEAL_CY = NULL ,
+          </when>
+          <otherwise >
+            RESTRUCTURE_DEAL_CY = #{RESTRUCTURE_DEAL_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESTRUCTURE_DEAL_AMOUNT != null" >
+        <choose >
+          <when test="RESTRUCTURE_DEAL_AMOUNT == emptyBigDecimalValue" >
+            RESTRUCTURE_DEAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            RESTRUCTURE_DEAL_AMOUNT = #{RESTRUCTURE_DEAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESTRUCTURE_VALUE_DATE != null" >
+        RESTRUCTURE_VALUE_DATE = #{RESTRUCTURE_VALUE_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_DEAL_NO = #{RESTRUCTURE_DEAL_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEALLINK_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEALLINK_RESTRUCTUREVO" >
+    <include refid="sql_updateTRSDEALLINK_RESTRUCTURE" />
+  </update>
+</mapper>

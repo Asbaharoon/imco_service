@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_PRINT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_PRINT_DETVO" >
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="MODULE" property="MODULE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="PROG_TYPE" property="PROG_TYPE" />
+    <result column="COLUMN_NAME" property="COLUMN_NAME" />
+    <result column="COLUMN_TYPE" property="COLUMN_TYPE" />
+    <result column="POSITION_FR" property="POSITION_FR" />
+    <result column="POSITION_TO" property="POSITION_TO" />
+    <result column="KEY_VALUE_TYPE" property="KEY_VALUE_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINE_NO, MODULE, PROG_REF, PROG_TYPE, COLUMN_NAME, COLUMN_TYPE, POSITION_FR, POSITION_TO, 
+    KEY_VALUE_TYPE
+  </sql>
+  <select id="selectSWIFT_PRINT_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_PRINT_DET
+    where LINE_NO = #{LINE_NO}
+      and MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </select>
+  <delete id="deleteSWIFT_PRINT_DET" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_DETVOKey" >
+    delete from SWIFT_PRINT_DET
+    where LINE_NO = #{LINE_NO}
+      and MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </delete>
+  <insert id="insertSWIFT_PRINT_DET" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_DETVO" >
+    insert into SWIFT_PRINT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MODULE != null and !&quot;&quot;.equals(MODULE)" >
+        MODULE,
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        PROG_REF,
+      </if>
+      <if test="PROG_TYPE != null and !&quot;&quot;.equals(PROG_TYPE)" >
+        PROG_TYPE,
+      </if>
+      <if test="COLUMN_NAME != null and !&quot;&quot;.equals(COLUMN_NAME)" >
+        COLUMN_NAME,
+      </if>
+      <if test="COLUMN_TYPE != null and !&quot;&quot;.equals(COLUMN_TYPE)" >
+        COLUMN_TYPE,
+      </if>
+      <if test="POSITION_FR != null and POSITION_FR != emptyBigDecimalValue" >
+        POSITION_FR,
+      </if>
+      <if test="POSITION_TO != null and POSITION_TO != emptyBigDecimalValue" >
+        POSITION_TO,
+      </if>
+      <if test="KEY_VALUE_TYPE != null and !&quot;&quot;.equals(KEY_VALUE_TYPE)" >
+        KEY_VALUE_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MODULE != null and !&quot;&quot;.equals(MODULE)" >
+        #{MODULE},
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        #{PROG_REF},
+      </if>
+      <if test="PROG_TYPE != null and !&quot;&quot;.equals(PROG_TYPE)" >
+        #{PROG_TYPE},
+      </if>
+      <if test="COLUMN_NAME != null and !&quot;&quot;.equals(COLUMN_NAME)" >
+        #{COLUMN_NAME},
+      </if>
+      <if test="COLUMN_TYPE != null and !&quot;&quot;.equals(COLUMN_TYPE)" >
+        #{COLUMN_TYPE},
+      </if>
+      <if test="POSITION_FR != null and POSITION_FR != emptyBigDecimalValue" >
+        #{POSITION_FR},
+      </if>
+      <if test="POSITION_TO != null and POSITION_TO != emptyBigDecimalValue" >
+        #{POSITION_TO},
+      </if>
+      <if test="KEY_VALUE_TYPE != null and !&quot;&quot;.equals(KEY_VALUE_TYPE)" >
+        #{KEY_VALUE_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_PRINT_DET" >
+    update SWIFT_PRINT_DET
+    <set >
+      <if test="COLUMN_NAME != null" >
+        <choose >
+          <when test="COLUMN_NAME.equals(&quot;&quot;)" >
+            COLUMN_NAME = NULL ,
+          </when>
+          <otherwise >
+            COLUMN_NAME = #{COLUMN_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLUMN_TYPE != null" >
+        <choose >
+          <when test="COLUMN_TYPE.equals(&quot;&quot;)" >
+            COLUMN_TYPE = NULL ,
+          </when>
+          <otherwise >
+            COLUMN_TYPE = #{COLUMN_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSITION_FR != null" >
+        <choose >
+          <when test="POSITION_FR == emptyBigDecimalValue" >
+            POSITION_FR = NULL ,
+          </when>
+          <otherwise >
+            POSITION_FR = #{POSITION_FR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSITION_TO != null" >
+        <choose >
+          <when test="POSITION_TO == emptyBigDecimalValue" >
+            POSITION_TO = NULL ,
+          </when>
+          <otherwise >
+            POSITION_TO = #{POSITION_TO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="KEY_VALUE_TYPE != null" >
+        <choose >
+          <when test="KEY_VALUE_TYPE.equals(&quot;&quot;)" >
+            KEY_VALUE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            KEY_VALUE_TYPE = #{KEY_VALUE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where LINE_NO = #{LINE_NO}
+      and MODULE = #{MODULE}
+      and PROG_REF = #{PROG_REF}
+      and PROG_TYPE = #{PROG_TYPE}
+  </sql>
+  <update id="updateSWIFT_PRINT_DET" parameterType="com.path.dbmaps.vo.SWIFT_PRINT_DETVO" >
+    <include refid="sql_updateSWIFT_PRINT_DET" />
+  </update>
+</mapper>

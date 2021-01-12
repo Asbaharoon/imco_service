@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cardTypeMapper">
+
+ <sql id="cardTypeListCommon" >
+
+			SELECT
+			CTSCARDS.CODE,        
+			CTSCARDS.BRIEF_NAME_ENG,
+			CTSCARDS.LONG_NAME_ENG , 
+			CTSCARDS.BRIEF_NAME_ARAB,
+			CTSCARDS.LONG_NAME_ARAB,
+			CARD_TYPE,
+			PREPAID,
+			AUTOMATIC_APPROVE,
+			CARD_GENERATED,
+			NUM_RANDOM,
+			GL_CODE,
+			AUTO_GEN_NUM_FR,
+			AUTO_GEN_NUM_TO,
+			EXPIRY_PERIOD,
+			DELIVERY_DATE_AFTER,
+			RELEASE_HOF_DAYS,
+			CARD_PRODUCT_CODE,
+			ALLOWED_IN_BR_UNDER_HO,
+			NO_CARDS_NOT_JOINT_ACC,
+			NO_CARDS_JOINT_ACC,
+			SERVICE_CODE,
+			PRINT_CONF_LEVEL,
+			RENEW_CARD,
+			MAX_REN_PERIOD,
+			ALLOW_CHANGE_CARD_CIF,
+			ALLOW_SUPP_CARD,
+			CANCEL_SEND_TO_PROVIDER,
+			ALLOW_ONLY_BASECY,
+			ENABLE_CARDHOLDER_TAB,
+			ALLOW_REPLACE,
+			ALLOW_RENEW,
+			LIMIT_CHECKING_BY,
+			WD_LIMIT_BASED_ON,
+			WD_LIMIT_CHECK_PERIOD,
+			WD_LIMIT_MODIFY_DET,
+			WD_LIMIT_AMOUNT,
+			WD_LIMIT_OVERRIDE,
+			POS_LIMIT_BASED_ON,
+			POS_LIMIT_CHECK_PERIOD,
+			POS_LIMIT_MODIFY_DET,
+			POS_LIMIT_AMOUNT,
+			POS_LIMIT_OVERRIDE,
+			SIGNATURE_MANDATORY,
+			DISPLAY_SIGNATURE,
+			DISPLAY_SIG_AFTER_PRINT
+			
+			FROM  CTSCARDS 
+			WHERE CTSCARDS.COMP_CODE  = #{compCode}
+		<if test="multiHO == true">
+			AND ((ALLOWED_IN_BR_UNDER_HO IN (SELECT BRANCH_CODE 
+										   FROM BRANCHES 
+										   WHERE COMP_CODE = #{compCode} 
+										    AND BRANCH_CODE = #{branchCode}
+										    AND BR_TYPE = 'H'))
+			OR	(ALLOWED_IN_BR_UNDER_HO IN (SELECT MAIN_HO_BR 
+										   FROM BRANCHES 
+										   WHERE COMP_CODE = #{compCode}
+ 										    AND BRANCH_CODE = #{branchCode}
+ 										    AND BR_TYPE = 'B'))
+			)
+		</if>
+		
+		<if test= "cardCrDrtype != null">
+			AND CTSCARDS.CARD_TYPE = #{cardCrDrtype}
+		</if>
+		
+		<if test= "status != null">
+		AND CTSCARDS.STATUS = #{status}
+		</if>
+ </sql>
+ 
+ <resultMap id="cardTypeListMap" type="cardTypeVO">
+	<id property="CODE" column="CODE" />
+	<result property="CODE" column="CODE" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="ALLOWED_IN_BR_UNDER_HO" column="ALLOWED_IN_BR_UNDER_HO" />
+	<result property="PREPAID_TYPE" column="PREPAID_TYPE" />
+	<result property="PREPAID" column="PREPAID" />
+	<result property="CARD_TYPE" column="CARD_TYPE" />
+	<result property="AUTOMATIC_APPROVE" column="AUTOMATIC_APPROVE" />	
+	<result property="CARD_GENERATED" column="CARD_GENERATED" />	
+	<result property="NUM_RANDOM" column="NUM_RANDOM" />
+	<result property="GL_CODE" column="GL_CODE" />
+	<result property="AUTO_GEN_NUM_FR" column="AUTO_GEN_NUM_FR" />	
+	<result property="AUTO_GEN_NUM_TO" column="AUTO_GEN_NUM_TO" />
+	<result property="EXPIRY_PERIOD" column="EXPIRY_PERIOD" />	
+	<result property="DELIVERY_DATE_AFTER" column="DELIVERY_DATE_AFTER" />	
+	<result property="RELEASE_HOF_DAYS" column="RELEASE_HOF_DAYS" />	
+	<result property="CARD_PRODUCT_CODE" column="CARD_PRODUCT_CODE" />
+	<result property="ALLOWED_IN_BR_UNDER_HO" column="ALLOWED_IN_BR_UNDER_HO" /> 
+	<result property="NO_CARDS_NOT_JOINT_ACC" column="NO_CARDS_NOT_JOINT_ACC" />
+	<result property="NO_CARDS_JOINT_ACC" column="NO_CARDS_JOINT_ACC" />	
+	<result property="SERVICE_CODE" column="SERVICE_CODE" />
+	<result property="PRINT_CONF_LEVEL" column="PRINT_CONF_LEVEL" />	
+	<result property="RENEW_CARD" column="RENEW_CARD" />	
+	<result property="MAX_REN_PERIOD" column="MAX_REN_PERIOD" />	
+	<result property="ALLOW_CHANGE_CARD_CIF" column="ALLOW_CHANGE_CARD_CIF" />	
+	<result property="ALLOW_SUPP_CARD" column="ALLOW_SUPP_CARD" />	
+	<result property="CANCEL_SEND_TO_PROVIDER" column="CANCEL_SEND_TO_PROVIDER" />	
+	<result property="ALLOW_ONLY_BASECY" column="ALLOW_ONLY_BASECY" />	
+	<result property="ENABLE_CARDHOLDER_TAB" column="ENABLE_CARDHOLDER_TAB" />	
+	<result property="ALLOW_REPLACE" column="ALLOW_REPLACE" />	
+	<result property="ALLOW_RENEW" column="ALLOW_RENEW" />	
+	<result property="LIMIT_CHECKING_BY" column="LIMIT_CHECKING_BY" />	
+	<result property="WD_LIMIT_BASED_ON" column="WD_LIMIT_BASED_ON" />
+	<result property="WD_LIMIT_CHECK_PERIOD" column="WD_LIMIT_CHECK_PERIOD" />
+	<result property="WD_LIMIT_MODIFY_DET" column="WD_LIMIT_MODIFY_DET" />
+	<result property="WD_LIMIT_AMOUNT" column="WD_LIMIT_AMOUNT" />
+	<result property="WD_LIMIT_OVERRIDE" column="WD_LIMIT_OVERRIDE" />
+	<result property="POS_LIMIT_BASED_ON" column="POS_LIMIT_BASED_ON" />	
+	<result property="POS_LIMIT_CHECK_PERIOD" column="POS_LIMIT_CHECK_PERIOD" />	
+	<result property="POS_LIMIT_MODIFY_DET" column="POS_LIMIT_MODIFY_DET" />	
+	<result property="POS_LIMIT_AMOUNT" column="POS_LIMIT_AMOUNT" />
+	<result property="POS_LIMIT_OVERRIDE" column="POS_LIMIT_OVERRIDE" />
+	<result property="SIGNATURE_MANDATORY" column="SIGNATURE_MANDATORY" />
+	<result property="DISPLAY_SIGNATURE" column="DISPLAY_SIGNATURE" />
+	<result property="DISPLAY_SIG_AFTER_PRINT" column="DISPLAY_SIG_AFTER_PRINT" />
+	<result property="STATUS" column="STATUS" />
+
+ </resultMap>
+ 
+ <select id="cardTypeList" resultMap="cardTypeListMap" parameterType="cardTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cardTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cardTypeListCount" resultType="int" parameterType="cardTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cardTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnCardTypeById" resultMap="cardTypeListMap" parameterType="cardTypeSC" >
+	SELECT 
+			CASE WHEN #{preferredLanguage} = 'A' THEN CTSCARDS.BRIEF_NAME_ARAB ELSE CTSCARDS.BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+			CTSCARDS.CODE, CTSCARDS.ALLOWED_IN_BR_UNDER_HO,CTSCARDS.PREPAID_TYPE,CTSCARDS.PREPAID,STATUS
+	FROM  	CTSCARDS 
+	WHERE 	CTSCARDS.COMP_CODE  = #{compCode}
+	AND		CTSCARDS.CODE = #{code}
+	<if test= "cardCrDrtype != null">
+	AND 	CTSCARDS.CARD_TYPE = #{cardCrDrtype}
+	</if>
+ </select>
+ 
+ <select id="returnDefaultedCardByCifTypeCode" parameterType="cardTypeSC" resultType="cardTypeVO">
+  	<!-- 
+  		SELECT 	RIFATT.DEFAULT_CARD					 
+		FROM 	RIFATT  
+		WHERE 	RIFATT.COMP_CODE = #{compCode}
+		AND 	RIFATT.TYPE_CODE = #{cifTypeCode}
+	-->	
+		SELECT 	CASE WHEN #{preferredLanguage} = 'A' THEN CTSCARDS.BRIEF_NAME_ARAB ELSE CTSCARDS.BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+			   	CTSCARDS.CODE
+		FROM 	CTSCARDS,RIFATT 
+		WHERE 	CTSCARDS.COMP_CODE 	= RIFATT.COMP_CODE 
+		AND 	CTSCARDS.CODE 		= RIFATT.DEFAULT_CARD
+		AND 	RIFATT.TYPE_CODE 	= #{cifTypeCode} 
+		AND 	RIFATT.COMP_CODE 	= #{compCode}
+  	</select>
+ 
+ <sql id="cardMgtListCommon" >
+	<![CDATA[
+	   SELECT 	CTSCARDS_MGT.CARD_NO         ,
+	   			CTSCARDS_MGT.REFERENCE		 ,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		         FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.STATUS 
+			     AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeStatus}
+			     AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) STATUS,
+       			CTSCARDS_MGT.APPLICATION_ID  ,
+       			CTSCARDS_MGT.APP_REF         ,
+       			CTSCARDS_MGT.CIF             ,
+       			CTSCARDS_MGT.BRANCH_CODE
+		FROM 	CTSCARDS_MGT, CTSCARDS
+		WHERE 	CTSCARDS_MGT.COMP_CODE   	= #{compCode}
+		AND   	CTSCARDS_MGT.PRIM_SUPP   	= 'P'
+		AND   	CTSCARDS_MGT.CIF         	= #{cif}
+		AND   	((CTSCARDS_MGT.CARD_TYPE   	= #{cardType} AND #{sameType} = '1') OR( #{sameType} ='0'))
+		AND   	CTSCARDS_MGT.CARD_NO IS NOT NULL
+		AND 	CTSCARDS.COMP_CODE 			= CTSCARDS_MGT.COMP_CODE
+		AND 	CTSCARDS.CODE 				= CTSCARDS_MGT.CARD_TYPE
+		AND 	CTSCARDS.CARD_TYPE 			= #{type}
+ 		AND 	CTSCARDS_MGT.STATUS NOT IN( 'J' ,'C','R')
+ 	]]>	 
+ </sql>
+ 
+ <select id="cardMgtList" resultMap="CTSCARDS_MGT.BaseResultMap" parameterType="cardsManagementSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cardMgtListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cardMgtListCount" resultType="int" parameterType="cardsManagementSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cardMgtListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+</mapper>

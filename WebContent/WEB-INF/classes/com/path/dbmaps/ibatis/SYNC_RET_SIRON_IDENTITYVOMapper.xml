@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_RET_SIRON_IDENTITY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_RET_SIRON_IDENTITYVO" >  
+    <id column="ID" property="ID" />
+    <result column="SESSION" property="SESSION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, SESSION
+  </sql>
+  <select id="selectSYNC_RET_SIRON_IDENTITY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_IDENTITYVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_RET_SIRON_IDENTITY
+    where ID = #{ID}
+  </select>
+  <delete id="deleteSYNC_RET_SIRON_IDENTITY" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_IDENTITYVO" >
+    delete from SYNC_RET_SIRON_IDENTITY
+    where ID = #{ID}
+  </delete>
+  <insert id="insertSYNC_RET_SIRON_IDENTITY" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_IDENTITYVO" >
+    insert into SYNC_RET_SIRON_IDENTITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="SESSION != null and SESSION != emptyBigDecimalValue" >
+        SESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="SESSION != null and SESSION != emptyBigDecimalValue" >
+        #{SESSION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_RET_SIRON_IDENTITY" >
+    update SYNC_RET_SIRON_IDENTITY
+    <set >
+      <if test="SESSION != null" >
+        <choose >
+          <when test="SESSION == emptyBigDecimalValue" >
+            SESSION = NULL ,
+          </when>
+          <otherwise >
+            SESSION = #{SESSION},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ID = #{ID}
+  </sql>
+  <update id="updateSYNC_RET_SIRON_IDENTITY" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_IDENTITYVO" >
+    <include refid="sql_updateSYNC_RET_SIRON_IDENTITY" />
+  </update>
+</mapper>

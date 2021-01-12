@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSGRPDOC_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSGRPDOC_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <id column="GRP_CODE" property="GRP_CODE" />
+  </resultMap>
+  <delete id="deleteTFSGRPDOC_DET" parameterType="com.path.dbmaps.vo.TFSGRPDOC_DETVO" >
+    delete from TFSGRPDOC_DET
+    where COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and GRP_CODE = #{GRP_CODE}
+  </delete>
+  <insert id="insertTFSGRPDOC_DET" parameterType="com.path.dbmaps.vo.TFSGRPDOC_DETVO" >
+    insert into TFSGRPDOC_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      COMP_CODE,
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        DOC_CODE,
+      </if>
+      <if test="GRP_CODE != null and GRP_CODE != emptyBigDecimalValue" >
+        GRP_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{COMP_CODE},
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        #{DOC_CODE},
+      </if>
+      <if test="GRP_CODE != null and GRP_CODE != emptyBigDecimalValue" >
+        #{GRP_CODE},
+      </if>
+    </trim>
+  </insert>
+</mapper>

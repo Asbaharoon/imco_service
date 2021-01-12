@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="currencyNominationDetMapper">
+
+	<sql id="currencyNominationDetListQuery">
+	SELECT   CURRENCY_NOMINATION_DET.COMP_CODE,
+			 CURRENCY_NOMINATION_DET.CURRENCY_CODE,  
+			 CURRENCY_NOMINATION_DET.BRIEF_DESC_ENG,
+			 CURRENCY_NOMINATION_DET.LONG_DESC_ENG,
+			 CURRENCY_NOMINATION_DET.BRIEF_DESC_ARAB,
+			 CURRENCY_NOMINATION_DET.LONG_DESC_ARAB,
+			 CURRENCY_NOMINATION_DET.VALUE
+	  FROM   CURRENCY_NOMINATION_DET 
+	 WHERE	 CURRENCY_NOMINATION_DET.COMP_CODE  = #{compCode}
+	   AND	 CURRENCY_NOMINATION_DET.CURRENCY_CODE  = #{currencyCode, jdbcType=NUMERIC}
+	</sql>
+	<resultMap id="currencyNominationDetListMap" type="com.path.dbmaps.vo.CURRENCY_NOMINATION_DETVO">
+		<result property="COMP_CODE" column="COMP_CODE" />
+		<result property="CURRENCY_CODE" column="CURRENCY_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+		<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+		<result property="VALUE" column="VALUE" />
+	</resultMap>
+	
+	<select id="returnCurrencyNominationDetLookupData" resultMap="currencyNominationDetListMap"
+		parameterType="com.path.vo.core.vault.VaultSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="currencyNominationDetListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnCurrencyNominationDetLookupCount" resultType="int" parameterType="currencySC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="currencyNominationDetListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+</mapper>

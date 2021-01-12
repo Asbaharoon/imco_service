@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="administrationMapper">
+
+	<resultMap id="administrationColumnMap" type="administrationVO">
+	</resultMap>
+	<sql id="querySelectCommon">
+		SELECT  ADMINS.CODE,
+				ADMINS.BRIEF_NAME_ENG,
+				ADMINS.LONG_NAME_ENG,
+				ADMINS.BRIEF_NAME_ARAB,
+				ADMINS.LONG_NAME_ARAB  
+	</sql>
+	<sql id="fromAdministrationTable">
+		  FROM CTSADMINISTRATION ADMINS
+	</sql>
+	<sql id="commonWhere">
+		 WHERE ADMINS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	</sql>
+	<sql id="andCodeEquals">
+		<if test="code !=null">
+		   AND ADMINS.CODE = #{code}
+		</if>
+	</sql>
+	<select id="administrationList" resultMap="administrationColumnMap"
+		parameterType="administrationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="querySelectCommon" />
+		<include refid="fromAdministrationTable" />
+		<include refid="commonWhere" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="administrationCount" resultType="java.lang.Integer" parameterType="administrationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="querySelectCommon" />
+		<include refid="fromAdministrationTable" />
+		<include refid="commonWhere" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="administrationByCode" resultType="administrationVO" parameterType="administrationSC">
+		<include refid="querySelectCommon" />
+		<include refid="fromAdministrationTable" />
+		<include refid="commonWhere" />
+		<include refid="andCodeEquals" />	
+	</select>
+</mapper>

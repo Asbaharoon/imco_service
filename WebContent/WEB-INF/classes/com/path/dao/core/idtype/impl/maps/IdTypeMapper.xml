@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="idTypeMapper">
+
+ <sql id="idTypeListCommon">
+	<![CDATA[
+	  SELECT ID_TYPES.CODE,   
+         ID_TYPES.DESC_ENG,   
+         ID_TYPES.DESC_ARAB,
+         ADDITIONNAL_REFERENCE
+    FROM ID_TYPES  
+	 WHERE COMP_CODE = #{compCode}
+	 AND   CODE<>0
+	]]>	 
+ </sql>
+ 
+  <sql id="idTypeListCommonOrder">
+	<![CDATA[
+	ORDER BY ID_TYPES.CODE ASC   
+	]]>	 
+ </sql>
+ 
+ <resultMap id="idTypeList_ResMap" type="idTypeVO">
+	<id property="CODE" column="CODE"/>
+	<result property="DESC_ENG" column="DESC_ENG" />
+	<result property="DESC_ARAB" column="DESC_ARAB" />
+	<result property="ADDITIONNAL_REFERENCE" column="ADDITIONNAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="idTypeList" resultMap="idTypeList_ResMap" parameterType="idTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="idTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="idTypeListCount" resultType="int" parameterType="idTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="idTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnIdTypeById" parameterType="idTypeSC" resultType="idTypeVO">
+  	  SELECT CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN DESC_ARAB ELSE DESC_ENG END DESC_ENG,
+			 TYPES,
+			 ID_CARD_TYPE,
+			 ENABLE_MCR
+		FROM ID_TYPES 
+	   WHERE ID_TYPES.CODE = #{idTypeCode} 
+		 AND ID_TYPES.COMP_CODE  = #{compCode}
+	 	
+         <if test="cifTypeCode != null and cifTypeCode != emptyBigDecimalValue">
+            AND	((EXISTS (SELECT 1 
+                            FROM RIFCTT_ALLOWED_ID_TYPE 
+					       WHERE RIFCTT_ALLOWED_ID_TYPE.COMP_CODE =	ID_TYPES.COMP_CODE 
+					         AND RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_CODE = ID_TYPES.CODE
+					         AND RIFCTT_ALLOWED_ID_TYPE.CIF_TYPE_CODE = #{cifTypeCode}
+							<if test="idTypeMandYn!=null and idTypeMandYn!= ''">
+							  AND RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_MAND_YN = #{idTypeMandYn,jdbcType=VARCHAR}
+							</if>
+				          )
+				 )
+				 <if test="existInAllowIds==null or existInAllowIds=='' ">			
+		          OR  			         
+			        (NOT EXISTS (SELECT 1 
+			                       FROM RIFCTT_ALLOWED_ID_TYPE 
+								  WHERE RIFCTT_ALLOWED_ID_TYPE.COMP_CODE = ID_TYPES.COMP_CODE 
+								    AND RIFCTT_ALLOWED_ID_TYPE.CIF_TYPE_CODE = #{cifTypeCode}))
+				 </if>
+			    )
+	     </if>    
+ </select>
+
+ <sql id="idTypeListByCIFTypeQuery">
+	<![CDATA[
+	  
+		SELECT 
+			ID_TYPES.CODE CODE,  
+			CASE WHEN #{cifTypeCode}>0 THEN 
+										(SELECT RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_MAND_YN FROM RIFCTT_ALLOWED_ID_TYPE 
+											WHERE    RIFCTT_ALLOWED_ID_TYPE.COMP_CODE     =     ID_TYPES.COMP_CODE 
+											AND 	 RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_CODE  =     ID_TYPES.CODE
+											AND		 RIFCTT_ALLOWED_ID_TYPE.CIF_TYPE_CODE =		#{cifTypeCode}
+										) 
+					
+										ELSE '0' END ENABLE_MCR ,  
+			ID_TYPES.DESC_ENG DESC_ENG,   
+			ID_TYPES.DESC_ARAB DESC_ARAB
+		FROM 		ID_TYPES
+		WHERE  		ID_TYPES.COMP_CODE  = #{compCode}
+		 AND CODE <> 0
+		    ]]>
+              <if test="idTypeCode!=null ">
+            AND ID_TYPES.CODE  = #{idTypeCode,jdbcType=NUMERIC}
+              </if>
+               <if test="cifTypeCode!=null and cifTypeCode != emptyBigDecimalValue">
+              <![CDATA[
+          
+                AND	((EXISTS (SELECT 1 FROM RIFCTT_ALLOWED_ID_TYPE 
+					WHERE    RIFCTT_ALLOWED_ID_TYPE.COMP_CODE 		=	ID_TYPES.COMP_CODE 
+					AND 	 RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_CODE	=	ID_TYPES.CODE
+					AND 	 RIFCTT_ALLOWED_ID_TYPE.CIF_TYPE_CODE  	=	#{cifTypeCode}
+				]]>	
+						
+				<if test="idTypeMandYn!=null and idTypeMandYn!= ''">
+				    AND      RIFCTT_ALLOWED_ID_TYPE.ID_TYPE_MAND_YN = #{idTypeMandYn,jdbcType=VARCHAR}
+				 </if>
+				<![CDATA[
+						   
+					))
+				 ]]>
+				 
+				 <if test="existInAllowIds==null or existInAllowIds=='' ">			
+		          OR  			         
+		        
+		        	(NOT EXISTS (SELECT 1 FROM RIFCTT_ALLOWED_ID_TYPE 
+							WHERE    RIFCTT_ALLOWED_ID_TYPE.COMP_CODE 		=	ID_TYPES.COMP_CODE 
+							AND 	 RIFCTT_ALLOWED_ID_TYPE.CIF_TYPE_CODE   =	#{cifTypeCode}))
+				 </if>
+				 <![CDATA[
+					)
+
+	             ]]>
+	              </if>	 
+ </sql>
+<!--ID_TYPE_MAND_YN-->
+
+ <select id="idTypeListByCIFType" resultMap="ID_TYPES.BaseResultMap" parameterType="idTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="idTypeListByCIFTypeQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="idTypeListByCIFTypeCount" resultType="int" parameterType="idTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="idTypeListByCIFTypeQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+</mapper>

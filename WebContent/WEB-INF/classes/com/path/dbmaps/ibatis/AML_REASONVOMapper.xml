@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AML_REASON" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AML_REASONVO" >
+    <id column="REASON_ID" property="REASON_ID" />
+    <result column="REASON_REF" property="REASON_REF" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="CODE" property="CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="REASON_TYPE" property="REASON_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REASON_ID, REASON_REF, COMP_CODE, CODE, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, REASON_TYPE
+  </sql>
+  <select id="selectAML_REASON" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AML_REASONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from AML_REASON
+    where REASON_ID = #{REASON_ID}
+  </select>
+  <delete id="deleteAML_REASON" parameterType="com.path.dbmaps.vo.AML_REASONVOKey" >
+    delete from AML_REASON
+    where REASON_ID = #{REASON_ID}
+  </delete>
+  <insert id="insertAML_REASON" parameterType="com.path.dbmaps.vo.AML_REASONVO" >
+    insert into AML_REASON
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REASON_ID != null" >
+        REASON_ID,
+      </if>
+      <if test="REASON_REF != null" >
+        REASON_REF,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="REASON_TYPE != null" >
+        REASON_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REASON_ID != null" >
+        #{REASON_ID},
+      </if>
+      <if test="REASON_REF != null" >
+        #{REASON_REF},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="REASON_TYPE != null" >
+        #{REASON_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAML_REASON" >
+    update AML_REASON
+    <set >
+      <if test="REASON_REF != null" >
+        REASON_REF = #{REASON_REF},
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE = #{COMP_CODE},
+      </if>
+      <if test="CODE != null" >
+        CODE = #{CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="REASON_TYPE != null" >
+        REASON_TYPE = #{REASON_TYPE},
+      </if>
+    </set>
+    where REASON_ID = #{REASON_ID}
+  </sql>
+  <update id="updateAML_REASON" parameterType="com.path.dbmaps.vo.AML_REASONVO" >
+    <include refid="sql_updateAML_REASON" />
+  </update>
+</mapper>

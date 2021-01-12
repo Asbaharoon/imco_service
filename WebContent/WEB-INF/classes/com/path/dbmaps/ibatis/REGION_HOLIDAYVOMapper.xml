@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="REGION_HOLIDAY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.REGION_HOLIDAYVO" >
+    <id column="DD_HOL" property="DD_HOL" />
+    <id column="MM_HOL" property="MM_HOL" />
+    <id column="REGION_CODE" property="REGION_CODE" />
+    <id column="YYYY_HOL" property="YYYY_HOL" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DD_HOL, MM_HOL, REGION_CODE, YYYY_HOL, DESCRIPTION
+  </sql>
+  <select id="selectREGION_HOLIDAY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.REGION_HOLIDAYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from REGION_HOLIDAY
+    where DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and REGION_CODE = #{REGION_CODE}
+      and YYYY_HOL = #{YYYY_HOL}
+  </select>
+  <delete id="deleteREGION_HOLIDAY" parameterType="com.path.dbmaps.vo.REGION_HOLIDAYVOKey" >
+    delete from REGION_HOLIDAY
+    where DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and REGION_CODE = #{REGION_CODE}
+      and YYYY_HOL = #{YYYY_HOL}
+  </delete>
+  <insert id="insertREGION_HOLIDAY" parameterType="com.path.dbmaps.vo.REGION_HOLIDAYVO" >
+    insert into REGION_HOLIDAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="DD_HOL != null and DD_HOL != emptyBigDecimalValue" >
+        DD_HOL,
+      </if>
+      <if test="MM_HOL != null and MM_HOL != emptyBigDecimalValue" >
+        MM_HOL,
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        REGION_CODE,
+      </if>
+      <if test="YYYY_HOL != null and YYYY_HOL != emptyBigDecimalValue" >
+        YYYY_HOL,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="DD_HOL != null and DD_HOL != emptyBigDecimalValue" >
+        #{DD_HOL},
+      </if>
+      <if test="MM_HOL != null and MM_HOL != emptyBigDecimalValue" >
+        #{MM_HOL},
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        #{REGION_CODE},
+      </if>
+      <if test="YYYY_HOL != null and YYYY_HOL != emptyBigDecimalValue" >
+        #{YYYY_HOL},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateREGION_HOLIDAY" >
+    update REGION_HOLIDAY
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and REGION_CODE = #{REGION_CODE}
+      and YYYY_HOL = #{YYYY_HOL}
+  </sql>
+  <update id="updateREGION_HOLIDAY" parameterType="com.path.dbmaps.vo.REGION_HOLIDAYVO" >
+    <include refid="sql_updateREGION_HOLIDAY" />
+  </update>
+</mapper>

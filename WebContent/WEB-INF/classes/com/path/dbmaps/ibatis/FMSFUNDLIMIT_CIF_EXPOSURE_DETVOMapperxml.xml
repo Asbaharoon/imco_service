@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSFUNDLIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSFUNDLIMIT_CIF_EXPOSURE_DETVO" >
+    <id column="FUND_CODE" property="FUND_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="COMP_CODE" />
+    <result column="CIF_TYPE" property="CIF_TYPE" />
+    <result column="CREDIT_RATING" property="CREDIT_RATING" />
+    <result column="EXPOSURE_LIMIT_PERC" property="EXPOSURE_LIMIT_PERC" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="UTILIZED" property="UTILIZED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="APPLICABLE_ALL_YN" property="APPLICABLE_ALL_YN" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FUND_CODE, COMP_CODE, LINE_NO, CIF_TYPE, CREDIT_RATING, EXPOSURE_LIMIT_PERC, AMOUNT, UTILIZED, APPLICABLE_ALL_YN,
+    STATUS, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE
+  </sql>
+  <select id="selectFMSFUNDLIMIT_CIF_EXPOSURE_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSFUNDLIMIT_CIF_EXPOSURE_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSFUNDLIMIT_CIF_EXPOSURE_DET
+    where FUND_CODE = #{FUND_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSFUNDLIMIT_CIF_EXPOSURE_DET" parameterType="com.path.dbmaps.vo.FMSFUNDLIMIT_CIF_EXPOSURE_DETVOKey" >
+    delete from FMSFUNDLIMIT_CIF_EXPOSURE_DET
+    where FUND_CODE = #{FUND_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSFUNDLIMIT_CIF_EXPOSURE_DET" parameterType="com.path.dbmaps.vo.FMSFUNDLIMIT_CIF_EXPOSURE_DETVO" >
+    insert into FMSFUNDLIMIT_CIF_EXPOSURE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FUND_CODE != null and FUND_CODE != emptyBigDecimalValue" >
+        FUND_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue">
+        CIF_TYPE,
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue">
+        CREDIT_RATING,
+      </if>
+      <if test="EXPOSURE_LIMIT_PERC != null and EXPOSURE_LIMIT_PERC != emptyBigDecimalValue" >
+        EXPOSURE_LIMIT_PERC,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="UTILIZED != null and UTILIZED != emptyBigDecimalValue" >
+        UTILIZED,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)"  >
+        STATUS,
+      </if>
+      <if test="APPLICABLE_ALL_YN != null and !&quot;&quot;.equals(APPLICABLE_ALL_YN)"  >
+        APPLICABLE_ALL_YN,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)"  >
+        CREATED_BY,
+      </if>
+        CREATED_DATE,
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)"  >
+        MODIFIED_BY,
+      </if>
+        MODIFIED_DATE,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FUND_CODE != null and FUND_CODE != emptyBigDecimalValue" >
+        #{FUND_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue">
+        #{CIF_TYPE},
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue">
+        #{CREDIT_RATING},
+      </if>
+      <if test="EXPOSURE_LIMIT_PERC != null and EXPOSURE_LIMIT_PERC != emptyBigDecimalValue" >
+        #{EXPOSURE_LIMIT_PERC},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="UTILIZED != null and UTILIZED != emptyBigDecimalValue" >
+        #{UTILIZED},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)"  >
+        #{STATUS},
+      </if>
+      <if test="APPLICABLE_ALL_YN != null and !&quot;&quot;.equals(APPLICABLE_ALL_YN)"  >
+        #{APPLICABLE_ALL_YN},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)"  >
+        #{CREATED_BY},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)"  >
+        #{MODIFIED_BY},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSFUNDLIMIT_CIF_EXPOSURE_DET" >
+    update FMSFUNDLIMIT_CIF_EXPOSURE_DET
+    <set >
+      <if test="CIF_TYPE != null" >
+        <choose >
+          <when test="CIF_TYPE == emptyBigDecimalValue">
+            CIF_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CIF_TYPE = #{CIF_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREDIT_RATING != null" >
+        <choose >
+          <when test="CREDIT_RATING == emptyBigDecimalValue">
+            CREDIT_RATING = NULL ,
+          </when>
+          <otherwise >
+            CREDIT_RATING = #{CREDIT_RATING},
+          </otherwise>
+        </choose>
+      </if>    
+      <if test="EXPOSURE_LIMIT_PERC != null" >
+        <choose >
+          <when test="EXPOSURE_LIMIT_PERC == emptyBigDecimalValue">
+            EXPOSURE_LIMIT_PERC = NULL ,
+          </when>
+          <otherwise >
+            EXPOSURE_LIMIT_PERC = #{EXPOSURE_LIMIT_PERC},
+          </otherwise>
+        </choose>
+      </if>    
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue">
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>    
+       <if test="UTILIZED != null" >
+        <choose >
+          <when test="UTILIZED == emptyBigDecimalValue">
+            UTILIZED = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>                    
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLICABLE_ALL_YN != null" >
+        <choose >
+          <when test="APPLICABLE_ALL_YN.equals(&quot;&quot;)" >
+            APPLICABLE_ALL_YN = NULL ,
+          </when>
+          <otherwise >
+            APPLICABLE_ALL_YN = #{APPLICABLE_ALL_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      CREATED_DATE = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      MODIFIED_DATE = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where FUND_CODE = #{FUND_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSFUNDLIMIT_CIF_EXPOSURE_DET" parameterType="com.path.dbmaps.vo.FMSFUNDLIMIT_CIF_EXPOSURE_DETVO" >
+    <include refid="sql_updateFMSFUNDLIMIT_CIF_EXPOSURE_DET" />
+    <if test="MODIFIED_DATE != null" >
+      AND MODIFIED_DATE = #{MODIFIED_DATE}
+    </if>
+  </update>
+</mapper>

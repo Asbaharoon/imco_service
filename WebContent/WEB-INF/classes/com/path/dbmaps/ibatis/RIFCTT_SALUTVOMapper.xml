@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFCTT_SALUT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFCTT_SALUTVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIVIL_CODE" property="CIVIL_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, CIVIL_CODE
+  </sql>
+  <select id="selectRIFCTT_SALUT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFCTT_SALUTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFCTT_SALUT
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteRIFCTT_SALUT" parameterType="com.path.dbmaps.vo.RIFCTT_SALUTVOKey" >
+    delete from RIFCTT_SALUT
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertRIFCTT_SALUT" parameterType="com.path.dbmaps.vo.RIFCTT_SALUTVO" >
+    insert into RIFCTT_SALUT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        CIVIL_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        #{CIVIL_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFCTT_SALUT" >
+    update RIFCTT_SALUT
+    <set >
+      <if test="CIVIL_CODE != null" >
+        <choose >
+          <when test="CIVIL_CODE == emptyBigDecimalValue" >
+            CIVIL_CODE = NULL ,
+          </when>
+          <otherwise >
+            CIVIL_CODE = #{CIVIL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateRIFCTT_SALUT" parameterType="com.path.dbmaps.vo.RIFCTT_SALUTVO" >
+    <include refid="sql_updateRIFCTT_SALUT" />
+  </update>
+</mapper>

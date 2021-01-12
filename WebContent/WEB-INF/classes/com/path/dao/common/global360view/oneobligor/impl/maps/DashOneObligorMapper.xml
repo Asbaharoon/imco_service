@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashOneObligorMapper">
+
+ <sql id="oneObligorListCommon">
+	<![CDATA[
+	SELECT
+			 RIFOBT.OBLIGOR_CODE,
+			 RIFOBT.BRIEF_DESC_ENG,
+			 RIFOBT.LONG_DESC_ENG,
+			 RIFOBT.BRIEF_DESC_ARAB,
+			 RIFOBT.LONG_DESC_ARAB,
+			 RIFOBT.ADDITIONAL_REFERENCE
+	FROM  RIFOBT 
+	WHERE	 RIFOBT.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ <sql id="OneObligorTrendsDetls">
+   SELECT RIFOBT_TRENDS_DET.COMP_CODE,
+         RIFOBT_TRENDS_DET.OBLIGOR_CODE,
+         RIFOBT_TRENDS_DET.LINE_NO,
+         RIFOBT_TRENDS_DET.CTSTRX_TYPE,
+         (
+            SELECT
+		    <choose>
+		       <when test='preferredLanguage != null and preferredLanguage.equals("A")'>
+		         CTSTRXTYPE.SHORT_DESC_ARAB 
+		       </when>
+		       <otherwise>
+		          CTSTRXTYPE.SHORT_DESC_ENG
+		       </otherwise>
+		    </choose> 
+			  FROM CTSTRXTYPE
+			 WHERE CODE = RIFOBT_TRENDS_DET.CTSTRX_TYPE
+			   AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+         )AS CTSTRXTYPE_DESC,
+         RIFOBT_TRENDS_DET.PERIODICITY_TYPE AS PERIODICITY_CODE,
+         (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+			   FROM SYS_PARAM_LOV_TRANS
+			  WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  =  RIFOBT_TRENDS_DET.PERIODICITY_TYPE
+			    AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+				AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}
+		 ) AS PERIODICITY_TYPE,
+		 (SELECT CURRENCIES.DECIMAL_POINTS
+            FROM CURRENCIES,RIFCRT
+           WHERE CURRENCIES.COMP_CODE = RIFCRT.COMP_CODE
+             AND CURRENCIES.CURRENCY_CODE = RIFCRT.CURRENCY_CODE
+           AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC})CURRENCIES_DECIMAL_POINTS,
+         RIFOBT_TRENDS_DET.PERIODICITY,
+         RIFOBT_TRENDS_DET.SINGLE_TRX_AMT,
+         RIFOBT_TRENDS_DET.TOTAL_TRX_AMT
+    FROM RIFOBT_TRENDS_DET
+   WHERE RIFOBT_TRENDS_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+     AND RIFOBT_TRENDS_DET.OBLIGOR_CODE = #{oneObligorCode,jdbcType=NUMERIC}
+ </sql>
+ <resultMap id="dashOneObligorTrendsListMap" type="dashOneObligorCO">
+ 	<result property="rifOBTTrendsDetVO.CTSTRX_TYPE"   	  	 column="CTSTRX_TYPE"/>
+ 	<result property="rifOBTTrendsDetVO.PERIODICITY_TYPE"    column="PERIODICITY_TYPE"/>
+ 	<result property="rifOBTTrendsDetVO.PERIODICITY"   	  	 column="PERIODICITY"/>
+ 	<result property="rifOBTTrendsDetVO.SINGLE_TRX_AMT"   	column="SINGLE_TRX_AMT"/>
+ 	<result property="rifOBTTrendsDetVO.TOTAL_TRX_AMT"    	column="TOTAL_TRX_AMT"/>
+ 	<result property="ctsTrxTypeDesc"                        column="CTSTRXTYPE_DESC"/>
+ 	<result property="decimalPts" 							 column="CURRENCY_DECIMAL_POINTS"/>
+ </resultMap>
+ 
+ 
+ <resultMap id="oneObligorList_ResMap" type="oneObligorVO">
+	<id property="OBLIGOR_CODE" column="OBLIGOR_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="oneObligorList" resultMap="oneObligorList_ResMap" parameterType="oneObligorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="oneObligorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="oneObligorListCount" resultType="int" parameterType="oneObligorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="oneObligorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnOneObligorById" parameterType="oneObligorSC" resultType="oneObligorVO">
+		SELECT 
+			OBLIGOR_CODE,
+		 	BRIEF_DESC_ENG
+		FROM  RIFOBT
+		WHERE RIFOBT.COMP_CODE      = #{compCode}
+		AND   RIFOBT.OBLIGOR_CODE   = #{oneObligorCode}
+  </select>
+  
+  <select id="returnDashOneObligorTrendsListCount" parameterType="dashOneObligorSC"
+	resultType="int">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="OneObligorTrendsDetls" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<select id="returnDashOneObligorTrendsList" parameterType="dashOneObligorSC" resultMap="dashOneObligorTrendsListMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="OneObligorTrendsDetls" />
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+  <sql id="dashOneObligorDataByCIF">
+   SELECT RIFOBT.COMP_CODE,
+       	  RIFOBT.OBLIGOR_CODE,
+       	  RIFOBT.BRIEF_DESC_ENG,
+       	  RIFOBT.BRIEF_DESC_ARAB,
+       	  RIFOBT.LONG_DESC_ENG,
+       	  RIFOBT.LONG_DESC_ARAB,
+       	  RIFOBT.LIMIT,
+       	  RIFOBT.ADDITIONAL_REFERENCE,
+       	  RIFOBT.ML_GROSS_AMOUNT,
+       	  RIFOBT.CREDIT_RATING,
+       	   (SELECT CURRENCIES.CURRENCY_CODE
+            FROM CURRENCIES,RIFCRT
+           WHERE CURRENCIES.COMP_CODE = RIFCRT.COMP_CODE
+             AND CURRENCIES.CURRENCY_CODE = RIFCRT.CURRENCY_CODE
+             AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC})CURRENCY_CODE,
+       	   (SELECT CURRENCIES.BRIEF_DESC_ENG
+            FROM CURRENCIES,RIFCRT
+           WHERE CURRENCIES.COMP_CODE = RIFCRT.COMP_CODE
+             AND CURRENCIES.CURRENCY_CODE = RIFCRT.CURRENCY_CODE
+             AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC})CURRENCIES_DESC,
+         (SELECT CURRENCIES.DECIMAL_POINTS
+            FROM CURRENCIES,RIFCRT
+           WHERE CURRENCIES.COMP_CODE = RIFCRT.COMP_CODE
+             AND CURRENCIES.CURRENCY_CODE = RIFCRT.CURRENCY_CODE
+             AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC})CURRENCIES_DECIMAL_POINTS,
+       	  (SELECT CREDIT_RATING.BRIEF_NAME_ENG
+        	FROM CREDIT_RATING
+       		WHERE CREDIT_RATING.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+         	AND CREDIT_RATING.CODE = RIFOBT.CREDIT_RATING)RATING_DESC,
+       	  RIFOBT.PROFILE,
+       	  (SELECT CIF_PROFILE.BRIEF_NAME_ENG  
+			FROM CIF_PROFILE  
+			WHERE CIF_PROFILE.COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+			AND CIF_PROFILE.CODE = RIFOBT.PROFILE)PROFILE_DESC,
+          RIFOBT.COMENT
+  	FROM  RIFOBT , CIF 
+  	WHERE RIFOBT.OBLIGOR_CODE = CIF.ONE_OBLIGOR
+  	AND RIFOBT.COMP_CODE = CIF.COMP_CODE 
+  	AND CIF.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+  	AND CIF.CIF_NO = #{cifNo,jdbcType=NUMERIC} 
+ </sql>
+
+  <resultMap id="dashOneObligorMap" type="dashOneObligorCO">
+    <result property="currenciesVO.DECIMAL_POINTS" 	 column="CURRENCIES_DECIMAL_POINTS"/>  
+    <result property="currenciesVO.CURRENCY_CODE" 	 column="CURRENCY_CODE"/>  
+	<result property="rifOBTVO.OBLIGOR_CODE" 		 column="OBLIGOR_CODE"/>
+ 	<result property="rifOBTVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+ 	<result property="rifOBTVO.LIMIT" 				 column="LIMIT"/>
+ 	<result property="currenciesVO.BRIEF_DESC_ENG" 	 column="CURRENCIES_DESC"/>
+ 	<result property="rifOBTVO.ML_GROSS_AMOUNT"      column="ML_GROSS_AMOUNT"/>
+ 	<result property="rifOBTVO.BRIEF_DESC_ENG" 		 column="BRIEF_DESC_ENG"/>
+ 	<result property="rifOBTVO.BRIEF_DESC_ARAB" 	 column="BRIEF_DESC_ARAB"/>
+ 	<result property="rifOBTVO.LONG_DESC_ENG" 		 column="LONG_DESC_ENG"/>
+    <result property="rifOBTVO.LONG_DESC_ARAB" 	     column="LONG_DESC_ARAB"/>
+    <result property="rifOBTVO.CREDIT_RATING" 		 column="CREDIT_RATING"/>
+    <result property="creditRatingVO.BRIEF_NAME_ENG" column="RATING_DESC"/>
+    <result property="rifOBTVO.PROFILE" 	 		 column="PROFILE"/>
+    <result property="cifProfileVO.BRIEF_NAME_ENG" 	 column="PROFILE_DESC"/>
+    <result property="rifOBTVO.COMENT" 				 column="COMENT"/>
+ </resultMap>
+ 
+
+	<select id="returnDashOneObligorDataByCIF" parameterType="dashOneObligorCO" resultMap="dashOneObligorMap">
+		<include refid="dashOneObligorDataByCIF"/>
+	</select>
+	
+	<!--   TP#202527; Saheer.Naduthodi; 01/08/2014 [START] -->
+	
+	<select id="oneObligorClassList" resultMap="oneObligorClassMap" parameterType="oneObligorSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="oneObligorClassQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 
+ 	<select id="oneObligorClassCount" resultType="int" parameterType="oneObligorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="oneObligorClassQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ 	</select>
+ 	
+ 	<resultMap id="oneObligorClassMap" type="com.path.dbmaps.vo.TRSCLASSVO">
+		<result property="CODE" column="CODE" />
+		<result property="CATEGORY" column="CATEGORY" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="EXPOSURE_LIMIT" column="EXPOSURE_LIMIT" />
+		<result property="LEASE_TYPE" column="LEASE_TYPE" />
+		<result property="PREFIX" column="PREFIX" />
+		<result property="SETTLEMENT_DIVISION" column="SETTLEMENT_DIVISION" />
+ 	</resultMap>
+ 	
+ 	<sql id="oneObligorClassQuery">
+	 SELECT
+			 TRSCLASS.CODE,
+			 TRSCLASS.CATEGORY,
+			 TRSCLASS.BRIEF_NAME_ENG,
+			 TRSCLASS.BRIEF_NAME_ARAB,
+			 TRSCLASS.LONG_NAME_ENG,
+			 TRSCLASS.EXPOSURE_LIMIT,
+			 TRSCLASS.LEASE_TYPE,
+			 TRSCLASS.PREFIX,
+			 TRSCLASS.SETTLEMENT_DIVISION,
+			 TRSCATEGORY.APP_NAME
+	FROM  	TRSCLASS, TRSCATEGORY
+	WHERE	(TRSCLASS.COMP_CODE  =  #{compCode}) and 
+			(TRSCLASS.CATEGORY  = TRSCATEGORY.CATEGORY_CODE)AND 
+	       	(CASE WHEN TRSCLASS.APP_NAME  IS NULL THEN #{currAppName} ELSE TRSCLASS.APP_NAME END = #{currAppName}) AND
+			(TRSCATEGORY.APP_NAME =#{currAppName} )	
+ 	</sql>
+ 	
+ 	<!--   TP#202527; Saheer.Naduthodi; 01/08/2014 [END] -->
+
+</mapper>

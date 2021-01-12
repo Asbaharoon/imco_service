@@ -1,0 +1,3310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifMapper">
+	<sql id="cifSearchFilter">
+		<if test="searchFilter != null and searchFilter != ''">
+			WHERE upper( CIF_NO ) LIKE upper('%'|| #searchFilter#||'%')
+	    </if>
+	</sql>
+	<!-- sql id="cifListQuery">
+	   SELECT CIF.CIF_NO,
+			  CIF.SHORT_NAME_ENG,
+			  CIF.LONG_NAME_ENG,
+			  CIF.TEL,
+			  CIF.RESIDENT,
+			  CIF.ID_NO,
+			  CIF.CIF_TYPE,
+		      CIF.ADDITIONAL_REFERENCE
+		 FROM CIF
+		WHERE COMP_CODE=#{comp_code}
+		  AND EXISTS (SELECT 1
+					  FROM AMF
+					 WHERE AMF.COMP_CODE = #{comp_code}
+					   AND CIF.CIF_NO = AMF.CIF_SUB_NO
+					   AND AMF.STATUS in ('A', 'I', 'T', 'P'))
+		<if test="cif_no!=null">
+		 AND CIF.CIF_NO = #{cif_no}
+		</if>
+	</sql-->
+	
+	<sql id="cifLookupQuery">
+	<choose>
+	   <when test='banksLkp !="true"'>
+			<![CDATA[
+				SELECT CIF.COMP_CODE,   
+			       CIF.BRANCH_CODE,   
+			       CIF.CIF_NO,   
+			       CIF.SHORT_NAME_ENG,   
+			       CIF.LONG_NAME_ENG,
+			       CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,   
+			       CIF.SHORT_NAME_ARAB,   
+				 	 CIF.LONG_NAME_ARAB,
+				 	 CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,   
+			 		 CIF.TEL,    
+					 CIF.ECO_SECTOR,   
+					 CIF.RELATION_CODE,   
+					 CIF.COUNTRY,   
+					 CIF.ID_NO,   
+					 CIF.ID_NO2,   
+					 CIF.CIF_TYPE,   
+					 CIF.ONE_OBLIGOR,   
+					 CIF.STATUS,   
+					 CIF.EMAIL_ID,   
+					 CIF.ADDITIONAL_REFERENCE,   
+					 CIF.FIRST_NAME_ENG,   
+					 CIF.SEC_NAME_ENG,   
+					 CIF.THIRD_NAME_ENG,   
+					 CIF.LAST_NAME_ENG,   
+					 CIF.FIRST_NAME_AR,   
+					 CIF.SEC_NAME_AR,   
+					 CIF.THIRD_NAME_AR,   
+					 CIF.LAST_NAME_AR ,
+					 CIF.SEXE,
+					 CIF.CARD_NAME,
+					 CIF.NICK_NAME,
+					 CIF.ID_TYPE,
+					 CIF.OCCUPATION,
+					 CIF.OCCUP_POSITION,
+					 CIF.BIRTH_DATE
+			FROM CIF
+			LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO  
+			WHERE CIF.COMP_CODE = #{comp_code}
+			  AND	( ( #{raFlag} = 'I') OR (#{raFlag} = 'N' AND CIF.BRANCH_CODE = #{branchCode})) 
+			  ]]>
+			  <if test='raStatus != "X"'>
+			   AND STATUS = #{raStatus} 
+			  </if>
+			  <if test='raResident != "B"'>
+			   AND RESIDENT =  #{raResident}
+			  </if>
+			  <if test='fromScreen != null  and !fromScreen.equals("") and fromScreen.equals("BENEF") and cif_no!=null and cif_no!=emptyBigDecimalValue'>
+			  	AND  CIF.CIF_NO = #{cif_no}
+			  </if>
+			  <if test='fromScreen != null  and !fromScreen.equals("") and (fromScreen.equals("AVA_FILE")or fromScreen.equals("AVA_PAYMENT") ) and cifType!=null and !cifType.equals("") '>
+			  	AND  CIF.TYPE = #{cifType}
+			  </if>
+	   </when>
+	   <otherwise>
+	        <choose>
+	            <when test='"true".equals(bankCifLkp)'>
+					<include refid="cifLookupQuery_innerSql"/>
+	            </when>
+	            <otherwise>
+	                <choose>
+	                     <when test='"true".equals(benefBankLkp)'>
+								<include refid="cifLookupQuery_innerSql"/>
+	                     </when>
+	                     <otherwise>
+								<include refid="cifLookupQuery_innerSql"/>
+	                     </otherwise>
+	                </choose>
+	            </otherwise>
+	        </choose>
+	   </otherwise>
+	</choose>
+</sql>
+
+
+<sql id="cifLookupQuery_innerSql">
+	<choose>
+		<when test='"true".equals(lookupBankCif)'>
+			<include refid="cifMapper.lookupBankCifQuery" />
+		</when>
+		<when test='"true".equals(lookupCorrBank)'>
+			<include refid="cifMapper.cifBenefLkp_sql" />
+		</when>
+		<otherwise>
+			<include refid="cifMapper.lookupBankCifAibQuery" />
+		</otherwise>
+	</choose>
+</sql>
+
+<sql id="lookupBankCifAibQuery">
+SELECT	 CIF.CIF_NO,
+         CIF.BRANCH_CODE, 
+		 CIF.SHORT_NAME_ENG,
+		 CIF.LONG_NAME_ENG,
+		 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+		 CIF.SHORT_NAME_ARAB,
+		 CIF.LONG_NAME_ARAB,
+		 CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+		 CIF.TEL,
+		 CIF.RESIDENT,
+		 CIF.ID_NO,
+		 CIF.ADD_STRING2,
+		 CIF.ADD_STRING3,
+		 CIF.ADD_STRING4,
+		 CIF_CLEARING_HOUSE.CLEARING_HOUSE
+	FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	    ,RIFCTT
+	    ,CIF_CLEARING_HOUSE 
+	WHERE	 (CIF.COMP_CODE  = RIFCTT.COMP_CODE)
+	 AND	(CIF.CIF_TYPE  = RIFCTT.TYPE_CODE)
+	 AND	(CIF.COMP_CODE  = #{comp_code})
+	 AND	(CIF.STATUS  = 'A')
+	 AND	(RIFCTT.BANK  = 'Y')
+	 AND	(CIF.ADD_STRING2  IS NOT NULL)
+	 AND	(CIF_CLEARING_HOUSE.COMP_CODE  = CIF.COMP_CODE)
+	 AND	(CIF_CLEARING_HOUSE.CIF_NO  = CIF.CIF_NO)
+	 AND	(CIF_CLEARING_HOUSE.CURRENCY_CODE  = 0 
+	         <if test="currencyCode!=null and currencyCode != emptyBigDecimalValue">
+	           OR CIF_CLEARING_HOUSE.CURRENCY_CODE  = #{currencyCode}
+	         </if>
+	         )
+	 AND	(CIF_CLEARING_HOUSE.CLEARING_HOUSE  =
+	         <choose>
+	            <when test="clearingHouse !=null and clearingHouse != 0">
+	               #{clearingHouse}
+	            </when>
+	            <otherwise>CIF_CLEARING_HOUSE.CLEARING_HOUSE</otherwise>
+	         </choose>)	
+</sql>
+
+
+<sql id="lookupBankCifSQL">
+	  SELECT CIF.CIF_NO,
+	         CIF.BRANCH_CODE, 
+			 CIF.SHORT_NAME_ENG,
+			 CIF.LONG_NAME_ENG,
+			 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+			 CIF.SHORT_NAME_ARAB,
+			 CIF.LONG_NAME_ARAB,
+			 CIF.TEL,
+			 CIF.RESIDENT,
+			 CIF.ID_NO,
+			 CIF.ADD_STRING2,
+			 CIF.ADD_STRING3,
+			 CIF.ADD_STRING4
+		FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		    ,RIFCTT 
+	   WHERE (CIF.COMP_CODE  = RIFCTT.COMP_CODE)
+	     AND (CIF.CIF_TYPE  = RIFCTT.TYPE_CODE)
+	     AND (CIF.COMP_CODE  = #{comp_code})
+	     AND (CIF.STATUS  = 'A')
+	     AND (RIFCTT.BANK  = 'Y')
+	     AND (CIF.ADD_STRING2  IS NOT NULL)
+</sql>
+
+
+<sql id="cifBenefLkp_sql">
+SELECT DISTINCT
+		 CIF_TRXTYPE_LIMITS.CIF_NO,
+		 CIF_TRXTYPE_LIMITS.ACC_BR,
+		 CIF_TRXTYPE_LIMITS.ACC_CY,
+		 CIF_TRXTYPE_LIMITS.ACC_GL,
+		 CIF_TRXTYPE_LIMITS.ACC_CIF,
+		 CIF_TRXTYPE_LIMITS.ACC_SL,
+		 CIF.SHORT_NAME_ENG SHORT_NAME_ENG,
+		 CIF.SHORT_NAME_ARAB SHORT_NAME_ARAB,
+		 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+		 CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+		 (CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN CIF.SHORT_NAME_ENG ELSE CIF.SHORT_NAME_ARAB END) CIF_SHORT_NAME_ENG,
+		 CIF.TEL,
+		 CIF.ECO_SECTOR,
+		 CIF.RELATION_CODE,
+		 CIF.COUNTRY,
+		 CIF.ID_NO,
+		 CIF.ID_NO2,
+		 CIF.CIF_TYPE,
+		 CIF.ONE_OBLIGOR,		 
+		 CIF.EMAIL_ID,
+		 CIF.SEXE,
+		 CIF.CARD_NAME,
+		 CIF.NICK_NAME,
+		 CIF.STATUS,
+		 AMF.BRIEF_NAME_ENG ,
+		 AMF.BRIEF_NAME_ARAB amfBriefNameAr,
+		 AMF.BRANCH_CODE,
+		 AMF.ADDITIONAL_REFERENCE
+ FROM  
+      <choose> 
+		<when test='"B".equals(cifByProviderBillType)'>
+			CIF
+			LEFT OUTER JOIN CIF_TRXTYPE_LIMITS ON CIF.COMP_CODE = CIF_TRXTYPE_LIMITS.COMP_CODE
+			LEFT OUTER JOIN AMF ON CIF_TRXTYPE_LIMITS.ACC_BR = AMF.BRANCH_CODE
+			                  AND (CIF_TRXTYPE_LIMITS.ACC_CY = AMF.CURRENCY_CODE)
+			                  AND (CIF_TRXTYPE_LIMITS.ACC_GL = AMF.GL_CODE)
+			                  AND (CIF_TRXTYPE_LIMITS.ACC_CIF = AMF.CIF_SUB_NO)
+			                  AND (CIF_TRXTYPE_LIMITS.ACC_SL = AMF.SL_NO)	
+		</when>
+		<otherwise>
+			CIF_TRXTYPE_LIMITS
+			,CIF
+			,AMF 
+		</otherwise>
+	</choose>
+ 
+WHERE 
+
+<choose> 
+	<when test='!"B".equals(cifByProviderBillType)'>
+		(CIF.COMP_CODE  = AMF.COMP_CODE) AND 
+	</when>
+</choose>
+      (CIF_TRXTYPE_LIMITS.COMP_CODE  = CIF.COMP_CODE)
+  		AND (CIF_TRXTYPE_LIMITS.CIF_NO  	 = CIF.CIF_NO)
+        <choose> 
+	<when test='!"B".equals(cifByProviderBillType)'>
+	  AND (CIF_TRXTYPE_LIMITS.ACC_BR  	 = AMF.BRANCH_CODE)
+		  AND (CIF_TRXTYPE_LIMITS.ACC_CY  	 = AMF.CURRENCY_CODE)
+		  AND (CIF_TRXTYPE_LIMITS.ACC_GL  	 = AMF.GL_CODE)
+		  AND (CIF_TRXTYPE_LIMITS.ACC_CIF  	 = AMF.CIF_SUB_NO)
+		  AND (CIF_TRXTYPE_LIMITS.ACC_SL  	 = AMF.SL_NO)
+		 </when>
+</choose> 
+		AND (CIF_TRXTYPE_LIMITS.COMP_CODE    = #{comp_code}       	
+	    AND  CIF_TRXTYPE_LIMITS.TRX_TYPE   = <choose> <when test="trxType!=null">#{trxType}</when>
+												<otherwise>CIF_TRXTYPE_LIMITS.TRX_TYPE</otherwise>
+										</choose>  
+	   <if test="currencyCode!=null and currencyCode != emptyBigDecimalValue">
+		   AND (
+		   		#{currencyCode} = 0 OR (#{currencyCode} <![CDATA[<>]]> 0 AND CIF_TRXTYPE_LIMITS.CY  = #{currencyCode})
+		   	)
+	   </if>
+	  )
+	  	<if test=" cif_no !=null and cif_no != emptyBigDecimalValue">
+  		and CIF_TRXTYPE_LIMITS.CIF_NO = #{cif_no}
+  	    </if>
+WHERE 
+ 	 (CIF.COMP_CODE  = AMF.COMP_CODE)
+  	<if test="country != null and country != emptyBigDecimalValue">	  	
+	  	AND (#{country}  = 0 
+	       OR (#{country} <![CDATA[<>]]> 0 AND CIF.COUNTRY = #{country} )
+	      )
+  	</if>
+  	<if test=" cif_no !=null and cif_no != emptyBigDecimalValue">
+  		and CIF_TRXTYPE_LIMITS.CIF_NO = #{cif_no}
+  	</if>
+  	
+  	<if test=' "true".equals(bankCifLkp) '>
+	  	and CIF_TRXTYPE_LIMITS.SHOW_IN_TRX = '1' and CIF.STATUS = 'A'
+	</if>
+	<if test="currencyCode!=null and currencyCode != emptyBigDecimalValue">
+		   AND (
+		   		#{currencyCode} = 0 OR (#{currencyCode} <![CDATA[<>]]> 0 AND AMF.CURRENCY_CODE  = #{currencyCode})
+		   	)
+	   </if>
+  	<if test="accNo !=null and accNo != ''">
+        AND EXISTS(SELECT 1
+                    FROM PMSCIFSWIFT
+                    WHERE PMSCIFSWIFT.CIF = CIF.CIF_NO
+                    AND PMSCIFSWIFT.COMP_CODE = CIF.COMP_CODE
+                    AND PMSCIFSWIFT.SWIFT_BIC_BBBB = #{bicCode,jdbcType=VARCHAR})
+        AND EXISTS (SELECT 1
+                     FROM RIFCTT
+                     WHERE CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+                     AND CIF.COMP_CODE = RIFCTT.COMP_CODE
+                     AND RIFCTT.BANK = 'Y')
+  	</if>
+</sql>
+
+
+<sql id="lookupBankCifQuery">
+SELECT	CIF.CIF_NO
+       ,CIF.BRANCH_CODE
+       ,CIF.SHORT_NAME_ENG
+       ,CIF.LONG_NAME_ENG
+       ,CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG
+       ,CIF.SHORT_NAME_ARAB
+       ,CIF.LONG_NAME_ARAB
+       ,CIF_EXTENDED.FULL_NAME_ARAB  FULL_NAME_ARAB
+       ,CIF.TEL
+       ,CIF.RESIDENT
+       ,CIF.ID_NO
+       ,CIF.ADD_STRING2
+       ,CIF.ADD_STRING3
+       ,CIF.ADD_STRING4
+  FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+  		,RIFCTT 
+ WHERE (CIF.COMP_CODE = RIFCTT.COMP_CODE)
+   AND (CIF.CIF_TYPE  = RIFCTT.TYPE_CODE)
+   AND (CIF.COMP_CODE = #{comp_code})
+   AND (CIF.STATUS    = 'A')
+   <if test=" isBank == 1">
+   AND (RIFCTT.BANK   = 'Y')
+   </if>
+   <if test="bankType == 1">
+   AND (CIF.ADD_STRING2 IS NOT NULL)
+   </if>
+   <if test='"true".equals(resident)'>
+   AND  (CIF.RESIDENT = 'R')
+   </if>
+</sql>
+
+
+<sql id="cifLookupQueryUnique">
+	AND CIF.CIF_NO = #{cif_no}
+</sql>	
+	<!-- dw_lookup_cif_dyn -->
+	<sql id="CIFLkpSelection">
+	    SELECT   CIF.CIF_NO,
+	             CIF.BRANCH_CODE,
+				 CIF.SHORT_NAME_ENG,
+				 CIF.SHORT_NAME_ARAB,
+				 CIF.LONG_NAME_ENG,
+				 CIF.LONG_NAME_ARAB,
+				 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+				 CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+				  coalesce((SELECT CIF_ADDRESS.TEL FROM CIF_ADDRESS
+				 WHERE CIF_ADDRESS.COMP_CODE = CIF.COMP_CODE 
+				 AND CIF_ADDRESS.CIF_NO = CIF.CIF_NO 
+				 AND CIF_ADDRESS.LINE_NO = 0),'') TEL,
+				 CIF.RESIDENT,
+				 (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = 24 AND LANG_CODE = #{lang} AND VALUE_CODE = CIF.RESIDENT) DESCR,
+				 CIF.ID_NO,  
+				 CIF.ID_NO2,  
+				 CIF.CIF_TYPE,
+				 CIF.ADDITIONAL_REFERENCE,
+				 CIF.CARD_NAME,
+				 CIF.COUNTRY,
+				 CIF.NICK_NAME,
+				 (SELECT RIFCTT.BRIEF_DESC_ENG FROM RIFCTT WHERE RIFCTT.COMP_CODE  = CIF.COMP_CODE AND RIFCTT.TYPE_CODE = CIF.CIF_TYPE) CIF_TYPE_DESC,
+				 (SELECT COUNTRIES.BRIEF_DESC_ENG FROM COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF.COUNTRY) COUNTRY_DESC,				 
+      			 CIF.PRIORITY_CODE,
+      			 CIF.BLACK_LISTED
+	</sql>
+	<resultMap id="cifListMap" type="cifVO">
+		<result property="CIF_NO" 				column="CIF_NO" />
+		<result property="BRANCH_CODE" 			column="BRANCH_CODE" />
+		<result property="SHORT_NAME_ENG" 		column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG" 		column="LONG_NAME_ENG" />
+		<result property="TEL" 					column="TEL" />
+		<result property="RESIDENT" 			column="RESIDENT" />
+		<result property="ID_NO" 				column="ID_NO" />
+		<result property="ID_NO2" 				column="ID_NO2" />
+		<result property="CIF_TYPE" 			column="CIF_TYPE" />
+		<result property="CARD_NAME" 			column="CARD_NAME" />
+		<result property="NICK_NAME"			column="NICK_NAME" />
+		<result property="COUNTRY"				column="COUNTRY" />
+		<result property="ADDITIONAL_REFERENCE"	column="ADDITIONAL_REFERENCE" />
+		<result property="PRIORITY_CODE"	    column="PRIORITY_CODE" />
+		<result property="FULL_NAME_ENG"		column="FULL_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" 	    column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" 	    column="LONG_NAME_ARAB" />
+		<result property="FULL_NAME_ARAB"		column="FULL_NAME_ARAB" />
+		<result property="DESCR"					column="DESCR" />
+		<result property="CIF_TYPE_DESC" 		column="CIF_TYPE_DESC" />
+		<result property="COUNTRY_DESC"			column="COUNTRY_DESC" />
+	</resultMap>
+	<resultMap id="cifListMapCert" type="cifVO">
+		<result property="CIF_NO" 				column="CIF_NO" />
+		<result property="BRANCH_CODE" 			column="BRANCH_CODE" />
+		<result property="SHORT_NAME_ENG" 		column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG" 		column="LONG_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" 	    column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" 	    column="LONG_NAME_ARAB" />
+		<result property="CIF_TYPE" 			column="CIF_TYPE" />
+		<result property="ADDITIONAL_REFERENCE"	column="ADDITIONAL_REFERENCE" />
+		<result property="FULL_NAME_ENG"		column="FULL_NAME_ENG" />
+		<result property="FULL_NAME_ARAB"		column="FULL_NAME_ARAB" />	
+	</resultMap>
+	
+	
+	<sql id="clubbedAccountChecking">
+		<if test="clubCode != null and clubCode != emptyBigDecimalValue" >
+		AND EXISTS (SELECT 1 FROM ACC_CLUBBING_TYPES K
+		           WHERE K.COMP_CODE = #{compCode}
+		            AND K.CLUBBING_CODE = #{clubCode}
+		            AND K.TYPE_CODE = CIF.CIF_TYPE
+		            AND K.TYPE_INDICATOR = 'C')
+		</if>            
+	</sql>
+	
+	
+	<select id="cifList" resultMap="cifListMap" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		
+		<include refid="CIFLkpSelection"/>
+		<include refid="accountMapper.dynAccountListQuery"/>
+		<if test="fromDash == 1">
+		  <if test="branchCode!=null">
+		     AND CIF.BRANCH_CODE = #{branchCode}
+		  </if>
+		</if>
+		<if test="cif_no!=null">
+       		AND CIF.CIF_NO = #{cif_no}
+  		</if>	
+		<choose>
+	        <when test='"Y".equals(lookupCivilId)'>
+	        	AND CIF.CIF_NO IS NOT NULL 
+			    AND CIF.ID_NO IS NOT NULL
+			</when>
+		</choose>
+				<include refid="cifRestriction"/>
+		<include refid="clubbedAccountChecking"/>
+
+		<choose>
+			<when test='id_no != null and !"".equals(id_no)'>
+				AND CIF.CIF_NO IN (SELECT X.CIF_NO FROM
+			       (SELECT CIF_NO
+			          FROM CIF
+			         WHERE COMP_CODE = #{compCode}
+			           AND (UPPER(ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%') OR
+			               UPPER(JOIN_ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%'))
+			        UNION
+			        SELECT CIF_CODE CIF_NO
+			          FROM CIF_CONTACT
+			         WHERE COMP_CODE = #{compCode}
+			           AND UPPER(CIF_CONTACT.ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%')
+			        UNION
+			        SELECT CIF_NO
+			          FROM CIF_AUTH_SIGNATORY
+			         WHERE COMP_CODE = #{compCode}
+			           AND UPPER(ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%')) X )
+			 </when>
+		 </choose>
+		     
+		<if test="cifWhereQuery!=null">
+			AND CIF.CIF_NO IN ( 
+			 SELECT CIF_NO FROM CIF WHERE COMP_CODE=#{compCode}  AND (UPPER(ID_NO) LIKE UPPER('%'|| #{id_no,jdbcType=VARCHAR} ||'%') OR UPPER(JOIN_ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%'))
+		      UNION
+		     SELECT CIF_CODE CIF_NO FROM CIF_CONTACT
+		     WHERE COMP_CODE = #{compCode} AND  UPPER(CIF_CONTACT.ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+		     UNION
+		     SELECT CIF_NO FROM  CIF_AUTH_SIGNATORY WHERE COMP_CODE=#{compCode} AND UPPER(ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+		     )
+			
+		</if>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="cifSearchFilter"/>
+		
+		<if test='idNoFilter != null'>
+
+		union
+		
+			<include refid="CIFLkpSelection"/>
+			<include refid="accountMapper.dynAccountListQuery"/>
+			<if test="fromDash == 1">
+			  <if test="branchCode!=null">
+			     AND CIF.BRANCH_CODE = #{branchCode}
+			  </if>
+			</if>
+			<if test="cif_no!=null">
+	       		AND CIF.CIF_NO = #{cif_no}
+	  		</if>	
+			<choose>
+		        <when test='"Y".equals(lookupCivilId)'>
+		        	AND CIF.CIF_NO IS NOT NULL 
+				    AND CIF.ID_NO IS NOT NULL
+				</when>
+			</choose>
+		   AND EXISTS (SELECT 1
+		          FROM CIF_JOINT_DET
+		         WHERE CIF.COMP_CODE = CIF_JOINT_DET.COMP_CODE
+		           AND CIF_JOINT_DET.ID_NO like UPPER(#{idNoFilter})
+		           AND CIF_JOINT_DET.CIF_NO = CIF.CIF_NO)
+			
+
+		</if>
+		
+		
+		
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	
+	<select id="cifListCount" resultType="int" parameterType="accountSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="CIFLkpSelection"/>
+		<include refid="accountMapper.dynAccountListQuery"/>
+		<if test="fromDash == 1">
+		  <if test="branchCode!=null">
+		     AND CIF.BRANCH_CODE = #{branchCode}
+		  </if>
+		</if>
+				<include refid="cifRestriction"/>
+		<include refid="clubbedAccountChecking"/>
+
+		<choose>
+			<when test='id_no != null and !"".equals(id_no)'>
+				AND CIF.CIF_NO IN (SELECT X.CIF_NO FROM
+			       (SELECT CIF_NO
+			          FROM CIF
+			         WHERE COMP_CODE = #{compCode}
+			           AND (UPPER(ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%') OR
+			               UPPER(JOIN_ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%'))
+			        UNION
+			        SELECT CIF_CODE CIF_NO
+			          FROM CIF_CONTACT
+			         WHERE COMP_CODE = #{compCode}
+			           AND UPPER(CIF_CONTACT.ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%')
+			        UNION
+			        SELECT CIF_NO
+			          FROM CIF_AUTH_SIGNATORY
+			         WHERE COMP_CODE = #{compCode}
+			           AND UPPER(ID_NO) LIKE
+			               UPPER('%' || #{id_no, jdbcType = VARCHAR} || '%')) X)
+			 </when>
+		 </choose>
+		     
+		<if test="cifWhereQuery!=null">
+			AND CIF.CIF_NO IN ( 
+			 SELECT CIF_NO FROM CIF WHERE COMP_CODE=#{compCode}  AND (UPPER(ID_NO) LIKE UPPER('%'|| #{id_no,jdbcType=VARCHAR} ||'%') OR UPPER(JOIN_ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%'))
+		      UNION
+		     SELECT CIF_CODE CIF_NO FROM CIF_CONTACT
+		     WHERE COMP_CODE = #{compCode} AND  UPPER(CIF_CONTACT.ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+		     UNION
+		     SELECT CIF_NO FROM  CIF_AUTH_SIGNATORY WHERE COMP_CODE=#{compCode} AND UPPER(ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+		     )
+		</if>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="cifSearchFilter"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	
+	<resultMap id="cifLookupQueryListMap" type="cifVO">
+		<result property="CIF_NO" column="CIF_NO" />
+		<result property="BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		<result property="TEL" column="TEL" />
+		<result property="ECO_SECTOR" column="ECO_SECTOR" />
+		<result property="RELATION_CODE" column="RELATION_CODE" />
+		<result property="COUNTRY" column="COUNTRY" />
+		<result property="ID_NO" column="ID_NO" />
+		<result property="ID_NO2" column="ID_NO2" />
+		<result property="CIF_TYPE" column="CIF_TYPE" />
+		<result property="ONE_OBLIGOR" column="ONE_OBLIGOR" />
+		<result property="STATUS" column="STATUS" />
+		<result property="EMAIL_ID" column="EMAIL_ID" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="FIRST_NAME_ENG" column="FIRST_NAME_ENG" />
+		<result property="SEC_NAME_ENG" column="SEC_NAME_ENG" />
+		<result property="THIRD_NAME_ENG" column="THIRD_NAME_ENG" />
+		<result property="LAST_NAME_ENG" column="LAST_NAME_ENG" />
+		<result property="FIRST_NAME_AR" column="FIRST_NAME_AR" />
+		<result property="SEC_NAME_AR" column="SEC_NAME_AR" />
+		<result property="THIRD_NAME_AR" column="THIRD_NAME_AR" />
+		<result property="LAST_NAME_AR" column="LAST_NAME_AR" />
+		<result property="SEXE" column="SEXE" />
+		<result property="CARD_NAME" column="CARD_NAME" />
+		<result property="NICK_NAME" column="NICK_NAME" />
+		<result property="STATUS" column="STATUS" />
+		<result property="RESIDENT" column="RESIDENT" />
+		<result property="ADD_STRING2" column="ADD_STRING2" />
+		<result property="ADD_STRING3" column="ADD_STRING3" />
+		<result property="ADD_STRING4" column="ADD_STRING4" />
+		<result property="FULL_NAME_ENG" column="FULL_NAME_ENG" />
+		<result property="FULL_NAME_ARAB" column="FULL_NAME_ARAB" />
+		<result property="ID_TYPE" column="ID_TYPE" />
+		<result property="OCCUPATION" column="OCCUPATION" />
+		<result property="OCCUP_POSITION" column="OCCUP_POSITION" />
+		<result property="BIRTH_DATE" 		column="BIRTH_DATE" />
+	</resultMap>
+	<select id="cifLookupQueryList" resultMap="cifLookupQueryListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifLookupQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="cifLookupQueryListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifLookupQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="getcifLookupQueryObject" resultMap="cifLookupQueryListMap" parameterType="cifSC">
+	 	<include refid="cifLookupQuery" />
+	 	<include refid="cifLookupQueryUnique"/>
+	 </select>
+	 
+	<select id="returnCifByNo" parameterType="accountSC" resultType="cifVO">		
+		SELECT DISTINCT CIF.*
+		<include refid="accountMapper.dynAccountListQuery" />
+		   and CIF.CIF_NO = #{cif_no}   
+	</select>
+  <select id="checkCifValidation" parameterType="cifSC" resultType="int">
+	SELECT COUNT(1)
+	  FROM AMF
+	 WHERE CIF_SUB_NO = #{cif_no,jdbcType=NUMERIC}
+	   <if test="branchCode!=null">
+	   AND BRANCH_CODE =  #{branchCode}
+	   </if>
+	   <if test="currencyCode!=null">
+	   AND CURRENCY_CODE = #{currencyCode}
+	   </if>
+	   <if test="glCode!=null">
+	   AND GL_CODE = #{glCode}
+	   </if>
+  </select>	
+  
+	<resultMap id="cifInfoMap" type="cifCO">
+		<result property="SHORT_NAME" 					column="SHORT_NAME" />
+		<result property="cifVO.BRANCH_CODE" 			column="BRANCH_CODE" />
+		<result property="cifVO.CIF_NO" 				column="CIF_NO" />  
+		<result property="cifVO.STATUS" 				column="STATUS" />  
+		<result property="cifVO.ID_NO" 					column="ID_NO" />
+		<result property="cifVO.ADDRESS1_ENG" 			column="ADDRESS1_ENG" />
+		<result property="cifVO.BIRTH_DATE" 			column="BIRTH_DATE" /> 
+		<result property="cifVO.CIF_TYPE" 				column="CIF_TYPE" />
+		<result property="cifVO.TYPE" 					column="TYPE" />
+		<result property="ADDRESS1" 					column="ADDRESS1" />
+		<result property="ADDRESS2" 					column="ADDRESS2" />
+		<result property="ADDRESS3" 					column="ADDRESS3" />
+		<result property="cifVO.REL_OFF_ID" 			column="REL_OFF_ID" />
+		<result property="cifVO.REL_OFFICER" 			column="REL_OFFICER" />
+		<result property="cifVO.SHORT_NAME_ENG" 		column="SHORT_NAME_ENG" />
+		<result property="cifVO.SHORT_NAME_ARAB"		column="SHORT_NAME_ARAB" />
+		<result property="cifVO.LONG_NAME_ENG" 			column="LONG_NAME_ENG" />	
+		<result property="cifVO.LONG_NAME_ARAB"			column="LONG_NAME_ARAB" />
+		<result property="cif1VO.PASPORT_NO" 			column="PASPORT_NO" />
+		<result property="cif1VO.PASSPORT_NO2" 			column="PASSPORT_NO2" />
+		<result property="cif1VO.PASSPORT_NO3" 			column="PASSPORT_NO3" />
+		<result property="cif1VO.PASSPORT_EXPIRY_DATE"	column="PASSPORT_EXPIRY_DATE" />
+		<result property="cif1VO.PASSPORT_EXPIRY_DATE2" column="PASSPORT_EXPIRY_DATE2" />
+		<result property="cif1VO.PASSPORT_EXPIRY_DATE3" column="PASSPORT_EXPIRY_DATE3" />
+		<result property="cifVO.FIRST_NAME_ENG" 		column="FIRST_NAME_ENG" />
+		<result property="cifVO.SEC_NAME_ENG"   		column="SEC_NAME_ENG" />
+		<result property="cifVO.THIRD_NAME_ENG" 		column="THIRD_NAME_ENG" />
+		<result property="cifVO.LAST_NAME_ENG"  		column="LAST_NAME_ENG" />
+		<result property="cifVO.FIRST_NAME_AR" 			column="FIRST_NAME_AR" />
+		<result property="cifVO.SEC_NAME_AR"    		column="SEC_NAME_AR" />
+		<result property="cifVO.THIRD_NAME_AR"  		column="THIRD_NAME_AR" />
+		<result property="cifVO.LAST_NAME_AR"   		column="LAST_NAME_AR" />		 	
+		<result property="cifVO.NATION_CODE"			column="NATION_CODE" />
+		<result property="natioName" 					column="NATIO_NAME" />
+		<result property="ID_TYPE_NAME" 				column="ID_TYPE_NAME" />
+		<result property="cifVO.ID_TYPE"				column="ID_TYPE" />
+		<result property="cifVO.ID_EXPIRY_DATE" 		column="ID_EXPIRY_DATE" />	 			 		
+		<result property="cifVO.ID_DELIVERY_DATE" 		column="ID_DELIVERY_DATE" />	 			 		
+		<result property="cifVO.ID_EXPIRY_DATE_HIJIRI"	column="ID_EXPIRY_DATE_HIc JIRI" />
+		<result property="cif1VO.PASS_EXP_DATE_HIJIRI" 	column="PASS_EXP_DATE_HIJIRI" />
+		<result property="cif1VO.PASS_EXP_DATE2_HIJIRI" column="PASS_EXP_DATE2_HIJIRI" />
+		<result property="cif1VO.PASS_EXP_DATE3_HIJIRI" column="PASS_EXP_DATE3_HIJIRI" />
+		<result property="cifVO.BIRTH_DATE_HIJIRI"		column="BIRTH_DATE_HIJIRI" />
+		<result property="cifVO.TEL"					column="TEL" />
+		<result property="cifVO.SEXE" 					column="SEXE" />
+		<result property="cifVO.MARITAL_STATUS" 		column="MARITAL_STATUS" />
+		<result property="cifVO.PRIORITY_CODE" 			column="PRIORITY_CODE" />
+		<result property="cifVO.ECO_SECTOR"	 			column="ECO_SECTOR" />
+		<result property="cifVO.FORBID_TRX"  			column="FORBID_TRX" />
+		<result property="cifVO.BLACK_LISTED" 			column="BLACK_LISTED" />
+		<result property="cifVO.LANGUAGE"				column="LANGUAGE" />
+		<result property="cifVO.ID_DELIVERY_DATE"	 	column="ID_DELIVERY_DATE" />
+		<result property="cifVO.ID_DELIVERED_BY"	 	column="ID_DELIVERED_BY" />
+		<result property="cifVO.ID_TYPE2" 				column="ID_TYPE2" />
+		<result property="cifVO.ID_NO2" 				column="ID_NO2" />
+		<result property="cifVO.CHQ_CLEAR" 				column="CHQ_CLEAR" />
+		<result property="cifVO.RESIDENT" 				column="RESIDENT" />
+		<result property="cifVO.COUNTRY" 				column="COUNTRY" />
+		<result property="cifVO.ADD_STRING3" 			column="ADD_STRING3" />
+		<result property="cifVO.ADD_STRING4" 			column="ADD_STRING4" />
+		<result property="cifVO.TYPE" 					column="TYPE" />
+		<result property="CIF_TYPE_DESC" 				column="CIF_TYPE_DESC" />
+		<result property="COUNTRY_DESC" 				column="COUNTRY_DESC" />
+		<result property="cifExtendedVO.COUNTRY_OF_ISSUANCE" column="COUNTRY_OF_ISSUANCE" />
+		<result property="countryOfIssuanceDesc" 		column="countryOfIssuanceDesc" />       
+		<result property="cifExtendedVO.FULL_NAME_ENG" 	column="FULL_NAME_ENG" />	
+		<result property="cifExtendedVO.FULL_NAME_ARAB" column="FULL_NAME_ARAB" />	
+		<result property="cifVO.PEPS" 					column="PEPS" />	
+		<result property="cif1VO.COUNTRY_OF_ISSUANCE" 	column="COUNTRY_OF_ISSUANCE1" />	
+		<result property="cif1VO.COUNTRY_OF_ISSUANCE2" 	column="COUNTRY_OF_ISSUANCE2" />	
+		<result property="cif1VO.COUNTRY_OF_ISSUANCE3" 	column="COUNTRY_OF_ISSUANCE3" />	
+		<result property="cif1CountryOfIssuanceDesc" 	column="cif1CountryOfIssuanceDesc" />	
+		<result property="cif1CountryOfIssuanceDesc2" 	column="cif1CountryOfIssuanceDesc2" />	
+		<result property="cif1CountryOfIssuanceDesc3" 	column="cif1CountryOfIssuanceDesc3" />	
+				
+		<result property="cifVO.REASON_CODE" 			column="REASON_CODE" />
+	</resultMap>
+	
+  	<select id="returnCifInfo" resultMap="cifInfoMap" parameterType="cifSC" >
+ 		 SELECT CIF.BRANCH_CODE,
+ 		 		CIF.CIF_NO , 
+				CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN CIF.SHORT_NAME_ENG ELSE CIF.SHORT_NAME_ARAB END SHORT_NAME, 		 
+			 	CIF.STATUS,
+			 	CIF.ID_NO ,
+			 	ADDRESS1_ENG ,
+			 	ID_DELIVERY_DATE,
+			 	BIRTH_DATE	,
+			 	CIF.CIF_TYPE,
+			 	CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS1_ENG ELSE ADDRESS1_ARAB END ADDRESS1,
+			 	CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS2_ENG ELSE ADDRESS2_ARAB END ADDRESS2,
+			 	CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ADDRESS3_ENG ELSE ADDRESS3_ARAB END ADDRESS3,
+			 	REL_OFF_ID,
+			 	REL_OFFICER,		 
+				CIF.SHORT_NAME_ENG,
+				CIF.SHORT_NAME_ARAB,
+				CIF.LONG_NAME_ENG,
+				CIF.LONG_NAME_ARAB,		
+				CIF1.PASPORT_NO,
+				CIF1.PASSPORT_NO2,
+				CIF1.PASSPORT_NO3,
+				CIF1.PASSPORT_EXPIRY_DATE,
+				CIF1.PASSPORT_EXPIRY_DATE2,
+				CIF1.PASSPORT_EXPIRY_DATE3,
+				CIF.FIRST_NAME_ENG,
+				CIF.SEC_NAME_ENG,
+				CIF.THIRD_NAME_ENG,
+				CIF.LAST_NAME_ENG,
+				CIF.FIRST_NAME_AR,
+				CIF.SEC_NAME_AR,
+				CIF.THIRD_NAME_AR,
+				CIF.LAST_NAME_AR,		 	
+				CIF.NATION_CODE,
+				CIF.TYPE,
+				CIF.PEPS,
+				(SELECT CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END
+		           FROM NATIONALITY  
+		          WHERE NATIONALITY.COMP_CODE = #{comp_code}   
+		            AND  NATIONALITY.CODE = CIF.NATION_CODE )NATIO_NAME ,
+				CIF.ID_TYPE					 ,
+				(SELECT CASE WHEN #{lang,jdbcType=VARCHAR} = 'L' THEN ID_TYPES.DESC_ENG ELSE ID_TYPES.DESC_ARAB END
+		           FROM ID_TYPES  
+		          WHERE ID_TYPES.COMP_CODE = #{comp_code}   
+		            AND ID_TYPES.CODE = CIF.ID_TYPE )ID_TYPE_NAME ,
+				CIF.ID_EXPIRY_DATE 			 ,				 			 		
+				CIF.ID_EXPIRY_DATE_HIJIRI	 ,
+				CIF1.PASS_EXP_DATE_HIJIRI,
+				CIF1.PASS_EXP_DATE2_HIJIRI,
+				CIF1.PASS_EXP_DATE3_HIJIRI,
+				CIF.BIRTH_DATE_HIJIRI,
+				CIF.TEL,
+				CIF.SEXE,
+				CIF.MARITAL_STATUS,
+				PRIORITY_CODE,
+				ECO_SECTOR, 
+				FORBID_TRX,
+				BLACK_LISTED,
+				LANGUAGE,
+				ID_DELIVERY_DATE,
+				ID_DELIVERED_BY,
+				CIF.ID_TYPE2,
+				CIF.ID_NO2,
+				CHQ_CLEAR,
+				CIF.RESIDENT,
+				CIF.COUNTRY,
+				CIF.ADD_STRING3,
+				CIF.ADD_STRING4,
+				CIF_EXTENDED.COUNTRY_OF_ISSUANCE,
+				(SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF_EXTENDED.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF_EXTENDED.COUNTRY_OF_ISSUANCE) countryOfIssuanceDesc,
+				CIF1.COUNTRY_OF_ISSUANCE COUNTRY_OF_ISSUANCE1,
+				(SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF_EXTENDED.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE) cif1CountryOfIssuanceDesc,
+				CIF1.COUNTRY_OF_ISSUANCE2,
+				(SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF_EXTENDED.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE2) cif1CountryOfIssuanceDesc2,
+				CIF1.COUNTRY_OF_ISSUANCE3,
+				(SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF_EXTENDED.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE3) cif1CountryOfIssuanceDesc3,
+								
+				REASON_CODE
+		FROM CIF LEFT OUTER JOIN CIF1	ON  CIF.COMP_CODE = CIF1.COMP_CODE AND
+											 CIF.CIF_NO	   = CIF1.CIF_NO 
+		LEFT OUTER JOIN CIF_EXTENDED  ON  CIF.COMP_CODE = CIF_EXTENDED.COMP_CODE AND
+                       CIF.CIF_NO     = CIF_EXTENDED.CIF_NO									 
+		 WHERE CIF.CIF_NO = #{cif_no}
+		   AND CIF.COMP_CODE = #{comp_code}
+	</select>
+	
+	
+	<select id="returnCIF" parameterType="cifSC" resultType="cifVO">
+		SELECT CIF.BRANCH_CODE,
+			   CIF.SHORT_NAME_ENG,
+		       CIF.SHORT_NAME_ARAB,
+		       CIF.LONG_NAME_ENG,
+		       CIF.LONG_NAME_ARAB,
+		       CIF.STATUS,
+		       CIF.ID_TYPE,
+		       CIF.TEL,
+		       CIF.ID_NO,
+		       CIF.LANGUAGE,
+		       CIF.CIF_TYPE,
+		       CIF.COUNTRY,
+		       CIF.BLACK_LISTED,
+		       CIF.ID_DELIVERY_DATE,
+		       CIF.NATION_CODE,
+		       CIF.PRIORITY_CODE,
+		       CIF.ADDRESS1_ENG,
+		       CIF.ADDRESS1_ARAB,
+		       CIF.ADDRESS2_ENG,
+		       CIF.ADDRESS2_ARAB,
+		       CIF.ADDRESS3_ENG,
+		       CIF.ADDRESS3_ARAB,
+		       CIF.CIF_NO,
+		       CIF.CARD_NAME,
+		       CIF.ADD_STRING3,
+		       CIF.ADD_STRING4,
+		       CIF.CIF_COMPLETE,
+		       CIF.BIRTH_DATE,
+		       CIF.ADDITIONAL_REFERENCE,
+		       CIF.REASON_CODE
+		  FROM CIF
+		 WHERE CIF_NO = #{cif_no}
+		   AND COMP_CODE = #{comp_code}
+		   <if test="idTypeCode != null and idTypeCode != emptyBigDecimalValue" >
+		 	  AND CIF.ID_TYPE = #{idTypeCode}
+		 	</if>
+	</select>
+	
+	
+	 <sql id="passportInfoFromCIFQuery" >
+		<![CDATA[
+		   SELECT
+					 CIF1.COMP_CODE,
+					 CIF1.CIF_NO,
+					 CIF1.PASPORT_NO,
+					 CIF1.PASSPORT_ISSUE_DATE,
+					 CIF1.PASSPORT_ISSUE_PLACE,
+					 CIF1.PASSPORT_EXPIRY_DATE,
+					 CIF1.PASSPORT_NO2,
+					 CIF1.PASSPORT_ISSUE_DATE2,
+					 CIF1.PASSPORT_ISSUE_PLACE2,
+					 CIF1.PASSPORT_EXPIRY_DATE2,
+					 CIF1.PASSPORT_NO3,
+					 CIF1.PASSPORT_ISSUE_DATE3,
+					 CIF1.PASSPORT_ISSUE_PLACE3,
+					 CIF1.PASSPORT_EXPIRY_DATE3,
+					 CIF1.PASS_ISSUE_DATE_HIJIRI,
+					 CIF1.PASS_EXP_DATE_HIJIRI,
+					 CIF1.PASS_ISSUE_DATE2_HIJIRI,
+					 CIF1.PASS_EXP_DATE2_HIJIRI,
+					 CIF1.PASS_ISSUE_DATE3_HIJIRI,
+					 CIF1.PASS_EXP_DATE3_HIJIRI,
+					 CIF1.COUNTRY_OF_ISSUANCE,
+					 (SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF1.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE) cif1VOCountryOfIssuanceDesc,
+					 CIF1.COUNTRY_OF_ISSUANCE2,
+					  (SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF1.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE2) cif1VOCountryOfIssuance2Desc,
+					 CIF1.COUNTRY_OF_ISSUANCE3,
+					  (SELECT COUNTRIES.LONG_DESC_ENG FROM  COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF1.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF1.COUNTRY_OF_ISSUANCE3) cif1VOCountryOfIssuance3Desc
+					  
+			FROM  CIF1 
+			WHERE	 (CIF1.COMP_CODE  = ]]>
+				<choose>
+		 			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+		 			<otherwise>#{compCode}</otherwise>
+		 		</choose>)
+		 	<![CDATA[
+			 AND	(CIF1.CIF_NO  = #{cif_no}) 
+		]]>	 
+ 	</sql>
+ 	
+	<resultMap id="passportInfoFromCIFMap" type="fomCO">
+		<id column="CIF_NO" property="cif1VO.CIF_NO" />
+	    <id column="COMP_CODE" property="cif1VO.COMP_CODE" />
+		<result column="PASPORT_NO" property="cif1VO.PASPORT_NO" />
+	    <result column="PASSPORT_ISSUE_DATE" property="cif1VO.PASSPORT_ISSUE_DATE" />
+	    <result column="PASSPORT_ISSUE_PLACE" property="cif1VO.PASSPORT_ISSUE_PLACE" />
+	    <result column="PASSPORT_EXPIRY_DATE" property="cif1VO.PASSPORT_EXPIRY_DATE" />
+	    <result column="PASSPORT_NO2" property="cif1VO.PASSPORT_NO2" />
+	    <result column="PASSPORT_ISSUE_DATE2" property="cif1VO.PASSPORT_ISSUE_DATE2" />
+	    <result column="PASSPORT_ISSUE_PLACE2" property="cif1VO.PASSPORT_ISSUE_PLACE2" />
+	    <result column="PASSPORT_EXPIRY_DATE2" property="cif1VO.PASSPORT_EXPIRY_DATE2" />
+	    <result column="PASSPORT_NO3" property="cif1VO.PASSPORT_NO3" />
+	    <result column="PASSPORT_ISSUE_DATE3" property="cif1VO.PASSPORT_ISSUE_DATE3" />
+	    <result column="PASSPORT_ISSUE_PLACE3" property="cif1VO.PASSPORT_ISSUE_PLACE3" />
+	    <result column="PASSPORT_EXPIRY_DATE3" property="cif1VO.PASSPORT_EXPIRY_DATE3" />
+		<result column="PASS_ISSUE_DATE_HIJIRI" property="cif1VO.PASS_ISSUE_DATE_HIJIRI" />
+	    <result column="PASS_EXP_DATE_HIJIRI" property="cif1VO.PASS_EXP_DATE_HIJIRI" />
+	    <result column="PASS_ISSUE_DATE2_HIJIRI" property="cif1VO.PASS_ISSUE_DATE2_HIJIRI" />
+	    <result column="PASS_EXP_DATE2_HIJIRI" property="cif1VO.PASS_EXP_DATE2_HIJIRI" />
+	    <result column="PASS_ISSUE_DATE3_HIJIRI" property="cif1VO.PASS_ISSUE_DATE3_HIJIRI" />
+	    <result column="PASS_EXP_DATE3_HIJIRI" property="cif1VO.PASS_EXP_DATE3_HIJIRI" />
+	    <result column="COUNTRY_OF_ISSUANCE" property="cif1VO.COUNTRY_OF_ISSUANCE" />
+	    <result column="cif1VOCountryOfIssuanceDesc" property="cif1VOCountryOfIssuanceDesc" />
+	    <result column="COUNTRY_OF_ISSUANCE2" property="cif1VO.COUNTRY_OF_ISSUANCE2" />
+	    <result column="cif1VOCountryOfIssuance2Desc" property="cif1VOCountryOfIssuance2Desc" />
+	    <result column="COUNTRY_OF_ISSUANCE3" property="cif1VO.COUNTRY_OF_ISSUANCE3" />
+	    <result column="cif1VOCountryOfIssuance3Desc" property="cif1VOCountryOfIssuance3Desc" />	    
+	</resultMap>
+	
+    <select id="passportInfoFromCIF" resultMap="passportInfoFromCIFMap" parameterType="cifSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="passportInfoFromCIFQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+   </select>
+   
+   <sql id="select_cifNoAcc">
+	   SELECT CIF.CIF_NO,
+				 CIF.SHORT_NAME_ENG,
+				 CIF.LONG_NAME_ENG,
+				 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+				 CIF.TEL,
+				 CIF.RESIDENT,
+				 CIF.ID_NO,
+				 CIF.CIF_TYPE,
+				 CIF.ADDITIONAL_REFERENCE
+		FROM  CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		WHERE	 (CIF.COMP_CODE  = #{comp_code})
+	 	AND	(CIF.STATUS  = 'A')
+   </sql>
+
+   <select id="cifNoAccList" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_cifNoAcc" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="cifNoAccListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_cifNoAcc" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnCIFDependencyById" parameterType="cifSC" resultType="cifVO">
+  		SELECT
+			  	CIF_NO,
+			  	CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN SHORT_NAME_ENG ELSE SHORT_NAME_ARAB END SHORT_NAME_ENG,
+			  	BLACK_LISTED		  
+		FROM  	CIF
+		WHERE	CIF.COMP_CODE  	= #{comp_code}
+	 	AND		CIF.STATUS  	= 'A'
+	 	AND		CIF_NO 			= #{cif_no}
+  	</select>
+
+
+	<resultMap id="cifClientDetailsInfoMap" type="cifCO">
+		<result property="cifVO.SHORT_NAME_ENG" 	column="SHORT_NAME_ENG" />
+		<result property="cifVO.COUNTRY" 			column="COUNTRY" />
+		<result property="cifVO.CARD_NAME" 			column="CARD_NAME" />
+		<result property="cifVO.ID_NO" 				column="ID_NO" />  
+		<result property="cifVO.ID_TYPE"			column="ID_TYPE" />		 	
+		<result property="cifVO.NATION_CODE"		column="NATION_CODE" />
+		<result property="cifVO.BIRTH_DATE" 		column="BIRTH_DATE" /> 
+		<result property="cifVO.OCCUP_POSITION" 	column="OCCUP_POSITION" /> 
+		<result property="cifVO.EDUC_LEVEL" 		column="EDUC_LEVEL" /> 
+		<result property="cifVO.DIVISION" 			column="DIVISION" /> 
+		<result property="cifVO.DEPT" 				column="DEPT" /> 
+		<result property="cifVO.MONTHLY_SALARY" 	column="MONTHLY_SALARY" /> 
+		<result property="cifVO.TYPE" 				column="TYPE" /> 
+		<result property="cifVO.CIF_TYPE" 			column="CIF_TYPE" /> 
+		<result property="cifVO.SEXE" 				column="SEXE" /> 
+		<result property="cifVO.BLACK_LISTED" 		column="BLACK_LISTED" /> 
+		<result property="rifcttVO.JOINT_ACCOUNTS" 	column="JOINT_ACCOUNTS" /> 
+		<result property="rifcttVO.STAFF" 			column="STAFF" /> 
+	</resultMap>
+	
+	<select id="cifClientDetailsInfo" resultMap="cifClientDetailsInfoMap" parameterType="cifSC">
+		SELECT CASE WHEN #{lang} = 'L' THEN SHORT_NAME_ENG ELSE SHORT_NAME_ARAB END SHORT_NAME_ENG,
+		       CIF.COUNTRY,
+		       CIF.CARD_NAME,
+		       CIF.ID_NO,
+		       CIF.ID_TYPE,
+		       CIF.NATION_CODE,
+		       CIF.BIRTH_DATE,
+		       CIF.OCCUP_POSITION,
+		       CIF.DIVISION,
+		       CIF.DEPT,
+		       CIF.MONTHLY_SALARY,
+		       CIF.EDUC_LEVEL,
+		       CIF.TYPE,
+		       CIF.CIF_TYPE,
+		       CIF.SEXE,
+		       CIF.BLACK_LISTED,
+		       RIFCTT.JOINT_ACCOUNTS,
+		       RIFCTT.STAFF
+		  FROM CIF, RIFCTT
+		 WHERE CIF.COMP_CODE = RIFCTT.COMP_CODE
+		   AND CIF.CIF_TYPE  = RIFCTT.TYPE_CODE
+		   AND CIF.COMP_CODE = #{comp_code}
+		   AND CIF.CIF_NO 	 = #{cif_no}
+		   AND CIF.STATUS 	 = 'A'
+		   AND RIFCTT.CLIENT = 'Y'
+	</select>
+
+   
+	<sql id="selectCifBank">
+	 SELECT CIF.CIF_NO,
+			CIF.SHORT_NAME_ENG,
+			CIF.LONG_NAME_ENG,
+			CIF.SHORT_NAME_ARAB,
+			CIF.LONG_NAME_ARAB,
+			CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+			CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+			CIF.ADDITIONAL_REFERENCE,
+			CIF.STATUS
+	</sql>
+	<sql id="selectCifBankCondition">
+	   FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO 
+			,RIFCTT
+	  WHERE CIF.COMP_CODE = #{comp_code}
+		AND CIF.COMP_CODE = RIFCTT.COMP_CODE
+		AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+		<if test="status != null and !''.equals(status)" >
+		AND CIF.STATUS = #{status}
+		</if>
+		AND RIFCTT.BANK = 'Y'
+		<if test="cif_no != null and cif_no != emptyBigDecimalValue"> 
+		   AND CIF.CIF_NO = #{cif_no}
+		</if>
+   </sql>
+
+	<resultMap id="cifBankLookupQueryListMap" type="cifVO">
+		<result property="CIF_NO" column="CIF_NO" />
+		<result property="SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		<result property="FULL_NAME_ENG" column="FULL_NAME_ENG" />
+		<result property="FULL_NAME_ARAB" column="FULL_NAME_ARAB" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="STATUS" column="STATUS" />
+	</resultMap>
+
+	<select id="cifBankList" resultMap="cifBankLookupQueryListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectCifBank" />
+		<include refid="selectCifBankCondition" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cifBankListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectCifBank" />
+		<include refid="selectCifBankCondition" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnCifNameByCifNo" parameterType="cifSC" resultType="cifVO">
+	SELECT CASE WHEN #{lang} IN ( 'EN' , 'FR' ) THEN SHORT_NAME_ENG ELSE SHORT_NAME_ARAB END SHORT_NAME_ENG,
+		   CASE WHEN #{lang} IN ( 'EN' , 'FR' )  THEN LONG_NAME_ENG ELSE LONG_NAME_ARAB END LONG_NAME_ENG,
+		   CIF_NO
+	FROM   CIF
+	WHERE  CIF_NO    = #{cif_no}
+	AND    COMP_CODE = #{compCode}
+	</select>
+	
+	<sql id = "getGlType">
+	 	 <![CDATA[
+	 	 	SELECT  GL_TYPE FROM  GEN_LEDGER 
+			WHERE	
+			(COMP_CODE  = #{comp_code})
+			AND	 (GL_CODE  = #{glCode}) 
+	 	 ]]> 
+	</sql>	
+	<select id="selectGlType" resultType="String" parameterType="cifSC">
+		<include refid="getGlType" />
+	</select>	
+	<sql id="selectCIFforJointAcc">
+	SELECT DISTINCT
+			 CIF.CIF_NO,
+			 CIF.SHORT_NAME_ENG,
+			 CIF.LONG_NAME_ENG,
+			 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+			 CIF.TEL,
+			 CIF.RESIDENT,
+			 CIF.ID_NO,
+			 CIF.CIF_TYPE,
+			 CIF.BRANCH_CODE,
+			 CIF.ADDITIONAL_REFERENCE
+	FROM  	 CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	WHERE	(CIF.COMP_CODE  = #{comp_code})
+	<if test="branchCode!= null and branchCode != emptyBigDecimalValue">
+	AND		((CASE WHEN #{branchCode} IS NULL THEN  0 ELSE #{branchCode}+0 END   = 0)
+	OR		(CIF.BRANCH_CODE  = #{branchCode}))
+	</if>
+	AND		(CIF.STATUS  = 'A')
+	 
+   </sql>
+   
+   <select id="jointAccCIFList" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectCIFforJointAcc" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="jointAccCIFListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectCIFforJointAcc" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+	
+	<resultMap id="validateCifByAmfRetMap" type="accountCO">
+		<result property="amfVO.BRANCH_CODE"          column="BRANCH_CODE" />
+		<result property="amfVO.CURRENCY_CODE"        column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE"              column="GL_CODE" />
+		<result property="amfVO.CIF_SUB_NO"           column="CIF_SUB_NO" />
+		<result property="amfVO.SL_NO"                column="SL_NO" />
+		<result property="amfVO.ACC_BC"               column="ACC_BC" />
+		<result property="amfVO.BRIEF_NAME_ENG"       column="BRIEF_NAME_ENG" />   
+        <result property="amfVO.LONG_NAME_ENG"        column="AMF_LONG_NAME_ENG" /> 
+        <result property="amfVO.STATUS"               column="STATUS" />
+		<result property="amfVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="amfVO.IBAN_ACC_NO" 		  column="IBAN_ACC_NO" />
+		<result property="amfVO.GMI_FLAG"             column="GMI_FLAG" />    
+		<result property="amfVO.AC_SRL"          	  column="AC_SRL" />  
+		<result property="amfVO.DATE_OPND"            column="DATE_OPND" />
+ 		<result property="amfVO.MATURITY_DTE"         column="MATURITY_DTE" />
+        <result property="rifattVO.CATEGORY"          column="CATEGORY" />   
+	</resultMap>
+		
+	<sql id = "validateCifByAmfRet_syb">
+	 	 <![CDATA[
+	 	 	SELECT distinct  AMF.COMP_CODE,
+	  						 AMF.BRANCH_CODE,
+							 AMF.CURRENCY_CODE,   
+					         AMF.GL_CODE,   
+					         AMF.CIF_SUB_NO,   
+					         AMF.SL_NO,   
+					         AMF.ACC_BC,   
+					         AMF.BRIEF_NAME_ENG,   
+					         AMF.LONG_NAME_ENG,   
+					         AMF.STATUS , 
+							 AMF.ADDITIONAL_REFERENCE,  
+							 AMF.IBAN_ACC_NO,  
+							 AMF.GMI_FLAG,
+							 AMF.AC_SRL,
+							 AMF.DATE_OPND,
+							 AMF.MATURITY_DTE,
+							 RIFATT.CATEGORY
+	    	 FROM GEN_LEDGER,AMF ,CIF,RIFCTT,RIFATT
+	    	WHERE ( AMF.COMP_CODE	= GEN_LEDGER.COMP_CODE ) AND
+			  ( AMF.GL_CODE	    = GEN_LEDGER.GL_CODE)    AND
+			  ( AMF.COMP_CODE  *= RIFATT.COMP_CODE) 	 AND
+			  ( AMF.GL_CODE    *= RIFATT.TYPE_CODE) 	 AND 
+	          ( AMF.COMP_CODE  *= CIF.COMP_CODE) 	 	 AND
+			  ( AMF.CIF_SUB_NO *= CIF.CIF_NO) 			 AND
+			  ( CIF.COMP_CODE  *= RIFCTT.COMP_CODE ) 	 AND
+			  ( CIF.CIF_TYPE   *= RIFCTT.TYPE_CODE )  	 AND
+			  ( AMF.COMP_CODE     = #{compCode}) 		 AND  
+	          ( AMF.ACC_BC        = CASE WHEN #{BS_CONTRA}  		= 'X' THEN AMF.ACC_BC 			ELSE #{BS_CONTRA}			END) AND  
+			  (  	( #{GMI_FLAG}  = 'X') 											OR
+	 			  	( #{GMI_FLAG}  = 'N' AND AMF.GMI_FLAG IN ('G','F')) 			OR
+					( #{GMI_FLAG} IN ('I','F','G') AND AMF.GMI_FLAG = #{GMI_FLAG} )
+			  ) AND 
+	         ( AMF.STATUS IN ( 'A', 'I','T', 'P' )) AND
+			 ( AMF.ACC_BC 		  <> 'S' ) AND
+			 ( 	
+				(#{affectPassChq} = '-1' )		OR 
+				(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+				(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+				(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2'			 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+					 (GEN_LEDGER.AFFECT_FLAG 	= '2' 		 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')))
+				)
+			  ) AND
+			  (  (#{cifType} = 'X') 									OR 
+					(#{cifType} = 'C' AND RIFCTT.CLIENT = 'Y'     	) 	OR 
+					(#{cifType} = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+			  ) 
+			]]> 
+			<if test="branchCode != null" >
+		 	  AND AMF.BRANCH_CODE = #{branchCode}
+		 	</if>
+		 	<if test="currencyCode != null" >
+		 	  AND AMF.CURRENCY_CODE != #{currencyCode}
+		 	</if>
+		 	  AND AMF.GL_CODE = #{glCode}
+		 	  AND AMF.CIF_SUB_NO = #{cif_no}
+	 	 
+	 	 	<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+		 <include refid="accountMapper.accRestriction"/> 
+	</sql>	
+	
+	<sql id = "validateCifByAmfRet_ora"><![CDATA[
+	  	SELECT distinct AMF.COMP_CODE,
+	  					AMF.BRANCH_CODE,
+						AMF.CURRENCY_CODE,   
+			         	AMF.GL_CODE,   
+			         	AMF.CIF_SUB_NO,   
+			         	AMF.SL_NO,   
+			         	AMF.ACC_BC,   
+			         	AMF.BRIEF_NAME_ENG,   
+			         	AMF.LONG_NAME_ENG,   
+			         	AMF.STATUS ,
+						AMF.ADDITIONAL_REFERENCE,  
+		     			AMF.IBAN_ACC_NO,  
+						AMF.GMI_FLAG,
+						AMF.AC_SRL,
+						AMF.DATE_OPND,
+						AMF.MATURITY_DTE,
+						RIFATT.CATEGORY
+    	 FROM AMF  , RIFATT , RIFCTT, CIF , GEN_LEDGER
+   		WHERE ( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE	 ) AND
+			( AMF.GL_CODE			= GEN_LEDGER.GL_CODE		 ) AND
+			( AMF.COMP_CODE     = RIFATT.COMP_CODE    (+) ) AND
+			( AMF.GL_CODE       = RIFATT.TYPE_CODE 	(+) ) AND
+			( AMF.COMP_CODE     = CIF.COMP_CODE 	   (+) ) AND
+			( AMF.CIF_SUB_NO	  = CIF.CIF_NO 	  	   (+) ) AND
+			( CIF.COMP_CODE	  = RIFCTT.COMP_CODE 	(+) ) AND
+			( CIF.CIF_TYPE		  = RIFCTT.TYPE_CODE 	(+) ) AND
+			( AMF.COMP_CODE     = #{compCode}				) AND 
+			( AMF.ACC_BC        = CASE WHEN 
+														( CASE WHEN #{BS_CONTRA} IS NULL THEN 'X'  else #{BS_CONTRA} END)  = 'X' THEN AMF.ACC_BC 
+												ELSE #{BS_CONTRA}
+												END  
+			) AND  
+			(  ( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'X' 																) OR
+ 			  	( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'N' 					AND AMF.GMI_FLAG IN ('G','F')) OR
+				( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END IN ('I','F','G') 	AND AMF.GMI_FLAG = #{GMI_FLAG} )
+			) AND 
+         ( AMF.STATUS 		  IN ( 'A', 'I','T', 'P' )
+			) AND
+			( AMF.ACC_BC 		  <> 'S' 				  	  
+			) AND
+			( 	
+				(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' )		OR 
+				(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+				(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+				(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2'			 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+												 (GEN_LEDGER.AFFECT_FLAG 	= '2' 		 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+												)
+				)
+			) AND
+			(  (CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X'												) OR 
+				(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'C' AND RIFCTT.CLIENT = 'Y'     	) OR 
+				(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+			)
+			]]>
+			<if test="branchCode != null" >
+		 	  AND AMF.BRANCH_CODE = #{branchCode}
+		 	</if>
+		 	<if test="currencyCode != null" >
+		 	  AND AMF.CURRENCY_CODE != #{currencyCode}
+		 	</if>
+		 	  AND AMF.GL_CODE = #{glCode}
+		 	  AND AMF.CIF_SUB_NO = #{cif_no}
+		 	<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+		 <include refid="accountMapper.accRestriction"/>   
+	</sql>
+	
+	<select id="selectCifByAmfRet" parameterType="cifSC" resultMap="validateCifByAmfRetMap">
+		<choose>
+        	<when test="isSybase == 1" >
+        		<include refid="validateCifByAmfRet_syb"/>
+        		</when>
+        	<otherwise >
+        		<include refid="validateCifByAmfRet_ora"/>
+        	</otherwise>
+        </choose>
+	</select>	
+	
+	<select id="checkAdditionalReference" parameterType="cifSC" resultType="int">
+		<include refid="checkAdditionalReference"/>
+	</select>
+	
+	<sql id="checkAdditionalReference">
+		SELECT MIN(CIF.CIF_NO)
+		FROM   CIF 
+		WHERE	 CIF.ADDITIONAL_REFERENCE  = #{addRef,jdbcType=VARCHAR}
+	</sql>
+	
+	<select id="returnMinCIFCompRef" parameterType="micrSC" resultType="java.math.BigDecimal">
+		<include refid="checkAdditionalReference"/>
+			AND COMP_CODE = #{compCode}
+	</select>
+	
+	<select id="returnCIFBankForeignCheques" parameterType="micrSC" resultType="java.math.BigDecimal">
+		SELECT MIN(CIF_NO)
+		FROM CIF  
+		WHERE COMP_CODE = #{compCode} 
+			AND	ADD_STRING2 = #{bank} 			
+			AND	(ADD_STRING3 = #{instRef} OR
+			<choose >
+ 				<when test="isSybase == 1" >
+    				#{instRefDec} BETWEEN CONVERT(NUMERIC, ADD_STRING3) AND CONVERT(NUMERIC, ADD_STRING4)
+ 				</when>
+ 				<otherwise >
+    				#{instRefDec, jdbcType=NUMERIC} BETWEEN TO_NUMBER(ADD_STRING3) AND TO_NUMBER(ADD_STRING4)
+				</otherwise>
+			</choose>
+			)
+	</select>
+	
+	<select id="returnCIFName" parameterType="micrSC" resultType="java.lang.String">
+		SELECT CASE WHEN #{preferredLanguage} = 'L' THEN SHORT_NAME_ENG ELSE SHORT_NAME_ARAB END
+		FROM CIF  
+		WHERE COMP_CODE = #{compCode} 
+			AND	CIF_NO = #{cifNo}		
+	</select>
+	
+	<select id="returnCIFNameAIB" resultMap="returnCIFNameAIBMap" parameterType="micrSC" >
+		SELECT CIF_NO, CASE WHEN #{preferredLanguage} = 'L' THEN SHORT_NAME_ENG ELSE SHORT_NAME_ARAB END SHORT_NAME
+		FROM CIF  
+		WHERE COMP_CODE = #{compCode}
+			AND	ADDITIONAL_REFERENCE = #{instRef}
+	</select>
+	
+	<resultMap id="returnCIFNameAIBMap" type="cifVO">
+		<result property="CIF_NO"			column="CIF_NO" />
+		<result property="SHORT_NAME_ENG"	column="SHORT_NAME" />
+	</resultMap>
+	
+	<select id="cifAllAmfList" resultMap="AMF.BaseResultMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifAllAmfListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cifAllAmfListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifAllAmfListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+		<sql id="cifAllAmfListCommon">
+		<![CDATA[
+	  SELECT distinct
+			AMF.BRANCH_CODE, 
+			AMF.CURRENCY_CODE,   
+         AMF.GL_CODE,   
+         AMF.CIF_SUB_NO,   
+         AMF.SL_NO,   
+         AMF.ACC_BC,   
+         AMF.BRIEF_NAME_ENG,   
+         AMF.LONG_NAME_ENG,
+         AMF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,   
+         AMF.STATUS ,
+			AMF.ADDITIONAL_REFERENCE,	
+			AMF.GMI_FLAG,
+			AMF.AC_SRL
+    FROM AMF LEFT OUTER JOIN AMF_EXTENDED ON AMF.COMP_CODE = AMF_EXTENDED.COMP_CODE AND AMF.CIF_SUB_NO = AMF_EXTENDED.CIF_SUB_NO  AND AMF.BRANCH_CODE = AMF_EXTENDED.BRANCH_CODE  
+	  		AND AMF.CURRENCY_CODE = AMF_EXTENDED.CURRENCY_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE AND AMF.GL_CODE = AMF_EXTENDED.GL_CODE  AND AMF.SL_NO = AMF_EXTENDED.SL_NO   
+    		,RIFATT , RIFCTT, CIF , GEN_LEDGER
+   WHERE ( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE		) AND
+			( AMF.GL_CODE			= GEN_LEDGER.GL_CODE		) AND
+			( GEN_LEDGER.COMP_CODE     = RIFATT.COMP_CODE 		) AND
+			( GEN_LEDGER.GL_CODE       = RIFATT.TYPE_CODE 		) AND
+			( AMF.COMP_CODE     = CIF.COMP_CODE 			) AND
+			( AMF.CIF_SUB_NO	  = CIF.CIF_NO 	  			) AND
+			( CIF.COMP_CODE	  = RIFCTT.COMP_CODE 		) AND
+			( CIF.CIF_TYPE		  = RIFCTT.TYPE_CODE 		) AND
+			( AMF.COMP_CODE     = #{compCode}				) AND  		
+			( ( #{branchCode} IS NULL OR #{branchCode} = 0  )  OR
+			  ( #{branchCode} IS NOT NULL AND #{branchCode} <> 0 AND #{branchCode} = AMF.BRANCH_CODE )  
+			)	AND
+			( ( #{currencyCode} IS NULL OR #{currencyCode} = 0  )  OR
+			  ( #{currencyCode} IS NOT NULL AND #{currencyCode} <> 0 AND #{currencyCode} = AMF.CURRENCY_CODE )  
+			)	AND
+			( ( #{glCode} IS NULL OR #{glCode} = 0  )  OR
+			  ( #{glCode} IS NOT NULL AND #{glCode} <> 0 AND #{glCode} = AMF.GL_CODE )  
+			)	AND
+			( ( #{cif_no} IS NULL OR #{cif_no} = -1  )  OR
+			  ( #{cif_no} IS NOT NULL AND #{cif_no} <> -1 AND #{cif_no} = AMF.CIF_SUB_NO )  
+			)	AND
+	     	( AMF.ACC_BC        = CASE WHEN 
+											CASE WHEN #{BS_CONTRA} IS NULL THEN 'X' ELSE #{BS_CONTRA} END = 'X' THEN AMF.ACC_BC 
+										 ELSE #{BS_CONTRA} END  ) AND  
+			(  ( CASE WHEN #{raFlag} IS NULL THEN 'X' ELSE #{raFlag} END  = 'X' 																) OR
+ 			  	( CASE WHEN #{raFlag} IS NULL THEN 'X' ELSE #{raFlag} END  = 'N' 					AND AMF.GMI_FLAG IN ('G','F')) OR
+				( CASE WHEN #{raFlag} IS NULL THEN 'X' ELSE #{raFlag} END IN ('I','F','G') 	AND AMF.GMI_FLAG = #{raFlag} )) AND 
+         ( AMF.STATUS 		  IN ( 'A', 'I','T', 'P' )) AND
+			( AMF.ACC_BC 		  <> 'S' 				  	  ) AND
+			( 	(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' )		OR 
+				(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+				(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+				(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2'			 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+												 (GEN_LEDGER.AFFECT_FLAG 	= '2' 		 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+												)
+				)
+			) AND
+			(  (CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X'												) OR 
+				(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'C' AND RIFCTT.CLIENT = 'Y'     	) OR 
+				(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+			)
+
+	 ]]>
+   </sql>
+   
+<sql id="seletMemoDtlsCifList">
+<choose>
+	<when test="flag == null">
+	SELECT CIF.CIF_NO,
+	       CIF.SHORT_NAME_ENG,
+	       CIF.LONG_NAME_ENG,
+	       CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+	       CIF.TEL,
+	       CIF.RESIDENT,
+	       CIF.ID_NO,
+	       CIF.CIF_TYPE,
+	       CIF.ADDITIONAL_REFERENCE,
+	       CIF.CARD_NAME,
+	       CIF.NICK_NAME
+	  FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	 WHERE (CIF.COMP_CODE = #{compCode})
+	   AND (CIF.STATUS = 'A')
+		<if test="cif_no != null" >
+		   AND CIF.CIF_NO = #{cif_no}
+		</if>      
+	</when><otherwise>
+	SELECT DISTINCT CIF.CIF_NO,
+	                CIF.SHORT_NAME_ENG,
+	                CIF.LONG_NAME_ENG,
+	                 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+	                CIF.TEL,
+	                CIF.RESIDENT,
+	                CIF.ID_NO,
+	                CIF.CIF_TYPE,
+	                CIF.ADDITIONAL_REFERENCE,
+	                CIF.CARD_NAME,
+	                CIF.NICK_NAME
+	  FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	  	, RIFCTT
+	 WHERE (CIF.COMP_CODE = #{compCode})
+	   AND (CIF.STATUS = 'A')
+	   AND (CIF.COMP_CODE = RIFCTT.COMP_CODE)
+	   AND (CIF.CIF_TYPE = RIFCTT.TYPE_CODE)
+	   AND (CASE WHEN #{raType} IS NULL OR #{raType} = '' THEN 'X' 
+	   	ELSE #{raType} END = 'X' 
+	   	OR (#{raType} = 'C' AND RIFCTT.CLIENT = 'Y') 
+	   	OR (#{raType} = 'B' AND RIFCTT.BANK = 'Y') 
+	   	OR (#{raType} = 'L' AND RIFCTT.VT_IND = 'T'))
+	</otherwise>
+</choose>
+</sql>
+   
+     <select id="memoDtlsCifList" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="seletMemoDtlsCifList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="memoDtlsCifListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="seletMemoDtlsCifList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	 <select id="getMemoDtlsCif" resultMap="cifListMap" parameterType="cifSC">
+	 	<include refid="seletMemoDtlsCifList" />
+	 </select>
+	 
+	 <select id="cifFmsList" resultMap="cifInfoMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="seletCifFmsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cifFmsListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="seletCifFmsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="seletCifFmsList">
+	 	  SELECT CIF.CIF_NO,
+         CIF.SHORT_NAME_ENG,
+         CIF.SHORT_NAME_ARAB,
+         CIF.LONG_NAME_ENG,
+         CIF.LONG_NAME_ARAB,
+         CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG,
+         CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+         CIF.ID_NO,
+         CIF.TEL,
+         (SELECT
+			VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+			WHERE LOV_TYPE_ID = 24
+			AND
+			LANG_CODE = #{lang}
+			AND VALUE_CODE = CIF.RESIDENT)
+			as RESIDENT,
+         
+         CIF.CIF_TYPE,
+         (SELECT
+			VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+			WHERE LOV_TYPE_ID = 68
+			AND
+			LANG_CODE = #{lang}
+			AND VALUE_CODE = CIF.TYPE)
+			as TYPE  ,
+         RIFCTT.BRIEF_DESC_ENG CIF_TYPE_DESC,
+         COUNTRIES.BRIEF_DESC_ENG COUNTRY_DESC
+    FROM CIF JOIN RIFCTT ON RIFCTT.COMP_CODE = CIF.COMP_CODE
+                        AND RIFCTT.TYPE_CODE = CIF.CIF_TYPE LEFT JOIN
+   COUNTRIES ON
+   COUNTRIES.COMP_CODE = CIF.COMP_CODE
+                        AND COUNTRIES.COUNTRY_CODE = CIF.COUNTRY
+         LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE
+         				 AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO               
+   WHERE(CIF.COMP_CODE =  #{compCode})
+				  	<choose>
+<!-- 				    <when test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( cifTypeCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@valueOf(-1)) == 0 and @com.path.lib.common.util.NumberUtil@nullEmptyToValue(  fmsCategory , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0" > -->
+				   	<when test ='cifTypeCode == -1 and fmsCategory != null'>
+					AND   CIF.CIF_TYPE IN (  SELECT   CIF_TYPE
+					                         FROM     FMS_CATEGORY_CIF_TYPES 
+					                         WHERE    FMS_CATEGORY_CIF_TYPES.COMP_CODE    =  #{compCode}
+					                         AND      FMS_CATEGORY_CIF_TYPES.CATEGORY_CODE   =  #{fmsCategory}
+					              )
+				    </when> 
+				    <otherwise>
+				      	AND 	(CIF.CIF_TYPE = CASE WHEN  #{cifTypeCode} + 0 = 0 THEN
+				         		CIF.CIF_TYPE ELSE #{cifTypeCode} + 0 END)
+				    </otherwise>   
+				   	</choose>
+                        AND (CIF.STATUS = 'A')
+                        AND (RIFCTT.CLIENT = 'Y')
+                        
+   	</sql>
+   	
+   	<select id="returnDependencyCifFms" resultMap="CIF.BaseResultMap" parameterType="cifSC">  
+  		SELECT 		CIF.CIF_NO,
+         			CIF.SHORT_NAME_ENG,
+         			CIF.LONG_NAME_ENG,
+         			CIF.STATUS
+     	FROM 		CIF JOIN RIFCTT ON RIFCTT.COMP_CODE = CIF.COMP_CODE
+        AND 		RIFCTT.TYPE_CODE = CIF.CIF_TYPE 
+     	WHERE		(CIF.COMP_CODE =  #{compCode})
+	  	<choose>
+	    <when test ='cifTypeCode == -1 and fmsCategory != null'>
+<!-- 	    <when test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( cifTypeCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@valueOf(-1)) == 0 and @com.path.lib.common.util.NumberUtil@nullEmptyToValue(  fmsCategory , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0" > -->
+					AND   CIF.CIF_TYPE IN (  SELECT   CIF_TYPE 
+					                      FROM     FMS_CATEGORY_CIF_TYPES 
+					                      WHERE    FMS_CATEGORY_CIF_TYPES.COMP_CODE    	=  #{compCode}
+					                      AND      FMS_CATEGORY_CIF_TYPES.CATEGORY_CODE =  #{fmsCategory}
+					                   )
+	    </when> 
+	    <otherwise>
+	      	AND 	(CIF.CIF_TYPE = CASE WHEN  #{cifTypeCode} + 0 = 0 THEN
+	         		CIF.CIF_TYPE ELSE #{cifTypeCode} + 0 END)
+	    </otherwise>   
+	   	</choose>
+       	AND 	CIF.CIF_NO   = #{cif_no}
+ 	</select>
+	
+<!-- ************************* Dependency to populate the CIF Record Details in Black List Screen ************************************** -->	
+   <sql id="blackListCIFDependency">
+   		SELECT
+   				 CIF.COMP_CODE,
+   				 CIF.CIF_NO,
+				 CIF.SHORT_NAME_ENG,
+				 CIF.LONG_NAME_ENG,
+				 CIF.SHORT_NAME_ARAB,
+				 CIF.LONG_NAME_ARAB,
+				 CIF.COUNTRY,
+				 (SELECT COUNTRIES.BRIEF_DESC_ENG FROM COUNTRIES WHERE COUNTRIES.COMP_CODE  = CIF.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF.COUNTRY) COUNTRY_DESC,
+				 CIF.ID_NO,
+				 CIF.TYPE,
+				 CIF.CIF_TYPE,
+				 (SELECT RIFCTT.BRIEF_DESC_ENG FROM RIFCTT WHERE RIFCTT.COMP_CODE  = CIF.COMP_CODE AND RIFCTT.TYPE_CODE = CIF.CIF_TYPE) CIF_TYPE_DESC,
+				 CIF.FIRST_NAME_ENG,
+				 CIF.SEC_NAME_ENG,
+				 CIF.THIRD_NAME_ENG,
+				 CIF.LAST_NAME_ENG,
+				 CIF.FIRST_NAME_AR,
+				 CIF.SEC_NAME_AR,
+				 CIF.THIRD_NAME_AR,
+				 CIF.LAST_NAME_AR,
+				 CIF_ADDRESS.REGION,
+				 (SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE = CIF_ADDRESS.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND COUNTRIES_REGION.REGION_CODE = CIF_ADDRESS.REGION) REGION_DESC,
+				 CIF.NATION_CODE,
+				 (SELECT NATIONALITY.BRIEF_DESC_ENG FROM  NATIONALITY WHERE NATIONALITY.COMP_CODE  = CIF.COMP_CODE AND NATIONALITY.CODE = CIF.NATION_CODE) NATION_DESC,
+				 CIF.BIRTH_DATE,
+				 CIF.MOTHER_FIRST_NAME,
+				 CIF.MOTHER_LAST_NAME,
+				 CIF.PLACE_OF_BIRTH,
+				 CIF.REGISTER_NO,
+				 CIF.LEGAL_STATUS,
+				 (SELECT LEGAL_STATUS.BRIEF_DESC_ENG FROM LEGAL_STATUS WHERE LEGAL_STATUS.COMP_CODE = CIF.COMP_CODE AND LEGAL_STATUS.STATUS_CODE = CIF.LEGAL_STATUS) LEGAL_STATUS_DESC
+		FROM  	 CIF 
+		LEFT OUTER JOIN CIF_ADDRESS ON
+				CIF.COMP_CODE = CIF_ADDRESS.COMP_CODE
+			AND CIF.CIF_NO = CIF_ADDRESS.CIF_NO
+			AND CIF_ADDRESS.LINE_NO = 0 
+		WHERE	 CIF.COMP_CODE  = #{compCode}
+		AND		 CIF.CIF_NO  	= #{cif_no}
+   </sql>
+   
+   <resultMap id="blackListDetailCIFMap" type="cifCO">
+		<result property="cifVO.COMP_CODE" 			column="COMP_CODE" />  
+		<result property="cifVO.CIF_NO" 			column="CIF_NO" />  
+		<result property="cifVO.SHORT_NAME_ENG" 	column="SHORT_NAME_ENG" />
+		<result property="cifVO.LONG_NAME_ENG" 		column="LONG_NAME_ENG" />	
+		<result property="cifVO.SHORT_NAME_ARAB" 	column="SHORT_NAME_ARAB" />
+		<result property="cifVO.LONG_NAME_ARAB" 	column="LONG_NAME_ARAB" />
+		<result property="cifVO.COUNTRY" 			column="COUNTRY" />
+		<result property="cifVO.ID_NO" 				column="ID_NO" />    
+		<result property="cifVO.TYPE" 				column="TYPE" />    
+		<result property="cifVO.CIF_TYPE" 			column="CIF_TYPE" /> 
+		<result property="cifVO.FIRST_NAME_ENG" 	column="FIRST_NAME_ENG" />
+		<result property="cifVO.SEC_NAME_ENG"   	column="SEC_NAME_ENG" />
+		<result property="cifVO.THIRD_NAME_ENG" 	column="THIRD_NAME_ENG" />
+		<result property="cifVO.LAST_NAME_ENG"  	column="LAST_NAME_ENG" />
+		<result property="cifVO.FIRST_NAME_AR" 		column="FIRST_NAME_AR" />
+		<result property="cifVO.SEC_NAME_AR"    	column="SEC_NAME_AR" />
+		<result property="cifVO.THIRD_NAME_AR"  	column="THIRD_NAME_AR" />
+		<result property="cifVO.LAST_NAME_AR"   	column="LAST_NAME_AR" />
+		<result property="cifVO.REGION_CODE" 		column="REGION" />  
+		<result property="cifVO.NATION_CODE"		column="NATION_CODE" />
+		<result property="cifVO.BIRTH_DATE" 		column="BIRTH_DATE" /> 
+		<result property="cifVO.MOTHER_FIRST_NAME" 	column="MOTHER_FIRST_NAME" />  
+		<result property="cifVO.MOTHER_LAST_NAME"	column="MOTHER_LAST_NAME" />
+		<result property="cifVO.PLACE_OF_BIRTH" 	column="PLACE_OF_BIRTH" /> 
+		<result property="cifVO.REGISTER_NO" 		column="REGISTER_NO" />
+		<result property="cifVO.LEGAL_STATUS" 		column="LEGAL_STATUS" />
+		<result property="COUNTRY_DESC" 			column="COUNTRY_DESC" />
+		<result property="CIF_TYPE_DESC" 			column="CIF_TYPE_DESC" />
+		<result property="REGION_DESC" 				column="REGION_DESC" />
+		<result property="NATION_DESC" 				column="NATION_DESC" />
+		<result property="LEGAL_STATUS_DESC" 		column="LEGAL_STATUS_DESC" />
+	</resultMap>
+	
+	<select id="returnCIFDetailsforBlackList" resultMap="blackListDetailCIFMap" parameterType="cifSC">
+		<include refid="blackListCIFDependency" />
+	</select>
+
+	
+<!-- ************************* w_lookup_cif_amf_rifctt  ************************************** -->	
+
+	<sql id="cifLookupQueryfor_w_lookup_cif_amf_rifctt">
+	
+  	            
+                  
+	  SELECT CIF.CIF_NO,
+			CIF.BRANCH_CODE,
+	       CIF.SHORT_NAME_ENG,
+	       CIF.LONG_NAME_ENG,
+	       CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+	       CIF.TEL,
+	       CIF.RESIDENT,
+	       CIF.ID_NO,
+	       CIF.CIF_TYPE,
+	       CIF.NICK_NAME,
+	       CIF.ADDITIONAL_REFERENCE
+	  FROM CIF
+	  LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	  WHERE CIF.COMP_CODE = #{compCode}
+	 	 <choose>
+	       <when test="CIFStatus == null or CIFStatus == ''">
+	       		AND (CIF.STATUS = 'A')		
+	       </when>
+	       <otherwise>
+		       <if test="'I'.equals(CIFStatus)">
+		       	AND CIF.STATUS IN ('I', 'A')
+		       </if>
+	       </otherwise>
+	      </choose>
+	      <if test='raType != null and !"X".equals(raType)'>
+	      		AND ((CASE WHEN #{raType} IS NULL OR #{raType} = '' THEN 'X' ELSE #{raType}
+		        END = 'X') OR EXISTS
+		        (SELECT 1
+		            FROM RIFCTT
+		            WHERE CIF.COMP_CODE = RIFCTT.COMP_CODE
+		            AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+		            AND ((CASE WHEN #{raType} IS NULL OR #{raType} = '' THEN 'X' ELSE
+		                 #{raType} END = 'B' AND RIFCTT.BANK = 'Y') OR
+		                (CASE WHEN #{raType} IS NULL OR #{raType} = '' THEN 'X' ELSE
+		                 #{raType} END = 'C' AND RIFCTT.CLIENT = 'Y'))))
+	  	</if>
+	 
+	  AND EXISTS
+	  (SELECT 1
+	          FROM AMF
+	         WHERE AMF.COMP_CODE = #{compCode}
+	           AND CIF.CIF_NO = AMF.CIF_SUB_NO
+	           AND AMF.STATUS in ('A', 'I', 'T', 'P')
+	       		 <if test='branchCode != null and branchCode != emptyBigDecimalValue '>
+	       				AND AMF.BRANCH_CODE = #{branchCode}
+	      		 </if>  
+	       		<if test='currencyCode != null and currencyCode != emptyBigDecimalValue '>
+	       				AND AMF.CURRENCY_CODE = #{currencyCode}
+	      		 </if>  
+	       		 <if test='glCode != null and glCode != emptyBigDecimalValue '>
+	       				AND AMF.GL_CODE = #{glCode}
+	      		 </if>    
+	       		<if test='ACC_BC != null and ACC_BC != ""'>
+	       				AND AMF.ACC_BC = #{ACC_BC}
+	      		 </if>     
+	          	<if test='!"X".equals(GMI_FLAG)'>
+			   		<choose>
+				        <when test='"N".equals(GMI_FLAG)'>
+				        	AND AMF.GMI_FLAG IN ('F','G')
+		   				</when>
+				        <otherwise>
+				        	AND AMF.GMI_FLAG = #{GMI_FLAG}
+		   				</otherwise>
+		   			</choose>
+	          	</if>
+	          	
+          	  	<if test='affectPassChq != null and !"-1".equals(affectPassChq)'>
+	          	  	 AND ((CASE WHEN #{affectPassChq} IS NULL OR #{affectPassChq} = '' THEN '-1' ELSE
+		                #{affectPassChq} END = '-1') OR EXISTS
+		                (SELECT 1
+		                   FROM RIFATT
+		                  WHERE AMF.COMP_CODE = RIFATT.COMP_CODE
+		                    AND AMF.GL_CODE = RIFATT.TYPE_CODE
+		                    AND ((CASE WHEN #{affectPassChq} IS NULL OR #{affectPassChq} = '' THEN '-1' ELSE
+		                         #{affectPassChq} END = '-1') OR
+		                        (#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0') OR
+		                        (#{affectPassChq} IN ('1', '2') AND
+		                        RIFATT.AFFECTION = #{affectPassChq} AND
+		                        (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL OR
+		                         AMF.UPDATE_PASSBOOK = '' THEN '0' ELSE
+		                         AMF.UPDATE_PASSBOOK END = '1')))))
+          	  	</if>
+	          	<if test='AFFECT_CARD != null'>
+	          		AND ((#{AFFECT_CARD} <![CDATA[ <> ]]> '1') OR EXISTS
+	                (SELECT 1
+	                   FROM RIFATT
+	                  WHERE AMF.COMP_CODE = RIFATT.COMP_CODE
+	                    AND AMF.GL_CODE = RIFATT.TYPE_CODE
+	                    and RIFATT.AFFECT_CARD = '1'
+	                    AND #{AFFECT_CARD} = 'A')
+	               )
+	          	</if>           
+	   )
+	    
+        <if test="cifCode != null" >
+	 	  AND CIF.CIF_NO = #{cifCode}
+	 	</if>
+ 	</sql>
+ 	
+ 	<sql id="cifListCertl">
+ 	  SELECT DISTINCT
+           CIF.CIF_NO,
+		   CIF.BRANCH_CODE,
+	       CIF.SHORT_NAME_ENG,
+	       CIF.LONG_NAME_ENG,
+	       CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+	       CIF.LONG_NAME_ARAB,
+	       CIF.SHORT_NAME_ARAB,
+	       CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+	       CIF.TEL,
+	       CIF.RESIDENT,
+	       CIF.ID_NO,
+	       CIF.CIF_TYPE,
+	       CIF.ADDITIONAL_REFERENCE
+  FROM AMF,
+     RIFCTT,
+     CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+  WHERE   (CIF.COMP_CODE  = AMF.COMP_CODE)
+   AND  (CIF.CIF_NO  = AMF.CIF_SUB_NO)
+   AND  (CIF.COMP_CODE  = #{compCode, jdbcType=NUMERIC})
+
+   AND  (  
+        (#{branchCode, jdbcType=NUMERIC} IS     NULL Or   #{branchCode, jdbcType=NUMERIC} = 0                               ) OR
+        (#{branchCode, jdbcType=NUMERIC} IS NOT NULL AND  #{branchCode, jdbcType=NUMERIC} <![CDATA[ <> ]]> 0 AND AMF.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}   ) 
+      )
+        
+   AND  (CIF.STATUS = 'A')
+   AND  (AMF.ACC_BC = CASE WHEN #{GI_VERSION} = 1 THEN 'B'
+                         WHEN #{GI_VERSION} = 2 THEN 'C'
+                     WHEN #{GI_VERSION} = 3 THEN AMF.ACC_BC  END)
+
+   AND  (AMF.STATUS  IN ( 'A'  , 'I'  , 'T'  , 'P'  ))
+   AND  (CIF.COMP_CODE  = RIFCTT.COMP_CODE)
+   AND  (CIF.CIF_TYPE   = RIFCTT.TYPE_CODE)
+   
+   AND  (CASE WHEN #{GMI_FLAG} IS NULL OR #{GMI_FLAG} = '' THEN  'X' ELSE #{GMI_FLAG} END = 'X' OR 
+          (#{GMI_FLAG}  = 'N' AND AMF.GMI_FLAG IN ('F', 'G')                ) OR  
+          (#{GMI_FLAG}  = AMF.GMI_FLAG)       )
+
+   AND  (CASE WHEN #{raType} IS NULL OR #{raType} = '' THEN  'X' ELSE #{raType} END = 'X' OR 
+          (#{raType}  = 'C' AND  RIFCTT.CLIENT  = 'Y')                 OR  
+          (#{raType}  = 'B' AND  RIFCTT.BANK    = 'Y')       )
+  
+  AND  (CASE WHEN #{raFlag} IS NULL OR #{raFlag} = '' THEN 'X' ELSE #{raFlag} END = 'X' OR
+       (#{raFlag}  = 'T' AND RIFCTT.VT_IND = 'T') OR
+       (#{raFlag}  = 'V' AND RIFCTT.VT_IND = 'V')  
+       
+              )
+      
+ 	</sql>
+   
+   	<select id="cifLookupQueryListFor_w_lookup_cif_amf_rifctt" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifLookupQueryfor_w_lookup_cif_amf_rifctt" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="cifLookupQueryListCountFor_w_lookup_cif_amf_rifctt" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifLookupQueryfor_w_lookup_cif_amf_rifctt" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="cifListCountCert" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifListCertl" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="cifListCert" resultMap="cifListMapCert" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifListCertl" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+    
+    <select id="getcifLookupCifDetailFor_w_lookup_cif_amf_rifctt" resultMap="cifListMap" parameterType="cifSC">
+	 	<include refid="cifLookupQueryfor_w_lookup_cif_amf_rifctt" />
+	 </select>
+	 	 <!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+	 <sql id="checkiFCifChangesToOneExist">
+	 
+		AND NOT EXISTS(select 1 from CIF_MOSBLACKLIST_UPDATES_TEMP cfmu 
+										where cfmu.USER_ID=#{userId} 
+       									AND cfmu.COMP_CODE=#{compCode}
+       									AND cfmu.CIF_NO=CIF.CIF_NO
+       									AND cfmu.NEW_STATUS='1')
+       	
+	</sql>
+	<sql id="checkiFCifChangesZeroExist">
+	 
+		AND NOT EXISTS(select 1 from CIF_MOSBLACKLIST_UPDATES_TEMP cfmu 
+						where cfmu.USER_ID=#{userId} 
+       					AND cfmu.COMP_CODE=#{compCode} 
+       					AND cfmu.CIF_NO=CIF.CIF_NO 
+       					AND cfmu.NEW_STATUS='0')
+       	
+	</sql>
+	<!-- END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+	<update id="updateBlackListedCIF" parameterType="cifSC" statementType="CALLABLE">
+		<if test="isSybase != 1" >
+		begin
+		</if>
+				
+<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+
+		DELETE CIF_MOSBLACKLIST_UPDATES_TEMP WHERE USER_ID = #{userId}
+		<if test="isSybase != 1" >
+		;
+		</if> 
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP  (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{userId}, CIF.COMP_CODE, CIF.CIF_NO, '1' 
+		from CIF  
+      	WHERE  COMP_CODE  = #{compCode}
+       AND CIF_NO  = #{cifCode}
+       AND CIF.STATUS IN('A','S','C','I')
+       AND CIF.CIF_NO != 0 
+       AND CIF.CIF_NO IS NOT NULL
+    	<include refid="checkiFCifChangesToOneExist" />
+       <if test="isSybase != 1" >
+		;
+		</if> 
+	<!-- END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+
+		
+		
+		UPDATE  CIF    
+			SET	BLACK_LISTED = 1 
+			WHERE  COMP_CODE  = #{compCode}
+			 AND CIF_NO  = #{cifCode} 
+			 AND CIF.STATUS IN('A','S','C','I')
+			 AND CIF.CIF_NO != 0 
+			 AND CIF.CIF_NO IS NOT NULL
+		<if test="isSybase != 1" >
+		;
+		</if> 
+				
+	
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{userId}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		from CIF  
+   WHERE COMP_CODE = #{compCode}
+			  AND BLACK_LISTED = 1
+			  AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+			  AND EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE = #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE M.COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM MOSBLACKLIST MOS
+					  WHERE MOS.COMP_CODE = #{compCode}
+						 AND MOS.CIF = CIF.CIF_NO
+						 AND MOS.STATUS = 'P'
+						 AND MOS.CODE != #{blackListCode})
+		<include refid="checkiFCifChangesZeroExist" />
+		<if test="isSybase != 1" >
+		;
+		</if> 
+		<!--  END 286482 ABAR130094 Blacklisted CIFs [mfalha]-->
+		
+		
+		 UPDATE CIF
+			  SET BLACK_LISTED = 0
+			WHERE COMP_CODE = #{compCode}
+			  AND BLACK_LISTED = 1
+			  AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+			  AND EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE = #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE M.COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM MOSBLACKLIST MOS
+					  WHERE MOS.COMP_CODE = #{compCode}
+						 AND MOS.CIF = CIF.CIF_NO
+						 AND MOS.STATUS = 'P'
+						 AND MOS.CODE != #{blackListCode})
+		<if test="isSybase != 1" >
+		;
+		</if>			 
+		  DELETE FROM CIF_MOSBLACKLIST
+			WHERE COMP_CODE = #{compCode}
+			  AND MOS_CODE = #{blackListCode}
+		<if test="isSybase != 1" >
+		;
+		</if>
+		
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{userId}, CIF.COMP_CODE, CIF.CIF_NO, '0' 
+		FROM CIF WHERE COMP_CODE = #{compCode}
+			  AND BLACK_LISTED = 1
+			  AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+			  AND EXISTS (SELECT 1
+						FROM CIF_BLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.BL_CODE = #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE M.COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM MOSBLACKLIST MOS
+					  WHERE MOS.COMP_CODE = #{compCode}
+						 AND MOS.CIF = CIF.CIF_NO
+						 AND MOS.STATUS = 'P'
+						 AND MOS.CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_BLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.BL_CODE != #{blackListCode})
+		<include refid="checkiFCifChangesZeroExist" />
+			<if test="isSybase != 1" >
+			;
+			</if>
+		<!-- END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+		
+		
+		
+		  UPDATE CIF
+			  SET BLACK_LISTED = 0
+			WHERE COMP_CODE = #{compCode}
+			  AND BLACK_LISTED = 1
+			  AND CIF.STATUS IN ('A', 'S', 'C', 'I')
+			  AND EXISTS (SELECT 1
+						FROM CIF_BLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.BL_CODE = #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_MOSBLACKLIST M
+					  WHERE M.COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.MOS_CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM MOSBLACKLIST MOS
+					  WHERE MOS.COMP_CODE = #{compCode}
+						 AND MOS.CIF = CIF.CIF_NO
+						 AND MOS.STATUS = 'P'
+						 AND MOS.CODE != #{blackListCode})
+			  AND NOT EXISTS (SELECT 1
+						FROM CIF_BLACKLIST M
+					  WHERE COMP_CODE = #{compCode}
+						 AND M.CIF_NO = CIF.CIF_NO
+						 AND M.BL_CODE != #{blackListCode})
+		<if test="isSybase != 1" >
+		;
+		</if>
+				
+		<!--  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+		INSERT INTO CIF_MOSBLACKLIST_UPDATES_TEMP (USER_ID, COMP_CODE, CIF_NO, NEW_STATUS)
+		select #{userId}, CIF.COMP_CODE, CIF.CIF_NO, '1' 
+		FROM CIF
+		WHERE CIF.BLACK_LISTED = 0
+			AND CIF.COMP_CODE = #{compCode}
+			AND CIF.CIF_NO != 0 
+			AND CIF.CIF_NO IS NOT NULL
+			AND (CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.CIF_NO = #{cifCode}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode})
+			OR CIF.CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.JOINT_CIF_NO =#{cifCode}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode}))
+		<include refid="checkiFCifChangesToOneExist" />						
+		<if test="isSybase != 1" >
+		;
+		</if>
+		<!-- END  286482 ABAR130094 Blacklisted CIFs [mfalha]-->	
+		
+		UPDATE CIF
+		SET CIF.BLACK_LISTED = 1
+		WHERE CIF.BLACK_LISTED = 0
+			AND CIF.COMP_CODE = #{compCode}
+			AND CIF.CIF_NO != 0 
+			AND CIF.CIF_NO IS NOT NULL
+			AND (CIF.CIF_NO IN (SELECT CIF_JOINT_DET.JOINT_CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.CIF_NO = #{cifCode}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode})
+			OR CIF.CIF_NO IN (SELECT CIF_JOINT_DET.CIF_NO
+								FROM CIF_JOINT_DET
+								WHERE CIF_JOINT_DET.JOINT_CIF_NO =#{cifCode}
+								AND CIF_JOINT_DET.COMP_CODE = #{compCode}))
+		<if test="isSybase != 1" >
+		  ;
+		 end;
+		</if> 								
+	</update>
+	    
+    <select id="returnJointAccounts" resultType="string" parameterType="cifSC">
+		SELECT RIFCTT.JOINT_ACCOUNTS 
+ 		  FROM RIFCTT
+ 		 WHERE RIFCTT.COMP_CODE = #{compCode}
+ 		   AND RIFCTT.TYPE_CODE = (SELECT CIF.CIF_TYPE
+									 FROM CIF
+									WHERE CIF.COMP_CODE  = RIFCTT.COMP_CODE
+									  AND CIF.CIF_NO     = #{cif_no})
+	 </select>
+	
+	 <select id="checkIDUniqueCount" parameterType="branchesSC" resultType="int">
+			<include refid="checkIDUniqueCountQuery"/>
+	 </select>
+	<sql id="checkIDUniqueCountQuery">
+			SELECT COUNT(1) 
+			FROM 	CIF
+			WHERE 	COMP_CODE  	= #{compCode}
+			AND		CIF_NO	 		<![CDATA[<> ]]> #{cif_no}
+			AND		JOIN_ID_NO 		= #{id_no, jdbcType=VARCHAR}
+			AND		JOIN_ID_TYPE IN 
+				( 	
+					SELECT 	CODE
+					FROM 	ID_TYPES
+					WHERE 	COMP_CODE = #{compCode}
+					AND		TYPES	  = '1'			
+				) 	
+	</sql>
+	
+	
+	<select id="checkIDUniqueness" resultMap="idUniquenessMap" parameterType="cifSC">
+		<include refid="checkIDUniquenessQuery" />
+	</select>
+	<resultMap id="idUniquenessMap" type="cifCO">
+		<result property="cifVO.CIF_NO" 	column="CIF_NO" />
+		<result property="countCif" 		column="CIF_COUNT" />
+	</resultMap>
+	<sql id="checkIDUniquenessQuery">
+		SELECT  	MAX(CIF_NO) CIF_NO,
+					COUNT(1) CIF_COUNT
+		FROM  		CIF 
+		WHERE 		CIF.COMP_CODE 	= #{compCode}
+		AND		( 	CIF.CIF_NO  	<![CDATA[ >= ]]> #{cif_no} + 1  OR  CIF.CIF_NO <![CDATA[ <= ]]> #{cif_no} - 1 )
+		AND	 		CIF.TYPE  		= #{cifType, jdbcType=VARCHAR}
+		AND	 		CIF.ID_TYPE		= CASE WHEN #{idTypeCode} = 0 THEN CIF.ID_TYPE ELSE #{idTypeCode} END
+		AND	 		CIF.ID_NO  		= #{id_no, jdbcType=VARCHAR}
+		AND    		CIF.STATUS		<![CDATA[ <> ]]> 'D'
+	</sql>
+	
+	<sql id="selectCardsManagementCondition">
+	   FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+	   		,RIFCTT
+	  WHERE CIF.COMP_CODE = #{comp_code}
+		AND CIF.COMP_CODE = RIFCTT.COMP_CODE
+		AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+		<if test="status != null" >
+		AND CIF.STATUS = #{status}
+    	</if>
+		<if test="client != null" >
+		AND RIFCTT.CLIENT = #{client}
+    	</if>
+		<if test="cif_no != null" >
+      	  AND CIF.CIF_NO = #{cif_no}
+    	</if>
+		<if test='"true".equals(avaCardFlag)'>
+    	 AND EXISTS(SELECT 1
+    	 			FROM CTS_AVA_FILE,CTS_AVA_CATEG
+    	 			WHERE CTS_AVA_FILE.COMP_CODE = #{comp_code}
+    	 			AND CTS_AVA_FILE.COMP_CODE=CTS_AVA_CATEG.COMP_CODE
+                    AND CTS_AVA_FILE.CATEGORY=CTS_AVA_CATEG.CODE
+                    AND CTS_AVA_CATEG.ADD_GROUP = 'AVA'    	 			 
+    	 			AND CTS_AVA_FILE.CIF_NO = CIF.CIF_NO
+    	 			AND CTS_AVA_FILE.STATUS = 'A' )
+    	</if>
+   </sql>
+   
+	<select id="cardsManagementList" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="CIFLkpSelection" />
+		<include refid="selectCardsManagementCondition" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cardsManagementListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="CIFLkpSelection" />
+		<include refid="selectCardsManagementCondition" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="returnCifDetailsForCardsManagementByCifNo" resultMap="cifListMap" parameterType="cifSC">
+	 	<include refid="CIFLkpSelection" />
+		<include refid="selectCardsManagementCondition" />
+	 </select>
+
+
+<resultMap id="cifBenefLkp_map" type="cifTrxTypeLimitCO">
+	<result property="cifTrxtypeLimitVO.CIF_NO" column="CIF_NO" />
+	<result property="cifTrxtypeLimitVO.ACC_BR" column="ACC_BR" />
+	<result property="cifTrxtypeLimitVO.ACC_CY" column="ACC_CY" />
+	<result property="cifTrxtypeLimitVO.ACC_GL" column="ACC_GL" />
+	<result property="cifTrxtypeLimitVO.ACC_CIF" column="ACC_CIF" />
+	<result property="cifTrxtypeLimitVO.ACC_SL" column="ACC_SL" />
+	<result property="cifVO.SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+	<result property="cifVO.SHORT_NAME_ARAB" column="SHORT_NAME_ARAB" />
+	<result property="cifVO.LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="cifVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="cifVO.TEL" column="TEL" />
+	<result property="cifVO.ECO_SECTOR" column="ECO_SECTOR" />
+	<result property="cifVO.RELATION_CODE" column="RELATION_CODE" />
+	<result property="cifVO.COUNTRY" column="COUNTRY" />
+	<result property="cifVO.ID_NO" column="ID_NO" />
+	<result property="cifVO.ID_NO2" column="ID_NO2" />
+	<result property="cifVO.CIF_TYPE" column="CIF_TYPE" />
+	<result property="cifVO.ONE_OBLIGOR" column="CIF_TYPE" />
+	<result property="cifVO.EMAIL_ID" column="EMAIL_ID" />
+	<result property="cifVO.SEXE" column="SEXE" />
+	<result property="cifVO.CARD_NAME" column="CARD_NAME" />
+	<result property="cifVO.NICK_NAME" column="NICK_NAME" />
+	<result property="cifVO.STATUS" column="STATUS" />
+	<result property="cif_EXTENDEDVO.FULL_NAME_ENG" column="FULL_NAME_ENG" />
+	<result property="cif_EXTENDEDVO.FULL_NAME_ARAB" column="FULL_NAME_ARAB" />
+
+	<result property="AMF_BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="AMF_BRIEF_NAME_ARAB" column="amfBriefNameAr" />
+	<result property="AMF_ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="CIF_SHORT_NAME_ENG" column="CIF_SHORT_NAME_ENG" />
+</resultMap>
+
+<resultMap id="bankCifLkp_map" type="cifTrxTypeLimitCO">
+	<result property="cifTrxtypeLimitVO.CIF_NO"	column="CIF_NO" />
+	<result property="cifVO.BRANCH_CODE" 		column="BRANCH_CODE" />
+	<result property="cifVO.SHORT_NAME_ENG" 	column="SHORT_NAME_ENG" />
+	<result property="cifVO.LONG_NAME_ENG" 		column="LONG_NAME_ENG" />
+	<result property="cifVO.SHORT_NAME_ARAB" 	column="SHORT_NAME_ARAB" />
+	<result property="cifVO.LONG_NAME_ARAB" 	column="LONG_NAME_ARAB" />
+	<result property="cifVO.TEL" 				column="TEL" />
+	<result property="cifVO.RESIDENT" 			column="RESIDENT" />
+	<result property="cifVO.ID_NO" 				column="ID_NO" />
+	<result property="cifVO.ADD_STRING2" 		column="ADD_STRING2" />
+	<result property="cifVO.ADD_STRING3" 		column="ADD_STRING3" />
+	<result property="cifVO.ADD_STRING4" 		column="ADD_STRING4" />
+	<result property="cifVO.FULL_NAME_ENG" 		column="FULL_NAME_ENG" />
+</resultMap>
+
+
+	<select id="bankCifLkpCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="lookupBankCifSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="bankCifLkpList" resultMap="bankCifLkp_map" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="lookupBankCifSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="cifBenefLkpCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifBenefLkp_sql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="cifBenefLkpList" resultMap="cifBenefLkp_map" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifBenefLkp_sql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="checkTellerCifAccess" resultType="BigDecimal"
+		parameterType="cifSC">
+		SELECT 1
+  FROM CIF
+ WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC}
+   AND CIF_NO = #{cifCode, jdbcType=NUMERIC}
+   <if test='fromScreen != null and fromScreen.equals("BENEF") and CIFStatus!= null'>
+   	AND CIF.STATUS = {#CIFStatus,jdbcType=VARCHAR}
+   </if>
+   AND (
+   	<if test='fromScreen != null and fromScreen.equals("BENEF")'>
+   		#{userId} = 'PATH' OR #{appName} ='CIF' OR
+   	</if>
+   	  EXISTS
+ 	(SELECT 1
+          FROM CTSTELLERCIFTYPEDET
+         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'C'
+           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CIF.CIF_TYPE)
+   )
+  
+   AND(
+    <if test='fromScreen != null and fromScreen.equals("BENEF")'>
+   		#{userId} = 'PATH' OR #{appName} ='CIF' OR
+   	</if>
+   EXISTS
+ (SELECT 1
+          FROM CTSTELLERCIFTYPEDET
+         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'P'
+           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode, jdbcType=NUMERIC}
+           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CASE WHEN
+         CIF.PRIORITY_CODE IS NULL THEN CTSTELLERCIFTYPEDET.CIF_TYPE ELSE CIF.PRIORITY_CODE END)
+   )
+  <if test='"E".equals(ecoSecProfMatrix)'>
+   AND
+   ( 
+   	<if test='fromScreen != null and fromScreen.equals("BENEF")'>
+   		#{userId} = 'PATH' OR #{appName} ='CIF' OR
+   	</if>
+	   EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERCIFTYPEDET
+	         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+	           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'E'
+	           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+	           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode, jdbcType=NUMERIC}
+	           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CASE WHEN
+	         CIF.ECO_SECTOR IS NULL THEN CTSTELLERCIFTYPEDET.CIF_TYPE ELSE CIF.ECO_SECTOR END)
+    )
+  </if>    
+	</select>
+	
+	<resultMap id="cifDetailsMap" type="cifCO">
+            <result property="cifVO.CIF_NO"                     	column="CIF_NO" />
+            <result property="cifVO.SHORT_NAME_ENG"         		column="SHORT_NAME_ENG" />
+            <result property="cifVO.LONG_NAME_ENG"         			column="LONG_NAME_ENG" />
+            <result property="cifVO.STATUS"                       	column="STATUS" />
+            <result property="cifVO.BLACK_LISTED"                   column="BLACK_LISTED" />
+            <result property="cifVO.ADDRESS1_ENG"                 	column="ADDRESS1_ENG" />
+            <result property="cifVO.ADDRESS2_ENG"                 	column="ADDRESS2_ENG" />
+            <result property="cifVO.ADDRESS3_ENG"                 	column="ADDRESS3_ENG" />
+            <result property="cifVO.COUNTRY"                      	column="COUNTRY" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BBBB" 		column="SWIFT_BIC_BBBB" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_CC"   		column="SWIFT_BIC_CC" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_LL"   		column="SWIFT_BIC_LL" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_T"    		column="SWIFT_BIC_T" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BCD" 			column="SWIFT_BIC_BCD" />
+            <result property="rifcttVO.BANK"                      	column="BANK" />
+            <result property="rifcttVO.CLIENT"                      column="CLIENT" />
+            <result property="countryName"                          column="countryName" />
+            <result property="countryNameLong"                      column="countryNameLong" />
+            <result property="branchName"                           column="branchName" />
+            <result property="bicCodeLimit"                       	column="bicCodeLimit" />
+            <result property="countryBlacklisted"                 	column="countryBlacklisted" />
+            <result property="cifInterdiction"                 	  	column="cifInterdiction" />
+            <result property="cifAddressCountry"                  	column="cifAddressCountry" />
+            <result property="cifAddCountryDesc"              	  	column="cifAddCountryDesc" />
+            <result property="cifVO.ID_NO"                  	  	column="ID_NO" />
+            <result property="cifVO.RESIDENT"                  	  	column="RESIDENT" />
+            <result property="idTypesName"                  	  	column="idTypesName" />
+            <result property="cifNis"                 			  	column="cifNis" />
+            <result property="cifNif"                 			  	column="cifNif" />
+      </resultMap>
+      
+      <select id="returnCIFDetails" resultMap="cifDetailsMap" parameterType="cifSC">
+           SELECT
+           
+            CIF.CIF_NO  CIF_NO, CIF.BLACK_LISTED,
+            <choose>
+					  <when test="isRTLDir == 1"> CIF.SHORT_NAME_ARAB </when>
+					  <otherwise> CIF.SHORT_NAME_ENG </otherwise>
+				  </choose>  SHORT_NAME_ENG,
+
+				  <choose>
+				      <when test="isRTLDir == 1"> CIF.LONG_NAME_ARAB </when>
+				      <otherwise> CIF.LONG_NAME_ENG </otherwise>
+				  </choose>  LONG_NAME_ENG,
+ 
+                  CIF.STATUS, 
+				  
+	              <choose>
+	                 	<when test="isRTLDir == 1"> coalesce( CIF_ADDRESS.ADDRESS1_ARAB, CIF.ADDRESS1_ARAB) </when>
+						<otherwise> coalesce( CIF_ADDRESS.ADDRESS1_ENG, CIF.ADDRESS1_ENG) </otherwise>
+				  </choose>  ADDRESS1_ENG,
+					
+				  <choose>
+					 	<when test="isRTLDir == 1"> coalesce( CIF_ADDRESS.ADDRESS2_ARAB, CIF.ADDRESS2_ARAB) </when>
+					    <otherwise> coalesce( CIF_ADDRESS.ADDRESS2_ENG, CIF.ADDRESS2_ENG) </otherwise>
+				  </choose>  ADDRESS2_ENG,
+					
+				  <choose>					  
+						<when test="isRTLDir == 1"> coalesce( CIF_ADDRESS.ADDRESS3_ARAB, CIF.ADDRESS3_ARAB) </when>
+						<otherwise> coalesce( CIF_ADDRESS.ADDRESS3_ENG, CIF.ADDRESS3_ENG) </otherwise>
+				  </choose>  ADDRESS3_ENG,
+
+                  CIF.COUNTRY,
+                  PMSCIFSWIFT.SWIFT_BIC_BBBB,
+                  PMSCIFSWIFT.SWIFT_BIC_CC,
+                  PMSCIFSWIFT.SWIFT_BIC_LL,
+                  PMSCIFSWIFT.SWIFT_BIC_T,
+                  PMSCIFSWIFT.SWIFT_BIC_BCD,
+                  <if test="returnNisNif == 1">
+            	  (SELECT NIS.ADD_VC
+			        FROM CIF_DATA_ADD_FIELDS NIS
+			       WHERE CIF.COMP_CODE = RIFCTT.COMP_CODE
+			        AND CIF.CIF_TYPE   = RIFCTT.TYPE_CODE
+			        AND CIF.COMP_CODE = NIS.COMP_CODE
+			        AND CIF.CIF_NO   = NIS.CIF_NO
+			        AND ( (NIS.COL_NO = 4  AND RIFCTT.TYPE_CODE IN (3, 4, 6, 7, 10)) OR
+			        		(NIS.COL_NO = 46 AND RIFCTT.TYPE_CODE IN (9, 15)) )
+							AND NIS.COMP_CODE = CIF.COMP_CODE
+							AND NIS.CIF_NO 	= CIF.CIF_NO
+							AND NIS.ENTITY 	= 'CIF') cifNis,
+			       (SELECT NIF.ADD_VC 
+					  FROM CIF_DATA_ADD_FIELDS NIF
+					 WHERE CIF.COMP_CODE = RIFCTT.COMP_CODE
+						AND CIF.CIF_TYPE 	= RIFCTT.TYPE_CODE
+						AND CIF.COMP_CODE = NIF.COMP_CODE
+						AND CIF.CIF_NO 	= NIF.CIF_NO
+						AND ( (NIF.COL_NO = 5  AND RIFCTT.TYPE_CODE IN (3, 4, 6, 7, 10)) OR
+								(NIF.COL_NO = 47 AND RIFCTT.TYPE_CODE IN (9, 15)) )
+						AND NIF.COMP_CODE = CIF.COMP_CODE
+						AND NIF.CIF_NO 	= CIF.CIF_NO
+						AND NIF.ENTITY 	= 'CIF') cifNif,
+				 </if>
+                  RIFCTT.BANK,
+                  RIFCTT.CLIENT,
+				<choose>
+					<when test="isRTLDir == 1"> COUNTRIES.BRIEF_DESC_ARAB </when>
+					<otherwise> COUNTRIES.BRIEF_DESC_ENG </otherwise>
+				</choose>  countryName,
+				<choose>
+					<when test="isRTLDir == 1"> COUNTRIES.LONG_DESC_ARAB </when>
+					<otherwise> COUNTRIES.LONG_DESC_ENG </otherwise>
+				</choose>  countryNameLong,
+				
+				<choose>
+					<when test="isRTLDir == 1"> BRANCHES.BRIEF_DESC_ARAB </when>
+					<otherwise> BRANCHES.BRIEF_DESC_ENG </otherwise>
+				</choose>  branchName,
+ 
+                  PTH_CTRL.BIC_CODE_LIMIT bicCodeLimit,
+                  <if test="validateCntryBlkLst == 1">
+                        TFS_BLACKLISTED_COUNTRIES.COUNTRY_CODE countryBlacklisted,
+                  </if>
+            	  CASE WHEN CIF.ADD_NUMBER3 IS NULL THEN 2 ELSE CIF.ADD_NUMBER3 END cifInterdiction,
+                  CIF_ADDRESS.COUNTRY cifAddressCountry,
+                  <choose>					  
+						<when test="isRTLDir == 1"> A.BRIEF_DESC_ARAB </when>
+						<otherwise> A.BRIEF_DESC_ENG </otherwise>
+				  </choose>  cifAddCountryDesc,
+                  CIF.ID_NO,
+                  <choose>
+					<when test="isRTLDir == 1"> ID_TYPES.DESC_ARAB </when>
+					<otherwise> ID_TYPES.DESC_ENG </otherwise>
+				  </choose>  idTypesName,
+                  CIF.RESIDENT
+            FROM RIFCTT, PTH_CTRL, CIF_ADDRESS LEFT OUTER JOIN COUNTRIES A ON CIF_ADDRESS.COMP_CODE = A.COMP_CODE
+															  			  AND CIF_ADDRESS.COUNTRY = A.COUNTRY_CODE, CIF
+            
+                  LEFT OUTER JOIN COUNTRIES ON
+                  CIF.COMP_CODE = COUNTRIES.COMP_CODE
+                  AND CIF.COUNTRY = COUNTRIES.COUNTRY_CODE
+                  
+                  LEFT OUTER JOIN BRANCHES ON
+                  CIF.COMP_CODE = BRANCHES.COMP_CODE
+                  AND CIF.BRANCH_CODE = BRANCHES.BRANCH_CODE    
+                                 
+                  LEFT OUTER JOIN PMSCIFSWIFT ON
+                  CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+                  AND CIF.CIF_NO = PMSCIFSWIFT.CIF
+                  
+                  LEFT OUTER JOIN ID_TYPES ON 
+                  CIF.COMP_CODE = ID_TYPES.COMP_CODE
+                  AND CIF.ID_TYPE = ID_TYPES.CODE
+                  <if test="validateCntryBlkLst == 1">
+                        LEFT OUTER JOIN TFS_BLACKLISTED_COUNTRIES
+                        ON COUNTRIES.COMP_CODE = TFS_BLACKLISTED_COUNTRIES.COMP_CODE
+                        AND COUNTRIES.COUNTRY_CODE = TFS_BLACKLISTED_COUNTRIES.COUNTRY_CODE
+                  </if>
+                  
+           WHERE CIF_ADDRESS.COMP_CODE = CIF.COMP_CODE 
+            AND CIF_ADDRESS.CIF_NO = CIF.CIF_NO
+                <choose>
+              <when test="validateCifAdress == 1">
+                AND CIF_ADDRESS.DEFAULT_ADD = '1'
+              </when>  
+                <when test='validateCifAdress ==null or "".equals("validateCifAdress")'>
+                 AND CIF_ADDRESS.LINE_NO = 0
+                </when>
+              
+              </choose>
+               AND CIF.COMP_CODE = RIFCTT.COMP_CODE       
+                  AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+                  AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                  AND   CIF.CIF_NO = #{cifCode,jdbcType=NUMERIC}
+      </select>
+      
+      <resultMap id="selectCommonSwiftDataMap" type="cifCO">
+            <result property="cifVO.CIF_NO"                             column="CIF_NO" />
+            <result property="cifVO.SHORT_NAME_ENG"               column="SHORT_NAME_ENG" />
+            <result property="cifVO.LONG_NAME_ENG"                column="LONG_NAME_ENG" />
+            <result property="cifVO.TEL"                          column="TEL" />
+            <result property="cifVO.RESIDENT"                     column="RESIDENT" />
+            <result property="cifVO.ID_NO"                              column="ID_NO" />
+            <result property="cifVO.CIF_TYPE"                     column="CIF_TYPE" />
+            <result property="cifVO.BRANCH_CODE"                  column="BRANCH_CODE" />
+            <result property="cifVO.ADDITIONAL_REFERENCE"   column="ADDITIONAL_REFERENCE" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BBBB" column="SWIFT_BIC_BBBB" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_CC"   column="SWIFT_BIC_CC" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_LL"   column="SWIFT_BIC_LL" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_T"    column="SWIFT_BIC_T" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BCD" column="SWIFT_BIC_BCD" />
+            <result property="cifExtendedVO.FULL_NAME_ENG" column="FULL_NAME_ENG" />
+      </resultMap>
+                  
+      <sql id="selectCommonSwiftData">
+            SELECT CIF.CIF_NO,
+                  CASE WHEN #{preferredLanguage} = 'AR' THEN CIF.SHORT_NAME_ARAB ELSE CIF.SHORT_NAME_ENG END SHORT_NAME_ENG,
+                  CASE WHEN #{preferredLanguage} = 'AR' THEN CIF.LONG_NAME_ENG ELSE CIF.LONG_NAME_ENG END LONG_NAME_ENG,
+                  CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG,
+                  CIF.TEL,
+                  ( SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+                    WHERE LOV_TYPE_ID = 830
+                    AND    LANG_CODE = #{preferredLanguage}
+                    AND VALUE_CODE = CIF.RESIDENT
+                  ) RESIDENT,
+                  CIF.ID_NO,
+                  CIF.CIF_TYPE,
+                  CIF.BRANCH_CODE,
+                  CIF.ADDITIONAL_REFERENCE,
+                  PMSCIFSWIFT.SWIFT_BIC_BBBB,
+                  PMSCIFSWIFT.SWIFT_BIC_CC,
+                  PMSCIFSWIFT.SWIFT_BIC_LL,
+                  PMSCIFSWIFT.SWIFT_BIC_T,
+                  PMSCIFSWIFT.SWIFT_BIC_BCD
+            FROM CIF LEFT OUTER JOIN 
+                  PMSCIFSWIFT ON CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+                  AND CIF.CIF_NO = PMSCIFSWIFT.CIF INNER JOIN
+                  RIFCTT ON CIF.COMP_CODE = RIFCTT.COMP_CODE
+                  AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+                  LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+            WHERE CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                  AND CIF.STATUS = 'A'
+                  AND RIFCTT.BANK = 'Y'
+      </sql>
+      
+      <select id="selectCommonSwiftData" resultMap="selectCommonSwiftDataMap" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefFlip" />
+            <include refid="selectCommonSwiftData" />
+            <include refid="servicesCommon.commonGridWrpAftFlip" />
+            <include refid="servicesCommon.commmonGridWrpFlipClose" />
+      </select>
+      
+      <select id="selectCommonSwiftDataCount" resultType="int" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefCnt" />
+            <include refid="selectCommonSwiftData" />
+            <include refid="servicesCommon.commonGridWrpAftCnt" />
+            <include refid="servicesCommon.commonGridCountWrpClose" />
+      </select>
+      
+      <resultMap id="swiftCIFListMap" type="cifCO">
+            <result property="cifVO.CIF_NO"                             column="CIF_NO" />
+            <result property="cifVO.SHORT_NAME_ENG"               column="SHORT_NAME_ENG" />
+            <result property="cifVO.LONG_NAME_ENG"                column="LONG_NAME_ENG" />
+            <result property="cifVO.TEL"                          column="TEL" />
+            <result property="cifVO.RESIDENT"                     column="RESIDENT" />
+            <result property="cifVO.ID_NO"                              column="ID_NO" />
+            <result property="cifVO.CIF_TYPE"                     column="CIF_TYPE" />
+            <result property="cifVO.BRANCH_CODE"                  column="BRANCH_CODE" />
+            <result property="cifVO.STATUS"                             column="STATUS" />
+            <result property="cifVO.ADDRESS1_ENG"                 column="ADDRESS1_ENG" />
+            <result property="cifVO.ADDRESS2_ENG"                 column="ADDRESS2_ENG" />
+            <result property="cifVO.ADDRESS3_ENG"                 column="ADDRESS3_ENG" />
+            <result property="cifVO.COUNTRY"                      column="COUNTRY" />
+            <result property="cifVO.ADDITIONAL_REFERENCE"   column="ADDITIONAL_REFERENCE" />
+            <result property="cifVO.BLACK_LISTED"                 column="BLACK_LISTED" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BBBB" column="SWIFT_BIC_BBBB" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_CC"   column="SWIFT_BIC_CC" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_LL"   column="SWIFT_BIC_LL" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_T"    column="SWIFT_BIC_T" />
+            <result property="pmsCifSwiftVO.SWIFT_BIC_BCD"  column="SWIFT_BIC_BCD" />
+            <result property="rifcttVO.BANK"                      column="BANK" />
+            <result property="countriesVO.BRIEF_DESC_ENG"   column="COUNTRIES_BRIEF_DESC_ENG" />
+            <result property="branchesVO.BRIEF_DESC_ENG"    column="BRANCHES_BRIEF_DESC_ENG" />
+            <result property="cifExtendedVO.FULL_NAME_ENG"   column="FULL_NAME_ENG" />
+      </resultMap>
+      
+      <sql id="selectAllCIF">
+            SELECT CIF.BRANCH_CODE,
+                  CIF.CIF_NO,
+                  PMSCIFSWIFT.SWIFT_BIC_BBBB,
+                  PMSCIFSWIFT.SWIFT_BIC_CC,
+                  PMSCIFSWIFT.SWIFT_BIC_LL,
+                  PMSCIFSWIFT.SWIFT_BIC_T,
+                  PMSCIFSWIFT.SWIFT_BIC_BCD,
+                  CASE WHEN PMSCIFSWIFT.CIF <![CDATA[<=]]> 0 THEN PMSCIFSWIFT.BANK_NAME ELSE CIF.SHORT_NAME_ENG END SHORT_NAME_ENG,
+                  CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+                  CIF.ADDITIONAL_REFERENCE
+            FROM CIF LEFT OUTER JOIN PMSCIFSWIFT
+                  ON CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+                  AND CIF.CIF_NO = PMSCIFSWIFT.CIF
+                  LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE 
+                  AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+            WHERE CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                  AND CIF.STATUS = 'A'
+      </sql>
+
+      <sql id="selectReceiverBank">
+            AND CIF.CIF_TYPE IN (SELECT TYPE_CODE
+                                          FROM RIFCTT
+                                          WHERE RIFCTT.BANK = 'Y'
+                                          AND RIFCTT.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+      </sql>
+
+      <select id="receiverBankList" resultMap="swiftCIFListMap" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefFlip" />
+            <include refid="selectAllCIF" />
+            <include refid="selectReceiverBank" />
+            <include refid="servicesCommon.commonGridWrpAftFlip" />
+            <include refid="servicesCommon.commmonGridWrpFlipClose" />
+      </select>
+
+      <select id="receiverBankListCount" resultType="int" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefCnt" />
+            <include refid="selectAllCIF" />
+            <include refid="selectReceiverBank" />
+            <include refid="servicesCommon.commonGridWrpAftCnt" />
+            <include refid="servicesCommon.commonGridCountWrpClose" />
+      </select>
+
+      <select id="allCIFList" resultMap="swiftCIFListMap"
+            parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefFlip" />
+            <include refid="selectAllCIF" />
+            <include refid="servicesCommon.commonGridWrpAftFlip" />
+            <include refid="servicesCommon.commmonGridWrpFlipClose" />
+      </select>
+
+      <select id="allCIFListCount" resultType="int" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefCnt" />
+            <include refid="selectAllCIF" />
+            <include refid="servicesCommon.commonGridWrpAftCnt" />
+            <include refid="servicesCommon.commonGridCountWrpClose" />
+      </select>
+
+   	  <select id="developerCifFmsList" resultMap="cifInfoMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectDeveloperCifFmsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	  </select>
+	   <select id="returnDeveloperCifFmsListCount" resultType="int" parameterType="cifSC">
+            <include refid="servicesCommon.commonGridWrpBefCnt" />
+            <include refid="selectDeveloperCifFmsList" />
+            <include refid="servicesCommon.commonGridWrpAftCnt" />
+            <include refid="servicesCommon.commonGridCountWrpClose" />
+      </select>
+	  <sql id="selectDeveloperCifFmsList">
+			  	SELECT 	CIF.CIF_NO,
+        		     	CIF.SHORT_NAME_ENG
+				FROM 	FMS_DEV_LIMIT
+				JOIN	CIF
+				ON		FMS_DEV_LIMIT.DEV_CIF 	= 	CIF.CIF_NO
+				AND		FMS_DEV_LIMIT.COMP_CODE = 	CIF.COMP_CODE	
+				WHERE 	FMS_DEV_LIMIT.COMP_CODE = 	#{compCode}
+				AND 	FMS_DEV_LIMIT.LINE_NBR  = 	0
+	  </sql>
+	  
+	   <!-- w_master_lookup_cif -->
+	  <!-- Assets trx template cif lookup mapper, by HanaaElJazzar -->
+	  <resultMap type="cifVO"              		id="cifListMapByGlobalCif">
+		<result column="COMP_CODE" 				property="COMP_CODE" />	
+		<result column="BRANCH_CODE" 			property="BRANCH_CODE" />	
+		<result column="CIF_NO" 				property="CIF_NO" />		
+		<result column="SHORT_NAME_ENG" 		property="SHORT_NAME_ENG" />		
+		<result column="LONG_NAME_ENG" 			property="LONG_NAME_ENG" />
+		<result column="TEL" 					property="TEL" />
+		<result column="ECO_SECTOR" 			property="ECO_SECTOR" />
+		<result column="RELATION_CODE" 			property="RELATION_CODE" />
+		<result column="COUNTRY" 				property="COUNTRY" />
+		<result column="RESIDENT" 				property="RESIDENT" />
+		<result column="ID_NO" 					property="ID_NO" />
+		<result column="CIF_TYPE" 				property="CIF_TYPE" />
+		<result column="ADDITIONAL_REFERENCE" 	property="ADDITIONAL_REFERENCE" />	
+		<result column="ONE_OBLIGOR" 			property="ONE_OBLIGOR" />
+		<result column="LONG_NAME_ARAB" 		property="LONG_NAME_ARAB" />
+		<result column="SHORT_NAME_ARAB" 		property="SHORT_NAME_ARAB" />	
+		<result column="STATUS" 				property="STATUS" />	
+		<result column="FULL_NAME_ENG" 			property="FULL_NAME_ENG" />
+	</resultMap>
+	
+	  <sql id = "selectCifListByGlobalCif" >
+		SELECT	 CIF.COMP_CODE,
+				 CIF.BRANCH_CODE,
+	       		 CIF.CIF_NO,
+				 CIF.SHORT_NAME_ENG,
+				 CIF.LONG_NAME_ENG,
+				 CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+				 CIF.TEL,
+				 CIF.ECO_SECTOR,
+	       		 CIF.RELATION_CODE,
+	       		 CIF.COUNTRY,
+				 CIF.RESIDENT,
+				 CIF.ID_NO,
+				 CIF.CIF_TYPE,
+				 CIF.ADDITIONAL_REFERENCE,
+				 CIF.ONE_OBLIGOR,
+				 CIF.LONG_NAME_ARAB,
+	       		 CIF.SHORT_NAME_ARAB,
+	       		 CIF.STATUS
+		FROM     CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+				, PTH_CTRL
+		WHERE	 <!--  CIF.COMP_CODE  = 
+					 CASE 
+					 	WHEN PTH_CTRL.GLOBAL_CIF = 'Y' THEN PTH_CTRL.GLOBAL_COMP_CIF 
+					 	ELSE #{compCode ,jdbcType=NUMERIC} 
+					 END commented for tp#780860 and replaced by the below-->
+				 ((CIF.COMP_CODE = #{compCode ,jdbcType=NUMERIC}  and PTH_CTRL.GLOBAL_CIF = 'N') 
+				or  (CIF.COMP_CODE = PTH_CTRL.GLOBAL_COMP_CIF and PTH_CTRL.GLOBAL_CIF = 'Y') )
+				
+		 AND	 CIF.STATUS  = 
+					 CASE 
+						WHEN #{status ,jdbcType=VARCHAR} = 'X' THEN CIF.STATUS 
+						ELSE #{status ,jdbcType=VARCHAR}
+					 END
+	</sql>
+    
+	<select id="getCifListByGlobalCif" resultMap="cifListMapByGlobalCif" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifMapper.selectCifListByGlobalCif" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="getCifCountByGlobalCif" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifMapper.selectCifListByGlobalCif" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="cifDetailsByGlobalCif" resultMap="cifListMapByGlobalCif" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="cifMapper.selectCifListByGlobalCif" />
+		   	AND CIF.CIF_NO = #{cif_no, jdbcType=NUMERIC}
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<resultMap type="cifVO"  id="returnCifIdNoListResultMap" >
+		<result column="CIF_NO" 			  property="CIF_NO" />	
+		<result column="SHORT_NAME_ENG" 	  property="SHORT_NAME_ENG" />	
+		<result column="LONG_NAME_ENG" 		  property="LONG_NAME_ENG" />		
+		<result column="TEL" 		    	  property="TEL" />		
+		<result column="RESIDENT" 			  property="RESIDENT" />
+		<result column="ID_NO" 				  property="ID_NO" />
+		<result column="CIF_TYPE" 			  property="CIF_TYPE" />
+		<result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+		<result column="CARD_NAME" 			  property="CARD_NAME" />
+		<result column="NICK_NAME" 			  property="NICK_NAME" />
+		<result column="FULL_NAME_ENG" 		  property="FULL_NAME_ENG" />
+	</resultMap>
+	
+	<sql id="cifIdNoQuery">
+		SELECT * FROM
+		(
+		SELECT CIF.CIF_NO   					CIF_NO,
+			 CIF.SHORT_NAME_ENG			SHORT_NAME_ENG,
+			 CIF.LONG_NAME_ENG   		LONG_NAME_ENG,
+			 CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG,
+			 CIF.TEL							TEL,
+			 CIF.RESIDENT					RESIDENT,
+			 CIF.ID_NO						ID_NO,
+			 CIF.CIF_TYPE				   CIF_TYPE,
+			 CIF.ADDITIONAL_REFERENCE	ADDITIONAL_REFERENCE,
+			 CIF.CARD_NAME					CARD_NAME,
+			 CIF.NICK_NAME 				NICK_NAME
+		FROM CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		WHERE  CIF.COMP_CODE 	= #{compCode ,jdbcType=NUMERIC} 
+		AND	 CIF.ID_NO			= #{id_no ,jdbcType=NUMERIC}
+		<if test="cif_no == null or cif_no == emptyBigDecimalValue"> 
+		UNION
+		SELECT CIF_CONTACT.CIF_CODE 		CIF_NO,
+				 CIF.SHORT_NAME_ENG			SHORT_NAME_ENG,
+				 CIF.LONG_NAME_ENG   		LONG_NAME_ENG,
+				 CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG,
+				 CIF.TEL							TEL,
+				 CIF.RESIDENT					RESIDENT,
+				 CIF.ID_NO						ID_NO,
+				 CIF.CIF_TYPE				   CIF_TYPE,
+				 CIF.ADDITIONAL_REFERENCE	ADDITIONAL_REFERENCE,
+				 CIF.CARD_NAME					CARD_NAME,
+				 CIF.NICK_NAME 				NICK_NAME
+		FROM CIF_CONTACT
+			,CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		WHERE CIF_CONTACT.COMP_CODE 	= CIF.COMP_CODE
+		AND 	CIF_CONTACT.CIF_CODE  	= CIF.CIF_NO
+		AND	CIF_CONTACT.COMP_CODE 	= #{compCode ,jdbcType=NUMERIC} 
+		AND	CIF_CONTACT.ID_NO		 	= #{id_no ,jdbcType=NUMERIC} 
+		UNION
+		SELECT CIF_JOINT_DET.CIF_NO  		CIF_NO,
+				 CIF.SHORT_NAME_ENG			SHORT_NAME_ENG,
+				 CIF.LONG_NAME_ENG   		LONG_NAME_ENG,
+				 CIF_EXTENDED.FULL_NAME_ENG  FULL_NAME_ENG,
+				 CIF.TEL							TEL,
+				 CIF.RESIDENT					RESIDENT,
+				 CIF.ID_NO						ID_NO,
+				 CIF.CIF_TYPE				   CIF_TYPE,
+				 CIF.ADDITIONAL_REFERENCE	ADDITIONAL_REFERENCE,
+				 CIF.CARD_NAME					CARD_NAME,
+				 CIF.NICK_NAME 				NICK_NAME
+		FROM CIF_JOINT_DET
+			 ,CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+		WHERE CIF_JOINT_DET.COMP_CODE 	= CIF.COMP_CODE
+		AND 	CIF_JOINT_DET.CIF_NO  		= CIF.CIF_NO
+		AND	CIF_JOINT_DET.COMP_CODE 	= #{compCode ,jdbcType=NUMERIC} 
+		AND	CIF_JOINT_DET.ID_NO		 	= #{id_no ,jdbcType=NUMERIC}
+	  </if>	
+       ) TBL
+       <if test="cif_no !=null and cif_no != emptyBigDecimalValue">
+  			WHERE TBL.CIF_NO = #{cif_no}
+  	   </if> 
+	</sql>
+	
+	<select id="returnCifIdNoListResult" resultMap="returnCifIdNoListResultMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifMapper.cifIdNoQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnCifIdNoListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifMapper.cifIdNoQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+	<resultMap type="cifCO"  id="returnCifVehicleNoListResultMap" >
+		<result column="CIF_NO" 			  property="cifVO.CIF_NO" />	
+		<result column="SHORT_NAME_ENG" 	  property="cifVO.SHORT_NAME_ENG" />	
+		<result column="LONG_NAME_ENG" 		  property="cifVO.LONG_NAME_ENG" />		
+		<result column="SHORT_NAME_ARAB" 	  property="cifVO.SHORT_NAME_ARAB" />	
+		<result column="LONG_NAME_ARAB" 	  property="cifVO.LONG_NAME_ARAB" />		
+		<result column="TEL" 		    	  property="cifVO.TEL" />		
+		<result column="RESIDENT" 			  property="cifVO.RESIDENT" />
+		<result column="ID_NO" 				  property="cifVO.ID_NO" />
+		<result column="CIF_TYPE" 			  property="cifVO.CIF_TYPE" />
+		<result column="ADDITIONAL_REFERENCE" property="cifVO.ADDITIONAL_REFERENCE" />
+		<result column="CARD_NAME" 			  property="cifVO.CARD_NAME" />
+		<result column="NICK_NAME" 			  property="cifVO.NICK_NAME" />
+		<result column="VEHICLE_NUMBER" 	  property="vehicleNo" /> 
+		<result column="cifExtendedVO.FULL_NAME_ENG" 	  property="FULL_NAME_ENG" />
+		<result column="cifExtendedVO.FULL_NAME_ARAB" 	  property="FULL_NAME_ARAB" />
+	</resultMap>
+	
+	<sql id="cifVehicleNoQuery">
+		 SELECT DISTINCT 
+				CIF.CIF_NO  		CIF_NO,
+				CIF.SHORT_NAME_ENG			SHORT_NAME_ENG,
+				CIF.LONG_NAME_ENG   		LONG_NAME_ENG,
+				CIF.TEL							TEL,
+				CIF.RESIDENT					RESIDENT,
+				CIF.ID_NO						ID_NO,
+				CIF.CIF_TYPE				   CIF_TYPE,
+				CIF.ADDITIONAL_REFERENCE	ADDITIONAL_REFERENCE,
+				CIF.CARD_NAME					CARD_NAME,
+				CIF.NICK_NAME 				NICK_NAME,
+				CIF.SHORT_NAME_ARAB SHORT_NAME_ARAB,
+				CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+				CIF_EXTENDED.FULL_NAME_ENG FULL_NAME_ENG,
+				CIF_EXTENDED.FULL_NAME_ARAB FULL_NAME_ARAB,
+				FMSCOLLATERAL.VEHICLE_NUMBER VEHICLE_NUMBER
+			FROM FMSCOLLATERAL, TRSCOLLATERALDET, TRSDEAL
+			, CIF LEFT OUTER JOIN CIF_EXTENDED ON  CIF.COMP_CODE= CIF_EXTENDED.COMP_CODE AND CIF.CIF_NO = CIF_EXTENDED.CIF_NO
+			WHERE FMSCOLLATERAL.COMP_CODE 		= #{compCode ,jdbcType=NUMERIC} 
+			AND	FMSCOLLATERAL.VEHICLE_NUMBER 	= #{vehicleNo ,jdbcType=VARCHAR} 
+			AND	FMSCOLLATERAL.COMP_CODE  	= TRSCOLLATERALDET.COMP_CODE
+			AND	FMSCOLLATERAL.BRANCH  			= TRSCOLLATERALDET.BRANCH_CODE
+			AND	FMSCOLLATERAL.CODE  				= TRSCOLLATERALDET.COLLATERAL_NO
+			AND	TRSCOLLATERALDET.COMP_CODE 	= TRSDEAL.COMP_CODE
+			AND	TRSCOLLATERALDET.BRANCH_CODE = TRSDEAL.BRANCH_CODE
+			AND	TRSCOLLATERALDET.DEAL_NO 		= TRSDEAL.SERIAL_NO
+			AND	TRSDEAL.COMP_CODE 	= CIF.COMP_CODE
+			AND	TRSDEAL.CIF_NO 			= CIF.CIF_NO
+			AND	TRSDEAL.STATUS			= #{status ,jdbcType=VARCHAR} 
+		<if test="cif_no !=null and cif_no != emptyBigDecimalValue">
+  			and CIF.CIF_NO = #{cif_no}
+  		</if>
+	</sql>
+	
+	<select id="returnCifVehicleNoListResult" resultMap="returnCifVehicleNoListResultMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifMapper.cifVehicleNoQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnCifVehicleNoListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifMapper.cifVehicleNoQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	 <select id="jointCifFmsList" resultMap="jointCifInfoMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="seletJointCifFmsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="jointCifFmsListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="seletJointCifFmsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="seletJointCifFmsList">
+	    SELECT  DISTINCT V_FMS_CIF_JOINT_CIF.CIF_NO    AS  CIF_NO,   
+	          V_FMS_CIF_JOINT_CIF.SHORT_NAME_ENG  AS  SHORT_NAME_ENG,  
+	          V_FMS_CIF_JOINT_CIF.SHORT_NAME_ARAB  AS  SHORT_NAME_ARAB, 
+	          V_FMS_CIF_JOINT_CIF.LONG_NAME_ENG  AS LONG_NAME_ENG ,   
+	          V_FMS_CIF_JOINT_CIF.LONG_NAME_ARAB  AS LONG_NAME_ARAB,   
+	           V_FMS_CIF_JOINT_CIF.TEL           AS TEL,   
+	            (SELECT
+                                  VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+                                  WHERE LOV_TYPE_ID = 24
+                                  AND
+                                  LANG_CODE = #{lang}
+                                  AND VALUE_CODE =  V_FMS_CIF_JOINT_CIF.RESIDENT)
+                           AS RESIDENT,
+  
+	          V_FMS_CIF_JOINT_CIF.ID_NO          AS ID_NO,   
+	          V_FMS_CIF_JOINT_CIF.CIF_TYPE         AS  CIF_TYPE,   
+	          V_FMS_CIF_JOINT_CIF.TYPE          AS TYPE,   
+	          RIFCTT.BRIEF_DESC_ENG   AS BRIEF_DESC_ENG,   
+	         (SELECT COUNTRIES.BRIEF_DESC_ENG
+	          FROM COUNTRIES
+	          WHERE  V_FMS_CIF_JOINT_CIF.COMP_CODE   = COUNTRIES.COMP_CODE
+	          AND    V_FMS_CIF_JOINT_CIF.COUNTRY    = COUNTRIES.COUNTRY_CODE
+	         )           AS COUNTRY_DESC,  
+	          V_FMS_CIF_JOINT_CIF.ADDITIONAL_REFERENCE  AS ADDITIONAL_REFERENCE ,
+            (SELECT
+						VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+						WHERE LOV_TYPE_ID = 68
+						AND	LANG_CODE = #{lang}
+						AND VALUE_CODE = V_FMS_CIF_JOINT_CIF.TYPE)	as TYPE ,   
+	          RIFCTT.BRIEF_DESC_ENG   AS CIF_TYPE_DESC
+	    FROM     V_FMS_CIF_JOINT_CIF 
+	    JOIN    RIFCTT
+	    ON   (   V_FMS_CIF_JOINT_CIF.COMP_CODE     =   RIFCTT.COMP_CODE ) 
+	    AND  (   V_FMS_CIF_JOINT_CIF.CIF_TYPE      =   RIFCTT.TYPE_CODE) 
+	    WHERE (  V_FMS_CIF_JOINT_CIF.COMP_CODE     =   #{compCode}         ) 
+	    AND   (  V_FMS_CIF_JOINT_CIF.STATUS         =   'A'                 ) 
+	    AND   (  V_FMS_CIF_JOINT_CIF.CIF_TYPE       =   CASE WHEN #{cifTypeCode} = 0 THEN V_FMS_CIF_JOINT_CIF.CIF_TYPE ELSE #{cifTypeCode} END)
+	    AND   (  RIFCTT.CLIENT      =   'Y' )
+	    <choose>
+		   	<!-- <when test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( cifTypeCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@valueOf(-1)) == 0 and @com.path.lib.common.util.NumberUtil@nullEmptyToValue(  fmsCategory , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0" > -->
+		   	<when test ='cifTypeCode == -1 and fmsCategory != null'>
+				AND    V_FMS_CIF_JOINT_CIF.CIF_TYPE IN (SELECT   CIF_TYPE 
+	                             FROM     FMS_CATEGORY_CIF_TYPES 
+	                             WHERE    FMS_CATEGORY_CIF_TYPES.COMP_CODE   =  #{compCode}
+	                             AND      FMS_CATEGORY_CIF_TYPES.CATEGORY_CODE  =  #{fmsCategory})
+		    </when> 
+	    	<otherwise>
+		    	AND   (  V_FMS_CIF_JOINT_CIF.CIF_TYPE       =   CASE WHEN #{cifTypeCode} = 0 THEN V_FMS_CIF_JOINT_CIF.CIF_TYPE ELSE #{cifTypeCode} END)
+	    	</otherwise>   
+    	</choose>
+    	
+	 </sql>
+	
+	<resultMap id="jointCifInfoMap" type="cifCO">
+		<result property="cifVO.CIF_NO" 				column="CIF_NO" />  
+		<result property="cifVO.CIF_TYPE" 				column="CIF_TYPE" /> 
+		<result property="cifVO.SHORT_NAME_ENG" 		column="SHORT_NAME_ENG" />
+		<result property="cifVO.SHORT_NAME_ARAB" 		column="SHORT_NAME_ARAB" />
+		<result property="cifVO.LONG_NAME_ENG" 			column="LONG_NAME_ENG" />	
+		<result property="cifVO.LONG_NAME_ARAB" 		column="LONG_NAME_ARAB" />
+		<result property="cifVO.TEL"					column="TEL" />
+		<result property="cifVO.RESIDENT" 				column="RESIDENT" />
+		<result property="cifVO.ID_NO" 					column="ID_NO" />
+		<result property="cifVO.TYPE" 					column="TYPE" />
+		<result property="rifcttVO.BRIEF_DESC_ENG" 		column="BRIEF_DESC_ENG" />
+		<result property="COUNTRY_DESC" 				column="COUNTRY_DESC" />
+		<result property="cifVO.ADDITIONAL_REFERENCE" 	column="ADDITIONAL_REFERENCE" />
+		<result property="CIF_TYPE_DESC" 				column="CIF_TYPE_DESC" />		
+	</resultMap>
+	
+	<select id="returnDependencyJointCifFms" resultMap="CIF.BaseResultMap" parameterType="cifSC"> 
+       SELECT   CIF.CIF_NO,
+               	CIF.SHORT_NAME_ENG,
+               	CIF.STATUS
+    	FROM    CIF 
+	    JOIN    RIFCTT
+	    ON   	(  CIF.COMP_CODE     	=    RIFCTT.COMP_CODE ) 
+	    AND  	(  CIF.CIF_TYPE      	=    RIFCTT.TYPE_CODE) 
+	    LEFT OUTER JOIN V_FMS_CIF_JOINT_CIF  
+	    ON   	(  CIF.COMP_CODE      	=    V_FMS_CIF_JOINT_CIF.COMP_CODE   ) 
+    	AND  	(( CIF.CIF_NO       	=     V_FMS_CIF_JOINT_CIF.CIF_NO) OR ( CIF.CIF_NO    =  V_FMS_CIF_JOINT_CIF.JOINT_CIF_NO))
+    	WHERE 	(  CIF.COMP_CODE       	=    #{compCode}         ) 
+    	AND   	(  CIF.STATUS          	=    'A'                 ) 
+    	<choose>
+     	<when test="@com.path.lib.common.util.NumberUtil@nullEmptyToValue( cifTypeCode , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@valueOf(-1)) == 0 and @com.path.lib.common.util.NumberUtil@nullEmptyToValue(  fmsCategory , @java.math.BigDecimal@ZERO ).compareTo(@java.math.BigDecimal@ZERO) != 0" >
+   			AND    CIF.CIF_TYPE IN (	SELECT   CIF_TYPE 
+                              			FROM     FMS_CATEGORY_CIF_TYPES 
+                              			WHERE    FMS_CATEGORY_CIF_TYPES.COMP_CODE   	=  #{compCode}
+                              			AND      FMS_CATEGORY_CIF_TYPES.CATEGORY_CODE  	=  #{fmsCategory})
+      	</when> 
+      	<otherwise>
+      		AND 	(CIF.CIF_TYPE = CASE WHEN  #{cifTypeCode} + 0 = 0 THEN
+          			CIF.CIF_TYPE ELSE #{cifTypeCode} + 0 END)
+      	</otherwise>   
+     	</choose>
+    	AND   (   RIFCTT.CLIENT       =    'Y' )  
+    	AND   (   CIF.CIF_NO       =    #{cif_no} )
+    	GROUP BY  CIF.CIF_NO, CIF.SHORT_NAME_ENG, CIF.STATUS
+  	</select>
+	
+	<select id="returnCifForBasedOnMasked" parameterType="cifSC" resultType="java.math.BigDecimal">
+		SELECT MAX(CIF_NO)
+		FROM CIF
+		WHERE COMP_CODE = #{compCode}
+		AND CIF_NO BETWEEN #{code} AND #{cif_no}
+	</select>
+
+    <select id="selectListCifForFilterIdNo" resultMap="selectListCifForFilterIdNoMap" parameterType="cifSC" >
+					  
+     SELECT CIF_NO FROM CIF WHERE COMP_CODE=#{compCode}  AND (UPPER(ID_NO) LIKE UPPER('%'|| #{id_no,jdbcType=VARCHAR} ||'%') OR UPPER(JOIN_ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%'))
+      UNION
+     SELECT CIF_CODE CIF_NO FROM CIF_CONTACT
+     WHERE COMP_CODE = #{compCode} AND  UPPER(CIF_CONTACT.ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+     UNION
+     SELECT CIF_NO FROM  CIF_AUTH_SIGNATORY WHERE COMP_CODE=#{compCode} AND UPPER(ID_NO) LIKE UPPER('%'||#{id_no,jdbcType=VARCHAR}||'%')
+      									
+		  </select>	 
+	<select id="cifSegmentTrialProcessListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+ 		<include refid="getCifOfTrialSegmentationProcess"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="cifSegmentTrialProcessList" resultMap="cifListMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="getCifOfTrialSegmentationProcess"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<sql id="getCifOfTrialSegmentationProcess">
+    	SELECT	CIF CIF_NO
+    	FROM	CIF_SEGEMENTATION_FINAL_TMP
+    	WHERE 	SEGMENT_CODE = #{segmentCode}
+    	AND 	USERID 		 = #{userId}
+    </sql>
+    
+      <resultMap id="selectListCifForFilterIdNoMap" type="cifCO" >
+		   <result column="CIF_NO" property="cifVO.CIF_NO" />
+      </resultMap>
+	 
+	  <sql id="cifRestriction">
+    	<if test='applyRestriction != null  and !applyRestriction.equals("") and applyRestriction.equals("1")'>
+    		
+    		
+			AND NOT EXISTS (
+			SELECT 1
+			FROM SADS_RESTRICTION_DEFINITION D,
+			     SADS_RESTRICTION_USER       U,
+			     SADS_RESTRICTION_BRANCHES   B,
+			     SADS_RESTRICTION_OPT        O
+			WHERE D.STATUS = 'P'
+			 AND U.USER_ID = #{userId,jdbcType=VARCHAR}
+			 AND B.COMP_CODE = #{compCode}
+			 AND B.BRANCH_CODE = #{restrBranchCode}
+			 AND O.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+			 AND O.PROG_REF = #{pageRef,jdbcType=VARCHAR}
+			 AND D.RESTRICTION_CODE = U.RESTRICTION_CODE
+			 AND D.RESTRICTION_CODE = B.RESTRICTION_CODE
+			 AND D.RESTRICTION_CODE = O.RESTRICTION_CODE
+			 AND (EXISTS (SELECT 1
+			            FROM SADS_RESTRICTION_CIF C
+			            WHERE D.RESTRICTION_CODE = C.RESTRICTION_CODE
+			            AND C.COMP_CODE = B.COMP_CODE
+			            AND C.RESTRICTION_LEVEL = '1'
+			            AND CIF.CIF_NO BETWEEN C.FROM_CIF_NO AND C.TO_CIF_NO) 
+			 OR EXISTS (SELECT 1
+			            FROM SADS_RESTRICTION_CIFTYPE T
+			            WHERE D.RESTRICTION_CODE = T.RESTRICTION_CODE
+			            AND T.COMP_CODE = B.COMP_CODE
+			            AND T.RESTRICTION_LEVEL = '1'
+			            AND T.CIF_TYPE = CIF.CIF_TYPE))
+			 )
+			 </if>
+			
+	</sql>
+		
+	<select id="returnSwitchCIFBranchAccList" resultMap="switchedCIFMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="switchCIFBranchAccList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnSwitchCIFBranchAccListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="switchCIFBranchAccList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<sql id="switchCIFBranchAccList">
+		SELECT
+		A.COMP_CODE,
+		A.BRANCH_CODE,
+		A.CURRENCY_CODE,
+		A.GL_CODE,
+		A.CIF_SUB_NO,
+		A.SL_NO,
+		A.LONG_NAME_ENG
+
+		FROM AMF A , CIF C, GEN_LEDGER G
+		WHERE A.COMP_CODE=C.COMP_CODE 
+		AND A.CIF_SUB_NO=C.CIF_NO 
+		AND G.COMP_CODE = A.COMP_CODE
+		AND G.GL_CODE = A.GL_CODE
+		AND	A.COMP_CODE = #{compCode}
+		AND A.BRANCH_CODE = #{branchCode}
+		AND A.CIF_SUB_NO= #{cif_no}
+		AND G.GL_CATEGORY = 'L'
+		AND A.GMI_FLAG != 'I'
+		AND A.STATUS NOT IN ('C','D','M','P')
+		AND ( NVL(A.YTD_FC_BAL,0.0) = NVL(A.FC_AVAIL_BAL,0.0)
+		AND
+		NVL(A.YTD_CV_BAL,0.0) = NVL(A.CV_AVAIL_BAL,0.0)
+		)
+		AND not EXISTS (SELECT 1
+		FROM AMF H
+		WHERE A.COMP_CODE = H.COMP_CODE
+		AND H.BRANCH_CODE = #{switchBranchCode}
+		AND A.CURRENCY_CODE = H.CURRENCY_CODE
+		AND A.GL_CODE = H.GL_CODE
+		AND A.CIF_SUB_NO = H.CIF_SUB_NO
+		AND A.SL_NO = H.SL_NO)
+
+		AND NOT EXISTS (SELECT 1
+		FROM T_TMP_CHECK_CLOSE_ACC_SPEC T
+		WHERE A.COMP_CODE = T.COMP_CODE
+		AND A.BRANCH_CODE = T.BRANCH_CODE
+		AND A.CURRENCY_CODE = T.CURRENCY_CODE
+		AND A.GL_CODE = T.GL_CODE
+		AND A.CIF_SUB_NO = T.CIF_SUB_NO
+		AND A.SL_NO = T.SL_NO)
+	
+	</sql>
+	
+	<resultMap type="cifSC" id="errorMsgChq">
+		<result column="errorMessage" javaType="string" jdbcType="VARCHAR"
+			property="errorMessage" />
+	</resultMap>
+	
+	<select id="switchCIFBRProc" parameterType="cifSC" statementType="CALLABLE">
+    { CALL P_TRANSFER_ACCOUNTS_DEMO(   #{compCode, mode=IN,jdbcType=NUMERIC},
+								    #{branchCode, mode=IN,jdbcType=NUMERIC},
+								    #{switchBranchCode, mode=IN,jdbcType=NUMERIC},
+								    #{cif_no, mode=IN,jdbcType=NUMERIC},
+								    #{userId, mode=IN,jdbcType=VARCHAR},
+								    #{errorCode, mode=OUT,jdbcType=NUMERIC},
+								    #{errorMessage, mode=OUT,jdbcType=LONGVARCHAR,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathLongVarcharHandler}	)}
+	</select>
+	
+		<resultMap id="switchedCIFMap" type="accountCO">
+		<result property="ACC_CHEQBOOKS" 		column="ACC_CHEQBOOKS" />
+		<result property="ACC_CARDS" 			column="ACC_CARDS" />  
+		<result property="ACC_SAFEBOX" 			column="ACC_SAFEBOX" />  
+		<result property="ACC_CSM_HOF" 			column="ACC_CSM_HOF" />
+		<result property="ACC_IISFMS_HOF" 		column="ACC_IISFMS_HOF" />
+		<result property="ACC_SO" 				column="ACC_SO" /> 
+		<result property="ACC_CTSSPCOND" 		column="ACC_CTSSPCOND" />
+		<result property="ACC_COLLATERALS" 		column="ACC_COLLATERALS" />
+		<result property="ACC_DEALS" 			column="ACC_DEALS" />
+		<result property="amfVO.COMP_CODE"		column="COMP_CODE" />
+		<result property="amfVO.BRANCH_CODE"    column="BRANCH_CODE" />
+		<result property="amfVO.CURRENCY_CODE"  column="CURRENCY_CODE" />
+		<result property="amfVO.GL_CODE"        column="GL_CODE" />
+		<result property="amfVO.CIF_SUB_NO"     column="CIF_SUB_NO" />
+		<result property="amfVO.SL_NO"          column="SL_NO" />
+		<result property="amfVO.LONG_NAME_ENG"  column="LONG_NAME_ENG" />
+	</resultMap>
+
+    <select id="returnSwitchedCIFDataList" resultMap="switchedCIFMap" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnSwitchedCIFData" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnSwitchedCIFDataListCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnSwitchedCIFData" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>     
+	
+	<sql id="returnSwitchedCIFData">
+	SELECT
+	COMP_CODE,
+	NEW_BRANCH_CODE BRANCH_CODE,
+	CURRENCY_CODE,
+	GL_CODE,
+	CIF_SUB_NO,
+	SL_NO,
+	(CASE WHEN ACC_CHEQBOOKS='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_CHEQBOOKS,
+	(CASE WHEN ACC_CARDS='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_CARDS,
+	(CASE WHEN ACC_SAFEBOX='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_SAFEBOX,
+	(CASE WHEN ACC_CSM_HOF='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_CSM_HOF,
+	(CASE WHEN ACC_IISFMS_HOF='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_IISFMS_HOF,
+	(CASE WHEN ACC_SO='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_SO,
+	(CASE WHEN ACC_CTSSPCOND='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_CTSSPCOND,
+	(CASE WHEN ACC_COLLATERALS='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_COLLATERALS,
+	(CASE WHEN ACC_DEALS='Y' THEN (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Transferred' ELSE 'Transférés' END) 
+	ELSE (CASE WHEN #{preferredLanguage} = 'EN' THEN 'Not Available' ELSE 'Non Existants' END) END) AS ACC_DEALS
+	
+	FROM T_TMP_CHECK_CLOSE_ACC_SPEC TMPACC
+
+	WHERE TMPACC.CIF_SUB_NO = #{cif_no,jdbcType=NUMERIC}
+	AND TMPACC.NEW_BRANCH_CODE = #{switchBranchCode,jdbcType=NUMERIC}
+
+</sql>
+			<sql id="cifNoLookupQueryWhere">
+			   and CIF.CIF_TYPE IN
+			       (SELECT CTSTELLERCIFTYPEDET.CIF_TYPE
+			          FROM CTSTELLERCIFTYPEDET
+			         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode}
+			           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'C'
+			           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode}
+			           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode})
+			   AND CIF.PRIORITY_CODE IN
+			       (SELECT CTSTELLERCIFTYPEDET.CIF_TYPE
+			          FROM CTSTELLERCIFTYPEDET
+			         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode}
+			           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'P'
+			           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode}
+			           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode})
+			   AND CIF.ECO_SECTOR IN
+			       (SELECT CTSTELLERCIFTYPEDET.CIF_TYPE
+			          FROM CTSTELLERCIFTYPEDET
+			         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = #{compCode}
+			           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'E'
+			           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = #{branchCode}
+			           AND CTSTELLERCIFTYPEDET.CODE = #{tellerCode} )
+		</sql>
+		
+		
+		
+		<resultMap id="resCifTypeCategPriority" type="cifCO">
+			<result property="cifVO.BRANCH_CODE" column="BRANCH_CODE"/>
+			<result property="cifVO.CIF_NO" column="CIF_NO"/>
+			<result property="cifVO.SHORT_NAME_ENG" column="SHORT_NAME_ENG"/>
+			<result property="cifVO.LONG_NAME_ENG" column="LONG_NAME_ENG"/>
+			<result property="cifVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+			<result property="cifVO.ID_NO" column="ID_NO"/>
+			<result property="cifVO.PC_IND" column="PC_IND"/>
+			<result property="cifVO.CIF_TYPE" column="CIF_TYPE"/>
+			<result property="cifVO.TEL" column="TEL"/>
+			<result property="cifVO.RESIDENT" column="RESIDENT"/>
+			<result property="priorityDesc" column="PRIORITY_DESC"/>
+			<result property="CIF_TYPE_DESC" column="TYPE_DESC"/>
+			<result property="cifVO.PRIORITY_CODE" column="PRIORITY_CODE"/>
+		</resultMap>
+
+
+	<select id="returnCifNoLookup" parameterType="cifSC" resultMap="resCifTypeCategPriority" >
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifNoLookupQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnCifNoLookupCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifNoLookupQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+	
+	<select id="returnCifNoLookupById" parameterType="cifSC" resultMap="resCifTypeCategPriority">
+	 	<include refid="cifNoLookupQuery"/>
+	</select>
+	
+	
+		<sql id="cifNoLookupQuery" >
+		SELECT CIF.BRANCH_CODE,
+			   CIF.CIF_NO,
+			   SHORT_NAME_ENG,
+			   CIF.LONG_NAME_ENG,
+			   CIF.ADDITIONAL_REFERENCE,
+			   CIF_TYPE,
+			   CIF.TEL,
+		       CIF.RESIDENT,
+		       CIF.ID_NO,
+	    	   CIF.PC_IND,
+	       (SELECT CASE
+	                 WHEN #{preferredLanguage} = 'L' THEN
+	                  BRIEF_DESC_ENG
+	                 ELSE
+	                  BRIEF_DESC_ARAB
+	               END
+	          FROM RIFCTT
+	         WHERE COMP_CODE = #{compCode}
+	           AND TYPE_CODE = CIF.CIF_TYPE) TYPE_DESC,
+	       PRIORITY_CODE,
+	       (SELECT CASE
+	                 WHEN #{preferredLanguage} = 'L' THEN
+	                  BRIEF_DESC_ENG
+	                 ELSE
+	                  BRIEF_DESC_ARAB
+	               END
+	          FROM RIFPCT
+	         WHERE RIFPCT.COMP_CODE = #{compCode}
+	           AND RIFPCT.PRIORITY_CODE = CIF.PRIORITY_CODE) PRIORITY_DESC
+	  FROM CIF
+	 WHERE COMP_CODE = #{compCode}
+	 <if test="cifCode !=null and cifCode != emptyBigDecimalValue">
+	   AND CIF_NO = #{cifCode}
+	 </if>
+	   AND CIF.STATUS = 'A'
+	   <include refid="cifNoLookupQueryWhere"/>
+	</sql> 
+	
+	
+</mapper>

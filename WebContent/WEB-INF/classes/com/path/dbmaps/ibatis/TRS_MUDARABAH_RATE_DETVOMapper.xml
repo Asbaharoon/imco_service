@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_MUDARABAH_RATE_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_MUDARABAH_RATE_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <id column="RATE_CODE" property="RATE_CODE" />
+    <id column="RATE_DATE" property="RATE_DATE" />
+    <result column="GIVEN_RATE" property="GIVEN_RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, CURRENCY_CODE, LINE_NUMBER, RATE_CODE, RATE_DATE, GIVEN_RATE
+  </sql>
+  <select id="selectTRS_MUDARABAH_RATE_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_MUDARABAH_RATE_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_MUDARABAH_RATE_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and RATE_CODE = #{RATE_CODE}
+      and RATE_DATE = #{RATE_DATE}
+  </select>
+  <delete id="deleteTRS_MUDARABAH_RATE_DET" parameterType="com.path.dbmaps.vo.TRS_MUDARABAH_RATE_DETVOKey" >
+    delete from TRS_MUDARABAH_RATE_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and RATE_CODE = #{RATE_CODE}
+      and RATE_DATE = #{RATE_DATE}
+  </delete>
+  <insert id="insertTRS_MUDARABAH_RATE_DET" parameterType="com.path.dbmaps.vo.TRS_MUDARABAH_RATE_DETVO" >
+    insert into TRS_MUDARABAH_RATE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        LINE_NUMBER,
+      </if>
+      <if test="RATE_CODE != null and RATE_CODE != emptyBigDecimalValue" >
+        RATE_CODE,
+      </if>
+      <if test="RATE_DATE != null" >
+        RATE_DATE,
+      </if>
+      <if test="GIVEN_RATE != null and GIVEN_RATE != emptyBigDecimalValue" >
+        GIVEN_RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        #{LINE_NUMBER},
+      </if>
+      <if test="RATE_CODE != null and RATE_CODE != emptyBigDecimalValue" >
+        #{RATE_CODE},
+      </if>
+      <if test="RATE_DATE != null" >
+        #{RATE_DATE},
+      </if>
+      <if test="GIVEN_RATE != null and GIVEN_RATE != emptyBigDecimalValue" >
+        #{GIVEN_RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_MUDARABAH_RATE_DET" >
+    update TRS_MUDARABAH_RATE_DET
+    <set >
+      <if test="GIVEN_RATE != null" >
+        <choose >
+          <when test="GIVEN_RATE == emptyBigDecimalValue" >
+            GIVEN_RATE = NULL ,
+          </when>
+          <otherwise >
+            GIVEN_RATE = #{GIVEN_RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and RATE_CODE = #{RATE_CODE}
+      and RATE_DATE = #{RATE_DATE}
+  </sql>
+  <update id="updateTRS_MUDARABAH_RATE_DET" parameterType="com.path.dbmaps.vo.TRS_MUDARABAH_RATE_DETVO" >
+    <include refid="sql_updateTRS_MUDARABAH_RATE_DET" />
+  </update>
+</mapper>

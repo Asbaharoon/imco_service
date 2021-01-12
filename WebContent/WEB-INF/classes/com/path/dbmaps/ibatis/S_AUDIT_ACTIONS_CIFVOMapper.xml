@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_AUDIT_ACTIONS_CIF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO" >
+    <id column="ACTION_DATE" property="ACTION_DATE" />
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="CIF_LINE_NO" property="CIF_LINE_NO" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <result column="CIF_NO" property="CIF_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACTION_DATE, APP_NAME, CIF_LINE_NO, PROG_REF, TRX_NBR, CIF_NO
+  </sql>
+  <select id="selectS_AUDIT_ACTIONS_CIF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_AUDIT_ACTIONS_CIF
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and CIF_LINE_NO = #{CIF_LINE_NO}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </select>
+  <delete id="deleteS_AUDIT_ACTIONS_CIF" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO" >
+    delete from S_AUDIT_ACTIONS_CIF
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and CIF_LINE_NO = #{CIF_LINE_NO}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </delete>
+  <insert id="insertS_AUDIT_ACTIONS_CIF" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO" >
+    insert into S_AUDIT_ACTIONS_CIF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue" >
+        CIF_LINE_NO,
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)" >
+        TRX_NBR,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="CIF_LINE_NO != null and CIF_LINE_NO != emptyBigDecimalValue" >
+        #{CIF_LINE_NO},
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        #{PROG_REF},
+      </if>
+      <if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)" >
+        #{TRX_NBR},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_AUDIT_ACTIONS_CIF" >
+    update S_AUDIT_ACTIONS_CIF
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and CIF_LINE_NO = #{CIF_LINE_NO}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </sql>
+  <update id="updateS_AUDIT_ACTIONS_CIF" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONS_CIFVO" >
+    <include refid="sql_updateS_AUDIT_ACTIONS_CIF" />
+  </update>
+</mapper>

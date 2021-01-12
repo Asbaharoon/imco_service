@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifRelationMapper">
+
+ <sql id="cifRelationListCommon">
+	<![CDATA[
+	SELECT RELATION_BETWEEN_CIFS.CODE,   
+           RELATION_BETWEEN_CIFS.BRIEF_DESC_ENG,   
+           RELATION_BETWEEN_CIFS.LONG_DESC_ENG,   
+           RELATION_BETWEEN_CIFS.BRIEF_DESC_ARAB,   
+           RELATION_BETWEEN_CIFS.LONG_DESC_ARAB
+   FROM    RELATION_BETWEEN_CIFS  
+   WHERE   RELATION_BETWEEN_CIFS.COMP_CODE = #{compCode}   
+	]]>	 
+ </sql>
+ 
+ <resultMap id="cifRelationListMap" type="cifRelationVO">
+	<id property="CODE" column="CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="cifRelationList" resultMap="cifRelationListMap" parameterType="cifRelationSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifRelationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cifRelationListCount" resultType="int" parameterType="cifRelationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifRelationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnCifRelationByCode" parameterType="cifRelationSC" resultType="cifRelationVO">
+  		SELECT
+			  CODE,
+			  BRIEF_DESC_ENG
+		FROM  RELATION_BETWEEN_CIFS
+		WHERE RELATION_BETWEEN_CIFS.COMP_CODE   = #{compCode}
+		AND   RELATION_BETWEEN_CIFS.CODE    	= #{cifRelationCode}
+   </select>
+ 
+</mapper>

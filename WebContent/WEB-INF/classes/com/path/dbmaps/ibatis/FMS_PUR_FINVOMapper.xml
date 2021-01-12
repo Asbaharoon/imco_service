@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_PUR_FIN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_PUR_FINVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="ADD_NUMBER" property="ADD_NUMBER" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARABIC" property="BRIEF_DESC_ARABIC" />
+    <result column="REFERENCE" property="REFERENCE" />
+    <result column="CHECK_VALUE_COLLATERAL" property="CHECK_VALUE_COLLATERAL" />
+    <result column="ACCEPTANCE_FROM_AMT" property="ACCEPTANCE_FROM_AMT" />
+    <result column="ACCEPTANCE_TO_AMT" property="ACCEPTANCE_TO_AMT" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, ADD_NUMBER, BRIEF_DESC_ENG, BRIEF_DESC_ARABIC, REFERENCE, CHECK_VALUE_COLLATERAL, 
+    ACCEPTANCE_FROM_AMT, ACCEPTANCE_TO_AMT, DATE_UPDATED, UPDATED_BY
+  </sql>
+  <select id="selectFMS_PUR_FIN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_PUR_FINVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_PUR_FIN
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFMS_PUR_FIN" parameterType="com.path.dbmaps.vo.FMS_PUR_FINVOKey" >
+    delete from FMS_PUR_FIN
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFMS_PUR_FIN" parameterType="com.path.dbmaps.vo.FMS_PUR_FINVO" >
+    insert into FMS_PUR_FIN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ADD_NUMBER != null and !&quot;&quot;.equals(ADD_NUMBER)" >
+        ADD_NUMBER,
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARABIC != null and !&quot;&quot;.equals(BRIEF_DESC_ARABIC)" >
+        BRIEF_DESC_ARABIC,
+      </if>
+      <if test="REFERENCE != null and !&quot;&quot;.equals(REFERENCE)" >
+        REFERENCE,
+      </if>
+      <if test="CHECK_VALUE_COLLATERAL != null and !&quot;&quot;.equals(CHECK_VALUE_COLLATERAL)" >
+        CHECK_VALUE_COLLATERAL,
+      </if>
+      <if test="ACCEPTANCE_FROM_AMT != null and ACCEPTANCE_FROM_AMT != emptyBigDecimalValue" >
+        ACCEPTANCE_FROM_AMT,
+      </if>
+      <if test="ACCEPTANCE_TO_AMT != null and ACCEPTANCE_TO_AMT != emptyBigDecimalValue" >
+        ACCEPTANCE_TO_AMT,
+      </if>
+      DATE_UPDATED,
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ADD_NUMBER != null and !&quot;&quot;.equals(ADD_NUMBER)" >
+        #{ADD_NUMBER},
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARABIC != null and !&quot;&quot;.equals(BRIEF_DESC_ARABIC)" >
+        #{BRIEF_DESC_ARABIC},
+      </if>
+      <if test="REFERENCE != null and !&quot;&quot;.equals(REFERENCE)" >
+        #{REFERENCE},
+      </if>
+      <if test="CHECK_VALUE_COLLATERAL != null and !&quot;&quot;.equals(CHECK_VALUE_COLLATERAL)" >
+        #{CHECK_VALUE_COLLATERAL},
+      </if>
+      <if test="ACCEPTANCE_FROM_AMT != null and ACCEPTANCE_FROM_AMT != emptyBigDecimalValue" >
+        #{ACCEPTANCE_FROM_AMT},
+      </if>
+      <if test="ACCEPTANCE_TO_AMT != null and ACCEPTANCE_TO_AMT != emptyBigDecimalValue" >
+        #{ACCEPTANCE_TO_AMT},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_PUR_FIN" >
+    update FMS_PUR_FIN
+    <set >
+      <if test="ADD_NUMBER != null" >
+        <choose >
+          <when test="ADD_NUMBER.equals(&quot;&quot;)" >
+            ADD_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            ADD_NUMBER = #{ADD_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        <choose >
+          <when test="BRIEF_DESC_ENG.equals(&quot;&quot;)" >
+            BRIEF_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_DESC_ARABIC != null" >
+        <choose >
+          <when test="BRIEF_DESC_ARABIC.equals(&quot;&quot;)" >
+            BRIEF_DESC_ARABIC = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ARABIC = #{BRIEF_DESC_ARABIC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REFERENCE != null" >
+        <choose >
+          <when test="REFERENCE.equals(&quot;&quot;)" >
+            REFERENCE = NULL ,
+          </when>
+          <otherwise >
+            REFERENCE = #{REFERENCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHECK_VALUE_COLLATERAL != null" >
+        <choose >
+          <when test="CHECK_VALUE_COLLATERAL.equals(&quot;&quot;)" >
+            CHECK_VALUE_COLLATERAL = NULL ,
+          </when>
+          <otherwise >
+            CHECK_VALUE_COLLATERAL = #{CHECK_VALUE_COLLATERAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACCEPTANCE_FROM_AMT != null" >
+        <choose >
+          <when test="ACCEPTANCE_FROM_AMT == emptyBigDecimalValue" >
+            ACCEPTANCE_FROM_AMT = NULL ,
+          </when>
+          <otherwise >
+            ACCEPTANCE_FROM_AMT = #{ACCEPTANCE_FROM_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACCEPTANCE_TO_AMT != null" >
+        <choose >
+          <when test="ACCEPTANCE_TO_AMT == emptyBigDecimalValue" >
+            ACCEPTANCE_TO_AMT = NULL ,
+          </when>
+          <otherwise >
+            ACCEPTANCE_TO_AMT = #{ACCEPTANCE_TO_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFMS_PUR_FIN" parameterType="com.path.dbmaps.vo.FMS_PUR_FINVO" >
+    <include refid="sql_updateFMS_PUR_FIN" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

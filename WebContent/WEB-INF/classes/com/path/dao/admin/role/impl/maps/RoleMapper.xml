@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="role">
+	<sql id="rolesListCommon" >
+	SELECT S.ROLE_NAME, S.LONG_NAME, S.APP_NAME
+	FROM S_ROLE S
+	WHERE S.STATUS = 'P'
+	<if test='currAppName != null and !"".equals(currAppName)'>
+         AND S.APP_NAME=  #{currAppName} 
+    </if>
+	
+	<if test='appList != null and !"".equals(appList)'>
+      AND S.APP_NAME IN  (${appList})
+	</if>  
+	
+</sql>
+
+<resultMap type="com.path.dbmaps.vo.S_ROLEVO" id="getRolesListMap">
+<result column="ROLE_NAME" property="ROLE_NAME"/>
+<result column="LONG_NAME" property="LONG_NAME"/>
+<result column="APP_NAME" property="APP_NAME"/>
+</resultMap>
+
+ <select id="getRolesList"  resultMap="getRolesListMap" parameterType="com.path.vo.admin.role.RoleSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="rolesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="getRolesCount"  resultType="int" parameterType="com.path.vo.admin.role.RoleSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="rolesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+<select id="returnRole" parameterType="com.path.vo.admin.role.RoleSC" resultType="com.path.dbmaps.vo.S_ROLEVO">
+	<include refid="rolesListCommon"/>
+	AND ROLE_NAME = #{roleName}
+</select>
+
+</mapper>

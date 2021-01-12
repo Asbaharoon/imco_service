@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="educationNatureMapper">
+	<resultMap id="resEducationNatureLookupMap" type="com.path.vo.core.educationnature.EducationNatureCO">
+		<result property="COMP_CODE" column="COMP_CODE"/>
+		<result property="CODE" column="CODE"/>
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG"/>
+		<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB"/>
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG"/>
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB"/>
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+		
+		<result property="ctsEducationalNatureVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsEducationalNatureVO.CODE" column="CODE"/>
+		<result property="ctsEducationalNatureVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG"/>
+		<result property="ctsEducationalNatureVO.BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB"/>
+		<result property="ctsEducationalNatureVO.LONG_DESC_ENG" column="LONG_DESC_ENG"/>
+		<result property="ctsEducationalNatureVO.LONG_DESC_ARAB" column="LONG_DESC_ARAB"/>
+		<result property="ctsEducationalNatureVO.ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE"/>
+	</resultMap>
+	<select id="returnEducationNatureLookup" parameterType="com.path.vo.core.educationnature.EducationNatureSC" resultMap="resEducationNatureLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryEducationNatureLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnEducationNatureLookupCount" parameterType="com.path.vo.core.educationnature.EducationNatureSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryEducationNatureLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryEducationNatureLkpSQL">
+		SELECT COMP_CODE,
+		       CODE,
+		       BRIEF_DESC_ENG,
+		       BRIEF_DESC_ARAB,
+		       LONG_DESC_ENG,
+		       LONG_DESC_ARAB,
+		       ADDITIONAL_REFERENCE
+		  FROM CTS_EDUCATIONAL_NATURE
+		  WHERE CTS_EDUCATIONAL_NATURE.COMP_CODE = #{compCode}
+		  <if test="educationNatureCode !=null and educationNatureCode != emptyBigDecimalValue">
+		  	AND CTS_EDUCATIONAL_NATURE.CODE = #{educationNatureCode}
+		  </if>
+	</sql>
+	<select id="dependencyByEducationNature" parameterType="com.path.vo.core.educationnature.EducationNatureSC" resultMap="resEducationNatureLookupMap">
+		<include refid="queryEducationNatureLkpSQL"/>
+	</select>
+</mapper>

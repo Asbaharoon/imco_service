@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="MSNGR_CONTACTLIST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.MSNGR_CONTACTLISTVO" >
+    <id column="ID" property="ID" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, DESCRIPTION
+  </sql>
+  <select id="selectMSNGR_CONTACTLIST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.MSNGR_CONTACTLISTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from MSNGR_CONTACTLIST
+    where ID = #{ID}
+  </select>
+  <delete id="deleteMSNGR_CONTACTLIST" parameterType="com.path.dbmaps.vo.MSNGR_CONTACTLISTVO" >
+    delete from MSNGR_CONTACTLIST
+    where ID = #{ID}
+  </delete>
+  <insert id="insertMSNGR_CONTACTLIST" parameterType="com.path.dbmaps.vo.MSNGR_CONTACTLISTVO" >
+    insert into MSNGR_CONTACTLIST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateMSNGR_CONTACTLIST" >
+    update MSNGR_CONTACTLIST
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where ID = #{ID}
+  </sql>
+  <update id="updateMSNGR_CONTACTLIST" parameterType="com.path.dbmaps.vo.MSNGR_CONTACTLISTVO" >
+    <include refid="sql_updateMSNGR_CONTACTLIST" />
+  </update>
+</mapper>

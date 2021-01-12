@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="mosBlackList">
+
+	<resultMap id="blackListMap" type="cifBlckLstVO">
+		<id column="COMP_CODE" property="compCode" />
+		<id column="CIF_NO" property="cifNo" />
+		<id column="BL_CODE" property="blCode" />
+		<id column="LONG_NAME" property="longName" />
+		<id column="NAME_AR" property="nameAR" />
+		<id column="TITLE" property="title" />
+		<id column="DESIGNATION" property="designation" />
+		<id column="STR_DOB" property="strDOB" />
+		<id column="DATE_DOB" property="dateDOB" />
+		<id column="POB" property="POB" />
+		<id column="NATIONALITY" property="nationality" />
+		<id column="PASSPORT_NO" property="passportNO" />
+		<id column="BL_TYPE" property="blType" />
+		<id column="BL_CHECKED" property="blChecked" />
+		<id column="JOINT_CIF" property="jointCIF" />
+		<id column="COLUMN_NAME" property="columnName" />
+		<id column="ID_TYPE" property="idType" />
+	</resultMap>
+
+	<select id="returncifBlackList" resultMap="blackListMap" parameterType="mosBlackListSC">
+		SELECT L.COMP_CODE,
+		L.CIF_NO,
+		L.BL_CODE,
+
+		<choose>
+			<when test="isSybase == 1">
+				LEFT(B.LONG_NAME, 250) LONG_NAME,
+				LEFT(B.NAME_AR,250)
+				NAME_AR,
+				LEFT(B.TITLE,250) TITLE,
+				LEFT(B.DESIGNATION ,250)
+				DESIGNATION,
+				LEFT(B.STR_DOB, 250) STR_DOB,
+				B.DATE_DOB DATE_DOB,
+				LEFT(B.POB , 250) POB,
+				LEFT(B.NATIONALITY , 250)
+				NATIONALITY ,
+				LEFT(B.PASSPORT_NO , 250) PASSPORT_NO ,
+       </when>
+			<otherwise>
+				SUBSTR(B.LONG_NAME,1, 250) LONG_NAME,
+				SUBSTR(B.NAME_AR,1,
+				250) NAME_AR,
+				SUBSTR(B.TITLE, 1,250) TITLE,
+				SUBSTR(B.DESIGNATION, 1
+				,250) DESIGNATION,
+				SUBSTR(B.STR_DOB, 1, 250) STR_DOB,
+				B.DATE_DOB DATE_DOB,
+				SUBSTR(B.POB, 1 , 250) POB,
+				SUBSTR(B.NATIONALITY, 1 , 250) NATIONALITY ,
+				SUBSTR(B.PASSPORT_NO, 1, 250) PASSPORT_NO ,       
+     		</otherwise>
+		</choose>
+
+		L.BL_TYPE,
+		L.BL_CHECKED,
+		L.JOINT_CIF,
+		'' COLUMN_NAME,
+		'' ID_TYPE
+		FROM
+		CIF_BLACKLIST L,
+		(SELECT OFAC_NUM CODE,
+		SDN_NAME LONG_NAME,
+		'' NAME_AR,
+		TITLE,
+		'' DESIGNATION,
+		'' STR_DOB,
+		NULL DATE_DOB,
+		'' POB,
+		PROGRAM NATIONALITY,
+		'' PASSPORT_NO,
+		'O' BL_TYPE
+
+		FROM OFAC_MAIN
+		UNION
+		
+		SELECT CODE,
+		LONG_NAME_ENG LONG_NAME,
+		LONG_NAME_ARAB
+		NAME_AR,
+		'' TITLE,
+		'' DESIGNATION,
+		'' STR_DOB,
+		T.DATE_OF_BIRTH DATE_DOB,
+		T.CIF_PLACE_OF_BIRTH POB,
+		(SELECT NATIONALITY.BRIEF_DESC_ENG	FROM NATIONALITY WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+		AND	(NATIONALITY.CODE = T.CIF_NATION_CODE)) NATIONALITY,
+		'' PASSPORT_NO,
+		'M' BL_TYPE
+		FROM MOSBLACKLIST T
+		WHERE T.COMP_CODE = #{compCode}
+		UNION
+		SELECT ENT_NUM CODE,
+		CASE WHEN NAME1 = 'na' then '' else NAME1 END
+		|| ' ' ||
+		CASE WHEN NAME2 = 'na' then '' else NAME2 END
+		|| ' ' ||
+		CASE WHEN
+		NAME3 = 'na' then '' else NAME3 END
+		|| ' ' ||
+		CASE WHEN NAME4 = 'na'
+		then '' else NAME4 END LONG_NAME,
+		NAME_ARAB NAME_AR,
+		TITLE,
+		DESIGNATION,
+		DOB STR_DOB,
+		NULL DATE_DOB,
+		POB,
+		NATIONALITY,
+		PASSPORT_NO,
+		UN_TYPE BL_TYPE
+		FROM UN_MAIN) B
+		WHERE L.BL_CODE = B.CODE
+		AND L.BL_TYPE = B.BL_TYPE
+		AND L.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+		AND	L.CIF_NO = #{cifNO, jdbcType=NUMERIC}
+			 
+	</select>
+	
+	
+	
+	<select id="returnCriteriaMatching" resultType = "mosBlackListCO" parameterType="mosBlackListSC">
+		SELECT CRITERIA criteriaName , COUNT(1) criteriaCount
+		  FROM (
+		         <if test="longNameEng!=null and  longNameEng!=''">
+		         SELECT 'LONG_NAME_ENG' CRITERIA FROM MOSBLACKLIST 
+		         <where>
+		          <include refid="qcBlkLName"/>
+		        </where>
+		        UNION ALL
+		        
+		        </if>
+		        
+		        <if test="shortNameEng!=null and  shortNameEng!=''">
+		        SELECT 'BRIEF_NAME_ENG' CRITERIA FROM MOSBLACKLIST 
+                <where>
+		          <include refid="qcBlkBName"/>
+		         </where> 
+		          UNION ALL
+		        </if>
+		        
+		       <if test="lastNameEng!=null and  lastNameEng!=''">
+		        SELECT 'CIF_LAST_NAME_ENG' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkLastName"/>
+		        </where> 
+		          UNION ALL
+		       </if> 
+		        
+		        <if test="thirdNameEng!=null and  thirdNameEng!=''">
+		        SELECT 'CIF_THIRD_NAME_ENG' CRITERIA FROM MOSBLACKLIST
+		        <where> 
+		          <include refid="qcBlkThrdName"/>
+		         </where> 
+		          UNION ALL
+		       </if> 
+		        
+		        <if test="secNameEng!=null and  secNameEng!=''">
+		        SELECT 'CIF_SEC_NAME_ENG' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkSecName"/>
+		        </where>  
+		          UNION ALL
+		        </if>
+		        
+		        <if test="firstNameEng!=null and  firstNameEng!=''">
+		        SELECT 'CIF_FIRST_NAME_ENG' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkFName"/>
+		        </where>
+		          UNION ALL
+		       </if>
+		        
+		        <if test="motherFirstName!=null and  motherFirstName!=''">
+		        SELECT 'CIF_MOTHER_FNAME' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkMFName"/>
+		         </where> 
+		          UNION ALL
+		       </if>
+		       
+		        <if test="motherLastName!=null and  motherLastName!=''">
+		        SELECT 'CIF_MOTHER_LNAME' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkMLName"/>
+		         </where> 
+		          UNION ALL
+		       </if>
+		        
+		       <if test="lRegion!=null and  lRegion!=''"> 
+		        SELECT 'CIF_REGION_CODE' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkRegion"/>
+		          </where>
+		          
+		          UNION ALL
+		      </if>
+		       
+		       <if test="lCountry!=null and  lCountry!=''">  
+		        SELECT 'COUNTRY' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkCountry"/>
+		        </where>  
+		          UNION ALL
+		       </if>
+		        
+		       <if test="lNation!=null and  lNation!=''">  
+		        SELECT 'CIF_NATION_CODE' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkNation"/>
+		        </where>  
+		          UNION ALL
+		       </if>
+		       
+		       <if test="ldtBDate!=null ">   
+		        SELECT 'DATE_OF_BIRTH' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkBdate"/>
+		        </where> 
+		          UNION ALL
+		       </if>
+		        
+		       <if test="placeOfBirth!=null and  placeOfBirth!=''">  
+		        SELECT 'CIF_PLACE_OF_BIRTH' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkBPlace"/>
+		        </where>  
+		          UNION ALL
+		       </if>   
+		       
+		      <if test="lRegno!=null and  lRegno!=''">   
+		        SELECT 'CIF_REGISTER_NO' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkRegNo"/>
+		        </where>  
+		          UNION ALL
+		       </if>
+		     
+		     <if test="lLegal!=null and  lLegal!=''">    
+		        SELECT 'LEGAL_STATUS' CRITERIA FROM MOSBLACKLIST 
+		        <where>
+		          <include refid="qcBlkLegal"/>
+		        </where>  
+		          UNION ALL
+		     </if>     
+		       
+		     <if test="idNo!=null and  idNo!=''">    
+		        SELECT 'OID_DOCUMENT_NBR' CRITERIA FROM MOSBLACKLIST 
+		      <where>  
+		          <include refid="qcBlkIdNo"/>
+		      </where> 
+		      UNION ALL   
+		     </if>
+			
+		      SELECT '' FROM DUAL ) TBL
+		 GROUP BY CRITERIA
+	</select>
+	
+	
+	<sql id="qcBlkLName">
+	<choose>
+		<when test='qcBlkLName == "EA"'>
+			 ((COALESCE
+			(LTRIM(RTRIM(LOWER(MOSBLACKLIST.LONG_NAME_ENG))),' ') = #{longNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE(LTRIM(RTRIM(MOSBLACKLIST.LONG_NAME_ARAB)),' ') = #{longNameArab,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkLName == "E"'>
+			(COALESCE(LTRIM(RTRIM(LOWER(MOSBLACKLIST.LONG_NAME_ENG))),' ') = #{longNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkLName == "A"'>
+			(COALESCE(LTRIM(RTRIM(MOSBLACKLIST.LONG_NAME_ARAB)),' ') = #{longNameArab,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkBName">
+		<choose>
+		<when test='qcBlkBName == "EA"'>
+			${qcBlkBNameCond} ((COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.BRIEF_NAME_ENG))),' ') = #{shortNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE (LTRIM(RTRIM(MOSBLACKLIST.BRIEF_NAME_ARAB)),' ') = #{shortNameArab,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkBName == "E"'>
+			${qcBlkBNameCond} (COALESCE	(LTRIM(RTRIM(LOWER(MOSBLACKLIST.BRIEF_NAME_ENG))),' ') = #{shortNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkBName == "A"'>
+			${qcBlkBNameCond} (COALESCE	(LTRIM(RTRIM(MOSBLACKLIST.BRIEF_NAME_ARAB)),' ') = #{shortNameEng,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkLastName">
+	
+		<choose>
+		<when test='qcBlkLastName == "EA"'>
+			${qcBlkLastNameCond} ((COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_LAST_NAME_ENG))),' ') =	#{lastNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_LAST_NAME_AR)),' ') = #{lastNameAr,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkLastName == "E"'>
+			${qcBlkLastNameCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_LAST_NAME_ENG))),' ') = #{lastNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkLastName == "A"'>
+			${qcBlkLastNameCond} (COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_LAST_NAME_AR)),' ') = #{lastNameAr,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkThrdName">
+	
+	<choose>
+		<when test='qcBlkThrdName == "EA"'>
+			${qcBlkThrdNameCond} ((COALESCE	(LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_THIRD_NAME_ENG))),' ') = #{thirdNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_LAST_NAME_AR)),' ') = #{thirdNameAr,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkThrdName == "E"'>
+			${qcBlkThrdNameCond} (COALESCE(LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_THIRD_NAME_ENG))),' ') = #{thirdNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkThrdName == "A"'>
+			${qcBlkThrdNameCond} (COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_THIRD_NAME_AR)),' ') = #{thirdNameAr,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkSecName">
+	
+		<choose>
+		<when test='qcBlkSecName == "EA"'>
+			${qcBlkSecNameCond} ((COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_SEC_NAME_ENG))),' ') = #{secNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_SEC_NAME_AR)),' ') = #{secNameAr,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkSecName == "E"'>
+			${qcBlkSecNameCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_SEC_NAME_ENG))),' ') = #{secNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkSecName == "A"'>
+			${qcBlkSecNameCond} (COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_SEC_NAME_AR)),' ') = #{secNameAr,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkFName">
+	
+	<choose>
+		<when test='qcBlkFName == "EA"'>
+			${qcBlkFNameCond} ((COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_FIRST_NAME_ENG))),' ') = #{firstNameEng,jdbcType=VARCHAR})
+			OR
+			(COALESCE (LTRIM(RTRIM(MOSBLACKLIST.CIF_FIRST_NAME_ENG)),' ') =	#{firstNameAr,jdbcType=VARCHAR}))
+		</when>
+		<when test='qcBlkFName == "E"'>
+			${qcBlkFNameCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_FIRST_NAME_ENG))),' ') = #{firstNameEng,jdbcType=VARCHAR})
+			</when>
+		<when test='qcBlkFName == "A"'>
+			${qcBlkFNameCond} (COALESCE	(LTRIM(RTRIM(MOSBLACKLIST.CIF_FIRST_NAME_AR)),' ') = #{firstNameAr,jdbcType=VARCHAR})
+		</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkMFName">
+	
+	<choose>
+		<when test='qcBlkMFName == "E"'>
+			${qcBlkMFNameCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_MOTHER_FNAME))), ' ') = #{motherFirstName,jdbcType=VARCHAR})
+			</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkMLName">
+	
+	<choose>
+		<when test='qcBlkMLName == "E"'>
+			${qcBlkMLNameCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_MOTHER_LNAME))), ' ') = #{motherLastName,jdbcType=VARCHAR})
+			</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkRegion">
+	
+		<choose>
+		<when test='qcBlkRegion == "E"'>
+			${qcBlkRegionCond} (COALESCE (MOSBLACKLIST.CIF_REGION_CODE, 0) = #{lRegion})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkCountry">
+	
+		<choose>
+		<when test='qcBlkCountry == "E"'>
+			${qcBlkCountryCond} (COALESCE (MOSBLACKLIST.COUNTRY, 0) = #{lCountry})
+			</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkNation">
+		<choose>
+		<when test='qcBlkNation == "E"'>
+			${qcBlkNationCond} (COALESCE( MOSBLACKLIST.CIF_NATION_CODE, 0) = #{lNation})
+		</when>
+	</choose>
+	
+	</sql>
+	
+	<sql id="qcBlkBdate">
+	
+		<choose>
+		<when test='qcBlkBdate == "E"'>
+
+			${qcBlkBdateCond} (MOSBLACKLIST.DATE_OF_BIRTH =#{ldtBDate,jdbcType=DATE})
+			
+		</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkBPlace">
+		<choose>
+		<when test='qcBlkBPlace == "E"'>
+			${qcBlkBPlaceCond} (COALESCE (LTRIM(RTRIM(LOWER(MOSBLACKLIST.CIF_PLACE_OF_BIRTH))), ' ') = #{placeOfBirth})
+			</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkRegNo">
+		<choose>
+		<when test='qcBlkRegNo == "E"'>
+			${qcBlkRegNoCond} (COALESCE ( MOSBLACKLIST.CIF_REGISTER_NO, 0) = #{lRegno})
+		</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkLegal">
+		<choose>
+		<when test='qcBlkLegal == "E"'>
+			${qcBlkLegalCond} (COALESCE ( MOSBLACKLIST.LEGAL_STATUS, 0) = #{lLegal})
+		</when>
+	</choose>
+	</sql>
+	
+	<sql id="qcBlkIdNo">
+		<choose>
+		<when test='qcBlkIdNo == "E"'>
+			${qcBlkIdNoCond} (COALESCE(MOSBLACKLIST.OID_DOCUMENT_NBR, ' ')) = #{idNo}
+			OR (#{idNo} IN (SELECT LOWER(ID_NO) FROM MOSBLACKLIST_ID I WHERE
+			I.COMP_CODE = MOSBLACKLIST.COMP_CODE AND I.CODE = MOSBLACKLIST.CODE
+			AND I.ID_TYPE = #{lIdType}))
+		</when>
+	</choose>
+	</sql>
+	
+
+	<select id="returnMOSBlackListedCif" resultType = "BigDecimal" parameterType="mosBlackListSC">
+	select mosblacklistTBL.CODE 
+	from(
+	SELECT MOSBLACKLIST.CODE,MOSBLACKLIST.STATUS,MOSBLACKLIST.COMP_CODE
+	FROM MOSBLACKLIST
+	
+	<where>
+	
+   <include refid="qcBlkLName"/>
+   <include refid="qcBlkBName"/>
+   <include refid="qcBlkLastName"/>
+   <include refid="qcBlkThrdName"/>
+   <include refid="qcBlkSecName"/>
+   <include refid="qcBlkFName"/>
+   <include refid="qcBlkMFName"/>
+   <include refid="qcBlkMLName"/>
+   <include refid="qcBlkRegion"/>
+   <include refid="qcBlkCountry"/>
+   <include refid="qcBlkNation"/>
+   <include refid="qcBlkBdate"/>
+   <include refid="qcBlkBPlace"/>
+   <include refid="qcBlkRegNo"/>
+   <include refid="qcBlkLegal"/>
+   <include refid="qcBlkIdNo"/>
+
+    </where>
+	
+) mosblacklistTBL
+	WHERE mosblacklistTBL.COMP_CODE = #{compCode}
+	AND mosblacklistTBL.STATUS = 'P'
+
+	</select>
+	 
+	<select id="returnUNBlackListedCif" resultType="BigDecimal" parameterType="mosBlackListSC">
+	select ENT_NUM from (
+	select ENT_NUM,REC_STATUS
+	FROM UN_MAIN
+	<where>
+		<choose>
+			<when test='qcBlkLastName == "EA" || qcBlkLastName == "E"'>
+				${qcBlkLastNameCond} (LOWER( coalesce(UN_MAIN.NAME4, ' '))  = #{lastNameEng})
+			</when>
+		</choose>
+		
+		<choose>
+			<when test='qcBlkThrdName == "EA" || qcBlkThrdName == "E"'>
+				${qcBlkThrdNameCond} (LOWER(coalesce( UN_MAIN.NAME3, ' ')) = #{thirdNameEng})
+			</when>
+		</choose>
+		
+		<choose>
+			<when test='qcBlkSecName == "EA" || qcBlkSecName == "E"'>
+				${qcBlkSecNameCond} (LOWER(coalesce( UN_MAIN.NAME2, ' '))  = #{secNameEng})
+			</when>
+		</choose>
+		
+		<choose>
+			<when test='qcBlkFName == "EA" || qcBlkFName == "E"'>
+				${qcBlkFNameCond} (LOWER(coalesce( UN_MAIN.NAME1, ' '))  = #{firstNameEng})
+			</when>
+		</choose>
+		<choose>
+			<when test='qcBlkBdate == "E"'>
+			<if test="isSybase == 1">
+			${qcBlkBdateCond} (UN_MAIN.DOB = Convert(char,#{ldtBDate},105))
+			</if>
+			<if test="isOracle == 1">
+			${qcBlkBdateCond} (UN_MAIN.DOB =to_char(#{ldtBDate}, 'yyyy-mm-dd'))
+			</if>
+			</when>
+		</choose>
+		
+		<choose>
+			<when test='qcBlkIdNo == "E"'>
+		 	${qcBlkIdNoCond} ( LOWER(coalesce(UN_MAIN.PASSPORT_NO, ' '))  = #{idNo})
+			</when>
+		</choose>
+		</where>
+		) tbl
+	WHERE REC_STATUS = 'A'
+	</select>
+	
+	<select id="returnOFACBlackListedCif" resultType="BigDecimal" parameterType="mosBlackListSC">
+
+		SELECT OFAC_NUM 
+		FROM OFAC_MAIN 
+		WHERE REC_STATUS ='A'
+		AND (
+		<choose>
+			<when test='qcBlkFName == "EA" || qcBlkFName == "E"'>
+				( LOWER(CASE WHEN OFAC_MAIN.SDN_NAME IS NULL THEN ' ' ELSE OFAC_MAIN.SDN_NAME END)  = #{longNameEng} )
+			</when>
+		</choose>
+		)
+	</select>
+	
+	
+	<select id="getBlackListByID" resultType="BigDecimal" parameterType="mosBlackListSC">
+	SELECT CODE
+	  FROM MOSBLACKLIST T
+	 WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC}
+	   AND (LOWER(OID_DOCUMENT_NBR) = LOWER(#{idNo, jdbcType=VARCHAR}) or #{idNo, jdbcType=VARCHAR} IN 
+			                                                                  (SELECT ID_NO 
+			                                                                     FROM MOSBLACKLIST_ID I 
+			                 													WHERE T.COMP_CODE= I.COMP_CODE
+																			      AND T.CODE = I.CODE
+														                          AND I.ID_TYPE = #{lIdType, jdbcType=NUMERIC})
+		   )
+	  <if test="status!=null and  status!=''">
+	   		AND STATUS in (${status})
+	   </if>
+	   <if test="status==null || status==''">
+	      AND STATUS = 'P'
+	   </if>
+	</select>
+	
+	<select id="getBlackListByRegisterNO" resultType="BigDecimal" parameterType="mosBlackListSC">
+	SELECT CODE
+	FROM MOSBLACKLIST
+	WHERE COMP_CODE 		= #{compCode}
+	AND   CIF_REGISTER_NO 	= #{idNo}
+	AND   STATUS 			= 'P'
+	</select>
+
+
+	<select id="returnBlkTypeSource" resultType="mosBlackListCO" parameterType="mosBlackListSC">
+    	SELECT  MOSBLACKLIST.CODE  code,
+    	        MOSBLACKLIST.BLACKLIST_TYPE codeType,
+                MOSBLACKLIST.CODE_SOURCE codeSource,
+               (SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN MOSBLACKLIST_TYPE.BRIEF_NAME_ENG ELSE MOSBLACKLIST_TYPE.BRIEF_NAME_ARAB END  FROM MOSBLACKLIST_TYPE WHERE MOSBLACKLIST_TYPE.COMP_CODE = MOSBLACKLIST.COMP_CODE AND MOSBLACKLIST_TYPE.CODE = MOSBLACKLIST.BLACKLIST_TYPE) blacklistType,
+               (SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN MOSBLACKSOURCE.BRIEF_DESC_ENG ELSE MOSBLACKSOURCE.BRIEF_DESC_ARAB  END FROM MOSBLACKSOURCE WHERE  MOSBLACKSOURCE.COMP_CODE  = MOSBLACKLIST.COMP_CODE AND  MOSBLACKSOURCE.CODE  = MOSBLACKLIST.CODE_SOURCE) blacklistSource,
+               (SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN MOSBLACKLIST_TYPE.LONG_NAME_ENG ELSE MOSBLACKLIST_TYPE.LONG_NAME_ARAB END  FROM MOSBLACKLIST_TYPE WHERE MOSBLACKLIST_TYPE.COMP_CODE = MOSBLACKLIST.COMP_CODE AND MOSBLACKLIST_TYPE.CODE = MOSBLACKLIST.BLACKLIST_TYPE) longNameBlacklistType,
+               (SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'L' THEN MOSBLACKSOURCE.LONG_DESC_ENG ELSE MOSBLACKSOURCE.LONG_DESC_ARAB  END FROM MOSBLACKSOURCE WHERE  MOSBLACKSOURCE.COMP_CODE  = MOSBLACKLIST.COMP_CODE AND  MOSBLACKSOURCE.CODE  = MOSBLACKLIST.CODE_SOURCE) longDescBlacklistSource
+    	  FROM  MOSBLACKLIST
+		 WHERE  MOSBLACKLIST.COMP_CODE = #{compCode}
+	    <if test="cifNO!=null">
+			AND CIF = #{cifNO}
+		</if>
+		<choose>
+			<when test="bdMosBlkCode!=null">AND MOSBLACKLIST.CODE = #{bdMosBlkCode}</when>
+			<otherwise>AND MOSBLACKLIST.CODE = (SELECT MAX(m.CODE) FROM MOSBLACKLIST m WHERE m.COMP_CODE=MOSBLACKLIST.COMP_CODE AND m.CIF=MOSBLACKLIST.CIF AND m.STATUS=MOSBLACKLIST.STATUS)</otherwise>
+		</choose>
+		AND MOSBLACKLIST.STATUS = 'P'
+	</select>
+			
+       
+    <select id="returnBlackListByCIFNO" resultType="BigDecimal" parameterType="mosBlackListSC">
+		SELECT MAX(CODE) 
+		  FROM MOSBLACKLIST
+		 WHERE COMP_CODE = #{compCode}
+		   AND CIF		 = #{cifNO}
+		 <if test="status == null">
+		   AND STATUS 	 = 'P'
+		 </if>
+		 <if test="status != null">
+		 	 AND STATUS NOT IN ('D','R')
+		 </if>
+	</select>
+	
+	<select id="showcifBlackListed" resultType="String" parameterType="mosBlackListSC">SELECT SHOW_CIF_BLACKLISTED				
+	FROM CIFCONTROL
+	WHERE COMP_CODE = #{compCode}</select>
+	
+	<select id="suspiciousBlackListUNMainList" resultMap="unMainMap" parameterType="mosBlackListSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="suspiciousBlackListUNMain" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="suspiciousBlackListUNMainRecordCount" resultType="int" parameterType="mosBlackListSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="suspiciousBlackListUNMain" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+  
+	<resultMap id="unMainMap" type="mosBlackListCO">
+	
+		<id column="BL_CODE" property="unMainVO.ENT_NUM" /> 	
+		<id column="CODE" property="unMainVO.ENT_NUM" />
+		<id column="BL_TYPE" property="blType" /> 
+		<id column="LONG_NAME" property="longName" />
+		<id column="NAME_AR" property="longNameAr" /> 
+		<id column="TITLE" property="unMainVO.TITLE" /> 
+		<id column="DESIGNATION" property="unMainVO.DESIGNATION" />
+		<id column="POB" property="unMainVO.POB" />
+		<id column="NATIONALITY" property="unMainVO.NATIONALITY" />
+		<id column="PASSPORT_NO" property="unMainVO.PASSPORT_NO" />
+		<id column="DATE_OF_BIRTH" property="unMainVO.DOB" />
+		<id column="BL_CHECKED" property="cifBlackListVO.BL_CHECKED" /> 
+		 
+	</resultMap>	
+	
+    <sql  id="suspiciousBlackListUNMain" >
+    <choose>
+	    <when test='checkByDocumentId != null and "1".equals(checkByDocumentId)'>
+		    SELECT 	CODE, 
+					'M' BL_TYPE, 
+		            LONG_NAME_ENG LONG_NAME,
+		            '' TITLE,
+		            '' DESIGNATION,
+		            T.CIF_PLACE_OF_BIRTH POB,
+		            (SELECT NATIONALITY.BRIEF_DESC_ENG
+		              FROM NATIONALITY
+		              WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+		               AND (NATIONALITY.CODE = T.CIF_NATION_CODE)) NATIONALITY,
+		            '' PASSPORT_NO
+           			<if test="trsNo != emptyBigDecimalValue and trsNo != null ">
+				       ,(SELECT TB.BL_CHECKED
+				          FROM TRS_BLACKLIST TB
+				         WHERE TB.COMP_CODE = T.COMP_CODE
+				           AND TB.BRANCH_CODE = #{branchCode}
+				           AND TB.TRS_NO = #{trsNo}
+				           AND TB.BL_CODE = T.CODE) BL_CHECKED
+					</if>
+		      FROM MOSBLACKLIST T
+				 WHERE 	T.COMP_CODE = #{compCode}
+					AND 	(T.OID_DOCUMENT_NBR LIKE #{documentId} || '%'
+							or #{documentId} in (SELECT ID_NO FROM MOSBLACKLIST_ID MID 
+														WHERE MID.COMP_CODE = T.COMP_CODE
+														AND MID.CODE = T.CODE
+														AND MID.ID_TYPE = #{trsIdType}
+													  ))
+		
+						
+					AND 	T.STATUS = 'P'
+				
+				UNION
+				SELECT ENT_NUM CODE,  UN_TYPE BL_TYPE, 
+								NAME1 || NAME2 || NAME3 || NAME4 LONG_NAME,
+								TITLE,
+								DESIGNATION,
+								POB,
+								NATIONALITY,
+								PASSPORT_NO
+				  <if test="trsNo != emptyBigDecimalValue and trsNo != null ">
+				       ,'0' BL_CHECKED
+					</if>				
+				  FROM UN_MAIN U
+				 WHERE (U.NAT_ID_NO LIKE #{documentId} || '%' AND #{documentIdType} = '1'
+							OR U.PASSPORT_NO LIKE #{documentId} || '%' AND #{documentIdType} = '3')
+					AND U.REC_STATUS = 'A' 
+	    </when>
+    <otherwise>
+    	SELECT  COUNT(1)  COUNT_WORDS,CODE,BL_TYPE,LONG_NAME,NAME_AR,TITLE,DESIGNATION,POB,NATIONALITY,PASSPORT_NO,DATE_OF_BIRTH
+			<if test="trsNo != emptyBigDecimalValue and trsNo != null ">
+		       ,(SELECT T.BL_CHECKED
+		          FROM TRS_BLACKLIST T
+		         WHERE T.COMP_CODE = TBL.COMP_CODE
+		           AND T.BRANCH_CODE = #{branchCode}
+		           AND T.TRS_NO = #{trsNo}
+		          AND T.BL_TYPE=TBL.BL_TYPE) BL_CHECKED
+			</if>
+    		<include refid="suspiciousBlackListUNMainCommonSelect" />
+
+		        
+		        <![CDATA[
+		        FROM 		 UN_MAIN_SOUNDEX  U
+		        WHERE 	 U.COMP_CODE = #{compCode}
+		        AND			(U.SOUNDEX_NAME IN (#{soundex1,jdbcType=VARCHAR},#{soundex2,jdbcType=VARCHAR},#{soundex3,jdbcType=VARCHAR},#{soundex4,jdbcType=VARCHAR})
+						AND 		U.SOUNDEX_NAME IS NOT NULL
+		
+		        OR
+						U.SOUNDEX_NAME_AR IN (#{soundexAr1,jdbcType=VARCHAR},#{soundexAr2,jdbcType=VARCHAR},#{soundexAr3,jdbcType=VARCHAR},#{soundexAr4,jdbcType=VARCHAR})
+						AND 		U.SOUNDEX_NAME_AR IS NOT NULL
+		       )) TBL
+		      WHERE  CODE IS NOT NULL
+		      GROUP BY TBL.COMP_CODE,TBL.CODE,TBL.BL_TYPE,TBL.LONG_NAME,TBL.NAME_AR,TBL.TITLE,TBL.DESIGNATION,TBL.POB,TBL.NATIONALITY,TBL.PASSPORT_NO,TBL.DATE_OF_BIRTH
+		      HAVING COUNT(1)>=2
+			]]>
+	
+		
+	 	</otherwise>
+	 </choose>
+	</sql>
+	 <sql  id="suspiciousBlackListUNMainCommonSelect" >
+    
+    
+		
+		      FROM  (
+		      SELECT U.COMP_CODE,
+		       case U.TABLE_TYPE  when 'M' then (select  CODE           from   MOSBLACKLIST where MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  and MOSBLACKLIST.CODE = U.CODE and MOSBLACKLIST.STATUS = 'P') 
+		                          when 'O' then (select  OFAC_NUM       from   OFAC_MAIN    where OFAC_MAIN.OFAC_NUM = U.CODE and OFAC_MAIN.REC_STATUS = 'A' )
+		                          
+		                          else (select  ENT_NUM        FROM   UN_MAIN      where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') 
+		                          end  CODE,
+		       
+		       case U.TABLE_TYPE  when 'M' then 'M' 
+		                          when 'O' then 'O'
+		                         
+		                         ELSE U.TABLE_TYPE END BL_TYPE,
+		                          
+		       case U.TABLE_TYPE  when 'M' then (select  LONG_NAME_ENG  from   MOSBLACKLIST where MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  and MOSBLACKLIST.CODE = U.CODE and MOSBLACKLIST.STATUS = 'P' ) 
+		                          when 'O' then (select  SDN_NAME  from   OFAC_MAIN where OFAC_MAIN.OFAC_NUM = U.CODE and OFAC_MAIN.REC_STATUS = 'A' )
+		                          
+		                         ELSE (select NAME1 || ' ' || NAME2 || ' ' || NAME3 || ' ' || NAME4 from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') end  LONG_NAME,
+		       
+		       case U.TABLE_TYPE  when 'M' then (select  LONG_NAME_ARAB from   MOSBLACKLIST where MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  and MOSBLACKLIST.CODE = U.CODE and MOSBLACKLIST.STATUS = 'P' ) 
+		                          when 'O' then ''
+		                          
+		                          ELSE (select NAME_ARAB from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') end  NAME_AR,
+		       
+		       case U.TABLE_TYPE  when 'M' then '' 
+		                          when 'O' then (select  TITLE  from OFAC_MAIN where OFAC_MAIN.OFAC_NUM = U.CODE and OFAC_MAIN.REC_STATUS = 'A' )
+		                          
+		                          ELSE (select  TITLE  from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') END TITLE,
+		       
+		       
+		       case U.TABLE_TYPE  when 'M' then ''
+		                          when 'O' then ''
+		                       
+		                          ELSE (select  DESIGNATION  from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') END DESIGNATION,
+		      
+		       case U.TABLE_TYPE  when 'M' then (select  CIF_PLACE_OF_BIRTH  from   MOSBLACKLIST where MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  and MOSBLACKLIST.CODE = U.CODE and MOSBLACKLIST.STATUS = 'P' )
+		                          when 'O' then ''
+		                          ELSE (select  POB from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') END POB,
+		        
+		       case U.TABLE_TYPE  when 'M' then (SELECT NATIONALITY.BRIEF_DESC_ENG
+		                                           FROM NATIONALITY,MOSBLACKLIST  
+		                                          WHERE NATIONALITY.COMP_CODE = U.COMP_CODE 
+		                                            AND NATIONALITY.CODE = CIF_NATION_CODE 
+		                                            AND MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  
+		                                            AND MOSBLACKLIST.CODE = U.CODE
+		                                            and MOSBLACKLIST.STATUS = 'P') 
+		                           when 'O' then  (select  PROGRAM  from   OFAC_MAIN where OFAC_MAIN.OFAC_NUM = U.CODE and OFAC_MAIN.REC_STATUS = 'A' )
+		                           ELSE (select  NATIONALITY from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') END NATIONALITY,
+		      	
+		        case U.TABLE_TYPE  when 'M' then ''
+		                           when 'O' then ''
+		                          
+		                          ELSE (select  PASSPORT_NO from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') END PASSPORT_NO,
+						
+		        case U.TABLE_TYPE  when 'M' then (select 
+		        <if test="isSybase != 1" >
+				 to_char(DATE_OF_BIRTH)
+				</if>	
+				
+				<if test="isSybase == 1" >
+				 convert(varchar(20),DATE_OF_BIRTH) 
+				</if>	
+		
+				 from   MOSBLACKLIST where MOSBLACKLIST. COMP_CODE =  U. COMP_CODE  and MOSBLACKLIST.CODE = U.CODE and MOSBLACKLIST.STATUS = 'P' )
+		                           when 'O' then NULL
+		                        
+		                           ELSE(select  DOB from UN_MAIN where ENT_NUM = U.CODE AND  UN_MAIN.REC_STATUS = 'A') end  DATE_OF_BIRTH
+		        
+		        
+		        </sql>
+		       
+	 
+	<select id="getSuspiciousBlackListList" resultMap="unMainMap" parameterType="mosBlackListSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="getSuspiciousBlackList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="getSuspiciousBlackListRecordCount" resultType="int" parameterType="mosBlackListSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="getSuspiciousBlackList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="getSuspiciousBlackList" >
+			  <![CDATA[
+			    SELECT L.COMP_CODE,
+			       L.CIF_NO,
+			       L.BL_CODE, 
+			       B.LONG_NAME LONG_NAME,
+			 	   NAME_AR,
+			       B.TITLE TITLE,
+			       B.DESIGNATION DESIGNATION,
+			       B.STR_DOB	STR_DOB,
+			       B.DATE_DOB DATE_DOB ,
+			       B.POB POB,
+			       B.NATIONALITY NATIONALITY ,
+			       B.PASSPORT_NO PASSPORT_NO ,
+			       L.BL_TYPE,
+			       L.BL_CHECKED,
+					 CASE WHEN L.JOINT_CIF IS NULL THEN 0 ELSE L.JOINT_CIF END JOINT_CIF,
+				'' COLUMN_NAME,
+				'' ID_TYPE
+			  FROM CIF_BLACKLIST L,
+			       (SELECT OFAC_NUM CODE,
+			               SDN_NAME LONG_NAME,
+						  '' NAME_AR,
+			               TITLE,
+			               '' DESIGNATION,
+			               '' STR_DOB,
+			               (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1) DATE_DOB,
+			               '' POB,
+			               PROGRAM NATIONALITY,
+			               '' PASSPORT_NO,
+			               'O' BL_TYPE
+			        
+			          FROM OFAC_MAIN
+			       
+			        UNION
+			        SELECT CODE,
+			             LONG_NAME_ENG LONG_NAME,
+						LONG_NAME_ARAB NAME_AR,
+			               '' TITLE,
+			               '' DESIGNATION,
+			               '' STR_DOB,
+			               T.DATE_OF_BIRTH DATE_DOB,
+			               T.CIF_PLACE_OF_BIRTH POB,
+			               (SELECT NATIONALITY.BRIEF_DESC_ENG
+			                  FROM NATIONALITY
+			                 WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+			                   AND (NATIONALITY.CODE = T.CIF_NATION_CODE)) NATIONALITY,
+			               '' PASSPORT_NO,
+			               'M' BL_TYPE
+			          FROM MOSBLACKLIST T
+			         WHERE T.COMP_CODE = #{compCode}
+			        UNION
+			        SELECT ENT_NUM CODE,
+			               CASE WHEN NAME1 = 'na' then '' else NAME1 END
+										|| ' ' || 
+										CASE WHEN NAME2 = 'na' then '' else NAME2 END 
+										|| ' ' || 
+										CASE WHEN NAME3 = 'na' then '' else NAME3 END 
+										|| ' ' || 
+										CASE WHEN NAME4 = 'na' then '' else NAME4 END LONG_NAME,
+						  NAME_ARAB NAME_AR,
+			               TITLE,
+			               DESIGNATION,
+			               DOB STR_DOB,
+			               (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1 )DATE_DOB,
+			               POB,
+			               NATIONALITY,
+			               PASSPORT_NO,
+			               UN_TYPE BL_TYPE
+			          FROM UN_MAIN) B
+			 WHERE L.BL_CODE = B.CODE
+			   AND L.BL_TYPE = B.BL_TYPE
+			   AND L.COMP_CODE = #{compCode}
+			   AND L.CIF_NO = #{cifNO}
+			   ]]>
+			   <if test="blChecked != null" >
+			   AND  L.BL_CHECKED = #{blChecked}
+			   </if>
+    </sql>
+    
+    <delete id="deleteSuspiciousRecords" parameterType="mosBlackListCO" >
+    DELETE FROM CIF_BLACKLIST WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo}
+    </delete>
+
+	<update id="whiteListCif" parameterType="mosBlackListCO" >
+    	UPDATE		CIF
+		SET			BLACK_LISTED	=	2
+		WHERE		COMP_CODE		=	#{compCode}
+		AND			CIF_NO			=	#{cifNo}
+		AND			BLACK_LISTED <![CDATA[ <> ]]> 2 
+    </update>
+
+	<insert id="saveSuspiciousRecords" parameterType="mosBlackListCO"  >
+		INSERT INTO CIF_BLACKLIST(COMP_CODE,CIF_NO,BL_CODE,BL_TYPE,BL_CHECKED)
+        VALUES(#{compCode}, #{cifNo}, #{unMainVO.ENT_NUM}, #{blType}, #{cifBlackListVO.BL_CHECKED} )
+    </insert>
+	
+	<select id="selectJointName" parameterType="mosBlackListSC"  resultType="cifJointAccVO" >
+			SELECT LONG_NAME_ENG,LONG_NAME_ARAB 
+			FROM CIF_JOINT_DET WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNO}
+	</select> 
+	
+	
+	<sql id="selectTrsBlackList">
+		SELECT L.COMP_CODE,
+	       L.TRS_NO,
+			 L.BRANCH_CODE,
+			 L.CB_IND,
+			 L.TRS_TYPE,	
+	       L.BL_CODE,
+	       <choose>
+	       	<when test="isSybase != 1">
+	       		SUBSTR(B.LONG_NAME,1, 250) LONG_NAME,
+  	  			SUBSTR(B.NAME_AR,1, 250) NAME_AR,
+       			SUBSTR(B.TITLE,1, 250) TITLE,
+       			SUBSTR(B.DESIGNATION,1, 250) DESIGNATION,
+       			SUBSTR(B.STR_DOB,1, 250) STR_DOB,
+       			SUBSTR(B.DATE_DOB,1, 250) DATE_DOB,
+       			SUBSTR(B.POB,1, 250) POB,
+       			SUBSTR(B.NATIONALITY, 250) NATIONALITY,
+       			SUBSTR(B.PASSPORT_NO, 250) PASSPORT_NO,
+	       	</when>
+	       	<otherwise>
+	       	 	LEFT(B.LONG_NAME, 250) LONG_NAME,
+		   	 	LEFT(B.NAME_AR, 250) NAME_AR,
+	         	LEFT(B.TITLE, 250) TITLE,
+	         	LEFT(B.DESIGNATION, 250) DESIGNATION,
+	         	LEFT(B.STR_DOB, 250) STR_DOB,
+	         	LEFT(B.DATE_DOB, 250) DATE_DOB,
+	         	LEFT(B.POB, 250) POB,
+	         	LEFT(B.NATIONALITY, 250) NATIONALITY,
+	         	LEFT(B.PASSPORT_NO, 250) PASSPORT_NO,
+	       	</otherwise>
+	       </choose>
+	       L.BL_TYPE,
+	       L.BL_CHECKED
+	  FROM TRS_BLACKLIST L,
+	       (SELECT OFAC_NUM CODE,
+	               SDN_NAME LONG_NAME,
+				  '' NAME_AR,
+	               TITLE,
+	               '' DESIGNATION,
+	               '' STR_DOB,
+	               (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1) DATE_DOB,
+	               '' POB,
+	               PROGRAM NATIONALITY,
+	               '' PASSPORT_NO,
+	               'O' BL_TYPE
+	        
+	          FROM OFAC_MAIN
+	      
+	        UNION
+	        SELECT CODE,
+	              T.LONG_NAME_ENG LONG_NAME,
+				  T.LONG_NAME_ARAB NAME_AR,
+	               '' TITLE,
+	               '' DESIGNATION,
+	               '' STR_DOB,
+	               T.DATE_OF_BIRTH DATE_DOB,
+	               T.CIF_PLACE_OF_BIRTH POB,
+	               (SELECT NATIONALITY.BRIEF_DESC_ENG
+	                  FROM NATIONALITY
+	                 WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+	                   AND (NATIONALITY.CODE = T.CIF_NATION_CODE)) NATIONALITY,
+	               '' PASSPORT_NO,
+	               'M' BL_TYPE
+	          FROM MOSBLACKLIST T
+	         WHERE T.COMP_CODE = #{compCode}
+	        UNION
+	        SELECT ENT_NUM CODE,
+	               NAME1 || NAME2 || NAME3 || NAME4 LONG_NAME,
+				  NAME_ARAB NAME_AR,
+	               TITLE,
+	               DESIGNATION,
+	               DOB STR_DOB,
+	               (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1 )DATE_DOB,
+	               POB,
+	               NATIONALITY,
+	               PASSPORT_NO,
+	               UN_TYPE BL_TYPE
+	          FROM UN_MAIN) B
+	 WHERE L.BL_CODE = B.CODE
+	   AND L.BL_TYPE = B.BL_TYPE
+	   AND L.COMP_CODE = #{compCode}
+		AND L.BRANCH_CODE = #{branchCode}
+		AND L.TRS_TYPE = 'R'
+	   AND L.CB_IND = 'C'
+	   AND L.TRS_NO = #{trsNo}
+	</sql>
+	
+	<select id="countTrsBlackList"  parameterType="mosBlackListCO" resultType="BigDecimal">
+	 select count(1)
+	 from 
+	 (
+	 	<include refid="selectTrsBlackList"/>
+	 	<if test="blChecked != null">
+	 	 AND L.BL_CHECKED = #{blChecked}
+	 	</if>
+	 )T
+	
+	</select>
+	
+    
+</mapper>

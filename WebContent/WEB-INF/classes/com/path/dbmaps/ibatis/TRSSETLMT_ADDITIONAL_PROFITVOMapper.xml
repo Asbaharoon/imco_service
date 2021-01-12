@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSSETLMT_ADDITIONAL_PROFIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSSETLMT_ADDITIONAL_PROFITVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SETTLEMENT_NO" property="SETTLEMENT_NO" />
+    <result column="ADDTNL_OUTSTAND_PROFIT" property="ADDTNL_OUTSTAND_PROFIT" />
+    <result column="ADDTNL_SETTLED_PROFIT" property="ADDTNL_SETTLED_PROFIT" />
+    <result column="ADDTNL_WAIVED_PROFIT" property="ADDTNL_WAIVED_PROFIT" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, SETTLEMENT_NO, ADDTNL_OUTSTAND_PROFIT, ADDTNL_SETTLED_PROFIT, 
+    ADDTNL_WAIVED_PROFIT, MODIFIED_DATE, CREATED_DATE, CREATED_BY, MODIFIED_BY
+  </sql>
+  <select id="selectTRSSETLMT_ADDITIONAL_PROFIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSSETLMT_ADDITIONAL_PROFITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSSETLMT_ADDITIONAL_PROFIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NO = #{SETTLEMENT_NO}
+  </select>
+  <delete id="deleteTRSSETLMT_ADDITIONAL_PROFIT" parameterType="com.path.dbmaps.vo.TRSSETLMT_ADDITIONAL_PROFITVOKey" >
+    delete from TRSSETLMT_ADDITIONAL_PROFIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NO = #{SETTLEMENT_NO}
+  </delete>
+  <insert id="insertTRSSETLMT_ADDITIONAL_PROFIT" parameterType="com.path.dbmaps.vo.TRSSETLMT_ADDITIONAL_PROFITVO" >
+    insert into TRSSETLMT_ADDITIONAL_PROFIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SETTLEMENT_NO != null and SETTLEMENT_NO != emptyBigDecimalValue" >
+        SETTLEMENT_NO,
+      </if>
+      <if test="ADDTNL_OUTSTAND_PROFIT != null and ADDTNL_OUTSTAND_PROFIT != emptyBigDecimalValue" >
+        ADDTNL_OUTSTAND_PROFIT,
+      </if>
+      <if test="ADDTNL_SETTLED_PROFIT != null and ADDTNL_SETTLED_PROFIT != emptyBigDecimalValue" >
+        ADDTNL_SETTLED_PROFIT,
+      </if>
+      <if test="ADDTNL_WAIVED_PROFIT != null and ADDTNL_WAIVED_PROFIT != emptyBigDecimalValue" >
+        ADDTNL_WAIVED_PROFIT,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SETTLEMENT_NO != null and SETTLEMENT_NO != emptyBigDecimalValue" >
+        #{SETTLEMENT_NO},
+      </if>
+      <if test="ADDTNL_OUTSTAND_PROFIT != null and ADDTNL_OUTSTAND_PROFIT != emptyBigDecimalValue" >
+        #{ADDTNL_OUTSTAND_PROFIT},
+      </if>
+      <if test="ADDTNL_SETTLED_PROFIT != null and ADDTNL_SETTLED_PROFIT != emptyBigDecimalValue" >
+        #{ADDTNL_SETTLED_PROFIT},
+      </if>
+      <if test="ADDTNL_WAIVED_PROFIT != null and ADDTNL_WAIVED_PROFIT != emptyBigDecimalValue" >
+        #{ADDTNL_WAIVED_PROFIT},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSSETLMT_ADDITIONAL_PROFIT" >
+    update TRSSETLMT_ADDITIONAL_PROFIT
+    <set >
+      <if test="ADDTNL_OUTSTAND_PROFIT != null" >
+        <choose >
+          <when test="ADDTNL_OUTSTAND_PROFIT == emptyBigDecimalValue" >
+            ADDTNL_OUTSTAND_PROFIT = NULL ,
+          </when>
+          <otherwise >
+            ADDTNL_OUTSTAND_PROFIT = #{ADDTNL_OUTSTAND_PROFIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDTNL_SETTLED_PROFIT != null" >
+        <choose >
+          <when test="ADDTNL_SETTLED_PROFIT == emptyBigDecimalValue" >
+            ADDTNL_SETTLED_PROFIT = NULL ,
+          </when>
+          <otherwise >
+            ADDTNL_SETTLED_PROFIT = #{ADDTNL_SETTLED_PROFIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDTNL_WAIVED_PROFIT != null" >
+        <choose >
+          <when test="ADDTNL_WAIVED_PROFIT == emptyBigDecimalValue" >
+            ADDTNL_WAIVED_PROFIT = NULL ,
+          </when>
+          <otherwise >
+            ADDTNL_WAIVED_PROFIT = #{ADDTNL_WAIVED_PROFIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NO = #{SETTLEMENT_NO}
+  </sql>
+  <update id="updateTRSSETLMT_ADDITIONAL_PROFIT" parameterType="com.path.dbmaps.vo.TRSSETLMT_ADDITIONAL_PROFITVO" >
+    <include refid="sql_updateTRSSETLMT_ADDITIONAL_PROFIT" />
+  </update>
+</mapper>

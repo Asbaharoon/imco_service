@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="proofOccupationMapper">
+
+	<sql id="proofOccupationListCommon">
+
+		SELECT
+		CTS_PROOF_OCCUPATION.PROOF_OCCUPATION_CODE,
+		CTS_PROOF_OCCUPATION.BRIEF_DESC_ENG,
+		CTS_PROOF_OCCUPATION.LONG_DESC_ENG
+		FROM CTS_PROOF_OCCUPATION
+		WHERE CTS_PROOF_OCCUPATION.COMP_CODE = #{compCode}
+
+	</sql>
+
+	<resultMap id="proofOccupationListMap" type="com.path.dbmaps.vo.CTS_PROOF_OCCUPATIONVO">
+		<id property="PROOF_OCCUPATION_CODE" column="PROOF_OCCUPATION_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	</resultMap>
+
+	<select id="proofOccupationList" resultMap="proofOccupationListMap"
+		parameterType="com.path.vo.core.proofoccupation.ProofOccupationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="proofOccupationListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="proofOccupationListCount" resultType="int"
+		parameterType="com.path.vo.core.proofoccupation.ProofOccupationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="proofOccupationListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnProofOccupationCodeById" parameterType="com.path.vo.core.proofoccupation.ProofOccupationSC"
+		resultType="com.path.dbmaps.vo.CTS_PROOF_OCCUPATIONVO">
+		SELECT
+		CTS_PROOF_OCCUPATION.PROOF_OCCUPATION_CODE,
+		CTS_PROOF_OCCUPATION.BRIEF_DESC_ENG,
+		CTS_PROOF_OCCUPATION.LONG_DESC_ENG
+		FROM CTS_PROOF_OCCUPATION
+		WHERE
+		CTS_PROOF_OCCUPATION.COMP_CODE = #{compCode}
+		AND CTS_PROOF_OCCUPATION.PROOF_OCCUPATION_CODE = #{code}
+	</select>
+</mapper>

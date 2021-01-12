@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCIFLIMIT_CHILD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCIFLIMIT_CHILDVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF" property="CIF" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PARENT_CIF" property="PARENT_CIF" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="TOTAL_LIMIT_UTILISATION" property="TOTAL_LIMIT_UTILISATION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF, COMP_CODE, PARENT_CIF, CREATED_BY, DATE_CREATED, MODIFIED_BY, DATE_MODIFIED, 
+    TOTAL_LIMIT_UTILISATION
+  </sql>
+  <select id="selectTRSCIFLIMIT_CHILD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_CHILDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCIFLIMIT_CHILD
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and PARENT_CIF = #{PARENT_CIF}
+  </select>
+  <delete id="deleteTRSCIFLIMIT_CHILD" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_CHILDVOKey" >
+    delete from TRSCIFLIMIT_CHILD
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and PARENT_CIF = #{PARENT_CIF}
+  </delete>
+  <insert id="insertTRSCIFLIMIT_CHILD" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_CHILDVO" >
+    insert into TRSCIFLIMIT_CHILD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PARENT_CIF != null and PARENT_CIF != emptyBigDecimalValue" >
+        PARENT_CIF,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="TOTAL_LIMIT_UTILISATION != null and TOTAL_LIMIT_UTILISATION != emptyBigDecimalValue" >
+        TOTAL_LIMIT_UTILISATION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PARENT_CIF != null and PARENT_CIF != emptyBigDecimalValue" >
+        #{PARENT_CIF},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="TOTAL_LIMIT_UTILISATION != null and TOTAL_LIMIT_UTILISATION != emptyBigDecimalValue" >
+        #{TOTAL_LIMIT_UTILISATION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCIFLIMIT_CHILD" >
+    update TRSCIFLIMIT_CHILD
+    <set >
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="TOTAL_LIMIT_UTILISATION != null" >
+        <choose >
+          <when test="TOTAL_LIMIT_UTILISATION == emptyBigDecimalValue" >
+            TOTAL_LIMIT_UTILISATION = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_LIMIT_UTILISATION = #{TOTAL_LIMIT_UTILISATION},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and PARENT_CIF = #{PARENT_CIF}
+  </sql>
+  <update id="updateTRSCIFLIMIT_CHILD" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_CHILDVO" >
+    <include refid="sql_updateTRSCIFLIMIT_CHILD" />
+  </update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USER_FAVORITES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USER_FAVORITESVO" >
+    <id column="ID" property="ID" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="PROG_REF" property="PROG_REF" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="URL" property="URL" />
+    <result column="OPEN_IN_DIALOG_YN" property="OPEN_IN_DIALOG_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, APP_NAME, PROG_REF, USER_ID, DESCRIPTION, URL, OPEN_IN_DIALOG_YN
+  </sql>
+  <select id="selectUSER_FAVORITES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USER_FAVORITESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from USER_FAVORITES
+    where ID = #{ID}
+  </select>
+  <delete id="deleteUSER_FAVORITES" parameterType="com.path.dbmaps.vo.USER_FAVORITESVOKey" >
+    delete from USER_FAVORITES
+    where ID = #{ID}
+  </delete>
+  <insert id="insertUSER_FAVORITES" parameterType="com.path.dbmaps.vo.USER_FAVORITESVO" >
+    insert into USER_FAVORITES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="URL != null" >
+        URL,
+      </if>
+      <if test="OPEN_IN_DIALOG_YN != null and OPEN_IN_DIALOG_YN != emptyBigDecimalValue" >
+        OPEN_IN_DIALOG_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="URL != null" >
+        #{URL},
+      </if>
+      <if test="OPEN_IN_DIALOG_YN != null and OPEN_IN_DIALOG_YN != emptyBigDecimalValue" >
+        #{OPEN_IN_DIALOG_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSER_FAVORITES" >
+    update USER_FAVORITES
+    <set >
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF = #{PROG_REF},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="URL != null" >
+        URL = #{URL},
+      </if>
+      <if test="OPEN_IN_DIALOG_YN != null" >
+        <choose >
+          <when test="OPEN_IN_DIALOG_YN == emptyBigDecimalValue" >
+            OPEN_IN_DIALOG_YN = NULL ,
+          </when>
+          <otherwise >
+            OPEN_IN_DIALOG_YN = #{OPEN_IN_DIALOG_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ID = #{ID}
+  </sql>
+  <update id="updateUSER_FAVORITES" parameterType="com.path.dbmaps.vo.USER_FAVORITESVO" >
+    <include refid="sql_updateUSER_FAVORITES" />
+  </update>
+</mapper>

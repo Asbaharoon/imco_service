@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSINSUR_COMP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSINSUR_COMPVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="DETAILS_ENG" property="DETAILS_ENG" />
+    <result column="DETAILS_ARAB" property="DETAILS_ARAB" />
+    <result column="INS_HYPERLINK" property="INS_HYPERLINK" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, DETAILS_ENG, DETAILS_ARAB, INS_HYPERLINK, 
+    DATE_UPDATED
+  </sql>
+  <select id="selectTFSINSUR_COMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSINSUR_COMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSINSUR_COMP
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTFSINSUR_COMP" parameterType="com.path.dbmaps.vo.TFSINSUR_COMPVOKey" >
+    delete from TFSINSUR_COMP
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTFSINSUR_COMP" parameterType="com.path.dbmaps.vo.TFSINSUR_COMPVO" >
+    insert into TFSINSUR_COMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG,
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB,
+      </if>
+      <if test="INS_HYPERLINK != null" >
+        INS_HYPERLINK,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="DETAILS_ENG != null" >
+        #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        #{DETAILS_ARAB},
+      </if>
+      <if test="INS_HYPERLINK != null" >
+        #{INS_HYPERLINK},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSINSUR_COMP" >
+    update TFSINSUR_COMP
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG = #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB = #{DETAILS_ARAB},
+      </if>
+      <if test="INS_HYPERLINK != null" >
+        INS_HYPERLINK = #{INS_HYPERLINK},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTFSINSUR_COMP" parameterType="com.path.dbmaps.vo.TFSINSUR_COMPVO" >
+    <include refid="sql_updateTFSINSUR_COMP" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+  
+  
+   <select id="selectAllTFSINSUR_COMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSINSUR_COMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSINSUR_COMP
+    where COMP_CODE = #{compCode}
+  </select>
+  
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="fieldMappingMapper">
+<resultMap id="resFieldMappingListMap" type="com.path.imco.vo.fieldmapping.FieldMappingCO">
+		<result property="syncolmappingVO.BR_CODE" column="BR_CODE"/>
+		<result property="syncolmappingVO.ENTITY_CODE" column="ENTITY_CODE"/>
+		<result property="syncolmappingVO.COL_NBR" column="COL_NBR"/>
+		<result property="syncolmappingVO.FROM_COL" column="FROM_COL"/>
+		<result property="syncolmappingVO.FROM_LABEL" column="FROM_LABEL"/>
+		<result property="syncolmappingVO.TO_COL" column="TO_COL"/>
+		<result property="syncolmappingVO.TO_LABEL" column="TO_LABEL"/>
+		<result property="syncolmappingVO.IN_OUT" column="IN_OUT"/>
+		<result property="syncolmappingVO.COL_TYPE" column="COL_TYPE"/>
+		<result property="syncolmappingVO.ACTION" column="ACTION"/>
+		<result property="syncolmappingVO.COL_DEFAULT" column="COL_DEFAULT"/>
+		<result property="forcenull" column="forcenull"/>
+		<result property="syncolmappingVO.API_CODE" column="API_CODE"/>
+		<result property="syncolmappingVO.VALUE_SUCCESS" column="VALUE_SUCCESS"/>
+		<result property="syncolmappingVO.VALUE_ERROR" column="VALUE_ERROR"/>
+		<result property="syncolmappingVO.MSG_TYPE" column="MSG_TYPE"/>
+	</resultMap>
+	<select id="returnFieldMappingList" parameterType="com.path.imco.vo.fieldmapping.FieldMappingSC" resultMap="resFieldMappingListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryFieldMappingSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnFieldMappingListCount" parameterType="com.path.imco.vo.fieldmapping.FieldMappingSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryFieldMappingSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryFieldMappingSQL">
+		 SELECT SYNC_COL_MAPPING.BR_CODE,   
+		         SYNC_COL_MAPPING.ENTITY_CODE,   
+		         SYNC_COL_MAPPING.COL_NBR,   
+		         SYNC_COL_MAPPING.FROM_COL,   
+		         SYNC_COL_MAPPING.FROM_LABEL,   
+		         SYNC_COL_MAPPING.TO_COL,   
+		         SYNC_COL_MAPPING.TO_LABEL,   
+		         SYNC_COL_MAPPING.IN_OUT,   
+		         SYNC_COL_MAPPING.COL_TYPE,   
+		         SYNC_COL_MAPPING.ACTION,   
+		         SYNC_COL_MAPPING.COL_DEFAULT,
+					CASE WHEN SYNC_COL_MAPPING.COL_DEFAULT IS NULL THEN 1 ElSE 0 END as forcenull  ,
+		        SYNC_COL_MAPPING.API_CODE,
+		        SYNC_COL_MAPPING.VALUE_SUCCESS,
+			   SYNC_COL_MAPPING.VALUE_ERROR,
+			   SYNC_COL_MAPPING.MSG_TYPE
+		    FROM SYNC_COL_MAPPING  
+	</sql>
+	
+	
+	<resultMap type="com.path.imco.vo.fieldmapping.FieldMappingCO" id="resGlobalColMapListMap">
+	<result property="syncolmappingVO.BR_CODE" column="BR_CODE"/>
+		<result property="syncolmappingVO.ENTITY_CODE" column="ENTITY_CODE"/>
+		<result property="syncolmappingVO.COL_NBR" column="COL_NBR"/>
+		<result property="forcenull" column="forcenull"/>
+		<result property="syncolmappingVO.COL_DEFAULT" column="COL_DEFAULT"/>
+	
+	
+	</resultMap>
+	<select id="returnGlobalColMapList" parameterType="com.path.imco.vo.fieldmapping.FieldMappingSC" resultMap="resGlobalColMapListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryGlobalSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<sql id="queryGlobalSQL">
+		 SELECT SYNC_COL_MAPPING.COL_DEFAULT,  
+               SYNC_COL_MAPPING.BR_CODE,  
+               SYNC_COL_MAPPING.ENTITY_CODE,  
+               SYNC_COL_MAPPING.COL_NBR ,
+	           CASE WHEN SYNC_COL_MAPPING.COL_DEFAULT IS NULL THEN 1 ElSE 0 END as forcenull   
+    FROM SYNC_COL_MAPPING 
+     WHERE   SYNC_COL_MAPPING.COL_NBR   = #{colNBR}
+     AND   SYNC_COL_MAPPING.ENTITY_CODE  = #{entityCode}  
+     AND   SYNC_COL_MAPPING.BR_CODE  = #{brcode}  
+	</sql>
+	
+	
+	<resultMap type="com.path.imco.vo.fieldmapping.FieldMappingCO" id="resFixColMapListMap">
+		
+		<result property="syncfixedmappingVO.IMAL_VALUE" column="IMAL_VALUE"/>
+		<result property="syncfixedmappingVO.EXT_SYS_VALUE" column="EXT_SYS_VALUE"/>
+		<result property="syncfixedmappingVO.BR_CODE" column="BR_CODE"/>
+		<result property="syncfixedmappingVO.ENTITY_CODE" column="ENTITY_CODE"/>
+		<result property="syncfixedmappingVO.COL_NBR" column="COL_NBR"/>
+		<result property="syncfixedmappingVO.LINE_NBR" column="LINE_NBR"/>
+	
+	
+	</resultMap>
+	<select id="returnFixColMapList" parameterType="com.path.imco.vo.fieldmapping.FieldMappingSC" resultMap="resFixColMapListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryFixSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<sql id="queryFixSQL">
+	   SELECT   SYNC_FIXED_MAPPING.IMAL_VALUE,   
+         SYNC_FIXED_MAPPING.EXT_SYS_VALUE,  
+         SYNC_FIXED_MAPPING.BR_CODE,   
+         SYNC_FIXED_MAPPING.ENTITY_CODE,   
+         SYNC_FIXED_MAPPING.COL_NBR,   
+         SYNC_FIXED_MAPPING.LINE_NBR        
+    FROM SYNC_FIXED_MAPPING
+   WHERE SYNC_FIXED_MAPPING.COL_NBR   = #{colNBR}
+     AND SYNC_FIXED_MAPPING.ENTITY_CODE  = #{entityCode}  
+     AND SYNC_FIXED_MAPPING.BR_CODE  = #{brcode}
+	</sql>
+	
+	
+	
+	
+	
+	
+	<delete id="deleteGridData" parameterType="com.path.imco.vo.fieldmapping.FieldMappingSC">
+	  DELETE FROM SYNC_FIXED_MAPPING
+  
+   WHERE SYNC_FIXED_MAPPING.COL_NBR   = #{colNBR}
+     AND SYNC_FIXED_MAPPING.ENTITY_CODE  = #{entityCode}  
+     AND SYNC_FIXED_MAPPING.BR_CODE  = #{brcode}
+	</delete>
+	
+	
+	
+</mapper>

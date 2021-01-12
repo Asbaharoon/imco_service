@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_CUT_OFF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_CUT_OFFVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <id column="CY_CODE" property="CY_CODE" />
+    <id column="MODULE" property="MODULE" />
+    <result column="CUTOFF_DATE" property="CUTOFF_DATE" />
+    <result column="BEFORE_CUTOFF" property="BEFORE_CUTOFF" />
+    <result column="AFTER_CUTOFF" property="AFTER_CUTOFF" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, COUNTRY_CODE, CY_CODE, MODULE, CUTOFF_DATE, BEFORE_CUTOFF, AFTER_CUTOFF
+  </sql>
+  <select id="selectSWIFT_CUT_OFF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_CUT_OFFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_CUT_OFF
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and CY_CODE = #{CY_CODE}
+      and MODULE = #{MODULE}
+  </select>
+  <delete id="deleteSWIFT_CUT_OFF" parameterType="com.path.dbmaps.vo.SWIFT_CUT_OFFVOKey" >
+    delete from SWIFT_CUT_OFF
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and CY_CODE = #{CY_CODE}
+      and MODULE = #{MODULE}
+  </delete>
+  <insert id="insertSWIFT_CUT_OFF" parameterType="com.path.dbmaps.vo.SWIFT_CUT_OFFVO" >
+    insert into SWIFT_CUT_OFF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="CUTOFF_DATE != null" >
+        CUTOFF_DATE,
+      </if>
+      <if test="BEFORE_CUTOFF != null and BEFORE_CUTOFF != emptyBigDecimalValue" >
+        BEFORE_CUTOFF,
+      </if>
+      <if test="AFTER_CUTOFF != null and AFTER_CUTOFF != emptyBigDecimalValue" >
+        AFTER_CUTOFF,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="CUTOFF_DATE != null" >
+        #{CUTOFF_DATE},
+      </if>
+      <if test="BEFORE_CUTOFF != null and BEFORE_CUTOFF != emptyBigDecimalValue" >
+        #{BEFORE_CUTOFF},
+      </if>
+      <if test="AFTER_CUTOFF != null and AFTER_CUTOFF != emptyBigDecimalValue" >
+        #{AFTER_CUTOFF},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_CUT_OFF" >
+    update SWIFT_CUT_OFF
+    <set >
+      <if test="CUTOFF_DATE != null" >
+        CUTOFF_DATE = #{CUTOFF_DATE},
+      </if>
+      <if test="BEFORE_CUTOFF != null" >
+        <choose >
+          <when test="BEFORE_CUTOFF == emptyBigDecimalValue" >
+            BEFORE_CUTOFF = NULL ,
+          </when>
+          <otherwise >
+            BEFORE_CUTOFF = #{BEFORE_CUTOFF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AFTER_CUTOFF != null" >
+        <choose >
+          <when test="AFTER_CUTOFF == emptyBigDecimalValue" >
+            AFTER_CUTOFF = NULL ,
+          </when>
+          <otherwise >
+            AFTER_CUTOFF = #{AFTER_CUTOFF},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and CY_CODE = #{CY_CODE}
+      and MODULE = #{MODULE}
+  </sql>
+  <update id="updateSWIFT_CUT_OFF" parameterType="com.path.dbmaps.vo.SWIFT_CUT_OFFVO" >
+    <include refid="sql_updateSWIFT_CUT_OFF" />
+  </update>
+</mapper>

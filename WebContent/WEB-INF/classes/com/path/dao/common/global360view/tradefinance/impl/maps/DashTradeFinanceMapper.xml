@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashTradeFinanceMapper">
+	<sql id="acceptanceQuery">
+		SELECT TFSTRX.LC_NBR TFSTRX_LC_NBR,
+			TFSTRX.TRX_NBR,
+			CURRENCIES.BRIEF_DESC_ENG CURRENCY,
+			TFSTRX.SHIPMENT_AMOUNT,
+			CASE WHEN TFSTRX.CY_RATE_MULT_DIV = 'M' THEN
+					(TFSTRX.CY_RATE * TFSTRX.SHIPMENT_AMOUNT) / TFSTRX.CY_RATE_UNIT 
+				ELSE
+					(TFSTRX.SHIPMENT_AMOUNT * TFSTRX.CY_RATE_UNIT) / TFSTRX.CY_RATE
+				END CV_AMOUNT,
+			TFSTRX.TRX_DATE,
+			TFSTRX.VALID_TO,
+			CASE TFSTRX.LC_TYPE 
+         		WHEN 'O' THEN 'IMPORT LC'
+         		WHEN 'I' THEN 'EXPORT LC'
+       		END TFSTRX_LC_TYPE,
+       		CURRENCIES.DECIMAL_POINTS,
+       		TFSLC1.LC_REFERENCE_YEAR LC_YEAR,
+			TFSLC1.LC_REFERENCE_NBR TFSLC1_LC_NBR,
+			TFSLC1.LC_TYPE TFSLC1_LC_TYPE,
+      		TFSTRX.TRX_TYPE
+  		FROM TFSTRX, TFSLC1, CURRENCIES
+		WHERE TFSTRX.COMP_CODE = TFSLC1.COMP_CODE
+	   		AND TFSTRX.BRANCH = TFSLC1.BRANCH
+		   	AND TFSTRX.LC_TYPE = TFSLC1.LC_TYPE
+		   	AND TFSTRX.LC_YEAR = TFSLC1.LC_REFERENCE_YEAR
+		   	AND TFSTRX.LC_NBR = TFSLC1.LC_REFERENCE_NBR
+		   	AND TFSTRX.CURRENCY = CURRENCIES.CURRENCY_CODE 
+           	AND TFSTRX.COMP_CODE = CURRENCIES.COMP_CODE
+		   	AND TFSTRX.TRX_TYPE = 1040
+		   	AND TFSTRX.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		   	<if test="loginTypeByBr == 1">
+				AND TFSTRX.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+		   	AND (TFSLC1.CIF = #{cif_no,jdbcType=NUMERIC}
+   				OR TFSLC1.CIF IN (SELECT CIF_NO  <!-- Added by Mark Ayoub on 06/08/2020 - #1015216 - DBU191081 -->
+                            From FMS_SUBSIDIARY_CIFS
+                            WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                            AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName,jdbcType=VARCHAR}
+                            AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId,jdbcType=VARCHAR}
+                            AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC})  )
+   
+		UNION ALL
+		
+		SELECT TFSTRX.LC_NBR TFSTRX_LC_NBR,
+       		TFSTRX.TRX_NBR,
+       		CURRENCIES.BRIEF_DESC_ENG CURRENCY,
+       		TFSTRX.SHIPMENT_AMOUNT,
+       		CASE WHEN TFSTRX.CY_RATE_MULT_DIV = 'M' THEN
+					(TFSTRX.CY_RATE * TFSTRX.SHIPMENT_AMOUNT) / TFSTRX.CY_RATE_UNIT 
+				ELSE
+					(TFSTRX.SHIPMENT_AMOUNT * TFSTRX.CY_RATE_UNIT) / TFSTRX.CY_RATE
+				END CV_AMOUNT,
+       		TFSTRX.TRX_DATE,
+       		TFSTRX.VALID_TO,
+       		CASE TFSTRX.LC_TYPE 
+         		WHEN 'U' THEN 'EXPORT BILL'
+         		WHEN 'N' THEN 'IMPORT BILL' 
+       		END TFSTRX_LC_TYPE,
+       		CURRENCIES.DECIMAL_POINTS,
+       		0 LC_YEAR,
+			TFSBILL.BILL_NBR TFSLC1_LC_NBR,
+			TFSBILL.BILL_TYPE TFSLC1_LC_TYPE,
+      		TFSTRX.TRX_TYPE
+  		FROM TFSTRX, TFSBILL, CURRENCIES
+		WHERE TFSTRX.COMP_CODE = TFSBILL.COMP_CODE
+   			AND TFSTRX.BRANCH = TFSBILL.BRANCH
+   			AND TFSTRX.LC_TYPE = TFSBILL.BILL_TYPE
+   			AND TFSTRX.LC_NBR = TFSBILL.BILL_NBR
+   			AND TFSTRX.CURRENCY = CURRENCIES.CURRENCY_CODE 
+           	AND TFSTRX.COMP_CODE = CURRENCIES.COMP_CODE
+   			AND TFSTRX.TRX_TYPE = 1040
+   			AND TFSTRX.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+   			<if test="loginTypeByBr == 1">
+				AND TFSTRX.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+   				AND (TFSBILL.CUSTOMER_CIF = #{cif_no,jdbcType=NUMERIC}
+   							OR TFSBILL.CUSTOMER_CIF IN (SELECT CIF_NO  <!-- Added by Mark Ayoub on 06/08/2020 - #1015216 - DBU191081 -->
+		                                From FMS_SUBSIDIARY_CIFS
+		                                WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			                            AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName,jdbcType=VARCHAR}
+			                            AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId,jdbcType=VARCHAR}
+		                                AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC})  )
+   			
+	</sql>
+	
+	<resultMap id="acceptanceListMap" type="dashTradeFinanceCO">
+		<result property="tfstrxVO.LC_NBR"			column="TFSTRX_LC_NBR"/>
+		<result property="tfstrxVO.TRX_NBR"			column="TRX_NBR"/>
+		<result property="currencyDesc"				column="CURRENCY"/>
+		<result property="tfstrxVO.SHIPMENT_AMOUNT"	column="SHIPMENT_AMOUNT"/>
+		<result property="tfstrxVO.CV_AMOUNT"		column="CV_AMOUNT"/>
+		<result property="tfstrxVO.TRX_DATE"		column="TRX_DATE"/>
+		<result property="tfstrxVO.VALID_TO"		column="VALID_TO"/>
+		<result property="tfstrxVO.LC_TYPE"			column="TFSTRX_LC_TYPE"/>
+		<result property="decimalPoints"    		column="DECIMAL_POINTS"/>
+		<result property="tfslc1VO.LC_YEAR"    		column="LC_YEAR"/>
+		<result property="tfslc1VO.LC_NBR"    		column="TFSLC1_LC_NBR"/>
+		<result property="tfslc1VO.LC_TYPE"    		column="TFSLC1_LC_TYPE"/>
+		<result property="tfstrxVO.TRX_TYPE"    	column="TRX_TYPE"/>
+	</resultMap>
+	
+	<select id="acceptanceList" parameterType="dashboardSC" resultMap="acceptanceListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="acceptanceQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="acceptanceListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="acceptanceQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+
+	<sql id="inOutLCQuery">
+		SELECT TFSLC1.VALIDITY_FROM,
+			TFSLC1.VALIDITY_TO,
+			TFSLC1.LC_AMOUNT,
+			TFSLC1.CV_AMOUNT,
+			CURRENCIES.BRIEF_DESC_ENG LC_CURRENCY,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = TFSLC1.CREDIT_AVAILABILITY
+	       	 	AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+	       	   	AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language,jdbcType=VARCHAR}) CREDIT_AVAILABILITY,
+       		CASE WHEN TFSLC1.CREDIT_AVAILABILITY IN ('F','S') THEN NULL ELSE TFSLC1.CREDIT_AVAILABILITY_DAYS END CREDIT_AVAILABILITY_DAYS,
+			CURRENCIES.DECIMAL_POINTS,
+			TFSLC1.LC_REFERENCE_YEAR LC_YEAR,
+			TFSLC1.LC_REFERENCE_NBR LC_NBR,
+			TFSLC1.LC_TYPE,
+      		TFSTRX.TRX_TYPE,
+      		TFSTRX.TRX_NBR,
+      		(SELECT
+	      			CASE WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1005 THEN 'Request' 
+						 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1010 THEN 'Issued' 
+						 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1050 AND TFSLC1.OUTSTANDING_FC_AMT = 0 THEN 'Settled' 
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1050 AND TFSLC1.OUTSTANDING_FC_AMT <![CDATA[>]]> 0 THEN 'Partial Setteled'
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1015 AND SUM(LEVEL_TRX.Shipment_Amount) <![CDATA[<]]> TFSLC1.LC_AMOUNT THEN 'Partially Doc Received' 
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1015 AND SUM(LEVEL_TRX.Shipment_Amount) <![CDATA[>=]]> TFSLC1.LC_AMOUNT THEN 'Doc Received'
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1040 AND TFSLC1.OUTSTANDING_FC_AMT = 0 THEN 'Accepted'
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1040 AND TFSLC1.OUTSTANDING_FC_AMT <![CDATA[>]]> 0 THEN 'Partially Accepted'
+		                 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 2020 THEN 'Closed'
+		                 ELSE CASE TFSLC1.LC_STATUS
+		                 	    WHEN 'A' then 'Active' 
+		                    	WHEN 'I' then 'Issued' 
+		                       	WHEN 'V' then 'Reversed'
+								WHEN 'N' then 'Cancelled' 
+								WHEN 'L' then 'Validated'
+								WHEN 'J' then 'Rejected-2'
+								WHEN 'Y' then 'Rejected-1'                     
+								WHEN 'G' then 'To Be Reversed'
+								WHEN 'Y' then 'To Be Canceled'
+								WHEN 'B' then 'Active HOF'
+						        ELSE LC_STATUS 
+						      END
+					END
+			 FROM TFSTRX LEVEL_TRX
+			 WHERE LEVEL_TRX.COMP_CODE = TFSTRX.COMP_CODE
+			 AND LEVEL_TRX.BRANCH = TFSTRX.BRANCH
+			 AND LEVEL_TRX.LC_TYPE = TFSTRX.LC_TYPE
+			 AND LEVEL_TRX.LC_NBR = TFSTRX.LC_NBR
+			 AND LEVEL_TRX.LC_YEAR = TFSTRX.LC_YEAR
+			 AND LEVEL_TRX.STATUS IN ('P','G','Q')
+			 AND LEVEL_TRX.TRX_TYPE IN (1005,1010,1015,1040,1050,2020)
+			) statusDesc
+			
+		FROM TFSLC1, CURRENCIES, TFSTRX
+		WHERE TFSLC1.LC_CURRENCY = CURRENCIES.CURRENCY_CODE 
+           	AND TFSLC1.COMP_CODE = CURRENCIES.COMP_CODE
+			AND TFSTRX.COMP_CODE = TFSLC1.COMP_CODE
+            AND TFSTRX.BRANCH = TFSLC1.BRANCH
+            AND TFSTRX.LC_TYPE = TFSLC1.LC_TYPE
+            AND TFSTRX.LC_YEAR = CASE WHEN TFSLC1.LC_REFERENCE_YEAR IS NULL THEN 0 ELSE TFSLC1.LC_REFERENCE_YEAR END
+           	AND TFSTRX.LC_NBR = CASE WHEN TFSLC1.LC_REFERENCE_NBR IS NULL THEN TFSLC1.LC_NBR ELSE TFSLC1.LC_REFERENCE_NBR END
+            AND TFSTRX.TRX_TYPE IN (1005,1010)
+            AND TFSLC1.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND TFSLC1.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND (TFSLC1.CIF = #{cif_no,jdbcType=NUMERIC}
+				OR TFSLC1.CIF IN (SELECT CIF_NO    <!-- Added by Mark Ayoub on 06/08/2020 - #1015216 - DBU191081 -->
+		                                From FMS_SUBSIDIARY_CIFS
+		                                WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			                            AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName,jdbcType=VARCHAR}
+			                            AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId,jdbcType=VARCHAR}
+		                                AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC})  )
+			AND TFSLC1.LC_TYPE = #{lcType,jdbcType=VARCHAR}
+			AND TFSLC1.LC_STATUS <![CDATA[<>]]> 'D'
+	</sql>
+	
+	<resultMap id="inOutLCListMap" type="dashTradeFinanceCO">
+		<result property="tfslc1VO.VALIDITY_FROM"				column="VALIDITY_FROM"/>
+		<result property="tfslc1VO.VALIDITY_TO"					column="VALIDITY_TO"/>
+		<result property="tfslc1VO.LC_AMOUNT"					column="LC_AMOUNT"/>
+		<result property="tfslc1VO.CV_AMOUNT"					column="CV_AMOUNT"/>
+		<result property="currencyDesc"							column="LC_CURRENCY"/>
+		<result property="tfslc1VO.CREDIT_AVAILABILITY"			column="CREDIT_AVAILABILITY"/>
+		<result property="tfslc1VO.CREDIT_AVAILABILITY_DAYS"	column="CREDIT_AVAILABILITY_DAYS"/>
+		<result property="decimalPoints"    					column="DECIMAL_POINTS"/>
+		<result property="tfslc1VO.LC_YEAR"    					column="LC_YEAR"/>
+		<result property="tfslc1VO.LC_NBR"    					column="LC_NBR"/>
+		<result property="tfslc1VO.LC_TYPE"    					column="LC_TYPE"/>
+		<result property="tfstrxVO.TRX_TYPE"    				column="TRX_TYPE"/>
+      	<result property="tfstrxVO.TRX_NBR"    					column="TRX_NBR"/>
+      	<result property="statusDesc"	    					column="statusDesc"/>      	
+	</resultMap>
+	
+	<select id="inOutLCList" parameterType="dashboardSC" resultMap="inOutLCListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="inOutLCQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="inOutLCListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="inOutLCQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="lgQuery">
+		SELECT TFSLG.VALIDITY_FROM,
+			TFSLG.VALIDITY_TO,
+			TFSLG.DOC_DATE,
+			CURRENCIES.BRIEF_DESC_ENG CURRENCY,
+			TFSLG.AMOUNT,
+			TFSLG.CV_AMOUNT,
+			CURRENCIES.DECIMAL_POINTS,
+			TFSTRX.TRX_TYPE,
+			TFSLG.LG_NBR,
+			TFSTRX.TRX_NBR,
+			(SELECT   
+				CASE WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1005 THEN 'Request'
+		  	    	 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1010 THEN 'Issued'
+		    		 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 2015 AND (CASE WHEN AMOUNT IS NULL THEN 0 ELSE AMOUNT END - CASE WHEN SETTLED_AMOUNT IS NULL THEN 0 ELSE SETTLED_AMOUNT END) = 0 THEN 'Settled'
+		     		 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 2015 AND ( CASE WHEN AMOUNT IS NULL THEN 0 ELSE AMOUNT END - CASE WHEN SETTLED_AMOUNT IS NULL THEN 0 ELSE SETTLED_AMOUNT END) <![CDATA[>]]> 0 THEN 'Partially Settled'
+		     		 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 2020 THEN 'Closed'
+		     		 ELSE CASE TFSLG.LG_STATUS
+							WHEN 'A' THEN 'Active' 
+			               	WHEN 'P' THEN 'Approved' 
+			                WHEN 'V' THEN 'Reversed'
+			                WHEN 'N' THEN 'Cancelled' 
+			                WHEN 'L' THEN 'Validated'
+			               	WHEN 'J' THEN 'Rejected-2'
+			               	WHEN 'Y' THEN 'Rejected-1'                     
+			                WHEN 'G' THEN 'To Be Reversed'
+			                WHEN 'Y' THEN 'To Be Cancelled'
+			                WHEN 'B' THEN 'Active HOF'
+		                    ELSE LG_STATUS                  
+	                      END
+	            END   
+			FROM TFSTRX LEVEL_TRX
+			WHERE LEVEL_TRX.COMP_CODE = TFSTRX.COMP_CODE
+			AND LEVEL_TRX.BRANCH = TFSTRX.BRANCH
+			AND LEVEL_TRX.LC_TYPE = TFSTRX.LC_TYPE
+			AND LEVEL_TRX.LC_NBR = TFSTRX.LC_NBR
+			AND LEVEL_TRX.LC_YEAR = TFSTRX.LC_YEAR
+			AND LEVEL_TRX.STATUS IN ('P','G','Q')
+			AND LEVEL_TRX.TRX_TYPE IN (1005,1010,2015,2020)
+		   ) statusDesc
+		   			
+		FROM TFSTRX, TFSLG, CURRENCIES
+		WHERE TFSTRX.COMP_CODE = TFSLG.COMP_CODE
+   			AND TFSTRX.BRANCH = TFSLG.BRANCH
+   			AND TFSTRX.LC_NBR = CASE WHEN TFSLG.LG_NBR IS NULL THEN TFSLG.REQUISITION_NBR ELSE TFSLG.LG_NBR END
+   			AND TFSTRX.TRX_TYPE = CASE WHEN TFSLG.LG_NBR IS NULL THEN 1005 ELSE TFSTRX.TRX_TYPE END
+   			AND TFSTRX.LC_TYPE = 'G'
+   			AND TFSTRX.LC_YEAR = 0
+   			AND ((TFSTRX.TRX_TYPE = 1005 AND TFSLG.STATUS IN ('P','G','Q')) OR TFSTRX.TRX_TYPE != 1005)
+   			AND TFSLG.COMP_CODE = CURRENCIES.COMP_CODE
+			AND TFSLG.CURRENCY = CURRENCIES.CURRENCY_CODE 
+           	AND TFSLG.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND TFSLG.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND (TFSLG.CIF = #{cif_no,jdbcType=NUMERIC}
+							OR TFSLG.CIF IN (SELECT CIF_NO    <!-- Added by Mark Ayoub on 06/08/2020 - #1015216 - DBU191081 -->
+		                                From FMS_SUBSIDIARY_CIFS
+		                                WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			                            AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName,jdbcType=VARCHAR}
+			                            AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId,jdbcType=VARCHAR}
+		                                AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC})  )
+			AND TFSLG.LG_STATUS <![CDATA[<>]]> 'D'
+	</sql>
+	
+	<resultMap id="lgListMap" type="dashTradeFinanceCO">
+		<result property="tfslgVO.VALIDITY_FROM"	column="VALIDITY_FROM"/>
+		<result property="tfslgVO.VALIDITY_TO"		column="VALIDITY_TO"/>
+		<result property="tfslgVO.DOC_DATE"			column="DOC_DATE"/>
+		<result property="currencyDesc"				column="CURRENCY"/>
+		<result property="tfslgVO.AMOUNT"			column="AMOUNT"/>
+		<result property="tfslgVO.CV_AMOUNT"		column="CV_AMOUNT"/>
+		<result property="decimalPoints"    		column="DECIMAL_POINTS"/>
+		<result property="tfstrxVO.TRX_TYPE"		column="TRX_TYPE"/>
+		<result property="tfslgVO.LG_NBR"			column="LG_NBR"/>
+		<result property="tfstrxVO.TRX_NBR"			column="TRX_NBR"/>
+		<result property="statusDesc"				column="statusDesc"/>
+	</resultMap>
+	
+	<select id="lgList" parameterType="dashboardSC" resultMap="lgListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="lgQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="lgListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="lgQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="inOutBillsQuery">
+		SELECT TFSBILL.BILL_NBR,
+			CASE WHEN TFSBILL.BILL_TYPE = 'U' THEN 'EXPORT BILL' ELSE 'IMPORT BILL' END BILL_TYPE,
+			TFSBILL.BILL_DATE,
+			TFSBILL.BILL_DUE_DATE,
+			CURRENCIES.BRIEF_DESC_ENG CURRENCY,
+			TFSBILL.FC_AMENDED_AMOUNT,
+			TFSBILL.CV_AMENDED_AMOUNT,
+			CURRENCIES.DECIMAL_POINTS,
+			TFSTRX.LC_TYPE,
+      		TFSTRX.TRX_TYPE,
+      		TFSTRX.TRX_NBR,
+		    (SELECT 
+		    	CASE WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1010 THEN 'Collection'
+          			 WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1050 AND TFSBILL.FC_AMENDED_AMOUNT 
+                             - (CASE WHEN TFSBILL.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TFSBILL.SETTLEMENT_AMOUNT END)
+                             - (CASE WHEN TFSBILL.RETURNED_AMOUNT IS NULL THEN 0 ELSE TFSBILL.RETURNED_AMOUNT END) 
+                             - (CASE WHEN TFSBILL.TRANSFERRED_AMOUNT IS NULL THEN 0 ELSE TFSBILL.TRANSFERRED_AMOUNT END) = 0 THEN 'Settled'
+          			WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1050 AND TFSBILL.FC_AMENDED_AMOUNT 
+                             - (CASE WHEN TFSBILL.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TFSBILL.SETTLEMENT_AMOUNT END)
+                             - (CASE WHEN TFSBILL.RETURNED_AMOUNT IS NULL THEN 0 ELSE TFSBILL.RETURNED_AMOUNT END) 
+                             - (CASE WHEN TFSBILL.TRANSFERRED_AMOUNT IS NULL THEN 0 ELSE TFSBILL.TRANSFERRED_AMOUNT END) > 0 THEN 'Partially Settled'
+                    WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1040 AND SUM(LEVEL_TRX.SHIPMENT_AMOUNT) = TFSBILL.FC_AMENDED_AMOUNT THEN 'Accepted'
+          			WHEN MAX(LEVEL_TRX.TRX_TYPE) = 1040 AND SUM(LEVEL_TRX.SHIPMENT_AMOUNT) <![CDATA[<]]> TFSBILL.FC_AMENDED_AMOUNT THEN 'Partially Accepted' 
+          			WHEN MAX(LEVEL_TRX.TRX_TYPE) = 2020 THEN 'Closed'
+          			ELSE CASE TFSBILL.STATUS
+	                     WHEN 'A' THEN 'Active' 
+	                     WHEN 'P' THEN 'Approved' 
+	                     WHEN 'V' THEN 'Reversed'
+	                     WHEN 'N' THEN 'Canceled' 
+	                     WHEN 'L' THEN 'Validated'
+	                     WHEN 'J' THEN 'Rejected-2'
+	                     WHEN 'Y' THEN 'Rejected-1'                     
+	                     WHEN 'G' THEN 'To Be Reversed'
+	                     WHEN 'Y' THEN 'To Be Canceled'
+	                     WHEN 'B' THEN 'Active HOF'
+	                     ELSE TFSBILL.STATUS                  
+	                 END
+        		END             
+			FROM TFSTRX LEVEL_TRX
+			WHERE LEVEL_TRX.COMP_CODE = TFSTRX.COMP_CODE
+			AND LEVEL_TRX.BRANCH = TFSTRX.BRANCH
+			AND LEVEL_TRX.LC_TYPE = TFSTRX.LC_TYPE
+			AND LEVEL_TRX.LC_NBR = TFSTRX.LC_NBR
+			AND LEVEL_TRX.LC_YEAR = TFSTRX.LC_YEAR
+			AND LEVEL_TRX.STATUS IN ('P','G','Q')
+			AND LEVEL_TRX.TRX_TYPE IN (1010,1040,1050,2020)
+			) statusDesc      		
+      		
+		FROM TFSTRX, TFSBILL, CURRENCIES
+		WHERE TFSTRX.COMP_CODE = TFSBILL.COMP_CODE
+		  AND TFSTRX.BRANCH = TFSBILL.BRANCH
+          AND TFSTRX.LC_TYPE = TFSBILL.BILL_TYPE
+          AND TFSTRX.LC_NBR = TFSBILL.BILL_NBR 
+		  AND TFSTRX.CURRENCY = CURRENCIES.CURRENCY_CODE 
+          AND TFSTRX.COMP_CODE = CURRENCIES.COMP_CODE
+          AND TFSTRX.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND TFSTRX.BRANCH = #{branchCode,jdbcType=NUMERIC}
+			</if>
+		 AND (TFSBILL.CUSTOMER_CIF = #{cif_no,jdbcType=NUMERIC}
+							OR TFSBILL.CUSTOMER_CIF IN (SELECT CIF_NO    <!-- Added by Mark Ayoub on 06/08/2020 - #1015216 - DBU191081 -->
+		                                From FMS_SUBSIDIARY_CIFS
+		                                WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			                            AND FMS_SUBSIDIARY_CIFS.APP_NAME = #{appName,jdbcType=VARCHAR}
+			                            AND FMS_SUBSIDIARY_CIFS.USER_ID = #{userId,jdbcType=VARCHAR}
+		                                AND FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC})  )
+		  AND TFSTRX.TRX_TYPE = 1010 
+          AND TFSBILL.STATUS <![CDATA[<>]]> 'D'
+	</sql>
+	
+	<resultMap id="inOutBillsListMap" type="dashTradeFinanceCO">
+		<result property="tfsbillVO.BILL_NBR"			column="BILL_NBR"/>
+		<result property="tfsbillVO.BILL_TYPE"			column="BILL_TYPE"/>
+		<result property="tfsbillVO.BILL_DATE"			column="BILL_DATE"/>
+		<result property="tfsbillVO.BILL_DUE_DATE"		column="BILL_DUE_DATE"/>
+		<result property="currencyDesc"					column="CURRENCY"/>
+		<result property="tfsbillVO.FC_AMENDED_AMOUNT"	column="FC_AMENDED_AMOUNT"/>
+		<result property="tfsbillVO.CV_AMENDED_AMOUNT"	column="CV_AMENDED_AMOUNT"/>
+		<result property="decimalPoints"    			column="DECIMAL_POINTS"/>
+		<result property="tfstrxVO.LC_TYPE"    			column="LC_TYPE"/>
+		<result property="tfstrxVO.TRX_TYPE"    		column="TRX_TYPE"/>
+		<result property="statusDesc"					column="statusDesc"/>
+	</resultMap>
+	
+	<select id="inOutBillsList" parameterType="dashboardSC" resultMap="inOutBillsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="inOutBillsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="inOutBillsListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="inOutBillsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+</mapper>

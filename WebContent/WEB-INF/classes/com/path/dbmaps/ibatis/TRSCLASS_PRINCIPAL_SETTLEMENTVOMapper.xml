@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCLASS_PRINCIPAL_SETTLEMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCLASS_PRINCIPAL_SETTLEMENTVO" >
+    <id column="CLASS_CODE" property="CLASS_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FROM_PERIOD" property="FROM_PERIOD" />
+    <id column="PERIOD_TYPE" property="PERIOD_TYPE" />
+    <result column="TO_PERIOD" property="TO_PERIOD" />
+    <result column="MAX_PERCENTAGE" property="MAX_PERCENTAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CLASS_CODE, COMP_CODE, FROM_PERIOD, PERIOD_TYPE, TO_PERIOD, MAX_PERCENTAGE
+  </sql>
+  <select id="selectTRSCLASS_PRINCIPAL_SETTLEMENT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCLASS_PRINCIPAL_SETTLEMENTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCLASS_PRINCIPAL_SETTLEMENT
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FROM_PERIOD = #{FROM_PERIOD}
+      and PERIOD_TYPE = #{PERIOD_TYPE}
+  </select>
+  <delete id="deleteTRSCLASS_PRINCIPAL_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRSCLASS_PRINCIPAL_SETTLEMENTVOKey" >
+    delete from TRSCLASS_PRINCIPAL_SETTLEMENT
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FROM_PERIOD = #{FROM_PERIOD}
+      and PERIOD_TYPE = #{PERIOD_TYPE}
+  </delete>
+  <insert id="insertTRSCLASS_PRINCIPAL_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRSCLASS_PRINCIPAL_SETTLEMENTVO" >
+    insert into TRSCLASS_PRINCIPAL_SETTLEMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        CLASS_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FROM_PERIOD != null and FROM_PERIOD != emptyBigDecimalValue" >
+        FROM_PERIOD,
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE,
+      </if>
+      <if test="TO_PERIOD != null and TO_PERIOD != emptyBigDecimalValue" >
+        TO_PERIOD,
+      </if>
+      <if test="MAX_PERCENTAGE != null and MAX_PERCENTAGE != emptyBigDecimalValue" >
+        MAX_PERCENTAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        #{CLASS_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FROM_PERIOD != null and FROM_PERIOD != emptyBigDecimalValue" >
+        #{FROM_PERIOD},
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        #{PERIOD_TYPE},
+      </if>
+      <if test="TO_PERIOD != null and TO_PERIOD != emptyBigDecimalValue" >
+        #{TO_PERIOD},
+      </if>
+      <if test="MAX_PERCENTAGE != null and MAX_PERCENTAGE != emptyBigDecimalValue" >
+        #{MAX_PERCENTAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCLASS_PRINCIPAL_SETTLEMENT" >
+    update TRSCLASS_PRINCIPAL_SETTLEMENT
+    <set >
+      <if test="TO_PERIOD != null" >
+        <choose >
+          <when test="TO_PERIOD == emptyBigDecimalValue" >
+            TO_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            TO_PERIOD = #{TO_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_PERCENTAGE != null" >
+        <choose >
+          <when test="MAX_PERCENTAGE == emptyBigDecimalValue" >
+            MAX_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            MAX_PERCENTAGE = #{MAX_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FROM_PERIOD = #{FROM_PERIOD}
+      and PERIOD_TYPE = #{PERIOD_TYPE}
+  </sql>
+  <update id="updateTRSCLASS_PRINCIPAL_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRSCLASS_PRINCIPAL_SETTLEMENTVO" >
+    <include refid="sql_updateTRSCLASS_PRINCIPAL_SETTLEMENT" />
+  </update>
+</mapper>

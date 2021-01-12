@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_KEY_LABEL_TRANS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="KEY_LABEL_CODE" property="KEY_LABEL_CODE" />
+    <id column="LANG_CODE" property="LANG_CODE" />
+    <id column="PROG_REF" property="PROG_REF" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" extends="BaseResultMap" >
+    <result column="VALUE_TRANS" property="VALUE_TRANS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, KEY_LABEL_CODE, LANG_CODE, PROG_REF
+  </sql>
+  <sql id="Blob_Column_List" >
+    VALUE_TRANS
+  </sql>
+  <select id="selectSYS_PARAM_KEY_LABEL_TRANS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_KEY_LABEL_TRANS
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteSYS_PARAM_KEY_LABEL_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" >
+    delete from SYS_PARAM_KEY_LABEL_TRANS
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertSYS_PARAM_KEY_LABEL_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" >
+    insert into SYS_PARAM_KEY_LABEL_TRANS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="KEY_LABEL_CODE != null" >
+        KEY_LABEL_CODE,
+      </if>
+      <if test="LANG_CODE != null" >
+        LANG_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="VALUE_TRANS != null" >
+        VALUE_TRANS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="KEY_LABEL_CODE != null" >
+        #{KEY_LABEL_CODE},
+      </if>
+      <if test="LANG_CODE != null" >
+        #{LANG_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="VALUE_TRANS != null" >
+        #{VALUE_TRANS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_KEY_LABEL_TRANS" >
+    update SYS_PARAM_KEY_LABEL_TRANS
+    <set >
+      <if test="VALUE_TRANS != null" >
+        VALUE_TRANS = #{VALUE_TRANS},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateSYS_PARAM_KEY_LABEL_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABEL_TRANSVO" >
+    <include refid="sql_updateSYS_PARAM_KEY_LABEL_TRANS" />
+  </update>
+</mapper>

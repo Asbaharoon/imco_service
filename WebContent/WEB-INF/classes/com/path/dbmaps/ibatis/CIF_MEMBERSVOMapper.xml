@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_MEMBERS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_MEMBERSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="NAME" property="NAME" />
+    <result column="NATIONALITY" property="NATIONALITY" />
+    <result column="B_DATE" property="BB_DATE" />
+    <result column="PASSPORT_NO" property="PASSPORT_NO" />
+    <result column="PASSPORT_EXP_DATE" property="PASSPORT_EXP_DATE" />
+    <result column="PRIMARY_ID_NO" property="PRIMARY_ID_NO" />
+    <result column="SECONDARY_ID" property="SECONDARY_ID" />
+    <result column="SECONDARY_ID_TYPE" property="SECONDARY_ID_TYPE" />
+    <result column="SECONDARY_ID_NO" property="SECONDARY_ID_NO" />
+    <result column="POSITION" property="POSITION" />
+    <result column="RELATION_CODE" property="RELATION_CODE" />
+    <result column="COMMENTS" property="COMMENTS" />
+    <result column="GENDER" property="GENDER" />
+    <result column="IS_OWNER_YN" property="IS_OWNER_YN" />
+    <result column="MEMBER_CIF_NO" property="MEMBER_CIF_NO" />
+    <result column="LONG_NAME" property="LONG_NAME" />
+    <result column="CIVIL_CODE" property="CIVIL_CODE" />
+    <result column="SHORT_NAME" property="SHORT_NAME" />
+    <result column="OWNERSHIP_PERCENTAGE" property="OWNERSHIP_PERCENTAGE" />
+    <result column="PEPS" property="PEPS" />
+    <result column="MANDATE_YN" property="MANDATE_YN" />
+    <result column="RELATION_CODE_NEW" property="RELATION_CODE_NEW" />
+    <result column="POSITION_NEW" property="POSITION_NEW" />
+    <result column="CIFMEMBER_NO" property="CIFMEMBER_NO" />
+    <result column="START_DATE" property="START_DATE" />
+    <result column="END_DATE" property="END_DATE" />
+    <result column="PRIMARY_ID_TYPE" property="PRIMARY_ID_TYPE" />
+    <result column="UBO_YN" property="UBO_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, NAME, NATIONALITY, B_DATE, PASSPORT_NO, PASSPORT_EXP_DATE, 
+    PRIMARY_ID_NO, SECONDARY_ID, SECONDARY_ID_TYPE, SECONDARY_ID_NO, POSITION, RELATION_CODE, 
+    COMMENTS, GENDER, IS_OWNER_YN, MEMBER_CIF_NO, LONG_NAME, CIVIL_CODE, SHORT_NAME, 
+    OWNERSHIP_PERCENTAGE, PEPS, MANDATE_YN,RELATION_CODE_NEW,POSITION_NEW, CIFMEMBER_NO,
+    START_DATE, END_DATE, PRIMARY_ID_TYPE, UBO_YN
+  </sql>
+  <select id="selectCIF_MEMBERS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_MEMBERSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_MEMBERS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_MEMBERS" parameterType="com.path.dbmaps.vo.CIF_MEMBERSVOKey" >
+    delete from CIF_MEMBERS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_MEMBERS" parameterType="com.path.dbmaps.vo.CIF_MEMBERSVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT MAX(COMP_CODE)+1 FROM CIF_MEMBERS
+    </selectKey>
+    insert into CIF_MEMBERS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="NAME != null" >
+        NAME,
+      </if>
+      <if test="NATIONALITY != null and NATIONALITY != emptyBigDecimalValue" >
+        NATIONALITY,
+      </if>
+      <if test="BB_DATE != null" >
+        B_DATE,
+      </if>
+      <if test="PASSPORT_NO != null" >
+        PASSPORT_NO,
+      </if>
+      <if test="PASSPORT_EXP_DATE != null" >
+        PASSPORT_EXP_DATE,
+      </if>
+      <if test="PRIMARY_ID_NO != null" >
+        PRIMARY_ID_NO,
+      </if>
+      <if test="SECONDARY_ID != null" >
+        SECONDARY_ID,
+      </if>
+      <if test="SECONDARY_ID_TYPE != null" >
+        SECONDARY_ID_TYPE,
+      </if>
+      <if test="SECONDARY_ID_NO != null" >
+        SECONDARY_ID_NO,
+      </if>
+      <if test="POSITION != null" >
+        POSITION,
+      </if>
+      <if test="RELATION_CODE != null and RELATION_CODE != emptyBigDecimalValue" >
+        RELATION_CODE,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+      <if test="GENDER != null" >
+        GENDER,
+      </if>
+      <if test="IS_OWNER_YN != null" >
+        IS_OWNER_YN,
+      </if>
+      <if test="MEMBER_CIF_NO != null and MEMBER_CIF_NO != emptyBigDecimalValue" >
+        MEMBER_CIF_NO,
+      </if>
+      <if test="LONG_NAME != null" >
+        LONG_NAME,
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        CIVIL_CODE,
+      </if>
+      <if test="SHORT_NAME != null" >
+        SHORT_NAME,
+      </if>
+      <if test="OWNERSHIP_PERCENTAGE != null and OWNERSHIP_PERCENTAGE != emptyBigDecimalValue" >
+        OWNERSHIP_PERCENTAGE,
+      </if>
+      <if test="PEPS != null" >
+        PEPS,
+      </if>
+      <if test="MANDATE_YN != null" >
+        MANDATE_YN,
+      </if>
+        <if test="RELATION_CODE_NEW != null and RELATION_CODE_NEW != emptyBigDecimalValue" >
+        RELATION_CODE_NEW,
+      </if>
+        <if test="POSITION_NEW != null and POSITION_NEW != emptyBigDecimalValue" >
+        POSITION_NEW,
+      </if>
+      <if test="CIFMEMBER_NO != null and CIFMEMBER_NO != emptyBigDecimalValue" >
+        CIFMEMBER_NO,
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE,
+      </if>
+      <if test="END_DATE != null" >
+        END_DATE,
+      </if>
+      <if test="PRIMARY_ID_TYPE != null and PRIMARY_ID_TYPE != emptyBigDecimalValue" >
+        PRIMARY_ID_TYPE,
+      </if>
+      <if test="UBO_YN != null" >
+        UBO_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="NAME != null" >
+        #{NAME},
+      </if>
+      <if test="NATIONALITY != null and NATIONALITY != emptyBigDecimalValue" >
+        #{NATIONALITY},
+      </if>
+      <if test="BB_DATE != null" >
+        #{BB_DATE},
+      </if>
+      <if test="PASSPORT_NO != null" >
+        #{PASSPORT_NO},
+      </if>
+      <if test="PASSPORT_EXP_DATE != null" >
+        #{PASSPORT_EXP_DATE},
+      </if>
+      <if test="PRIMARY_ID_NO != null" >
+        #{PRIMARY_ID_NO},
+      </if>
+      <if test="SECONDARY_ID != null" >
+        #{SECONDARY_ID},
+      </if>
+      <if test="SECONDARY_ID_TYPE != null" >
+        #{SECONDARY_ID_TYPE},
+      </if>
+      <if test="SECONDARY_ID_NO != null" >
+        #{SECONDARY_ID_NO},
+      </if>
+      <if test="POSITION != null" >
+        #{POSITION},
+      </if>
+      <if test="RELATION_CODE != null and RELATION_CODE != emptyBigDecimalValue" >
+        #{RELATION_CODE},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+      <if test="GENDER != null" >
+        #{GENDER},
+      </if>
+      <if test="IS_OWNER_YN != null" >
+        #{IS_OWNER_YN},
+      </if>
+      <if test="MEMBER_CIF_NO != null and MEMBER_CIF_NO != emptyBigDecimalValue" >
+        #{MEMBER_CIF_NO},
+      </if>
+      <if test="LONG_NAME != null" >
+        #{LONG_NAME},
+      </if>
+      <if test="CIVIL_CODE != null and CIVIL_CODE != emptyBigDecimalValue" >
+        #{CIVIL_CODE},
+      </if>
+      <if test="SHORT_NAME != null" >
+        #{SHORT_NAME},
+      </if>
+      <if test="OWNERSHIP_PERCENTAGE != null and OWNERSHIP_PERCENTAGE != emptyBigDecimalValue" >
+        #{OWNERSHIP_PERCENTAGE},
+      </if>
+      <if test="PEPS != null" >
+        #{PEPS},
+      </if>
+      <if test="MANDATE_YN != null" >
+        #{MANDATE_YN},
+      </if>
+       <if test="RELATION_CODE_NEW != null and RELATION_CODE_NEW != emptyBigDecimalValue" >
+        #{RELATION_CODE_NEW},
+      </if>
+       <if test="POSITION_NEW != null and POSITION_NEW != emptyBigDecimalValue" >
+        #{POSITION_NEW},
+      </if>
+      <if test="CIFMEMBER_NO != null and CIFMEMBER_NO != emptyBigDecimalValue" >
+        #{CIFMEMBER_NO},
+      </if>
+      <if test="START_DATE != null" >
+        #{START_DATE},
+      </if>
+      <if test="END_DATE != null" >
+        #{END_DATE},
+      </if>
+      <if test="PRIMARY_ID_TYPE != null and PRIMARY_ID_TYPE != emptyBigDecimalValue" >
+        #{PRIMARY_ID_TYPE},
+      </if>
+      <if test="UBO_YN != null" >
+        #{UBO_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_MEMBERS" >
+    update CIF_MEMBERS
+    <set >
+      <if test="NAME != null" >
+        NAME = #{NAME},
+      </if>
+      <if test="NATIONALITY != null" >
+        <choose >
+          <when test="NATIONALITY == emptyBigDecimalValue" >
+            NATIONALITY = NULL ,
+          </when>
+          <otherwise >
+            NATIONALITY = #{NATIONALITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BB_DATE != null" >
+        B_DATE = #{BB_DATE},
+      </if>
+      <if test="PASSPORT_NO != null" >
+        PASSPORT_NO = #{PASSPORT_NO},
+      </if>
+      <if test="PASSPORT_EXP_DATE != null" >
+        PASSPORT_EXP_DATE = #{PASSPORT_EXP_DATE},
+      </if>
+      <if test="PRIMARY_ID_NO != null" >
+        PRIMARY_ID_NO = #{PRIMARY_ID_NO},
+      </if>
+      <if test="SECONDARY_ID != null" >
+        SECONDARY_ID = #{SECONDARY_ID},
+      </if>
+      <if test="SECONDARY_ID_TYPE != null" >
+        SECONDARY_ID_TYPE = #{SECONDARY_ID_TYPE},
+      </if>
+      <if test="SECONDARY_ID_NO != null" >
+        SECONDARY_ID_NO = #{SECONDARY_ID_NO},
+      </if>
+      <if test="POSITION != null" >
+        POSITION = #{POSITION},
+      </if>
+      <if test="RELATION_CODE != null" >
+        <choose >
+          <when test="RELATION_CODE == emptyBigDecimalValue" >
+            RELATION_CODE = NULL ,
+          </when>
+          <otherwise >
+            RELATION_CODE = #{RELATION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+      <if test="GENDER != null" >
+        GENDER = #{GENDER},
+      </if>
+      <if test="IS_OWNER_YN != null" >
+        IS_OWNER_YN = #{IS_OWNER_YN},
+      </if>
+      <if test="MEMBER_CIF_NO != null" >
+        <choose >
+          <when test="MEMBER_CIF_NO == emptyBigDecimalValue" >
+            MEMBER_CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            MEMBER_CIF_NO = #{MEMBER_CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME != null" >
+        LONG_NAME = #{LONG_NAME},
+      </if>
+      <if test="CIVIL_CODE != null" >
+        <choose >
+          <when test="CIVIL_CODE == emptyBigDecimalValue" >
+            CIVIL_CODE = NULL ,
+          </when>
+          <otherwise >
+            CIVIL_CODE = #{CIVIL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHORT_NAME != null" >
+        SHORT_NAME = #{SHORT_NAME},
+      </if>
+      <if test="OWNERSHIP_PERCENTAGE != null" >
+        <choose >
+          <when test="OWNERSHIP_PERCENTAGE == emptyBigDecimalValue" >
+            OWNERSHIP_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            OWNERSHIP_PERCENTAGE = #{OWNERSHIP_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PEPS != null" >
+        PEPS = #{PEPS},
+      </if>
+      <if test="MANDATE_YN != null" >
+        MANDATE_YN = #{MANDATE_YN},
+      </if>
+       <if test="RELATION_CODE_NEW != null" >
+        <choose >
+          <when test="RELATION_CODE_NEW == emptyBigDecimalValue" >
+            RELATION_CODE_NEW = NULL ,
+          </when>
+          <otherwise >
+            RELATION_CODE_NEW = #{RELATION_CODE_NEW},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="POSITION_NEW != null" >
+        <choose >
+          <when test="POSITION_NEW == emptyBigDecimalValue" >
+            POSITION_NEW = NULL ,
+          </when>
+          <otherwise >
+            POSITION_NEW = #{POSITION_NEW},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="CIFMEMBER_NO != null" >
+        <choose >
+          <when test="CIFMEMBER_NO == emptyBigDecimalValue" >
+            CIFMEMBER_NO = NULL ,
+          </when>
+          <otherwise >
+            CIFMEMBER_NO = #{CIFMEMBER_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE = #{START_DATE},
+      </if>
+      <if test="END_DATE != null" >
+        END_DATE = #{END_DATE},
+      </if>
+      <if test="PRIMARY_ID_TYPE != null" >
+        <choose >
+          <when test="PRIMARY_ID_TYPE == emptyBigDecimalValue" >
+            PRIMARY_ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            PRIMARY_ID_TYPE = #{PRIMARY_ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UBO_YN != null" >
+        UBO_YN = #{UBO_YN},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_MEMBERS" parameterType="com.path.dbmaps.vo.CIF_MEMBERSVO" >
+    <include refid="sql_updateCIF_MEMBERS" />
+  </update>
+</mapper>

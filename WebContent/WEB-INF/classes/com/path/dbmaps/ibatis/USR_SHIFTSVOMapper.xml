@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USR_SHIFTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USR_SHIFTSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DAY_OF_WEEK" property="DAY_OF_WEEK" />
+    <id column="LINE" property="LINE" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="FROM_TIME" property="FROM_TIME" />
+    <result column="TO_TIME" property="TO_TIME" />
+    <result column="FROM_TEMPLATE" property="FROM_TEMPLATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DAY_OF_WEEK, LINE, USER_ID, FROM_TIME, TO_TIME, FROM_TEMPLATE,DATE_UPDATED
+  </sql>
+  <select id="selectUSR_SHIFTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USR_SHIFTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from USR_SHIFTS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DAY_OF_WEEK = #{DAY_OF_WEEK}
+      and LINE = #{LINE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteUSR_SHIFTS" parameterType="com.path.dbmaps.vo.USR_SHIFTSVOKey" >
+    delete from USR_SHIFTS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DAY_OF_WEEK = #{DAY_OF_WEEK}
+      and LINE = #{LINE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertUSR_SHIFTS" parameterType="com.path.dbmaps.vo.USR_SHIFTSVO" >
+    insert into USR_SHIFTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DAY_OF_WEEK != null and DAY_OF_WEEK != emptyBigDecimalValue" >
+        DAY_OF_WEEK,
+      </if>
+      <if test="LINE != null and LINE != emptyBigDecimalValue" >
+        LINE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="FROM_TIME != null" >
+        FROM_TIME,
+      </if>
+      <if test="TO_TIME != null" >
+        TO_TIME,
+      </if>
+      <if test="FROM_TEMPLATE != null and FROM_TEMPLATE != emptyBigDecimalValue" >
+        FROM_TEMPLATE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DAY_OF_WEEK != null and DAY_OF_WEEK != emptyBigDecimalValue" >
+        #{DAY_OF_WEEK},
+      </if>
+      <if test="LINE != null and LINE != emptyBigDecimalValue" >
+        #{LINE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="FROM_TIME != null" >
+        #{FROM_TIME},
+      </if>
+      <if test="TO_TIME != null" >
+        #{TO_TIME},
+      </if>
+      <if test="FROM_TEMPLATE != null and FROM_TEMPLATE != emptyBigDecimalValue" >
+        #{FROM_TEMPLATE},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateUSR_SHIFTS" >
+    update USR_SHIFTS
+    <set >
+      <if test="FROM_TIME != null" >
+        FROM_TIME = #{FROM_TIME},
+      </if>
+      <if test="TO_TIME != null" >
+        TO_TIME = #{TO_TIME},
+      </if>
+      <if test="FROM_TEMPLATE != null" >
+        <choose >
+          <when test="FROM_TEMPLATE == emptyBigDecimalValue" >
+            FROM_TEMPLATE = NULL ,
+          </when>
+          <otherwise >
+            FROM_TEMPLATE = #{FROM_TEMPLATE},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DAY_OF_WEEK = #{DAY_OF_WEEK}
+      and LINE = #{LINE}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateUSR_SHIFTS" parameterType="com.path.dbmaps.vo.USR_SHIFTSVO" >
+    <include refid="sql_updateUSR_SHIFTS" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+  </update>
+</mapper>

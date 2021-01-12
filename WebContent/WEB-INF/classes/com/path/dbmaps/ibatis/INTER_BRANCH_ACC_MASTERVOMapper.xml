@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="INTER_BRANCH_ACC_MASTER" >
+
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.INTER_BRANCH_ACC_MASTERVO" >
+    <id column="ACC_CODE" property="ACC_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="ACCOUNT_DESCRIPTION" property="ACCOUNT_DESCRIPTION" />
+  </resultMap>
+  
+  
+  
+  <sql id="Base_Column_List" >
+    ACC_CODE, COMP_CODE, ACCOUNT_DESCRIPTION
+  </sql>
+  
+  
+  
+  <select id="selectINTER_BRANCH_ACC_MASTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.INTER_BRANCH_ACC_MASTERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from INTER_BRANCH_ACC_MASTER
+    where ACC_CODE = #{ACC_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  
+  
+  
+  <delete id="deleteINTER_BRANCH_ACC_MASTER" parameterType="com.path.dbmaps.vo.INTER_BRANCH_ACC_MASTERVO" >
+    delete from INTER_BRANCH_ACC_MASTER
+    where ACC_CODE = #{ACC_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  
+  
+  
+  <insert id="insertINTER_BRANCH_ACC_MASTER" parameterType="com.path.dbmaps.vo.INTER_BRANCH_ACC_MASTERVO" >
+    insert into INTER_BRANCH_ACC_MASTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACC_CODE != null and ACC_CODE != emptyBigDecimalValue" >
+        ACC_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ACCOUNT_DESCRIPTION != null" >
+        ACCOUNT_DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACC_CODE != null and ACC_CODE != emptyBigDecimalValue" >
+        #{ACC_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ACCOUNT_DESCRIPTION != null" >
+        #{ACCOUNT_DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  
+  <sql id="sql_updateINTER_BRANCH_ACC_MASTER" >
+    update INTER_BRANCH_ACC_MASTER
+    <set >
+      <if test="ACCOUNT_DESCRIPTION != null" >
+        ACCOUNT_DESCRIPTION = #{ACCOUNT_DESCRIPTION},
+      </if>
+    </set>
+    where ACC_CODE = #{ACC_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  
+  
+  
+  <update id="updateINTER_BRANCH_ACC_MASTER" parameterType="com.path.dbmaps.vo.INTER_BRANCH_ACC_MASTERVO" >
+    <include refid="sql_updateINTER_BRANCH_ACC_MASTER" />
+  </update>
+  
+  
+  
+</mapper>

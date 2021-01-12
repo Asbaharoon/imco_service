@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="glMapper">
+  <select id="checkGLValidation" parameterType="glSC" resultType="int">  
+	SELECT 1  FROM GEN_LEDGER  WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC} AND GL_CODE = #{glCode, jdbcType=NUMERIC}						  	  
+  </select>
+  
+  <resultMap id="glDependencyMap" type="genLedgerVO">
+  	<result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+  	<result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+  	<result column="GL_CODE" property="GL_CODE" />
+  	<result column="GL_TYPE" property="GL_TYPE" />
+  	<result column="BS_CONTRA" property="BS_CONTRA" />
+  	<result column="AFFECT_FLAG" property="AFFECT_FLAG" />
+  	<result column="GL_TERM" property="GL_TERM" /> 
+  	<result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+  </resultMap>
+  
+  <select id="dependencyByGlCode" parameterType="glSC" resultMap="glDependencyMap">
+  	SELECT CASE WHEN #{lang} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+  			 BRIEF_DESC_ARAB,
+  			 GL_CODE,
+			 GL_TYPE,
+			 BS_CONTRA ,
+			 AFFECT_FLAG,
+			 GL_TERM
+	FROM  GEN_LEDGER 
+	WHERE	 (COMP_CODE  = #{compCode})
+	AND	 (GL_CODE  = #{glCode}) 
+  </select>
+  
+  
+ <resultMap id="glListMap" type="glCO">
+	<result property="GL_CODE" column="GL_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="AC_SIGN" column="AC_SIGN" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="BS_CONTRA" column="BS_CONTRA" />
+	<result property="CATEGORY" column="CATEGORY" />
+	<result property="TERM_IND" column="TERM_IND" />
+	<result property="TERM_DAYS" column="TERM_DAYS" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="GL_TYPE" column="GL_TYPE" />	
+</resultMap>
+ 
+ <select id="glList" resultMap="glListMap" parameterType="glSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="glCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="glListCount" resultType="int" parameterType="glSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="glCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+  <select id="selectgenLedgerglcode" resultType="int" parameterType="glSC" > 
+	<![CDATA[
+                  SELECT GEN_LEDGER.GL_CODE   				
+					FROM  GEN_LEDGER  
+					WHERE ( GEN_LEDGER.COMP_CODE = #{compCode}  ) AND  
+							( GEN_LEDGER.GL_TYPE   = 'N' ) AND
+							( GEN_LEDGER.BS_CONTRA = 'B' ) AND	
+							( GEN_LEDGER.BS_CONTRA <> 'S' ) AND		
+							( GEN_LEDGER.GL_CODE 	=  #{glCode} ) and
+							( GEN_LEDGER.GL_CODE IN 
+								( SELECT RIFATT.TYPE_CODE FROM  RIFATT 
+								  WHERE RIFATT.COMP_CODE = #{compCode}
+								  AND	  RIFATT.CATEGORY IN ('T','D')
+								  AND	( ( (#{appName}  = 'RET' OR  #{appName} = 'RADM' ) AND RIFATT.SHOW_IN_CSM = '1' )  OR
+											 (#{appName} <> 'RET' AND #{appName} <> 'RADM')
+										)
+								)  
+							)					
+	]]>	 
+ </select>
+ 
+	
+ 
+ 
+ <sql id="glCommon">
+      <![CDATA[
+	     SELECT GEN_LEDGER.GL_CODE,   
+	       GEN_LEDGER.BRIEF_DESC_ENG,   
+	       GEN_LEDGER.BRIEF_DESC_ARAB, 
+	       GEN_LEDGER.AC_SIGN ,
+	       GEN_LEDGER.ADDITIONAL_REFERENCE,
+		   GEN_LEDGER.BS_CONTRA,
+		   RIFATT.CATEGORY,
+		   RIFATT.TERM_IND,
+		   RIFATT.TERM_DAYS
+  		FROM GEN_LEDGER  LEFT OUTER JOIN RIFATT ON  GEN_LEDGER.COMP_CODE =RIFATT.COMP_CODE AND GEN_LEDGER.GL_CODE =RIFATT.TYPE_CODE
+		WHERE ( GEN_LEDGER.COMP_CODE = #{compCode} ) AND  
+      		  ( GEN_LEDGER.GL_TYPE = 'N' )   and
+      		  ( GEN_LEDGER.BS_CONTRA <> 'S' )   and
+		      ( GEN_LEDGER.GL_CODE IN 
+		      		(SELECT RIFATT.TYPE_CODE 
+                     FROM   RIFATT 
+			         WHERE  RIFATT.COMP_CODE = #{compCode}
+					 AND    RIFATT.CATEGORY  = #{category}	
+					 AND	( ( (#{appName}  = 'RET' OR  #{appName} = 'RADM' or #{appName} = 'KSK' ) AND RIFATT.SHOW_IN_CSM = '1' )  
+					 OR
+				    (#{appName} <> 'RET' AND #{appName} <> 'RADM' AND #{appName} <> 'KSK'))))   
+       ]]>   
+ </sql>
+ 
+ <sql id="validateGLByGlAmfRifatt_core">
+
+  FROM AMF, GEN_LEDGER
+  LEFT OUTER JOIN RIFATT ON GEN_LEDGER.COMP_CODE = RIFATT.COMP_CODE
+                        AND GEN_LEDGER.GL_CODE = RIFATT.TYPE_CODE
+ WHERE (GEN_LEDGER.COMP_CODE = AMF.COMP_CODE)
+   AND (GEN_LEDGER.GL_CODE = AMF.GL_CODE)
+   AND (GEN_LEDGER.COMP_CODE = #{compCode})
+   AND (GEN_LEDGER.BS_CONTRA = CASE WHEN CASE WHEN #{BS_CONTRA} IS NULL THEN 'X' ELSE
+        #{BS_CONTRA} END = 'X' THEN GEN_LEDGER.BS_CONTRA ELSE #{BS_CONTRA} END)
+   AND (GEN_LEDGER.GL_TYPE = CASE WHEN CASE WHEN #{GL_TYPE} IS NULL THEN 'X' ELSE
+        #{GL_TYPE} END = 'X' THEN GEN_LEDGER.GL_TYPE ELSE #{GL_TYPE} END)
+   AND ((#{GMI_FLAG} = 'GI' AND AMF.GMI_FLAG IN ('G', 'I')) Or
+       (AMF.GMI_FLAG = CASE WHEN CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE
+        #{GMI_FLAG} END = 'X' THEN AMF.GMI_FLAG ELSE #{GMI_FLAG} END))
+       <if test="affectPassChq != null">
+   AND ((CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE
+        #{affectPassChq} END = '-1') OR
+       (#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0') OR
+       (#{affectPassChq} IN ('1', '2') AND
+        RIFATT.AFFECTION = #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE
+         AMF.UPDATE_PASSBOOK END = '1')) OR
+       (#{affectPassChq} = '3' AND
+        ((RIFATT.AFFECTION = '2' AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE
+         AMF.UPDATE_PASSBOOK END = '1')) Or
+        (GEN_LEDGER.AFFECT_FLAG = '2' AND
+        (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE
+         AMF.UPDATE_PASSBOOK END = '1')))))
+       </if>
+         
+   AND ((#{AFFECT_CARD} = '0') OR
+       (#{AFFECT_CARD} = '1' AND RIFATT.AFFECT_CARD = '1'))
+      
+   AND (AMF.STATUS in ('I', 'A', 'T', 'P'))
+      
+   AND (((CASE WHEN #{branchCode} IS NULL THEN 0 ELSE
+        #{branchCode} + 0 END) = 0) Or
+       ((CASE WHEN #{branchCode} IS NULL THEN 0 ELSE
+        #{branchCode} + 0 END)  <![CDATA[<>]]> 0 AND AMF.BRANCH_CODE = #{branchCode} + 0))
+      
+   AND (((CASE WHEN #{currencyCode} IS NULL THEN 0 ELSE
+        #{currencyCode} + 0 END) = 0) Or
+       ((CASE WHEN #{currencyCode} IS NULL THEN 0 ELSE
+        #{currencyCode} + 0 END)  <![CDATA[<>]]> 0 AND
+       AMF.CURRENCY_CODE = #{currencyCode} + 0))
+
+ </sql>
+ 
+	 <sql id = "validateGLByGlAmfRifatt">
+	 	 	SELECT DISTINCT GEN_LEDGER.GL_CODE
+			<include refid="validateGLByGlAmfRifatt_core"/>
+				AND AMF.GL_CODE = #{glCode}
+				AND AMF.COMP_CODE = #{compCode}
+				AND  AMF.BRANCH_CODE = #{branchCode}
+	 </sql>
+	 
+	
+	
+	
+	<select id="selectValidateGLByGlAmfRifatt" resultType="BigDecimal" parameterType="accountSC">
+		<include refid="validateGLByGlAmfRifatt" />
+	</select>
+	
+	<!--Get the GL CODE list from  GEN_LEDGER table only the columns selected here also differ from the above query dw_lookup_common_gl-->
+	
+	<select id="glListFromGL" resultMap="glListMap" parameterType="glSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="glCommonFromGL"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 
+ 	<select id="glListCountFromGL" resultType="int" parameterType="glSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="glCommonFromGL"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ 	</select>
+	
+	<sql id="glCommonFromGL">
+      <![CDATA[
+			SELECT GEN_LEDGER.GL_CODE,
+				GEN_LEDGER.BRIEF_DESC_ENG,
+				GEN_LEDGER.LONG_DESC_ENG,
+				GEN_LEDGER.BRIEF_DESC_ARAB,
+				GEN_LEDGER.LONG_DESC_ARAB,
+				GEN_LEDGER.GL_CATEGORY,
+				GEN_LEDGER.GL_TYPE,
+				GEN_LEDGER.ADDITIONAL_REFERENCE,
+				GEN_LEDGER.COMP_CODE,
+				GEN_LEDGER.PT_IND
+				FROM  GEN_LEDGER				
+				WHERE	 (GEN_LEDGER.COMP_CODE  = #{compCode})
+				AND	(GEN_LEDGER.BS_CONTRA  =
+				CASE
+					WHEN #{bsContra} = 'Z' THEN GEN_LEDGER.BS_CONTRA
+					ELSE #{bsContra}
+				END)
+       ]]>
+       		<if test="contraService != null" >
+              	AND 	(GEN_LEDGER.GL_TYPE NOT IN ('C', 'H') )
+				AND 	(GEN_LEDGER.BS_CONTRA IN ('B', ( SELECT CASE WHEN SERVICE IS NULL OR SERVICE ='' THEN  'C' ELSE SERVICE END <!-- BY reem bug:970458 added OR SERVICE ='' -->
+														 FROM S_APP 
+														 WHERE S_APP.APP_NAME=#{appName} ) ))	
+			</if>
+      		<!--  condition on flagFromCtrlRecAcc added by rany for ctrl record screen-->
+      		<if test="contraService == null and allowInternAcc != 'flagFromCtrlRecAcc'" >
+      			<![CDATA[
+              	AND		(GEN_LEDGER.BS_CONTRA  <> 'S')
+              	]]>
+			</if> 
+			<!--  added by rany for ctrl record screen-->
+			<if test="allowInternAcc == 'flagFromCtrlRecAcc'" >
+			  AND GEN_LEDGER.GL_TYPE 	IN ('I', 'N')
+			</if>
+			<!-- end rany -->
+			
+			<!--  moved by rany for ctrl record screen and adding the cdtion -->
+			<if test="allowInternAcc != 'flagFromCtrlRecAcc'">
+					AND	(GEN_LEDGER.GL_TYPE  =
+					CASE
+						WHEN #{genLedgerType} = 'Z' THEN GEN_LEDGER.GL_TYPE
+						ELSE #{genLedgerType}
+					END)
+				</if>
+ 	</sql>
+	
+	<select id="selectValidateGLFromGL" resultType="genLedgerVO" parameterType="glSC">
+		<include refid="validateGLFromGL" />
+	</select>
+	
+	 <sql id = "validateGLFromGL">
+	 	 <![CDATA[
+	 	 		SELECT DISTINCT GEN_LEDGER.GL_CODE,
+	 	 		CASE WHEN #{lang} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+				FROM  GEN_LEDGER				
+				WHERE	 (GEN_LEDGER.COMP_CODE  = #{compCode})
+				AND	(GEN_LEDGER.BS_CONTRA  =
+				CASE
+					WHEN #{bsContra} = 'Z' THEN GEN_LEDGER.BS_CONTRA
+					ELSE #{bsContra}
+				END)
+				AND	(GEN_LEDGER.GL_TYPE  =
+				CASE
+					WHEN #{genLedgerType} = 'Z' THEN GEN_LEDGER.GL_TYPE
+					ELSE #{genLedgerType}
+				END)
+				AND	(GEN_LEDGER.BS_CONTRA  <> 'S')
+				AND GEN_LEDGER.GL_CODE = #{glCode}
+		  ]]> 
+	 </sql>
+	
+	<select id="selectBsContra" resultType="String" parameterType="glSC">
+		<include refid="validateBsContra" />
+	</select>
+	
+	 <sql id = "validateBsContra">
+	 	 <![CDATA[
+	 	 	SELECT BS_CONTRA INTO :is_bs_contra 
+			FROM GEN_LEDGER 
+			WHERE GL_CODE = #{glCode} and 
+			COMP_CODE = #{compCode};
+		  ]]> 
+	 </sql>	
+
+<!-- *************************Query to validate GL starts(Data Window : w_lookup_amf_ret_nonint)-**************************************
+-->	 
+	 <select id="selectValidateGlFromAmfRifattGenLedger" resultType="genLedgerVO" parameterType="accountSC">
+		<include refid="validateGlFromAmfRifattGenLedger" />
+	</select>
+	
+	  <sql id = "validateGlFromAmfRifattGenLedger">
+	 	 <![CDATA[
+	 	 	SELECT DISTINCT  
+				GEN_LEDGER.GL_CODE
+			FROM AMF  , RIFATT , RIFCTT, CIF , GEN_LEDGER
+   			WHERE 	( AMF.COMP_CODE		= GEN_LEDGER.COMP_CODE		) AND
+					( AMF.GL_CODE			= GEN_LEDGER.GL_CODE		) AND
+					( AMF.COMP_CODE     = RIFATT.COMP_CODE 		) AND
+					( AMF.GL_CODE       = RIFATT.TYPE_CODE 		) AND
+					( AMF.COMP_CODE     = CIF.COMP_CODE 			) AND
+					( AMF.CIF_SUB_NO	  = CIF.CIF_NO 	  			) AND
+					( CIF.COMP_CODE	  = RIFCTT.COMP_CODE 		) AND
+					( CIF.CIF_TYPE		  = RIFCTT.TYPE_CODE 		) AND
+					( AMF.COMP_CODE     = #{compCode}		) 
+
+					AND  		
+					( (  #{branchCode} IS NULL OR  #{branchCode} = 0  )  OR
+					  (  #{branchCode} IS NOT NULL AND  #{branchCode} <> 0 AND  #{branchCode} = AMF.BRANCH_CODE )  
+					)	
+					
+					AND
+					( ( #{currencyCode} IS NULL OR #{currencyCode} = 0  )  OR
+					  ( #{currencyCode} IS NOT NULL AND #{currencyCode} <> 0 AND #{currencyCode} = AMF.CURRENCY_CODE )  
+					)	
+					
+					AND
+					( ( #{glCode} IS NULL OR #{glCode} = 0  )  OR
+					  ( #{glCode} IS NOT NULL AND #{glCode} <> 0 AND #{glCode} = AMF.GL_CODE )  
+					)	AND
+
+			     	( AMF.ACC_BC = CASE WHEN #{BS_CONTRA} = 'X' THEN AMF.ACC_BC ELSE #{BS_CONTRA} END  ) AND  
+					(  ( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'X' 																) OR
+		 			  	( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END  = 'N' 					AND AMF.GMI_FLAG IN ('G','F')) OR
+						( CASE WHEN #{GMI_FLAG} IS NULL THEN 'X' ELSE #{GMI_FLAG} END IN ('I','F','G') 	AND AMF.GMI_FLAG = #{GMI_FLAG} )) AND 
+         			( AMF.STATUS 		  IN ( 'A', 'I','T', 'P' )) AND
+					( AMF.ACC_BC 		  <> 'S' 				  	  ) AND
+					( 	(CASE WHEN #{affectPassChq} IS NULL THEN '-1' ELSE #{affectPassChq} END = '-1' )		OR 
+						(#{affectPassChq} = '0' AND RIFATT.AFFECTION = '0' ) OR
+						(#{affectPassChq} IN ('1','2') AND RIFATT.AFFECTION 	= #{affectPassChq} AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+						(#{affectPassChq} = '3' AND ((RIFATT.AFFECTION 			= '2'			 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1')) Or
+														 (GEN_LEDGER.AFFECT_FLAG 	= '2' 		 	AND (CASE WHEN AMF.UPDATE_PASSBOOK IS NULL THEN '0' ELSE AMF.UPDATE_PASSBOOK END = '1'))
+														)
+						)
+					) AND
+					(  (CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'X'												) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'C' AND RIFCTT.CLIENT = 'Y'     	) OR 
+						(CASE WHEN #{cifType} IS NULL THEN 'X' ELSE #{cifType} END = 'B' AND RIFCTT.BANK 	= 'Y'     	) 
+					) AND
+					(	( #{AFFECT_CARD} <> '1' ) Or
+						( #{AFFECT_CARD} = '1' and RIFATT.AFFECT_CARD = '1' )
+					)
+		  ]]> 
+		  			<!--
+					( ( #{cifCode} IS NULL OR #{cifCode} = -1 )  OR
+					  ( #{cifCode} IS NOT NULL AND #{cifCode} <> -1 AND #{cifCode} = AMF.CIF_SUB_NO )  
+					)	AND
+					-->
+	 </sql>	
+<!-- *************************Query to validate GL ends (Data Window : w_lookup_amf_ret_nonint)-**************************************
+-->
+
+<!-- *************************  begin data window : dw_lookup_gl_amf  *************************
+-->
+<sql id="glAmfList_sql">
+SELECT DISTINCT GEN_LEDGER.GL_CODE,
+                GEN_LEDGER.BRIEF_DESC_ENG,
+                GEN_LEDGER.LONG_DESC_ENG,
+                GEN_LEDGER.GL_CATEGORY,
+                GEN_LEDGER.GL_TYPE,
+                GEN_LEDGER.BS_CONTRA
+	<include refid="validateGLByGlAmfRifatt_core"/>
+</sql>
+
+
+
+	<select id="glAmfList" resultMap="glListMap" parameterType="accountSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="glAmfList_sql"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 
+ 	<select id="glAmfListCount" resultType="int" parameterType="accountSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="glAmfList_sql"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ 	</select>
+
+<!-- *************************  end data window : dw_lookup_gl_amf  *************************
+-->
+
+<!-- 
+ 		Get the GL CODE Object Details from  GEN_LEDGER table based on the same conditions added 
+ 		On glCommonFromGL query...
+ 		glDetailsfromGL and glCommonResMap are added by HanaaElJazzar for Assets TrxTemplate Screen..
+ 	-->
+ 	<select id="glDetailsfromGL" resultMap="glCommonResMap" parameterType="glSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="glCommonFromGL"/>
+      	AND GL_CODE = #{glCode}
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 	
+ 	 <resultMap id="glCommonResMap" type="genLedgerVO">
+		<result property="GL_CODE" 					column="GL_CODE" />	
+		<result property="BRIEF_DESC_ENG" 			column="BRIEF_DESC_ENG" />
+		<result property="BRIEF_DESC_ARAB" 			column="BRIEF_DESC_ARAB" />
+		<result property="GL_CATEGORY" 				column="GL_CATEGORY" />
+		<result property="GL_TYPE" 					column="GL_TYPE" />	
+		<result property="ADDITIONAL_REFERENCE" 	column="ADDITIONAL_REFERENCE" />
+		<result property="COMP_CODE" 				column="COMP_CODE" />
+		<result property="PT_IND" 					column="PT_IND" />
+	</resultMap>
+</mapper>

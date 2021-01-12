@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="salutationMapper">
+
+ <sql id="salutationListCommon" >
+	<![CDATA[
+	SELECT DISTINCT 
+		   CIVIL_CODES.CIVIL_CODE,
+           CIVIL_CODES.BRIEF_DESC_ENG,
+           CIVIL_CODES.LONG_DESC_ENG,
+           CIVIL_CODES.BRIEF_DESC_ARAB,
+           CIVIL_CODES.LONG_DESC_ARAB
+    FROM   RIFCTT LEFT OUTER JOIN RIFCTT_SALUT ON RIFCTT.COMP_CODE = RIFCTT_SALUT.COMP_CODE 
+											   AND    RIFCTT.TYPE_CODE = RIFCTT_SALUT.CODE , 
+		   CIVIL_CODES  
+  WHERE  CIVIL_CODES.COMP_CODE   = RIFCTT.COMP_CODE
+  AND    ( (
+  					 #{cifFlag}  + 0 = 1  
+			  AND    RIFCTT_SALUT.COMP_CODE    = RIFCTT.COMP_CODE
+			  AND    RIFCTT_SALUT.CODE      = RIFCTT.TYPE_CODE
+			  AND    CIVIL_CODES.COMP_CODE   = RIFCTT_SALUT.COMP_CODE 	
+			  AND    RIFCTT_SALUT.CIVIL_CODE = CIVIL_CODES.CIVIL_CODE  
+			  AND    RIFCTT_SALUT.COMP_CODE  = #{compCode}
+			  AND    RIFCTT_SALUT.CODE = #{cifTypeCode}
+			  AND    RIFCTT_SALUT.COMP_CODE  = #{compCode}
+  			)
+			OR   
+			
+				(
+				(
+				  NOT exists (select  1 from RIFCTT_SALUT 
+			       where RIFCTT_SALUT.COMP_CODE=#{compCode}
+			       and RIFCTT_SALUT.CODE=#{cifTypeCode})
+			   
+			   ) and  (CIVIL_CODES.COMP_CODE = #{compCode})
+			   )
+			
+ 				
+		 )
+
+	]]>	 
+ </sql>
+ 
+ <resultMap id="salutationListMap" type="civilCodesVO">
+	<id property="CIVIL_CODE" column="CIVIL_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="salutationList" resultMap="salutationListMap" parameterType="salutationSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="salutationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="salutationListCount" resultType="int" parameterType="salutationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="salutationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnSalutationById" parameterType="salutationSC" resultType="civilCodesVO">
+   
+  SELECT DISTINCT CIVIL_CODES.CIVIL_CODE, CASE WHEN #{preferredLanguage} = 'L' THEN CIVIL_CODES.BRIEF_DESC_ENG ELSE CIVIL_CODES.BRIEF_DESC_ARAB END BRIEF_DESC_ENG
+  FROM   RIFCTT LEFT OUTER JOIN RIFCTT_SALUT ON RIFCTT.COMP_CODE = RIFCTT_SALUT.COMP_CODE AND RIFCTT.TYPE_CODE = RIFCTT_SALUT.CODE , 
+		 CIVIL_CODES  
+  WHERE  CIVIL_CODES.COMP_CODE     = RIFCTT.COMP_CODE
+  AND    ( (#{cifFlag}  + 0 = 1  
+  AND    RIFCTT_SALUT.COMP_CODE    = RIFCTT.COMP_CODE
+  AND    RIFCTT_SALUT.CODE         = RIFCTT.TYPE_CODE
+  AND    CIVIL_CODES.COMP_CODE     = RIFCTT_SALUT.COMP_CODE 	
+  AND    RIFCTT_SALUT.CIVIL_CODE   = CIVIL_CODES.CIVIL_CODE  
+  AND    RIFCTT_SALUT.COMP_CODE    = #{compCode} + 0 
+  AND    RIFCTT_SALUT.CODE         = #{cifTypeCode} + 0  
+  AND    RIFCTT_SALUT.COMP_CODE    = #{compCode} + 0)
+  AND	 CIVIL_CODES.CIVIL_CODE    = #{civilCode}
+				  OR   
+ 			
+				(
+				(
+				  NOT exists (select  1 from RIFCTT_SALUT 
+			       where RIFCTT_SALUT.COMP_CODE=#{compCode}
+			       and RIFCTT_SALUT.CODE=#{cifTypeCode})			   
+			   ) and  (CIVIL_CODES.COMP_CODE = #{compCode} AND	CIVIL_CODES.CIVIL_CODE = #{civilCode})
+			   )
+			
+ 				
+		 )
+
+ </select>
+
+	<select id="checkSalutationExistance" parameterType="salutationSC" resultType="int">
+		SELECT count(1)
+		FROM RIFCTT_SALUT
+		WHERE COMP_CODE = #{compCode}
+		AND CODE = #{cifTypeCode} <!-- add this line  --> 
+		AND CIVIL_CODE = #{civilCode}
+	</select>
+
+	<select id="checkSalutExistByCifType" parameterType="salutationSC" resultType="int">
+		SELECT count(1)
+		FROM RIFCTT_SALUT
+		WHERE COMP_CODE = #{compCode}
+		AND CODE = #{cifTypeCode}
+	</select>
+ 
+</mapper>

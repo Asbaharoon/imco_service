@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_STRUCT_DETAIL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVO" >
+    <id column="STRUCT_CODE" property="STRUCT_CODE" />
+    <id column="TAG_NO" property="TAG_NO" />
+    <result column="TAG_NAME" property="TAG_NAME" />
+    <result column="TAG_DESC" property="TAG_DESC" />
+    <result column="MAND_OBLG" property="MAND_OBLG" />
+    <result column="PARENT_TAG_NO" property="PARENT_TAG_NO" />
+    <result column="TAG_COUNT_MIN" property="TAG_COUNT_MIN" />
+    <result column="TAG_COUNT_MAX" property="TAG_COUNT_MAX" />
+    <result column="TAG_DECLARATION" property="TAG_DECLARATION" />
+    <result column="IDENTIFIER_FLAG" property="IDENTIFIER_FLAG" />
+    <result column="IDENTIFIER_VALUE" property="IDENTIFIER_VALUE" />
+    <result column="VARIABLE_TAG_NAME" property="VARIABLE_TAG_NAME" />
+    <result column="TAG_NAME_SQL" property="TAG_NAME_SQL" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVO" extends="BaseResultMap" >
+    <result column="COL_NAME" property="COL_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    STRUCT_CODE, TAG_NO, TAG_NAME, TAG_DESC, MAND_OBLG, PARENT_TAG_NO, TAG_COUNT_MIN, 
+    TAG_COUNT_MAX, TAG_DECLARATION, IDENTIFIER_FLAG, IDENTIFIER_VALUE, VARIABLE_TAG_NAME, 
+    TAG_NAME_SQL
+  </sql>
+  <sql id="Blob_Column_List" >
+    COL_NAME
+  </sql>
+  <select id="selectDF_FILE_STRUCT_DETAIL" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from DF_FILE_STRUCT_DETAIL
+    where STRUCT_CODE = #{STRUCT_CODE}
+      and TAG_NO = #{TAG_NO}
+  </select>
+  <delete id="deleteDF_FILE_STRUCT_DETAIL" parameterType="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVOKey" >
+    delete from DF_FILE_STRUCT_DETAIL
+    where STRUCT_CODE = #{STRUCT_CODE}
+      and TAG_NO = #{TAG_NO}
+  </delete>
+  <insert id="insertDF_FILE_STRUCT_DETAIL" parameterType="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVO" >
+    insert into DF_FILE_STRUCT_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="STRUCT_CODE != null" >
+        STRUCT_CODE,
+      </if>
+      <if test="TAG_NO != null" >
+        TAG_NO,
+      </if>
+      <if test="TAG_NAME != null" >
+        TAG_NAME,
+      </if>
+      <if test="TAG_DESC != null" >
+        TAG_DESC,
+      </if>
+      <if test="MAND_OBLG != null" >
+        MAND_OBLG,
+      </if>
+      <if test="PARENT_TAG_NO != null" >
+        PARENT_TAG_NO,
+      </if>
+      <if test="TAG_COUNT_MIN != null" >
+        TAG_COUNT_MIN,
+      </if>
+      <if test="TAG_COUNT_MAX != null" >
+        TAG_COUNT_MAX,
+      </if>
+      <if test="TAG_DECLARATION != null" >
+        TAG_DECLARATION,
+      </if>
+      <if test="IDENTIFIER_FLAG != null" >
+        IDENTIFIER_FLAG,
+      </if>
+      <if test="IDENTIFIER_VALUE != null" >
+        IDENTIFIER_VALUE,
+      </if>
+      <if test="VARIABLE_TAG_NAME != null" >
+        VARIABLE_TAG_NAME,
+      </if>
+      <if test="TAG_NAME_SQL != null and TAG_NAME_SQL != emptyBigDecimalValue" >
+        TAG_NAME_SQL,
+      </if>
+      <if test="COL_NAME != null" >
+        COL_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="STRUCT_CODE != null" >
+        #{STRUCT_CODE},
+      </if>
+      <if test="TAG_NO != null" >
+        #{TAG_NO},
+      </if>
+      <if test="TAG_NAME != null" >
+        #{TAG_NAME},
+      </if>
+      <if test="TAG_DESC != null" >
+        #{TAG_DESC},
+      </if>
+      <if test="MAND_OBLG != null" >
+        #{MAND_OBLG},
+      </if>
+      <if test="PARENT_TAG_NO != null" >
+        #{PARENT_TAG_NO},
+      </if>
+      <if test="TAG_COUNT_MIN != null" >
+        #{TAG_COUNT_MIN},
+      </if>
+      <if test="TAG_COUNT_MAX != null" >
+        #{TAG_COUNT_MAX},
+      </if>
+      <if test="TAG_DECLARATION != null" >
+        #{TAG_DECLARATION},
+      </if>
+      <if test="IDENTIFIER_FLAG != null" >
+        #{IDENTIFIER_FLAG},
+      </if>
+      <if test="IDENTIFIER_VALUE != null" >
+        #{IDENTIFIER_VALUE},
+      </if>
+      <if test="VARIABLE_TAG_NAME != null" >
+        #{VARIABLE_TAG_NAME},
+      </if>
+      <if test="TAG_NAME_SQL != null and TAG_NAME_SQL != emptyBigDecimalValue" >
+        #{TAG_NAME_SQL},
+      </if>
+      <if test="COL_NAME != null" >
+        #{COL_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_STRUCT_DETAIL" >
+    update DF_FILE_STRUCT_DETAIL
+    <set >
+      <if test="TAG_NAME != null" >
+        TAG_NAME = #{TAG_NAME},
+      </if>
+      <if test="TAG_DESC != null" >
+        TAG_DESC = #{TAG_DESC},
+      </if>
+      <if test="MAND_OBLG != null" >
+        MAND_OBLG = #{MAND_OBLG},
+      </if>
+      <if test="PARENT_TAG_NO != null" >
+        PARENT_TAG_NO = #{PARENT_TAG_NO},
+      </if>
+      <if test="TAG_COUNT_MIN != null" >
+        TAG_COUNT_MIN = #{TAG_COUNT_MIN},
+      </if>
+      <if test="TAG_COUNT_MAX != null" >
+        TAG_COUNT_MAX = #{TAG_COUNT_MAX},
+      </if>
+      <if test="TAG_DECLARATION != null" >
+        TAG_DECLARATION = #{TAG_DECLARATION},
+      </if>
+      <if test="IDENTIFIER_FLAG != null" >
+        IDENTIFIER_FLAG = #{IDENTIFIER_FLAG},
+      </if>
+      <if test="IDENTIFIER_VALUE != null" >
+        IDENTIFIER_VALUE = #{IDENTIFIER_VALUE},
+      </if>
+      <if test="VARIABLE_TAG_NAME != null" >
+        VARIABLE_TAG_NAME = #{VARIABLE_TAG_NAME},
+      </if>
+      <if test="TAG_NAME_SQL != null" >
+        <choose >
+          <when test="TAG_NAME_SQL == emptyBigDecimalValue" >
+            TAG_NAME_SQL = NULL ,
+          </when>
+          <otherwise >
+            TAG_NAME_SQL = #{TAG_NAME_SQL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COL_NAME != null" >
+        COL_NAME = #{COL_NAME},
+      </if>
+    </set>
+    where STRUCT_CODE = #{STRUCT_CODE}
+      and TAG_NO = #{TAG_NO}
+  </sql>
+  <update id="updateDF_FILE_STRUCT_DETAIL" parameterType="com.path.dbmaps.vo.DF_FILE_STRUCT_DETAILVO" >
+    <include refid="sql_updateDF_FILE_STRUCT_DETAIL" />
+  </update>
+</mapper>

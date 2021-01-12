@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_BUSINESS_NATURE_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_BUSINESS_NATURE_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="DETAILS_ENG" property="DETAILS_ENG" />
+    <result column="DETAILS_ARAB" property="DETAILS_ARAB" />
+    <result column="VALUE_OF_BUSINESS" property="VALUE_OF_BUSINESS" />
+    <result column="VALUE_CY" property="VALUE_CY" />
+    <result column="PURPOSE_OF_ACC_ENG" property="PURPOSE_OF_ACC_ENG" />
+    <result column="PURPOSE_OF_ACC_ARAB" property="PURPOSE_OF_ACC_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, DETAILS_ENG, DETAILS_ARAB, VALUE_OF_BUSINESS, VALUE_CY, 
+    PURPOSE_OF_ACC_ENG, PURPOSE_OF_ACC_ARAB
+  </sql>
+  <select id="selectCIF_BUSINESS_NATURE_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_BUSINESS_NATURE_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_BUSINESS_NATURE_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_BUSINESS_NATURE_DET" parameterType="com.path.dbmaps.vo.CIF_BUSINESS_NATURE_DETVOKey" >
+    delete from CIF_BUSINESS_NATURE_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_BUSINESS_NATURE_DET" parameterType="com.path.dbmaps.vo.CIF_BUSINESS_NATURE_DETVO" >
+    insert into CIF_BUSINESS_NATURE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG,
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB,
+      </if>
+      <if test="VALUE_OF_BUSINESS != null and VALUE_OF_BUSINESS != emptyBigDecimalValue" >
+        VALUE_OF_BUSINESS,
+      </if>
+      <if test="VALUE_CY != null and VALUE_CY != emptyBigDecimalValue" >
+        VALUE_CY,
+      </if>
+      <if test="PURPOSE_OF_ACC_ENG != null" >
+        PURPOSE_OF_ACC_ENG,
+      </if>
+      <if test="PURPOSE_OF_ACC_ARAB != null" >
+        PURPOSE_OF_ACC_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="DETAILS_ENG != null" >
+        #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        #{DETAILS_ARAB},
+      </if>
+      <if test="VALUE_OF_BUSINESS != null and VALUE_OF_BUSINESS != emptyBigDecimalValue" >
+        #{VALUE_OF_BUSINESS},
+      </if>
+      <if test="VALUE_CY != null and VALUE_CY != emptyBigDecimalValue" >
+        #{VALUE_CY},
+      </if>
+      <if test="PURPOSE_OF_ACC_ENG != null" >
+        #{PURPOSE_OF_ACC_ENG},
+      </if>
+      <if test="PURPOSE_OF_ACC_ARAB != null" >
+        #{PURPOSE_OF_ACC_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_BUSINESS_NATURE_DET" >
+    update CIF_BUSINESS_NATURE_DET
+    <set >
+      <if test="DETAILS_ENG != null" >
+        DETAILS_ENG = #{DETAILS_ENG},
+      </if>
+      <if test="DETAILS_ARAB != null" >
+        DETAILS_ARAB = #{DETAILS_ARAB},
+      </if>
+      <if test="VALUE_OF_BUSINESS != null" >
+        <choose >
+          <when test="VALUE_OF_BUSINESS == emptyBigDecimalValue" >
+            VALUE_OF_BUSINESS = NULL ,
+          </when>
+          <otherwise >
+            VALUE_OF_BUSINESS = #{VALUE_OF_BUSINESS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VALUE_CY != null" >
+        <choose >
+          <when test="VALUE_CY == emptyBigDecimalValue" >
+            VALUE_CY = NULL ,
+          </when>
+          <otherwise >
+            VALUE_CY = #{VALUE_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PURPOSE_OF_ACC_ENG != null" >
+        PURPOSE_OF_ACC_ENG = #{PURPOSE_OF_ACC_ENG},
+      </if>
+      <if test="PURPOSE_OF_ACC_ARAB != null" >
+        PURPOSE_OF_ACC_ARAB = #{PURPOSE_OF_ACC_ARAB},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_BUSINESS_NATURE_DET" parameterType="com.path.dbmaps.vo.CIF_BUSINESS_NATURE_DETVO" >
+    <include refid="sql_updateCIF_BUSINESS_NATURE_DET" />
+  </update>
+</mapper>

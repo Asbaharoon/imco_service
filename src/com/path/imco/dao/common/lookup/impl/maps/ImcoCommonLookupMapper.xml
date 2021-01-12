@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="imcoCommonLookupMapper">
+
+	<resultMap id="paramLovMap" type="sys_param_lov_transVO" >
+		<id column="LOV_TYPE_ID" property="LOV_TYPE_ID" />
+	    <id column="VALUE_CODE" property="VALUE_CODE" />
+	    <result column="VALUE_DESC" property="VALUE_DESC" />
+	</resultMap>
+	
+	<select id="selectSYS_PARAM_LOV_TRANS" resultMap="paramLovMap" parameterType="sys_param_lov_transVO" >
+	    select LOV_TYPE_ID, VALUE_CODE, VALUE_DESC
+	    from SYS_PARAM_LOV_TRANS
+	    where LOV_TYPE_ID = #{LOV_TYPE_ID}
+	    and LANG_CODE = (  
+	                      case when ( select count(*) 
+	                      			  from SYS_PARAM_LOV_TRANS
+	                                  where LANG_CODE = #{LANG_CODE}
+	                                  and LOV_TYPE_ID = #{LOV_TYPE_ID}
+	                                 ) > 0
+	                      then #{LANG_CODE}
+	                      else  'EN'
+	                      end
+	                    )
+	    ORDER BY LOV_ORDER ,VALUE_DESC
+  </select>
+</mapper>

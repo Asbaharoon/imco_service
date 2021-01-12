@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DYN_CHRG_TEMPLATE_NODES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DYN_CHRG_TEMPLATE_NODESVO" >
+    <id column="DYN_TEMP_ID" property="DYN_TEMP_ID" />
+    <id column="NODE_ID" property="NODE_ID" />
+    <id column="PARENT_NODE_ID" property="PARENT_NODE_ID" />
+    <result column="NODE_TYPE" property="NODE_TYPE" />
+    <result column="NODE_DESC" property="NODE_DESC" />
+    <result column="NODE_ORDER" property="NODE_ORDER" />
+    <result column="SCREEN_ID" property="SCREEN_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DYN_TEMP_ID, NODE_ID, PARENT_NODE_ID, NODE_TYPE, NODE_DESC, NODE_ORDER, SCREEN_ID
+  </sql>
+  <select id="selectDYN_CHRG_TEMPLATE_NODES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DYN_CHRG_TEMPLATE_NODESVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DYN_CHRG_TEMPLATE_NODES
+    where DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+      and PARENT_NODE_ID = #{PARENT_NODE_ID}
+  </select>
+  <delete id="deleteDYN_CHRG_TEMPLATE_NODES" parameterType="com.path.dbmaps.vo.DYN_CHRG_TEMPLATE_NODESVO" >
+    delete from DYN_CHRG_TEMPLATE_NODES
+    where DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+      and PARENT_NODE_ID = #{PARENT_NODE_ID}
+  </delete>
+  <insert id="insertDYN_CHRG_TEMPLATE_NODES" parameterType="com.path.dbmaps.vo.DYN_CHRG_TEMPLATE_NODESVO" >
+    insert into DYN_CHRG_TEMPLATE_NODES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="DYN_TEMP_ID != null and DYN_TEMP_ID != emptyBigDecimalValue" >
+        DYN_TEMP_ID,
+      </if>
+      <if test="NODE_ID != null" >
+        NODE_ID,
+      </if>
+      <if test="PARENT_NODE_ID != null" >
+        PARENT_NODE_ID,
+      </if>
+      <if test="NODE_TYPE != null" >
+        NODE_TYPE,
+      </if>
+      <if test="NODE_DESC != null" >
+        NODE_DESC,
+      </if>
+      <if test="NODE_ORDER != null and NODE_ORDER != emptyBigDecimalValue" >
+        NODE_ORDER,
+      </if>
+      <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        SCREEN_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="DYN_TEMP_ID != null and DYN_TEMP_ID != emptyBigDecimalValue" >
+        #{DYN_TEMP_ID},
+      </if>
+      <if test="NODE_ID != null" >
+        #{NODE_ID},
+      </if>
+      <if test="PARENT_NODE_ID != null" >
+        #{PARENT_NODE_ID},
+      </if>
+      <if test="NODE_TYPE != null" >
+        #{NODE_TYPE},
+      </if>
+      <if test="NODE_DESC != null" >
+        #{NODE_DESC},
+      </if>
+      <if test="NODE_ORDER != null and NODE_ORDER != emptyBigDecimalValue" >
+        #{NODE_ORDER},
+      </if>
+      <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        #{SCREEN_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDYN_CHRG_TEMPLATE_NODES" >
+    update DYN_CHRG_TEMPLATE_NODES
+    <set >
+      <if test="NODE_TYPE != null" >
+        NODE_TYPE = #{NODE_TYPE},
+      </if>
+      <if test="NODE_DESC != null" >
+        NODE_DESC = #{NODE_DESC},
+      </if>
+      <if test="NODE_ORDER != null" >
+        <choose >
+          <when test="NODE_ORDER == emptyBigDecimalValue" >
+            NODE_ORDER = NULL ,
+          </when>
+          <otherwise >
+            NODE_ORDER = #{NODE_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCREEN_ID != null" >
+        <choose >
+          <when test="SCREEN_ID == emptyBigDecimalValue" >
+            SCREEN_ID = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_ID = #{SCREEN_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where DYN_TEMP_ID = #{DYN_TEMP_ID}
+      and NODE_ID = #{NODE_ID}
+      and PARENT_NODE_ID = #{PARENT_NODE_ID}
+  </sql>
+  <update id="updateDYN_CHRG_TEMPLATE_NODES" parameterType="com.path.dbmaps.vo.DYN_CHRG_TEMPLATE_NODESVO" >
+    <include refid="sql_updateDYN_CHRG_TEMPLATE_NODES" />
+  </update>
+</mapper>

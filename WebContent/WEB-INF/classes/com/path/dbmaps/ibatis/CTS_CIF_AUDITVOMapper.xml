@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_CIF_AUDIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_CIF_AUDITVO" >
+    <id column="AUDIT_DATE" property="AUDIT_DATE" />
+    <id column="AUDIT_TIME" property="AUDIT_TIME" />
+    <id column="BLACK_LISTED" property="BLACK_LISTED" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="USERID" property="USERID" />
+    <result column="SOURCE_CODE" property="SOURCE_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="TRS_NO" property="TRS_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    AUDIT_DATE, AUDIT_TIME, BLACK_LISTED, CIF_NO, COMP_CODE, USERID, SOURCE_CODE, BRANCH_CODE, 
+    TRS_NO
+  </sql>
+  <select id="selectCTS_CIF_AUDIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_CIF_AUDITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_CIF_AUDIT
+    where AUDIT_DATE = #{AUDIT_DATE}
+      and AUDIT_TIME = #{AUDIT_TIME}
+      and BLACK_LISTED = #{BLACK_LISTED}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and USERID = #{USERID}
+  </select>
+  <delete id="deleteCTS_CIF_AUDIT" parameterType="com.path.dbmaps.vo.CTS_CIF_AUDITVOKey" >
+    delete from CTS_CIF_AUDIT
+    where AUDIT_DATE = #{AUDIT_DATE}
+      and AUDIT_TIME = #{AUDIT_TIME}
+      and BLACK_LISTED = #{BLACK_LISTED}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and USERID = #{USERID}
+  </delete>
+  <insert id="insertCTS_CIF_AUDIT" parameterType="com.path.dbmaps.vo.CTS_CIF_AUDITVO" >
+    insert into CTS_CIF_AUDIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="AUDIT_DATE != null" >
+        AUDIT_DATE,
+      </if>
+      <if test="AUDIT_TIME != null" >
+        AUDIT_TIME,
+      </if>
+      <if test="BLACK_LISTED != null and BLACK_LISTED != emptyBigDecimalValue" >
+        BLACK_LISTED,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="USERID != null" >
+        USERID,
+      </if>
+      <if test="SOURCE_CODE != null and SOURCE_CODE != emptyBigDecimalValue" >
+        SOURCE_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="AUDIT_DATE != null" >
+        #{AUDIT_DATE},
+      </if>
+      <if test="AUDIT_TIME != null" >
+        #{AUDIT_TIME},
+      </if>
+      <if test="BLACK_LISTED != null and BLACK_LISTED != emptyBigDecimalValue" >
+        #{BLACK_LISTED},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="USERID != null" >
+        #{USERID},
+      </if>
+      <if test="SOURCE_CODE != null and SOURCE_CODE != emptyBigDecimalValue" >
+        #{SOURCE_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_CIF_AUDIT" >
+    update CTS_CIF_AUDIT
+    <set >
+      <if test="SOURCE_CODE != null" >
+        <choose >
+          <when test="SOURCE_CODE == emptyBigDecimalValue" >
+            SOURCE_CODE = NULL ,
+          </when>
+          <otherwise >
+            SOURCE_CODE = #{SOURCE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where AUDIT_DATE = #{AUDIT_DATE}
+      and AUDIT_TIME = #{AUDIT_TIME}
+      and BLACK_LISTED = #{BLACK_LISTED}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and USERID = #{USERID}
+  </sql>
+  <update id="updateCTS_CIF_AUDIT" parameterType="com.path.dbmaps.vo.CTS_CIF_AUDITVO" >
+    <include refid="sql_updateCTS_CIF_AUDIT" />
+  </update>
+</mapper>

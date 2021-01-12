@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSSEC_ECL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSSEC_ECLVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ECL_DATE" property="ECL_DATE" />
+    <id column="SECURITY_CODE1" property="SECURITY_CODE1" />
+    <id column="SECURITY_CODE2" property="SECURITY_CODE2" />
+    <result column="STAGE" property="STAGE" />
+    <result column="EL_AMOUNT" property="EL_AMOUNT" />
+    <result column="EL_PERCENTAGE" property="EL_PERCENTAGE" />
+    <result column="LEL_AMOUNT" property="LEL_AMOUNT" />
+    <result column="LEL_PERCENTAGE" property="LEL_PERCENTAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, ECL_DATE, SECURITY_CODE1, SECURITY_CODE2, STAGE, EL_AMOUNT, EL_PERCENTAGE, 
+    LEL_AMOUNT, LEL_PERCENTAGE
+  </sql>
+  <select id="selectPMSSEC_ECL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSSEC_ECLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSSEC_ECL
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and ECL_DATE = #{ECL_DATE}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+  </select>
+  <delete id="deletePMSSEC_ECL" parameterType="com.path.dbmaps.vo.PMSSEC_ECLVOKey" >
+    delete from PMSSEC_ECL
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and ECL_DATE = #{ECL_DATE}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+  </delete>
+  <insert id="insertPMSSEC_ECL" parameterType="com.path.dbmaps.vo.PMSSEC_ECLVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(COMP_CODE),0)+1</when><otherwise>NVL(MAX(COMP_CODE),0)+1</otherwise></choose> FROM PMSSEC_ECL
+    </selectKey>
+    insert into PMSSEC_ECL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      COMP_CODE,
+      <if test="ECL_DATE != null" >
+        ECL_DATE,
+      </if>
+      <if test="SECURITY_CODE1 != null and SECURITY_CODE1 != emptyBigDecimalValue" >
+        SECURITY_CODE1,
+      </if>
+      <if test="SECURITY_CODE2 != null and SECURITY_CODE2 != emptyBigDecimalValue" >
+        SECURITY_CODE2,
+      </if>
+      <if test="STAGE != null and STAGE != emptyBigDecimalValue" >
+        STAGE,
+      </if>
+      <if test="EL_AMOUNT != null and EL_AMOUNT != emptyBigDecimalValue" >
+        EL_AMOUNT,
+      </if>
+      <if test="EL_PERCENTAGE != null and EL_PERCENTAGE != emptyBigDecimalValue" >
+        EL_PERCENTAGE,
+      </if>
+      <if test="LEL_AMOUNT != null and LEL_AMOUNT != emptyBigDecimalValue" >
+        LEL_AMOUNT,
+      </if>
+      <if test="LEL_PERCENTAGE != null and LEL_PERCENTAGE != emptyBigDecimalValue" >
+        LEL_PERCENTAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      #{COMP_CODE},
+      <if test="ECL_DATE != null" >
+        #{ECL_DATE},
+      </if>
+      <if test="SECURITY_CODE1 != null and SECURITY_CODE1 != emptyBigDecimalValue" >
+        #{SECURITY_CODE1},
+      </if>
+      <if test="SECURITY_CODE2 != null and SECURITY_CODE2 != emptyBigDecimalValue" >
+        #{SECURITY_CODE2},
+      </if>
+      <if test="STAGE != null and STAGE != emptyBigDecimalValue" >
+        #{STAGE},
+      </if>
+      <if test="EL_AMOUNT != null and EL_AMOUNT != emptyBigDecimalValue" >
+        #{EL_AMOUNT},
+      </if>
+      <if test="EL_PERCENTAGE != null and EL_PERCENTAGE != emptyBigDecimalValue" >
+        #{EL_PERCENTAGE},
+      </if>
+      <if test="LEL_AMOUNT != null and LEL_AMOUNT != emptyBigDecimalValue" >
+        #{LEL_AMOUNT},
+      </if>
+      <if test="LEL_PERCENTAGE != null and LEL_PERCENTAGE != emptyBigDecimalValue" >
+        #{LEL_PERCENTAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSSEC_ECL" >
+    update PMSSEC_ECL
+    <set >
+      <if test="STAGE != null" >
+        <choose >
+          <when test="STAGE == emptyBigDecimalValue" >
+            STAGE = NULL ,
+          </when>
+          <otherwise >
+            STAGE = #{STAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EL_AMOUNT != null" >
+        <choose >
+          <when test="EL_AMOUNT == emptyBigDecimalValue" >
+            EL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            EL_AMOUNT = #{EL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EL_PERCENTAGE != null" >
+        <choose >
+          <when test="EL_PERCENTAGE == emptyBigDecimalValue" >
+            EL_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            EL_PERCENTAGE = #{EL_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LEL_AMOUNT != null" >
+        <choose >
+          <when test="LEL_AMOUNT == emptyBigDecimalValue" >
+            LEL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            LEL_AMOUNT = #{LEL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LEL_PERCENTAGE != null" >
+        <choose >
+          <when test="LEL_PERCENTAGE == emptyBigDecimalValue" >
+            LEL_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            LEL_PERCENTAGE = #{LEL_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and ECL_DATE = #{ECL_DATE}
+      and SECURITY_CODE1 = #{SECURITY_CODE1}
+      and SECURITY_CODE2 = #{SECURITY_CODE2}
+  </sql>
+  <update id="updatePMSSEC_ECL" parameterType="com.path.dbmaps.vo.PMSSEC_ECLVO" >
+    <include refid="sql_updatePMSSEC_ECL" />
+  </update>
+</mapper>

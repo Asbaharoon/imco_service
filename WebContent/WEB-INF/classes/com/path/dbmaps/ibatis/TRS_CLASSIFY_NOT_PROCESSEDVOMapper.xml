@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_CLASSIFY_NOT_PROCESSED" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_CLASSIFY_NOT_PROCESSEDVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PRODUCT_TYPE" property="PRODUCT_TYPE" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="AC_NO" property="AC_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="REASON" property="REASON" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PRODUCT_TYPE, SERIAL_NO, AC_NO, CIF_NO, REASON
+  </sql>
+  <select id="selectTRS_CLASSIFY_NOT_PROCESSED" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_CLASSIFY_NOT_PROCESSEDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_CLASSIFY_NOT_PROCESSED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRS_CLASSIFY_NOT_PROCESSED" parameterType="com.path.dbmaps.vo.TRS_CLASSIFY_NOT_PROCESSEDVOKey" >
+    delete from TRS_CLASSIFY_NOT_PROCESSED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRS_CLASSIFY_NOT_PROCESSED" parameterType="com.path.dbmaps.vo.TRS_CLASSIFY_NOT_PROCESSEDVO" >
+    insert into TRS_CLASSIFY_NOT_PROCESSED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PRODUCT_TYPE != null" >
+        PRODUCT_TYPE,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="AC_NO != null" >
+        AC_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="REASON != null" >
+        REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PRODUCT_TYPE != null" >
+        #{PRODUCT_TYPE},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="AC_NO != null" >
+        #{AC_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="REASON != null" >
+        #{REASON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_CLASSIFY_NOT_PROCESSED" >
+    update TRS_CLASSIFY_NOT_PROCESSED
+    <set >
+      <if test="AC_NO != null" >
+        AC_NO = #{AC_NO},
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REASON != null" >
+        REASON = #{REASON},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PRODUCT_TYPE = #{PRODUCT_TYPE}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRS_CLASSIFY_NOT_PROCESSED" parameterType="com.path.dbmaps.vo.TRS_CLASSIFY_NOT_PROCESSEDVO" >
+    <include refid="sql_updateTRS_CLASSIFY_NOT_PROCESSED" />
+  </update>
+</mapper>

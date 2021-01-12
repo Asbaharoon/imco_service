@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_LIEN_CAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_LIEN_CATVO" >
+    <id column="CAT_CODE" property="CAT_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="GL_CODE" property="GL_CODE" />
+    <result column="INCLUDE_EXCLUDE" property="INCLUDE_EXCLUDE" />
+    <result column="MANDATORY_LIEN_ACCOUNT" property="MANDATORY_LIEN_ACCOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CAT_CODE, COMP_CODE, LINE_NO, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    GL_CODE, INCLUDE_EXCLUDE, MANDATORY_LIEN_ACCOUNT
+  </sql>
+  <select id="selectCTSCARDS_LIEN_CAT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_LIEN_CATVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_LIEN_CAT
+    where CAT_CODE = #{CAT_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSCARDS_LIEN_CAT" parameterType="com.path.dbmaps.vo.CTSCARDS_LIEN_CATVOKey" >
+    delete from CTSCARDS_LIEN_CAT
+    where CAT_CODE = #{CAT_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSCARDS_LIEN_CAT" parameterType="com.path.dbmaps.vo.CTSCARDS_LIEN_CATVO" >
+    insert into CTSCARDS_LIEN_CAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CAT_CODE != null and CAT_CODE != emptyBigDecimalValue" >
+        CAT_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="INCLUDE_EXCLUDE != null" >
+        INCLUDE_EXCLUDE,
+      </if>
+      <if test="MANDATORY_LIEN_ACCOUNT != null" >
+        MANDATORY_LIEN_ACCOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CAT_CODE != null and CAT_CODE != emptyBigDecimalValue" >
+        #{CAT_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="INCLUDE_EXCLUDE != null" >
+        #{INCLUDE_EXCLUDE},
+      </if>
+      <if test="MANDATORY_LIEN_ACCOUNT != null" >
+        #{MANDATORY_LIEN_ACCOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_LIEN_CAT" >
+    update CTSCARDS_LIEN_CAT
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="GL_CODE != null" >
+        <choose >
+          <when test="GL_CODE == emptyBigDecimalValue" >
+            GL_CODE = NULL ,
+          </when>
+          <otherwise >
+            GL_CODE = #{GL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INCLUDE_EXCLUDE != null" >
+        INCLUDE_EXCLUDE = #{INCLUDE_EXCLUDE},
+      </if>
+      <if test="MANDATORY_LIEN_ACCOUNT != null" >
+        MANDATORY_LIEN_ACCOUNT = #{MANDATORY_LIEN_ACCOUNT},
+      </if>
+    </set>
+    where CAT_CODE = #{CAT_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSCARDS_LIEN_CAT" parameterType="com.path.dbmaps.vo.CTSCARDS_LIEN_CATVO" >
+    <include refid="sql_updateCTSCARDS_LIEN_CAT" />
+  </update>
+</mapper>

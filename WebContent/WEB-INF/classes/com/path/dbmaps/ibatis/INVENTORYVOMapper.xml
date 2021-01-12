@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="INVENTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.INVENTORYVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PORTFOLIO_CIF" property="PORTFOLIO_CIF" />
+    <id column="PORTFOLIO_SEQ" property="PORTFOLIO_SEQ" />
+    <id column="SECURITY" property="SECURITY" />
+    <result column="QTY" property="QTY" />
+    <result column="VALUE" property="VALUE" />
+    <result column="BLOCKED_INVENTORY" property="BLOCKED_INVENTORY" />
+    <result column="BLOCKED_QTY" property="BLOCKED_QTY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, PORTFOLIO_CIF, PORTFOLIO_SEQ, SECURITY, QTY, VALUE, BLOCKED_INVENTORY, 
+    BLOCKED_QTY
+  </sql>
+  <select id="selectINVENTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.INVENTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from INVENTORY
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and PORTFOLIO_CIF = #{PORTFOLIO_CIF}
+      and PORTFOLIO_SEQ = #{PORTFOLIO_SEQ}
+      and SECURITY = #{SECURITY}
+  </select>
+  <delete id="deleteINVENTORY" parameterType="com.path.dbmaps.vo.INVENTORYVOKey" >
+    delete from INVENTORY
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and PORTFOLIO_CIF = #{PORTFOLIO_CIF}
+      and PORTFOLIO_SEQ = #{PORTFOLIO_SEQ}
+      and SECURITY = #{SECURITY}
+  </delete>
+  <insert id="insertINVENTORY" parameterType="com.path.dbmaps.vo.INVENTORYVO" >
+    insert into INVENTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PORTFOLIO_CIF != null and PORTFOLIO_CIF != emptyBigDecimalValue" >
+        PORTFOLIO_CIF,
+      </if>
+      <if test="PORTFOLIO_SEQ != null and PORTFOLIO_SEQ != emptyBigDecimalValue" >
+        PORTFOLIO_SEQ,
+      </if>
+      <if test="SECURITY != null and SECURITY != emptyBigDecimalValue" >
+        SECURITY,
+      </if>
+      <if test="QTY != null and QTY != emptyBigDecimalValue" >
+        QTY,
+      </if>
+      <if test="VALUE != null and VALUE != emptyBigDecimalValue" >
+        VALUE,
+      </if>
+      <if test="BLOCKED_INVENTORY != null and BLOCKED_INVENTORY != emptyBigDecimalValue" >
+        BLOCKED_INVENTORY,
+      </if>
+      <if test="BLOCKED_QTY != null and BLOCKED_QTY != emptyBigDecimalValue" >
+        BLOCKED_QTY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PORTFOLIO_CIF != null and PORTFOLIO_CIF != emptyBigDecimalValue" >
+        #{PORTFOLIO_CIF},
+      </if>
+      <if test="PORTFOLIO_SEQ != null and PORTFOLIO_SEQ != emptyBigDecimalValue" >
+        #{PORTFOLIO_SEQ},
+      </if>
+      <if test="SECURITY != null and SECURITY != emptyBigDecimalValue" >
+        #{SECURITY},
+      </if>
+      <if test="QTY != null and QTY != emptyBigDecimalValue" >
+        #{QTY},
+      </if>
+      <if test="VALUE != null and VALUE != emptyBigDecimalValue" >
+        #{VALUE},
+      </if>
+      <if test="BLOCKED_INVENTORY != null and BLOCKED_INVENTORY != emptyBigDecimalValue" >
+        #{BLOCKED_INVENTORY},
+      </if>
+      <if test="BLOCKED_QTY != null and BLOCKED_QTY != emptyBigDecimalValue" >
+        #{BLOCKED_QTY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateINVENTORY" >
+    update INVENTORY
+    <set >
+      <if test="QTY != null" >
+        <choose >
+          <when test="QTY == emptyBigDecimalValue" >
+            QTY = NULL ,
+          </when>
+          <otherwise >
+            QTY = #{QTY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VALUE != null" >
+        <choose >
+          <when test="VALUE == emptyBigDecimalValue" >
+            VALUE = NULL ,
+          </when>
+          <otherwise >
+            VALUE = #{VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BLOCKED_INVENTORY != null" >
+        <choose >
+          <when test="BLOCKED_INVENTORY == emptyBigDecimalValue" >
+            BLOCKED_INVENTORY = NULL ,
+          </when>
+          <otherwise >
+            BLOCKED_INVENTORY = #{BLOCKED_INVENTORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BLOCKED_QTY != null" >
+        <choose >
+          <when test="BLOCKED_QTY == emptyBigDecimalValue" >
+            BLOCKED_QTY = NULL ,
+          </when>
+          <otherwise >
+            BLOCKED_QTY = #{BLOCKED_QTY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and PORTFOLIO_CIF = #{PORTFOLIO_CIF}
+      and PORTFOLIO_SEQ = #{PORTFOLIO_SEQ}
+      and SECURITY = #{SECURITY}
+  </sql>
+  <update id="updateINVENTORY" parameterType="com.path.dbmaps.vo.INVENTORYVO" >
+    <include refid="sql_updateINVENTORY" />
+  </update>
+</mapper>

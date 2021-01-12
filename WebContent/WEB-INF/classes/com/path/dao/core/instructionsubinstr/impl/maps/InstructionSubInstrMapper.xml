@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="instructionSubInstrMapper">
+<resultMap id="resInstructionSubInstrListMap" type="com.path.vo.core.instructionsubinstr.InstructionSubInstrCO">
+		<result property="SUB_INSTRUCTION_CODE" column="SUB_INSTRUCTION_CODE"/>
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+	</resultMap>
+	<select id="returnInstructionSubInstrList" parameterType="com.path.vo.core.instructionsubinstr.InstructionSubInstrSC" resultMap="resInstructionSubInstrListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryInstructionSubInstrSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnInstructionSubInstrListCount" parameterType="com.path.vo.core.instructionsubinstr.InstructionSubInstrSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryInstructionSubInstrSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryInstructionSubInstrSQL">
+		SELECT 	 SUB_INSTRUCTION_CODE, (SELECT BRIEF_NAME_ENG FROM CTS_SUB_INSTRUCTION S WHERE S.SUB_INSTRUCTION_CODE = I.SUB_INSTRUCTION_CODE AND S.COMP_CODE = I.COMP_CODE) BRIEF_NAME_ENG
+		FROM CTS_INSTRUCTION_SUB_INSTRUCT	I
+		WHERE COMP_CODE = #{compCode}	
+		AND INSTRUCTION_CODE = #{instrCode}
+	</sql>
+	
+	<resultMap id="returnSubInstructionForDepMap" type="com.path.vo.core.instructionsubinstr.InstructionSubInstrCO">
+		<result property="ctsInstructionSubInstrVO.SUB_INSTRUCTION_CODE" column="SUB_INSTRUCTION_CODE"/>
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+	</resultMap>
+	
+	<select id="returnSubInstructionForDep" parameterType="com.path.vo.core.instructionsubinstr.InstructionSubInstrSC" resultMap="returnSubInstructionForDepMap">
+		SELECT 	 SUB_INSTRUCTION_CODE, (SELECT BRIEF_NAME_ENG FROM CTS_SUB_INSTRUCTION S WHERE S.COMP_CODE = I.COMP_CODE AND S.SUB_INSTRUCTION_CODE = I.SUB_INSTRUCTION_CODE) BRIEF_NAME_ENG
+		FROM CTS_INSTRUCTION_SUB_INSTRUCT	I
+		WHERE COMP_CODE = #{compCode}	
+		AND INSTRUCTION_CODE = #{instrCode}
+		AND SUB_INSTRUCTION_CODE = #{subInstrCode}	
+	</select>
+	
+	<!-- <select id="returnSubInstructionDescForDep" parameterType="com.path.vo.core.instructionsubinstr.InstructionSubInstrSC" resultType="com.path.vo.core.instructionsubinstr.InstructionSubInstrCO">
+		SELECT 	 BRIEF_NAME_ENG
+		FROM CTS_INSTRUCTION_SUB_INSTRUCT	
+		WHERE COMP_CODE = #{compCode}	
+		AND INSTRUCTION_CODE = #{instrCode}
+		AND SUB_INSTRUCTION_CODE = #{subInstrCode}	
+	</select> -->
+	
+	
+</mapper>

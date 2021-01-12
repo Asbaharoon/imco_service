@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="statusCustomizationMapper">
+<sql id="statusCustListQuery">
+SELECT 
+       OPTLK.*
+      ,(CASE
+         WHEN (SELECT COUNT(1)
+                 FROM SYS_PARAM_LOV_LK_OPT CNT
+                WHERE CNT.LOV_TYPE_ID = OPTLK.LOV_TYPE_ID
+                  AND CNT.APP_NAME    = OPTLK.APP_NAME
+                  AND CNT.PROG_REF    = OPTLK.PROG_REF) = 1 
+         THEN
+	          (CASE WHEN (SELECT  TR.VALUE_DESC  
+	                        FROM SYS_PARAM_LOV_TRANS TR, SYS_PARAM_LOV_LK_OPT LKO
+	                       WHERE TR.LOV_TYPE_ID  = LKO.LOV_TYPE_ID
+	                         AND TR.VALUE_CODE   = LKO.VALUE_CODE
+	                         AND TR.LANG_CODE    = #{langCode}
+	                         AND LKO.LOV_TYPE_ID = OPTLK.LOV_TYPE_ID
+	                         AND LKO.APP_NAME    = OPTLK.APP_NAME
+	                         AND LKO.PROG_REF    = OPTLK.PROG_REF) IS NOT NULL
+	               THEN (SELECT  TR.VALUE_DESC  
+	                        FROM SYS_PARAM_LOV_TRANS TR, SYS_PARAM_LOV_LK_OPT LKO
+	                       WHERE TR.LOV_TYPE_ID  = LKO.LOV_TYPE_ID
+	                         AND TR.VALUE_CODE   = LKO.VALUE_CODE
+	                         AND TR.LANG_CODE    = #{langCode}
+	                         AND LKO.LOV_TYPE_ID = OPTLK.LOV_TYPE_ID 
+	                         AND LKO.APP_NAME    = OPTLK.APP_NAME
+	                         AND LKO.PROG_REF    = OPTLK.PROG_REF)
+	               ELSE 'No LOV Detail Exists, Check Administrator' 
+	           END)
+         ELSE
+	          (SELECT <if test="isSybase == 1">CONVERT(VARCHAR,</if>COUNT(1)<if test="isSybase == 1">)</if>
+	             FROM SYS_PARAM_LOV_LK_OPT CNT
+	            WHERE CNT.LOV_TYPE_ID = OPTLK.LOV_TYPE_ID
+	              AND CNT.APP_NAME = OPTLK.APP_NAME
+	              AND CNT.PROG_REF = OPTLK.PROG_REF) || ' ' || #{selectedKey}
+       END) AS STATUS_DESC
+FROM
+   ( 
+	SELECT O.LOV_TYPE_ID
+	      ,O.PROG_REF
+	      ,O.APP_NAME
+	      ,(SELECT S_APP.LONG_DESC FROM S_APP WHERE S_APP.APP_NAME = O.APP_NAME) AS APP_DESC
+	      ,(SELECT OPT.PROG_DESC FROM OPT WHERE OPT.PROG_REF = O.PROG_REF AND OPT.APP_NAME = O.APP_NAME) AS SECTION_DESC
+	  FROM SYS_PARAM_LOV_LK_OPT O  
+	 WHERE O.APP_NAME    = #{currAppName}
+	 <if test="progRef!=null and progRef!=''">
+	   AND O.PROG_REF    = #{progRef}
+	 </if>
+	 GROUP BY LOV_TYPE_ID,APP_NAME,PROG_REF
+	) OPTLK 
+</sql>
+<resultMap id="statusCustMap" type="statusCustomizationCO">
+ <result property="LOV_TYPE_ID"  column="LOV_TYPE_ID"/>
+ <result property="PROG_REF"     column="PROG_REF"/>
+ <result property="APP_NAME"     column="APP_NAME"/>
+ <result property="APP_DESC"     column="APP_DESC"/>
+ <result property="SECTION_DESC" column="SECTION_DESC"/>
+ <result property="STATUS_DESC"  column="STATUS_DESC"/>
+</resultMap>
+<select id="statusCustList" resultMap="statusCustMap" parameterType="statusCustomizationSC">
+ 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="statusCustomizationMapper.statusCustListQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+    <if test='sortOrder == null  or sortOrder == "" ' >
+    	ORDER BY TBL.LOV_TYPE_ID,TBL.APP_NAME,TBL.PROG_REF ASC
+    </if>
+</select>
+<select id="statusCustCount" resultType="int" parameterType="statusCustomizationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="statusCustomizationMapper.statusCustListQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+<sql id="statusLookupQuery">
+  SELECT T.VALUE_CODE AS STATUS_CODE
+        ,T.VALUE_DESC AS STATUS_DESC 
+    FROM SYS_PARAM_LOV_TRANS T
+   WHERE T.LOV_TYPE_ID = #{lovTypeId} 
+     AND T.LANG_CODE   = 'EN'
+     AND T.VALUE_CODE NOT LIKE '0_%'
+     <if test='checkExistence=="1"'>
+     AND NOT EXISTS(SELECT 1
+                      FROM SYS_PARAM_LOV_LK_OPT  O 
+                     WHERE O.VALUE_CODE  = T.VALUE_CODE 
+                       AND O.LOV_TYPE_ID = T.LOV_TYPE_ID
+                       AND O.PROG_REF    = #{progRef}
+                       AND O.APP_NAME    = #{currAppName})
+     </if>
+</sql>
+<resultMap id="statusLookupMap" type="statusCustomizationCO">
+ <result property="STATUS_CODE"  column="STATUS_CODE"/>
+ <result property="STATUS_DESC"  column="STATUS_DESC"/>
+</resultMap>
+<select id="statusLookupLkpRecords" resultMap="statusLookupMap" parameterType="statusCustomizationSC">
+   <include refid="servicesCommon.commonGridWrpBefFlip"/>
+   <include refid="statusCustomizationMapper.statusLookupQuery"/>
+   <include refid="servicesCommon.commonGridWrpAftFlip"/>
+   <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+<select id="statusLookupLkpCount" resultType="int" parameterType="statusCustomizationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="statusCustomizationMapper.statusLookupQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+<insert id="saveNewCustStatus" parameterType="statusCustomizationCO">
+BEGIN
+   <foreach item="item" index="index" open="" close="" separator="" collection="selectedStsCodesList" > 
+		INSERT INTO SYS_PARAM_LOV_LK_OPT(LOV_TYPE_ID
+		,VALUE_CODE
+		,PROG_REF
+		,APP_NAME)VALUES(#{LOV_TYPE_ID},#{item},#{PROG_REF},#{APP_NAME}) <if test="isOracle == 1">;</if>     
+   </foreach>
+END<if test="isOracle == 1">;</if>
+</insert>
+<update id="updateCustStatus" parameterType="statusCustomizationCO">
+BEGIN
+   DELETE FROM SYS_PARAM_LOV_LK_OPT WHERE LOV_TYPE_ID = #{LOV_TYPE_ID} AND PROG_REF = #{PROG_REF} AND APP_NAME = #{APP_NAME}<if test="isOracle == 1">;</if>
+   <foreach item="item" index="index" open="" close="" separator="" collection="selectedStsCodesList" > 
+		INSERT INTO SYS_PARAM_LOV_LK_OPT(LOV_TYPE_ID
+		,VALUE_CODE
+		,PROG_REF
+		,APP_NAME)VALUES(#{LOV_TYPE_ID},#{item},#{PROG_REF},#{APP_NAME})<if test="isOracle == 1">;</if>     
+   </foreach>
+END<if test="isOracle == 1">;</if>
+</update>
+<select id="checkExistence" parameterType="statusCustomizationCO" resultType="int">
+  SELECT COUNT(1)
+    FROM SYS_PARAM_LOV_LK_OPT 
+   WHERE LOV_TYPE_ID = #{LOV_TYPE_ID} 
+     AND PROG_REF    = #{PROG_REF}
+     AND APP_NAME    = #{APP_NAME}
+     AND VALUE_CODE IN 
+	   <foreach item="item" index="index" open="(" close=")" separator="," collection="selectedStsCodesList" > 
+			#{item}     
+	   </foreach>
+</select>
+<resultMap id="statusCustInfoMap" type="statusCustomizationCO">
+ <result property="LOV_TYPE_ID"          column="LOV_TYPE_ID"/>
+ <result property="LOV_TYPE_DESCRIPTION" column="lovTypeDesc"/>
+ <result property="PROG_REF"             column="PROG_REF"/>
+ <result property="APP_NAME"             column="APP_NAME"/>
+ <result property="APP_DESC"             column="APP_DESC"/>
+ <result property="SECTION_DESC"         column="SECTION_DESC"/>
+ <result property="STATUS_DESC"          column="STATUS_DESC"/>
+</resultMap>
+<select id="returnStatusCustInfo" parameterType="statusCustomizationSC" resultMap="statusCustInfoMap">
+	SELECT O.LOV_TYPE_ID
+	      ,(SELECT LOV_TYPE_DESCRIPTION FROM SYS_PARAM_LOV_TYPE WHERE LOV_TYPE_ID = O.LOV_TYPE_ID) as lovTypeDesc
+	      ,O.PROG_REF
+	      ,O.APP_NAME
+	      ,(SELECT S_APP.LONG_DESC FROM S_APP WHERE S_APP.APP_NAME = O.APP_NAME) AS APP_DESC
+	      ,(SELECT OPT.PROG_DESC FROM OPT WHERE OPT.PROG_REF = O.PROG_REF AND OPT.APP_NAME = O.APP_NAME) AS SECTION_DESC
+          ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR,</if>COUNT(1)<if test="isSybase == 1">)</if>
+              FROM SYS_PARAM_LOV_LK_OPT O1 
+             WHERE O1.APP_NAME    = O.APP_NAME   
+               AND O1.PROG_REF    = O.PROG_REF
+               AND O1.LOV_TYPE_ID = O.LOV_TYPE_ID
+           )||' '||#{selectedKey} as STATUS_DESC
+	  FROM SYS_PARAM_LOV_LK_OPT O  
+	 WHERE O.APP_NAME    = #{currAppName}   
+	   AND O.PROG_REF    = #{progRef}
+	   AND O.LOV_TYPE_ID = #{lovTypeId}
+	 GROUP BY LOV_TYPE_ID,APP_NAME,PROG_REF
+	 ORDER BY O.LOV_TYPE_ID,O.APP_NAME,O.PROG_REF ASC   
+</select>
+<resultMap id="returnStatusCodeLstMap" type="com.path.vo.common.statuscustomization.SelectedStatusCO">
+  <result property="STATUS_CODE" column="STATUS_CODE"/>
+</resultMap>
+<select id="returnStatusCodeLst" parameterType="statusCustomizationSC" resultMap="returnStatusCodeLstMap">
+	SELECT O.VALUE_CODE AS STATUS_CODE
+	  FROM SYS_PARAM_LOV_LK_OPT O  
+	 WHERE O.APP_NAME    = #{currAppName}   
+	   AND O.PROG_REF    = #{progRef}
+	   AND O.LOV_TYPE_ID = #{lovTypeId}  
+</select>
+<sql id="statusLovLookupQuery">
+SELECT LOV_TYPE_ID
+      ,LOV_TYPE_DESCRIPTION 
+  FROM SYS_PARAM_LOV_TYPE 
+<if test="lovTypeId!=null">
+ WHERE LOV_TYPE_ID = #{lovTypeId}
+</if>
+</sql>
+<resultMap id="statusLovLookupMap" type="sysParamLOVTypeVO">
+ <result property="LOV_TYPE_ID"          column="LOV_TYPE_ID"/>
+ <result property="LOV_TYPE_DESCRIPTION" column="LOV_TYPE_DESCRIPTION"/>
+</resultMap>
+<select id="statusLovLookupRecords" parameterType="statusCustomizationSC" resultMap="statusLovLookupMap">
+   <include refid="servicesCommon.commonGridWrpBefFlip"/>
+   <include refid="statusCustomizationMapper.statusLovLookupQuery"/>
+   <include refid="servicesCommon.commonGridWrpAftFlip"/>
+   <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+   <if test='sortOrder == null  or sortOrder == "" ' >
+   	ORDER BY LOV_TYPE_ID ASC
+   </if>
+</select>
+<select id="statusLovLookupCount" resultType="int" parameterType="statusCustomizationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="statusCustomizationMapper.statusLovLookupQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+<delete id="deleteStatusCust" parameterType="statusCustomizationCO">
+DELETE 
+  FROM SYS_PARAM_LOV_LK_OPT
+ WHERE LOV_TYPE_ID = #{LOV_TYPE_ID}
+   AND PROG_REF    = #{PROG_REF}
+   AND APP_NAME    = #{APP_NAME}
+</delete>
+</mapper>

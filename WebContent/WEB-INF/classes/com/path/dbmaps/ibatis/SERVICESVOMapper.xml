@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SERVICES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SERVICESVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SERVICE_CODE" property="SERVICE_CODE" />
+    <result column="SERVICE_DESC" property="SERVICE_DESC" />
+    <result column="SERVICE_TYPE" property="SERVICE_TYPE" />
+    <result column="MSG_SOURCE" property="MSG_SOURCE" />
+    <result column="BANK_ATM" property="BANK_ATM" />
+    <result column="ATM_T_ID" property="ATM_T_ID" />
+    <result column="TRX_BR_CODE" property="TRX_BR_CODE" />
+    <result column="TELLER_ID" property="TELLER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, SERVICE_CODE, SERVICE_DESC, SERVICE_TYPE, MSG_SOURCE, BANK_ATM, ATM_T_ID, 
+    TRX_BR_CODE, TELLER_ID
+  </sql>
+  <select id="selectSERVICES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SERVICESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SERVICES
+    where COMP_CODE = #{COMP_CODE}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </select>
+  <delete id="deleteSERVICES" parameterType="com.path.dbmaps.vo.SERVICESVOKey" >
+    delete from SERVICES
+    where COMP_CODE = #{COMP_CODE}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </delete>
+  <insert id="insertSERVICES" parameterType="com.path.dbmaps.vo.SERVICESVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(COMP_CODE),0)+1</when><otherwise>NVL(MAX(COMP_CODE),0)+1</otherwise></choose> FROM SERVICES
+    </selectKey>
+    insert into SERVICES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      COMP_CODE,
+      <if test="SERVICE_CODE != null and SERVICE_CODE != emptyBigDecimalValue" >
+        SERVICE_CODE,
+      </if>
+      <if test="SERVICE_DESC != null" >
+        SERVICE_DESC,
+      </if>
+      <if test="SERVICE_TYPE != null and SERVICE_TYPE != emptyBigDecimalValue" >
+        SERVICE_TYPE,
+      </if>
+      <if test="MSG_SOURCE != null" >
+        MSG_SOURCE,
+      </if>
+      <if test="BANK_ATM != null" >
+        BANK_ATM,
+      </if>
+      <if test="ATM_T_ID != null" >
+        ATM_T_ID,
+      </if>
+      <if test="TRX_BR_CODE != null and TRX_BR_CODE != emptyBigDecimalValue" >
+        TRX_BR_CODE,
+      </if>
+      <if test="TELLER_ID != null and TELLER_ID != emptyBigDecimalValue" >
+        TELLER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{COMP_CODE},
+      <if test="SERVICE_CODE != null and SERVICE_CODE != emptyBigDecimalValue" >
+        #{SERVICE_CODE},
+      </if>
+      <if test="SERVICE_DESC != null" >
+        #{SERVICE_DESC},
+      </if>
+      <if test="SERVICE_TYPE != null and SERVICE_TYPE != emptyBigDecimalValue" >
+        #{SERVICE_TYPE},
+      </if>
+      <if test="MSG_SOURCE != null" >
+        #{MSG_SOURCE},
+      </if>
+      <if test="BANK_ATM != null" >
+        #{BANK_ATM},
+      </if>
+      <if test="ATM_T_ID != null" >
+        #{ATM_T_ID},
+      </if>
+      <if test="TRX_BR_CODE != null and TRX_BR_CODE != emptyBigDecimalValue" >
+        #{TRX_BR_CODE},
+      </if>
+      <if test="TELLER_ID != null and TELLER_ID != emptyBigDecimalValue" >
+        #{TELLER_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSERVICES" >
+    update SERVICES
+    <set >
+      <if test="SERVICE_DESC != null" >
+        SERVICE_DESC = #{SERVICE_DESC},
+      </if>
+      <if test="SERVICE_TYPE != null" >
+        <choose >
+          <when test="SERVICE_TYPE == emptyBigDecimalValue" >
+            SERVICE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            SERVICE_TYPE = #{SERVICE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MSG_SOURCE != null" >
+        MSG_SOURCE = #{MSG_SOURCE},
+      </if>
+      <if test="BANK_ATM != null" >
+        BANK_ATM = #{BANK_ATM},
+      </if>
+      <if test="ATM_T_ID != null" >
+        ATM_T_ID = #{ATM_T_ID},
+      </if>
+      <if test="TRX_BR_CODE != null" >
+        <choose >
+          <when test="TRX_BR_CODE == emptyBigDecimalValue" >
+            TRX_BR_CODE = NULL ,
+          </when>
+          <otherwise >
+            TRX_BR_CODE = #{TRX_BR_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TELLER_ID != null" >
+        <choose >
+          <when test="TELLER_ID == emptyBigDecimalValue" >
+            TELLER_ID = NULL ,
+          </when>
+          <otherwise >
+            TELLER_ID = #{TELLER_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </sql>
+  <update id="updateSERVICES" parameterType="com.path.dbmaps.vo.SERVICESVO" >
+    <include refid="sql_updateSERVICES" />
+  </update>
+</mapper>

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="fmsDrawdownsMapper">
+<sql id="fmsDrawdownsListCommon">
+      <![CDATA[
+            SELECT
+                  FMSDRWDWN.CODE,
+                  FMSDRWDWN.FROM_FACILITY,
+                  FMSDRWDWN.STATUS,
+                  FMSDRWDWN.LONG_NAME_ENG,
+                  FMSDRWDWN.DRAWDOWN_TYPE,
+                  FMSDRWDWNTYPE.BRIEF_NAME_ENG,
+                  FMSFACILITY.FROM_APPLICATION,
+                  CIF.CIF_NO,
+                  CIF.SHORT_NAME_ENG CIF_SHORT_NAME_ENG,
+                  CIF.LONG_NAME_ENG CIF_LONG_NAME_ENG
+            FROM  FMSDRWDWN  
+            LEFT OUTER JOIN  FMSDRWDWNTYPE      
+                  ON  FMSDRWDWN.COMP_CODE  = FMSDRWDWNTYPE.COMP_CODE
+                  AND   FMSDRWDWN.DRAWDOWN_TYPE  = FMSDRWDWNTYPE.CODE ,
+                  FMSFACILITY , CIF, FMSFACILITYDET
+            LEFT OUTER JOIN TRSCLASS      
+                  ON    TRSCLASS.COMP_CODE      =     FMSFACILITYDET.COMP_CODE 
+                  AND TRSCLASS.CODE             =     FMSFACILITYDET.CLASS         
+                  AND TRSCLASS.CATEGORY   = #{FACILITY_CATEG}
+            WHERE FMSDRWDWN.COMP_CODE  = #{compCode}
+                  AND   FMSDRWDWN.BRANCH  = #{branchCode}
+                  AND   FMSDRWDWN.STATUS  = 
+                                    CASE 
+                                    WHEN #{crud} = 'R' THEN FMSDRWDWN.STATUS 
+                                    WHEN #{crud} = 'P' THEN 'L' 
+                                    WHEN #{crud} = 'V' THEN 'P' 
+                                    WHEN #{crud} = 'F' THEN 'P' 
+                                    ELSE 'A' 
+                                    END
+                  AND     FMSDRWDWN.COMP_CODE                           =     FMSFACILITY.COMP_CODE
+                  AND     FMSDRWDWN.FACILITY_BRANCH               =     FMSFACILITY.BRANCH
+                  AND     FMSDRWDWN.FROM_FACILITY                       =       FMSFACILITY.CODE
+                  AND           FMSDRWDWN.COMP_CODE                           =      FMSFACILITYDET.COMP_CODE 
+                  AND           FMSDRWDWN.FACILITY_BRANCH               =      FMSFACILITYDET.BRANCH 
+                  AND           FMSDRWDWN.FROM_FACILITY                       =      FMSFACILITYDET.CODE 
+                  AND    FMSDRWDWN.FACILITY_TYPE_CLASS           =      FMSFACILITYDET.LINE_NBR  
+                  
+                  AND          FMSFACILITY.COMP_CODE                          = CIF.COMP_CODE
+                  AND     FMSFACILITY.CIF                                           = CIF.CIF_NO              
+                  AND   CIF.CIF_NO = CASE WHEN #{cifNo} + 0  = 0 THEN CIF.CIF_NO ELSE #{cifNo} + 0 END
+      ]]>
+      </sql>
+
+
+	<sql id="fmsDrawdownsDependencyByCode">
+		AND FMSDRWDWN.CODE = #{code}
+ </sql>
+
+
+	<resultMap id="fmsDrawdownListMap" type="fmsDrawdownCO">
+		<result property="CODE" column="CODE" />
+		<result property="FROM_FACILITY" column="FROM_FACILITY" />
+		<result property="DRAWDOWN_TYPE" column="DRAWDOWN_TYPE" />
+		<result property="STATUS" column="STATUS" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="FROM_APPLICATION" column="FROM_APPLICATION" />
+		<result property="CIF_NO" column="CIF_NO" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="CIF_SHORT_NAME_ENG" column="CIF_SHORT_NAME_ENG" />
+		<result property="CIF_LONG_NAME_ENG" column="CIF_LONG_NAME_ENG" />
+	</resultMap>
+
+	<select id="fmsDrawDownsList" resultMap="fmsDrawdownListMap"
+		parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="fmsDrawdownsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="fmsDrawDownsListCount" resultType="int"
+		parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="fmsDrawdownsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnFMSDrawdownCOByCode" resultType="fmsDrawdownCO"
+		parameterType="facilityTypeSC">
+		<include refid="fmsDrawdownsListCommon" />
+		<include refid="fmsDrawdownsDependencyByCode" />
+	</select>
+
+	<select id="returnCountFMSDRWDWNByCodeAndStatus" resultType="int"
+	parameterType="FMSDrawdownSC">
+	SELECT COUNT(1)
+	FROM FMSDRWDWN
+	WHERE FMSDRWDWN.COMP_CODE = #{compCode}
+	AND FMSDRWDWN.BRANCH = #{branchCode}
+	AND FMSDRWDWN.CODE = #{code}
+	AND FMSDRWDWN.STATUS = #{status}
+	</select>
+
+	<select id="validateDrawdownCodeforAccounts" resultMap="fmsDrawdownListMap" parameterType="facilityTypeSC">
+	SELECT FMSDRWDWN.LONG_NAME_ENG, FMSDRWDWN.CODE CODE 
+	  FROM FMSDRWDWN, FMSFACILITY, TRSCLASS, FMSFACILITYDET
+	 WHERE FMSDRWDWN.COMP_CODE = #{compCode}
+	   AND FMSDRWDWN.BRANCH = #{branchCode}
+	   AND FMSDRWDWN.STATUS = 'P'
+	   AND FMSDRWDWN.CODE = #{code}
+	   AND FMSDRWDWN.CURRENCY = CASE WHEN #{currencyCode} = 0 THEN FMSDRWDWN.CURRENCY ELSE #{currencyCode} END 
+	   AND FMSDRWDWN.COMP_CODE = FMSFACILITY.COMP_CODE 
+	   AND FMSDRWDWN.FACILITY_BRANCH = FMSFACILITY.BRANCH 
+	   AND FMSDRWDWN.FROM_FACILITY = FMSFACILITY.CODE 
+	   AND FMSDRWDWN.COMP_CODE = FMSFACILITYDET.COMP_CODE 
+	   AND FMSDRWDWN.FACILITY_BRANCH = FMSFACILITYDET.BRANCH 
+	   AND FMSDRWDWN.FROM_FACILITY = FMSFACILITYDET.CODE 
+	   AND FMSDRWDWN.FACILITY_TYPE_CLASS = FMSFACILITYDET.LINE_NBR 
+	   AND TRSCLASS.COMP_CODE = FMSFACILITYDET.COMP_CODE 
+	   AND TRSCLASS.CODE = FMSFACILITYDET.CLASS 
+	   AND FMSFACILITY.CIF = CASE WHEN #{cifNo} = 0 THEN FMSFACILITY.CIF ELSE #{cifNo} END 
+	   AND TRSCLASS.CATEGORY = 22
+	</select>
+	
+	<select id="fmsDrawDownsListFMS" resultMap="fmsDrawdownListMap" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="fmsDrawdownsListCommonFMS" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	
+	<select id="fmsDrawDownsListCountFMS" resultType="int" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="fmsDrawdownsListCommonFMS" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="fmsDrawdownsListCommonFMS">
+	<![CDATA[
+		SELECT
+		FMSDRWDWN.CODE,
+		FMSDRWDWN.FROM_FACILITY,
+		FMSFACILITY.FROM_APPLICATION,
+		(SELECT VALUE_DESC 
+          FROM SYS_PARAM_LOV_TRANS 
+          WHERE LOV_TYPE_ID = 549
+          AND LANG_CODE = #{preferredLanguage}
+          AND VALUE_CODE = FMSDRWDWN.STATUS
+      	) STATUS,
+		FMSDRWDWN.LONG_NAME_ENG,
+		FMSDRWDWN.DRAWDOWN_TYPE,
+		FMSDRWDWNTYPE.BRIEF_NAME_ENG,
+		CIF.CIF_NO,
+		CIF.SHORT_NAME_ENG SHORT_NAME_ENG,
+		CIF.LONG_NAME_ENG CIF_LONG_NAME_ENG
+		FROM  FMSDRWDWN  LEFT OUTER JOIN  FMSDRWDWNTYPE  ON  FMSDRWDWN.COMP_CODE  = FMSDRWDWNTYPE.COMP_CODE
+        AND FMSDRWDWN.DRAWDOWN_TYPE  = FMSDRWDWNTYPE.CODE ,
+		FMSFACILITY , CIF
+		WHERE  FMSDRWDWN.COMP_CODE  = #{compCode}
+		AND FMSDRWDWN.BRANCH  = #{branchCode}
+		AND FMSDRWDWN.STATUS  = 
+	   	CASE 
+	   	WHEN #{crud} = 'R' THEN FMSDRWDWN.STATUS 
+	   	WHEN #{crud} = 'P' THEN 'L' 
+	   	WHEN #{crud} = 'V' THEN 'P' 
+	   	WHEN #{crud} = 'F' THEN 'P' 
+	  	ELSE 'A' 
+	  	END
+		AND FMSDRWDWN.COMP_CODE  = FMSFACILITY.COMP_CODE
+		AND FMSDRWDWN.FACILITY_BRANCH  = FMSFACILITY.BRANCH
+		AND FMSDRWDWN.FROM_FACILITY  = FMSFACILITY.CODE
+		AND FMSFACILITY.LOAN_CATEGORY  = #{FACILITY_CATEG}
+	
+		AND   FMSFACILITY.COMP_CODE = CIF.COMP_CODE
+		AND   FMSFACILITY.CIF       = CIF.CIF_NO
+				
+	]]>
+	</sql>
+	
+	<!-- BoushraFahs -->
+	<!-- Begin of constructFmsDrwDwnLkpTFA -->
+	<resultMap id="resultTfaFmsDrwDwnLkpMap" type="fmsDrawdownCO">
+		<result property="CODE" 			column="CODE" />
+		<result property="FROM_FACILITY" 	column="FROM_FACILITY" />
+		<result property="STATUS" 			column="STATUS" />
+		<result property="LONG_NAME_ENG" 	column="LONG_NAME_ENG" />
+		<result property="DRAWDOWN_TYPE" 	column="DRAWDOWN_TYPE" />
+		<result property="BRIEF_NAME_ENG" 	column="BRIEF_NAME_ENG" />
+	</resultMap>
+
+	<select id="returnTfaDrwDwnList" resultMap="resultTfaFmsDrwDwnLkpMap"
+		parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_TfaFmsDrwDwnLkp" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnTfaDrwDwnCount" resultType="int"
+		parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_TfaFmsDrwDwnLkp" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="select_TfaFmsDrwDwnLkp">
+		SELECT FMSDRWDWN.CODE,   
+			FMSDRWDWN.FROM_FACILITY,
+			(SELECT VALUE_DESC 
+		        FROM SYS_PARAM_LOV_TRANS 
+		        WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+		        AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		        AND VALUE_CODE = FMSDRWDWN.STATUS
+		    ) STATUS ,
+			FMSDRWDWN.LONG_NAME_ENG,
+			FMSDRWDWN.DRAWDOWN_TYPE,
+			FMSDRWDWNTYPE.BRIEF_NAME_ENG  
+		FROM FMSDRWDWN LEFT OUTER JOIN  FMSDRWDWNTYPE  
+		  ON  FMSDRWDWN.COMP_CODE 	= FMSDRWDWNTYPE.COMP_CODE
+			AND FMSDRWDWN.DRAWDOWN_TYPE = FMSDRWDWNTYPE.CODE
+			
+			WHERE FMSDRWDWN.COMP_CODE 	= #{compCode,jdbcType=NUMERIC}
+			AND FMSDRWDWN.BRANCH 		= #{branchCode,jdbcType=NUMERIC}
+			AND FMSDRWDWN.FROM_FACILITY = #{facilityCode,jdbcType=NUMERIC}
+			AND ((FMSDRWDWN.FACILITY_TYPE_CLASS IS NOT NULL AND FMSDRWDWN.FACILITY_TYPE_CLASS =#{lineNbr,jdbcType=NUMERIC}) OR
+				   (FMSDRWDWN.FACILITY_TYPE_CLASS IS NULL)) 
+			<if test='!"R".equals(crud)'>
+			<choose>
+			       <when test='"P".equals(crud)'> AND FMSDRWDWN.STATUS = 'L' </when>			       
+				   <when test='"V".equals(crud) or "N".equals(crud) '> AND FMSDRWDWN.STATUS = 'P' </when>			       
+			       <otherwise> 
+				       AND FMSDRWDWN.STATUS = 'Q'
+			       </otherwise>
+		     </choose>
+			</if>
+ 	</sql>
+ 	
+ 	<resultMap id="resultDrwDwnAccountLkpMap" type="fmsDrawdownCO">
+		<result property="DD_BR" 			    column="DD_BR" />
+		<result property="DD_NO" 	            column="DD_NO" />
+		<result property="BRANCH_CODE" 			column="BRANCH_CODE" />
+		<result property="CURRENCY_CODE" 	    column="CURRENCY_CODE" />
+		<result property="GL_CODE" 	            column="GL_CODE" />
+		<result property="CIF_NO" 	            column="CIF_SUB_NO" />
+		<result property="SL_NO" 	            column="SL_NO" />
+		<result property="LONG_NAME_ENG" 	    column="LONG_NAME_ENG" />
+		<result property="LONG_NAME_ENG" 	    column="LONG_NAME_ARAB" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	</resultMap>
+ 	
+ 	
+ 	<select id="returnDrwDwnAccountList" resultMap="resultDrwDwnAccountLkpMap" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_DrwDwnAccountList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnDrwDwnAccountCount" resultType="int" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_DrwDwnAccountList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+ 	
+ 	<sql id="select_DrwDwnAccountList">
+	  SELECT AMF_DRAWDOWNS.DD_BR,
+			 AMF_DRAWDOWNS.DD_NO,
+			 AMF_DRAWDOWNS.BRANCH_CODE,
+			 AMF_DRAWDOWNS.CURRENCY_CODE,
+			 AMF_DRAWDOWNS.GL_CODE,
+			 AMF_DRAWDOWNS.CIF_SUB_NO,
+			 AMF_DRAWDOWNS.SL_NO,
+			 FMSDRWDWN.LONG_NAME_ENG,
+			 FMSDRWDWN.LONG_NAME_ARAB,
+			 AMF.ADDITIONAL_REFERENCE
+		FROM AMF_DRAWDOWNS, FMSDRWDWN, AMF
+	   WHERE AMF_DRAWDOWNS.COMP_CODE = FMSDRWDWN.COMP_CODE
+		 AND AMF_DRAWDOWNS.DD_BR = FMSDRWDWN.BRANCH
+		 AND AMF_DRAWDOWNS.DD_NO = FMSDRWDWN.CODE
+		 AND AMF_DRAWDOWNS.DD_BR = CASE WHEN #{branchCode,jdbcType=NUMERIC} = 0 THEN AMF_DRAWDOWNS.DD_BR ELSE #{branchCode,jdbcType=NUMERIC} END
+		 AND AMF_DRAWDOWNS.COMP_CODE = AMF.COMP_CODE
+		 AND AMF_DRAWDOWNS.BRANCH_CODE	= AMF.BRANCH_CODE
+		 AND AMF_DRAWDOWNS.CURRENCY_CODE = AMF.CURRENCY_CODE
+		 AND AMF_DRAWDOWNS.GL_CODE = AMF.GL_CODE
+		 AND AMF_DRAWDOWNS.CIF_SUB_NO = AMF.CIF_SUB_NO
+		 AND AMF_DRAWDOWNS.SL_NO = AMF.SL_NO
+		 AND FMSDRWDWN.STATUS = 'P'
+		 AND AMF_DRAWDOWNS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+ 	</sql>
+ 	
+ 	
+ 	<resultMap id="resultDrwDwnLkpMap" type="fmsDrawdownCO">
+		<result property="CODE" 		 column="CODE" />
+		<result property="DRWDWN_CODE" 	 column="DRWDWN_CODE" />
+		<result property="FROM_FACILITY" column="FROM_FACILITY" />
+		<result property="FACILITY_BRANCH" column="FACILITY_BRANCH" />
+		<result property="CHQ_TRSFR_AMT" column="CHQ_TRSFR_AMT" />
+	</resultMap>
+ 	
+ 	
+ 	<select id="returnDrwDwnList" resultMap="resultDrwDwnLkpMap" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_DrwDwnList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnDrwDwnListCount" resultType="int" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_DrwDwnList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+ 	
+ 	<sql id="select_DrwDwnList">
+		SELECT  FMSFINANCEPAYMENT.CODE  ,
+                FMSFINANCEPAYMENT.DRWDWN_CODE ,             
+                FMSFINANCEPAYMENT.FROM_FACILITY ,
+                FMSFINANCEPAYMENT.FACILITY_BRANCH  ,      
+                FMSFINANCEPAYMENT.CHQ_TRSFR_AMT  
+		  from FMSFINANCEPAYMENT   
+		 WHERE FMSFINANCEPAYMENT.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		   AND FMSFINANCEPAYMENT.BRANCH = #{branchCode,jdbcType=NUMERIC}
+		   AND FMSFINANCEPAYMENT.STATUS = 'P'
+		   AND FMSFINANCEPAYMENT.CODE > 0  
+		   AND NOT EXISTS
+		(	SELECT 1
+			FROM CTSTRS,CTSTRXTYPE
+			WHERE CTSTRS.COMP_CODE = FMSFINANCEPAYMENT.COMP_CODE
+			AND CTSTRS.BRANCH_CODE = FMSFINANCEPAYMENT.BRANCH
+			AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+			AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE
+			AND CTSTRXTYPE.TYPE   = 'T'  
+			AND CTSTRXTYPE.LINK_TO_DRAWDOWN = '1'
+			AND ( 
+						CTSTRXTYPE.TRSFR_TYPE <![CDATA[ <> ]]> 1 
+						OR ( 			CTSTRXTYPE.TRSFR_TYPE = 1 
+								AND 	CTSTRXTYPE.NOSTRO_MVT = '1' 
+								AND (
+										(CTSTRXTYPE.CR_DR_FOREX = 'C' AND CTSTRXTYPE.CHQ_RELATED = 'N' )
+										OR
+										(CTSTRXTYPE.CR_DR_FOREX = 'D' AND CTSTRXTYPE.REMITT_TYPE IS NOT NULL )
+									   ) 
+							 )
+					)
+			AND CTSTRS.TRS_TYPE = 'R'
+			AND CTSTRS.CB_IND = 'C'
+			AND CTSTRS.STATUS IN ('A', 'P')
+			AND CTSTRS.FACILITY_COLLATERAL_REF = FMSFINANCEPAYMENT.CODE
+		)
+ 	</sql>
+ 	
+ 	<!-- Template lookup for FMS [BEGIN]-->
+ 	<select id="fmsDrawDownsListTemplateFMS" resultMap="fmsDrawdownListMap" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="fmsDrawdownsListCommonTemplateFMS" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	
+	<select id="fmsDrawDownsListCountTemplateFMS" resultType="int" parameterType="facilityTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="fmsDrawdownsListCommonTemplateFMS" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="fmsDrawdownsListCommonTemplateFMS">
+	<![CDATA[
+		SELECT
+		FMSDRWDWN.CODE,
+		FMSDRWDWN.FROM_FACILITY,
+		FMSFACILITY.FROM_APPLICATION,
+		FMSDRWDWN.STATUS,
+		FMSDRWDWN.LONG_NAME_ENG,
+		FMSDRWDWN.DRAWDOWN_TYPE,
+		FMSDRWDWNTYPE.BRIEF_NAME_ENG,
+		CIF.CIF_NO,
+		CIF.SHORT_NAME_ENG SHORT_NAME_ENG,
+		CIF.LONG_NAME_ENG CIF_LONG_NAME_ENG
+		FROM  FMSDRWDWN  LEFT OUTER JOIN  FMSDRWDWNTYPE  ON  FMSDRWDWN.COMP_CODE  = FMSDRWDWNTYPE.COMP_CODE
+        AND FMSDRWDWN.DRAWDOWN_TYPE  = FMSDRWDWNTYPE.CODE ,
+		FMSFACILITY , CIF
+		WHERE  FMSDRWDWN.COMP_CODE  = #{compCode}
+		AND FMSDRWDWN.BRANCH  = #{branchCode}
+		AND FMSDRWDWN.COMP_CODE  = FMSFACILITY.COMP_CODE
+		AND FMSDRWDWN.FACILITY_BRANCH  = FMSFACILITY.BRANCH
+		AND FMSDRWDWN.FROM_FACILITY  = FMSFACILITY.CODE
+		AND   FMSFACILITY.COMP_CODE = CIF.COMP_CODE
+		AND   FMSFACILITY.CIF       = CIF.CIF_NO
+				
+	]]>
+	</sql>
+	<!-- Template lookup for FMS [END]-->
+
+	
+</mapper>

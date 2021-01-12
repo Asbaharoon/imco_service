@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_IN_OUT_FLOW" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_IN_OUT_FLOWVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="INDICATOR" property="INDICATOR" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TYPE" property="TYPE" />
+    <result column="VALUE" property="VALUE" />
+    <result column="MULTIPLIER" property="MULTIPLIER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, INDICATOR, LINE_NO, TYPE, VALUE, MULTIPLIER
+  </sql>
+  <select id="selectCIF_IN_OUT_FLOW" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_IN_OUT_FLOWVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_IN_OUT_FLOW
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and INDICATOR = #{INDICATOR}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </select>
+  <delete id="deleteCIF_IN_OUT_FLOW" parameterType="com.path.dbmaps.vo.CIF_IN_OUT_FLOWVOKey" >
+    delete from CIF_IN_OUT_FLOW
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and INDICATOR = #{INDICATOR}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </delete>
+  <insert id="insertCIF_IN_OUT_FLOW" parameterType="com.path.dbmaps.vo.CIF_IN_OUT_FLOWVO" >
+    insert into CIF_IN_OUT_FLOW
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="INDICATOR != null and INDICATOR != emptyBigDecimalValue" >
+        INDICATOR,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+      <if test="VALUE != null" >
+        VALUE,
+      </if>
+      <if test="MULTIPLIER != null and MULTIPLIER != emptyBigDecimalValue" >
+        MULTIPLIER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="INDICATOR != null and INDICATOR != emptyBigDecimalValue" >
+        #{INDICATOR},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TYPE != null" >
+        #{TYPE},
+      </if>
+      <if test="VALUE != null" >
+        #{VALUE},
+      </if>
+      <if test="MULTIPLIER != null and MULTIPLIER != emptyBigDecimalValue" >
+        #{MULTIPLIER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_IN_OUT_FLOW" >
+    update CIF_IN_OUT_FLOW
+    <set >
+      <if test="VALUE != null" >
+        VALUE = #{VALUE},
+      </if>
+      <if test="MULTIPLIER != null" >
+        <choose >
+          <when test="MULTIPLIER == emptyBigDecimalValue" >
+            MULTIPLIER = NULL ,
+          </when>
+          <otherwise >
+            MULTIPLIER = #{MULTIPLIER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and INDICATOR = #{INDICATOR}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </sql>
+  <update id="updateCIF_IN_OUT_FLOW" parameterType="com.path.dbmaps.vo.CIF_IN_OUT_FLOWVO" >
+    <include refid="sql_updateCIF_IN_OUT_FLOW" />
+  </update>
+</mapper>

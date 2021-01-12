@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="linkMapper">
+ <sql id="select_links">
+	  	SELECT
+				 S_LINK.COMP_CODE,
+				 S_LINK.LINK_CODE,
+				 S_LINK.BRIEF_NAME_ENG,
+				 S_LINK.LONG_NAME_ENG,
+				 S_LINK.BRIEF_NAME_ARAB,
+				 S_LINK.LONG_NAME_ARAB,
+				 (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = 
+		      <choose>
+      			 <when test="isSybase == 1">
+      			  CONVERT(VARCHAR,S_LINK.LINK_TO_CIF)
+      			 </when>
+       			<otherwise>
+       			S_LINK.LINK_TO_CIF
+       			 </otherwise>
+      		 </choose>
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{langCode,jdbcType=VARCHAR} 
+		    ) LINK_TO_CIF,
+		     (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = 
+		      <choose>
+      			 <when test="isSybase == 1">
+      			  CONVERT(VARCHAR,S_LINK.LINK_TO_AMF)
+      			 </when>
+       			<otherwise>
+       			S_LINK.LINK_TO_AMF
+       			 </otherwise>
+      		 </choose> 
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{langCode,jdbcType=VARCHAR} 
+		    ) LINK_TO_AMF
+		  FROM  S_LINK
+		 WHERE  S_LINK.COMP_CODE = #{compCode}
+ </sql>
+ <resultMap id="linkCodeLkpMap" type="linkCO">
+ 	<result property="s_linkVO.LINK_CODE"       	column="LINK_CODE"/>
+	<result property="s_linkVO.BRIEF_NAME_ENG"  	column="BRIEF_NAME_ENG"/>
+	<result property="s_linkVO.LONG_NAME_ENG"    	column="LONG_NAME_ENG"/>
+	<result property="s_linkVO.BRIEF_NAME_ARAB"  		column="BRIEF_NAME_ARAB"/>
+	<result property="s_linkVO.LONG_NAME_ARAB"    	column="LONG_NAME_ARAB"/>	
+	<result property="LINK_TO_CIF"         			column="LINK_TO_CIF"/>
+	<result property="LINK_TO_AMF"        			column="LINK_TO_AMF"/>
+ </resultMap>
+ <select id="linkCodeLkpRecords" 
+         resultMap="linkCodeLkpMap" 
+         parameterType="linkSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="select_links"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+ </select>
+<select id="linkCodeLkpCount"  resultType="int" parameterType="linkSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="select_links"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+</mapper>

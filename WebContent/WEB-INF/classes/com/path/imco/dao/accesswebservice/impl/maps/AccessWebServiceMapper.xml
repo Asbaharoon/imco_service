@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="accesswebserviceMapper">
+
+	<resultMap id="returnAccessWebServiceListMap" type="com.path.imco.vo.accesswebservice.AccessWebServiceCO">
+		<result column="TEMPLATE_ID" property="imcoPwsTmpltMasterVO.TEMPLATE_ID" />
+		<result column="TEMPLATE_DESC" property="imcoPwsTmpltMasterVO.TEMPLATE_DESC" />
+		<result column="STATUS" property="imcoPwsTmpltMasterVO.STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+		<result column="DATE_UPDATED" property="imcoPwsTmpltMasterVO.DATE_UPDATED" />
+	</resultMap>
+	
+	<resultMap id="returnServicesFromDbMap" type="com.path.imco.vo.accesswebservice.AccessWebServiceCO">
+		<result column="APP_NAME" property="imcoPwsTmpltDetVO.APP_NAME" />
+		<result column="WS_NAME" property="imcoPwsTmpltDetVO.WS_NAME" />
+		<result column="OPERATION" property="imcoPwsTmpltDetVO.OPERATION" />
+		<result column="EXCLUDE_ACCESS_YN" property="imcoPwsTmpltDetVO.EXCLUDE_ACCESS_YN" />
+		<result column="TYPE" property="imcoPwsTmpltDetVO.TYPE" />
+	</resultMap>
+	
+	<resultMap id="resUserIdLkupMap" type="com.path.dbmaps.vo.IMCO_PWS_CHANNELVO">
+		<result column="USER_ID" property="USER_ID" />
+		<result column="CHANNEL_ID" property="CHANNEL_ID" />
+	</resultMap>
+	
+	<resultMap id="returnSelectedUserIdDetailsMap" type="com.path.imco.vo.accesswebservice.AccessWebServiceCO">
+		<result column="CHANNEL_ID" property="imcoPwsChannelVO.CHANNEL_ID" />
+		<result column="DESCRIPTION" property="imcoPwsChannelVO.DESCRIPTION" />
+	</resultMap>
+
+	<select id="returnAccessWebServiceListCount" resultType="int"	parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="retAccessWebServiceListSql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnAccessWebServiceList" resultMap="returnAccessWebServiceListMap" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="retAccessWebServiceListSql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	
+	<select id="returnUserIdListCount" resultType="int"	parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="retUserIdListSql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnUserIdList" resultMap="resUserIdLkupMap" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="retUserIdListSql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnSelectedUserIdDetails" resultMap="returnSelectedUserIdDetailsMap"	parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		SELECT A.CHANNEL_ID,A.DESCRIPTION
+		FROM IMCO_PWS_CHANNEL A
+		WHERE A.USER_ID=#{channelUserId}
+	</select>
+	
+	<select id="returnTemplateIdCount" resultType="int"	parameterType="BigDecimal">
+		SELECT COUNT(1)
+		FROM IMCO_PWS_TMPLT_MASTER A
+		WHERE A.TEMPLATE_ID=#{tempID}
+	</select>
+	
+	<select id="retrieveSelectedTemplateId" resultMap="returnAccessWebServiceListMap" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		<include refid="retAccessWebServiceListSql" />
+		AND TEMPLATE_ID = #{tempID}
+	</select>
+	
+	<select id="countTmpltUsrVO" resultType="BigDecimal" parameterType="BigDecimal">
+    	SELECT A.CHANNEL_ID
+		FROM IMCO_PWS_TMPLT_USR A,IMCO_PWS_CHANNEL B
+    	WHERE A.TEMPLATE_ID = #{tempID}
+    	AND A.CHANNEL_ID = B.CHANNEL_ID
+    	AND B.STATUS != 'D'
+	</select>
+	
+	<select id="returnServicesFromDb" resultMap="returnServicesFromDbMap" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		  SELECT APP_NAME,
+	         WS_NAME,
+	         OPERATION,
+	         EXCLUDE_ACCESS_YN,
+	         TYPE
+	      FROM IMCO_PWS_TMPLT_DET
+	  	  WHERE TEMPLATE_ID = #{tempID} 
+	  	  <if test='level == null' >
+		  	  AND WS_NAME = 'All'
+		  	  AND OPERATION = 'All'
+		  	  <if test='feName != null' >
+		  	  	AND APP_NAME = #{feName}
+		  	  </if>
+	  	  </if>
+	  	  <if test='level == "1"' >
+		  	  AND APP_NAME = #{feName}
+		  	  AND WS_NAME != 'All'
+		  	  AND OPERATION = 'All'
+	  	  </if>
+	  	  <if test='level == "2"' >
+		  	  AND WS_NAME = #{feName}
+		  	  AND OPERATION != 'All'
+	  	  </if>
+	</select>
+	
+	<select id="returnedParamCheckedList" resultType="String" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		  SELECT PARAM_ID
+	      FROM IMCO_PWS_TMPLT_DET_PARAM
+	  	  WHERE TEMPLATE_ID = #{tempID} 
+	  	  AND APP_NAME = #{accessCO.imcoPwsTmpltDetVO.APP_NAME}
+		  AND WS_NAME = #{accessCO.imcoPwsTmpltDetVO.WS_NAME}
+		  AND OPERATION = #{accessCO.imcoPwsTmpltDetVO.OPERATION}
+		  
+	</select>
+	
+	<delete id="deleteAllPreviousRecord" parameterType="BigDecimal">
+		  DELETE FROM IMCO_PWS_TMPLT_DET 
+		  WHERE TEMPLATE_ID = #{templateId}
+	</delete>
+	
+	<delete id="deleteRecordDetParamFromDB" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		  DELETE FROM IMCO_PWS_TMPLT_DET_PARAM 
+		  WHERE TEMPLATE_ID = #{tempID}
+		  AND APP_NAME = #{appName}
+	      <if test="serviceName != null" >
+		  	AND WS_NAME = #{serviceName}
+	      </if>
+	      <if test="operationName != null" >
+			AND OPERATION = #{operationName}
+	      </if>
+	</delete>
+	
+	<delete id="deleteRecordDetFromDB" parameterType="com.path.imco.vo.accesswebservice.AccessWebServiceSC">
+		  DELETE FROM IMCO_PWS_TMPLT_DET 
+		  WHERE TEMPLATE_ID = #{tempID}
+		  AND APP_NAME = #{appName}
+		  <if test="serviceName != null" >
+		  	AND WS_NAME = #{serviceName}
+	      </if>
+	      <if test="operationName != null" >
+			AND OPERATION = #{operationName}
+	      </if>
+	</delete>
+	
+	<sql id="retAccessWebServiceListSql">
+		SELECT B.TEMPLATE_ID,
+        B.TEMPLATE_DESC,
+		B.DATE_UPDATED,
+		B.STATUS,
+		(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = B.STATUS
+		AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		AND	SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) STATUS_DESC
+		FROM IMCO_PWS_TMPLT_MASTER B
+		<if test='crudMode!="R"'>
+			, SYS_PARAM_LOV_LK_OPT lovOpt
+		</if>
+		where 1 = 1 
+		<if test='crudMode!="R"'>
+			AND B.STATUS = lovOpt.VALUE_CODE
+			AND lovOpt.LOV_TYPE_ID = #{lovTypeLkOpt,jdbcType=NUMERIC}
+			AND lovOpt.PROG_REF = #{menuRef,jdbcType=VARCHAR}
+			AND lovOpt.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="retUserIdListSql">
+		SELECT T.USER_ID AS USER_ID,
+		T.CHANNEL_ID AS CHANNEL_ID
+		FROM IMCO_PWS_CHANNEL T
+	</sql>
+</mapper>

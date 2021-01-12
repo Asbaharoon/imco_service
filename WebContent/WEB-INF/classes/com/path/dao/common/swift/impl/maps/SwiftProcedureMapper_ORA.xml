@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="swiftMapperDBMS">
+      
+<select id="executeSwiftReport" parameterType="swiftOutwardSC"
+	resultMap="swiftSpResultMap" statementType="CALLABLE">
+	{ CALL ${sReportProcedure}(
+	#{compCode, mode=IN,jdbcType=NUMERIC},
+	#{trsFromDate, mode=IN,jdbcType=DATE},
+	#{trsToDate, mode=IN,jdbcType=DATE},
+	#{trsFromNo, mode=IN,jdbcType=NUMERIC},
+	#{trsToNo, mode=IN,jdbcType=NUMERIC},
+	#{status, mode=IN,jdbcType=VARCHAR},	
+	#{swiftSpResultList, mode=OUT, jdbcType=CURSOR,javaType=java.sql.ResultSet, resultMap=swiftSpResultMap}	
+	)
+	}
+</select>
+
+	<resultMap id="swiftSpResultMap" type="java.util.LinkedHashMap">
+</resultMap>     
+
+
+
+</mapper>

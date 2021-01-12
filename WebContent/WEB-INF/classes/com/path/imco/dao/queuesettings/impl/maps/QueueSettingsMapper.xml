@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="queueSettingsMapper">
+
+<resultMap id="resQueueSettingsMap" type="com.path.imco.vo.queuesettings.QueueSettingsCO">
+<result property="syncEntityVO.ENTITY_NAME" column="ENTITY_NAME"/>
+	<result property="syncEntityParametersVO.ENTITY_CODE" column="ENTITY_CODE"/>
+	<result property="syncEntityParametersVO.ENTITY_ORDER" column="ENTITY_ORDER"/>
+	<result property="syncEntityParametersVO.BR_CODE" column="BR_CODE"/>
+	<result property="syncBranchVO.ORDER_FLAG" column="ORDER_FLAG"/>
+	
+</resultMap>
+
+<select id="returnQueueSettingsList" parameterType="com.path.imco.vo.queuesettings.QueueSettingsSC" resultMap="resQueueSettingsMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryQueueSettingsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<sql id="queryQueueSettingsSQL">
+	SELECT  SYNC_ENTITY.ENTITY_NAME , 
+		   SYNC_ENTITY_PARAMETERS.ENTITY_CODE, 
+		   SYNC_ENTITY_PARAMETERS.ENTITY_ORDER,
+		   SYNC_ENTITY_PARAMETERS.BR_CODE,
+	       SYNC_BRANCH.ORDER_FLAG
+
+			FROM SYNC_ENTITY, SYNC_ENTITY_PARAMETERS, SYNC_BRANCH
+			WHERE SYNC_ENTITY.ENTITY_CODE = SYNC_ENTITY_PARAMETERS.ENTITY_CODE
+			AND     SYNC_ENTITY_PARAMETERS.BR_CODE =#{brCode}
+			AND   SYNC_ENTITY_PARAMETERS.ENTITY_ORDER IS NOT NULL
+			AND   SYNC_ENTITY_PARAMETERS.BR_CODE = SYNC_BRANCH.BR_CODE 
+		</sql>
+<update id="updateData" parameterType="com.path.imco.vo.queuesettings.QueueSettingsSC">
+  
+  UPDATE SYNC_BRANCH
+	SET   ORDER_FLAG = #{orderFlag}
+	WHERE BR_CODE =#{brCode} 
+  
+ </update>		
+		
+
+
+</mapper>

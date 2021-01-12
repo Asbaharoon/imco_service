@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+   
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<!-- we need to have this bean definition here in order to read values from property file  -->
+	<bean  parent="propertyPlaceholderConfigurer" />
+	
+	<bean id="registryRmi" class="com.path.lib.remote.RegistryRmi">
+		<!--port in .properties file fro imal_services-->
+		<property name="port" value="${imco.rmi.registry.port}"></property>
+	</bean>
+	
+	<bean id="pathBeanFactoryExporter" class="com.path.lib.remote.PathBeanExporter">
+		<property name="pathRegistry" ref="registryRmi"></property>
+		<property name="beanAvailability" value="${imco.beanAvailability}" />
+		<property name="remoteTechnicque" value="${imco.remoting.technique}" />
+	</bean>
+	     
+	<bean id="imcoServicesExporter" class="com.path.lib.remote.PathBeanExporter">
+		<property name="pathRegistry" ref="registryRmi"></property>
+		<property name="beanAvailability" value="${imco.beanAvailability}" />
+		<property name="remoteTechnicque" value="${imco.remoting.technique}" />
+	</bean>
+	     
+	<!-- below we will include all screen or module related BO exporter files -->
+	<import resource="classpath:com/path/**/conf/**/*BOExporter.xml"/>
+	 
+
+</beans>

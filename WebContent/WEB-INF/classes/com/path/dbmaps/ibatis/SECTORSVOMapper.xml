@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SECTORS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SECTORSVO" >
+    <id column="CITY_CODE" property="CITY_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <id column="REGION_CODE" property="REGION_CODE" />
+    <id column="SECTOR_CODE" property="SECTOR_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="FETCH_KEY" property="FETCH_KEY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CITY_CODE, COMP_CODE, COUNTRY_CODE, REGION_CODE, SECTOR_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, 
+    LONG_DESC_ENG, LONG_DESC_ARAB, ADDITIONAL_REFERENCE, FETCH_KEY
+  </sql>
+  <select id="selectSECTORS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SECTORSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SECTORS
+    where CITY_CODE = #{CITY_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and REGION_CODE = #{REGION_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+  </select>
+  <delete id="deleteSECTORS" parameterType="com.path.dbmaps.vo.SECTORSVOKey" >
+    delete from SECTORS
+    where CITY_CODE = #{CITY_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and REGION_CODE = #{REGION_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+  </delete>
+  <insert id="insertSECTORS" parameterType="com.path.dbmaps.vo.SECTORSVO" >
+    insert into SECTORS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CITY_CODE != null and CITY_CODE != emptyBigDecimalValue" >
+        CITY_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        REGION_CODE,
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        SECTOR_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="FETCH_KEY != null" >
+        FETCH_KEY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CITY_CODE != null and CITY_CODE != emptyBigDecimalValue" >
+        #{CITY_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        #{REGION_CODE},
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        #{SECTOR_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="FETCH_KEY != null" >
+        #{FETCH_KEY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSECTORS" >
+    update SECTORS
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="FETCH_KEY != null" >
+        FETCH_KEY = #{FETCH_KEY},
+      </if>
+    </set>
+    where CITY_CODE = #{CITY_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and REGION_CODE = #{REGION_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+  </sql>
+  <update id="updateSECTORS" parameterType="com.path.dbmaps.vo.SECTORSVO" >
+    <include refid="sql_updateSECTORS" />
+  </update>
+</mapper>

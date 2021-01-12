@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DMS_AXS_MAP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DMS_AXS_MAPVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="USER_ID" property="USER_ID" />
+    <id column="INDEX_NUM" property="INDEX_NUM"/>
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="INTEGRATION_ID" property="INTEGRATION_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, BRANCH_CODE, COMP_CODE, PROG_REF, USER_ID,INDEX_NUM, INTEGRATION_ID, DATE_UPDATED
+  </sql>
+  <select id="selectDMS_AXS_MAP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DMS_AXS_MAPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DMS_AXS_MAP
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteDMS_AXS_MAP" parameterType="com.path.dbmaps.vo.DMS_AXS_MAPVOKey" >
+    delete from DMS_AXS_MAP
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and USER_ID = #{USER_ID}
+      and INDEX_NUM = #{INDEX_NUM}
+  </delete>
+  <insert id="insertDMS_AXS_MAP" parameterType="com.path.dbmaps.vo.DMS_AXS_MAPVO" >
+    insert into DMS_AXS_MAP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="INDEX_NUM != null and INDEX_NUM != emptyBigDecimalValue">
+      	INDEX_NUM,
+      </if>
+      <if test="INTEGRATION_ID != null and INTEGRATION_ID != emptyBigDecimalValue" >
+        INTEGRATION_ID,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="INDEX_NUM != null and INDEX_NUM != emptyBigDecimalValue">
+      	#{INDEX_NUM},
+      </if>
+      <if test="INTEGRATION_ID != null and INTEGRATION_ID != emptyBigDecimalValue" >
+        #{INTEGRATION_ID},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateDMS_AXS_MAP" >
+    update DMS_AXS_MAP
+    <set >
+      <if test="INTEGRATION_ID != null" >
+        <choose >
+          <when test="INTEGRATION_ID == emptyBigDecimalValue" >
+            INTEGRATION_ID = NULL ,
+          </when>
+          <otherwise >
+            INTEGRATION_ID = #{INTEGRATION_ID},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and USER_ID = #{USER_ID}
+      and INDEX_NUM = #{INDEX_NUM}
+  </sql>
+  <update id="updateDMS_AXS_MAP" parameterType="com.path.dbmaps.vo.DMS_AXS_MAPVO" >
+    <include refid="sql_updateDMS_AXS_MAP" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+  </update>
+</mapper>

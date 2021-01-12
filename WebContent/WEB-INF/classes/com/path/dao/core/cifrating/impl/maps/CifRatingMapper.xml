@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifRatingMapper">
+
+ <sql id="cifRatingListCommon">
+	<![CDATA[
+    SELECT CREDIT_RATING.CODE,   
+         CREDIT_RATING.BRIEF_NAME_ENG,   
+         CREDIT_RATING.LONG_NAME_ENG,   
+         CREDIT_RATING.BRIEF_NAME_ARAB,   
+         CREDIT_RATING.LONG_NAME_ARAB,
+         CREDIT_RATING.SOURCE
+    FROM CREDIT_RATING 
+    WHERE CREDIT_RATING.COMP_CODE = #{compCode}
+	]]>	 
+ </sql>
+  <sql id="cifRatingListCommonUnique">
+	<![CDATA[
+	
+ 		AND    CREDIT_RATING.CODE       = #{cifRatingCode}
+	 
+	 ]]>	 
+  </sql>
+ 
+ 
+ <resultMap id="cifRatingList_ResMap" type="cifRatingVO">
+	<id property="CODE" column="CODE"/>
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="SOURCE" column="SOURCE" />
+ </resultMap>
+ 
+ <select id="cifRatingList" resultMap="cifRatingList_ResMap" parameterType="cifRatingSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifRatingListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cifRatingListCount" resultType="int" parameterType="cifRatingSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifRatingListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnCifRatingById" parameterType="cifRatingSC" resultType="cifRatingVO">
+		SELECT CODE, CASE WHEN #{language} = 'L' THEN BRIEF_NAME_ENG ELSE BRIEF_NAME_ARAB END BRIEF_NAME_ENG
+		FROM   CREDIT_RATING
+		WHERE  CREDIT_RATING.COMP_CODE  = #{compCode}
+		AND    CREDIT_RATING.CODE       = #{cifRatingCode}
+  </select>
+  
+   <select id="returnCifRatingDetailsById" parameterType="cifRatingSC" resultType="cifRatingVO">
+	<include refid="cifRatingListCommon"/>
+	<include refid="cifRatingListCommonUnique"/>
+   </select>
+
+</mapper>

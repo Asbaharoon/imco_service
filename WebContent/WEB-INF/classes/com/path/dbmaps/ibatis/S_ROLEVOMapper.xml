@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_ROLE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_ROLEVO" >
+    <id column="ROLE_NAME" property="ROLE_NAME" />
+    <result column="LONG_NAME" property="LONG_NAME" />
+    <result column="REMARKS" property="REMARKS" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="AUTHORIZED_BY" property="AUTHORIZED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROLE_NAME, LONG_NAME, REMARKS, APP_NAME, STATUS, CREATED_BY, AUTHORIZED_BY
+  </sql>
+  <select id="selectS_ROLE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_ROLEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ROLE
+    where ROLE_NAME = #{ROLE_NAME}
+  </select>
+  <delete id="deleteS_ROLE" parameterType="com.path.dbmaps.vo.S_ROLEVO" >
+    delete from S_ROLE
+    where ROLE_NAME = #{ROLE_NAME}
+  </delete>
+  <insert id="insertS_ROLE" parameterType="com.path.dbmaps.vo.S_ROLEVO" >
+    insert into S_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ROLE_NAME != null" >
+        ROLE_NAME,
+      </if>
+      <if test="LONG_NAME != null" >
+        LONG_NAME,
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="AUTHORIZED_BY != null" >
+        AUTHORIZED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ROLE_NAME != null" >
+        #{ROLE_NAME},
+      </if>
+      <if test="LONG_NAME != null" >
+        #{LONG_NAME},
+      </if>
+      <if test="REMARKS != null" >
+        #{REMARKS},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="AUTHORIZED_BY != null" >
+        #{AUTHORIZED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_ROLE" >
+    update S_ROLE
+    <set >
+      <if test="LONG_NAME != null" >
+        LONG_NAME = #{LONG_NAME},
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS = #{REMARKS},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="AUTHORIZED_BY != null" >
+        AUTHORIZED_BY = #{AUTHORIZED_BY},
+      </if>
+    </set>
+    where ROLE_NAME = #{ROLE_NAME}
+  </sql>
+  <update id="updateS_ROLE" parameterType="com.path.dbmaps.vo.S_ROLEVO" >
+    <include refid="sql_updateS_ROLE" />
+  </update>
+</mapper>

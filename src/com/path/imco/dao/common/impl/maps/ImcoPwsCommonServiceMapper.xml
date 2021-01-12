@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ImcoPwsCommonServiceMapper">
+
+<sql id="commonParams">
+		<if test="userID != null" >
+			,USER_ID
+		</if>
+		<if test="hashKey != null" >
+			,HASH_KEY
+		</if>
+		<if test="hostName != null" >
+			,HOST_NAME
+		</if>
+		<if test="channelID != null" >
+			,CHANNEL_ID
+		</if>
+		<if test="companyCode != null and companyCode != emptyBigDecimalValue" >
+			,COMPANY_CODE
+		</if>
+		<if test="branchCode != null and branchCode != emptyBigDecimalValue" >
+			,BRANCH_CODE
+		</if>
+		<if test="serviceID != null" >
+			,SERVICE_ID
+		</if>
+		<if test="businessArea != null" >
+			,BUSINESS_AREA
+		</if>
+		<if test="businessDomain != null" >
+			,BUSINESS_DOMAIN
+		</if>
+		<if test="serviceDomain != null" >
+			,SERVICE_DOMAIN
+		</if>
+		<if test="operationName != null" >
+			,OPERATION_NAME
+		</if>
+		<if test="version != null" >
+			,VERSION
+		</if>
+		<if test="cifNo != null and cifNo != emptyBigDecimalValue" >
+			,CIF_NO
+		</if>
+		<if test="dealNo != null and dealNo != emptyBigDecimalValue" >
+			,DEAL_NO
+		</if>
+		<if test="transactionNo != null and transactionNo != emptyBigDecimalValue" >
+			,TRANSACTION_NO
+		</if>
+		<if test="branch != null and branch != emptyBigDecimalValue" >
+			,BRANCH
+		</if>
+		<if test="currency != null and currency != emptyBigDecimalValue" >
+			,CURRENCY
+		</if>
+		<if test="accGl != null and accGl != emptyBigDecimalValue" >
+			,ACC_GL
+		</if>
+		<if test="serialNo != null and serialNo != emptyBigDecimalValue" >
+			,SERIAL_NO
+		</if>
+		<if test="additionalRef != null" >
+			,ADDITIONAL_REF
+		</if>
+		<if test="ibanAccNo != null" >
+			,IBAN_ACC_NO
+		</if>
+		<if test="opNo != null and opNo != emptyBigDecimalValue" >
+			,OP_NO
+		</if>
+		<if test="cardNo != null" >
+			,CARD_NO
+		</if>
+</sql>
+<sql id="commonParamValues">
+		<if test="userID != null" >
+			,#{userID}
+		</if>
+		<if test="hashKey != null" >
+			,#{hashKey}
+		</if>
+		<if test="hostName != null" >
+			,#{hostName}
+		</if>
+		<if test="channelID != null" >
+			,#{channelID}
+		</if>
+		<if test="companyCode != null and companyCode != emptyBigDecimalValue" >
+			,#{companyCode}
+		</if>
+		<if test="branchCode != null and branchCode != emptyBigDecimalValue" >
+			,#{branchCode}
+		</if>
+		<if test="serviceID != null" >
+			,#{serviceID}
+		</if>
+		<if test="businessArea != null" >
+			,#{businessArea}
+		</if>
+		<if test="businessDomain != null" >
+			,#{businessDomain}
+		</if>
+		<if test="serviceDomain != null" >
+			,#{serviceDomain}
+		</if>
+		<if test="operationName != null" >
+			,#{operationName}
+		</if>
+		<if test="version != null" >
+			,#{version}
+		</if>
+		<if test="cifNo != null and cifNo != emptyBigDecimalValue" >
+			,#{cifNo}
+		</if>
+		<if test="dealNo != null and dealNo != emptyBigDecimalValue" >
+			,#{dealNo}
+		</if>
+		<if test="transactionNo != null and transactionNo != emptyBigDecimalValue" >
+			#{transactionNo}
+		</if>
+		<if test="branch != null and branch != emptyBigDecimalValue" >
+			,#{branch}
+		</if>
+		<if test="currency != null and currency != emptyBigDecimalValue" >
+			,#{currency}
+		</if>
+		<if test="accGl != null and accGl != emptyBigDecimalValue" >
+			,#{accGl}
+		</if>
+		<if test="serialNo != null and serialNo != emptyBigDecimalValue" >
+			,#{serialNo}
+		</if>
+		<if test="additionalRef != null" >
+			,#{additionalRef}
+		</if>
+		<if test="ibanAccNo != null" >
+			,#{ibanAccNo}
+		</if>
+		<if test="opNo != null and opNo != emptyBigDecimalValue" >
+			,#{opNo}
+		</if>
+		<if test="cardNo != null" >
+			,#{cardNo}
+		</if>
+</sql>
+<insert id="insertLogRequest" parameterType="com.path.imco.vo.common.ImcoPwsRequestLogVO">
+		INSERT INTO IMCO_PWS_REQUEST_LOG (
+			REQUEST_ID, CORE_REQUEST_TIMESTAMP, REQUEST_CONTENT
+				<include refid="commonParams"/>
+        )
+		SELECT #{requestID}, #{coreRequestTimeStamp, jdbcType=TIMESTAMP}, #{requestKernelDetails, jdbcType=CLOB,typeHandler=org.apache.ibatis.type.ClobTypeHandler}
+				<include refid="commonParamValues"/>
+	FROM DUAL
+	WHERE NOT EXISTS(SELECT 1 FROM IMCO_PWS_REQUEST_LOG WHERE REQUEST_ID = #{requestID})
+</insert>
+
+<insert id="insertLogResponse" parameterType="com.path.imco.vo.common.ImcoPwsRequestLogVO">
+	INSERT INTO IMCO_PWS_RESPONSE_LOG (
+			RESPONSE_ID, CORE_REQUEST_TIMESTAMP, CORE_RESPONSE_TIMESTAMP
+			<include refid="commonParams"/>
+			<if test="statusCode != null" >
+				, STATUS_CODE
+			</if>
+			<if test="statusDesc != null" >
+				,STATUS_DESC
+			</if>
+			<if test="severity != null" >
+				,SEVERITY
+			</if>				
+			<if test="errorType != null" >
+				,ERROR_TYPE
+			</if>
+			<if test="requestKernelDetails != null" >
+				,RESPONSE_CONTENT
+			</if>
+           )
+	
+		SELECT #{responseID}, #{coreRequestTimeStamp, jdbcType=TIMESTAMP}, #{coreResponseTimeStamp, jdbcType=TIMESTAMP}
+		
+		<include refid="commonParamValues"/>
+			<if test="statusCode != null" >
+				, #{statusCode}
+			</if>
+			<if test="statusDesc != null" >
+				,#{statusDesc}
+			</if>
+			<if test="severity != null" >
+				,#{severity}
+			</if>				
+			<if test="errorType != null" >
+				,#{errorType}
+			</if>	
+			<if test="requestKernelDetails != null" >
+				,#{requestKernelDetails}
+			</if>			
+				
+	FROM DUAL
+	WHERE NOT EXISTS(SELECT 1 FROM IMCO_PWS_RESPONSE_LOG WHERE RESPONSE_ID = #{responseID})
+</insert>
+<update id="updateLogResponseXml" parameterType="com.path.imco.vo.common.ImcoPwsRequestLogVO">
+	UPDATE IMCO_PWS_RESPONSE_LOG 
+	SET RESPONSE_CONTENT = #{requestKernelDetails}
+	WHERE RESPONSE_ID = #{responseID}
+</update>
+
+<select id="returnHasAcess" parameterType="com.path.imco.vo.common.CheckAccessSC" resultType="int">
+	SELECT COUNT(1) FROM IMCO_PWS_TMPLT_MASTER M , IMCO_PWS_TMPLT_USR U, IMCO_PWS_TMPLT_DET D,IMCO_PWS_CHANNEL C
+	WHERE M.TEMPLATE_ID = U.TEMPLATE_ID
+	AND M.TEMPLATE_ID = D.TEMPLATE_ID
+	AND U.CHANNEL_ID = C.CHANNEL_ID
+	AND U.CHANNEL_ID = #{channelID} 
+	AND U.USER_ID = #{userID}
+	AND M.STATUS = 'P'
+	AND C.STATUS = 'P'
+	AND 
+	(
+		(D.APP_NAME = #{wsAppName} AND D.TYPE = 'A' )
+			OR
+		(D.WS_NAME = #{wsName} AND D.TYPE = 'A')
+			OR 
+		(D.WS_NAME = #{wsName} AND D.OPERATION= #{wsOperationName} AND D.TYPE = 'S')
+	)
+</select>
+<select id="returnMaskingParams" parameterType="com.path.imco.vo.common.CheckAccessSC" resultType="string">
+	
+	  SELECT P.PARAM_ID FROM IMCO_PWS_TMPLT_MASTER M , IMCO_PWS_TMPLT_USR U, IMCO_PWS_TMPLT_DET D,IMCO_PWS_CHANNEL C, IMCO_PWS_TMPLT_DET_PARAM P
+	  WHERE M.TEMPLATE_ID = U.TEMPLATE_ID
+	  AND M.TEMPLATE_ID = D.TEMPLATE_ID
+	  AND U.CHANNEL_ID = C.CHANNEL_ID
+	  AND D.TEMPLATE_ID = P.TEMPLATE_ID
+		AND 
+		(
+			(D.APP_NAME = #{wsAppName} AND D.TYPE = 'A' )
+				OR
+			(D.WS_NAME = #{wsName} AND D.TYPE = 'A')
+				OR 
+			(D.WS_NAME = #{wsName} AND D.OPERATION= #{wsOperationName} AND D.TYPE = 'S')
+		)
+	  AND U.CHANNEL_ID = #{channelID} 
+	  AND U.USER_ID = #{userID}
+	  AND M.STATUS = 'P'
+	  AND C.STATUS = 'P'
+	  AND P.APP_NAME = #{wsAppName}
+	  AND P.WS_NAME = #{wsName}
+	  AND P.OPERATION= #{wsOperationName}
+</select>
+
+<insert id="insertLogTimeConsumption" parameterType="com.path.dbmaps.vo.IMCO_PWS_TIMESTAMP_LOGVO">
+	INSERT INTO IMCO_PWS_TIMESTAMP_LOG(REQUEST_ID,STEP_NAME,STEP_STAGE,STEP_TIMESTAMP,BUSINESS_AREA,SERVICE_NAME,OPERATION_NAME)
+	SELECT #{REQUEST_ID},#{STEP_NAME},#{STEP_STAGE},#{STEP_TIMESTAMP, jdbcType=TIMESTAMP},#{BUSINESS_AREA},#{SERVICE_NAME},#{OPERATION_NAME}
+	FROM DUAL
+	WHERE NOT EXISTS(
+					SELECT 1 FROM IMCO_PWS_TIMESTAMP_LOG L 
+					WHERE L.REQUEST_ID = #{REQUEST_ID}  
+					AND L.STEP_NAME=  #{STEP_NAME}
+					AND L.STEP_STAGE = #{STEP_STAGE})
+</insert>
+</mapper>

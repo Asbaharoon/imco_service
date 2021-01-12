@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSTRXTYPE">
+	<resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSTRXTYPEVO">
+		<id column="CODE" property="CODE" />
+		<id column="COMP_CODE" property="COMP_CODE" />
+		<result column="SHORT_DESC_ENG" property="SHORT_DESC_ENG" />
+		<result column="SHORT_DESC_ARAB" property="SHORT_DESC_ARAB" />
+		<result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+		<result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+		<result column="SYSTEM" property="SYSTEM" />
+		<result column="B_ACC_CY" property="b_ACC_CY" />
+		<result column="B_ACC_GL" property="b_ACC_GL" />
+		<result column="B_ACC_CIF" property="b_ACC_CIF" />
+		<result column="B_ACC_SL" property="b_ACC_SL" />
+		<result column="C_ACC_CY" property="c_ACC_CY" />
+		<result column="C_ACC_GL" property="c_ACC_GL" />
+		<result column="C_ACC_CIF" property="c_ACC_CIF" />
+		<result column="C_ACC_SL" property="c_ACC_SL" />
+		<result column="CATEGORY" property="CATEGORY" />
+		<result column="C_TYPE_GL" property="c_TYPE_GL" />
+		<result column="B_TYPE_GL" property="b_TYPE_GL" />
+		<result column="CHARGES_CODE" property="CHARGES_CODE" />
+		<result column="INCOME_ACC_CY" property="INCOME_ACC_CY" />
+		<result column="INCOME_ACC_GL" property="INCOME_ACC_GL" />
+		<result column="INCOME_ACC_CIF" property="INCOME_ACC_CIF" />
+		<result column="INCOME_ACC_SL" property="INCOME_ACC_SL" />
+		<result column="EXP_ACC_CY" property="EXP_ACC_CY" />
+		<result column="EXP_ACC_GL" property="EXP_ACC_GL" />
+		<result column="EXP_ACC_CIF" property="EXP_ACC_CIF" />
+		<result column="EXP_ACC_SL" property="EXP_ACC_SL" />
+		<result column="REP_ID" property="REP_ID" />
+		<result column="INCLUDE_CAPITAL" property="INCLUDE_CAPITAL" />
+		<result column="CSM_TRX_CODE" property="CSM_TRX_CODE" />
+		<result column="DATE_UPDATED" property="DATE_UPDATED" />
+		<result column="STATUS" property="STATUS" />
+		<result column="CREATE_PLACMENT_BORROWING_YN" property="CREATE_PLACMENT_BORROWING_YN" />
+		<result column="EXPENSE_PROFIT_RECEIVABLE_CIF" property="EXPENSE_PROFIT_RECEIVABLE_CIF" />
+		<result column="EXPENSE_PROFIT_RECEIVABLE_GL" property="EXPENSE_PROFIT_RECEIVABLE_GL" />
+		<result column="EXPENSE_PROFIT_RECEIVABLE_SL" property="EXPENSE_PROFIT_RECEIVABLE_SL" />
+		<result column="PLACEMENT_BORROWING_CIF" property="PLACEMENT_BORROWING_CIF" />
+		<result column="PLACEMENT_BORROWING_GL" property="PLACEMENT_BORROWING_GL" />
+		<result column="PLACEMENT_BORROWING_SL" property="PLACEMENT_BORROWING_SL" />
+		<result column="PREMIUM_DEFERRED_PROFIT_CIF" property="PREMIUM_DEFERRED_PROFIT_CIF" />
+		<result column="PREMIUM_DEFERRED_PROFIT_GL" property="PREMIUM_DEFERRED_PROFIT_GL" />
+		<result column="PREMIUM_DEFERRED_PROFIT_SL" property="PREMIUM_DEFERRED_PROFIT_SL" />
+		<result column="PRODUCT_CLASS" property="PRODUCT_CLASS" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CODE, COMP_CODE, SHORT_DESC_ENG, SHORT_DESC_ARAB,
+		LONG_DESC_ENG,
+		LONG_DESC_ARAB,
+		SYSTEM, B_ACC_CY, B_ACC_GL, B_ACC_CIF,
+		B_ACC_SL, C_ACC_CY, C_ACC_GL,
+		C_ACC_CIF, C_ACC_SL,
+		CATEGORY, C_TYPE_GL,
+		B_TYPE_GL, CHARGES_CODE, INCOME_ACC_CY, INCOME_ACC_GL,
+		INCOME_ACC_CIF,
+		INCOME_ACC_SL, EXP_ACC_CY, EXP_ACC_GL, EXP_ACC_CIF, EXP_ACC_SL,
+		REP_ID,
+		INCLUDE_CAPITAL,
+		CSM_TRX_CODE, DATE_UPDATED, STATUS,
+		CREATE_PLACMENT_BORROWING_YN, EXPENSE_PROFIT_RECEIVABLE_CIF,
+		EXPENSE_PROFIT_RECEIVABLE_GL, EXPENSE_PROFIT_RECEIVABLE_SL,
+		PLACEMENT_BORROWING_CIF,
+		PLACEMENT_BORROWING_GL, PLACEMENT_BORROWING_SL, PREMIUM_DEFERRED_PROFIT_CIF,
+		PREMIUM_DEFERRED_PROFIT_GL,
+		PREMIUM_DEFERRED_PROFIT_SL, PRODUCT_CLASS
+	</sql>
+	<select id="selectPMSTRXTYPE" resultMap="BaseResultMap"
+		parameterType="com.path.dbmaps.vo.PMSTRXTYPEVOKey">
+		select
+		<include refid="Base_Column_List" />
+		from PMSTRXTYPE
+		where CODE = #{CODE}
+		and COMP_CODE = #{COMP_CODE}
+		<if test="STATUS != null">
+			and STATUS =#{STATUS}
+		</if>
+	</select>
+	<delete id="deletePMSTRXTYPE" parameterType="com.path.dbmaps.vo.PMSTRXTYPEVOKey">
+		delete from
+		PMSTRXTYPE
+		where CODE = #{CODE}
+		and COMP_CODE = #{COMP_CODE}
+	</delete>
+	<insert id="insertPMSTRXTYPE" parameterType="com.path.dbmaps.vo.PMSTRXTYPEVO">
+		insert into PMSTRXTYPE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="CODE != null and CODE != emptyBigDecimalValue">
+				CODE,
+			</if>
+			<if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue">
+				COMP_CODE,
+			</if>
+			<if test="SHORT_DESC_ENG != null">
+				SHORT_DESC_ENG,
+			</if>
+			<if test="SHORT_DESC_ARAB != null">
+				SHORT_DESC_ARAB,
+			</if>
+			<if test="LONG_DESC_ENG != null">
+				LONG_DESC_ENG,
+			</if>
+			<if test="LONG_DESC_ARAB != null">
+				LONG_DESC_ARAB,
+			</if>
+			<if test="SYSTEM != null and SYSTEM != emptyBigDecimalValue">
+				SYSTEM,
+			</if>
+			<if test="b_ACC_CY != null and b_ACC_CY != emptyBigDecimalValue">
+				B_ACC_CY,
+			</if>
+			<if test="b_ACC_GL != null and b_ACC_GL != emptyBigDecimalValue">
+				B_ACC_GL,
+			</if>
+			<if test="b_ACC_CIF != null and b_ACC_CIF != emptyBigDecimalValue">
+				B_ACC_CIF,
+			</if>
+			<if test="b_ACC_SL != null and b_ACC_SL != emptyBigDecimalValue">
+				B_ACC_SL,
+			</if>
+			<if test="c_ACC_CY != null and c_ACC_CY != emptyBigDecimalValue">
+				C_ACC_CY,
+			</if>
+			<if test="c_ACC_GL != null and c_ACC_GL != emptyBigDecimalValue">
+				C_ACC_GL,
+			</if>
+			<if test="c_ACC_CIF != null and c_ACC_CIF != emptyBigDecimalValue">
+				C_ACC_CIF,
+			</if>
+			<if test="c_ACC_SL != null and c_ACC_SL != emptyBigDecimalValue">
+				C_ACC_SL,
+			</if>
+			<if test="CATEGORY != null">
+				CATEGORY,
+			</if>
+			<if test="c_TYPE_GL != null and c_TYPE_GL != emptyBigDecimalValue">
+				C_TYPE_GL,
+			</if>
+			<if test="b_TYPE_GL != null and b_TYPE_GL != emptyBigDecimalValue">
+				B_TYPE_GL,
+			</if>
+			<if test="CHARGES_CODE != null and CHARGES_CODE != emptyBigDecimalValue">
+				CHARGES_CODE,
+			</if>
+			<if test="INCOME_ACC_CY != null and INCOME_ACC_CY != emptyBigDecimalValue">
+				INCOME_ACC_CY,
+			</if>
+			<if test="INCOME_ACC_GL != null and INCOME_ACC_GL != emptyBigDecimalValue">
+				INCOME_ACC_GL,
+			</if>
+			<if
+				test="INCOME_ACC_CIF != null and INCOME_ACC_CIF != emptyBigDecimalValue">
+				INCOME_ACC_CIF,
+			</if>
+			<if test="INCOME_ACC_SL != null and INCOME_ACC_SL != emptyBigDecimalValue">
+				INCOME_ACC_SL,
+			</if>
+			<if test="EXP_ACC_CY != null and EXP_ACC_CY != emptyBigDecimalValue">
+				EXP_ACC_CY,
+			</if>
+			<if test="EXP_ACC_GL != null and EXP_ACC_GL != emptyBigDecimalValue">
+				EXP_ACC_GL,
+			</if>
+			<if test="EXP_ACC_CIF != null and EXP_ACC_CIF != emptyBigDecimalValue">
+				EXP_ACC_CIF,
+			</if>
+			<if test="EXP_ACC_SL != null and EXP_ACC_SL != emptyBigDecimalValue">
+				EXP_ACC_SL,
+			</if>
+			<if test="REP_ID != null and REP_ID != emptyBigDecimalValue">
+				REP_ID,
+			</if>
+			<if test="INCLUDE_CAPITAL != null">
+				INCLUDE_CAPITAL,
+			</if>
+			<if test="CSM_TRX_CODE != null and CSM_TRX_CODE != emptyBigDecimalValue">
+				CSM_TRX_CODE,
+			</if>
+			<if test="STATUS != null">
+				STATUS,
+			</if>
+			DATE_UPDATED,
+			<if test="CREATE_PLACMENT_BORROWING_YN != null">
+				CREATE_PLACMENT_BORROWING_YN,
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_CIF != null and EXPENSE_PROFIT_RECEIVABLE_CIF != emptyBigDecimalValue">
+				EXPENSE_PROFIT_RECEIVABLE_CIF,
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_GL != null and EXPENSE_PROFIT_RECEIVABLE_GL != emptyBigDecimalValue">
+				EXPENSE_PROFIT_RECEIVABLE_GL,
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_SL != null and EXPENSE_PROFIT_RECEIVABLE_SL != emptyBigDecimalValue">
+				EXPENSE_PROFIT_RECEIVABLE_SL,
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_CIF != null and PLACEMENT_BORROWING_CIF != emptyBigDecimalValue">
+				PLACEMENT_BORROWING_CIF,
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_GL != null and PLACEMENT_BORROWING_GL != emptyBigDecimalValue">
+				PLACEMENT_BORROWING_GL,
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_SL != null and PLACEMENT_BORROWING_SL != emptyBigDecimalValue">
+				PLACEMENT_BORROWING_SL,
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_CIF != null and PREMIUM_DEFERRED_PROFIT_CIF != emptyBigDecimalValue">
+				PREMIUM_DEFERRED_PROFIT_CIF,
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_GL != null and PREMIUM_DEFERRED_PROFIT_GL != emptyBigDecimalValue">
+				PREMIUM_DEFERRED_PROFIT_GL,
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_SL != null and PREMIUM_DEFERRED_PROFIT_SL != emptyBigDecimalValue">
+				PREMIUM_DEFERRED_PROFIT_SL,
+			</if>
+			<if test="PRODUCT_CLASS != null and PRODUCT_CLASS != emptyBigDecimalValue">
+				PRODUCT_CLASS,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="CODE != null and CODE != emptyBigDecimalValue">
+				#{CODE},
+			</if>
+			<if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue">
+				#{COMP_CODE},
+			</if>
+			<if test="SHORT_DESC_ENG != null">
+				#{SHORT_DESC_ENG},
+			</if>
+			<if test="SHORT_DESC_ARAB != null">
+				#{SHORT_DESC_ARAB},
+			</if>
+			<if test="LONG_DESC_ENG != null">
+				#{LONG_DESC_ENG},
+			</if>
+			<if test="LONG_DESC_ARAB != null">
+				#{LONG_DESC_ARAB},
+			</if>
+			<if test="SYSTEM != null and SYSTEM != emptyBigDecimalValue">
+				#{SYSTEM},
+			</if>
+			<if test="b_ACC_CY != null and b_ACC_CY != emptyBigDecimalValue">
+				#{b_ACC_CY},
+			</if>
+			<if test="b_ACC_GL != null and b_ACC_GL != emptyBigDecimalValue">
+				#{b_ACC_GL},
+			</if>
+			<if test="b_ACC_CIF != null and b_ACC_CIF != emptyBigDecimalValue">
+				#{b_ACC_CIF},
+			</if>
+			<if test="b_ACC_SL != null and b_ACC_SL != emptyBigDecimalValue">
+				#{b_ACC_SL},
+			</if>
+			<if test="c_ACC_CY != null and c_ACC_CY != emptyBigDecimalValue">
+				#{c_ACC_CY},
+			</if>
+			<if test="c_ACC_GL != null and c_ACC_GL != emptyBigDecimalValue">
+				#{c_ACC_GL},
+			</if>
+			<if test="c_ACC_CIF != null and c_ACC_CIF != emptyBigDecimalValue">
+				#{c_ACC_CIF},
+			</if>
+			<if test="c_ACC_SL != null and c_ACC_SL != emptyBigDecimalValue">
+				#{c_ACC_SL},
+			</if>
+			<if test="CATEGORY != null">
+				#{CATEGORY},
+			</if>
+			<if test="c_TYPE_GL != null and c_TYPE_GL != emptyBigDecimalValue">
+				#{c_TYPE_GL},
+			</if>
+			<if test="b_TYPE_GL != null and b_TYPE_GL != emptyBigDecimalValue">
+				#{b_TYPE_GL},
+			</if>
+			<if test="CHARGES_CODE != null and CHARGES_CODE != emptyBigDecimalValue">
+				#{CHARGES_CODE},
+			</if>
+			<if test="INCOME_ACC_CY != null and INCOME_ACC_CY != emptyBigDecimalValue">
+				#{INCOME_ACC_CY},
+			</if>
+			<if test="INCOME_ACC_GL != null and INCOME_ACC_GL != emptyBigDecimalValue">
+				#{INCOME_ACC_GL},
+			</if>
+			<if
+				test="INCOME_ACC_CIF != null and INCOME_ACC_CIF != emptyBigDecimalValue">
+				#{INCOME_ACC_CIF},
+			</if>
+			<if test="INCOME_ACC_SL != null and INCOME_ACC_SL != emptyBigDecimalValue">
+				#{INCOME_ACC_SL},
+			</if>
+			<if test="EXP_ACC_CY != null and EXP_ACC_CY != emptyBigDecimalValue">
+				#{EXP_ACC_CY},
+			</if>
+			<if test="EXP_ACC_GL != null and EXP_ACC_GL != emptyBigDecimalValue">
+				#{EXP_ACC_GL},
+			</if>
+			<if test="EXP_ACC_CIF != null and EXP_ACC_CIF != emptyBigDecimalValue">
+				#{EXP_ACC_CIF},
+			</if>
+			<if test="EXP_ACC_SL != null and EXP_ACC_SL != emptyBigDecimalValue">
+				#{EXP_ACC_SL},
+			</if>
+			<if test="REP_ID != null and REP_ID != emptyBigDecimalValue">
+				#{REP_ID},
+			</if>
+			<if test="INCLUDE_CAPITAL != null">
+				#{INCLUDE_CAPITAL},
+			</if>
+			<if test="CSM_TRX_CODE != null and CSM_TRX_CODE != emptyBigDecimalValue">
+				#{CSM_TRX_CODE},
+			</if>
+			<if test="STATUS != null">
+				#{STATUS},
+			</if>
+			<choose>
+				<when test="isSybase == 1">
+					GETDATE(),
+				</when>
+				<otherwise>
+					SYSDATE,
+				</otherwise>
+			</choose>
+			<if test="CREATE_PLACMENT_BORROWING_YN != null">
+				#{CREATE_PLACMENT_BORROWING_YN},
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_CIF != null and EXPENSE_PROFIT_RECEIVABLE_CIF != emptyBigDecimalValue">
+				#{EXPENSE_PROFIT_RECEIVABLE_CIF},
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_GL != null and EXPENSE_PROFIT_RECEIVABLE_GL != emptyBigDecimalValue">
+				#{EXPENSE_PROFIT_RECEIVABLE_GL},
+			</if>
+			<if
+				test="EXPENSE_PROFIT_RECEIVABLE_SL != null and EXPENSE_PROFIT_RECEIVABLE_SL != emptyBigDecimalValue">
+				#{EXPENSE_PROFIT_RECEIVABLE_SL},
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_CIF != null and PLACEMENT_BORROWING_CIF != emptyBigDecimalValue">
+				#{PLACEMENT_BORROWING_CIF},
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_GL != null and PLACEMENT_BORROWING_GL != emptyBigDecimalValue">
+				#{PLACEMENT_BORROWING_GL},
+			</if>
+			<if
+				test="PLACEMENT_BORROWING_SL != null and PLACEMENT_BORROWING_SL != emptyBigDecimalValue">
+				#{PLACEMENT_BORROWING_SL},
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_CIF != null and PREMIUM_DEFERRED_PROFIT_CIF != emptyBigDecimalValue">
+				#{PREMIUM_DEFERRED_PROFIT_CIF},
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_GL != null and PREMIUM_DEFERRED_PROFIT_GL != emptyBigDecimalValue">
+				#{PREMIUM_DEFERRED_PROFIT_GL},
+			</if>
+			<if
+				test="PREMIUM_DEFERRED_PROFIT_SL != null and PREMIUM_DEFERRED_PROFIT_SL != emptyBigDecimalValue">
+				#{PREMIUM_DEFERRED_PROFIT_SL},
+			</if>
+			<if test="PRODUCT_CLASS != null and PRODUCT_CLASS != emptyBigDecimalValue">
+				#{PRODUCT_CLASS},
+			</if>
+		</trim>
+	</insert>
+	<sql id="sql_updatePMSTRXTYPE">
+		update PMSTRXTYPE
+		<set>
+			<if test="SHORT_DESC_ENG != null">
+				SHORT_DESC_ENG = #{SHORT_DESC_ENG},
+			</if>
+			<if test="SHORT_DESC_ARAB != null">
+				SHORT_DESC_ARAB = #{SHORT_DESC_ARAB},
+			</if>
+			<if test="LONG_DESC_ENG != null">
+				LONG_DESC_ENG = #{LONG_DESC_ENG},
+			</if>
+			<if test="LONG_DESC_ARAB != null">
+				LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+			</if>
+			<if test="SYSTEM != null">
+				<choose>
+					<when test="SYSTEM == emptyBigDecimalValue">
+						SYSTEM = NULL ,
+					</when>
+					<otherwise>
+						SYSTEM = #{SYSTEM},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="b_ACC_CY != null">
+				<choose>
+					<when test="b_ACC_CY == emptyBigDecimalValue">
+						B_ACC_CY = NULL ,
+					</when>
+					<otherwise>
+						B_ACC_CY = #{b_ACC_CY},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="b_ACC_GL != null">
+				<choose>
+					<when test="b_ACC_GL == emptyBigDecimalValue">
+						B_ACC_GL = NULL ,
+					</when>
+					<otherwise>
+						B_ACC_GL = #{b_ACC_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="b_ACC_CIF != null">
+				<choose>
+					<when test="b_ACC_CIF == emptyBigDecimalValue">
+						B_ACC_CIF = NULL ,
+					</when>
+					<otherwise>
+						B_ACC_CIF = #{b_ACC_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="b_ACC_SL != null">
+				<choose>
+					<when test="b_ACC_SL == emptyBigDecimalValue">
+						B_ACC_SL = NULL ,
+					</when>
+					<otherwise>
+						B_ACC_SL = #{b_ACC_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="c_ACC_CY != null">
+				<choose>
+					<when test="c_ACC_CY == emptyBigDecimalValue">
+						C_ACC_CY = NULL ,
+					</when>
+					<otherwise>
+						C_ACC_CY = #{c_ACC_CY},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="c_ACC_GL != null">
+				<choose>
+					<when test="c_ACC_GL == emptyBigDecimalValue">
+						C_ACC_GL = NULL ,
+					</when>
+					<otherwise>
+						C_ACC_GL = #{c_ACC_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="c_ACC_CIF != null">
+				<choose>
+					<when test="c_ACC_CIF == emptyBigDecimalValue">
+						C_ACC_CIF = NULL ,
+					</when>
+					<otherwise>
+						C_ACC_CIF = #{c_ACC_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="c_ACC_SL != null">
+				<choose>
+					<when test="c_ACC_SL == emptyBigDecimalValue">
+						C_ACC_SL = NULL ,
+					</when>
+					<otherwise>
+						C_ACC_SL = #{c_ACC_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="CATEGORY != null">
+				CATEGORY = #{CATEGORY},
+			</if>
+			<if test="c_TYPE_GL != null">
+				<choose>
+					<when test="c_TYPE_GL == emptyBigDecimalValue">
+						C_TYPE_GL = NULL ,
+					</when>
+					<otherwise>
+						C_TYPE_GL = #{c_TYPE_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="b_TYPE_GL != null">
+				<choose>
+					<when test="b_TYPE_GL == emptyBigDecimalValue">
+						B_TYPE_GL = NULL ,
+					</when>
+					<otherwise>
+						B_TYPE_GL = #{b_TYPE_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="CHARGES_CODE != null">
+				<choose>
+					<when test="CHARGES_CODE == emptyBigDecimalValue">
+						CHARGES_CODE = NULL ,
+					</when>
+					<otherwise>
+						CHARGES_CODE = #{CHARGES_CODE},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="INCOME_ACC_CY != null">
+				<choose>
+					<when test="INCOME_ACC_CY == emptyBigDecimalValue">
+						INCOME_ACC_CY = NULL ,
+					</when>
+					<otherwise>
+						INCOME_ACC_CY = #{INCOME_ACC_CY},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="INCOME_ACC_GL != null">
+				<choose>
+					<when test="INCOME_ACC_GL == emptyBigDecimalValue">
+						INCOME_ACC_GL = NULL ,
+					</when>
+					<otherwise>
+						INCOME_ACC_GL = #{INCOME_ACC_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="INCOME_ACC_CIF != null">
+				<choose>
+					<when test="INCOME_ACC_CIF == emptyBigDecimalValue">
+						INCOME_ACC_CIF = NULL ,
+					</when>
+					<otherwise>
+						INCOME_ACC_CIF = #{INCOME_ACC_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="INCOME_ACC_SL != null">
+				<choose>
+					<when test="INCOME_ACC_SL == emptyBigDecimalValue">
+						INCOME_ACC_SL = NULL ,
+					</when>
+					<otherwise>
+						INCOME_ACC_SL = #{INCOME_ACC_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXP_ACC_CY != null">
+				<choose>
+					<when test="EXP_ACC_CY == emptyBigDecimalValue">
+						EXP_ACC_CY = NULL ,
+					</when>
+					<otherwise>
+						EXP_ACC_CY = #{EXP_ACC_CY},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXP_ACC_GL != null">
+				<choose>
+					<when test="EXP_ACC_GL == emptyBigDecimalValue">
+						EXP_ACC_GL = NULL ,
+					</when>
+					<otherwise>
+						EXP_ACC_GL = #{EXP_ACC_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXP_ACC_CIF != null">
+				<choose>
+					<when test="EXP_ACC_CIF == emptyBigDecimalValue">
+						EXP_ACC_CIF = NULL ,
+					</when>
+					<otherwise>
+						EXP_ACC_CIF = #{EXP_ACC_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXP_ACC_SL != null">
+				<choose>
+					<when test="EXP_ACC_SL == emptyBigDecimalValue">
+						EXP_ACC_SL = NULL ,
+					</when>
+					<otherwise>
+						EXP_ACC_SL = #{EXP_ACC_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="REP_ID != null">
+				<choose>
+					<when test="REP_ID == emptyBigDecimalValue">
+						REP_ID = NULL ,
+					</when>
+					<otherwise>
+						REP_ID = #{REP_ID},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="INCLUDE_CAPITAL != null">
+				INCLUDE_CAPITAL = #{INCLUDE_CAPITAL},
+			</if>
+			<if test="CSM_TRX_CODE != null">
+				<choose>
+					<when test="CSM_TRX_CODE == emptyBigDecimalValue">
+						CSM_TRX_CODE = NULL ,
+					</when>
+					<otherwise>
+						CSM_TRX_CODE = #{CSM_TRX_CODE},
+					</otherwise>
+				</choose>
+			</if>
+			DATE_UPDATED =
+			<choose>
+				<when test="isSybase == 1">
+					GETDATE(),
+				</when>
+				<otherwise>
+					SYSDATE,
+				</otherwise>
+			</choose>
+			<if test="STATUS != null">
+				STATUS = #{STATUS},
+			</if>
+			<if test="CREATE_PLACMENT_BORROWING_YN != null">
+				CREATE_PLACMENT_BORROWING_YN = #{CREATE_PLACMENT_BORROWING_YN},
+			</if>
+			<if test="EXPENSE_PROFIT_RECEIVABLE_CIF != null">
+				<choose>
+					<when test="EXPENSE_PROFIT_RECEIVABLE_CIF == emptyBigDecimalValue">
+						EXPENSE_PROFIT_RECEIVABLE_CIF = NULL ,
+					</when>
+					<otherwise>
+						EXPENSE_PROFIT_RECEIVABLE_CIF = #{EXPENSE_PROFIT_RECEIVABLE_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXPENSE_PROFIT_RECEIVABLE_GL != null">
+				<choose>
+					<when test="EXPENSE_PROFIT_RECEIVABLE_GL == emptyBigDecimalValue">
+						EXPENSE_PROFIT_RECEIVABLE_GL = NULL ,
+					</when>
+					<otherwise>
+						EXPENSE_PROFIT_RECEIVABLE_GL = #{EXPENSE_PROFIT_RECEIVABLE_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="EXPENSE_PROFIT_RECEIVABLE_SL != null">
+				<choose>
+					<when test="EXPENSE_PROFIT_RECEIVABLE_SL == emptyBigDecimalValue">
+						EXPENSE_PROFIT_RECEIVABLE_SL = NULL ,
+					</when>
+					<otherwise>
+						EXPENSE_PROFIT_RECEIVABLE_SL = #{EXPENSE_PROFIT_RECEIVABLE_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PLACEMENT_BORROWING_CIF != null">
+				<choose>
+					<when test="PLACEMENT_BORROWING_CIF == emptyBigDecimalValue">
+						PLACEMENT_BORROWING_CIF = NULL ,
+					</when>
+					<otherwise>
+						PLACEMENT_BORROWING_CIF = #{PLACEMENT_BORROWING_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PLACEMENT_BORROWING_GL != null">
+				<choose>
+					<when test="PLACEMENT_BORROWING_GL == emptyBigDecimalValue">
+						PLACEMENT_BORROWING_GL = NULL ,
+					</when>
+					<otherwise>
+						PLACEMENT_BORROWING_GL = #{PLACEMENT_BORROWING_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PLACEMENT_BORROWING_SL != null">
+				<choose>
+					<when test="PLACEMENT_BORROWING_SL == emptyBigDecimalValue">
+						PLACEMENT_BORROWING_SL = NULL ,
+					</when>
+					<otherwise>
+						PLACEMENT_BORROWING_SL = #{PLACEMENT_BORROWING_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PREMIUM_DEFERRED_PROFIT_CIF != null">
+				<choose>
+					<when test="PREMIUM_DEFERRED_PROFIT_CIF == emptyBigDecimalValue">
+						PREMIUM_DEFERRED_PROFIT_CIF = NULL ,
+					</when>
+					<otherwise>
+						PREMIUM_DEFERRED_PROFIT_CIF = #{PREMIUM_DEFERRED_PROFIT_CIF},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PREMIUM_DEFERRED_PROFIT_GL != null">
+				<choose>
+					<when test="PREMIUM_DEFERRED_PROFIT_GL == emptyBigDecimalValue">
+						PREMIUM_DEFERRED_PROFIT_GL = NULL ,
+					</when>
+					<otherwise>
+						PREMIUM_DEFERRED_PROFIT_GL = #{PREMIUM_DEFERRED_PROFIT_GL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PREMIUM_DEFERRED_PROFIT_SL != null">
+				<choose>
+					<when test="PREMIUM_DEFERRED_PROFIT_SL == emptyBigDecimalValue">
+						PREMIUM_DEFERRED_PROFIT_SL = NULL ,
+					</when>
+					<otherwise>
+						PREMIUM_DEFERRED_PROFIT_SL = #{PREMIUM_DEFERRED_PROFIT_SL},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="PRODUCT_CLASS != null">
+				<choose>
+					<when test="PRODUCT_CLASS == emptyBigDecimalValue">
+						PRODUCT_CLASS = NULL ,
+					</when>
+					<otherwise>
+						PRODUCT_CLASS = #{PRODUCT_CLASS},
+					</otherwise>
+				</choose>
+			</if>
+		</set>
+		where CODE = #{CODE}
+		and COMP_CODE = #{COMP_CODE}
+	</sql>
+	<update id="updatePMSTRXTYPE" parameterType="com.path.dbmaps.vo.PMSTRXTYPEVO">
+		<include refid="sql_updatePMSTRXTYPE" />
+		<if test="DATE_UPDATED != null">
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>
+	</update>
+</mapper>

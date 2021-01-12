@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="accountTierNoMapper">
+
+	<resultMap id="accountTierNoListMap" type="com.path.vo.core.account.AccountTierNoCO">
+		<result property="accTierNO"        	column="ACC_LIMIT_TIER_NO" />
+		<result property="accLimitScreenCode"   column="CODE" />
+		<result property="accLimitDesc"        	column="BRIEF_NAME_ENG" />
+		<result property="accLimitBy"        	column="ACC_LIMIT_TYPE_BY" />
+	</resultMap>
+	
+	 <select id="accountTierNoList" resultMap="accountTierNoListMap" parameterType="accountSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="accountTierNoCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+
+	<select id="accountTierNoListCount" resultType="int"	parameterType="accountSC">
+	  <include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accountTierNoCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<sql id="accountTierNoCommon">
+		select DISTINCT C.ACC_LIMIT_TIER_NO ACC_LIMIT_TIER_NO, 
+						C.CODE CODE, 
+						C.BRIEF_NAME_ENG BRIEF_NAME_ENG, 
+						CASE WHEN C.ACC_LIMIT_TYPE_BY = 'A' THEN 'ACCOUNT' ELSE 'ACCOUNT TYPE' END ACC_LIMIT_TYPE_BY
+	    from CTS_ACC_LIMITS C, CTS_ACC_LIMITS_DET CD, 
+	    CTS_ACC_LIMITS_ACC_TYPES CAT, CTS_ACC_LIMITS_CIF_TYPES CCT
+	    WHERE C.COMP_CODE = CD.COMP_CODE
+	    AND C.CODE = CD.CODE    
+	    AND C.COMP_CODE = CAT.COMP_CODE
+	    AND C.CODE = CAT.CODE						 		
+		AND C.COMP_CODE = CCT.COMP_CODE
+		AND C.CODE = CCT.CODE
+		AND C.COMP_CODE =  #{compCode, jdbcType=NUMERIC}
+		AND C.STATUS = 'P'
+		AND C.ACC_LIMIT_APPLY_TIER_YN = '1'
+		AND C.ACC_LIMIT_TIER_NO IS NOT NULL 
+		AND (CD.ACC_LIMIT_CY =  #{currencyCode, jdbcType=NUMERIC}) 
+		AND (CAT.ACC_TYPE =  #{glCode, jdbcType=NUMERIC}  OR CAT.ACC_TYPE = 0)
+		AND (CCT.ACC_LIMIT_CIF_TYPE = (SELECT CIF.CIF_TYPE
+										FROM CIF
+										WHERE CIF.COMP_CODE =  #{compCode, jdbcType=NUMERIC}
+										AND	  CIF.CIF_NO = #{cifCode, jdbcType=NUMERIC}
+										)		
+		     OR CCT.ACC_LIMIT_CIF_TYPE = 0)
+	</sql>
+	
+	<select  id = "returnAccountTierNoCount" resultType="int"	parameterType="accountSC">
+	
+	SELECT COUNT(1)
+    from CTS_ACC_LIMITS C, CTS_ACC_LIMITS_DET CD, 
+    CTS_ACC_LIMITS_ACC_TYPES CAT, CTS_ACC_LIMITS_CIF_TYPES CCT
+    WHERE C.COMP_CODE = CD.COMP_CODE
+    AND C.CODE = CD.CODE    
+    AND C.COMP_CODE = CAT.COMP_CODE
+    AND C.CODE = CAT.CODE						 		
+	AND C.COMP_CODE = CCT.COMP_CODE
+	AND C.CODE = CCT.CODE
+	AND C.COMP_CODE =  #{compCode, jdbcType=NUMERIC}
+	AND C.STATUS = 'P'
+	AND C.ACC_LIMIT_APPLY_TIER_YN = '1'
+	AND C.ACC_LIMIT_TIER_NO IS NOT NULL 
+	AND (CD.ACC_LIMIT_CY = #{currencyCode, jdbcType=NUMERIC}) 
+	AND (CAT.ACC_TYPE = #{glCode, jdbcType=NUMERIC} OR CAT.ACC_TYPE = 0)
+	AND (CCT.ACC_LIMIT_CIF_TYPE = (SELECT CIF.CIF_TYPE
+									FROM CIF
+									WHERE CIF.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+									AND	  CIF.CIF_NO = #{cifCode, jdbcType=NUMERIC}
+									)		
+	     OR CCT.ACC_LIMIT_CIF_TYPE = 0)
+		AND ACC_LIMIT_TIER_NO =  #{accTierNo, jdbcType=NUMERIC} 
+	</select>
+	
+	<select id = "returnAccountTierNoSuspension" resultType="int"	parameterType="accountSC" >
+	 SELECT COUNT(1)
+	 FROM CTS_ACC_LIMITS C, CTS_ACC_LIMITS_DET D
+	 WHERE C.COMP_CODE = D.COMP_CODE
+	 AND C.CODE = D.CODE
+	 AND C.ACC_LIMIT_TIER_NO = #{accTierNo, jdbcType=NUMERIC} 
+	 AND D.ACC_LIMIT_ACTION_SUSP_REASON = CASE WHEN #{accLimitSuspReason, jdbcType=NUMERIC} IS NOT NULL THEN #{accLimitSuspReason, jdbcType=NUMERIC}  ELSE  D.ACC_LIMIT_ACTION_SUSP_REASON END   
+	 AND C.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+	 AND C.STATUS = 'P'
+	</select>
+</mapper>

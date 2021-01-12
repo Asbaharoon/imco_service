@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_SCHEMA_DOCTYPE_LINK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_SCHEMA_DOCTYPE_LINKVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOCTYPE" property="DOCTYPE" />
+    <id column="SCHEMA_CODE" property="SCHEMA_CODE" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DOCTYPE, SCHEMA_CODE, TYPE_CODE, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE, DATE_UPDATED
+  </sql>
+  <select id="selectTFS_SCHEMA_DOCTYPE_LINK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_SCHEMA_DOCTYPE_LINKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_SCHEMA_DOCTYPE_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and SCHEMA_CODE = #{SCHEMA_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteTFS_SCHEMA_DOCTYPE_LINK" parameterType="com.path.dbmaps.vo.TFS_SCHEMA_DOCTYPE_LINKVOKey" >
+    delete from TFS_SCHEMA_DOCTYPE_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and SCHEMA_CODE = #{SCHEMA_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertTFS_SCHEMA_DOCTYPE_LINK" parameterType="com.path.dbmaps.vo.TFS_SCHEMA_DOCTYPE_LINKVO" >
+    insert into TFS_SCHEMA_DOCTYPE_LINK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOCTYPE != null and !&quot;&quot;.equals(DOCTYPE)" >
+        DOCTYPE,
+      </if>
+      <if test="SCHEMA_CODE != null and SCHEMA_CODE != emptyBigDecimalValue" >
+        SCHEMA_CODE,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOCTYPE != null and !&quot;&quot;.equals(DOCTYPE)" >
+        #{DOCTYPE},
+      </if>
+      <if test="SCHEMA_CODE != null and SCHEMA_CODE != emptyBigDecimalValue" >
+        #{SCHEMA_CODE},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_SCHEMA_DOCTYPE_LINK" >
+    update TFS_SCHEMA_DOCTYPE_LINK
+    <set >
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and SCHEMA_CODE = #{SCHEMA_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateTFS_SCHEMA_DOCTYPE_LINK" parameterType="com.path.dbmaps.vo.TFS_SCHEMA_DOCTYPE_LINKVO" >
+    <include refid="sql_updateTFS_SCHEMA_DOCTYPE_LINK" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

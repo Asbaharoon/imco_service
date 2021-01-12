@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_AUDIT_ACTIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >
+    <id column="ACTION_DATE" property="ACTION_DATE" />
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="AUTO_INCREMENT" property="AUTO_INCREMENT" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="MACHINE_ID" property="MACHINE_ID" />
+    <result column="RUNNING_DATE" property="RUNNING_DATE" />
+    <result column="FIELD_AUDIT_YN" property="FIELD_AUDIT_YN" />
+    <result column="TRX_DESC" property="TRX_DESC" />
+    <result column="SESSION_ID" property="SESSION_ID" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACTION_DATE, APP_NAME, AUTO_INCREMENT, PROG_REF, TRX_NBR, ACTION_TYPE, USER_ID, MACHINE_ID, 
+    RUNNING_DATE, FIELD_AUDIT_YN, TRX_DESC, SESSION_ID, BRANCH_CODE
+  </sql>
+  <select id="selectS_AUDIT_ACTIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_AUDIT_ACTIONS
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and AUTO_INCREMENT = #{AUTO_INCREMENT}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </select>
+  <delete id="deleteS_AUDIT_ACTIONS" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >
+    delete from S_AUDIT_ACTIONS
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and AUTO_INCREMENT = #{AUTO_INCREMENT}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </delete>
+  <insert id="insertS_AUDIT_ACTIONS" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >
+    insert into S_AUDIT_ACTIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="AUTO_INCREMENT != null and AUTO_INCREMENT != emptyBigDecimalValue" >
+        AUTO_INCREMENT,
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        PROG_REF,
+      </if>
+      <if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)" >
+        TRX_NBR,
+      </if>
+      <if test="ACTION_TYPE != null and !&quot;&quot;.equals(ACTION_TYPE)" >
+        ACTION_TYPE,
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        USER_ID,
+      </if>
+      <if test="MACHINE_ID != null and !&quot;&quot;.equals(MACHINE_ID)" >
+        MACHINE_ID,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="FIELD_AUDIT_YN != null and FIELD_AUDIT_YN != emptyBigDecimalValue" >
+        FIELD_AUDIT_YN,
+      </if>
+      <if test="TRX_DESC != null and !&quot;&quot;.equals(TRX_DESC)" >
+        TRX_DESC,
+      </if>
+      <if test="SESSION_ID != null and !&quot;&quot;.equals(SESSION_ID)" >
+        SESSION_ID,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="AUTO_INCREMENT != null and AUTO_INCREMENT != emptyBigDecimalValue" >
+        #{AUTO_INCREMENT},
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        #{PROG_REF},
+      </if>
+      <if test="TRX_NBR != null and !&quot;&quot;.equals(TRX_NBR)" >
+        #{TRX_NBR},
+      </if>
+      <if test="ACTION_TYPE != null and !&quot;&quot;.equals(ACTION_TYPE)" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="USER_ID != null and !&quot;&quot;.equals(USER_ID)" >
+        #{USER_ID},
+      </if>
+      <if test="MACHINE_ID != null and !&quot;&quot;.equals(MACHINE_ID)" >
+        #{MACHINE_ID},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="FIELD_AUDIT_YN != null and FIELD_AUDIT_YN != emptyBigDecimalValue" >
+        #{FIELD_AUDIT_YN},
+      </if>
+      <if test="TRX_DESC != null and !&quot;&quot;.equals(TRX_DESC)" >
+        #{TRX_DESC},
+      </if>
+      <if test="SESSION_ID != null and !&quot;&quot;.equals(SESSION_ID)" >
+        #{SESSION_ID},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_AUDIT_ACTIONS" >
+    update S_AUDIT_ACTIONS
+    <set >
+      <if test="ACTION_TYPE != null" >
+        <choose >
+          <when test="ACTION_TYPE.equals(&quot;&quot;)" >
+            ACTION_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ACTION_TYPE = #{ACTION_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_ID != null" >
+        <choose >
+          <when test="USER_ID.equals(&quot;&quot;)" >
+            USER_ID = NULL ,
+          </when>
+          <otherwise >
+            USER_ID = #{USER_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MACHINE_ID != null" >
+        <choose >
+          <when test="MACHINE_ID.equals(&quot;&quot;)" >
+            MACHINE_ID = NULL ,
+          </when>
+          <otherwise >
+            MACHINE_ID = #{MACHINE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE = #{RUNNING_DATE},
+      </if>
+      <if test="FIELD_AUDIT_YN != null" >
+        <choose >
+          <when test="FIELD_AUDIT_YN == emptyBigDecimalValue" >
+            FIELD_AUDIT_YN = NULL ,
+          </when>
+          <otherwise >
+            FIELD_AUDIT_YN = #{FIELD_AUDIT_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_DESC != null" >
+        <choose >
+          <when test="TRX_DESC.equals(&quot;&quot;)" >
+            TRX_DESC = NULL ,
+          </when>
+          <otherwise >
+            TRX_DESC = #{TRX_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SESSION_ID != null" >
+        <choose >
+          <when test="SESSION_ID.equals(&quot;&quot;)" >
+            SESSION_ID = NULL ,
+          </when>
+          <otherwise >
+            SESSION_ID = #{SESSION_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ACTION_DATE = #{ACTION_DATE}
+      and APP_NAME = #{APP_NAME}
+      and AUTO_INCREMENT = #{AUTO_INCREMENT}
+      and PROG_REF = #{PROG_REF}
+      and TRX_NBR = #{TRX_NBR}
+  </sql>
+  <update id="updateS_AUDIT_ACTIONS" parameterType="com.path.dbmaps.vo.S_AUDIT_ACTIONSVO" >
+    <include refid="sql_updateS_AUDIT_ACTIONS" />
+  </update>
+</mapper>

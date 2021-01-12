@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_JV_DESCRIPTIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_JV_DESCRIPTIONSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="DESCRIPTION_ARAB" property="DESCRIPTION_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DOC_TYPE, TRS_TYPE, DESCRIPTION, DESCRIPTION_ARAB
+  </sql>
+  <select id="selectTFS_JV_DESCRIPTIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_JV_DESCRIPTIONSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_JV_DESCRIPTIONS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRS_TYPE = #{TRS_TYPE}
+  </select>
+  <delete id="deleteTFS_JV_DESCRIPTIONS" parameterType="com.path.dbmaps.vo.TFS_JV_DESCRIPTIONSVOKey" >
+    delete from TFS_JV_DESCRIPTIONS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRS_TYPE = #{TRS_TYPE}
+  </delete>
+  <insert id="insertTFS_JV_DESCRIPTIONS" parameterType="com.path.dbmaps.vo.TFS_JV_DESCRIPTIONSVO" >
+    insert into TFS_JV_DESCRIPTIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="TRS_TYPE != null and TRS_TYPE != emptyBigDecimalValue" >
+        TRS_TYPE,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="DESCRIPTION_ARAB != null" >
+        DESCRIPTION_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="TRS_TYPE != null and TRS_TYPE != emptyBigDecimalValue" >
+        #{TRS_TYPE},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="DESCRIPTION_ARAB != null" >
+        #{DESCRIPTION_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_JV_DESCRIPTIONS" >
+    update TFS_JV_DESCRIPTIONS
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="DESCRIPTION_ARAB != null" >
+        DESCRIPTION_ARAB = #{DESCRIPTION_ARAB},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRS_TYPE = #{TRS_TYPE}
+  </sql>
+  <update id="updateTFS_JV_DESCRIPTIONS" parameterType="com.path.dbmaps.vo.TFS_JV_DESCRIPTIONSVO" >
+    <include refid="sql_updateTFS_JV_DESCRIPTIONS" />
+  </update>
+</mapper>

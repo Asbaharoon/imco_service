@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_ISO_CURRENCIES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_ISO_CURRENCIESVO" >
+    <id column="CY_ISO_CODE" property="CY_ISO_CODE" />
+    <result column="IS_FEMALE_NOUN_YN" property="IS_FEMALE_NOUN_YN" />
+    <result column="IS_DECIMAL_FEMALE_NOUN_YN" property="IS_DECIMAL_FEMALE_NOUN_YN" />
+    <result column="CONVERT_LIKE_CURRENCY" property="CONVERT_LIKE_CURRENCY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CY_ISO_CODE, IS_FEMALE_NOUN_YN, IS_DECIMAL_FEMALE_NOUN_YN, CONVERT_LIKE_CURRENCY
+  </sql>
+  <select id="selectSYS_PARAM_ISO_CURRENCIES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_CURRENCIESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_ISO_CURRENCIES
+    where CY_ISO_CODE = #{CY_ISO_CODE}
+  </select>
+  <delete id="deleteSYS_PARAM_ISO_CURRENCIES" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_CURRENCIESVOKey" >
+    delete from SYS_PARAM_ISO_CURRENCIES
+    where CY_ISO_CODE = #{CY_ISO_CODE}
+  </delete>
+  <insert id="insertSYS_PARAM_ISO_CURRENCIES" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_CURRENCIESVO" >
+    insert into SYS_PARAM_ISO_CURRENCIES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CY_ISO_CODE != null" >
+        CY_ISO_CODE,
+      </if>
+      <if test="IS_FEMALE_NOUN_YN != null" >
+        IS_FEMALE_NOUN_YN,
+      </if>
+      <if test="IS_DECIMAL_FEMALE_NOUN_YN != null" >
+        IS_DECIMAL_FEMALE_NOUN_YN,
+      </if>
+      <if test="CONVERT_LIKE_CURRENCY != null" >
+        CONVERT_LIKE_CURRENCY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CY_ISO_CODE != null" >
+        #{CY_ISO_CODE},
+      </if>
+      <if test="IS_FEMALE_NOUN_YN != null" >
+        #{IS_FEMALE_NOUN_YN},
+      </if>
+      <if test="IS_DECIMAL_FEMALE_NOUN_YN != null" >
+        #{IS_DECIMAL_FEMALE_NOUN_YN},
+      </if>
+      <if test="CONVERT_LIKE_CURRENCY != null" >
+        #{CONVERT_LIKE_CURRENCY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_ISO_CURRENCIES" >
+    update SYS_PARAM_ISO_CURRENCIES
+    <set >
+      <if test="IS_FEMALE_NOUN_YN != null" >
+        IS_FEMALE_NOUN_YN = #{IS_FEMALE_NOUN_YN},
+      </if>
+      <if test="IS_DECIMAL_FEMALE_NOUN_YN != null" >
+        IS_DECIMAL_FEMALE_NOUN_YN = #{IS_DECIMAL_FEMALE_NOUN_YN},
+      </if>
+      <if test="CONVERT_LIKE_CURRENCY != null" >
+        CONVERT_LIKE_CURRENCY = #{CONVERT_LIKE_CURRENCY},
+      </if>
+    </set>
+    where CY_ISO_CODE = #{CY_ISO_CODE}
+  </sql>
+  <update id="updateSYS_PARAM_ISO_CURRENCIES" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_CURRENCIESVO" >
+    <include refid="sql_updateSYS_PARAM_ISO_CURRENCIES" />
+  </update>
+</mapper>

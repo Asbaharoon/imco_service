@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSCERTIFICATE_TYPESMapper">
+
+
+<!-- TYPES List --> 
+ <sql id="certificateTypesListCommon" >
+	 <![CDATA[
+		SELECT CTSCERTIFICATE_TYPE.COMP_CODE,
+		       CTSCERTIFICATE_TYPE.CODE,
+		       CTSCERTIFICATE_TYPE.BRIEF_DESC_ENG,
+		       CTSCERTIFICATE_TYPE.BRIEF_DESC_ARAB
+		      
+		FROM CTSCERTIFICATE_TYPE
+		]]>	
+</sql>
+
+<sql id="certificateTypesCondition">
+	WHERE CTSCERTIFICATE_TYPE.COMP_CODE = #{compCode}
+	<if test="typesCode != null">
+		AND CTSCERTIFICATE_TYPE.CODE = #{typesCode}
+	</if>
+	
+</sql>
+
+
+
+<resultMap id="getTypesList_ResMap" type="com.path.dbmaps.vo.CTSCERTIFICATE_TYPEVO" >
+    <result column="COMP_CODE" 			property="COMP_CODE" />
+    <result column="CODE" 				property="CODE" />
+    <result column="DESC_ENG" 			property="BRIEF_DESC_ENG" />
+    <result column="DESC_ARAB" 			property="BRIEF_DESC_ARAB" />
+   
+</resultMap>
+
+<select id="getTypesList"  resultMap="getTypesList_ResMap" parameterType="com.path.vo.core.certificatetypes.CertificateTypesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="certificateTypesListCommon"/>
+	<include refid="certificateTypesCondition"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getTypesCount"  resultType="int" parameterType="com.path.vo.core.certificatetypes.CertificateTypesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="certificateTypesListCommon"/>
+	<include refid="certificateTypesCondition"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_USR_ALLOWED_PORTLETS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO" >
+    <id column="PORTLET_CODE" property="PORTLET_CODE" />
+    <id column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PORTLET_CODE, USER_ID
+  </sql>
+  <select id="selectSYS_PARAM_USR_ALLOWED_PORTLETS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_USR_ALLOWED_PORTLETS
+    where PORTLET_CODE = #{PORTLET_CODE}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_USR_ALLOWED_PORTLETS" parameterType="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO" >
+    delete from SYS_PARAM_USR_ALLOWED_PORTLETS
+    where PORTLET_CODE = #{PORTLET_CODE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_USR_ALLOWED_PORTLETS" parameterType="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO" >
+    insert into SYS_PARAM_USR_ALLOWED_PORTLETS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="PORTLET_CODE != null" >
+        PORTLET_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="PORTLET_CODE != null" >
+        #{PORTLET_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+</mapper>

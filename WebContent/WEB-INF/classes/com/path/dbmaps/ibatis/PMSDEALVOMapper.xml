@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSDEAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSDEALVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="STATUS" property="STATUS" />
+    <result column="LONG_NAME_ENG2" property="LONG_NAME_ENG2" />
+    <result column="LONG_NAME_ARAB2" property="LONG_NAME_ARAB2" />
+    <result column="TRADE_DATE" property="TRADE_DATE" />
+    <result column="OPENING_DATE" property="OPENING_DATE" />
+    <result column="CLOSING_DATE" property="CLOSING_DATE" />
+    <result column="DEAL_CIF" property="DEAL_CIF" />
+    <result column="DEAL_SIZE" property="DEAL_SIZE" />
+    <result column="DEAL_TOTAL_VALUE" property="DEAL_TOTAL_VALUE" />
+    <result column="DEAL_FACE_VALUE" property="DEAL_FACE_VALUE" />
+    <result column="MIN_SUB" property="MIN_SUB" />
+    <result column="MAX_SUB" property="MAX_SUB" />
+    <result column="REP_ID" property="REP_ID" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="DATE_REVERSED" property="DATE_REVERSED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="SHORT_CODE" property="SHORT_CODE" />
+    <result column="DEAL_ROUND" property="DEAL_ROUND" />
+    <result column="REP_ID_ALLOC" property="REP_ID_ALLOC" />
+    <result column="REP_ID_ALLOC_SEC" property="REP_ID_ALLOC_SEC" />
+    <result column="DEAL_CURR" property="DEAL_CURR" />
+    <result column="DEAL_TYPE" property="DEAL_TYPE" />
+    <result column="COST_PER_SHARE" property="COST_PER_SHARE" />
+    <result column="RESERVES_PERC" property="RESERVES_PERC" />
+    <result column="PPM_DATE" property="PPM_DATE" />
+    <result column="MGT_FEE_PERC" property="MGT_FEE_PERC" />
+    <result column="REBATE_PERC" property="REBATE_PERC" />
+    <result column="PROMISED_IRR" property="PROMISED_IRR" />
+    <result column="PERFORMANCE_FEE" property="PERFORMANCE_FEE" />
+    <result column="DIV_PERIOD" property="DIV_PERIOD" />
+    <result column="DEAL_TYPE_CODE" property="DEAL_TYPE_CODE" />
+    <result column="DEAL_NATURE_CODE" property="DEAL_NATURE_CODE" />
+    <result column="DEAL_STATUS" property="DEAL_STATUS" />
+    <result column="PROJECT_NO" property="PROJECT_NO" />
+    <result column="CASH_MKUP" property="CASH_MKUP" />
+    <result column="SHARE_MKUP" property="SHARE_MKUP" />
+    <result column="TYPE_CAL" property="TYPE_CAL" />
+    <result column="FEES_EXCEED_AMT" property="FEES_EXCEED_AMT" />
+    <result column="STARTING_MONTH" property="STARTING_MONTH" />
+    <result column="COMPUTATION_METHOD" property="COMPUTATION_METHOD" />
+    <result column="OWN_COMPANY_DEAL" property="OWN_COMPANY_DEAL" />
+    <result column="DATE_EXITED" property="DATE_EXITED" />
+    <result column="ENDING_DAY" property="ENDING_DAY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, 
+    LONG_NAME_ARAB, STATUS, LONG_NAME_ENG2, LONG_NAME_ARAB2, TRADE_DATE, OPENING_DATE, 
+    CLOSING_DATE, DEAL_CIF, DEAL_SIZE, DEAL_TOTAL_VALUE, DEAL_FACE_VALUE, MIN_SUB, MAX_SUB, 
+    REP_ID, CREATED_BY, DATE_CREATED, DELETED_BY, DATE_DELETED, APPROVED_BY, DATE_APPROVED, 
+    REVERSED_BY, DATE_REVERSED, MODIFIED_BY, DATE_MODIFIED, SHORT_CODE, DEAL_ROUND, REP_ID_ALLOC, 
+    REP_ID_ALLOC_SEC, DEAL_CURR, DEAL_TYPE, COST_PER_SHARE, RESERVES_PERC, PPM_DATE, 
+    MGT_FEE_PERC, REBATE_PERC, PROMISED_IRR, PERFORMANCE_FEE, DIV_PERIOD, DEAL_TYPE_CODE, 
+    DEAL_NATURE_CODE, DEAL_STATUS, PROJECT_NO, CASH_MKUP, SHARE_MKUP, TYPE_CAL, FEES_EXCEED_AMT, 
+    STARTING_MONTH, COMPUTATION_METHOD, OWN_COMPANY_DEAL, DATE_EXITED, ENDING_DAY
+  </sql>
+  <select id="selectPMSDEAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSDEALVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSDEAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </select>
+  <delete id="deletePMSDEAL" parameterType="com.path.dbmaps.vo.PMSDEALVOKey" >
+    delete from PMSDEAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </delete>
+  <insert id="insertPMSDEAL" parameterType="com.path.dbmaps.vo.PMSDEALVO" >
+    insert into PMSDEAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="LONG_NAME_ENG2 != null" >
+        LONG_NAME_ENG2,
+      </if>
+      <if test="LONG_NAME_ARAB2 != null" >
+        LONG_NAME_ARAB2,
+      </if>
+      <if test="TRADE_DATE != null" >
+        TRADE_DATE,
+      </if>
+      <if test="OPENING_DATE != null" >
+        OPENING_DATE,
+      </if>
+      <if test="CLOSING_DATE != null" >
+        CLOSING_DATE,
+      </if>
+      <if test="DEAL_CIF != null and DEAL_CIF != emptyBigDecimalValue" >
+        DEAL_CIF,
+      </if>
+      <if test="DEAL_SIZE != null and DEAL_SIZE != emptyBigDecimalValue" >
+        DEAL_SIZE,
+      </if>
+      <if test="DEAL_TOTAL_VALUE != null and DEAL_TOTAL_VALUE != emptyBigDecimalValue" >
+        DEAL_TOTAL_VALUE,
+      </if>
+      <if test="DEAL_FACE_VALUE != null and DEAL_FACE_VALUE != emptyBigDecimalValue" >
+        DEAL_FACE_VALUE,
+      </if>
+      <if test="MIN_SUB != null and MIN_SUB != emptyBigDecimalValue" >
+        MIN_SUB,
+      </if>
+      <if test="MAX_SUB != null and MAX_SUB != emptyBigDecimalValue" >
+        MAX_SUB,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY,
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="SHORT_CODE != null" >
+        SHORT_CODE,
+      </if>
+      <if test="DEAL_ROUND != null and DEAL_ROUND != emptyBigDecimalValue" >
+        DEAL_ROUND,
+      </if>
+      <if test="REP_ID_ALLOC != null and REP_ID_ALLOC != emptyBigDecimalValue" >
+        REP_ID_ALLOC,
+      </if>
+      <if test="REP_ID_ALLOC_SEC != null and REP_ID_ALLOC_SEC != emptyBigDecimalValue" >
+        REP_ID_ALLOC_SEC,
+      </if>
+      <if test="DEAL_CURR != null and DEAL_CURR != emptyBigDecimalValue" >
+        DEAL_CURR,
+      </if>
+      <if test="DEAL_TYPE != null" >
+        DEAL_TYPE,
+      </if>
+      <if test="COST_PER_SHARE != null and COST_PER_SHARE != emptyBigDecimalValue" >
+        COST_PER_SHARE,
+      </if>
+      <if test="RESERVES_PERC != null and RESERVES_PERC != emptyBigDecimalValue" >
+        RESERVES_PERC,
+      </if>
+      <if test="PPM_DATE != null" >
+        PPM_DATE,
+      </if>
+      <if test="MGT_FEE_PERC != null and MGT_FEE_PERC != emptyBigDecimalValue" >
+        MGT_FEE_PERC,
+      </if>
+      <if test="REBATE_PERC != null and REBATE_PERC != emptyBigDecimalValue" >
+        REBATE_PERC,
+      </if>
+      <if test="PROMISED_IRR != null and PROMISED_IRR != emptyBigDecimalValue" >
+        PROMISED_IRR,
+      </if>
+      <if test="PERFORMANCE_FEE != null and PERFORMANCE_FEE != emptyBigDecimalValue" >
+        PERFORMANCE_FEE,
+      </if>
+      <if test="DIV_PERIOD != null" >
+        DIV_PERIOD,
+      </if>
+      <if test="DEAL_TYPE_CODE != null and DEAL_TYPE_CODE != emptyBigDecimalValue" >
+        DEAL_TYPE_CODE,
+      </if>
+      <if test="DEAL_NATURE_CODE != null and DEAL_NATURE_CODE != emptyBigDecimalValue" >
+        DEAL_NATURE_CODE,
+      </if>
+      <if test="DEAL_STATUS != null" >
+        DEAL_STATUS,
+      </if>
+      <if test="PROJECT_NO != null and PROJECT_NO != emptyBigDecimalValue" >
+        PROJECT_NO,
+      </if>
+      <if test="CASH_MKUP != null and CASH_MKUP != emptyBigDecimalValue" >
+        CASH_MKUP,
+      </if>
+      <if test="SHARE_MKUP != null and SHARE_MKUP != emptyBigDecimalValue" >
+        SHARE_MKUP,
+      </if>
+      <if test="TYPE_CAL != null and TYPE_CAL != emptyBigDecimalValue" >
+        TYPE_CAL,
+      </if>
+      <if test="FEES_EXCEED_AMT != null" >
+        FEES_EXCEED_AMT,
+      </if>
+      <if test="STARTING_MONTH != null and STARTING_MONTH != emptyBigDecimalValue" >
+        STARTING_MONTH,
+      </if>
+      <if test="COMPUTATION_METHOD != null" >
+        COMPUTATION_METHOD,
+      </if>
+      <if test="OWN_COMPANY_DEAL != null" >
+        OWN_COMPANY_DEAL,
+      </if>
+      <if test="DATE_EXITED != null" >
+        DATE_EXITED,
+      </if>
+      <if test="ENDING_DAY != null and ENDING_DAY != emptyBigDecimalValue" >
+        ENDING_DAY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="LONG_NAME_ENG2 != null" >
+        #{LONG_NAME_ENG2},
+      </if>
+      <if test="LONG_NAME_ARAB2 != null" >
+        #{LONG_NAME_ARAB2},
+      </if>
+      <if test="TRADE_DATE != null" >
+        #{TRADE_DATE},
+      </if>
+      <if test="OPENING_DATE != null" >
+        #{OPENING_DATE},
+      </if>
+      <if test="CLOSING_DATE != null" >
+        #{CLOSING_DATE},
+      </if>
+      <if test="DEAL_CIF != null and DEAL_CIF != emptyBigDecimalValue" >
+        #{DEAL_CIF},
+      </if>
+      <if test="DEAL_SIZE != null and DEAL_SIZE != emptyBigDecimalValue" >
+        #{DEAL_SIZE},
+      </if>
+      <if test="DEAL_TOTAL_VALUE != null and DEAL_TOTAL_VALUE != emptyBigDecimalValue" >
+        #{DEAL_TOTAL_VALUE},
+      </if>
+      <if test="DEAL_FACE_VALUE != null and DEAL_FACE_VALUE != emptyBigDecimalValue" >
+        #{DEAL_FACE_VALUE},
+      </if>
+      <if test="MIN_SUB != null and MIN_SUB != emptyBigDecimalValue" >
+        #{MIN_SUB},
+      </if>
+      <if test="MAX_SUB != null and MAX_SUB != emptyBigDecimalValue" >
+        #{MAX_SUB},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        #{REVERSED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        #{DATE_REVERSED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="SHORT_CODE != null" >
+        #{SHORT_CODE},
+      </if>
+      <if test="DEAL_ROUND != null and DEAL_ROUND != emptyBigDecimalValue" >
+        #{DEAL_ROUND},
+      </if>
+      <if test="REP_ID_ALLOC != null and REP_ID_ALLOC != emptyBigDecimalValue" >
+        #{REP_ID_ALLOC},
+      </if>
+      <if test="REP_ID_ALLOC_SEC != null and REP_ID_ALLOC_SEC != emptyBigDecimalValue" >
+        #{REP_ID_ALLOC_SEC},
+      </if>
+      <if test="DEAL_CURR != null and DEAL_CURR != emptyBigDecimalValue" >
+        #{DEAL_CURR},
+      </if>
+      <if test="DEAL_TYPE != null" >
+        #{DEAL_TYPE},
+      </if>
+      <if test="COST_PER_SHARE != null and COST_PER_SHARE != emptyBigDecimalValue" >
+        #{COST_PER_SHARE},
+      </if>
+      <if test="RESERVES_PERC != null and RESERVES_PERC != emptyBigDecimalValue" >
+        #{RESERVES_PERC},
+      </if>
+      <if test="PPM_DATE != null" >
+        #{PPM_DATE},
+      </if>
+      <if test="MGT_FEE_PERC != null and MGT_FEE_PERC != emptyBigDecimalValue" >
+        #{MGT_FEE_PERC},
+      </if>
+      <if test="REBATE_PERC != null and REBATE_PERC != emptyBigDecimalValue" >
+        #{REBATE_PERC},
+      </if>
+      <if test="PROMISED_IRR != null and PROMISED_IRR != emptyBigDecimalValue" >
+        #{PROMISED_IRR},
+      </if>
+      <if test="PERFORMANCE_FEE != null and PERFORMANCE_FEE != emptyBigDecimalValue" >
+        #{PERFORMANCE_FEE},
+      </if>
+      <if test="DIV_PERIOD != null" >
+        #{DIV_PERIOD},
+      </if>
+      <if test="DEAL_TYPE_CODE != null and DEAL_TYPE_CODE != emptyBigDecimalValue" >
+        #{DEAL_TYPE_CODE},
+      </if>
+      <if test="DEAL_NATURE_CODE != null and DEAL_NATURE_CODE != emptyBigDecimalValue" >
+        #{DEAL_NATURE_CODE},
+      </if>
+      <if test="DEAL_STATUS != null" >
+        #{DEAL_STATUS},
+      </if>
+      <if test="PROJECT_NO != null and PROJECT_NO != emptyBigDecimalValue" >
+        #{PROJECT_NO},
+      </if>
+      <if test="CASH_MKUP != null and CASH_MKUP != emptyBigDecimalValue" >
+        #{CASH_MKUP},
+      </if>
+      <if test="SHARE_MKUP != null and SHARE_MKUP != emptyBigDecimalValue" >
+        #{SHARE_MKUP},
+      </if>
+      <if test="TYPE_CAL != null and TYPE_CAL != emptyBigDecimalValue" >
+        #{TYPE_CAL},
+      </if>
+      <if test="FEES_EXCEED_AMT != null" >
+        #{FEES_EXCEED_AMT},
+      </if>
+      <if test="STARTING_MONTH != null and STARTING_MONTH != emptyBigDecimalValue" >
+        #{STARTING_MONTH},
+      </if>
+      <if test="COMPUTATION_METHOD != null" >
+        #{COMPUTATION_METHOD},
+      </if>
+      <if test="OWN_COMPANY_DEAL != null" >
+        #{OWN_COMPANY_DEAL},
+      </if>
+      <if test="DATE_EXITED != null" >
+        #{DATE_EXITED},
+      </if>
+      <if test="ENDING_DAY != null and ENDING_DAY != emptyBigDecimalValue" >
+        #{ENDING_DAY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSDEAL" >
+    update PMSDEAL
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="LONG_NAME_ENG2 != null" >
+        LONG_NAME_ENG2 = #{LONG_NAME_ENG2},
+      </if>
+      <if test="LONG_NAME_ARAB2 != null" >
+        LONG_NAME_ARAB2 = #{LONG_NAME_ARAB2},
+      </if>
+      <if test="TRADE_DATE != null" >
+        TRADE_DATE = #{TRADE_DATE},
+      </if>
+      <if test="OPENING_DATE != null" >
+        OPENING_DATE = #{OPENING_DATE},
+      </if>
+      <if test="CLOSING_DATE != null" >
+        CLOSING_DATE = #{CLOSING_DATE},
+      </if>
+      <if test="DEAL_CIF != null" >
+        <choose >
+          <when test="DEAL_CIF == emptyBigDecimalValue" >
+            DEAL_CIF = NULL ,
+          </when>
+          <otherwise >
+            DEAL_CIF = #{DEAL_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_SIZE != null" >
+        <choose >
+          <when test="DEAL_SIZE == emptyBigDecimalValue" >
+            DEAL_SIZE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_SIZE = #{DEAL_SIZE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_TOTAL_VALUE != null" >
+        <choose >
+          <when test="DEAL_TOTAL_VALUE == emptyBigDecimalValue" >
+            DEAL_TOTAL_VALUE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_TOTAL_VALUE = #{DEAL_TOTAL_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_FACE_VALUE != null" >
+        <choose >
+          <when test="DEAL_FACE_VALUE == emptyBigDecimalValue" >
+            DEAL_FACE_VALUE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_FACE_VALUE = #{DEAL_FACE_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_SUB != null" >
+        <choose >
+          <when test="MIN_SUB == emptyBigDecimalValue" >
+            MIN_SUB = NULL ,
+          </when>
+          <otherwise >
+            MIN_SUB = #{MIN_SUB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_SUB != null" >
+        <choose >
+          <when test="MAX_SUB == emptyBigDecimalValue" >
+            MAX_SUB = NULL ,
+          </when>
+          <otherwise >
+            MAX_SUB = #{MAX_SUB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_ID != null" >
+        <choose >
+          <when test="REP_ID == emptyBigDecimalValue" >
+            REP_ID = NULL ,
+          </when>
+          <otherwise >
+            REP_ID = #{REP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY = #{REVERSED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED = #{DATE_REVERSED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="SHORT_CODE != null" >
+        SHORT_CODE = #{SHORT_CODE},
+      </if>
+      <if test="DEAL_ROUND != null" >
+        <choose >
+          <when test="DEAL_ROUND == emptyBigDecimalValue" >
+            DEAL_ROUND = NULL ,
+          </when>
+          <otherwise >
+            DEAL_ROUND = #{DEAL_ROUND},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_ID_ALLOC != null" >
+        <choose >
+          <when test="REP_ID_ALLOC == emptyBigDecimalValue" >
+            REP_ID_ALLOC = NULL ,
+          </when>
+          <otherwise >
+            REP_ID_ALLOC = #{REP_ID_ALLOC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_ID_ALLOC_SEC != null" >
+        <choose >
+          <when test="REP_ID_ALLOC_SEC == emptyBigDecimalValue" >
+            REP_ID_ALLOC_SEC = NULL ,
+          </when>
+          <otherwise >
+            REP_ID_ALLOC_SEC = #{REP_ID_ALLOC_SEC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_CURR != null" >
+        <choose >
+          <when test="DEAL_CURR == emptyBigDecimalValue" >
+            DEAL_CURR = NULL ,
+          </when>
+          <otherwise >
+            DEAL_CURR = #{DEAL_CURR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_TYPE != null" >
+        DEAL_TYPE = #{DEAL_TYPE},
+      </if>
+      <if test="COST_PER_SHARE != null" >
+        <choose >
+          <when test="COST_PER_SHARE == emptyBigDecimalValue" >
+            COST_PER_SHARE = NULL ,
+          </when>
+          <otherwise >
+            COST_PER_SHARE = #{COST_PER_SHARE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESERVES_PERC != null" >
+        <choose >
+          <when test="RESERVES_PERC == emptyBigDecimalValue" >
+            RESERVES_PERC = NULL ,
+          </when>
+          <otherwise >
+            RESERVES_PERC = #{RESERVES_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PPM_DATE != null" >
+        PPM_DATE = #{PPM_DATE},
+      </if>
+      <if test="MGT_FEE_PERC != null" >
+        <choose >
+          <when test="MGT_FEE_PERC == emptyBigDecimalValue" >
+            MGT_FEE_PERC = NULL ,
+          </when>
+          <otherwise >
+            MGT_FEE_PERC = #{MGT_FEE_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REBATE_PERC != null" >
+        <choose >
+          <when test="REBATE_PERC == emptyBigDecimalValue" >
+            REBATE_PERC = NULL ,
+          </when>
+          <otherwise >
+            REBATE_PERC = #{REBATE_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROMISED_IRR != null" >
+        <choose >
+          <when test="PROMISED_IRR == emptyBigDecimalValue" >
+            PROMISED_IRR = NULL ,
+          </when>
+          <otherwise >
+            PROMISED_IRR = #{PROMISED_IRR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERFORMANCE_FEE != null" >
+        <choose >
+          <when test="PERFORMANCE_FEE == emptyBigDecimalValue" >
+            PERFORMANCE_FEE = NULL ,
+          </when>
+          <otherwise >
+            PERFORMANCE_FEE = #{PERFORMANCE_FEE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DIV_PERIOD != null" >
+        DIV_PERIOD = #{DIV_PERIOD},
+      </if>
+      <if test="DEAL_TYPE_CODE != null" >
+        <choose >
+          <when test="DEAL_TYPE_CODE == emptyBigDecimalValue" >
+            DEAL_TYPE_CODE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_TYPE_CODE = #{DEAL_TYPE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_NATURE_CODE != null" >
+        <choose >
+          <when test="DEAL_NATURE_CODE == emptyBigDecimalValue" >
+            DEAL_NATURE_CODE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NATURE_CODE = #{DEAL_NATURE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_STATUS != null" >
+        DEAL_STATUS = #{DEAL_STATUS},
+      </if>
+      <if test="PROJECT_NO != null" >
+        <choose >
+          <when test="PROJECT_NO == emptyBigDecimalValue" >
+            PROJECT_NO = NULL ,
+          </when>
+          <otherwise >
+            PROJECT_NO = #{PROJECT_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CASH_MKUP != null" >
+        <choose >
+          <when test="CASH_MKUP == emptyBigDecimalValue" >
+            CASH_MKUP = NULL ,
+          </when>
+          <otherwise >
+            CASH_MKUP = #{CASH_MKUP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHARE_MKUP != null" >
+        <choose >
+          <when test="SHARE_MKUP == emptyBigDecimalValue" >
+            SHARE_MKUP = NULL ,
+          </when>
+          <otherwise >
+            SHARE_MKUP = #{SHARE_MKUP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TYPE_CAL != null" >
+        <choose >
+          <when test="TYPE_CAL == emptyBigDecimalValue" >
+            TYPE_CAL = NULL ,
+          </when>
+          <otherwise >
+            TYPE_CAL = #{TYPE_CAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FEES_EXCEED_AMT != null" >
+        FEES_EXCEED_AMT = #{FEES_EXCEED_AMT},
+      </if>
+      <if test="STARTING_MONTH != null" >
+        <choose >
+          <when test="STARTING_MONTH == emptyBigDecimalValue" >
+            STARTING_MONTH = NULL ,
+          </when>
+          <otherwise >
+            STARTING_MONTH = #{STARTING_MONTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMPUTATION_METHOD != null" >
+        COMPUTATION_METHOD = #{COMPUTATION_METHOD},
+      </if>
+      <if test="OWN_COMPANY_DEAL != null" >
+        OWN_COMPANY_DEAL = #{OWN_COMPANY_DEAL},
+      </if>
+      <if test="DATE_EXITED != null" >
+        DATE_EXITED = #{DATE_EXITED},
+      </if>
+      <if test="ENDING_DAY != null" >
+        <choose >
+          <when test="ENDING_DAY == emptyBigDecimalValue" >
+            ENDING_DAY = NULL ,
+          </when>
+          <otherwise >
+            ENDING_DAY = #{ENDING_DAY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </sql>
+  <update id="updatePMSDEAL" parameterType="com.path.dbmaps.vo.PMSDEALVO" >
+    <include refid="sql_updatePMSDEAL" />
+  </update>
+</mapper>

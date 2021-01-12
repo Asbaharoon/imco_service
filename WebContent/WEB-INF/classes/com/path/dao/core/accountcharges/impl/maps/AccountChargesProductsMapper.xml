@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="accountChargesProductsMapper">
+
+	<resultMap id="safeboxChargesMap" type="ctsSafeBoxChargesVO">
+		<result property="COMP_CODE" 			column="COMP_CODE"/>
+		<result property="CODE" 				column="CODE"/>
+		<result property="BRIEF_DESC_ENG" 		column="BRIEF_DESC_ENG"/>
+		<result property="LONG_DESC_ENG" 		column="LONG_DESC_ENG"/>
+		<result property="BRIEF_DESC_ARAB" 		column="BRIEF_DESC_ARAB"/>
+		<result property="LONG_DESC_ARAB" 		column="LONG_DESC_ARAB"/>
+		<result property="PERIODICITY" 			column="PERIODICITY"/>
+		<result property="PERIODICITY_TYPE" 	column="PERIODICITY_TYPE"/>
+		<result property="CHARGES" 				column="CHARGES"/>
+	</resultMap>
+
+	<select id="loadSafeboxChargesLookup" resultMap="safeboxChargesMap" parameterType="accountChargesSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="select_safeboxCharges"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	 </select>
+	<select id="loadSafeboxChargesLookupCount" resultType="int" parameterType="accountChargesSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="select_safeboxCharges"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="select_safeboxCharges">
+	
+		SELECT
+				 COMP_CODE,
+				 CODE,
+				 BRIEF_DESC_ENG,
+				 LONG_DESC_ENG,
+				 BRIEF_DESC_ARAB,
+				 LONG_DESC_ARAB,
+				 PERIODICITY,
+				 PERIODICITY_TYPE,
+				 CHARGES
+		FROM  CTS_SAFEBOX_CHARGES
+		WHERE	
+		CTS_SAFEBOX_CHARGES.COMP_CODE  = #{compCode}
+	</sql>
+	
+	<select id="loadSafeboxChargesDependency" resultMap = "safeboxChargesMap" parameterType="accountChargesSC">
+		<include refid="select_safeboxCharges"/>
+		AND CODE = #{code}
+	</select>
+</mapper>	

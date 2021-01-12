@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_PROV_CATEGORY_COLLTYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_PROV_CATEGORY_COLLTYPEVO" >
+    <id column="CATEGORY_CODE" property="CATEGORY_CODE" />
+    <id column="COLLATERAL_TYPE" property="COLLATERAL_TYPE" />
+    <result column="CONSIDER_FOR_PROVISION" property="CONSIDER_FOR_PROVISION" />
+    <result column="COLLATERAL_COVERAGE_PERC" property="COLLATERAL_COVERAGE_PERC" />
+    <result column="OVER_PROVISION_PERC" property="OVER_PROVISION_PERC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CATEGORY_CODE, COLLATERAL_TYPE, CONSIDER_FOR_PROVISION, COLLATERAL_COVERAGE_PERC, 
+    OVER_PROVISION_PERC
+  </sql>
+  <select id="selectTRS_PROV_CATEGORY_COLLTYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_PROV_CATEGORY_COLLTYPEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_PROV_CATEGORY_COLLTYPE
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and COLLATERAL_TYPE = #{COLLATERAL_TYPE}
+  </select>
+  <delete id="deleteTRS_PROV_CATEGORY_COLLTYPE" parameterType="com.path.dbmaps.vo.TRS_PROV_CATEGORY_COLLTYPEVOKey" >
+    delete from TRS_PROV_CATEGORY_COLLTYPE
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and COLLATERAL_TYPE = #{COLLATERAL_TYPE}
+  </delete>
+  <insert id="insertTRS_PROV_CATEGORY_COLLTYPE" parameterType="com.path.dbmaps.vo.TRS_PROV_CATEGORY_COLLTYPEVO" >
+    insert into TRS_PROV_CATEGORY_COLLTYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        CATEGORY_CODE,
+      </if>
+      <if test="COLLATERAL_TYPE != null and COLLATERAL_TYPE != emptyBigDecimalValue" >
+        COLLATERAL_TYPE,
+      </if>
+      <if test="CONSIDER_FOR_PROVISION != null" >
+        CONSIDER_FOR_PROVISION,
+      </if>
+      <if test="COLLATERAL_COVERAGE_PERC != null and COLLATERAL_COVERAGE_PERC != emptyBigDecimalValue" >
+        COLLATERAL_COVERAGE_PERC,
+      </if>
+      <if test="OVER_PROVISION_PERC != null and OVER_PROVISION_PERC != emptyBigDecimalValue" >
+        OVER_PROVISION_PERC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        #{CATEGORY_CODE},
+      </if>
+      <if test="COLLATERAL_TYPE != null and COLLATERAL_TYPE != emptyBigDecimalValue" >
+        #{COLLATERAL_TYPE},
+      </if>
+      <if test="CONSIDER_FOR_PROVISION != null" >
+        #{CONSIDER_FOR_PROVISION},
+      </if>
+      <if test="COLLATERAL_COVERAGE_PERC != null and COLLATERAL_COVERAGE_PERC != emptyBigDecimalValue" >
+        #{COLLATERAL_COVERAGE_PERC},
+      </if>
+      <if test="OVER_PROVISION_PERC != null and OVER_PROVISION_PERC != emptyBigDecimalValue" >
+        #{OVER_PROVISION_PERC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_PROV_CATEGORY_COLLTYPE" >
+    update TRS_PROV_CATEGORY_COLLTYPE
+    <set >
+      <if test="CONSIDER_FOR_PROVISION != null" >
+        CONSIDER_FOR_PROVISION = #{CONSIDER_FOR_PROVISION},
+      </if>
+      <if test="COLLATERAL_COVERAGE_PERC != null" >
+        <choose >
+          <when test="COLLATERAL_COVERAGE_PERC == emptyBigDecimalValue" >
+            COLLATERAL_COVERAGE_PERC = NULL ,
+          </when>
+          <otherwise >
+            COLLATERAL_COVERAGE_PERC = #{COLLATERAL_COVERAGE_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OVER_PROVISION_PERC != null" >
+        <choose >
+          <when test="OVER_PROVISION_PERC == emptyBigDecimalValue" >
+            OVER_PROVISION_PERC = NULL ,
+          </when>
+          <otherwise >
+            OVER_PROVISION_PERC = #{OVER_PROVISION_PERC},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and COLLATERAL_TYPE = #{COLLATERAL_TYPE}
+  </sql>
+  <update id="updateTRS_PROV_CATEGORY_COLLTYPE" parameterType="com.path.dbmaps.vo.TRS_PROV_CATEGORY_COLLTYPEVO" >
+    <include refid="sql_updateTRS_PROV_CATEGORY_COLLTYPE" />
+  </update>
+</mapper>

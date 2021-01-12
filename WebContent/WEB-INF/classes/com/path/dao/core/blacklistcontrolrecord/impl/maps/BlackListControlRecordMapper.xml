@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackListControlRecordMapper">
+
+
+	<resultMap
+		type="com.path.vo.core.blacklistcontrolrecord.BlackListControlRecordCO"
+		id="resDataMap">
+		<result column="COMP_CODE" property="cifControlVO.COMP_CODE" />
+		<result column="BLCKL_FST_NAME" property="BLCKL_FST_NAME" />
+
+		<result column="BLCKL_SEC_NAME" property="BLCKL_SEC_NAME" />
+		<result column="BLCKL_LAST_NAME" property="BLCKL_LAST_NAME" />
+		<result column="BLCKL_THRD_NAME" property="BLCKL_THRD_NAME" />
+		<result column="BLCKL_BPLACE" property="BLCKL_BPLACE" />
+		<result column="BLCKL_BDATE" property="BLCKL_BDATE" />
+		<result column="BLCKL_MOTHER_LNAME"
+			property="BLCKL_MOTHER_LNAME" />
+		<result column="BLCKL_IDNO" property="BLCKL_IDNO" />
+
+		<result column="BLCKL_REGNO" property="BLCKL_REGNO" />
+		<result column="BLCKL_BNAME" property="BLCKL_BNAME" />
+		<result column="BLCKL_LNAME" property="BLCKL_LNAME" />
+		<result column="BLCKL_NATION" property="BLCKL_NATION" />
+		<result column="BLCKL_REGION" property="BLCKL_REGION" />
+		<result column="BLCKL_COUNTRY" property="BLCKL_COUNTRY" />
+		<result column="BLCKL_LEGAL" property="BLCKL_LEGAL" />
+		<result column="AND_OR" property="cifControlVO.AND_OR" />
+		<result column="BLCKL_NAME_MATCH_PERC"
+			property="cifControlVO.BLCKL_NAME_MATCH_PERC" />
+		<result column="BLCKL_CRITERIA_MATCH_PERC"
+			property="cifControlVO.BLCKL_CRITERIA_MATCH_PERC" />
+		<result column="APPLY_BLKLST_ON_WALKIN_CUST_YN"
+			property="APPLY_BLKLST_ON_WALKIN_CUST_YN" />
+		<result column="BLCKL_MOTHER_FNAME"
+			property="BLCKL_MOTHER_FNAME" />
+		<result column="ENTITY_STATUS"
+			property="cifControlVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+		<result column="CREATED_BY"
+			property="cifControlVO.CREATED_BY" />
+			<result column="MODIFIED_BY"
+			property="cifControlVO.MODIFIED_BY" />
+			<result column="BLCKL_WALKIN_NAME_MATCH_PERC"
+			property="cifControlVO.BLCKL_WALKIN_NAME_MATCH_PERC" />
+			<result column="BLCKL_WALKIN_CRIT_MATCH_PERC"
+			property="cifControlVO.BLCKL_WALKIN_CRIT_MATCH_PERC" />
+
+	</resultMap>
+
+	<select id="returnData" resultMap="resDataMap"
+		parameterType="com.path.vo.core.blacklistcontrolrecord.BlackListControlRecordCO">
+		SELECT
+		CIFCONTROL.ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE = #{language}
+		AND
+		VALUE_CODE = CIFCONTROL.ENTITY_STATUS) STATUS_DESC,
+		CIFCONTROL.COMP_CODE,
+		CIFCONTROL.BLCKL_FST_NAME,
+		CIFCONTROL.BLCKL_SEC_NAME,
+		CIFCONTROL.BLCKL_LAST_NAME,
+		CIFCONTROL.BLCKL_THRD_NAME,
+		CIFCONTROL.BLCKL_BPLACE,
+		CIFCONTROL.BLCKL_BDATE,
+		CIFCONTROL.BLCKL_MOTHER_LNAME,
+		CIFCONTROL.BLCKL_IDNO,
+		CIFCONTROL.BLCKL_REGNO,
+		CIFCONTROL.BLCKL_BNAME,
+		CIFCONTROL.BLCKL_LNAME,
+		CIFCONTROL.BLCKL_NATION,
+		CIFCONTROL.BLCKL_REGION,
+		CIFCONTROL.BLCKL_COUNTRY,
+		CIFCONTROL.BLCKL_LEGAL,
+		CIFCONTROL.AND_OR,
+		CIFCONTROL.BLCKL_NAME_MATCH_PERC,
+		CIFCONTROL.BLCKL_CRITERIA_MATCH_PERC,
+		CIFCONTROL.APPLY_BLKLST_ON_WALKIN_CUST_YN,
+		CIFCONTROL.BLCKL_WALKIN_NAME_MATCH_PERC,
+		CIFCONTROL.BLCKL_WALKIN_CRIT_MATCH_PERC,
+		CIFCONTROL.BLCKL_MOTHER_FNAME,
+		CIFCONTROL.CREATED_BY,
+		CIFCONTROL.MODIFIED_BY,
+		CIFCONTROL.BLCKL_TRX_NONFINANCE_YN
+		FROM CIFCONTROL
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					((CIFCONTROL.COMP_CODE=-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})
+					OR
+					(CIFCONTROL.COMP_CODE=#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+					AND NOT EXISTS (SELECT 1
+					FROM CIFCONTROL B
+					WHERE B.COMP_CODE =
+					-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})))
+				</if>
+				<if test='ivCrud == "U"'>
+					(CIFCONTROL.COMP_CODE=#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}AND
+					NOT EXISTS (SELECT 1
+					FROM CIFCONTROL B
+					WHERE B.COMP_CODE =-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}))
+				</if>
+				<if test='ivCrud == "P"'>
+					(CIFCONTROL.COMP_CODE=-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					<if test="cancelFlag==null">
+						(CIFCONTROL.COMP_CODE=-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+						AND EXISTS (SELECT 1
+						FROM CIFCONTROL B
+						WHERE B.COMP_CODE =#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}))
+					</if>
+					<if test="cancelFlag!=null">
+						<if test="cancelFlag==1">
+						( CIFCONTROL.COMP_CODE =#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})
+						</if>
+						
+					</if>
+				</if>
+			</when>
+			<otherwise>
+				( CIFCONTROL.COMP_CODE =#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<sql id="sql_approve">
+		UPDATE CIFCONTROL
+		<set>
+			COMP_CODE = #{cifControlVO.COMP_CODE,jdbcType=NUMERIC} ,
+			ENTITY_STATUS = 'P',
+			CIFCONTROL.APPROVED_BY=#{cifControlVO.APPROVED_BY,jdbcType=VARCHAR},
+			CIFCONTROL.APPROVED_DATE=#{cifControlVO.APPROVED_DATE,jdbcType=TIMESTAMP}
+
+		</set>
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				COMP_CODE =
+				-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT
+				EXISTS (SELECT 1
+				FROM CIFCONTROL B
+				WHERE B.COMP_CODE =#{compCode,jdbcType=NUMERIC}
+				)
+
+			</when>
+			<otherwise>
+				COMP_CODE = #{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</otherwise>
+		</choose>
+	</sql>
+
+	<update id="approveControlRecord"
+		parameterType="com.path.vo.core.blacklistcontrolrecord.BlackListControlRecordCO">
+		<include refid="blackListControlRecordMapper.sql_approve" />
+	</update>
+
+
+	<delete id="deleteControlRecord"
+		parameterType="com.path.vo.core.blacklistcontrolrecord.BlackListControlRecordCO">
+		DELETE FROM CIFCONTROL
+		WHERE
+		<if test="dualParam!=1">
+			COMP_CODE = #{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+		</if>
+		<if test="dualParam==1">
+			<if test="method==1">
+				COMP_CODE = #{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+				AND
+				EXISTS (SELECT 1
+				FROM CIFCONTROL B
+				WHERE B.COMP_CODE = -#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+
+				)
+			</if>
+			<if test="method==2">
+				COMP_CODE = -#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</if>
+			<if test="method==3">
+				COMP_CODE IN
+				(-#{cifControlVO.COMP_CODE,jdbcType=NUMERIC},
+				#{cifControlVO.COMP_CODE,jdbcType=NUMERIC})
+				AND EXISTS (SELECT 1
+				FROM CIFCONTROL B
+				WHERE B.COMP_CODE = -#{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+				)
+			</if>
+		</if>
+	</delete>
+	<update id="updateBlackListControlRecord" parameterType="com.path.vo.core.blacklistcontrolrecord.BlackListControlRecordCO"  >
+		UPDATE CIFCONTROL
+		<set>
+		<if test="method ==1">
+		    COMP_CODE     = #{cifControlVO.COMP_CODE,jdbcType=NUMERIC},
+			MODIFIED_BY   = #{cifControlVO.MODIFIED_BY,jdbcType=VARCHAR},
+			MODIFIED_DATE = #{cifControlVO.MODIFIED_DATE,jdbcType=NUMERIC},
+		</if>
+		ENTITY_STATUS = #{cifControlVO.ENTITY_STATUS,jdbcType=VARCHAR},
+		DATE_UPDATED = 
+		<choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+        </choose>
+		</set>
+		WHERE  COMP_CODE      =  #{cifControlVO.COMP_CODE,jdbcType=NUMERIC}
+		
+	   
+	</update>
+	
+	
+</mapper>

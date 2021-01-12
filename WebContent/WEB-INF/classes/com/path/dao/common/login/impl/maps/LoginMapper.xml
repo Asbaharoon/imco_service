@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="Login">
+
+<resultMap type="usrCO"  id="userLoginDetRes">
+  <result property="USER_VALID_DT" column="USER_VALID_DT"/>
+  <result property="PASS_FORWARD" column="PASS_FORWARD"/>
+  <result property="PASS_REVERSE" column="PASS_REVERSE"/>
+  <result property="AUTHORIZED_BY" column="AUTHORIZED_BY"/>
+  <result property="PASS_FINAL" column="PASS_FINAL"/>
+  <result property="encType" column="ENC_TYPE"/>
+  <result property="PATH_STS" column="PATH_STS"/>
+  <result property="LOG_MACHINE" column="LOG_MACHINE"/>
+  <result property="USER_STS" column="USER_STS"/>
+  <result property="systemDate" column="systemDate"/>
+  <result property="SUSPEND_PERIOD" column="SUSPEND_PERIOD"/>
+  <result property="SUSPEND_PERIOD_TYPE" column="SUSPEND_PERIOD_TYPE"/>
+  <result property="LAST_LOGIN" column="LAST_LOGIN"/>
+  <result property="USER_ID" column="USER_ID"/>
+  <result property="FIRST_NAME" column="FIRST_NAME"/>
+  <result property="LAST_NAME" column="LAST_NAME"/>
+  <result property="PREFERED_LANGUAGE" column="PREFERED_LANGUAGE"/>
+  <result property="TODO_REFRESH_TIME" column="TODO_REFRESH_TIME"/>
+  <result property="ALERT_PER_ONCE" column="ALERT_PER_ONCE"/>
+  <result property="UNSUCCESS_LOGINS" column="UNSUCCESS_LOGINS"/>
+  <result property="CIF_NO" column="CIF_NO"/>
+  <result property="ACCESS_RESTRICTED" column="ACCESS_RESTRICTED"/>
+  <result property="PASSWD_CHG_FRQ" column="PASSWD_CHG_FRQ"/>
+  <result property="PASSWD_CHG_DT" column="PASSWD_CHG_DT"/>
+  <result property="FREQ_NBR" column="FREQ_NBR"/>
+  <result property="EMPLOYEE_ID" column="EMPLOYEE_ID"/>
+  <result property="EMP_COMP_CODE" column="EMP_COMP_CODE"/>
+  <result property="EMP_BRANCH_CODE" column="EMP_BRANCH_CODE"/>
+  <result property="IDLE" column="IDLE"/>
+  <result property="DISABLE_PRINTSCR" column="DISABLE_PRINTSCR"/>
+  <result property="DEFAULT_PRINTER" column="DEFAULT_PRINTER"/>
+  <result property="PASSWD_SET_BY_ADMIN_YN" column="PASSWD_SET_BY_ADMIN_YN"/>
+  <!-- LDAP -->
+  <result property="AD_USER_ID"     column="AD_USER_ID"/>
+  <result property="AD_USER_NAME"   column="AD_USER_NAME"/>
+  <result property="AD_USER_DOMAIN" column="AD_USER_DOMAIN"/>
+  
+  <result property="USR_PWD_EXPIRY_NOTIFY_DAYS_NO" column="USR_PWD_EXPIRY_NOTIFY_DAYS_NO"/>
+  <result property="TOKEN_VERIFICATION_YN" column="TOKEN_VERIFICATION_YN"/>
+  <result property="SHOW_PRINT_PREVIEW_YN" column="SHOW_PRINT_PREVIEW_YN"/>
+
+</resultMap>
+<select id="userLoginDet" parameterType="usrSC" resultMap="userLoginDetRes">
+SELECT USR.USER_VALID_DT,
+       USR.USER_STS,
+       USR.PASS_FORWARD,
+       USR.PASS_REVERSE,
+       USR.AUTHORIZED_BY,
+       USR.PASS_FINAL,
+       CASE WHEN USR.PATH_STS IS NULL THEN '0' ELSE USR.PATH_STS END PATH_STS,
+       USR.USER_STS,
+       USR.LOG_MACHINE,
+       SUSPEND_PERIOD,
+       SUSPEND_PERIOD_TYPE,
+       LAST_LOGIN,
+       USR.UNSUCCESS_LOGINS,
+       <choose>
+       <when test="isSybase == 1"> GETDATE() systemDate,</when>
+       <otherwise>SYSDATE systemDate,</otherwise>
+       </choose>
+       USR.USER_ID,
+	   USR.FIRST_NAME,
+	   USR.LAST_NAME,
+       (SELECT PTH_CTRL.ENC_TYPE FROM PTH_CTRL) ENC_TYPE,
+        CASE WHEN USR.PREFERED_LANGUAGE IS NULL OR USR.PREFERED_LANGUAGE = '' THEN 'L' ELSE USR.PREFERED_LANGUAGE END PREFERED_LANGUAGE,
+       USR.TODO_REFRESH_TIME,
+       USR.ALERT_PER_ONCE,
+       USR.CIF_NO,
+       USR.ACCESS_RESTRICTED,
+       CASE WHEN USR.PASSWD_CHG_FRQ IS NULL THEN  'N' ELSE USR.PASSWD_CHG_FRQ END PASSWD_CHG_FRQ,
+       USR.PASSWD_CHG_DT,
+       USR.FREQ_NBR,
+       USR.EMPLOYEE_ID,
+       USR.EMP_COMP_CODE,
+       USR.EMP_BRANCH_CODE,
+       USR.IDLE,
+       DISABLE_PRINTSCR,
+       DEFAULT_PRINTER,
+       PASSWD_SET_BY_ADMIN_YN,
+       <!-- LDAP  -->
+       USR.AD_USER_ID,				
+	   USR.AD_USER_NAME,			
+	   USR.AD_USER_DOMAIN,
+	   
+	   USR.USR_PWD_EXPIRY_NOTIFY_DAYS_NO,
+	   TOKEN_VERIFICATION_YN,
+	   SHOW_PRINT_PREVIEW_YN
+	   
+  FROM  USR 
+  WHERE   USR.USER_ID  = #{user_id}
+</select>
+<select id="userBasedOnLDAPUsr" parameterType="usrSC" resultType="usrVO">
+SELECT USER_ID FROM USR WHERE AD_USER_ID = #{user_id}
+</select> 
+
+<insert id="insertUserLoginLog" parameterType="usrLoginlogVO" >
+BEGIN
+   	      INSERT INTO S_USR_LOGIN_LOG
+   	      (LOG_DATE, USER_ID, APP_NAME
+   	      <if test="MACHINE_NAME != null" >
+       		, MACHINE_NAME
+	      </if>
+	      <if test="STATUS != null" >
+	        ,STATUS
+	      </if>
+	      <if test="REASON != null" >
+	        ,REASON
+	      </if>
+	      <if test="WINDOWS_USERNAME != null" >
+	        ,WINDOWS_USERNAME
+	      </if>
+	      <if test="WEB_HTTP_SESSION_ID != null" >
+	        ,WEB_HTTP_SESSION_ID
+	      </if>
+	      <if test="LOGIN_APPROVER_REJECTER != null" >
+	        ,LOGIN_APPROVER_REJECTER
+	      </if>
+      	 )
+	     SELECT  <choose>
+		       <when test="isSybase == 1"> GETDATE(),</when>
+		       <otherwise>SYSDATE,</otherwise>
+	   </choose>
+	   #{USER_ID}, #{APP_NAME}
+	   <if test="MACHINE_NAME != null" >
+       	 ,#{MACHINE_NAME}
+       </if>
+       <if test="STATUS != null" >
+        , #{STATUS}
+       </if>
+       <if test="REASON != null" >
+         ,#{REASON}
+       </if>
+       <if test="WINDOWS_USERNAME != null" >
+         ,#{WINDOWS_USERNAME}
+       </if>
+       <if test="WEB_HTTP_SESSION_ID != null" >
+         ,#{WEB_HTTP_SESSION_ID}
+       </if>
+       <if test="LOGIN_APPROVER_REJECTER != null" >
+         ,#{LOGIN_APPROVER_REJECTER}
+       </if>
+	   FROM  
+			<choose>
+				<when test="isOracle == 1">DUAL</when>
+				<otherwise>DUMMY1</otherwise>
+			</choose>
+	   WHERE NOT EXISTS
+	   (SELECT 1 FROM S_USR_LOGIN_LOG
+	     WHERE LOG_DATE = <choose>
+		       <when test="isSybase == 1"> GETDATE()</when>
+		       <otherwise>SYSDATE</otherwise>
+		       </choose>
+	    AND USER_ID = #{USER_ID}
+	    AND APP_NAME = #{APP_NAME})
+	   <if test="isOracle == 1">;</if>
+	
+	UPDATE S_USR_LOGIN_LOG
+  		SET STATUS = #{STATUS},
+   	REASON = #{REASON}
+    	<if test="WINDOWS_USERNAME != null" >
+       	,WINDOWS_USERNAME =   #{WINDOWS_USERNAME}
+     	</if>
+    	<if test="MACHINE_NAME != null" >
+        ,MACHINE_NAME =   #{MACHINE_NAME}
+     	</if>
+   	WHERE LOG_DATE =     <choose>
+	       <when test="isSybase == 1"> GETDATE()</when>
+	       <otherwise>SYSDATE</otherwise>
+   	</choose>
+   	AND USER_ID = #{USER_ID}
+   	AND APP_NAME = #{APP_NAME}
+	<if test="isOracle == 1">;</if>
+	
+END	<if test="isOracle == 1">;</if>
+</insert>
+
+<resultMap type="ctsTellerVO" id="getCtsTeller_Res">
+  <result property="USER_IS_BRANCH_MANAGER" column="USER_IS_BRANCH_MANAGER"/>
+  <result property="CODE" column="CODE"/>
+  <result property="STATUS" column="STATUS"/>
+  <result property="PRIVILEGE_LEVEL" column="PRIVILEGE_LEVEL"/>
+  <result property="DIVISION_CODE" column="DIVISION_CODE"/>
+  <result property="DEPT_CODE" column="DEPT_CODE"/>
+  <result property="FTP_MEMO" column="FTP_MEMO"/>
+  <result property="CIF_WO_ACC" column="CIF_WO_ACC"/>
+  <result property="CIF_RESERVED_NO" column="CIF_RESERVED_NO"/>
+  <result property="CHECK_ROLE" column="CHECK_ROLE"/>
+  <result property="ALLOW_TO_MODIFY_CIF" column="ALLOW_TO_MODIFY_CIF"/>
+  <result property="SHOW_ALL_TRX" column="SHOW_ALL_TRX"/>
+  <result property="FORBID_TRS_ON_ITS_ACC" column="FORBID_TRS_ON_ITS_ACC"/>
+  <result property="VIEW_SUSPEND_ACC" column="VIEW_SUSPEND_ACC"/>
+  <result property="VIEW_DORMANT_ACC" column="VIEW_DORMANT_ACC"/>
+  <result property="MASK_CARD_NO" column="MASK_CARD_NO"/>
+  <result property="CIF_NO" column="CIF_NO"/>
+  <result property="TRS_ADVICE_PRINTER" column="TRS_ADVICE_PRINTER"/>
+  <result property="ACC_CIF_FORMS_PRINTER" column="ACC_CIF_FORMS_PRINTER"/>
+  <result property="FORBID_VOID_CHQ" column="FORBID_VOID_CHQ"/>
+  <result property="ALLOW_CIF_CREATION_MASK_YN" column="ALLOW_CIF_CREATION_MASK_YN"/>
+  <result property="ENABLE_MULTI_BR_ACC_CREAT_YN" column="ENABLE_MULTI_BR_ACC_CREAT_YN"/> 
+  <result property="SHOW_ACC_BR"  column="SHOW_ACC_BR" />
+  <result property="CHEQUE_SCANNER_TYPE"  column="CHEQUE_SCANNER_TYPE" />
+  <result property="MASK_TRX_AMT_APPROVE_YN"  column="MASK_TRX_AMT_APPROVE_YN" />
+  <result property="FORBID_AMEND_ACTIVE_TRX_YN"  column="FORBID_AMEND_ACTIVE_TRX_YN" />
+</resultMap>
+<select id="ctsTellerDetails" parameterType="ctsTellerSC" resultMap="getCtsTeller_Res">
+<![CDATA[
+    SELECT		
+      
+     CTSTELLER.COMP_CODE,
+     CTSTELLER.BRANCH_CODE, 
+     CTSTELLER.USER_IS_BRANCH_MANAGER, 
+				CTSTELLER.CODE,
+				CTSTELLER.STATUS,
+				CTSTELLER.PRIVILEGE_LEVEL,
+				CTSTELLER.DIVISION_CODE,
+			    CTSTELLER.DEPT_CODE,
+			    CTSTELLER.FTP_MEMO,
+			    CTSTELLER.CIF_WO_ACC,  
+			    CTSTELLER.CIF_RESERVED_NO,
+			    CTSTELLER.CHECK_ROLE,
+			    CTSTELLER.ROLE_CODE,
+			    CTSTELLER.ALLOW_TO_MODIFY_CIF,
+			    CTSTELLER.SHOW_ALL_TRX,
+			    CTSTELLER.FORBID_TRS_ON_ITS_ACC,	
+			    CTSTELLER.VIEW_SUSPEND_ACC,
+			    CTSTELLER.VIEW_DORMANT_ACC	,
+			    CTSTELLER.CIF_APPROVED,
+			    CTSTELLER.MASK_CARD_NO,
+			    CTSTELLER.CIF_NO,
+			    CTSTELLER.TRS_ADVICE_PRINTER,
+			    CTSTELLER.ACC_CIF_FORMS_PRINTER	,
+			    CTSTELLER.FORBID_VOID_CHQ,
+			    CTSTELLER.ALLOW_CIF_CREATION_MASK_YN,
+			    CTSTELLER.ENABLE_MULTI_BR_ACC_CREAT_YN,
+			    CTSTELLER.SHOW_ACC_BR, 
+		    	CTSTELLER.CHEQUE_SCANNER_TYPE,
+		    	CTSTELLER.MASK_TRX_AMT_APPROVE_YN,
+		    	CTSTELLER.FORBID_AMEND_ACTIVE_TRX_YN
+	FROM		CTSTELLER 
+	WHERE		CTSTELLER.COMP_CODE	= #{compCode}
+	AND		CTSTELLER.BRANCH_CODE	= #{branchCode}
+	AND		CTSTELLER.USER_ID		= #{userId}
+	AND		CTSTELLER.STATUS		<> 'D'
+   ]]>
+</select>
+
+<select id="returnRunningDate" parameterType="commonLibSC"  resultType="date">
+     	SELECT 	RUN_DATE 
+		FROM	S_RUNDTE  
+		WHERE	COMP_CODE 	=  #{companyCode}
+		AND		BRANCH_CODE =  #{branchCode}
+		AND		APP_NAME  	=  #{appName}
+</select>
+
+<select id="returnPhoenixRunningDate" parameterType="commonLibSC"  resultType="com.path.vo.common.CommonLibCO">
+		SELECT EXT_SYS_DATE phoenixExtDate, (CASE WHEN VALID_EXT_SYS_DT IS NULL THEN 'N' ELSE VALID_EXT_SYS_DT END) validPhoenixExtDate
+		FROM SYNC_SYS_PARM 
+		WHERE COMP_CODE =  #{companyCode}
+</select>
+
+<update id="updateRunningDate" parameterType="commonLibSC">
+		    BEGIN
+		    
+		   	   INSERT INTO S_RUNDTE(COMP_CODE, BRANCH_CODE,APP_NAME,RUN_DATE)
+			   SELECT #{companyCode}, #{branchCode},#{appName},#{runningDate}
+			   FROM  
+ 				<choose>
+	 				<when test="isOracle == 1">DUAL</when>
+	 				<otherwise>DUMMY1</otherwise>
+ 				</choose>
+			   WHERE NOT EXISTS
+			   (SELECT 1 FROM S_RUNDTE
+			     WHERE COMP_CODE = #{companyCode}
+			    AND BRANCH_CODE = #{branchCode}
+			    AND APP_NAME = #{appName})
+			   <if test="isOracle == 1">;</if>
+				
+				UPDATE S_RUNDTE
+				SET RUN_DATE = #{runningDate}
+				WHERE COMP_CODE = #{companyCode}
+				AND BRANCH_CODE = #{branchCode}
+				AND APP_NAME = #{appName} 
+				<if test="isOracle == 1">;</if>
+				
+			END	<if test="isOracle == 1">;</if>
+</update>
+
+<select id="returnLastLogDate" parameterType="sAppLogVO"  resultType="sAppLogVO">
+    SELECT MAX(LAST_LOG)  LAST_LOG
+	FROM  S_APPLOG 
+	WHERE	S_APPLOG.USER_ID = #{USER_ID}
+</select>
+
+<sql id="commonAlreadyLoggedIn">
+		FROM  S_APPLOG 
+		WHERE  USER_ID = #{sAppLogVO.USER_ID}
+		<choose>
+		   <when test="isWebVers==2">
+		    AND USER_STS_WEB = 'L'
+		   </when>
+		   <otherwise>
+		    AND USER_STS = 'L' 
+		   </otherwise>
+		</choose>
+		AND APP_NAME = #{sAppLogVO.APP_NAME}
+		AND COMP_CODE = #{sAppLogVO.COMP_CODE}
+		AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE}
+        <if test="httpSessionId != null">
+         AND WEB_HTTP_SESSION_ID != #{httpSessionId} 
+        </if>
+</sql>
+<select id="checkAlreadyLoggedIn" parameterType="loginCO"  resultType="long">
+		SELECT 1  
+		<include refid="commonAlreadyLoggedIn"/>
+</select>
+<select id="returnWebHttpSessionId" parameterType="loginCO"  resultType="string">
+		SELECT WEB_HTTP_SESSION_ID
+		<include refid="commonAlreadyLoggedIn"/>
+</select>
+
+<select id="checkUsersAlreadyLoggedIn" parameterType="loginCO" resultType="long">
+    <if test="donotCheckLoc == null">
+    select sum (
+    (
+    </if>
+    select
+		count(1)   
+		FROM  S_APPLOG 
+		WHERE  
+		<choose>
+		   <when test="sameUsrToOthApp != null">
+		      USER_ID == #{sAppLogVO.USER_ID}
+          AND APP_NAME NOT IN ('IBIS','SADS')
+              <if test="currAppName != null">
+              AND APP_NAME <![CDATA[<>]]> #{sAppLogVO.APP_NAME}
+              </if> 		      
+		   </when>
+		   <otherwise>
+		     USER_ID != #{sAppLogVO.USER_ID}
+		AND APP_NAME = #{sAppLogVO.APP_NAME} 
+		   </otherwise>
+		</choose>
+		<choose>
+		    <when test="isWebVers==2">
+		    AND (USER_STS = 'L' OR USER_STS_WEB = 'L')
+		    </when>
+		    <otherwise>
+		    AND USER_STS = 'L'
+		    </otherwise>
+		</choose>
+		AND COMP_CODE = #{sAppLogVO.COMP_CODE}
+		AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE} 
+	  <if test="donotCheckLoc == null">	
+		)
+		+
+		(select
+		count(1)   
+		FROM  LOC 
+		WHERE  
+		<choose>
+		   <when test="sameUsrToOthApp != null">
+		      USER_ID == #{sAppLogVO.USER_ID}
+		   </when>
+		   <otherwise>
+		     USER_ID != #{sAppLogVO.USER_ID}
+		   </otherwise>
+		</choose>
+		<!-- WEB applications always use USER_LOC_STS_WEB in S_LOC table-->
+		AND (USER_LOC_STS = 'L' OR USER_LOC_STS_WEB = 'L')
+		AND COMP_CODE = #{sAppLogVO.COMP_CODE}
+		AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE}
+		) 
+		) isLogged 
+		from PTH_CTRL
+	  </if>
+</select>
+<update id="applyLockOnAppLog" parameterType="loginCO">
+	UPDATE S_APPLOG  
+	SET	USER_STS = USER_STS	
+	WHERE  USER_ID != #{sAppLogVO.USER_ID}
+	AND COMP_CODE = #{sAppLogVO.COMP_CODE}
+	<choose>
+	    <when test="isWebVers==2">
+	    AND (USER_STS <![CDATA[<>]]> 'S' OR USER_STS_WEB <![CDATA[<>]]> 'S')
+	    </when>
+	    <otherwise>
+	    AND USER_STS <![CDATA[<>]]> 'S'
+	    </otherwise>
+	</choose>
+	<if test="sAppLogVO.APP_NAME != null">
+		AND APP_NAME = #{sAppLogVO.APP_NAME}
+	</if>
+	<if test="sAppLogVO.BRANCH_CODE != null">
+		AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE} 
+	</if>
+	<!-- Not Engine applications -->
+	<if test="excludeEngineApps != null">
+		AND NOT EXISTS (SELECT 1 FROM S_APP S WHERE S.APP_NAME = APP_NAME AND S.APP_CATEGORY = 1)
+	</if>
+</update>
+
+<update id="activateDeactivateSingleUserMode" parameterType="loginCO">
+	UPDATE S_APPLOG    
+	SET	USER_STS = #{sAppLogVO.USER_STS}
+	<choose>
+	    <when test="isWebVers==2">
+	    ,USER_STS_WEB = #{sAppLogVO.USER_STS},MACHINE_ID_WEB = #{sAppLogVO.MACHINE_ID,jdbcType=VARCHAR}
+	    </when>
+	    <otherwise>
+	    ,MACHINE_ID = #{sAppLogVO.MACHINE_ID,jdbcType=VARCHAR}
+	    </otherwise>
+	</choose>	
+	WHERE  USER_ID != #{sAppLogVO.USER_ID}
+	AND COMP_CODE = #{sAppLogVO.COMP_CODE}
+	<choose>
+	    <when test="isWebVers==2">
+	    AND (USER_STS = #{sAppLogVO.USER_STS_WEB} OR USER_STS_WEB = #{sAppLogVO.USER_STS_WEB})
+	    </when>
+	    <otherwise>
+	    AND USER_STS = #{sAppLogVO.USER_STS_WEB}
+	    </otherwise>
+	</choose>
+	<if test="sAppLogVO.APP_NAME != null">
+		AND APP_NAME = #{sAppLogVO.APP_NAME}
+	</if>
+	<if test="sAppLogVO.BRANCH_CODE != null">
+		AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE} 
+	</if>
+	<!-- Not Engine applications -->
+	<if test="excludeEngineApps != null">
+		AND NOT EXISTS (SELECT 1 FROM S_APP S WHERE S.APP_NAME = APP_NAME AND S.APP_CATEGORY = 1)
+	</if>
+</update>
+<select id="checkAppLogUsrsAlreadyLoggedIn" parameterType="loginCO" resultType="long">
+    select count(1) isLogged  
+		FROM  S_APPLOG SL
+		WHERE  
+		SL.COMP_CODE = #{sAppLogVO.COMP_CODE}
+		<choose>
+		  <when test="sameUsrToOthApp != null">
+		  	AND SL.USER_ID = #{sAppLogVO.USER_ID}
+		  	AND SL.APP_NAME NOT IN ('IBIS','SADS')
+		  </when>
+		  <otherwise>
+		  	AND SL.USER_ID != #{sAppLogVO.USER_ID}
+		  </otherwise>
+		  </choose>
+		<choose>
+		    <when test="isWebVers==2">
+		    AND (SL.USER_STS = 'L' OR SL.USER_STS_WEB = 'L')
+		    </when>
+		    <otherwise>
+		    AND SL.USER_STS = 'L'
+		    </otherwise>
+		</choose>
+		<if test="sAppLogVO.APP_NAME != null">
+			AND SL.APP_NAME = #{sAppLogVO.APP_NAME}
+		</if>
+		<if test="sAppLogVO.BRANCH_CODE != null">
+			AND SL.BRANCH_CODE = #{sAppLogVO.BRANCH_CODE} 
+		</if>
+		<!-- Not Engine applications -->
+		<if test="excludeEngineApps != null">
+			AND NOT EXISTS (SELECT 1 FROM S_APP S WHERE S.APP_NAME = SL.APP_NAME AND S.APP_CATEGORY = 1)
+		</if>	
+</select>
+
+<select id="checkUserShiftSatisfied" resultType="int" parameterType="userShiftVO">
+
+   SELECT 1
+  FROM USR_SHIFTS
+ WHERE (USR_SHIFTS.USER_ID = #{USER_ID})
+   AND (USR_SHIFTS.COMP_CODE = CASE WHEN USR_SHIFTS.COMP_CODE = 0 THEN
+        USR_SHIFTS.COMP_CODE ELSE #{COMP_CODE} END)
+   AND (USR_SHIFTS.BRANCH_CODE = CASE WHEN USR_SHIFTS.BRANCH_CODE = 0 THEN
+        USR_SHIFTS.BRANCH_CODE ELSE #{BRANCH_CODE} END)
+  <choose>
+  	<!-- Compare only the Time part regardless what is the Date part -->
+       <when test="isSybase == 1">
+       AND CONVERT (DATETIME,CONVERT(VARCHAR,USR_SHIFTS.FROM_TIME,108),108) <![CDATA[<=]]> CONVERT(DATETIME,CONVERT(VARCHAR,#{FROM_TIME},108),108)
+  	   AND CONVERT (DATETIME,CONVERT(VARCHAR,USR_SHIFTS.TO_TIME,108),108) <![CDATA[>=]]> CONVERT(DATETIME,CONVERT(VARCHAR,#{FROM_TIME},108),108)
+		</when>
+       <otherwise>
+        AND (TO_DATE(TO_CHAR(USR_SHIFTS.FROM_TIME,'HH:MI:SS AM'),'HH:MI:SS AM') <![CDATA[<=]]> TO_DATE(TO_CHAR(#{FROM_TIME},'HH:MI:SS AM'),'HH:MI:SS AM'))
+   		AND (TO_DATE(TO_CHAR(USR_SHIFTS.TO_TIME,'HH:MI:SS AM'),'HH:MI:SS AM') <![CDATA[>=]]> TO_DATE(TO_CHAR(#{FROM_TIME},'HH:MI:SS AM'),'HH:MI:SS AM'))
+      </otherwise>
+	</choose>
+   AND (USR_SHIFTS.DAY_OF_WEEK = #{DAY_OF_WEEK})
+</select>
+
+<select id="checkUserShiftExst" resultType="int" parameterType="userShiftVO">
+<![CDATA[
+   SELECT COUNT(1)
+  FROM USR_SHIFTS
+ WHERE (USR_SHIFTS.USER_ID = #{USER_ID})
+   AND (USR_SHIFTS.COMP_CODE = CASE WHEN USR_SHIFTS.COMP_CODE = 0 THEN
+        USR_SHIFTS.COMP_CODE ELSE #{COMP_CODE} END)
+   AND (USR_SHIFTS.BRANCH_CODE = CASE WHEN USR_SHIFTS.BRANCH_CODE = 0 THEN
+        USR_SHIFTS.BRANCH_CODE ELSE #{BRANCH_CODE} END)
+   ]]>
+</select>
+
+<update id="suspendUser" parameterType="usrVO"  >
+	UPDATE  USR    
+	SET	USER_STS = #{USER_STS},
+	SUSPEND_REASON = #{SUSPEND_REASON},
+	SUSPEND_DATE   = 
+	<choose>
+       <when test="isSybase == 1"> GETDATE()</when>
+       <otherwise>SYSDATE</otherwise>
+	</choose> ,
+	SUSPEND_BY       = #{SUSPEND_BY},
+	UNSUCCESS_LOGINS = #{UNSUCCESS_LOGINS} 
+	WHERE  USER_ID   = #{USER_ID}
+</update>
+<update id="updateNonSuspendedUserSts" parameterType="usrVO"  >
+	<include refid="USR.sql_updateUSR" />
+	<!-- 'N' new status control added based on Bug TP428313-->
+	<![CDATA[ AND USER_STS NOT IN ( 'S', 'N' )  ]]>
+</update>
+<update id="updateUserAppLog" parameterType="sAppLogVO">
+
+	UPDATE S_APPLOG
+	   SET USER_STS     = #{USER_STS}
+	   <if test="USER_STS_WEB != null">
+	     ,USER_STS_WEB = #{USER_STS_WEB}
+	   </if>
+	 WHERE S_APPLOG.USER_ID  = #{USER_ID}
+	   AND (USER_STS <![CDATA[<>]]> #{USER_STS}	 
+	   <if test="USER_STS_WEB != null"> 
+	   	 OR USER_STS_WEB <![CDATA[<>]]> #{USER_STS_WEB}
+	   </if>
+	   )
+</update>
+<select id="checkLoggedToOtherApp" parameterType="sAppLogVO" resultType="string" >
+	SELECT APP_NAME 
+	FROM  S_APPLOG    		
+	WHERE  USER_ID  = #{USER_ID}
+	AND APP_NAME <![CDATA[<>]]> #{APP_NAME}
+	AND BRANCH_CODE = #{BRANCH_CODE}
+    AND COMP_CODE = #{COMP_CODE}
+	 AND (USER_STS = #{USER_STS}
+	<if test="USER_STS_WEB != null">
+	  OR USER_STS_WEB = #{USER_STS_WEB}
+	</if>
+	)
+</select>
+<select id="checkLoggedToOtherCompBranch" parameterType="locVO" resultType="string" >
+
+	SELECT <if test="isSybase == 1">TOP 1</if> USER_LOC_STS 
+	FROM  LOC    		
+	WHERE  USER_ID  = #{USER_ID}
+	AND (USER_LOC_STS = #{USER_LOC_STS}
+	  OR USER_LOC_STS_WEB = #{USER_LOC_STS_WEB}
+	)
+	<if test="COMP_CODE != null">
+	<![CDATA[ AND (BRANCH_CODE <> #{BRANCH_CODE} OR COMP_CODE <> #{COMP_CODE})]]>
+	</if>
+	<if test="isOracle == 1">AND ROWNUM = 1</if>
+</select>
+
+<select id="returnLastLogoutDate" parameterType="string" resultType="date" >
+	SELECT MAX(S_USR_LOGOUT_LOG.LAST_LOGOUT)
+	FROM S_USR_LOGOUT_LOG
+	WHERE S_USR_LOGOUT_LOG.USER_ID = #{value}
+</select>
+<update id="updateUserLoc" parameterType="locVO"  >
+	UPDATE  LOC  
+	<set>
+	 <if test="USER_LOC_STS !=null">
+	  USER_LOC_STS = #{USER_LOC_STS}
+	</if> 
+	<if test="USER_LOC_STS_WEB !=null">
+	  <if test="USER_LOC_STS !=null">,</if>
+	  USER_LOC_STS_WEB = #{USER_LOC_STS_WEB}
+	</if>
+	</set>   
+	WHERE  USER_ID  = #{USER_ID} 
+	AND (
+	<if test="USER_LOC_STS !=null">
+	  USER_LOC_STS <![CDATA[<>]]> #{USER_LOC_STS}
+	</if> 
+	<if test="USER_LOC_STS_WEB !=null">
+	   <if test="USER_LOC_STS !=null">OR</if> 
+	   USER_LOC_STS_WEB <![CDATA[<>]]> #{USER_LOC_STS_WEB}
+	</if> 
+    )
+</update>
+<update id="updateCtsTeller" parameterType="ctsTellerVO"  >
+<![CDATA[
+	UPDATE  CTSTELLER    
+	SET	SIGNED_ON_STATUS = #{SIGNED_ON_STATUS} 
+	WHERE  (CTSTELLER.COMP_CODE  = #{COMP_CODE})
+	AND	(CTSTELLER.BRANCH_CODE  = #{BRANCH_CODE})
+	AND	(CTSTELLER.USER_ID  = #{USER_ID})
+	AND	(CTSTELLER.STATUS  <> #{STATUS})
+]]>
+</update>
+
+<select id="CheckRejectedPwd" parameterType="string" resultType="string">
+	SELECT PASSWORDS
+	FROM S_REJECTED_PASSWORDS
+	WHERE PASSWORDS =  #{value}
+</select>
+
+<select id="returnUserBirthDate" parameterType="usrVO" resultType="date">
+	SELECT EMP.BIRTH_DATE
+	FROM USR, EMP
+	WHERE USR.USER_ID = #{USER_ID}
+    AND EMP.COMP_CODE = USR.EMP_COMP_CODE
+	AND EMP.BRANCH_CODE  = USR.EMP_BRANCH_CODE
+    AND EMP.EMPLOYEE_ID = USR.EMPLOYEE_ID
+</select>
+
+<sql id="pwdHistCommon">
+	FROM  USR_PWDS 
+	WHERE USR_PWDS.USER_ID  = #{USER_ID}
+	<choose>
+		<when test="PASS_FINAL != null" >
+			AND	USR_PWDS.PASS_FINAL = #{PASS_FINAL}
+		</when>
+	</choose>
+</sql>
+<select id="checkUsrPwdsExist" parameterType="usrPwdsVO" resultType="string">
+		SELECT <if test="isSybase == 1">TOP ${noPwdTrack}</if> PASS_FINAL
+		FROM USR_PWDS WHERE USER_ID = #{USER_ID}
+		<if test="isOracle == 1">
+			AND ROWNUM <![CDATA[<=]]> ${noPwdTrack}
+		</if>
+		ORDER BY PWD_DATE DESC
+</select>
+<select id="returnPwdHistForMirroring" parameterType="usrSC" resultType="usrPwdsVO">
+	SELECT  <if test="isSybase == 1">TOP ${pwdRestrictMirrorNo}</if> PWD_OLD,PWD_OLD_KEY 
+	FROM  USR_PWDS 
+	WHERE USR_PWDS.USER_ID  = #{user_id}
+	AND PWD_OLD IS NOT NULL 
+	AND PWD_OLD_KEY IS NOT NULL
+	<if test="isOracle == 1">AND ROWNUM <![CDATA[<= ]]> ${pwdRestrictMirrorNo}</if>
+	ORDER BY PWD_DATE DESC
+</select>
+
+<sql id="returnNbPwdHistCommon">
+	SELECT COUNT(1) 
+	FROM  USR_PWDS 
+	WHERE USR_PWDS.USER_ID  = #{USER_ID}
+</sql>
+<select id="returnNbPwdHist" parameterType="usrPwdsVO" resultType="int">
+	<include refid="returnNbPwdHistCommon"></include>
+</select>
+<select id="returnNbPwdHistPerDay" parameterType="usrPwdsVO" resultType="int">
+	<include refid="returnNbPwdHistCommon"></include>
+	AND 
+		<if test="isOracle == 1">to_char(PWD_DATE,'dd/mm/yyyy') = to_char(#{PWD_DATE},'dd/mm/yyyy')</if>
+		<if test="isSybase == 1">CONVERT(VARCHAR,PWD_DATE,103 ) = CONVERT(VARCHAR,#{PWD_DATE},103 )</if>
+</select>
+
+<delete id="deleteOldestPwdHist" parameterType="usrPwdsVO">
+	DELETE FROM USR_PWDS    
+	WHERE USER_ID  = #{USER_ID}
+	 AND PWD_DATE  =
+		(
+			SELECT MIN(PWD_DATE)
+			FROM  USR_PWDS 
+			WHERE USR_PWDS.USER_ID  = #{USER_ID}
+		) 
+</delete>
+
+<insert id="insertPwdHist" parameterType="usrPwdsVO">
+
+INSERT INTO  USR_PWDS  ( USER_ID ,PWD_DATE ,
+ <choose>
+		<when test="PASS_FINAL != null" >
+							PASS_FINAL
+		</when>
+		<otherwise>
+		 	PWD_FORWARD  , PWD_REVERSE
+		</otherwise>		
+</choose>	
+<if test="PWD_OLD != null and PWD_OLD_KEY != null">
+		, PWD_OLD, PWD_OLD_KEY
+</if>			
+				)  
+				VALUES ( #{USER_ID}, #{PWD_DATE} , 
+ <choose>
+		<when test="PASS_FINAL != null" >
+							#{PASS_FINAL}
+		</when>
+		<otherwise>
+		 	#{PWD_FORWARD}  , #{PWD_REVERSE}
+		</otherwise>		
+</choose>	
+<if test="PWD_OLD != null and PWD_OLD_KEY != null">
+	, #{PWD_OLD}, #{PWD_OLD_KEY}				
+</if>		
+)  
+							
+</insert>
+
+<update id="updateUserPwd" parameterType="usrVO">
+	UPDATE  USR 
+	SET
+	PASSWD_SET_BY_ADMIN_YN = '0',
+	 <choose>
+		<when test="PASS_FINAL != null" >
+			PASS_FINAL = #{PASS_FINAL}
+		</when>
+		<otherwise>
+		 	PASS_FORWARD = #{PASS_FORWARD} , 
+		 	PASS_REVERSE = #{PASS_REVERSE}
+		</otherwise>		
+</choose>	
+	, USER_STS = CASE WHEN USER_STS IN ('S', 'R') THEN USER_STS ELSE 'A' END 
+	<if test="PASSWD_CHG_DT != null">
+	   ,PASSWD_CHG_DT = <include refid="commonLibMapper.systemDate"/>
+	</if>
+	WHERE USR.USER_ID  = #{USER_ID}
+</update>
+
+<select id="checkOldPwd" parameterType="string" resultType="usrVO">
+	SELECT PASS_FORWARD, PASS_REVERSE, PASS_FINAL
+	FROM USR 
+	WHERE USR.USER_ID  = #{value}
+</select>
+<resultMap type="loginCO"  id="branchSessionMap">
+  <result property="isBranch" column="isBranch"/>
+  <result property="notIsBranch" column="notIsBranch"/>
+  <result property="branchClosedAllowUser" column="branchClosedAllowUser"/>
+</resultMap>
+<select id="checkBranchOpenedSession" parameterType="com.path.vo.common.BranchSessionCO" resultMap="branchSessionMap">
+SELECT 
+	( SELECT 1 FROM BRANCH_SESSION 
+	WHERE  COMP_CODE =  #{branchSessionVO.COMP_CODE}
+	AND BRANCH_CODE =  #{branchSessionVO.BRANCH_CODE}
+	AND IS_BRANCH = '0' 
+	AND STATUS = #{branchSessionVO.STATUS}
+	<choose>
+	 <when test="isSybase == 1">
+	  AND DATE_OPENED BETWEEN CONVERT (DATETIME,CONVERT(CHAR(26),(SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET') ,109), 109)
+	  AND DATEADD ( SS ,86399, CONVERT (DATETIME,CONVERT(CHAR(26),(SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET') ,109), 109))
+	 </when>
+	 <otherwise>
+	 <!--(1439.99/1440) is to add one day - one millisecond to the running date  -->
+	   AND  TO_CHAR(DATE_OPENED , 'DD/MM/YYYY HH24:MI:SS') BETWEEN 
+	     to_char(TO_date((SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET')  , 'DD/MM/YY HH24:MI:SS'), 'DD/MM/YYYY HH24:MI:SS')
+	    AND to_char(TO_date((SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET')  , 'DD/MM/YY HH24:MI:SS')+ (1439.99/1440), 'DD/MM/YYYY HH24:MI:SS')
+	 </otherwise>
+	</choose>
+	
+	)notIsBranch, 
+	( SELECT 1 FROM BRANCH_SESSION 
+	WHERE  COMP_CODE =  #{branchSessionVO.COMP_CODE}
+	AND BRANCH_CODE =  #{branchSessionVO.BRANCH_CODE}
+	AND IS_BRANCH = '1'
+	AND STATUS = #{branchSessionVO.STATUS}  
+	<choose>
+	 <when test="isSybase == 1">
+	  AND DATE_OPENED BETWEEN CONVERT (DATETIME,CONVERT(CHAR(26),(SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET') ,109), 109)
+	  AND DATEADD ( SS ,86399, CONVERT (DATETIME,CONVERT(CHAR(26),(SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET') ,109), 109))
+	 </when>
+	 <otherwise>
+	 <!--(1439.99/1440) is to add one day - one millisecond to the running date  -->
+	   AND  TO_CHAR(DATE_OPENED , 'DD/MM/YYYY HH24:MI:SS') BETWEEN 
+	     to_char(TO_date((SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET')  , 'DD/MM/YY HH24:MI:SS'), 'DD/MM/YYYY HH24:MI:SS')
+	    AND to_char(TO_date((SELECT RUN_DATE FROM S_RUNDTE WHERE COMP_CODE = #{branchSessionVO.COMP_CODE} AND BRANCH_CODE = #{branchSessionVO.BRANCH_CODE} AND APP_NAME = 'RET')  , 'DD/MM/YY HH24:MI:SS')+ (1439.99/1440), 'DD/MM/YYYY HH24:MI:SS')
+	 </otherwise>
+	</choose>
+	)  isBranch 
+	, 
+	(SELECT CAN_LOGIN_AFTER_BR_CLOSURE_YN FROM USR WHERE USER_ID =#{userId}) branchClosedAllowUser 
+<if test="isOracle == 1">from dual</if>
+    
+</select>
+<sql id="select_reactivate_user_list">
+	<include refid="reactivateUserFromAXS"/>
+	UNION
+	<include refid="reactivateUserFromUsr"/>
+	UNION
+	<include refid="reactivateUserFromGroup"/>
+</sql>
+
+<sql id="reactivateUserFromAXS">
+SELECT AXS.USER_ID
+  FROM AXS
+ WHERE AXS.PROG_REF    = #{progRef}
+   AND AXS.APP_NAME    = #{appName}
+   AND AXS.STATUS      = 'P'
+   AND AXS.COMP_CODE   = 0 
+   AND AXS.BRANCH_CODE = 0
+   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+</sql>
+	
+<sql id="reactivateUserFromUsr">
+SELECT USER_ID
+  FROM S_APPROLUSR, S_ROLE_DETAIL
+ WHERE S_APPROLUSR.APP_NAME    = #{appName}
+   AND S_APPROLUSR.STATUS      = 'P'
+   AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+   AND S_ROLE_DETAIL.APP_NAME  = S_APPROLUSR.APP_NAME
+   AND S_ROLE_DETAIL.PROG_REF  = #{progRef}
+   AND S_ROLE_DETAIL.STATUS    = 'P'
+</sql>         
+	
+<sql id="reactivateUserFromGroup">
+SELECT USER_ID
+  FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+ WHERE S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+   AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+   AND S_ROLE_DETAIL.APP_NAME    = S_GROUP_PROFILE.APP_NAME
+   AND S_ROLE_DETAIL.PROG_REF    = #{progRef}
+   AND S_ROLE_DETAIL.STATUS      = 'P'
+   AND S_GROUP_PROFILE.APP_NAME  = #{appName}
+   AND S_GROUP_PROFILE.STATUS    = 'P'
+   AND S_GROUP_USER.STATUS       = 'P'
+   AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+   AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+</sql>
+<resultMap id="reactivateUserListMap" type="usrVO">
+  <result property="FIRST_NAME"   column="FIRST_NAME"/>
+  <result property="LAST_NAME"    column="LAST_NAME"/>
+  <result property="EMAIL_ID"     column="EMAIL_ID"/>
+  <result property="EMAIL_SERVER" column="EMAIL_SERVER"/>
+  <result property="EMAIL_PASSWD" column="EMAIL_PASSWD"/>
+</resultMap>
+<select id="reactivateUserList" parameterType="commonLibSC" resultMap="reactivateUserListMap">
+SELECT FIRST_NAME, LAST_NAME, EMAIL_ID, EMAIL_SERVER, EMAIL_PASSWD
+  FROM USR, PTH_CTRL
+ WHERE USR.USER_ID IN
+                     (SELECT X.USER_ID
+                        FROM (
+                               <choose>
+                                   <when test="popProfModAccess=='1'">
+                                        <include refid="select_reactivate_user_list"/>
+                                   </when>
+                                   <otherwise>
+                                        <include refid="reactivateUserFromAXS"/>
+                                   </otherwise>
+                               </choose>
+                             ) X
+                     )
+   AND USR.USER_ID <![CDATA[<>]]> #{userId}
+</select>
+<resultMap id="returnAdminUsersMap" type="usrVO">
+  <result property="USER_ID"           column="USER_ID"/>
+  <result property="EMAIL_ID"          column="EMAIL_ID"/>
+  <result property="EMAIL_SERVER"      column="EMAIL_SERVER"/>
+  <result property="PREFERED_LANGUAGE" column="PREFERED_LANGUAGE"/>
+</resultMap>
+<select id="returnAdminUsers" resultMap="returnAdminUsersMap">
+  SELECT USER_ID, EMAIL_ID,EMAIL_SERVER,(CASE WHEN U.PREFERED_LANGUAGE IS NOT NULL  THEN U.PREFERED_LANGUAGE ELSE 'L' END)  
+  FROM USR U 
+ WHERE U.PATH_STS = '1'
+   AND U.EMAIL_ID IS NOT NULL
+   AND U.EMAIL_SERVER IS NOT NULL
+</select>
+
+<select id="returnLoggedInUsersList" resultMap="loggedInUsersMap"
+	parameterType="ctsTellerSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="returnLoggedInUsers" />
+	<if test='"1".equals(overPassFlag)'>
+		<include refid="overPassClosureUsers" />
+	</if>
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+
+<select id="returnLoggedInUsersListCount" resultType="int"
+	parameterType="ctsTellerSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="returnLoggedInUsers" />
+	<if test='"1".equals(overPassFlag)'>
+		<include refid="overPassClosureUsers" />
+	</if>
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<select id="returnLoggedInOverPassCount" resultType="int"
+	parameterType="ctsTellerSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="returnLoggedInUsers" />
+	<include refid="overPassClosureUsers" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<resultMap id="loggedInUsersMap" type="com.path.vo.admin.user.UsrCO">
+	<result column="USER_ID"              property="USER_ID"/>
+	<result column="PRIVILEGE_LEVEL_DESC" property="PRIVILEGE_LEVEL_DESC"/>
+	<result column="LONG_NAME_ENG"        property="LONG_NAME_ENG"/>
+</resultMap>
+
+<sql id="returnLoggedInUsers">
+	SELECT DISTINCT G.USER_ID USER_ID, 
+	LTRIM(RTRIM(U.FIRST_NAME)) || ' ' || LTRIM(RTRIM(U.MIDDLE_NAME)) || ' ' || LTRIM(RTRIM(U.LAST_NAME)) LONG_NAME_ENG,
+	OVERPASS_CLOSURE,
+    (SELECT CASE WHEN #{language} = 'AR' 
+                 THEN UL.DESC_ARAB 
+                 ELSE UL.DESC_ENG 
+             END
+       FROM USR_LEVEL UL 
+      WHERE UL.CODE = T.PRIVILEGE_LEVEL) AS  PRIVILEGE_LEVEL_DESC	
+	  FROM S_APPLOG G ,  CTSTELLER T , USR U
+	  WHERE G.COMP_CODE = T.COMP_CODE
+	  AND G.BRANCH_CODE = T.BRANCH_CODE
+	  AND G.USER_ID = U.USER_ID
+	  AND G.USER_ID = T.USER_ID 
+	  AND G.COMP_CODE = #{compCode}
+	  AND G.BRANCH_CODE = #{branchCode}
+	  AND G.APP_NAME = #{appName}
+	  AND (G.USER_STS = 'L' OR G.USER_STS_WEB = 'L')
+</sql>
+
+<sql id="overPassClosureUsers">
+	AND T.OVERPASS_CLOSURE = 1
+	AND NOT EXISTS  ( SELECT 1 FROM CTSCONTROL_EXCL_PEND_TRX_USERS CEPTU
+                     WHERE CEPTU.COMP_CODE = #{compCode}  
+                     AND CEPTU.BRANCH_CODE = #{branchCode}
+                     AND U.USER_ID = CEPTU.USER_ID)
+</sql>
+
+
+<select id="returnUsrDefaultDisplayPage" parameterType="usrSC" resultType="string">
+ 	SELECT 	DEFAULT_DISPLAY_PAGE
+	FROM  	USR 
+	WHERE	USER_ID = #{user_id}
+</select>
+
+<select id="returnPwdRestrictions" parameterType="usrSC" resultType="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO">
+	SELECT RESTRICTION_CODE,DATA_VALUE 
+	FROM SYS_PARAM_PWD_RESTRICTION 
+	WHERE IS_SELECTED_YN = 1
+</select>
+
+
+<resultMap id="returnLoginAlertSubUserMap" type="usrSC" >
+	<result column="SUBORDINATE_COUNT" property="subordinate_count"/>
+	<result column="ALERT_LAST_LOGIN_DATE" property="login_alert_approval"/>
+</resultMap>
+
+<select id="returnLoginAlertSubUserCount" parameterType="usrSC" resultMap="returnLoginAlertSubUserMap" >
+	SELECT
+		(	
+			SELECT COUNT(1) FROM USR_SUBORDINATES 
+			WHERE  
+			<choose>
+			       <when test=' subordinate_id != null and !"".equals(subordinate_id) '>
+				   		SUBORDINATE_USER_ID = #{subordinate_id}
+			       </when>
+			       <otherwise>
+			        	USER_ID = #{user_id} 
+			       </otherwise>
+		    </choose>
+	    ) SUBORDINATE_COUNT,
+	    (
+	    	SELECT ALERT_LAST_LOGIN_DATE FROM USR
+         	WHERE USER_ID = 
+         				<choose>
+         					<when test=' subordinate_id != null and !"".equals(subordinate_id) '>
+				   				#{subordinate_id}
+					       </when>
+					       <otherwise>
+					        	#{user_id} 
+					       </otherwise>
+					    </choose>
+	    ) ALERT_LAST_LOGIN_DATE
+	    <if test="isOracle == 1">FROM DUAL</if>
+</select>
+
+<update id="updateUsrAlertLoginApproval" parameterType="usrVO"  >
+	UPDATE USR    
+	SET ALERT_LAST_LOGIN_DATE = 
+	<choose>
+       <when test="ALERT_LAST_LOGIN_DATE == null"> NULL </when>
+       <otherwise>
+		   <choose>
+	       		<when test="isSybase == 1"> GETDATE() </when>
+	       		<otherwise> SYSDATE </otherwise>
+	       </choose>
+	   </otherwise>
+	</choose>
+	WHERE  USER_ID = #{USER_ID}
+</update>
+
+<select id="returnPwdChangePerDay" parameterType="string" resultType="int">
+SELECT USR_PWD_CHNG_PER_DAY_NO FROM USR WHERE USER_ID = #{user_id}
+</select>
+<select id="checkPeriodicalProcess" parameterType="loginCO" resultType="string">
+SELECT USER_ID 
+  FROM IBIS_PROCESS
+ WHERE COMP_CODE = #{sAppLogVO.COMP_CODE}
+   AND BRANCH_CODE = #{sAppLogVO.BRANCH_CODE}
+   AND PERIODICAL_PROCESS = 'Y'
+</select>
+<!-- PROC Module is Web Version -->
+<select id="checkPROCWebPeriodicalProcess" parameterType="loginCO" resultType="string">
+	SELECT (SELECT BATCH_BRIEF_NAME FROM EOD_BATCH_MASTER WHERE BATCH_CODE = R.BATCH_CODE) BATCH_BRIEF_NAME
+	FROM EOD_BATCH_RUN_LOGIN_RESTRICT R
+	WHERE R.COMP_CODE = #{sAppLogVO.COMP_CODE}
+	AND R.BRANCH_CODE = #{sAppLogVO.BRANCH_CODE}
+	AND (R.APP_NAME = #{sAppLogVO.APP_NAME} OR R.APP_NAME = 'ALL')
+	AND R.BATCH_RUN_STATUS = 'R' 
+</select>
+<select id="returnExpiryNtfNbDays" parameterType="commonLibSC" resultType="int">
+SELECT
+   MIN(DAYS_NBR)
+FROM 
+(
+SELECT (<choose><when test="isSQLServer == 1">DATEDIFF(day,CAST(AXS.ACCESS_TO_DATE AS datetime),</when><otherwise>AXS.ACCESS_TO_DATE</otherwise></choose><choose><when test="isOracle == 1" > - SYSDATE</when><otherwise><if test="isSQLServer == 0">-</if>GETDATE()<if test="isSQLServer == 1">)</if></otherwise></choose>) AS DAYS_NBR 
+  FROM AXS
+ WHERE AXS.USER_ID     = #{userId}
+   AND AXS.COMP_CODE   = #{companyCode}
+   AND AXS.BRANCH_CODE = #{branchCode}
+   AND AXS.APP_NAME    = #{appName}
+   AND AXS.STATUS      = 'P'
+   AND (
+        (AXS.ACCESS_FROM_DATE IS NOT NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose>) 
+         AND 
+        (AXS.ACCESS_TO_DATE IS NOT NULL OR AXS.ACCESS_TO_DATE <![CDATA[>=]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose>)
+       )
+   AND <choose><when test="isSQLServer == 1">CAST(AXS.ACCESS_TO_DATE AS datetime)</when><otherwise>AXS.ACCESS_TO_DATE</otherwise></choose> - #{accessNtfNbDays} <![CDATA[ <= ]]> <choose><when test="isOracle == 1" >SYSDATE</when><otherwise>GETDATE()</otherwise></choose>
+
+ 
+
+UNION ALL
+
+ 
+
+SELECT (<choose><when test="isSQLServer == 1">DATEDIFF(day,CAST(S_GROUP_USER.TO_DATE AS datetime),</when><otherwise>S_GROUP_USER.TO_DATE</otherwise></choose><choose><when test="isOracle == 1" > - SYSDATE</when><otherwise><if test="isSQLServer == 0">-</if>GETDATE()<if test="isSQLServer == 1">)</if></otherwise></choose>) AS DAYS_NBR
+FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+WHERE (S_GROUP_USER.COMP_CODE   = #{companyCode} OR S_GROUP_USER.COMP_CODE   = 0)
+AND   (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+AND   S_GROUP_USER.USER_ID      = #{userId}
+AND   S_GROUP_USER.STATUS       = 'P'
+AND ( 
+     ( S_GROUP_USER.FROM_DATE IS NOT NULL AND S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose>) 
+      AND 
+     ( S_GROUP_USER.TO_DATE IS NOT NULL AND S_GROUP_USER.TO_DATE <![CDATA[>=]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose>)
+    )
+AND <choose><when test="isSQLServer == 1">CAST(S_GROUP_USER.TO_DATE AS datetime)</when><otherwise>S_GROUP_USER.TO_DATE</otherwise></choose> - #{accessNtfNbDays} <![CDATA[ <= ]]> <choose><when test="isOracle == 1" >SYSDATE</when><otherwise>GETDATE()</otherwise></choose>                             
+AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+AND S_GROUP_PROFILE.APP_NAME = S_ROLE_DETAIL.APP_NAME
+AND S_GROUP_PROFILE.APP_NAME = #{appName}
+AND S_GROUP_PROFILE.STATUS   = 'P'                               
+AND S_ROLE_DETAIL.ROLE_NAME  = S_GROUP_PROFILE.ROLE_NAME
+AND S_ROLE_DETAIL.APP_NAME   = #{appName}
+AND S_ROLE_DETAIL.STATUS     = 'P'                            
+AND NOT EXISTS ( SELECT 1 
+                 FROM S_GROUP_USER_EXCLUSION 
+                 WHERE S_GROUP_USER_EXCLUSION.USER_ID   = S_GROUP_USER.USER_ID 
+                 AND S_GROUP_USER_EXCLUSION.GROUP_ID    = S_GROUP_USER.GROUP_ID
+                 AND S_GROUP_USER_EXCLUSION.COMP_CODE   = S_GROUP_USER.COMP_CODE
+                 AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                 AND S_GROUP_USER_EXCLUSION.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+                )
+) tbl                 
+</select>
+<select id="returnRoleNameByUserId" parameterType="commonLibSC" resultType="string">
+	SELECT ROLE_NAME FROM V_JBPM_USER_ROLE WHERE USER_ID = #{userId}
+</select>
+<resultMap type="com.path.vo.common.DefaultCompBranchCO" id="defaultCompBrMap">
+   <result property="companyCode" column="COMP_CODE"/>
+   <result property="companyDesc" column="COMPANY_DESC"/>
+   <result property="branchCode"  column="BRANCH_CODE"/>
+   <result property="branchDesc"  column="BRANCH_DESC"/>
+</resultMap>
+<select id="returnDefaultCompBr" resultMap="defaultCompBrMap">
+	SELECT <if test="isSybase == 1">TOP 1</if> SA.COMP_CODE
+	  ,(SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN C.BRIEF_DESC_ENG ELSE C.BRIEF_DESC_ARAB END) FROM COMPANIES C WHERE C.COMP_CODE = SA.COMP_CODE) AS COMPANY_DESC
+      ,SA.BRANCH_CODE
+      ,(SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN B.BRIEF_DESC_ENG ELSE B.BRIEF_DESC_ARAB END) FROM BRANCHES B where B.COMP_CODE = SA.COMP_CODE AND B.BRANCH_CODE = SA.BRANCH_CODE) AS BRANCH_DESC 
+	FROM S_APPLOG SA,
+		(SELECT S.APP_NAME,S.USER_ID,MAX(S.LAST_LOGOUT) AS MAX_LOGOUT_DATE
+		  FROM S_APPLOG S 
+		 WHERE S.APP_NAME = #{appName}
+		   AND S.USER_ID  = #{userId}
+		   AND 'A' = (CASE WHEN 2 = (SELECT S_APP.IS_WEB_YN FROM S_APP WHERE APP_NAME = #{appName}) 
+		                           THEN S.USER_STS_WEB 
+		                           ELSE S.USER_STS 
+		                       END) 
+		  GROUP BY S.APP_NAME,S.USER_ID)TBL
+	WHERE SA.USER_ID = TBL.USER_ID 
+	  AND SA.APP_NAME = TBL.APP_NAME
+	  AND 'A' = (CASE WHEN 2 = (SELECT S_APP.IS_WEB_YN FROM S_APP WHERE APP_NAME = #{userId}) 
+	                  THEN SA.USER_STS_WEB 
+	                  ELSE SA.USER_STS 
+	              END) 
+	  AND ((TBL.MAX_LOGOUT_DATE IS NOT NULL AND SA.LAST_LOGOUT = TBL.MAX_LOGOUT_DATE) 
+	        OR (TBL.MAX_LOGOUT_DATE IS NULL AND SA.LAST_LOGOUT IS NULL <if test="isOracle == 1">AND ROWNUM = 1</if>))
+</select>
+</mapper> 

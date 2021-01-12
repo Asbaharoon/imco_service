@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_TRX_TRENDS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_TRX_TRENDS_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CTSTRX_TYPE" property="CTSTRX_TYPE" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="PERIODICITY" property="PERIODICITY" />
+    <result column="SINGLE_TRX_AMT" property="SINGLE_TRX_AMT" />
+    <result column="TOTAL_TRX_AMT" property="TOTAL_TRX_AMT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, CTSTRX_TYPE, PERIODICITY_TYPE, PERIODICITY, SINGLE_TRX_AMT, 
+    TOTAL_TRX_AMT
+  </sql>
+  <select id="selectCIF_TRX_TRENDS_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_TRX_TRENDS_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_TRX_TRENDS_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_TRX_TRENDS_DET" parameterType="com.path.dbmaps.vo.CIF_TRX_TRENDS_DETVOKey" >
+    delete from CIF_TRX_TRENDS_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_TRX_TRENDS_DET" parameterType="com.path.dbmaps.vo.CIF_TRX_TRENDS_DETVO" >
+     insert into CIF_TRX_TRENDS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      COMP_CODE,
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CTSTRX_TYPE != null and CTSTRX_TYPE != emptyBigDecimalValue" >
+        CTSTRX_TYPE,
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE,
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        PERIODICITY,
+      </if>
+      <if test="SINGLE_TRX_AMT != null and SINGLE_TRX_AMT != emptyBigDecimalValue" >
+        SINGLE_TRX_AMT,
+      </if>
+      <if test="TOTAL_TRX_AMT != null and TOTAL_TRX_AMT != emptyBigDecimalValue" >
+        TOTAL_TRX_AMT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      #{COMP_CODE},
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CTSTRX_TYPE != null and CTSTRX_TYPE != emptyBigDecimalValue" >
+        #{CTSTRX_TYPE},
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        #{PERIODICITY},
+      </if>
+      <if test="SINGLE_TRX_AMT != null and SINGLE_TRX_AMT != emptyBigDecimalValue" >
+        #{SINGLE_TRX_AMT},
+      </if>
+      <if test="TOTAL_TRX_AMT != null and TOTAL_TRX_AMT != emptyBigDecimalValue" >
+        #{TOTAL_TRX_AMT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_TRX_TRENDS_DET" >
+    update CIF_TRX_TRENDS_DET
+    <set >
+      <if test="CTSTRX_TYPE != null" >
+        <choose >
+          <when test="CTSTRX_TYPE == emptyBigDecimalValue" >
+            CTSTRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CTSTRX_TYPE = #{CTSTRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE = #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null" >
+        <choose >
+          <when test="PERIODICITY == emptyBigDecimalValue" >
+            PERIODICITY = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY = #{PERIODICITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SINGLE_TRX_AMT != null" >
+        <choose >
+          <when test="SINGLE_TRX_AMT == emptyBigDecimalValue" >
+            SINGLE_TRX_AMT = NULL ,
+          </when>
+          <otherwise >
+            SINGLE_TRX_AMT = #{SINGLE_TRX_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_TRX_AMT != null" >
+        <choose >
+          <when test="TOTAL_TRX_AMT == emptyBigDecimalValue" >
+            TOTAL_TRX_AMT = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_TRX_AMT = #{TOTAL_TRX_AMT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_TRX_TRENDS_DET" parameterType="com.path.dbmaps.vo.CIF_TRX_TRENDS_DETVO" >
+    <include refid="sql_updateCIF_TRX_TRENDS_DET" />
+  </update>
+</mapper>

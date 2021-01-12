@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_ID_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_ID_DETAILSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ID_TYPE_CODE" property="ID_TYPE_CODE" />
+    <result column="ID_NO" property="ID_NO" />
+    <result column="COUNTRY_OF_ISSUANCE" property="COUNTRY_OF_ISSUANCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, ID_TYPE_CODE, ID_NO , COUNTRY_OF_ISSUANCE
+  </sql>
+  <select id="selectCIF_ID_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_ID_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_ID_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+  </select>
+  <delete id="deleteCIF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ID_DETAILSVOKey" >
+    delete from CIF_ID_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+  </delete>
+  <insert id="insertCIF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ID_DETAILSVO" >
+    insert into CIF_ID_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        ID_TYPE_CODE,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        COUNTRY_OF_ISSUANCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        #{ID_TYPE_CODE},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+       <if test="COUNTRY_OF_ISSUANCE != null and COUNTRY_OF_ISSUANCE != emptyBigDecimalValue" >
+        #{COUNTRY_OF_ISSUANCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_ID_DETAILS" >
+    update CIF_ID_DETAILS
+    <set >
+      <if test="ID_NO != null" >
+        ID_NO = #{ID_NO},
+      </if>
+      <if test="COUNTRY_OF_ISSUANCE != null" >
+        <choose >
+          <when test="COUNTRY_OF_ISSUANCE == emptyBigDecimalValue" >
+            COUNTRY_OF_ISSUANCE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_OF_ISSUANCE = #{COUNTRY_OF_ISSUANCE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+  </sql>
+  <update id="updateCIF_ID_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ID_DETAILSVO" >
+    <include refid="sql_updateCIF_ID_DETAILS" />
+  </update>
+</mapper>

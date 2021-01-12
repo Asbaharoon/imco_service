@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="vendorCifMapper">
+
+	<!-- Vendor CIF - Result Map -->
+	<resultMap id="trsVendorCIFListMap" type="trsVendorCO">
+	 	<result property="trsVendorVO.COMP_CODE"  	column="COMP_CODE" />
+	 	<result property="trsVendorVO.BRANCH_CODE"	column="BRANCH_CODE" />
+		<result property="trsVendorVO.CIF"        	column="CIF" />
+		<result property="SHORT_NAME_ENG" 			column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG"  			column="LONG_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" 			column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB"  			column="LONG_NAME_ARAB" />
+		<result property="ID_NO"  					column="ID_NO" />
+		<result property="ADDITIONAL_REFERENCE" 	column="ADDITIONAL_REFERENCE" />
+	</resultMap>
+	
+	<!-- Vendor CIF Search Lookup -->
+	<sql id="trsVendorCIFListCommon" >
+		SELECT DISTINCT TRS_VENDOR.CIF CIF,
+                CIF.SHORT_NAME_ENG SHORT_NAME_ENG,
+                CIF.LONG_NAME_ENG LONG_NAME_ENG,
+                CIF.SHORT_NAME_ARAB SHORT_NAME_ARAB,
+                CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+                CIF.ID_NO ID_NO,
+                CIF.ADDITIONAL_REFERENCE ADDITIONAL_REFERENCE
+			FROM TRS_VENDOR, CIF, IISCTRL
+			WHERE TRS_VENDOR.COMP_CODE = #{compCode}
+			AND TRS_VENDOR.BRANCH_CODE = #{branchCode}
+			AND TRS_VENDOR.COMP_CODE = CIF.COMP_CODE
+			AND TRS_VENDOR.CIF = CIF.CIF_NO
+			AND (IISCTRL.COMP_CODE = CIF.COMP_CODE)
+			AND (IISCTRL.BRANCH_CODE = #{branchCode})
+			AND ((IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'N') OR
+			    (IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'Y' AND
+			    (CIF.REL_OFF_ID =
+			    (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId}) OR
+			    (CIF.CIF_NO IN
+			    (SELECT CIF_OFFICER.CIF_CODE
+			           FROM CIF_OFFICER
+			          WHERE CIF_OFFICER.COMP_CODE = #{compCode}
+			            AND CIF_OFFICER.REL_OFF_ID =
+			                (SELECT USR.EMPLOYEE_ID
+			                   FROM USR
+			                  WHERE USR.USER_ID = #{userId}))))))
+	</sql>
+ 	
+ 	<resultMap id="trsCIFACCListMap" type="trsVendorCO">
+	 	<result property="trsVendorVO.CIF"        	column="CIF_NO" />
+		<result property="SHORT_NAME_ENG" 			column="SHORT_NAME_ENG" />
+		<result property="LONG_NAME_ENG"  			column="LONG_NAME_ENG" />
+		<result property="SHORT_NAME_ARAB" 			column="SHORT_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB"  			column="LONG_NAME_ARAB" />
+		<result property="ID_NO"  					column="ID_NO" />
+		<result property="ADDITIONAL_REFERENCE" 	column="ADDITIONAL_REFERENCE" />
+	</resultMap>
+ 	<sql id="trsCIFACCListQry" >
+		SELECT
+  		      CIF.CIF_NO,
+			 CIF.SHORT_NAME_ENG,
+			 CIF.LONG_NAME_ENG,
+              CIF.ID_NO,
+			 CIF.ADDITIONAL_REFERENCE,
+              CIF.SHORT_NAME_ARAB,
+        CIF.LONG_NAME_ARAB
+		 	FROM  CIF ,IISCTRL
+	WHERE	 (CIF.COMP_CODE  = #{compCode})
+      AND ( IISCTRL.COMP_CODE = CIF.COMP_CODE )
+	 AND ( IISCTRL.BRANCH_CODE = #{branchCode} )
+    AND ((IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'N') 
+	OR    (IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'Y' AND (CIF.REL_OFF_ID = (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId})
+	OR    (CIF.CIF_NO IN (SELECT CIF_OFFICER.CIF_CODE FROM CIF_OFFICER WHERE CIF_OFFICER.COMP_CODE = #{compCode}  AND CIF_OFFICER.REL_OFF_ID = (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId}))))))
+	 AND	(CIF.STATUS  = 'A')
+	</sql>
+ 	<select id="trsCIFACCList" resultMap="trsCIFACCListMap" parameterType="cifSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trsCIFACCListQry"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+ 	<select id="trsCIFACCListCount" resultType="int" parameterType="cifSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trsCIFACCListQry"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<select id="trsVendorCIFList" resultMap="trsVendorCIFListMap" parameterType="cifSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trsVendorCIFListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="trsVendorCIFListCount" resultType="int" parameterType="cifSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trsVendorCIFListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- Vendor CIF Dependency -->
+	<select id="returnTrsVendorCIFById" 
+	        parameterType="cifSC"
+	        resultMap="trsVendorCIFListMap">
+		SELECT DISTINCT CIF.CIF_NO CIF, CIF.SHORT_NAME_ENG SHORT_NAME_ENG
+			FROM TRS_VENDOR, CIF, IISCTRL
+			WHERE TRS_VENDOR.COMP_CODE = #{compCode}
+			AND TRS_VENDOR.BRANCH_CODE = #{branchCode}
+			AND CIF.CIF_NO = #{cif_no}
+			AND TRS_VENDOR.COMP_CODE = CIF.COMP_CODE
+			AND TRS_VENDOR.CIF = CIF.CIF_NO
+			AND (IISCTRL.COMP_CODE = CIF.COMP_CODE)
+			AND (IISCTRL.BRANCH_CODE = #{branchCode})
+			AND ((IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'N') OR
+			    (IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'Y' AND
+			    (CIF.REL_OFF_ID =
+			    (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId}) OR
+			    (CIF.CIF_NO IN
+			    (SELECT CIF_OFFICER.CIF_CODE
+			           FROM CIF_OFFICER
+			          WHERE CIF_OFFICER.COMP_CODE = #{compCode}
+			            AND CIF_OFFICER.REL_OFF_ID =
+			                (SELECT USR.EMPLOYEE_ID
+			                   FROM USR
+			                  WHERE USR.USER_ID = #{userId}))))))
+	</select>
+	 <select id="returnTrsVendorDetails" parameterType="com.path.dbmaps.vo.TRS_VENDORVOKey" resultType="com.path.dbmaps.vo.TRS_VENDORVO">
+	 SELECT * FROM TRS_VENDOR
+	 WHERE COMP_CODE = #{COMP_CODE}
+	 AND BRANCH_CODE = #{BRANCH_CODE}
+	 AND CIF = #{CIF}
+	</select>
+	  <select id="getStopVendorPayment" parameterType="com.path.dbmaps.vo.TRS_VENDORVOKey" resultType="String">
+	  		SELECT 	DISTINCT STOP_VENDOR_PAYMENT_YN 
+			FROM 	TRS_VENDOR
+			 WHERE COMP_CODE = #{COMP_CODE}
+	 			AND BRANCH_CODE = #{BRANCH_CODE}
+	 			<if test="CIF != null and CIF != emptyBigDecimalValue" > 
+				AND CIF = #{CIF}
+		        </if>
+		
+	  </select>
+	  <select id="trsVendorIncentiveCIFList" resultMap="trsVendorCIFListMap" parameterType="cifSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trsVendorIncentiveCIF"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="trsVendorIncentiveCIFListCount" resultType="int" parameterType="cifSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trsVendorIncentiveCIF"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<sql id="trsVendorIncentiveCIF" >
+	SELECT 
+	#{compCode} COMP_CODE,
+	#{branchCode} BRANCH_CODE,
+	0 CIF,
+	'All Vendor' SHORT_NAME_ENG,
+	'All Vendor' SHORT_NAME_ARAB,
+	'' selected_name
+	FROM CIF
+	UNION
+	SELECT
+	CIF.COMP_CODE,
+	CIF.BRANCH_CODE,
+	CIF.CIF_NO AS CIF,
+	CIF.SHORT_NAME_ENG,
+	CIF.SHORT_NAME_ARAB,
+	CASE WHEN (SELECT CALCULATOR_LANGUAGE FROM IISCTRL WHERE COMP_CODE = CIF.COMP_CODE AND BRANCH_CODE = CIF.BRANCH_CODE ) = 'A' THEN CIF.SHORT_NAME_ARAB
+	ELSE CIF.SHORT_NAME_ENG END selected_name
+	FROM CIF, IISCTRL
+	WHERE	(CIF.COMP_CODE = #{compCode})
+	AND ( IISCTRL.COMP_CODE = CIF.COMP_CODE )
+	AND ( IISCTRL.BRANCH_CODE = #{branchCode} )
+	AND ((IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'N') OR (IISCTRL.RESTRICT_CIF_ACCESS_USR_GRP_YN = 'Y' AND (CIF.REL_OFF_ID = (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId})
+	OR (CIF.CIF_NO IN (SELECT CIF_OFFICER.CIF_CODE FROM CIF_OFFICER WHERE CIF_OFFICER.COMP_CODE = 1 AND CIF_OFFICER.REL_OFF_ID = (SELECT USR.EMPLOYEE_ID FROM USR WHERE USR.USER_ID = #{userId}))))))
+	
+	</sql>
+</mapper>

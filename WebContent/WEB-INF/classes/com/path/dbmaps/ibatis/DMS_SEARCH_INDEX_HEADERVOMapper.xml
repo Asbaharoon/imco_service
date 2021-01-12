@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DMS_SEARCH_INDEX_HEADER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DMS_SEARCH_INDEX_HEADERVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="E_FILE_URL" property="e_FILE_URL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, PROG_REF, E_FILE_URL
+  </sql>
+  <select id="selectDMS_SEARCH_INDEX_HEADER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEX_HEADERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DMS_SEARCH_INDEX_HEADER
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteDMS_SEARCH_INDEX_HEADER" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEX_HEADERVO" >
+    delete from DMS_SEARCH_INDEX_HEADER
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertDMS_SEARCH_INDEX_HEADER" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEX_HEADERVO" >
+    insert into DMS_SEARCH_INDEX_HEADER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="e_FILE_URL != null" >
+        E_FILE_URL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="e_FILE_URL != null" >
+        #{e_FILE_URL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDMS_SEARCH_INDEX_HEADER" >
+    update DMS_SEARCH_INDEX_HEADER
+    <set >
+      <if test="e_FILE_URL != null" >
+        E_FILE_URL = #{e_FILE_URL},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateDMS_SEARCH_INDEX_HEADER" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEX_HEADERVO" >
+    <include refid="sql_updateDMS_SEARCH_INDEX_HEADER" />
+  </update>
+</mapper>

@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SEGMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SEGMENTVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SEGMENT_CODE" property="SEGMENT_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="SEGMENT_DESC" property="SEGMENT_DESC" />
+    <result column="PRIORITY" property="PRIORITY" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="DATE_REJECTED" property="DATE_REJECTED" />
+    <result column="OLD_STATUS" property="OLD_STATUS" />
+    <result column="SEGMENT_TYPE" property="SEGMENT_TYPE" />
+    <result column="SUSPENDED_BY" property="SUSPENDED_BY" />
+    <result column="SUSPENDED_DATE" property="SUSPENDED_DATE" />
+    <result column="REACTIVATED_BY" property="REACTIVATED_BY" />
+    <result column="REACTIVATED_DATE" property="REACTIVATED_DATE" />
+    <result column="CANCELED_BY" property="CANCELED_BY" />
+    <result column="CANCELED_DATE" property="CANCELED_DATE" />
+    <result column="TO_SUSPEND_BY" property="TO_SUSPEND_BY" />
+    <result column="TO_SUSPEND_DATE" property="TO_SUSPEND_DATE" />
+    <result column="TO_REACTIVATE_BY" property="TO_REACTIVATE_BY" />
+    <result column="TO_REACTIVATE_DATE" property="TO_REACTIVATE_DATE" />
+    <result column="TO_CANCEL_BY" property="TO_CANCEL_BY" />
+    <result column="TO_CANCEL_DATE" property="TO_CANCEL_DATE" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+    <result column="GROUP_CODE" property="GROUP_CODE" />
+    <result column="AMENDED_PRIORITY" property="AMENDED_PRIORITY" />
+   
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="START_DATE" property="START_DATE" />
+    <result column="END_DATE" property="END_DATE" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="SUSPEND_REASON_CODE" property="SUSPEND_REASON_CODE" />
+    <result column="SUSPEND_REASON_REF" property="SUSPEND_REASON_REF" />
+     <result column="PERIODICITY" property="PERIODICITY" />
+    <result column="DAY" property="DAY" />
+    <result column="MAIN_SCORE_YN" property="MAIN_SCORE_YN" />
+    
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, SEGMENT_CODE, BRANCH_CODE, SEGMENT_DESC, PRIORITY, STATUS, CREATED_BY, 
+    DATE_CREATED, MODIFIED_BY, DATE_MODIFIED, DATE_UPDATED, APPROVED_BY, DATE_APPROVED, 
+    REJECTED_BY, DATE_REJECTED, OLD_STATUS, SEGMENT_TYPE, SUSPENDED_BY, SUSPENDED_DATE, 
+    REACTIVATED_BY, REACTIVATED_DATE, CANCELED_BY, CANCELED_DATE, TO_SUSPEND_BY, TO_SUSPEND_DATE, 
+    TO_REACTIVATE_BY, TO_REACTIVATE_DATE, TO_CANCEL_BY, TO_CANCEL_DATE, DELETED_BY, DELETED_DATE, GROUP_CODE, AMENDED_PRIORITY,APP_NAME,START_DATE,END_DATE,LONG_DESC_ENG,SUSPEND_REASON_CODE,SUSPEND_REASON_REF,PERIODICITY, DAY,
+    MAIN_SCORE_YN
+  </sql>
+  <select id="selectCTS_SEGMENT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SEGMENTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SEGMENT
+    where COMP_CODE = #{COMP_CODE}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </select>
+  <delete id="deleteCTS_SEGMENT" parameterType="com.path.dbmaps.vo.CTS_SEGMENTVOKey" >
+    delete from CTS_SEGMENT
+    where COMP_CODE = #{COMP_CODE}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </delete>
+  <insert id="insertCTS_SEGMENT" parameterType="com.path.dbmaps.vo.CTS_SEGMENTVO" >
+    insert into CTS_SEGMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+        <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE,
+      </if>
+       <if test="END_DATE != null" >
+        END_DATE,
+      </if>
+        <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        SEGMENT_CODE,
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="SEGMENT_DESC != null and !&quot;&quot;.equals(SEGMENT_DESC)" >
+        SEGMENT_DESC,
+      </if>
+      <if test="PRIORITY != null" >
+        PRIORITY,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      DATE_UPDATED,
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        REJECTED_BY,
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED,
+      </if>
+      <if test="OLD_STATUS != null and !&quot;&quot;.equals(OLD_STATUS)" >
+        OLD_STATUS,
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        SEGMENT_TYPE,
+      </if>
+      <if test="SUSPENDED_BY != null and !&quot;&quot;.equals(SUSPENDED_BY)" >
+        SUSPENDED_BY,
+      </if>
+      <if test="SUSPENDED_DATE != null" >
+        SUSPENDED_DATE,
+      </if>
+      <if test="REACTIVATED_BY != null and !&quot;&quot;.equals(REACTIVATED_BY)" >
+        REACTIVATED_BY,
+      </if>
+      <if test="REACTIVATED_DATE != null" >
+        REACTIVATED_DATE,
+      </if>
+      <if test="CANCELED_BY != null and !&quot;&quot;.equals(CANCELED_BY)" >
+        CANCELED_BY,
+      </if>
+      <if test="CANCELED_DATE != null" >
+        CANCELED_DATE,
+      </if>
+      <if test="TO_SUSPEND_BY != null and !&quot;&quot;.equals(TO_SUSPEND_BY)" >
+        TO_SUSPEND_BY,
+      </if>
+      <if test="TO_SUSPEND_DATE != null" >
+        TO_SUSPEND_DATE,
+      </if>
+      <if test="TO_REACTIVATE_BY != null and !&quot;&quot;.equals(TO_REACTIVATE_BY)" >
+        TO_REACTIVATE_BY,
+      </if>
+      <if test="TO_REACTIVATE_DATE != null" >
+        TO_REACTIVATE_DATE,
+      </if>
+      <if test="TO_CANCEL_BY != null and !&quot;&quot;.equals(TO_CANCEL_BY)" >
+        TO_CANCEL_BY,
+      </if>
+      <if test="TO_CANCEL_DATE != null" >
+        TO_CANCEL_DATE,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+      <if test="GROUP_CODE != null" >
+        GROUP_CODE,
+      </if>
+      <if test="AMENDED_PRIORITY != null" >
+        AMENDED_PRIORITY,
+      </if>
+       <if test="SUSPEND_REASON_CODE != null" >
+        SUSPEND_REASON_CODE,
+      </if>
+      <if test="SUSPEND_REASON_REF != null" >
+        SUSPEND_REASON_REF,
+      </if>
+       <if test="PERIODICITY != null" >
+        PERIODICITY,
+      </if>
+      <if test="DAY != null" >
+        DAY,
+      </if>
+      <if test="MAIN_SCORE_YN != null and !&quot;&quot;.equals(MAIN_SCORE_YN)" >
+        MAIN_SCORE_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if> 
+            <if test="APP_NAME != null" >
+         #{APP_NAME},
+      </if>
+        <if test="SUSPEND_REASON_CODE != null" >
+        SUSPEND_REASON_CODE,
+      </if>
+            <if test="START_DATE != null" >
+        #{START_DATE},
+      </if>
+            <if test="END_DATE != null" >
+        #{END_DATE},
+      </if>
+            <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        #{SEGMENT_CODE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="SEGMENT_DESC != null and !&quot;&quot;.equals(SEGMENT_DESC)" >
+        #{SEGMENT_DESC},
+      </if>
+      <if test="PRIORITY != null" >
+        #{PRIORITY},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        #{DATE_REJECTED},
+      </if>
+      <if test="OLD_STATUS != null and !&quot;&quot;.equals(OLD_STATUS)" >
+        #{OLD_STATUS},
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        #{SEGMENT_TYPE},
+      </if>
+      <if test="SUSPENDED_BY != null and !&quot;&quot;.equals(SUSPENDED_BY)" >
+        #{SUSPENDED_BY},
+      </if>
+      <if test="SUSPENDED_DATE != null" >
+        #{SUSPENDED_DATE},
+      </if>
+      <if test="REACTIVATED_BY != null and !&quot;&quot;.equals(REACTIVATED_BY)" >
+        #{REACTIVATED_BY},
+      </if>
+      <if test="REACTIVATED_DATE != null" >
+        #{REACTIVATED_DATE},
+      </if>
+      <if test="CANCELED_BY != null and !&quot;&quot;.equals(CANCELED_BY)" >
+        #{CANCELED_BY},
+      </if>
+      <if test="CANCELED_DATE != null" >
+        #{CANCELED_DATE},
+      </if>
+      <if test="TO_SUSPEND_BY != null and !&quot;&quot;.equals(TO_SUSPEND_BY)" >
+        #{TO_SUSPEND_BY},
+      </if>
+      <if test="TO_SUSPEND_DATE != null" >
+        #{TO_SUSPEND_DATE},
+      </if>
+      <if test="TO_REACTIVATE_BY != null and !&quot;&quot;.equals(TO_REACTIVATE_BY)" >
+        #{TO_REACTIVATE_BY},
+      </if>
+      <if test="TO_REACTIVATE_DATE != null" >
+        #{TO_REACTIVATE_DATE},
+      </if>
+      <if test="TO_CANCEL_BY != null and !&quot;&quot;.equals(TO_CANCEL_BY)" >
+        #{TO_CANCEL_BY},
+      </if>
+      <if test="TO_CANCEL_DATE != null" >
+        #{TO_CANCEL_DATE},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+      <if test="GROUP_CODE != null" >
+        #{GROUP_CODE},
+      </if>
+      <if test="AMENDED_PRIORITY != null" >
+        #{AMENDED_PRIORITY},
+      </if>
+       <if test="SUSPEND_REASON_CODE != null" >
+        #{SUSPEND_REASON_CODE},
+      </if>
+      <if test="SUSPEND_REASON_REF != null" >
+        #{SUSPEND_REASON_REF},
+      </if>
+       <if test="PERIODICITY != null" >
+        #{PERIODICITY},
+      </if>
+      <if test="DAY != null" >
+        #{DAY},
+      </if>
+      <if test="MAIN_SCORE_YN != null and !&quot;&quot;.equals(MAIN_SCORE_YN)" >
+        #{MAIN_SCORE_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SEGMENT" >
+    update CTS_SEGMENT
+    <set >
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE = #{BRANCH_CODE},
+      </if>
+      <if test="SEGMENT_DESC != null" >
+        <choose >
+          <when test="SEGMENT_DESC.equals(&quot;&quot;)" >
+            SEGMENT_DESC = NULL ,
+          </when>
+          <otherwise >
+            SEGMENT_DESC = #{SEGMENT_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRIORITY != null" >
+        PRIORITY = #{PRIORITY},
+      </if>
+         <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE = #{START_DATE},
+      </if>
+      <if test="END_DATE != null" >
+        END_DATE = #{END_DATE},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="REJECTED_BY != null" >
+        <choose >
+          <when test="REJECTED_BY.equals(&quot;&quot;)" >
+            REJECTED_BY = NULL ,
+          </when>
+          <otherwise >
+            REJECTED_BY = #{REJECTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED = #{DATE_REJECTED},
+      </if>
+      <if test="OLD_STATUS != null" >
+        <choose >
+          <when test="OLD_STATUS.equals(&quot;&quot;)" >
+            OLD_STATUS = NULL ,
+          </when>
+          <otherwise >
+            OLD_STATUS = #{OLD_STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SEGMENT_TYPE != null" >
+        <choose >
+          <when test="SEGMENT_TYPE.equals(&quot;&quot;)" >
+            SEGMENT_TYPE = NULL ,
+          </when>
+          <otherwise >
+            SEGMENT_TYPE = #{SEGMENT_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUSPENDED_BY != null" >
+        <choose >
+          <when test="SUSPENDED_BY.equals(&quot;&quot;)" >
+            SUSPENDED_BY = NULL ,
+          </when>
+          <otherwise >
+            SUSPENDED_BY = #{SUSPENDED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUSPENDED_DATE != null" >
+        SUSPENDED_DATE = #{SUSPENDED_DATE},
+      </if>
+      <if test="REACTIVATED_BY != null" >
+        <choose >
+          <when test="REACTIVATED_BY.equals(&quot;&quot;)" >
+            REACTIVATED_BY = NULL ,
+          </when>
+          <otherwise >
+            REACTIVATED_BY = #{REACTIVATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REACTIVATED_DATE != null" >
+        REACTIVATED_DATE = #{REACTIVATED_DATE},
+      </if>
+      <if test="CANCELED_BY != null" >
+        <choose >
+          <when test="CANCELED_BY.equals(&quot;&quot;)" >
+            CANCELED_BY = NULL ,
+          </when>
+          <otherwise >
+            CANCELED_BY = #{CANCELED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CANCELED_DATE != null" >
+        CANCELED_DATE = #{CANCELED_DATE},
+      </if>
+      <if test="TO_SUSPEND_BY != null" >
+        <choose >
+          <when test="TO_SUSPEND_BY.equals(&quot;&quot;)" >
+            TO_SUSPEND_BY = NULL ,
+          </when>
+          <otherwise >
+            TO_SUSPEND_BY = #{TO_SUSPEND_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_SUSPEND_DATE != null" >
+        TO_SUSPEND_DATE = #{TO_SUSPEND_DATE},
+      </if>
+      <if test="TO_REACTIVATE_BY != null" >
+        <choose >
+          <when test="TO_REACTIVATE_BY.equals(&quot;&quot;)" >
+            TO_REACTIVATE_BY = NULL ,
+          </when>
+          <otherwise >
+            TO_REACTIVATE_BY = #{TO_REACTIVATE_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_REACTIVATE_DATE != null" >
+        TO_REACTIVATE_DATE = #{TO_REACTIVATE_DATE},
+      </if>
+      <if test="TO_CANCEL_BY != null" >
+        <choose >
+          <when test="TO_CANCEL_BY.equals(&quot;&quot;)" >
+            TO_CANCEL_BY = NULL ,
+          </when>
+          <otherwise >
+            TO_CANCEL_BY = #{TO_CANCEL_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_CANCEL_DATE != null" >
+        TO_CANCEL_DATE = #{TO_CANCEL_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+      <if test="GROUP_CODE != null" >
+        GROUP_CODE = #{GROUP_CODE},
+      </if>
+      <if test="AMENDED_PRIORITY != null" >
+        AMENDED_PRIORITY = #{AMENDED_PRIORITY},
+      </if>
+       <choose>
+          <when test="SUSPEND_REASON_CODE != null" >
+            SUSPEND_REASON_CODE = #{SUSPEND_REASON_CODE} ,
+          </when>
+          <otherwise >
+            SUSPEND_REASON_CODE = NULL,
+          </otherwise>
+      </choose>
+       <choose>
+          <when test="SUSPEND_REASON_REF != null" >
+            SUSPEND_REASON_REF = #{SUSPEND_REASON_REF} ,
+          </when>
+          <otherwise >
+            SUSPEND_REASON_REF = NULL,
+          </otherwise>
+      </choose>
+      <if test="PERIODICITY != null" >
+        PERIODICITY = #{PERIODICITY},
+      </if>
+      <if test="DAY != null" >
+        DAY = #{DAY},
+      </if>
+      <if test="MAIN_SCORE_YN != null" >
+        <choose >
+          <when test="MAIN_SCORE_YN.equals(&quot;&quot;)" >
+            MAIN_SCORE_YN = NULL ,
+          </when>
+          <otherwise >
+            MAIN_SCORE_YN = #{MAIN_SCORE_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </sql>
+  <update id="updateCTS_SEGMENT" parameterType="com.path.dbmaps.vo.CTS_SEGMENTVO" >
+    <include refid="sql_updateCTS_SEGMENT" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

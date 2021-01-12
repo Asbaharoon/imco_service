@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="entitiesMapper">
+<resultMap id="resEntitiesListMap" type="com.path.imco.vo.entities.EntitiesCO">
+		<result property="syncEntityVO.ENTITY_CODE" column="ENTITY_CODE"/>
+		<result property="syncEntityVO.ENTITY_NAME" column="ENTITY_NAME"/>
+		<result property="syncEntityVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="syncEntityVO.BR_FIELD_NAME" column="BR_FIELD_NAME"/>
+		<result property="syncEntityVO.REQUEST_API_CODE" column="REQUEST_API_CODE"/>
+		<result property="syncEntityVO.RESPONSE_API_CODE" column="RESPONSE_API_CODE"/>
+	</resultMap>
+	<select id="returnEntitiesList" parameterType="com.path.imco.vo.entities.EntitiesSC" resultMap="resEntitiesListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryEntitiesSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnEntitiesListCount" parameterType="com.path.imco.vo.entities.EntitiesSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryEntitiesSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	 <select id="returnEntitiesDetails"  resultMap="EntityDetails_ResMap" parameterType="com.path.imco.vo.entities.EntitiesSC"  > 
+  SELECT  ENTITY_CODE,ENTITY_NAME,DESCRIPTION,REQUEST_API_CODE, RESPONSE_API_CODE
+    FROM SYNC_ENTITY
+   WHERE SYNC_ENTITY.ENTITY_CODE = #{entityCode}
+    
+ </select>
+	<resultMap id="EntityDetails_ResMap" type="com.path.imco.vo.entities.EntitiesCO">
+  <result property="syncEntityVO.ENTITY_CODE" column="ENTITY_CODE"/> 
+    <result property="syncEntityVO.ENTITY_NAME" column="ENTITY_NAME"/>
+     <result property="syncEntityVO.DESCRIPTION" column="DESCRIPTION"/>
+	<result property="syncEntityVO.BR_FIELD_NAME" column="BR_FIELD_NAME"/>
+	<result property="syncEntityVO.REQUEST_API_CODE" column="REQUEST_API_CODE"/>
+	<result property="syncEntityVO.RESPONSE_API_CODE" column="RESPONSE_API_CODE"/>
+	</resultMap>
+	
+	
+	<sql id="queryEntitiesSQL">
+		  SELECT SYNC_ENTITY.ENTITY_CODE,   
+		         SYNC_ENTITY.ENTITY_NAME,   
+		         SYNC_ENTITY.DESCRIPTION ,
+					SYNC_ENTITY.BR_FIELD_NAME ,
+		SYNC_ENTITY.REQUEST_API_CODE,
+		SYNC_ENTITY.RESPONSE_API_CODE
+		        
+		    FROM SYNC_ENTITY  
+	</sql>
+</mapper>

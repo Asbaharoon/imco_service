@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCIFLIMITDET_DEAL_CY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCIFLIMITDET_DEAL_CYVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CIF" property="CIF" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LIMIT_SERIAL_NO" property="LIMIT_SERIAL_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CURRENCY_CODE" property="CURRENCY_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CIF, COMP_CODE, LIMIT_SERIAL_NO, LINE_NO, CURRENCY_CODE
+  </sql>
+  <select id="selectTRSCIFLIMITDET_DEAL_CY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCIFLIMITDET_DEAL_CYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCIFLIMITDET_DEAL_CY
+    where BRANCH = #{BRANCH}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LIMIT_SERIAL_NO = #{LIMIT_SERIAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSCIFLIMITDET_DEAL_CY" parameterType="com.path.dbmaps.vo.TRSCIFLIMITDET_DEAL_CYVOKey" >
+    delete from TRSCIFLIMITDET_DEAL_CY
+    where BRANCH = #{BRANCH}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LIMIT_SERIAL_NO = #{LIMIT_SERIAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSCIFLIMITDET_DEAL_CY" parameterType="com.path.dbmaps.vo.TRSCIFLIMITDET_DEAL_CYVO" >
+    insert into TRSCIFLIMITDET_DEAL_CY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LIMIT_SERIAL_NO != null and LIMIT_SERIAL_NO != emptyBigDecimalValue" >
+        LIMIT_SERIAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LIMIT_SERIAL_NO != null and LIMIT_SERIAL_NO != emptyBigDecimalValue" >
+        #{LIMIT_SERIAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCIFLIMITDET_DEAL_CY" >
+    update TRSCIFLIMITDET_DEAL_CY
+    <set >
+      <if test="CURRENCY_CODE != null" >
+        <choose >
+          <when test="CURRENCY_CODE == emptyBigDecimalValue" >
+            CURRENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_CODE = #{CURRENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LIMIT_SERIAL_NO = #{LIMIT_SERIAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSCIFLIMITDET_DEAL_CY" parameterType="com.path.dbmaps.vo.TRSCIFLIMITDET_DEAL_CYVO" >
+    <include refid="sql_updateTRSCIFLIMITDET_DEAL_CY" />
+  </update>
+</mapper>

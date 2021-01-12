@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_LEGAL_STATUS_DOCUMENTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_LEGAL_STATUS_DOCUMENTSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOCUMENT_NAME" property="DOCUMENT_NAME" />
+    <id column="LEGAL_STATUS_CODE" property="LEGAL_STATUS_CODE" />
+    <result column="DOCUMENT_PROVIDED" property="DOCUMENT_PROVIDED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, DOCUMENT_NAME, LEGAL_STATUS_CODE, DOCUMENT_PROVIDED
+  </sql>
+  <select id="selectCIF_LEGAL_STATUS_DOCUMENTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_LEGAL_STATUS_DOCUMENTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_LEGAL_STATUS_DOCUMENTS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and DOCUMENT_NAME = #{DOCUMENT_NAME}
+      and LEGAL_STATUS_CODE = #{LEGAL_STATUS_CODE}
+  </select>
+  <delete id="deleteCIF_LEGAL_STATUS_DOCUMENTS" parameterType="com.path.dbmaps.vo.CIF_LEGAL_STATUS_DOCUMENTSVOKey" >
+    delete from CIF_LEGAL_STATUS_DOCUMENTS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and DOCUMENT_NAME = #{DOCUMENT_NAME}
+      and LEGAL_STATUS_CODE = #{LEGAL_STATUS_CODE}
+  </delete>
+  <insert id="insertCIF_LEGAL_STATUS_DOCUMENTS" parameterType="com.path.dbmaps.vo.CIF_LEGAL_STATUS_DOCUMENTSVO" >
+    insert into CIF_LEGAL_STATUS_DOCUMENTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOCUMENT_NAME != null" >
+        DOCUMENT_NAME,
+      </if>
+      <if test="LEGAL_STATUS_CODE != null and LEGAL_STATUS_CODE != emptyBigDecimalValue" >
+        LEGAL_STATUS_CODE,
+      </if>
+      <if test="DOCUMENT_PROVIDED != null" >
+        DOCUMENT_PROVIDED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOCUMENT_NAME != null" >
+        #{DOCUMENT_NAME},
+      </if>
+      <if test="LEGAL_STATUS_CODE != null and LEGAL_STATUS_CODE != emptyBigDecimalValue" >
+        #{LEGAL_STATUS_CODE},
+      </if>
+      <if test="DOCUMENT_PROVIDED != null" >
+        #{DOCUMENT_PROVIDED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_LEGAL_STATUS_DOCUMENTS" >
+    update CIF_LEGAL_STATUS_DOCUMENTS
+    <set >
+      <if test="DOCUMENT_PROVIDED != null" >
+        DOCUMENT_PROVIDED = #{DOCUMENT_PROVIDED},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and DOCUMENT_NAME = #{DOCUMENT_NAME}
+      and LEGAL_STATUS_CODE = #{LEGAL_STATUS_CODE}
+  </sql>
+  <update id="updateCIF_LEGAL_STATUS_DOCUMENTS" parameterType="com.path.dbmaps.vo.CIF_LEGAL_STATUS_DOCUMENTSVO" >
+    <include refid="sql_updateCIF_LEGAL_STATUS_DOCUMENTS" />
+  </update>
+</mapper>

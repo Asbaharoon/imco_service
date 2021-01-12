@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEALLINK_IRS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEALLINK_IRSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NBR" property="DEAL_NBR" />
+    <id column="IRS_ID" property="IRS_ID" />
+    <result column="DEAL_CY" property="DEAL_CY" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="IRS_TYPE" property="IRS_TYPE" />
+    <result column="DEAL_STATUS" property="DEAL_STATUS" />
+    <result column="CLOSED_DATE" property="CLOSED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NBR, IRS_ID, DEAL_CY, CIF_NO, IRS_TYPE, DEAL_STATUS, 
+    CLOSED_DATE
+  </sql>
+  <select id="selectTRSDEALLINK_IRS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEALLINK_IRSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEALLINK_IRS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NBR = #{DEAL_NBR}
+      and IRS_ID = #{IRS_ID}
+  </select>
+  <delete id="deleteTRSDEALLINK_IRS" parameterType="com.path.dbmaps.vo.TRSDEALLINK_IRSVOKey" >
+    delete from TRSDEALLINK_IRS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NBR = #{DEAL_NBR}
+      and IRS_ID = #{IRS_ID}
+  </delete>
+  <insert id="insertTRSDEALLINK_IRS" parameterType="com.path.dbmaps.vo.TRSDEALLINK_IRSVO" >
+    insert into TRSDEALLINK_IRS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NBR != null and DEAL_NBR != emptyBigDecimalValue" >
+        DEAL_NBR,
+      </if>
+      <if test="IRS_ID != null and IRS_ID != emptyBigDecimalValue" >
+        IRS_ID,
+      </if>
+      <if test="DEAL_CY != null and DEAL_CY != emptyBigDecimalValue" >
+        DEAL_CY,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="IRS_TYPE != null" >
+        IRS_TYPE,
+      </if>
+      <if test="DEAL_STATUS != null" >
+        DEAL_STATUS,
+      </if>
+      <if test="CLOSED_DATE != null" >
+        CLOSED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NBR != null and DEAL_NBR != emptyBigDecimalValue" >
+        #{DEAL_NBR},
+      </if>
+      <if test="IRS_ID != null and IRS_ID != emptyBigDecimalValue" >
+        #{IRS_ID},
+      </if>
+      <if test="DEAL_CY != null and DEAL_CY != emptyBigDecimalValue" >
+        #{DEAL_CY},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="IRS_TYPE != null" >
+        #{IRS_TYPE},
+      </if>
+      <if test="DEAL_STATUS != null" >
+        #{DEAL_STATUS},
+      </if>
+      <if test="CLOSED_DATE != null" >
+        #{CLOSED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEALLINK_IRS" >
+    update TRSDEALLINK_IRS
+    <set >
+      <if test="DEAL_CY != null" >
+        <choose >
+          <when test="DEAL_CY == emptyBigDecimalValue" >
+            DEAL_CY = NULL ,
+          </when>
+          <otherwise >
+            DEAL_CY = #{DEAL_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IRS_TYPE != null" >
+        IRS_TYPE = #{IRS_TYPE},
+      </if>
+      <if test="DEAL_STATUS != null" >
+        DEAL_STATUS = #{DEAL_STATUS},
+      </if>
+      <if test="CLOSED_DATE != null" >
+        CLOSED_DATE = #{CLOSED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NBR = #{DEAL_NBR}
+      and IRS_ID = #{IRS_ID}
+  </sql>
+  <update id="updateTRSDEALLINK_IRS" parameterType="com.path.dbmaps.vo.TRSDEALLINK_IRSVO" >
+    <include refid="sql_updateTRSDEALLINK_IRS" />
+  </update>
+</mapper>

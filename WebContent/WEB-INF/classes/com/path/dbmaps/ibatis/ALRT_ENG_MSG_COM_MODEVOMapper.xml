@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ALRT_ENG_MSG_COM_MODE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ALRT_ENG_MSG_COM_MODEVO" >
+    <id column="COMM_MODE" property="COMM_MODE" />
+    <id column="MSG_ID" property="MSG_ID" />
+    <id column="REQUEST_ID" property="REQUEST_ID" />
+    <result column="STARTING_TIME" property="STARTING_TIME" />
+    <result column="ENDING_TIME" property="ENDING_TIME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="OUTPUT_MSG" property="OUTPUT_MSG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMM_MODE, MSG_ID, REQUEST_ID, STARTING_TIME, ENDING_TIME, STATUS, OUTPUT_MSG
+  </sql>
+  <select id="selectALRT_ENG_MSG_COM_MODE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ALRT_ENG_MSG_COM_MODEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from ALRT_ENG_MSG_COM_MODE
+    where COMM_MODE = #{COMM_MODE}
+      and MSG_ID = #{MSG_ID}
+      and REQUEST_ID = #{REQUEST_ID}
+  </select>
+  <delete id="deleteALRT_ENG_MSG_COM_MODE" parameterType="com.path.dbmaps.vo.ALRT_ENG_MSG_COM_MODEVO" >
+    delete from ALRT_ENG_MSG_COM_MODE
+    where COMM_MODE = #{COMM_MODE}
+      and MSG_ID = #{MSG_ID}
+      and REQUEST_ID = #{REQUEST_ID}
+  </delete>
+  <insert id="insertALRT_ENG_MSG_COM_MODE" parameterType="com.path.dbmaps.vo.ALRT_ENG_MSG_COM_MODEVO" >
+    insert into ALRT_ENG_MSG_COM_MODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMM_MODE != null and !&quot;&quot;.equals(COMM_MODE)" >
+        COMM_MODE,
+      </if>
+      <if test="MSG_ID != null and MSG_ID != emptyBigDecimalValue" >
+        MSG_ID,
+      </if>
+      <if test="REQUEST_ID != null and REQUEST_ID != emptyBigDecimalValue" >
+        REQUEST_ID,
+      </if>
+      <if test="STARTING_TIME != null" >
+        STARTING_TIME,
+      </if>
+      <if test="ENDING_TIME != null" >
+        ENDING_TIME,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="OUTPUT_MSG != null and !&quot;&quot;.equals(OUTPUT_MSG)" >
+        OUTPUT_MSG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMM_MODE != null and !&quot;&quot;.equals(COMM_MODE)" >
+        #{COMM_MODE},
+      </if>
+      <if test="MSG_ID != null and MSG_ID != emptyBigDecimalValue" >
+        #{MSG_ID},
+      </if>
+      <if test="REQUEST_ID != null and REQUEST_ID != emptyBigDecimalValue" >
+        #{REQUEST_ID},
+      </if>
+      <if test="STARTING_TIME != null" >
+        #{STARTING_TIME},
+      </if>
+      <if test="ENDING_TIME != null" >
+        #{ENDING_TIME},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="OUTPUT_MSG != null and !&quot;&quot;.equals(OUTPUT_MSG)" >
+        #{OUTPUT_MSG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateALRT_ENG_MSG_COM_MODE" >
+    update ALRT_ENG_MSG_COM_MODE
+    <set >
+      <if test="STARTING_TIME != null" >
+        STARTING_TIME = #{STARTING_TIME},
+      </if>
+      <if test="ENDING_TIME != null" >
+        ENDING_TIME = #{ENDING_TIME},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OUTPUT_MSG != null" >
+        <choose >
+          <when test="OUTPUT_MSG.equals(&quot;&quot;)" >
+            OUTPUT_MSG = NULL ,
+          </when>
+          <otherwise >
+            OUTPUT_MSG = #{OUTPUT_MSG},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMM_MODE = #{COMM_MODE}
+      and MSG_ID = #{MSG_ID}
+      and REQUEST_ID = #{REQUEST_ID}
+  </sql>
+  <update id="updateALRT_ENG_MSG_COM_MODE" parameterType="com.path.dbmaps.vo.ALRT_ENG_MSG_COM_MODEVO" >
+    <include refid="sql_updateALRT_ENG_MSG_COM_MODE" />
+  </update>
+</mapper>

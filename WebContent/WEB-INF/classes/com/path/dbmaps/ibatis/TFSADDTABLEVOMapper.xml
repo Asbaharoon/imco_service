@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSADDTABLE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSADDTABLEVO" >
+    <result column="ENTITY_NAME" property="ENTITY_NAME" />
+    <result column="COLUMN_NAME" property="COLUMN_NAME" />
+    <result column="KEY_VALUE" property="KEY_VALUE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.TFSADDTABLEVO" extends="BaseResultMap" >
+    <result column="COLUMN_VALUE" property="COLUMN_VALUE" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    COLUMN_VALUE
+  </sql>
+  <insert id="insertTFSADDTABLE" parameterType="com.path.dbmaps.vo.TFSADDTABLEVO" >
+    insert into TFSADDTABLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ENTITY_NAME != null" >
+        ENTITY_NAME,
+      </if>
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME,
+      </if>
+      <if test="KEY_VALUE != null" >
+        KEY_VALUE,
+      </if>
+      <if test="COLUMN_VALUE != null" >
+        COLUMN_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ENTITY_NAME != null" >
+        #{ENTITY_NAME},
+      </if>
+      <if test="COLUMN_NAME != null" >
+        #{COLUMN_NAME},
+      </if>
+      <if test="KEY_VALUE != null" >
+        #{KEY_VALUE},
+      </if>
+      <if test="COLUMN_VALUE != null" >
+        #{COLUMN_VALUE},
+      </if>
+    </trim>
+  </insert>
+</mapper>

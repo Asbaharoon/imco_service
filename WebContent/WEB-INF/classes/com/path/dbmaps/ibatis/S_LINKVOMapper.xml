@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_LINK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_LINKVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINK_CODE" property="LINK_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="LINK_TO_CIF" property="LINK_TO_CIF" />
+    <result column="LINK_TO_AMF" property="LINK_TO_AMF" />
+    <result column="LAST_NUMBER" property="LAST_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINK_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ARAB, 
+    LINK_TO_CIF, LINK_TO_AMF, LAST_NUMBER
+  </sql>
+  <select id="selectS_LINK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_LINKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and LINK_CODE = #{LINK_CODE}
+  </select>
+  <delete id="deleteS_LINK" parameterType="com.path.dbmaps.vo.S_LINKVOKey" >
+    delete from S_LINK
+    where COMP_CODE = #{COMP_CODE}
+      and LINK_CODE = #{LINK_CODE}
+  </delete>
+  <insert id="insertS_LINK" parameterType="com.path.dbmaps.vo.S_LINKVO" >
+    insert into S_LINK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINK_CODE != null and LINK_CODE != emptyBigDecimalValue" >
+        LINK_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="LINK_TO_CIF != null and LINK_TO_CIF != emptyBigDecimalValue" >
+        LINK_TO_CIF,
+      </if>
+      <if test="LINK_TO_AMF != null and LINK_TO_AMF != emptyBigDecimalValue" >
+        LINK_TO_AMF,
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        LAST_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINK_CODE != null and LINK_CODE != emptyBigDecimalValue" >
+        #{LINK_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="LINK_TO_CIF != null and LINK_TO_CIF != emptyBigDecimalValue" >
+        #{LINK_TO_CIF},
+      </if>
+      <if test="LINK_TO_AMF != null and LINK_TO_AMF != emptyBigDecimalValue" >
+        #{LINK_TO_AMF},
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        #{LAST_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_LINK" >
+    update S_LINK
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="LINK_TO_CIF != null" >
+        <choose >
+          <when test="LINK_TO_CIF == emptyBigDecimalValue" >
+            LINK_TO_CIF = NULL ,
+          </when>
+          <otherwise >
+            LINK_TO_CIF = #{LINK_TO_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINK_TO_AMF != null" >
+        <choose >
+          <when test="LINK_TO_AMF == emptyBigDecimalValue" >
+            LINK_TO_AMF = NULL ,
+          </when>
+          <otherwise >
+            LINK_TO_AMF = #{LINK_TO_AMF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LAST_NUMBER != null" >
+        <choose >
+          <when test="LAST_NUMBER == emptyBigDecimalValue" >
+            LAST_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LAST_NUMBER = #{LAST_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINK_CODE = #{LINK_CODE}
+  </sql>
+  <update id="updateS_LINK" parameterType="com.path.dbmaps.vo.S_LINKVO" >
+    <include refid="sql_updateS_LINK" />
+  </update>
+</mapper>

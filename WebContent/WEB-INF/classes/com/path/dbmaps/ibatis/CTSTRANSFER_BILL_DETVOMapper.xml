@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTRANSFER_BILL_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTRANSFER_BILL_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TRS_BRANCH" property="TRS_BRANCH" />
+    <result column="TRS_NO" property="TRS_NO" />
+    <result column="LINKED_CLEARING_CODE" property="LINKED_CLEARING_CODE" />
+    <result column="LINKED_CLEARING_CODE" property="LINKED_CLEARING_CODE" />
+    <result column="TRSFR_BILLS_TYPE" property="TRSFR_BILLS_TYPE" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NO, STATUS, TRS_BRANCH, TRS_NO, LINKED_CLEARING_CODE, LINKED_CLEARING_CODE,TRSFR_BILLS_TYPE
+  </sql>
+  <select id="selectCTSTRANSFER_BILL_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTRANSFER_BILL_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTRANSFER_BILL_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSTRANSFER_BILL_DET" parameterType="com.path.dbmaps.vo.CTSTRANSFER_BILL_DETVOKey" >
+    delete from CTSTRANSFER_BILL_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSTRANSFER_BILL_DET" parameterType="com.path.dbmaps.vo.CTSTRANSFER_BILL_DETVO" >
+    insert into CTSTRANSFER_BILL_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="TRS_BRANCH != null and TRS_BRANCH != emptyBigDecimalValue" >
+        TRS_BRANCH,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="LINKED_CLEARING_CODE != null and LINKED_CLEARING_CODE != emptyBigDecimalValue" >
+        LINKED_CLEARING_CODE,
+      </if>
+      <if test="LINKED_CLEARING_LINE != null and LINKED_CLEARING_LINE != emptyBigDecimalValue" >
+        LINKED_CLEARING_LINE,
+      </if>
+      <if test="TRSFR_BILLS_TYPE != null and !&quot;&quot;.equals(TRSFR_BILLS_TYPE)" >
+        TRSFR_BILLS_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="TRS_BRANCH != null and TRS_BRANCH != emptyBigDecimalValue" >
+        #{TRS_BRANCH},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="LINKED_CLEARING_CODE != null and LINKED_CLEARING_CODE != emptyBigDecimalValue" >
+        #{LINKED_CLEARING_CODE},
+      </if>
+      <if test="LINKED_CLEARING_LINE != null and LINKED_CLEARING_LINE != emptyBigDecimalValue" >
+        #{LINKED_CLEARING_LINE},
+      </if>
+      <if test="TRSFR_BILLS_TYPE != null and !&quot;&quot;.equals(TRSFR_BILLS_TYPE)" >
+        #{TRSFR_BILLS_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTRANSFER_BILL_DET" >
+    update CTSTRANSFER_BILL_DET
+    <set >
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TRS_BRANCH != null" >
+        <choose >
+          <when test="TRS_BRANCH == emptyBigDecimalValue" >
+            TRS_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            TRS_BRANCH = #{TRS_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINKED_CLEARING_CODE != null" >
+        <choose >
+          <when test="LINKED_CLEARING_CODE == emptyBigDecimalValue" >
+            LINKED_CLEARING_CODE = NULL ,
+          </when>
+          <otherwise >
+            LINKED_CLEARING_CODE = #{LINKED_CLEARING_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINKED_CLEARING_LINE != null" >
+        <choose >
+          <when test="LINKED_CLEARING_LINE == emptyBigDecimalValue" >
+            LINKED_CLEARING_LINE = NULL ,
+          </when>
+          <otherwise >
+            LINKED_CLEARING_LINE = #{LINKED_CLEARING_LINE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRSFR_BILLS_TYPE != null and !&quot;&quot;.equals(TRSFR_BILLS_TYPE)" >
+        TRSFR_BILLS_TYPE = #{TRSFR_BILLS_TYPE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSTRANSFER_BILL_DET" parameterType="com.path.dbmaps.vo.CTSTRANSFER_BILL_DETVO" >
+    <include refid="sql_updateCTSTRANSFER_BILL_DET" />
+  </update>
+</mapper>

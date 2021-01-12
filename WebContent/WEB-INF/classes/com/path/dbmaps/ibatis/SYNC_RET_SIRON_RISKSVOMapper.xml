@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_RET_SIRON_RISKS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_RET_SIRON_RISKSVO" >  
+    <id column="ID" property="ID" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="RISK_ABBREV" property="RISK_ABBREV" />
+    <result column="RISK_CLASS" property="RISK_CLASS" />
+    <result column="RISK_CLASS_SPECIFIED_YN" property="RISK_CLASS_SPECIFIED_YN" />
+    <result column="RISK_DESC" property="RISK_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, LINE_NO, RISK_ABBREV, RISK_CLASS, RISK_CLASS_SPECIFIED_YN, RISK_DESC
+  </sql>
+  <select id="selectSYNC_RET_SIRON_RISKS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_RISKSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_RET_SIRON_RISKS
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteSYNC_RET_SIRON_RISKS" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_RISKSVO" >
+    delete from SYNC_RET_SIRON_RISKS
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertSYNC_RET_SIRON_RISKS" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_RISKSVO" >
+    insert into SYNC_RET_SIRON_RISKS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="RISK_ABBREV != null" >
+        RISK_ABBREV,
+      </if>
+      <if test="RISK_CLASS != null" >
+        RISK_CLASS,
+      </if>
+      <if test="RISK_CLASS_SPECIFIED_YN != null" >
+        RISK_CLASS_SPECIFIED_YN,
+      </if>
+      <if test="RISK_DESC != null" >
+        RISK_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="RISK_ABBREV != null" >
+        #{RISK_ABBREV},
+      </if>
+      <if test="RISK_CLASS != null" >
+        #{RISK_CLASS},
+      </if>
+      <if test="RISK_CLASS_SPECIFIED_YN != null" >
+        #{RISK_CLASS_SPECIFIED_YN},
+      </if>
+      <if test="RISK_DESC != null" >
+        #{RISK_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_RET_SIRON_RISKS" >
+    update SYNC_RET_SIRON_RISKS
+    <set >
+      <if test="RISK_ABBREV != null" >
+        RISK_ABBREV = #{RISK_ABBREV},
+      </if>
+      <if test="RISK_CLASS != null" >
+        RISK_CLASS = #{RISK_CLASS},
+      </if>
+      <if test="RISK_CLASS_SPECIFIED_YN != null" >
+        RISK_CLASS_SPECIFIED_YN = #{RISK_CLASS_SPECIFIED_YN},
+      </if>
+      <if test="RISK_DESC != null" >
+        RISK_DESC = #{RISK_DESC},
+      </if>
+    </set>
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateSYNC_RET_SIRON_RISKS" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_RISKSVO" >
+    <include refid="sql_updateSYNC_RET_SIRON_RISKS" />
+  </update>
+</mapper>

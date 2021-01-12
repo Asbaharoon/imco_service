@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashCardsMapper">
+     <sql id="selectCardsList">
+		  SELECT
+		         CTSCARDS_MGT.BRANCH_CODE
+		        ,CTSCARDS_MGT.APPLICATION_ID
+		        ,CTSCARDS_MGT.CARD_NO  
+		        ,CTSCARDS_MGT.CARD_TYPE
+		        ,CTSCARDS_MGT.APP_REF
+				,CTSCARDS_MGT.CARD_HOLDER_NAME
+				,CTSCARDS_MGT.OUTSTANDING_BALANCE
+				,CTSCARDS_MGT.DUE_AMOUNT
+				,CTSCARDS_MGT.EFFECTIVE_DATE
+			    ,(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+			        FROM SYS_PARAM_LOV_TRANS
+			       WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.PRIM_SUPP 
+			       	 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypePrimSupp}
+			       	 AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language} ) PRIM_SUPP
+		        ,CTSCARDS_MGT.EXPIRY_DATE
+		        ,(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		            FROM SYS_PARAM_LOV_TRANS
+		           WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.STATUS 
+			       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+			       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language} ) STATUS
+		        ,CTSCARDS_MGT.CREDIT_TYPE
+		        ,CTSCARDS_MGT.PAYMENT_PERC
+		        ,CTSCARDS_ACC.ACC_BR
+			      ,CTSCARDS_ACC.ACC_CY
+			      ,CTSCARDS_ACC.ACC_GL
+			      ,CTSCARDS_ACC.ACC_CIF	
+			      ,CTSCARDS_ACC.ACC_SL
+			      ,AMF.ADDITIONAL_REFERENCE ACC_ADD_REF
+			      ,AMF.LONG_NAME_ENG ACC_LONG_NAME_ENG
+		    FROM CTSCARDS_MGT
+		    LEFT OUTER JOIN CTSCARDS_ACC
+		    LEFT OUTER JOIN AMF 
+		      ON AMF.COMP_CODE     = CTSCARDS_ACC.COMP_CODE
+		     AND AMF.BRANCH_CODE   = CTSCARDS_ACC.ACC_BR
+		     AND AMF.CURRENCY_CODE = CTSCARDS_ACC.ACC_CY
+		     AND AMF.GL_CODE       = CTSCARDS_ACC.ACC_GL
+		     AND AMF.CIF_SUB_NO    = CTSCARDS_ACC.ACC_CIF
+		     AND AMF.SL_NO         = CTSCARDS_ACC.ACC_SL 
+		      ON CTSCARDS_ACC.COMP_CODE      = CTSCARDS_MGT.COMP_CODE
+		     AND CTSCARDS_ACC.BRANCH_CODE    = CTSCARDS_MGT.BRANCH_CODE
+		     AND CTSCARDS_ACC.APPLICATION_ID = CTSCARDS_MGT.APPLICATION_ID
+		     AND CTSCARDS_ACC.PK_SEC_FLAG    = '1'
+		   WHERE CTSCARDS_MGT.COMP_CODE   = #{compCode}
+		     <if test="branchCode!=null">
+		        AND CTSCARDS_MGT.BRANCH_CODE = #{branchCode}
+		     </if>
+		     AND  CTSCARDS_MGT.CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL)  TBL)
+                                                          
+		     AND CTSCARDS_MGT.STATUS <![CDATA[<>]]> 'D' 
+		    <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+			     AND NOT EXISTS
+			    (SELECT 1
+			          FROM AMF, CTSTELLER_ACC_HIDDEN_STATUSES 
+			         WHERE AMF.COMP_CODE = CTSCARDS_ACC.COMP_CODE
+			           AND AMF.BRANCH_CODE =CTSCARDS_ACC.ACC_BR
+			           AND AMF.CURRENCY_CODE =CTSCARDS_ACC.ACC_CY
+			           AND AMF.GL_CODE = CTSCARDS_ACC.ACC_GL
+			           AND AMF.SL_NO = CTSCARDS_ACC.ACC_SL
+			           AND AMF.CIF_SUB_NO = CTSCARDS_ACC.ACC_CIF
+			           AND AMF.STATUS=CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+			           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+			           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+			           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+				 )
+			 </if>
+			  
+			AND NOT EXISTS (
+			SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+	         WHERE  CTSCARDS_ACC.COMP_CODE = AccRest.COMP_CODE  
+	       	  AND  CTSCARDS_ACC.ACC_BR = AccRest.BRANCH_CODE  
+			 AND  CTSCARDS_ACC.ACC_CY = AccRest.CURRENCY_CODE 
+			 AND  CTSCARDS_ACC.ACC_GL = AccRest.GL_CODE 
+			 AND  CTSCARDS_ACC.ACC_CIF = AccRest.CIF_SUB_NO 
+			 AND   CTSCARDS_ACC.ACC_SL = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+     </sql>
+	 <resultMap id="cardsListMap" type="cardsCO">
+	   <result property="banch_code"           						column="BRANCH_CODE"/>
+	   <result property="ctsCardsMGTVO.CARD_NO"          			column="CARD_NO"/>
+	   <result property="card_type"            						column="CARD_TYPE"/>
+	   <result property="primary_suplementary" 						column="PRIM_SUPP"/>
+	   <result property="expiry_date"          						column="EXPIRY_DATE"/>   
+	   <result property="status"              	 					column="STATUS"/>
+	   <result property="credit_type"          						column="CREDIT_TYPE"/>
+	   <result property="payment_perc"         						column="PAYMENT_PERC"/>
+	   <result property="acc_br"              					 	column="ACC_BR"/>
+	   <result property="acc_cy"               						column="ACC_CY"/>
+	   <result property="acc_gl"               						column="ACC_GL"/>
+	   <result property="acc_cif"              						column="ACC_CIF"/>   
+	   <result property="acc_sl"               						column="ACC_SL"/>
+	   <result property="amfVO.ADDITIONAL_REFERENCE"               	column="ACC_ADD_REF"/>
+	   <result property="amfVO.LONG_NAME_ENG"               		column="ACC_LONG_NAME_ENG"/>
+	   <result property="ctsCardsMGTVO.APPLICATION_ID"       		column="APPLICATION_ID"/>
+	   <result property="ctsCardsMGTVO.APP_REF"          			column="APP_REF"/>
+	   <result property="ctsCardsMGTVO.CARD_HOLDER_NAME"          	column="CARD_HOLDER_NAME"/>
+	   <result property="ctsCardsMGTVO.OUTSTANDING_BALANCE"         column="OUTSTANDING_BALANCE"/>
+	   <result property="ctsCardsMGTVO.DUE_AMOUNT"          		column="DUE_AMOUNT"/>
+	   <result property="ctsCardsMGTVO.EFFECTIVE_DATE"          	column="EFFECTIVE_DATE"/>
+	</resultMap>    
+    <select id="getCardsList"  resultMap="cardsListMap"  parameterType="dashboardSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="selectCardsList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="getCardsListCount"  resultType="int" parameterType="dashboardSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="selectCardsList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- Hasan BB140052 -->
+	<sql id="select_cardsMgmtListORA">
+	      SELECT CTSCARDS_MGT.APPLICATION_ID,
+	       CTSCARDS_MGT.CARD_TYPE,
+	       CTSCARDS_MGT.REFERENCE,
+	       CTSCARDS_MGT.CIF,
+	       CTSCARDS_MGT.CARD_HOLDER_NAME,
+	       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	  FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.STATUS 
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeStatus}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language} ) STATUS,
+	       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	  FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.CIF_STATUS 
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeCifStatus}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language} ) CIF_STATUS,
+	       CTSCARDS.BRIEF_NAME_ENG,
+	       (SELECT CIF.SHORT_NAME_ENG
+	          FROM CIF
+	         WHERE CTSCARDS_MGT.COMP_CODE = CIF.COMP_CODE
+	           AND CTSCARDS_MGT.CIF = CIF.CIF_NO) SHORT_NAME_ENG,
+	       CTSCARDS_MGT.EFFECTIVE_DATE,
+	       CTSCARDS_MGT.PREPARATION_DATE,
+	       CTSCARDS_MGT.EXPIRY_DATE,
+	       CTSCARDS_MGT.CARD_NO,
+	       CTSCARDS_MGT.CARD_NO as maskedCardNo,
+	       CTSCARDS_MGT.BRANCH_CODE,
+	       (SELECT BRANCHES.BRIEF_DESC_ENG
+	          FROM BRANCHES
+	         WHERE BRANCHES.COMP_CODE = CTSCARDS_MGT.COMP_CODE
+	           AND BRANCHES.BRANCH_CODE = CTSCARDS_MGT.BRANCH_CODE)  BRIEF_DESC_ENG,
+	       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	  FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCARDS_MGT.PRIM_SUPP 
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypePrimSupp}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language} ) PRIM_SUPP,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_BR IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_BR
+	         ELSE
+	          (SELECT  MAX(CTSCARDS_ACC1.ACC_BR)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_BR,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_CY IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_CY
+	         ELSE
+	          (SELECT  MAX(CTSCARDS_ACC1.ACC_CY)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_CY,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_GL IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_GL
+	         ELSE
+	          (SELECT  MAX(CTSCARDS_ACC1.ACC_GL)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_GL,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_CIF IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_CIF
+	         ELSE
+	          (SELECT  MAX(CTSCARDS_ACC1.ACC_CIF)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_CIF,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_SL IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_SL
+	         ELSE
+	          (SELECT  MAX(CTSCARDS_ACC1.ACC_SL)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_SL,
+	       
+	       (CASE
+	         WHEN CTSCARDS_ACC.ACC_ADD_REF IS NOT NULL THEN
+	          CTSCARDS_ACC.ACC_ADD_REF
+	         ELSE
+	          (SELECT MAX(CTSCARDS_ACC1.ACC_ADD_REF)
+	             FROM CTSCARDS_ACC CTSCARDS_ACC1
+	            WHERE CTSCARDS_ACC1.COMP_CODE 		= CTSCARDS_MGT.COMP_CODE
+	              AND CTSCARDS_ACC1.BRANCH_CODE 	= CTSCARDS_MGT.BRANCH_CODE
+	              AND CTSCARDS_ACC1.APPLICATION_ID 	= CTSCARDS_MGT.APPLICATION_ID)
+	       END) ACC_ADD_REF,
+	       CTSCARDS_MGT.APP_REF,
+	       CTSCARDS_MGT.DEST_BRANCH,
+	       (SELECT AMF.IBAN_ACC_NO
+	          FROM AMF
+	         WHERE AMF.COMP_CODE = CTSCARDS_ACC.COMP_CODE
+	           AND AMF.BRANCH_CODE = CTSCARDS_ACC.ACC_BR
+	           AND AMF.CURRENCY_CODE = CTSCARDS_ACC.ACC_CY
+	           AND AMF.GL_CODE = CTSCARDS_ACC.ACC_GL
+	           AND AMF.CIF_SUB_NO = CTSCARDS_ACC.ACC_CIF
+	           AND AMF.SL_NO = CTSCARDS_ACC.ACC_SL)  IBAN_ACC_NO
+	  FROM CTSCARDS_MGT
+	
+	  LEFT OUTER JOIN CTSCARDS_ACC 
+	  					  ON CTSCARDS_ACC.COMP_CODE 	 = CTSCARDS_MGT.COMP_CODE
+	                     AND CTSCARDS_ACC.BRANCH_CODE    = CTSCARDS_MGT.BRANCH_CODE
+	                     AND CTSCARDS_ACC.APPLICATION_ID = CTSCARDS_MGT.APPLICATION_ID
+	                     AND CTSCARDS_ACC.PK_SEC_FLAG    = '1'
+	
+	  JOIN CTSCARDS ON CTSCARDS_MGT.COMP_CODE = CTSCARDS.COMP_CODE
+	               AND CTSCARDS_MGT.CARD_TYPE = CTSCARDS.CODE
+	            
+	        <if test=' "1".equals(creditCardPaymentTrx)'>    
+	            AND    CTSCARDS.CARD_TYPE = 'C'  
+	       </if>
+	 WHERE CTSCARDS_MGT.COMP_CODE = #{compCode}
+		<if test="null != cif">
+		   AND CTSCARDS_MGT.CIF = #{cif}
+		</if>
+	  
+		<if test='!"I".equals(iv_crud) 
+		 			and !"K".equals(iv_crud) 
+		 			and !"M".equals(iv_crud) 
+		 			and !"T".equals(iv_crud) 
+		 			and !"H".equals(iv_crud) 
+		 			and !"N".equals(iv_crud) 
+		 			and !"RE".equals(iv_crud) 
+		 			and !"UK".equals(iv_crud) 
+		 			and !"Q".equals(iv_crud) 
+		 			and !"V".equals(iv_crud) 
+		 			and !"DY".equals(iv_crud)
+		 			and "0".equals(multiBrTrx)'>
+		 	AND CTSCARDS_MGT.BRANCH_CODE = #{branchCode}
+		</if>   
+		<choose>
+	        <when test='"P".equals(iv_crud)'>
+	        	 AND ((CTSCARDS_MGT.STATUS = 'C' AND CTSCARDS.CARD_TYPE = 'D') 
+	       				OR (CTSCARDS_MGT.STATUS = 'A' AND CTSCARDS.CARD_TYPE = 'C'))
+  			</when>
+	        <when test='"CJ".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'C'
+  			</when>
+	        <when test='"AP".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'C' AND CTSCARDS.CARD_TYPE = 'C'
+  			</when>
+	        <when test='"UP".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'P'
+  			</when>
+	        <when test='"I".equals(iv_crud)'>
+	        	 AND (CTSCARDS_MGT.STATUS = 'P' OR (CTSCARDS_MGT.STATUS = 'R' AND CTSCARDS_MGT.IS_RENEWED IN ('I', 'B')))
+  			</when>
+	        <when test='"V".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('I', '5', '9') AND CTSCARDS_MGT.DEST_BRANCH = #{branchCode}
+  			</when>
+	        <when test='"K".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('2', '4', 'R') AND CTSCARDS_MGT.EXPIRY_DATE > #{sysDate}
+  			</when>
+	        <when test='"H".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('2', '4', '3', 'R') AND CTSCARDS_MGT.EXPIRY_DATE > #{sysDate}
+  			</when>
+	        <when test='"M".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('2', '5')
+  			</when>
+	        <when test='"T".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('2', '4')
+  			</when>
+	        <when test='"N".equals(iv_crud)'>
+	        	 AND (CTSCARDS.CANCEL_SEND_TO_PROVIDER = '0'        AND CTSCARDS_MGT.STATUS IN ('I', '2', '3', '4', '5', 'R') 
+	        	 		or (CTSCARDS.CANCEL_SEND_TO_PROVIDER  = '1' AND CTSCARDS_MGT.STATUS IN ('I', '2', '3', '4', '5', 'R', 'S'))) 
+	        	 AND CTSCARDS_MGT.EXPIRY_DATE > #{sysDate}
+  			</when>
+	        <when test='"RE".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('I', '2')
+  			</when>
+	        <when test='"RN".equals(iv_crud)'>
+				 AND (CTSCARDS_MGT.STATUS = '2' AND CTSCARDS_ACC.PK_SEC_FLAG = '1' 
+						       AND  EXISTS (SELECT 1 from AMF WHERE AMF.COMP_CODE = CTSCARDS_ACC.COMP_CODE
+					                           AND AMF.BRANCH_CODE = CTSCARDS_ACC.ACC_BR
+					                           AND AMF.CURRENCY_CODE = CTSCARDS_ACC.ACC_CY
+					                           AND AMF.GL_CODE = CTSCARDS_ACC.ACC_GL
+					                           AND AMF.CIF_SUB_NO = CTSCARDS_ACC.ACC_CIF
+					                           AND AMF.SL_NO = CTSCARDS_ACC.ACC_SL
+					                           AND AMF.STATUS = 'A') 
+						      AND (CTSCARDS_MGT.EXPIRY_DATE BETWEEN #{sysDate} 
+							        AND (SELECT 
+										        <choose>
+											       <when test="isSybase == 1" >
+												       	DATEADD(MM, MAX_REN_PERIOD + 1, #{sysDate})
+										       		</when>
+										        	<otherwise>
+										        		 ADD_MONTHS(#{sysDate}, MAX_REN_PERIOD + 1 )
+													</otherwise>
+									        	</choose>	
+								            	FROM CTSCARDS
+								             	WHERE CTSCARDS.COMP_CODE = CTSCARDS_MGT.COMP_CODE
+								             	AND CTSCARDS.CODE = CTSCARDS_MGT.CARD_TYPE)
+							        ))
+  			</when>
+	        <when test='"RV".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'R' AND IS_RENEWED = '0'
+  			</when>
+	        <when test='"AD".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('I', '2', '4')
+  			</when>
+	        <when test='"PR".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('I', 'P', '2')
+  			</when>
+	        <when test='"DY".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS IN ('9', 'I') 
+	        	 AND CTSCARDS_MGT.DEST_BRANCH = #{branchCode}
+  			</when>
+	        <when test='"UK".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = '3'
+  			</when>
+	        <when test='"CI".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'A' 
+	        	 AND CINET_CHECKED = '0'
+  			</when>
+	        <when test='"RM".equals(iv_crud)'>
+	        	 AND ((CTSCARDS_MGT.STATUS = 'A' AND CINET_CHECKED = '1') OR CTSCARDS_MGT.STATUS = 'V')
+  			</when>
+	        <when test='"RD".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = 'M'
+  			</when>
+	        <when test='"AM".equals(iv_crud)'>
+	        	 AND CTSCARDS_MGT.STATUS = '2'
+  			</when>
+	        <otherwise>
+	        	 
+  			</otherwise>
+		</choose>      
+	</sql>
+	
+	<sql id="select_cardsMgmtList">
+		<include refid="select_cardsMgmtListORA"/>
+	</sql>
+	
+	<resultMap id="cardsManagementMap" type="cardsManagementCO">
+ 	 	 <result property="cardsMgtVO.APP_REF"  					column="APP_REF"/>
+		 <result property="cardsMgtVO.BRANCH_CODE"  				column="BRANCH_CODE"/>
+		 <result property="branchesVO.BRIEF_DESC_ENG"  				column="BRIEF_DESC_ENG"/>
+		 <result property="cardsMgtVO.DEST_BRANCH"  				column="DEST_BRANCH"/>
+		 <result property="cardsMgtVO.APPLICATION_ID"  				column="APPLICATION_ID"/>
+		 <result property="cardsMgtVO.CARD_HOLDER_NAME"  			column="CARD_HOLDER_NAME"/>
+		 <result property="cardsMgtVO.CARD_NO"  					column="CARD_NO"/>
+		 <result property="maskedCardNo"  							column="maskedCardNo"/>
+		 <result property="cardsMgtVO.CARD_TYPE"  					column="CARD_TYPE"/>
+		 <result property="ctsCardsVO.BRIEF_NAME_ENG"  				column="BRIEF_NAME_ENG"/>
+		 <result property="cardsMgtVO.STATUS"  						column="STATUS"/>
+		 <result property="cardsMgtVO.CIF"  						column="CIF"/>
+ 		 <result property="cardsMgtVO.CIF_STATUS"  					column="CIF_STATUS"/>
+		 <result property="cifVO.SHORT_NAME_ENG"  					column="SHORT_NAME_ENG"/>
+		 <result property="cardsMgtVO.PRIM_SUPP"  					column="PRIM_SUPP"/>
+		 <result property="cardsAccountCO.accountVO.ACC_BR"  		column="ACC_BR"/>
+		 <result property="cardsAccountCO.accountVO.ACC_CY"  		column="ACC_CY"/>
+		 <result property="cardsAccountCO.accountVO.ACC_GL"  		column="ACC_GL"/>
+		 <result property="cardsAccountCO.accountVO.ACC_CIF" 		column="ACC_CIF"/>
+		 <result property="cardsAccountCO.accountVO.ACC_SL"  		column="ACC_SL"/>
+		 <result property="cardsAccountCO.accountVO.ACC_ADD_REF"  	column="ACC_ADD_REF"/>
+		 <result property="amfVO.IBAN_ACC_NO"						column="IBAN_ACC_NO"/>
+	</resultMap>
+	
+	
+	<select id="cardsManagementList" resultMap="cardsManagementMap" parameterType="cardsManagementSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="select_cardsMgmtList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="cardsManagementListCount"  resultType="int" parameterType="cardsManagementSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="select_cardsMgmtList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<!-- End Hasan -->
+
+
+	<!-- Hala Al Sheikh ABEI180106 -->
+
+	<resultMap id="collateralsGridMap" type="com.path.vo.core.cardsmanagement.CardsCollateralsCO">
+		<result property="ctsCardsCollateralsVO.COLLATERAL_CODE"   	    column="CODE"/>
+		<result property="collateralName"   					   	    column="collateralName"/>
+		<result property="amountType"   						   		column="amountType"/>
+		<result property="collateralType"   					        column="collateralType"/>
+		<result property="collateralAllocatedAmount"   			        column="collateralAllocatedAmount"/>
+		<result property="fixedAmount"   						   		column="fixedAmount"/>
+	</resultMap>
+		
+	 <select id="collateralsList" resultMap="collateralsGridMap" parameterType="cardsManagementSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="collateralsListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	 <select id="collateralsListCount" resultType="int" parameterType="cardsManagementSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="collateralsListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	
+	<sql id="collateralsListCommon">
+	<![CDATA[
+	SELECT FMSAPPCOLLATERALS.COLLATERAL AS CODE,
+       FMSCOLLATERAL.BRIEF_NAME_ENG AS collateralName,
+       FMSAPPCOLLATERALS.AMOUNT_TYPE AS amountType,
+       FMSCOLLATERAL.TYPE AS collateralType,
+       CASE WHEN FMSFACILITYTYPE.COLLATERAL_ALLOC_AMT_BASEDON = 'S' THEN ROUND(FMSAPPCOLLATERALS.COVERAGE, 6) * FMSCOLLATERAL.FORCED_SALE_VALUE / 100
+       ELSE CASE WHEN FMSFACILITYTYPE.COLLATERAL_ALLOC_AMT_BASEDON = 'M' THEN ROUND(FMSAPPCOLLATERALS.COVERAGE, 6) * FMSCOLLATERAL.MARKET_VALUE / 100
+       ELSE ROUND(FMSAPPCOLLATERALS.COVERAGE, 6) * FMSCOLLATERAL.MARKET_VALUE / 100 END END AS collateralAllocatedAmount,
+       FMSAPPCOLLATERALS.ALLOCATED_AMT AS fixedAmount
+	  FROM FMSAPPCOLLATERALS
+	  JOIN FMSCOLLATERAL ON FMSAPPCOLLATERALS.COMP_CODE = FMSCOLLATERAL.COMP_CODE
+	                    AND FMSAPPCOLLATERALS.BRANCH_CODE = FMSCOLLATERAL.BRANCH
+	                    AND FMSAPPCOLLATERALS.COLLATERAL = FMSCOLLATERAL.CODE
+	  JOIN FMSAPPL ON FMSAPPCOLLATERALS.COMP_CODE = FMSAPPL.COMP_CODE
+	              AND FMSAPPCOLLATERALS.BRANCH_CODE = FMSAPPL.BRANCH
+	              AND FMSAPPCOLLATERALS.APP_REF = FMSAPPL.CODE
+	  JOIN FMSCOLATTYPE ON FMSCOLLATERAL.COMP_CODE = FMSCOLATTYPE.COMP_CODE
+	                   AND FMSCOLLATERAL.TYPE = FMSCOLATTYPE.CODE
+	  JOIN FMSFACILITYTYPE ON FMSAPPL.COMP_CODE = FMSFACILITYTYPE.COMP_CODE
+	                      AND FMSAPPL.LOAN_TYPE = FMSFACILITYTYPE.CODE
+	  JOIN FMSFACILITY ON FMSAPPCOLLATERALS.COMP_CODE = FMSFACILITY.COMP_CODE
+	                  AND FMSAPPCOLLATERALS.BRANCH_CODE = FMSFACILITY.BRANCH
+	                  AND FMSAPPCOLLATERALS.APP_REF = FMSFACILITY.FROM_APPLICATION
+	 WHERE FMSAPPCOLLATERALS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	   AND FMSAPPCOLLATERALS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+	   AND FMSAPPCOLLATERALS.LINE_NO = #{facilitySubLimit,jdbcType=NUMERIC}
+	   AND FMSFACILITY.CODE = #{facilityCode,jdbcType=NUMERIC}
+	]]>	   
+</sql>
+<!-- End Hala Al Sheikh ABEI180106 -->
+
+</mapper>

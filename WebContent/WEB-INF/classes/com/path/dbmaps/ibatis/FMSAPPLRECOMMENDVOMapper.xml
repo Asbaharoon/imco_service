@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLRECOMMEND" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLRECOMMENDVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="COMMITTEE_LINE_NBR" property="COMMITTEE_LINE_NBR" />
+    <result column="DATE_RECOMMENDED" property="DATE_RECOMMENDED" />
+    <result column="RECOMMENDED_BY" property="RECOMMENDED_BY" />
+    <result column="RECOMMENDATION" property="RECOMMENDATION" />
+    <result column="COMMITTEE" property="COMMITTEE" />
+    <result column="COMMENTS" property="COMMENTS" />
+    <result column="HIERARCHY_STATUS" property="HIERARCHY_STATUS" />
+    <result column="CR_RECOMMENDATION" property="CR_RECOMMENDATION" />
+    <result column="APPROVE_RECOMMEND" property="APPROVE_RECOMMEND" />
+    <result column="FORWARD_TO" property="FORWARD_TO" />
+    <result column="COMMENT_CODE" property="COMMENT_CODE" />
+    <result column="SENDBACK_LEVEL" property="SENDBACK_LEVEL" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.FMSAPPLRECOMMENDVO" extends="BaseResultMap" >
+    <result column="MORE_COMMENTS" property="MORE_COMMENTS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NBR, COMMITTEE_LINE_NBR, DATE_RECOMMENDED, RECOMMENDED_BY, 
+    RECOMMENDATION, COMMITTEE, COMMENTS, HIERARCHY_STATUS, CR_RECOMMENDATION, APPROVE_RECOMMEND, 
+    FORWARD_TO, COMMENT_CODE,SENDBACK_LEVEL
+  </sql>
+  <sql id="Blob_Column_List" >
+    MORE_COMMENTS
+  </sql>
+  <select id="selectFMSAPPLRECOMMEND" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.FMSAPPLRECOMMENDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from FMSAPPLRECOMMEND
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSAPPLRECOMMEND" parameterType="com.path.dbmaps.vo.FMSAPPLRECOMMENDVOKey" >
+    delete from FMSAPPLRECOMMEND
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSAPPLRECOMMEND" parameterType="com.path.dbmaps.vo.FMSAPPLRECOMMENDVO" >
+    insert into FMSAPPLRECOMMEND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="COMMITTEE_LINE_NBR != null and COMMITTEE_LINE_NBR != emptyBigDecimalValue" >
+        COMMITTEE_LINE_NBR,
+      </if>
+      <if test="DATE_RECOMMENDED != null" >
+        DATE_RECOMMENDED,
+      </if>
+      <if test="RECOMMENDED_BY != null" >
+        RECOMMENDED_BY,
+      </if>
+      <if test="RECOMMENDATION != null" >
+        RECOMMENDATION,
+      </if>
+      <if test="COMMITTEE != null and COMMITTEE != emptyBigDecimalValue" >
+        COMMITTEE,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+      <if test="HIERARCHY_STATUS != null" >
+        HIERARCHY_STATUS,
+      </if>
+      <if test="CR_RECOMMENDATION != null" >
+        CR_RECOMMENDATION,
+      </if>
+      <if test="APPROVE_RECOMMEND != null" >
+        APPROVE_RECOMMEND,
+      </if>
+      <if test="FORWARD_TO != null" >
+        FORWARD_TO,
+      </if>
+      <if test="COMMENT_CODE != null and COMMENT_CODE != emptyBigDecimalValue" >
+        COMMENT_CODE,
+      </if>
+      <if test="MORE_COMMENTS != null" >
+        MORE_COMMENTS,
+      </if>
+       <if test="SENDBACK_LEVEL != null" >
+        SENDBACK_LEVEL,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="COMMITTEE_LINE_NBR != null and COMMITTEE_LINE_NBR != emptyBigDecimalValue" >
+        #{COMMITTEE_LINE_NBR},
+      </if>
+      <if test="DATE_RECOMMENDED != null" >
+        #{DATE_RECOMMENDED},
+      </if>
+      <if test="RECOMMENDED_BY != null" >
+        #{RECOMMENDED_BY},
+      </if>
+      <if test="RECOMMENDATION != null" >
+        #{RECOMMENDATION},
+      </if>
+      <if test="COMMITTEE != null and COMMITTEE != emptyBigDecimalValue" >
+        #{COMMITTEE},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+      <if test="HIERARCHY_STATUS != null" >
+        #{HIERARCHY_STATUS},
+      </if>
+      <if test="CR_RECOMMENDATION != null" >
+        #{CR_RECOMMENDATION},
+      </if>
+      <if test="APPROVE_RECOMMEND != null" >
+        #{APPROVE_RECOMMEND},
+      </if>
+      <if test="FORWARD_TO != null" >
+        #{FORWARD_TO},
+      </if>
+      <if test="COMMENT_CODE != null and COMMENT_CODE != emptyBigDecimalValue" >
+        #{COMMENT_CODE},
+      </if>
+      <if test="MORE_COMMENTS != null" >
+        #{MORE_COMMENTS},
+      </if>
+      <if test="SENDBACK_LEVEL != null" >
+        #{SENDBACK_LEVEL},
+      </if>
+      
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLRECOMMEND" >
+    update FMSAPPLRECOMMEND
+    <set >
+      <if test="COMMITTEE_LINE_NBR != null" >
+        <choose >
+          <when test="COMMITTEE_LINE_NBR == emptyBigDecimalValue" >
+            COMMITTEE_LINE_NBR = NULL ,
+          </when>
+          <otherwise >
+            COMMITTEE_LINE_NBR = #{COMMITTEE_LINE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_RECOMMENDED != null" >
+        DATE_RECOMMENDED = #{DATE_RECOMMENDED},
+      </if>
+      <if test="RECOMMENDED_BY != null" >
+        RECOMMENDED_BY = #{RECOMMENDED_BY},
+      </if>
+      <if test="RECOMMENDATION != null" >
+        RECOMMENDATION = #{RECOMMENDATION},
+      </if>
+      <if test="COMMITTEE != null" >
+        <choose >
+          <when test="COMMITTEE == emptyBigDecimalValue" >
+            COMMITTEE = NULL ,
+          </when>
+          <otherwise >
+            COMMITTEE = #{COMMITTEE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+      <if test="HIERARCHY_STATUS != null" >
+        HIERARCHY_STATUS = #{HIERARCHY_STATUS},
+      </if>
+      <if test="CR_RECOMMENDATION != null" >
+        CR_RECOMMENDATION = #{CR_RECOMMENDATION},
+      </if>
+      <if test="APPROVE_RECOMMEND != null" >
+        APPROVE_RECOMMEND = #{APPROVE_RECOMMEND},
+      </if>
+      <if test="FORWARD_TO != null" >
+        FORWARD_TO = #{FORWARD_TO},
+      </if>
+      <if test="COMMENT_CODE != null" >
+        <choose >
+          <when test="COMMENT_CODE == emptyBigDecimalValue" >
+            COMMENT_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMMENT_CODE = #{COMMENT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MORE_COMMENTS != null" >
+        MORE_COMMENTS = #{MORE_COMMENTS},
+      </if>
+      <if test="SENDBACK_LEVEL != null" >
+        SENDBACK_LEVEL = #{SENDBACK_LEVEL},
+      </if>
+      
+      
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSAPPLRECOMMEND" parameterType="com.path.dbmaps.vo.FMSAPPLRECOMMENDVO" >
+    <include refid="sql_updateFMSAPPLRECOMMEND" />
+  </update>
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="themeCustomizationMapper">
+
+	<!-- Result Maps -->
+	<resultMap id="styleAttrMapper" type="com.path.vo.common.customization.ThemeCustomizationCO">
+		<result property="styleVO.STYLE_ID" column="STYLE_ID" />
+		<result property="attrVO.ATTRIBUTE_CODE" column="ATTRIBUTE_CODE" />
+		<result property="attrVO.ATTRIBUTE_TECH_NAME" column="ATTRIBUTE_TECH_NAME" />
+		<result property="attrVO.ATTRIBUTE_TOOL_ID" column="ATTRIBUTE_TOOL_ID" />
+	</resultMap>
+	<resultMap id="returnImageResMap" type="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO">
+		<result property="IMAGE" column="IMAGE" />
+	</resultMap>
+	<resultMap id="userThemesMap" type="com.path.vo.common.customization.ThemeCustomizationCO">
+		<result property="themeVO.THEME_ID" column="THEME_ID" />
+		<result property="themeVO.THEME_NAME" column="THEME_NAME" />
+		<result property="themeVO.IS_ACTIVE_YN" column="IS_ACTIVE_YN" />
+		<result property="themeVO.APP_NAME" column="APP_NAME" />
+		<result property="appDesc" column="APP_DESC" />
+	</resultMap>
+
+
+	<!-- Selects  -->
+	<select id="getStyleAttrs" parameterType="java.lang.String"
+		resultMap="styleAttrMapper">
+		<include refid="queryAttributesForStyle" />
+	</select>
+	<select id="returnUserThemesCount"
+		parameterType="com.path.struts2.lib.common.GridParamsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryUserThemes" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="loadUserThemes" resultMap="userThemesMap" parameterType="com.path.struts2.lib.common.GridParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryUserThemes" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="getAttributeName" parameterType="java.lang.String" resultType="java.lang.String">
+		<include refid="queryAttributeName" />
+	</select>
+	<select id="returnUserThemeExit" parameterType="java.lang.String" resultType="int">
+		<include refid="queryThemeExist" />
+	</select>
+	<select id="getCssClassName" parameterType="java.math.BigDecimal" resultType="java.lang.String">
+		<include refid="queryCssClassName" />
+	</select>
+	<select id="getThemeDetails" parameterType="com.path.vo.common.customization.ThemeCustomizationCO" resultType="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO">
+		<include refid="queryThemeDetails" />
+	</select>
+	<select id="returnCurrentActiveTheme"  parameterType="java.lang.String" resultType="com.path.dbmaps.vo.SYS_THEMEVO">
+		<include refid="queryCurrentActiveTheme" />
+	</select>
+	<select id="returnImageFromDB" parameterType="com.path.vo.common.customization.ThemeCustomizationCO" resultMap="returnImageResMap">
+		<include refid="queryImageFromDB" />
+	</select>
+	
+	
+	<!-- Deletes  -->
+	<delete id="deleteThemeDetails" parameterType="java.math.BigDecimal">
+		<include refid="queryDeleteThemeDetails" />
+	</delete>
+	
+	<!-- updates -->
+	<update id="activateUserTheme" parameterType="com.path.dbmaps.vo.SYS_THEMEVO">
+		<include refid="queryActivateUserTheme" />
+	</update>
+	<update id="deactivateUserTheme" parameterType="java.math.BigDecimal">
+		<include refid="queryDeactivateUserTheme" />
+	</update>
+	
+	<!-- Sql queries  -->
+	<sql id="queryAttributesForStyle">
+		SELECT 
+			SPSA.STYLE_ID STYLE_ID,
+       		SPSA.ATTRIBUTE_CODE ATTRIBUTE_CODE,
+       		SPA.ATTRIBUTE_TECH_NAME ATTRIBUTE_TECH_NAME,
+       		SPA.ATTRIBUTE_TOOL_ID ATTRIBUTE_TOOL_ID
+    	FROM 
+    		SYS_PARAM_STYLE_ATTRIBUTE SPSA, SYS_PARAM_ATTRIBUTE SPA
+    	WHERE 
+    		SPSA.STYLE_ID =
+        		(  	SELECT STYLE_ID 
+          			FROM SYS_PARAM_STYLE 
+					WHERE STYLE_TECH_NAME = #{styleTechName,jdbcType=VARCHAR})
+			AND SPSA.ATTRIBUTE_CODE = SPA.ATTRIBUTE_CODE
+	</sql>
+	
+	<sql id="queryUserThemes">
+		SELECT  
+			S.THEME_ID,
+			S.THEME_NAME,
+			S.IS_ACTIVE_YN,
+			S.APP_NAME,
+			(CASE WHEN S.APP_NAME = 'IMAL' THEN #{currAppName,jdbcType=VARCHAR} ELSE A.APP_DESC END ) APP_DESC
+		FROM SYS_THEME S LEFT OUTER JOIN S_APP A ON  S.APP_NAME = A.APP_NAME
+	</sql>
+	
+	<sql id="queryAttributeName">
+		SELECT ATTRIBUTE_TECH_NAME
+		FROM SYS_PARAM_ATTRIBUTE
+		WHERE ATTRIBUTE_CODE = #{attrCode,jdbcType=VARCHAR}
+	</sql>
+	<sql id="queryThemeExist">
+		SELECT  COALESCE(MAX(THEME_ID),0)
+		FROM SYS_THEME
+		WHERE THEME_NAME = #{themeName,jdbcType=VARCHAR}
+	</sql>
+	
+	<sql id="queryCssClassName">
+		SELECT STYLE_TECH_NAME
+		FROM SYS_PARAM_STYLE
+		WHERE STYLE_ID = #{styleID,jdbcType=NUMERIC}
+	</sql>
+	
+	<sql id="queryThemeDetails">
+		SELECT *
+		FROM SYS_THEME_STYLE_ATTRIBUTE_VAL
+		WHERE THEME_ID = #{themeVO.THEME_ID,jdbcType=NUMERIC}
+		
+		<if test="styleVO.STYLE_REFERENCE != null">
+			AND EXISTS ( SELECT 1
+						 FROM SYS_PARAM_STYLE
+						 WHERE SYS_THEME_STYLE_ATTRIBUTE_VAL.STYLE_ID = SYS_PARAM_STYLE.STYLE_ID
+             			 AND STYLE_REFERENCE = #{styleVO.STYLE_REFERENCE,jdbcType=VARCHAR})
+		</if>
+	</sql>
+	
+	<sql id="queryCurrentActiveTheme">
+		SELECT *
+		FROM SYS_THEME S
+		WHERE S.IS_ACTIVE_YN = 1
+			AND ((S.APP_NAME = #{appName,jdbcType=VARCHAR} ) OR
+			( S.APP_NAME = 'IMAL' AND NOT EXISTS
+								(SELECT 1 FROM SYS_THEME S1 WHERE 
+									S1.IS_ACTIVE_YN = 1 AND S1.APP_NAME = #{appName,jdbcType=VARCHAR})))
+	</sql>
+	
+	<sql id="queryImageFromDB">
+		SELECT IMAGE
+		FROM SYS_THEME_STYLE_ATTRIBUTE_VAL
+		WHERE THEME_ID = #{themeVO.THEME_ID,jdbcType=NUMERIC}
+		AND STYLE_ID = (SELECT STYLE_ID 
+						FROM SYS_PARAM_STYLE
+						WHERE STYLE_TECH_NAME = #{styleVO.STYLE_TECH_NAME,jdbcType=VARCHAR})
+		AND ATTRIBUTE_CODE = 'bi'
+	</sql>
+	
+	<sql id="queryDeleteThemeDetails">
+		DELETE FROM SYS_THEME_STYLE_ATTRIBUTE_VAL
+		WHERE THEME_ID = #{themeID,jdbcType=NUMERIC}
+	</sql>
+	
+	<sql id="queryActivateUserTheme">
+		UPDATE SYS_THEME
+		SET IS_ACTIVE_YN = CASE WHEN THEME_ID <![CDATA[ <> ]]>  #{THEME_ID, jdbcType=NUMERIC} THEN 0 ELSE 1 END,
+		IS_UPDATED_YN = CASE WHEN THEME_ID = #{THEME_ID, jdbcType=NUMERIC} THEN 1 ELSE 0 END
+		WHERE APP_NAME = #{APP_NAME, jdbcType=VARCHAR}	
+	</sql>
+	
+	<sql id="queryDeactivateUserTheme">
+		UPDATE SYS_THEME
+		SET IS_ACTIVE_YN = 0, IS_UPDATED_YN = 1
+		WHERE  THEME_ID = #{themeId, jdbcType=NUMERIC}
+	</sql>
+	
+</mapper>

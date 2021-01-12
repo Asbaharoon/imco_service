@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RELIGION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RELIGIONVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="RELIGION_CODE" property="RELIGION_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="HAJ_IND" property="HAJ_IND" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="RAMADAN_IND" property="RAMADAN_IND" />
+    <result column="ZAKAT_IND" property="ZAKAT_IND" />
+    <result column="IDDAT_LEAVE_TYPE" property="IDDAT_LEAVE_TYPE" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, RELIGION_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, HAJ_IND, LONG_DESC_ENG, 
+    LONG_DESC_ARAB, RAMADAN_IND, ZAKAT_IND ,IDDAT_LEAVE_TYPE
+  </sql>
+  <select id="selectRELIGION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RELIGIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RELIGION
+    where COMP_CODE = #{COMP_CODE}
+      and RELIGION_CODE = #{RELIGION_CODE}
+  </select>
+  <delete id="deleteRELIGION" parameterType="com.path.dbmaps.vo.RELIGIONVOKey" >
+    delete from RELIGION
+    where COMP_CODE = #{COMP_CODE}
+      and RELIGION_CODE = #{RELIGION_CODE}
+  </delete>
+  <insert id="insertRELIGION" parameterType="com.path.dbmaps.vo.RELIGIONVO" >
+    insert into RELIGION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="RELIGION_CODE != null and RELIGION_CODE != emptyBigDecimalValue" >
+        RELIGION_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="HAJ_IND != null" >
+        HAJ_IND,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="RAMADAN_IND != null" >
+        RAMADAN_IND,
+      </if>
+      <if test="ZAKAT_IND != null" >
+        ZAKAT_IND,
+      </if>
+      <if test="IDDAT_LEAVE_TYPE != null" >
+        IDDAT_LEAVE_TYPE,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="RELIGION_CODE != null and RELIGION_CODE != emptyBigDecimalValue" >
+        #{RELIGION_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="HAJ_IND != null" >
+        #{HAJ_IND},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="RAMADAN_IND != null" >
+        #{RAMADAN_IND},
+      </if>
+        <if test="ZAKAT_IND != null" >
+        #{ZAKAT_IND},
+      </if>
+      <if test="IDDAT_LEAVE_TYPE != null" >
+        #{IDDAT_LEAVE_TYPE},
+      </if>
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateRELIGION" >
+    update RELIGION
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="HAJ_IND != null" >
+        HAJ_IND = #{HAJ_IND},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="RAMADAN_IND != null" >
+        RAMADAN_IND = #{RAMADAN_IND},
+      </if>
+       <if test="ZAKAT_IND != null" >
+        ZAKAT_IND = #{ZAKAT_IND},
+      </if>
+      <if test="IDDAT_LEAVE_TYPE != null" >
+        IDDAT_LEAVE_TYPE = #{IDDAT_LEAVE_TYPE},
+      </if>
+      
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and RELIGION_CODE = #{RELIGION_CODE}
+  </sql>
+  <update id="updateRELIGION" parameterType="com.path.dbmaps.vo.RELIGIONVO" >
+    <include refid="sql_updateRELIGION" />
+  </update>
+</mapper>

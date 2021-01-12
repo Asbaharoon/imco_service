@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AMF_ADVANCE_PROFIT_PAY_RATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AMF_ADVANCE_PROFIT_PAY_RATEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_SUB_NO" property="CIF_SUB_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="GL_CODE" property="GL_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SL_NO" property="SL_NO" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="RATE" property="RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_SUB_NO, COMP_CODE, CURRENCY_CODE, GL_CODE, LINE_NO, SL_NO, FROM_DATE, 
+    TO_DATE, RATE
+  </sql>
+  <select id="selectAMF_ADVANCE_PROFIT_PAY_RATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AMF_ADVANCE_PROFIT_PAY_RATEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from AMF_ADVANCE_PROFIT_PAY_RATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SL_NO = #{SL_NO}
+  </select>
+  <delete id="deleteAMF_ADVANCE_PROFIT_PAY_RATE" parameterType="com.path.dbmaps.vo.AMF_ADVANCE_PROFIT_PAY_RATEVO" >
+    delete from AMF_ADVANCE_PROFIT_PAY_RATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SL_NO = #{SL_NO}
+  </delete>
+  <insert id="insertAMF_ADVANCE_PROFIT_PAY_RATE" parameterType="com.path.dbmaps.vo.AMF_ADVANCE_PROFIT_PAY_RATEVO" >
+    insert into AMF_ADVANCE_PROFIT_PAY_RATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        CIF_SUB_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CIF_SUB_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        #{RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAMF_ADVANCE_PROFIT_PAY_RATE" >
+    update AMF_ADVANCE_PROFIT_PAY_RATE
+    <set >
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="RATE != null" >
+        <choose >
+          <when test="RATE == emptyBigDecimalValue" >
+            RATE = NULL ,
+          </when>
+          <otherwise >
+            RATE = #{RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and GL_CODE = #{GL_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SL_NO = #{SL_NO}
+  </sql>
+  <update id="updateAMF_ADVANCE_PROFIT_PAY_RATE" parameterType="com.path.dbmaps.vo.AMF_ADVANCE_PROFIT_PAY_RATEVO" >
+    <include refid="sql_updateAMF_ADVANCE_PROFIT_PAY_RATE" />
+  </update>
+</mapper>

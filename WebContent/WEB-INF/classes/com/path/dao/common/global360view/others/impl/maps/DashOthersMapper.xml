@@ -1,0 +1,1539 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashOthersMapper">
+	<sql id="remittancesQuery">
+		SELECT DISTINCT CTSTRS.BRANCH_CODE,
+			 CTSTRS.COMP_CODE,
+			 CTSTRS.CB_IND,
+			 CTSTRS.TRS_TYPE trsType,
+			CTSTRS.TRS_NO, 
+			CTSTRS.TRX_TYPE,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSTRS.TRS_TYPE
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) TRS_TYPE,
+			CASE WHEN #{langCode} = 'L' THEN CTSTRXTYPE.SHORT_DESC_ENG ELSE CTSTRXTYPE.SHORT_DESC_ARAB END SHORT_DESC_ENG,
+			CTSTRS.TRS_AC_BR,
+			CTSTRS.TRS_AC_CY,
+			CTSTRS.TRS_AC_GL,
+			CTSTRS.TRS_AC_CIF,
+			CTSTRS.TRS_AC_SL,
+			CTSTRS.ACC_ADDITIONAL_REFERENCE, 
+			(
+				SELECT CASE WHEN #{langCode} = 'L' THEN AMF.LONG_NAME_ENG ELSE AMF.LONG_NAME_ARAB END  
+				FROM AMF 
+				WHERE AMF.COMP_CODE = CTSTRS.COMP_CODE 
+				AND AMF.BRANCH_CODE = CTSTRS.TRS_AC_BR 
+				AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+				AND AMF.GL_CODE = CTSTRS.TRS_AC_GL 
+				AND AMF.CIF_SUB_NO = CTSTRS.TRS_AC_CIF
+				AND AMF.SL_NO = CTSTRS.TRS_AC_SL 
+			)  FROM_LONG_NAME_ENG,
+			CTSTRS.TO_TRS_AC_BR,
+			CTSTRS.TO_TRS_AC_CY,
+			CTSTRS.TO_TRS_AC_GL,
+			CTSTRS.TO_TRS_AC_CIF,
+			CTSTRS.TO_TRS_AC_SL,
+			CTSTRS.TO_ACC_ADD_REF, 
+			(
+				SELECT CASE WHEN #{langCode} = 'L' THEN AMF.LONG_NAME_ENG ELSE AMF.LONG_NAME_ARAB END  
+				FROM AMF
+				WHERE AMF.COMP_CODE = CTSTRS.COMP_CODE 
+				AND AMF.BRANCH_CODE = CTSTRS.TO_TRS_AC_BR 
+				AND AMF.CURRENCY_CODE = CTSTRS.TO_TRS_AC_CY
+				AND AMF.GL_CODE = CTSTRS.TO_TRS_AC_GL 
+				AND AMF.CIF_SUB_NO = CTSTRS.TO_TRS_AC_CIF
+				AND AMF.SL_NO = CTSTRS.TO_TRS_AC_SL 
+			) TO_LONG_NAME_ENG,
+			(CASE
+	            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+	             -CTSTRS.AMOUNT
+	            ELSE
+	             CTSTRS.AMOUNT
+	         END) AS AMOUNT,
+			(CASE
+	            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+	             -CTSTRS.TRS_AC_AMOUNT
+	            ELSE
+	             CTSTRS.TRS_AC_AMOUNT
+	         END) AS TRS_AC_AMOUNT,
+			(CASE
+	            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+	             -CTSTRS.CV_AMOUNT
+	            ELSE
+	             CTSTRS.CV_AMOUNT
+	         END) AS CV_AMOUNT,
+			CTSTRS.TRS_DATE,
+			CTSTRS.VALUE_DATE,
+		   (SELECT VALUE_DESC
+            FROM SYS_PARAM_LOV_TRANS 
+           	WHERE LOV_TYPE_ID = #{rmitStatusLov}
+             AND LANG_CODE = #{language}
+             AND VALUE_CODE = 'I') REMITTANCE_STATUS,
+            (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS, REMITTANCE
+	       	 WHERE REMITTANCE.REMITTANCE_TYPE = SYS_PARAM_LOV_TRANS.VALUE_CODE
+	       	 	AND REMITTANCE.COMP_CODE = CTSTRXTYPE.COMP_CODE
+				AND REMITTANCE.CODE = CTSTRXTYPE.REMITT_TYPE
+	       	 	AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovPeriodicity,jdbcType=NUMERIC}
+	       	   	AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language,jdbcType=VARCHAR}) REMITT_TYPE,
+          (SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+		FROM CTSTRS, CTSTRXTYPE  
+		WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE 
+		AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE
+		AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+		AND CTSTRS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		<if test="loginTypeByBr == 1">
+			AND CTSTRS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		</if>
+		AND CTSTRS.TRS_TYPE = 'R'
+		AND CTSTRS.CB_IND = 'C'
+		AND CTSTRS.STATUS = 'P'
+		<!-- AND CTSTRS.TRS_AC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+		AND (CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+		AND CTSTRXTYPE.CR_DR_FOREX = 'D' 
+		AND CTSTRS.LINKTOOTHER_TRXNO IS NULL
+		AND CASE WHEN CTSTRXTYPE.REMITT_TYPE IS NULL THEN 0 ELSE CTSTRXTYPE.REMITT_TYPE END > 0
+		AND EXISTS (SELECT 1
+					FROM REMITTANCE_INVENTORY R
+					WHERE R.COMP_CODE = CTSTRS.COMP_CODE
+						AND R.BRANCH_CODE = CTSTRS.BRANCH_CODE
+						AND R.COMP_CODE = CTSTRXTYPE.COMP_CODE
+						AND R.REMITTANCE_TYPE = CTSTRXTYPE.REMITT_TYPE
+						AND R.CURRENCY = CASE WHEN (CASE WHEN CTSTRS.REMITT_CY IS NULL THEN 'T' ELSE CTSTRS.REMITT_CY END) = 'T' THEN CTSTRS.TRS_CY ELSE 0 END
+						AND R.SEQ_NO IN (CASE WHEN CTSTRS.REMITTANCE_FR_NUM IS NULL THEN CTSTRS.REMITTANCE_TO_NUM ELSE CTSTRS.REMITTANCE_FR_NUM END,
+										 CASE WHEN CTSTRS.REMITTANCE_TO_NUM IS NULL THEN CTSTRS.REMITTANCE_FR_NUM ELSE CTSTRS.REMITTANCE_TO_NUM END)
+						AND R.REMITTANCE_TYPE IN (SELECT REMITTANCE.CODE 
+												FROM REMITTANCE 
+												WHERE REMITTANCE.COMP_CODE = R.COMP_CODE 
+													AND REMITTANCE.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+													AND REMITTANCE.REMITTANCE_TYPE IN ('DD' , 'PO' )
+												)
+						AND R.COMP_CODE   = #{compCode,jdbcType=NUMERIC}
+						AND R.BRANCH_CODE = CTSTRS.BRANCH_CODE
+						AND R.STATUS IN ('I')
+												 
+					)
+			<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">		
+			    AND NOT EXISTS
+	                   (SELECT 1
+	                  FROM CTSTELLER_ACC_HIDDEN_STATUSES,AMF A
+	                  WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}                  
+	                       AND (A.COMP_CODE = CTSTRS.COMP_CODE 
+	                       AND A.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+	                       AND A.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+	                       AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE
+	                       AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE 
+	                       AND CTSTRS.TRS_AC_GL = A.GL_CODE 
+	                       AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO 
+	                       AND CTSTRS.TRS_AC_SL = A.SL_NO
+	                       AND A.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	                     OR(CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode} 
+	                     	   AND A.COMP_CODE = CTSTRS.COMP_CODE 
+	                           AND A.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+		                       AND A.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+		                       AND CTSTRS.TO_TRS_AC_BR =A.BRANCH_CODE 
+		                       AND CTSTRS.TO_TRS_AC_CY = A.CURRENCY_CODE 
+		                       AND CTSTRS.TO_TRS_AC_GL = A.GL_CODE 
+		                       AND CTSTRS.TO_TRS_AC_CIF =A.CIF_SUB_NO 
+		                       AND CTSTRS.TO_TRS_AC_SL = A.SL_NO	
+		                       AND A.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	                )  
+             </if>
+		     AND NOT EXISTS
+			(SELECT 1
+			FROM 
+			ACC_RESTRICTED AccRest
+			 WHERE 
+			       (     CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND CTSTRS.TRS_AC_BR = AccRest.BRANCH_CODE 
+						 AND   CTSTRS.TRS_AC_CY = AccRest.CURRENCY_CODE 
+						 AND   CTSTRS.TRS_AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+						 AND  CTSTRS.TRS_AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+					  OR (
+					     CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND  CTSTRS.TO_TRS_AC_BR = AccRest.BRANCH_CODE 
+						 AND  CTSTRS.TO_TRS_AC_CY = AccRest.CURRENCY_CODE 
+						 AND   CTSTRS.TO_TRS_AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS.TO_TRS_AC_CIF = AccRest.CIF_SUB_NO 
+						 AND  CTSTRS.TO_TRS_AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+				)   
+
+	</sql>
+	
+	<resultMap id="remittancesListMap" type="dashOthersCO">
+	    <result property="ctstrsVO.COMP_CODE"					column="COMP_CODE"/>
+	    <result property="ctstrsVO.CB_IND"					    column="CB_IND"/>
+	    <result property="trsType"					            column="trsType"/>
+		<result property="ctstrsVO.BRANCH_CODE"					column="BRANCH_CODE"/>
+		<result property="ctstrsVO.TRS_NO"						column="TRS_NO"/>
+		<result property="ctstrsVO.TRX_TYPE"					column="TRX_TYPE"/>
+		<result property="trsStatusDesc"					column="trsStatusDesc"/>
+		<result property="ctstrsVO.TRS_TYPE"					column="TRS_TYPE"/>
+		<result property="ctstrxTypeVO.SHORT_DESC_ENG"			column="SHORT_DESC_ENG"/>
+		<result property="ctstrsVO.TRS_AC_BR"					column="TRS_AC_BR"/>
+		<result property="ctstrsVO.TRS_AC_CY"					column="TRS_AC_CY"/>
+		<result property="ctstrsVO.TRS_AC_GL"					column="TRS_AC_GL"/>
+		<result property="ctstrsVO.TRS_AC_CIF"					column="TRS_AC_CIF"/>
+		<result property="ctstrsVO.TRS_AC_SL"					column="TRS_AC_SL"/>
+		<result property="ctstrsVO.ACC_ADDITIONAL_REFERENCE"	column="ACC_ADDITIONAL_REFERENCE"/>
+		<result property="amfVO.LONG_NAME_ENG"					column="LONG_NAME_ENG"/>
+		<result property="ctstrsVO.TO_TRS_AC_BR"				column="TO_TRS_AC_BR"/>
+		<result property="ctstrsVO.TO_TRS_AC_CY"				column="TO_TRS_AC_CY"/>
+		<result property="ctstrsVO.TO_TRS_AC_GL"				column="TO_TRS_AC_GL"/>
+		<result property="ctstrsVO.TO_TRS_AC_CIF"				column="TO_TRS_AC_CIF"/>
+		<result property="ctstrsVO.TO_TRS_AC_SL"				column="TO_TRS_AC_SL"/>
+		<result property="ctstrsVO.TO_ACC_ADD_REF"				column="TO_ACC_ADD_REF"/>
+		<result property="amfVO1.LONG_NAME_ENG"					column="LONG_NAME_ENG"/>
+		<result property="ctstrsVO.AMOUNT"						column="AMOUNT"/>
+		<result property="ctstrsVO.TRS_AC_AMOUNT"				column="TRS_AC_AMOUNT"/>
+		<result property="ctstrsVO.CV_AMOUNT"					column="CV_AMOUNT"/>
+		<result property="ctstrsVO.TRS_DATE"					column="TRS_DATE"/>
+		<result property="ctstrsVO.VALUE_DATE"					column="VALUE_DATE"/>
+		<result property="remittanceStatus"						column="REMITTANCE_STATUS"/>
+		<result property="remittanceType"						column="REMITT_TYPE"/>
+		<result property="decimal_points"				        column="DECIMAL_POINTS"/>
+	</resultMap>
+	
+	<select id="remittancesList" parameterType="dashboardSC" resultMap="remittancesListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="remittancesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="remittancesListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="remittancesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="authorizedSigQuery">
+		SELECT 
+			CIF.AUTH_NAME NAME,
+			CIF.BRANCH_CODE,
+			ID_TYPES.DESC_ENG ID_TYPE,
+			CIF.AUTH_ID ID
+		FROM CIF, ID_TYPES
+		WHERE CIF.COMP_CODE = ID_TYPES.COMP_CODE
+			AND CIF.SIGNATORY_ID_TYPE = ID_TYPES.CODE
+			AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<!--AND CIF.CIF_NO = #{cif_no,jdbcType=NUMERIC}-->
+			AND (CIF.CIF_NO  IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+		
+		UNION ALL
+		
+		SELECT
+			CIF_AUTH_SIGNATORY.AUTH_NAME NAME,
+			CIF.BRANCH_CODE,
+			ID_TYPES.DESC_ENG ID_TYPE,
+			CIF_AUTH_SIGNATORY.ID_NO ID
+		FROM CIF, CIF_AUTH_SIGNATORY, ID_TYPES
+		WHERE CIF.COMP_CODE = CIF_AUTH_SIGNATORY.COMP_CODE
+			AND CIF.CIF_NO = CIF_AUTH_SIGNATORY.CIF_NO
+			AND CIF_AUTH_SIGNATORY.DETAILS_TYPE = 'S'
+			AND CIF_AUTH_SIGNATORY.COMP_CODE = ID_TYPES.COMP_CODE
+			AND CIF_AUTH_SIGNATORY.ID_TYPE = ID_TYPES.CODE
+			AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<!-- AND CIF.CIF_NO = #{cif_no,jdbcType=NUMERIC}-->
+			AND (CIF.CIF_NO  IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+	</sql>
+	
+	<resultMap id="authorizedSigListMap" type="dashOthersCO">
+		<result property="cifVO.BRANCH_CODE"	column="BRANCH_CODE"/>
+		<result property="cifVO.AUTH_NAME"		column="NAME"/>
+		<result property="idTypesVO.DESC_ENG"	column="ID_TYPE"/>
+		<result property="cifVO.AUTH_ID"		column="ID"/>
+	</resultMap>
+	
+	<select id="authorizedSigList" parameterType="dashboardSC" resultMap="authorizedSigListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="authorizedSigQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="authorizedSigListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="authorizedSigQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="specialCondAccQuery">
+		SELECT 
+			CTSSPCOND.LINE_NO,
+			CTSSPCOND.ACC_BR ACC_BRANCH,
+			CTSSPCOND.ACC_CY ACC_CURRENCY,
+			CTSSPCOND.ACC_GL ACC_GL,
+			CTSSPCOND.ACC_CIF ACC_CIF,
+			CTSSPCOND.ACC_SL ACC_SL,
+			AMF.ADDITIONAL_REFERENCE,
+			AMF.BRIEF_NAME_ENG ACC_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSSPCOND.FORBID_TRX
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) FORBID_RESTRICT_TRX,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSSPCOND.FORBID_PRODUCT
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovPeriodicity,jdbcType=NUMERIC}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) FORBID_PRODUCT,
+			(SELECT CASE WHEN #{language} = 'AR' THEN CTSREASONS.BRIEF_NAME_ARAB ELSE CTSREASONS.BRIEF_NAME_ENG END  FROM CTSREASONS WHERE CTSREASONS.COMP_CODE = CTSSPCOND.COMP_CODE AND CTSREASONS.CODE = CTSSPCOND.REASON_CODE) REASON,
+			CTSSPCOND.STARTING_DATE STARTING_DATE,
+			CTSSPCOND.EXPIRY_DATE EXPIRY_DATE,
+			CTSSPCOND.ALLOW_SO ALLOW_SO
+		FROM CTSSPCOND, AMF	
+		WHERE CTSSPCOND.COMP_CODE = AMF.COMP_CODE
+        	AND CTSSPCOND.ACC_BR = AMF.BRANCH_CODE
+          	AND CTSSPCOND.ACC_CY = AMF.CURRENCY_CODE
+          	AND CTSSPCOND.ACC_GL = AMF.GL_CODE
+          	AND CTSSPCOND.ACC_CIF = AMF.CIF_SUB_NO
+          	AND CTSSPCOND.ACC_SL = AMF.SL_NO
+      		AND CTSSPCOND.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+      		<if test="loginTypeByBr == 1">
+				AND CTSSPCOND.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+      		<!-- AND CTSSPCOND.ACC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+      		AND (CTSSPCOND.ACC_CIF  IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+      		AND CTSSPCOND.ENTITY_TYPE = 'A'
+      		AND CTSSPCOND.STATUS <![CDATA[<>]]> 'D'
+      		<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+	      		AND NOT EXISTS
+	 		(SELECT 1
+	          FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	         WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+	           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	           AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+           </if>
+           
+      	    AND NOT EXISTS (
+            SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF.SL_NO = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+	</sql>
+	
+	<select id="specialCondAccList" parameterType="dashboardSC" resultMap="specialCondListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="specialCondAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="specialCondAccListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="specialCondAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="specialCondCifQuery">
+		SELECT 
+		    CTSSPCOND.LINE_NO,
+			CTSSPCOND.CIF_NO CIF_NO,
+			CIF.SHORT_NAME_ENG CIF_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTSSPCOND.FORBID_TRX
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) FORBID_RESTRICT_TRX,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSSPCOND.FORBID_PRODUCT
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovPeriodicity,jdbcType=NUMERIC}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) FORBID_PRODUCT,
+			(SELECT CASE WHEN #{language} = 'AR' THEN CTSREASONS.BRIEF_NAME_ARAB ELSE CTSREASONS.BRIEF_NAME_ENG END  FROM CTSREASONS WHERE CTSREASONS.COMP_CODE = CTSSPCOND.COMP_CODE AND CTSREASONS.CODE = CTSSPCOND.REASON_CODE) REASON,
+			CTSSPCOND.STARTING_DATE STARTING_DATE,
+			CTSSPCOND.EXPIRY_DATE EXPIRY_DATE,
+			CTSSPCOND.ALLOW_SO ALLOW_SO
+		FROM CTSSPCOND, CIF
+		WHERE CTSSPCOND.COMP_CODE = CIF.COMP_CODE 
+			AND CTSSPCOND.CIF_NO = CIF.CIF_NO 
+			AND CTSSPCOND.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND CTSSPCOND.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND CTSSPCOND.STATUS <![CDATA[<>]]> 'D'
+			<!-- AND CTSSPCOND.CIF_NO = #{cif_no,jdbcType=NUMERIC}-->
+			 AND (CTSSPCOND.CIF_NO  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+			AND CTSSPCOND.ENTITY_TYPE = 'C'
+	</sql>
+	
+	<select id="specialCondCifList" parameterType="dashboardSC" resultMap="specialCondListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="specialCondCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="specialCondCifListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="specialCondCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<resultMap id="specialCondListMap" type="dashOthersCO">
+	    <result property="ctsSpCondVO.LINE_NO"			column="LINE_NO"/>
+		<result property="ctsSpCondVO.CIF_NO"			column="CIF_NO"/>
+		<result property="cifVO.SHORT_NAME_ENG"			column="CIF_NAME"/>
+		<result property="ctsSpCondVO.ACC_BR"			column="ACC_BRANCH"/>
+		<result property="ctsSpCondVO.ACC_CY"			column="ACC_CURRENCY"/>
+		<result property="ctsSpCondVO.ACC_GL"			column="ACC_GL"/>
+		<result property="ctsSpCondVO.ACC_CIF"			column="ACC_CIF"/>
+		<result property="ctsSpCondVO.ACC_SL"			column="ACC_SL"/>
+		<result property="amfVO.ADDITIONAL_REFERENCE"   column="ADDITIONAL_REFERENCE"/>
+		<result property="amfVO.BRIEF_NAME_ENG"			column="ACC_NAME"/>
+		<result property="ctsSpCondVO.FORBID_TRX"		column="FORBID_RESTRICT_TRX"/>
+		<result property="ctsSpCondVO.FORBID_PRODUCT"	column="FORBID_PRODUCT"/>
+		<result property="ctsSpCondVO.REASON_ENG"		column="REASON"/>
+		<result property="ctsSpCondVO.STARTING_DATE"	column="STARTING_DATE"/>
+		<result property="ctsSpCondVO.EXPIRY_DATE"		column="EXPIRY_DATE"/>
+		<result property="ctsSpCondVO.ALLOW_SO"			column="ALLOW_SO"/>
+	</resultMap>
+	
+	<select id="returnLinksExistanceQueryList" resultMap="returnLinksExistanceQueryListMap" parameterType="dashboardSC">
+		SELECT 
+			(SELECT COUNT(1) 
+			FROM S_LINK_CIF_AMF, S_LINK
+			WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+				AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+				AND	S_LINK.LINK_TO_CIF = 0
+				AND	S_LINK.LINK_TO_AMF = 0
+				AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				<!-- AND	(S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				AND (
+				( S_LINK_CIF_AMF.FROM_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                                          
+					OR
+					<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC})-->
+					 (S_LINK_CIF_AMF.TO_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+				AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			) CIF_CIF_LINKS_EXISTS,
+			(SELECT COUNT(1) 
+			FROM S_LINK_CIF_AMF, S_LINK
+			WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+				AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+				AND	S_LINK.LINK_TO_CIF = 0
+				AND	S_LINK.LINK_TO_AMF = 1
+				AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				AND	(
+				<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				(S_LINK_CIF_AMF.FROM_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+					OR
+					<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+					(S_LINK_CIF_AMF.TO_CIF  IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+				AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			) CIF_ACC_LINKS_EXISTS,
+			(SELECT COUNT(1) 
+			FROM S_LINK_CIF_AMF, S_LINK
+			WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+				AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+				AND	S_LINK.LINK_TO_CIF = 1
+				AND	S_LINK.LINK_TO_AMF = 0
+				AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				AND	(
+				<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				 (S_LINK_CIF_AMF.FROM_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                                          
+					
+					OR
+					
+					<!--S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+					 ( S_LINK_CIF_AMF.TO_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+				AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			) ACC_CIF_LINKS_EXISTS,
+			(SELECT COUNT(1) 
+			FROM S_LINK_CIF_AMF, S_LINK
+			WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+				AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+				AND	S_LINK.LINK_TO_CIF = 1
+				AND	S_LINK.LINK_TO_AMF = 1
+				AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				AND	(
+				
+				
+				<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				(S_LINK_CIF_AMF.FROM_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                                          
+				
+					OR
+					<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+					( S_LINK_CIF_AMF.TO_CIF IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+				AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			) ACC_ACC_LINKS_EXISTS
+		FROM DUAL
+	</select>
+	
+	<resultMap id="returnLinksExistanceQueryListMap" type="dashOthersCO">
+		<result property="isCifCif"		column="CIF_CIF_LINKS_EXISTS"/>
+		<result property="isCifAcc"		column="CIF_ACC_LINKS_EXISTS"/>
+		<result property="isAccCif"		column="ACC_CIF_LINKS_EXISTS"/>
+		<result property="isAccAcc"		column="ACC_ACC_LINKS_EXISTS"/>
+	</resultMap>
+	
+	<sql id="linksCifCifQuery">
+		SELECT 
+			S_LINK_CIF_AMF.LINK_CODE CODE,
+			S_LINK_CIF_AMF.LINK_SERIAL SERIAL,
+			S_LINK_CIF_AMF.BRIEF_DESC_ENG BRIEF_NAME,
+			S_LINK_CIF_AMF.FROM_CIF FROM_CIF_NO,
+			CIF.SHORT_NAME_ENG FROM_CIF_NAME,
+			S_LINK_CIF_AMF.TO_CIF TO_CIF_NO,
+			CIF1.SHORT_NAME_ENG TO_CIF_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = S_LINK_CIF_AMF.STATUS
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) STATUS
+		FROM S_LINK_CIF_AMF, S_LINK, CIF, CIF CIF1
+		WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+			AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+			AND	S_LINK.LINK_TO_CIF = 0
+			AND	S_LINK.LINK_TO_AMF = 0
+			AND	S_LINK_CIF_AMF.COMP_CODE = CIF.COMP_CODE
+			AND	S_LINK_CIF_AMF.FROM_CIF = CIF.CIF_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = CIF1.COMP_CODE
+			AND	S_LINK_CIF_AMF.TO_CIF = CIF1.CIF_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND	(
+			<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+			(S_LINK_CIF_AMF.FROM_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                                          
+				OR
+				<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				(S_LINK_CIF_AMF.TO_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+			AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			AND NOT EXISTS (
+	        SELECT 1 FROM 
+				ACC_RESTRICTED AccRest
+	            WHERE 
+	             (
+	             S_LINK_CIF_AMF.COMP_CODE = AccRest.COMP_CODE  
+	          	 AND  S_LINK_CIF_AMF.FROM_BR = AccRest.BRANCH_CODE 
+				 AND  S_LINK_CIF_AMF.FROM_CY = AccRest.CURRENCY_CODE 
+				 AND  S_LINK_CIF_AMF.FROM_GL = AccRest.GL_CODE 
+				 AND  S_LINK_CIF_AMF.FROM_CIF = AccRest.CIF_SUB_NO 
+				 AND  S_LINK_CIF_AMF.FROM_SL = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )
+				 OR
+				 (
+				 S_LINK_CIF_AMF.COMP_CODE = AccRest.COMP_CODE  
+	          	 AND  S_LINK_CIF_AMF.TO_BR = AccRest.BRANCH_CODE 
+				 AND  S_LINK_CIF_AMF.TO_CY = AccRest.CURRENCY_CODE 
+				 AND  S_LINK_CIF_AMF.TO_GL = AccRest.GL_CODE 
+				 AND  S_LINK_CIF_AMF.TO_CIF = AccRest.CIF_SUB_NO 
+				 AND  S_LINK_CIF_AMF.TO_SL = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )
+		)
+	</sql>
+	
+	<select id="linksCifCifList" parameterType="dashboardSC" resultMap="linksListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="linksCifCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="linksCifCifListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="linksCifCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="linksAccAccQuery">
+		SELECT 
+			S_LINK_CIF_AMF.LINK_CODE CODE,
+			S_LINK_CIF_AMF.LINK_SERIAL SERIAL,
+			S_LINK_CIF_AMF.BRIEF_DESC_ENG BRIEF_NAME,
+			S_LINK_CIF_AMF.FROM_BR FROM_BRANCH,
+			S_LINK_CIF_AMF.FROM_CY FROM_CURRENCY,
+			S_LINK_CIF_AMF.FROM_GL FROM_GL,
+			S_LINK_CIF_AMF.FROM_CIF FROM_CIF,
+			S_LINK_CIF_AMF.FROM_SL FROM_SL,
+			AMF.BRIEF_NAME_ENG FROM_NAME,
+			S_LINK_CIF_AMF.TO_BR TO_BRANCH,
+			S_LINK_CIF_AMF.TO_CY TO_CURRENCY,
+			S_LINK_CIF_AMF.TO_GL TO_GL,
+			S_LINK_CIF_AMF.TO_CIF TO_CIF,
+			S_LINK_CIF_AMF.TO_SL TO_SL,
+			AMF1.ADDITIONAL_REFERENCE TO_ADD_REFERENCE,
+			AMF1.BRIEF_NAME_ENG TO_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = S_LINK_CIF_AMF.STATUS
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) STATUS
+		FROM S_LINK_CIF_AMF, S_LINK, AMF, AMF AMF1
+		WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+		AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+		AND	S_LINK.LINK_TO_CIF = 1
+		AND	S_LINK.LINK_TO_AMF = 1
+		AND	S_LINK_CIF_AMF.COMP_CODE = AMF.COMP_CODE
+		AND	S_LINK_CIF_AMF.FROM_BR = AMF.BRANCH_CODE
+		AND	S_LINK_CIF_AMF.FROM_CY = AMF.CURRENCY_CODE
+		AND	S_LINK_CIF_AMF.FROM_GL = AMF.GL_CODE
+		AND	S_LINK_CIF_AMF.FROM_CIF	= AMF.CIF_SUB_NO
+		AND	S_LINK_CIF_AMF.FROM_SL = AMF.SL_NO
+		AND	S_LINK_CIF_AMF.COMP_CODE = AMF1.COMP_CODE
+		AND	S_LINK_CIF_AMF.TO_BR = AMF1.BRANCH_CODE
+		AND	S_LINK_CIF_AMF.TO_CY = AMF1.CURRENCY_CODE
+		AND	S_LINK_CIF_AMF.TO_GL = AMF1.GL_CODE
+		AND	S_LINK_CIF_AMF.TO_CIF = AMF1.CIF_SUB_NO
+		AND	S_LINK_CIF_AMF.TO_SL = AMF1.SL_NO
+		AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND	(
+		<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+		(S_LINK_CIF_AMF.FROM_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                                          
+			OR
+			<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC})-->
+			(S_LINK_CIF_AMF.TO_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+                                                          
+		AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+		<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+			AND NOT EXISTS
+	         (SELECT 1
+	                  FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	                 WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode} 
+	                       AND (AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+	                       AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+	                       AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	                    OR (CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	                    	AND AMF1.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+	                        AND AMF1.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+	                        AND AMF1.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	          )
+		</if>
+		
+		AND NOT EXISTS (
+        SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE 
+             (AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF.SL_NO = AccRest.SL_NO )
+			 OR 
+			 (
+			 AMF1.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF1.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF1.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF1.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF1.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF1.SL_NO = AccRest.SL_NO
+			 )
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+			 
+	</sql>
+	
+	<select id="linksAccAccList" parameterType="dashboardSC" resultMap="linksListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="linksAccAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="linksAccAccListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="linksAccAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="linksAccCifQuery">
+		SELECT 
+			S_LINK_CIF_AMF.LINK_CODE CODE,
+			S_LINK_CIF_AMF.LINK_SERIAL SERIAL,
+			S_LINK_CIF_AMF.BRIEF_DESC_ENG BRIEF_NAME,
+			S_LINK_CIF_AMF.FROM_BR FROM_BRANCH,
+			S_LINK_CIF_AMF.FROM_CY FROM_CURRENCY,
+			S_LINK_CIF_AMF.FROM_GL FROM_GL,
+			S_LINK_CIF_AMF.FROM_CIF FROM_CIF,
+			S_LINK_CIF_AMF.FROM_SL FROM_SL,
+			AMF.ADDITIONAL_REFERENCE FROM_ADD_REFERENCE,
+			AMF.BRIEF_NAME_ENG FROM_NAME,
+			S_LINK_CIF_AMF.TO_CIF TO_CIF_NO,
+			CIF.SHORT_NAME_ENG TO_CIF_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = S_LINK_CIF_AMF.STATUS
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) STATUS
+		FROM S_LINK_CIF_AMF, S_LINK, CIF, AMF
+		WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+			AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+			AND	S_LINK.LINK_TO_CIF = 1
+			AND	S_LINK.LINK_TO_AMF = 0
+			AND	S_LINK_CIF_AMF.COMP_CODE = CIF.COMP_CODE
+			AND	S_LINK_CIF_AMF.TO_CIF = CIF.CIF_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = AMF.COMP_CODE
+			AND	S_LINK_CIF_AMF.FROM_BR = AMF.BRANCH_CODE
+			AND	S_LINK_CIF_AMF.FROM_CY = AMF.CURRENCY_CODE
+			AND	S_LINK_CIF_AMF.FROM_GL = AMF.GL_CODE
+			AND	S_LINK_CIF_AMF.FROM_CIF = AMF.CIF_SUB_NO
+			AND	S_LINK_CIF_AMF.FROM_SL = AMF.SL_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND	(
+			<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+						(S_LINK_CIF_AMF.FROM_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+				OR
+				<!--S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+									(S_LINK_CIF_AMF.TO_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+			AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+				AND NOT EXISTS
+	         (SELECT 1
+	                  FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	                 WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode} 
+	                       AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+	                       AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+	                       AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	          )
+			</if>
+			
+			  AND NOT EXISTS (
+             SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  S_LINK_CIF_AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  S_LINK_CIF_AMF.FROM_BR = AccRest.BRANCH_CODE 
+			 AND  S_LINK_CIF_AMF.FROM_CY  = AccRest.CURRENCY_CODE 
+			 AND  S_LINK_CIF_AMF.FROM_GL  = AccRest.GL_CODE 
+			 AND  S_LINK_CIF_AMF.FROM_CIF  = AccRest.CIF_SUB_NO 
+			 AND  S_LINK_CIF_AMF.FROM_SL = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+			 
+	</sql>
+	
+	<select id="linksAccCifList" parameterType="dashboardSC" resultMap="linksListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="linksAccCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="linksAccCifListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="linksAccCifQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="linksCifAccQuery">
+		SELECT 
+			S_LINK_CIF_AMF.LINK_CODE CODE,
+			S_LINK_CIF_AMF.LINK_SERIAL SERIAL,
+			S_LINK_CIF_AMF.BRIEF_DESC_ENG BRIEF_NAME,
+			S_LINK_CIF_AMF.FROM_CIF FROM_CIF_NO,
+			CIF.SHORT_NAME_ENG FROM_CIF_NAME,
+			S_LINK_CIF_AMF.TO_BR TO_BRANCH,
+			S_LINK_CIF_AMF.TO_CY TO_CURRENCY,
+			S_LINK_CIF_AMF.TO_GL TO_GL,
+			S_LINK_CIF_AMF.TO_CIF TO_CIF,
+			S_LINK_CIF_AMF.TO_SL TO_SL,
+			AMF.ADDITIONAL_REFERENCE TO_ADD_REFERENCE,
+			AMF.BRIEF_NAME_ENG TO_NAME,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = S_LINK_CIF_AMF.STATUS
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) STATUS
+		FROM S_LINK_CIF_AMF, S_LINK, CIF, AMF
+		WHERE S_LINK_CIF_AMF.COMP_CODE = S_LINK.COMP_CODE
+			AND S_LINK_CIF_AMF.LINK_CODE = S_LINK.LINK_CODE
+			AND	S_LINK.LINK_TO_CIF = 0
+			AND	S_LINK.LINK_TO_AMF = 1
+			AND	S_LINK_CIF_AMF.COMP_CODE = CIF.COMP_CODE
+			AND	S_LINK_CIF_AMF.FROM_CIF	= CIF.CIF_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = AMF.COMP_CODE
+			AND	S_LINK_CIF_AMF.TO_BR = AMF.BRANCH_CODE
+			AND	S_LINK_CIF_AMF.TO_CY = AMF.CURRENCY_CODE
+			AND	S_LINK_CIF_AMF.TO_GL = AMF.GL_CODE
+			AND	S_LINK_CIF_AMF.TO_CIF = AMF.CIF_SUB_NO
+			AND	S_LINK_CIF_AMF.TO_SL = AMF.SL_NO
+			AND	S_LINK_CIF_AMF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND	(
+			<!-- S_LINK_CIF_AMF.FROM_CIF = #{cif_no,jdbcType=NUMERIC}-->
+			(S_LINK_CIF_AMF.FROM_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+				OR
+				<!-- S_LINK_CIF_AMF.TO_CIF = #{cif_no,jdbcType=NUMERIC}-->
+				(S_LINK_CIF_AMF.TO_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+			AND S_LINK_CIF_AMF.STATUS <![CDATA[<>]]> 'D'
+			<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+			 AND NOT EXISTS
+	         (SELECT 1
+	                  FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	                 WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}  
+	                       AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+	                       AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	                       AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	                )
+			</if>
+			
+			  AND NOT EXISTS (
+            SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  S_LINK_CIF_AMF.COMP_CODE  = AccRest.COMP_CODE  
+          	 AND  S_LINK_CIF_AMF.TO_BR  = AccRest.BRANCH_CODE 
+			 AND  S_LINK_CIF_AMF.TO_CY  = AccRest.CURRENCY_CODE 
+			 AND  S_LINK_CIF_AMF.TO_GL = AccRest.GL_CODE 
+			 AND  S_LINK_CIF_AMF.TO_CIF = AccRest.CIF_SUB_NO 
+			 AND  S_LINK_CIF_AMF.TO_SL = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 AND S_LINK_CIF_AMF.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+			 )
+			  
+	</sql>
+	
+	<select id="linksCifAccList" parameterType="dashboardSC" resultMap="linksListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="linksCifAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="linksCifAccListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="linksCifAccQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<resultMap id="linksListMap" type="dashOthersCO">
+		<result property="sLinkCifAmfVO.LINK_CODE"		column="CODE"/>
+		<result property="sLinkCifAmfVO.LINK_SERIAL"	column="SERIAL"/>
+		<result property="sLinkCifAmfVO.BRIEF_DESC_ENG"	column="BRIEF_NAME"/>
+		<result property="sLinkCifAmfVO.FROM_CIF"		column="FROM_CIF_NO"/>
+		<result property="cifVO.SHORT_NAME_ENG"			column="FROM_CIF_NAME"/>
+		<result property="sLinkCifAmfVO.TO_CIF"			column="TO_CIF_NO"/>
+		<result property="cifVO1.SHORT_NAME_ENG"		column="TO_CIF_NAME"/>
+		<result property="sLinkCifAmfVO.FROM_BR"		column="FROM_BRANCH"/>
+		<result property="sLinkCifAmfVO.FROM_CY"		column="FROM_CURRENCY"/>
+		<result property="sLinkCifAmfVO.FROM_GL"		column="FROM_GL"/>
+		<result property="sLinkCifAmfVO.FROM_CIF"		column="FROM_CIF"/>
+		<result property="sLinkCifAmfVO.FROM_SL"		column="FROM_SL"/>
+		<result property="from_add_reference"			column="FROM_ADD_REFERENCE"/>
+		<result property="amfVO.BRIEF_NAME_ENG"			column="FROM_NAME"/>
+		<result property="sLinkCifAmfVO.TO_BR"			column="TO_BRANCH"/>
+		<result property="sLinkCifAmfVO.TO_CY"			column="TO_CURRENCY"/>
+		<result property="sLinkCifAmfVO.TO_GL"			column="TO_GL"/>
+		<result property="sLinkCifAmfVO.TO_CIF"			column="TO_CIF"/>
+		<result property="sLinkCifAmfVO.TO_SL"			column="TO_SL"/>
+		<result property="to_add_reference"	            column="TO_ADD_REFERENCE"/>
+		<result property="amfVO1.BRIEF_NAME_ENG"		column="TO_NAME"/>
+		<result property="sLinkCifAmfVO.STATUS"			column="STATUS"/>
+	</resultMap>
+	
+	<sql id="soSelectQuery">
+		SELECT CTSTRS.COMP_CODE,
+		    CTSTRS.TRS_TYPE,
+			CTSTRS.CB_IND, 
+			CTSTRS.BRANCH_CODE,
+			CTSTRS.TRS_NO,
+			CTSTRS.TRX_TYPE,
+			( SELECT VALUE_DESC 
+				FROM SYS_PARAM_LOV_TRANS 
+				WHERE LOV_TYPE_ID = #{trsStatusLovType,jdbcType=NUMERIC}
+					AND LANG_CODE = #{language,jdbcType=VARCHAR}
+		            AND VALUE_CODE = CTSTRS.STATUS 
+	         ) trsStatusDesc,			
+			CTSTRXTYPE.SHORT_DESC_ENG,
+			CTSTRS.TRS_AC_BR,
+			CTSTRS.TRS_AC_CY,
+			CTSTRS.TRS_AC_GL,
+			CTSTRS.TRS_AC_CIF,
+			CTSTRS.TRS_AC_SL,
+			A.BRIEF_NAME_ENG,
+			A.ADDITIONAL_REFERENCE,
+			CTSTRS.TO_TRS_AC_BR,
+			CTSTRS.TO_TRS_AC_CY,
+			CTSTRS.TO_TRS_AC_GL,
+			CTSTRS.TO_TRS_AC_CIF,
+			CTSTRS.TO_TRS_AC_SL,
+			B.BRIEF_NAME_ENG TO_BRIEF_NAME_ENG,
+			B.ADDITIONAL_REFERENCE TO_ADDITIONAL_REFERENCE,
+           (CASE
+             WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+             ELSE
+             CTSTRS.AMOUNT
+             END) AS AMOUNT,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSTRXTYPE.SO_PROCESS_TYPE
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) SO_PROCESS_TYPE,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	       	 FROM SYS_PARAM_LOV_TRANS
+	       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSTRS.SO_PERIODICITY
+	       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovPeriodicity}
+	       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{language}) SO_PERIODICITY,
+			CTSTRS.VALUE_DATE as startDate,
+			CTSTRS.RELEASE_DATE as endDate,
+	        (SELECT C.DECIMAL_POINTS
+	           FROM CURRENCIES C
+	          WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+	            AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	</sql>
+	
+	<sql id="soFromQuery1">
+		FROM CTSTRS LEFT JOIN AMF B ON CTSTRS.COMP_CODE = B.COMP_CODE
+			AND CTSTRS.TO_TRS_AC_BR = B.BRANCH_CODE
+			AND CTSTRS.TO_TRS_AC_CY = B.CURRENCY_CODE
+			AND CTSTRS.TO_TRS_AC_GL = B.GL_CODE
+			AND CTSTRS.TO_TRS_AC_CIF = B.CIF_SUB_NO
+			AND CTSTRS.TO_TRS_AC_SL = B.SL_NO, 
+			CTSTRXTYPE, AMF A
+		WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	  		AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE
+	     	AND CTSTRS.COMP_CODE = A.COMP_CODE
+			AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE
+			AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE
+			AND CTSTRS.TRS_AC_GL = A.GL_CODE
+			AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO
+			AND CTSTRS.TRS_AC_SL = A.SL_NO
+     		AND CTSTRXTYPE.STANDING_ORDER = '1'
+			AND CTSTRS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND CTSTRS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND CTSTRS.TRS_TYPE = 'R'
+			AND CTSTRS.CB_IND = 'C'
+			AND CTSTRS.STATUS NOT IN ('D')
+			<!-- AND CTSTRS.TRS_AC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+			AND (CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+			<if test=' trsStatus !=null and "T".equals(trsStatus)'>
+				AND CTSTRS.STATUS = 'T'
+			</if>
+			<if test='trsStatus != null and  "O".equals(trsStatus)'>
+				AND CTSTRS.STATUS <![CDATA[<>]]> 'T'
+			</if>
+	</sql>
+	
+	<sql id="soFromQuery2">
+		FROM CTSTRS LEFT JOIN AMF B ON CTSTRS.COMP_CODE = B.COMP_CODE
+			AND CTSTRS.TO_TRS_AC_BR = B.BRANCH_CODE
+			AND CTSTRS.TO_TRS_AC_CY = B.CURRENCY_CODE
+			AND CTSTRS.TO_TRS_AC_GL = B.GL_CODE
+			AND CTSTRS.TO_TRS_AC_CIF = B.CIF_SUB_NO
+			AND CTSTRS.TO_TRS_AC_SL = B.SL_NO, 
+			CTSTRXTYPE, AMF A
+		WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	  		AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE
+	     	AND CTSTRS.COMP_CODE = A.COMP_CODE
+			AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE
+			AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE
+			AND CTSTRS.TRS_AC_GL = A.GL_CODE
+			AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO
+			AND CTSTRS.TRS_AC_SL = A.SL_NO
+     		AND CTSTRXTYPE.STANDING_ORDER = '1'
+			AND CTSTRS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND CTSTRS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND CTSTRS.TRS_TYPE = 'R'
+			AND CTSTRS.CB_IND = 'C'
+			AND CTSTRS.STATUS NOT IN ( 'D')
+		<!-- 	AND CTSTRS.TO_TRS_AC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+		AND (CTSTRS.TO_TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+			<if test=' trsStatus !=null and "T".equals(trsStatus)'>
+				AND CTSTRS.STATUS = 'T'
+			</if>
+			<if test='trsStatus != null and  "O".equals(trsStatus)'>
+				AND CTSTRS.STATUS <![CDATA[<>]]> 'T'
+			</if>
+	</sql>
+	
+	<sql id="soFromQuery3">
+		FROM CTSTRS, CTSTRS_ACC_DET
+        LEFT JOIN AMF B ON CTSTRS_ACC_DET.COMP_CODE = B.COMP_CODE
+                       AND CTSTRS_ACC_DET.AC_BR = B.BRANCH_CODE
+                       AND CTSTRS_ACC_DET.AC_CY = B.CURRENCY_CODE
+                       AND CTSTRS_ACC_DET.AC_GL = B.GL_CODE
+                       AND CTSTRS_ACC_DET.AC_CIF = B.CIF_SUB_NO
+                       AND CTSTRS_ACC_DET.AC_SL = B.SL_NO,
+       CTSTRXTYPE, AMF A
+		WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+			AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE
+			AND CTSTRS.COMP_CODE = A.COMP_CODE
+			AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE
+			AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE
+			AND CTSTRS.TRS_AC_GL = A.GL_CODE
+			AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO
+			AND CTSTRS.TRS_AC_SL = A.SL_NO
+			AND CTSTRXTYPE.STANDING_ORDER = '1'
+			AND CTSTRS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND CTSTRS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND CTSTRS.TRS_TYPE = 'R'
+			AND CTSTRS.CB_IND = 'C'
+			AND CTSTRS.STATUS NOT IN ( 'D')
+
+			AND CTSTRS_ACC_DET.COMP_CODE = CTSTRS.COMP_CODE
+			AND CTSTRS_ACC_DET.BRANCH_CODE = CTSTRS.BRANCH_CODE
+			AND CTSTRS_ACC_DET.TRS_TYPE = CTSTRS.TRS_TYPE
+			AND CTSTRS_ACC_DET.CB_IND = CTSTRS.CB_IND
+			AND CTSTRS_ACC_DET.TRS_NO = CTSTRS.TRS_NO
+			<!-- AND CTSTRS_ACC_DET.AC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+			AND ( CTSTRS_ACC_DET.AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+			<if test=' trsStatus !=null and "T".equals(trsStatus)'>
+				AND CTSTRS.STATUS = 'T'
+			</if>
+			<if test='trsStatus != null and  "O".equals(trsStatus)'>
+				AND CTSTRS.STATUS <![CDATA[<>]]> 'T'
+			</if>
+	</sql>
+	
+	<sql id="soCommonFilter">
+		<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">				
+			AND NOT EXISTS
+	         (SELECT 1
+	          FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	          WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}                   
+	                AND(
+	                	A.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+		                AND A.BRANCH_CODE= CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+		                AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE 
+		                AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE 
+		                AND CTSTRS.TRS_AC_GL = A.GL_CODE 
+		                AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO 
+		                AND CTSTRS.TRS_AC_SL = A.SL_NO
+		               	AND A.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	            	OR(CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	            		AND B.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+		                AND B.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+		                AND CTSTRS.TO_TRS_AC_BR = B.BRANCH_CODE 
+		                AND CTSTRS.TO_TRS_AC_CY = B.CURRENCY_CODE 
+		                AND CTSTRS.TO_TRS_AC_GL = B.GL_CODE 
+		                AND CTSTRS.TO_TRS_AC_CIF = B.CIF_SUB_NO 
+		                AND CTSTRS.TO_TRS_AC_SL = B.SL_NO
+		                AND B.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	                )
+          </if>
+          
+			AND NOT EXISTS
+			(SELECT 1
+			FROM 
+			ACC_RESTRICTED AccRest
+			 WHERE   (  CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND  CTSTRS.TRS_AC_BR = AccRest.BRANCH_CODE 
+						 AND  CTSTRS.TRS_AC_CY = AccRest.CURRENCY_CODE 
+						 AND  CTSTRS.TRS_AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+						 AND CTSTRS.TRS_AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+					  OR (
+					     CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND CTSTRS.TO_TRS_AC_BR= AccRest.BRANCH_CODE 
+						 AND CTSTRS.TO_TRS_AC_CY = AccRest.CURRENCY_CODE 
+						 AND CTSTRS.TO_TRS_AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS.TO_TRS_AC_CIF = AccRest.CIF_SUB_NO 
+						 AND   CTSTRS.TO_TRS_AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+				     )		
+	</sql>
+	
+	<sql id="multiSOFilter">
+		<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">				
+			AND NOT EXISTS
+	         (SELECT 1
+	          FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	          WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}                   
+	                AND(
+	                	A.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+		                AND A.BRANCH_CODE= CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE 
+		                AND CTSTRS.TRS_AC_BR = A.BRANCH_CODE 
+		                AND CTSTRS.TRS_AC_CY = A.CURRENCY_CODE 
+		                AND CTSTRS.TRS_AC_GL = A.GL_CODE 
+		                AND CTSTRS.TRS_AC_CIF = A.CIF_SUB_NO 
+		                AND CTSTRS.TRS_AC_SL = A.SL_NO
+		               	AND A.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	            	OR(CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	            		AND B.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE 
+		                AND B.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+		                AND CTSTRS_ACC_DET.AC_BR = B.BRANCH_CODE 
+		                AND CTSTRS_ACC_DET.AC_CY = B.CURRENCY_CODE 
+		                AND CTSTRS_ACC_DET.AC_GL = B.GL_CODE 
+		                AND CTSTRS_ACC_DET.AC_CIF = B.CIF_SUB_NO 
+		                AND CTSTRS_ACC_DET.AC_SL = B.SL_NO
+		                AND B.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+	                )
+          </if>
+          
+			AND NOT EXISTS
+			(SELECT 1
+			FROM 
+			ACC_RESTRICTED AccRest
+			 WHERE   (  CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND  CTSTRS.TRS_AC_BR = AccRest.BRANCH_CODE 
+						 AND  CTSTRS.TRS_AC_CY = AccRest.CURRENCY_CODE 
+						 AND  CTSTRS.TRS_AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+						 AND CTSTRS.TRS_AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+					  OR (
+					     CTSTRS.COMP_CODE = AccRest.COMP_CODE  
+				       	 AND CTSTRS_ACC_DET.AC_BR = AccRest.BRANCH_CODE 
+						 AND CTSTRS_ACC_DET.AC_CY = AccRest.CURRENCY_CODE 
+						 AND CTSTRS_ACC_DET.AC_GL = AccRest.GL_CODE 
+						 AND  CTSTRS_ACC_DET.AC_CIF = AccRest.CIF_SUB_NO 
+						 AND   CTSTRS_ACC_DET.AC_SL = AccRest.SL_NO 
+						 AND  AccRest.USER_ID =  #{userId}
+						 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+						 AND  AccRest.APP_NAME = #{appName}
+						 )
+				     )		
+	</sql>
+	
+	<sql id="soQuery">
+		<include refid="soSelectQuery"/>
+		<include refid="soFromQuery1"/>
+		<include refid="soCommonFilter"/>
+		UNION
+		<include refid="soSelectQuery"/>
+		<include refid="soFromQuery2"/>
+		<include refid="soCommonFilter"/>	
+		UNION
+		<include refid="soSelectQuery"/>
+		<include refid="soFromQuery3"/>
+		<include refid="multiSOFilter"/>
+	</sql>
+	
+	<resultMap id="soListMap" type="dashOthersCO">
+	
+		<result property="ctstrsVO.COMP_CODE"				column="COMP_CODE"/>
+		<result property="ctstrsVO.TRS_TYPE"				column="TRS_TYPE"/>
+		<result property="ctstrsVO.CB_IND"				    column="CB_IND"/>
+		<result property="ctstrsVO.BRANCH_CODE"				column="BRANCH_CODE"/>
+		<result property="ctstrsVO.TRS_NO"					column="TRS_NO"/>
+		<result property="ctstrsVO.TRX_TYPE"				column="TRX_TYPE"/>
+		<result property="ctstrxTypeVO.SHORT_DESC_ENG"		column="SHORT_DESC_ENG"/>
+		<result property="ctstrsVO.TRS_AC_BR"				column="TRS_AC_BR"/>
+		<result property="ctstrsVO.TRS_AC_CY"				column="TRS_AC_CY"/>
+		<result property="ctstrsVO.TRS_AC_GL"				column="TRS_AC_GL"/>
+		<result property="ctstrsVO.TRS_AC_CIF"				column="TRS_AC_CIF"/>
+		<result property="ctstrsVO.TRS_AC_SL"				column="TRS_AC_SL"/>
+		<result property="amfVO.BRIEF_NAME_ENG"				column="BRIEF_NAME_ENG"/>
+		<result property="amfVO.ADDITIONAL_REFERENCE"		column="ADDITIONAL_REFERENCE"/>
+		<result property="ctstrsVO.TO_TRS_AC_BR"			column="TO_TRS_AC_BR"/>
+		<result property="ctstrsVO.TO_TRS_AC_CY"			column="TO_TRS_AC_CY"/>
+		<result property="ctstrsVO.TO_TRS_AC_GL"			column="TO_TRS_AC_GL"/>
+		<result property="ctstrsVO.TO_TRS_AC_CIF"			column="TO_TRS_AC_CIF"/>
+		<result property="ctstrsVO.TO_TRS_AC_SL"			column="TO_TRS_AC_SL"/>
+		<result property="amfVO1.BRIEF_NAME_ENG"			column="TO_BRIEF_NAME_ENG"/>
+		<result property="amfVO1.ADDITIONAL_REFERENCE"		column="TO_ADDITIONAL_REFERENCE"/>
+		<result property="ctstrsVO.AMOUNT"					column="AMOUNT"/>
+		<result property="ctstrxTypeVO.SO_PROCESS_TYPE"		column="SO_PROCESS_TYPE"/>
+		<result property="ctstrsVO.SO_PERIODICITY"			column="SO_PERIODICITY"/>
+		<result property="startDate"				        column="startDate"/>
+		<result property="endDate"				            column="endDate"/>
+		<result property="decimal_points"				    column="DECIMAL_POINTS"/>
+	</resultMap>
+	
+	<select id="soList" parameterType="dashboardSC" resultMap="soListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="soQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="soListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="soQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="memosQuery">
+		SELECT CTSMEMO_DET.BRANCH_CODE, 
+			CTSMEMO_DET.TRX_NO,
+	        CTSMEMO_DET.ENG_COMENT,
+	        CTSMEMO.COMMON_DESC_ENG,
+	        CTSMEMO.BRIEF_DESC_ENG,
+	        CTSMEMO.LONG_DESC_ENG,
+	        CTSMEMO.BRIEF_DESC_ARAB,
+	        CTSMEMO.LONG_DESC_ARAB,
+	        CTSMEMO_DET.ARAB_COMENT
+	    FROM CTSMEMO_DET,   
+	         CTSMEMO  
+		WHERE CTSMEMO_DET.COMP_CODE = CTSMEMO.COMP_CODE
+			AND CTSMEMO_DET.MEMO_CODE = CTSMEMO.CODE
+			AND CTSMEMO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			<if test="loginTypeByBr == 1">
+				AND CTSMEMO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			</if>
+			AND CTSMEMO_DET.STATUS = 'P'
+			AND (CTSMEMO.DATE_INTERVAL = '0'
+	            OR (CTSMEMO.DATE_INTERVAL = '1' 
+					AND CTSMEMO_DET.FROM_DATE <![CDATA[<=]]> #{runningDate,jdbcType=DATE}
+	            	AND CTSMEMO_DET.DATE_TO >= #{runningDate,jdbcType=DATE})) 
+			AND (CTSMEMO.NUMBER_REVIEWS = 0 OR CTSMEMO_DET.LAST_REVIEW_NO <![CDATA[<]]> CTSMEMO.NUMBER_REVIEWS)
+			AND CTSMEMO.TYPE IN ('A','R','L')
+			<!-- CTSMEMO_DET.CIF_NO = #{cif_no,jdbcType=NUMERIC} -->
+			AND (( CTSMEMO_DET.CIF_NO  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL))
+                                               
+			
+			OR 
+			<!-- CTSMEMO_DET.ACC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+			 (CTSMEMO_DET.ACC_CIF  IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId,jdbcType=VARCHAR}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL)))
+                                                          
+			
+			
+			
+			
+			
+			<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">		
+			AND NOT EXISTS
+	      (SELECT 1
+               FROM CTSTELLER_ACC_HIDDEN_STATUSES,AMF
+              WHERE CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+                AND CTSMEMO_DET.COMP_CODE = AMF.COMP_CODE
+                AND CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE = AMF.COMP_CODE
+                AND CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE = AMF.BRANCH_CODE
+                AND AMF.BRANCH_CODE = CTSMEMO_DET.ACC_BR
+                AND AMF.CURRENCY_CODE = CTSMEMO_DET.ACC_CY
+                AND AMF.GL_CODE = CTSMEMO_DET.ACC_GL
+                AND AMF.SL_NO = CTSMEMO_DET.ACC_SL
+                AND AMF.CIF_SUB_NO = CTSMEMO_DET.ACC_CIF
+                AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+            </if>	
+            
+			  AND NOT EXISTS (
+		        SELECT 1 FROM 
+					ACC_RESTRICTED AccRest
+		            WHERE AccRest.COMP_CODE = CTSMEMO_DET.COMP_CODE
+	                 AND  AccRest.BRANCH_CODE = CTSMEMO_DET.ACC_BR
+	                 AND  AccRest.CURRENCY_CODE = CTSMEMO_DET.ACC_CY
+	                 AND  AccRest.GL_CODE = CTSMEMO_DET.ACC_GL
+	                 AND  AccRest.SL_NO = CTSMEMO_DET.ACC_SL
+	                 AND  AccRest.CIF_SUB_NO = CTSMEMO_DET.ACC_CIF
+					 AND  AccRest.USER_ID =  #{userId}
+					 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+					 AND  AccRest.APP_NAME = #{appName}
+					 )	
+	</sql>
+	
+	<resultMap id="memosListMap" type="dashOthersCO">
+		<result property="ctsMemoDetVO.BRANCH_CODE"		column="BRANCH_CODE"/>
+		<result property="ctsMemoDetVO.TRX_NO"			column="TRX_NO"/>
+		<result property="ctsMemoDetVO.ENG_COMENT"		column="ENG_COMENT"/>
+		<result property="ctsMemoVO.COMMON_DESC_ENG"	column="COMMON_DESC_ENG"/>
+		<result property="ctsMemoVO.BRIEF_DESC_ENG"		column="BRIEF_DESC_ENG"/>
+		<result property="ctsMemoVO.LONG_DESC_ENG"		column="LONG_DESC_ENG"/>
+		<result property="ctsMemoVO.BRIEF_DESC_ARAB"	column="BRIEF_DESC_ARAB"/>
+		<result property="ctsMemoVO.LONG_DESC_ARAB"		column="LONG_DESC_ARAB"/>
+		<result property="ctsMemoDetVO.ARAB_COMENT"		column="ARAB_COMENT"/>
+	</resultMap>
+	
+	<select id="memosList" parameterType="dashboardSC" resultMap="memosListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="memosQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="memosListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="memosQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+		
+	
+	<resultMap id="childCifListMap" type="dashOthersCO">
+		<result property="cifVO.CIF_NO"		column="CIF_NO"/>
+		<result property="cifVO.SHORT_NAME_ENG"			column="SHORT_NAME_ENG"/>
+	</resultMap>
+	
+	<select id="childCifList" parameterType="dashboardSC" resultMap="childCifListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="childCifListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="childCifListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="childCifListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	
+	<sql id="childCifListQuery">
+		SELECT C.CIF_NO, CIF.SHORT_NAME_ENG
+		From FMS_SUBSIDIARY_CIFS C, CIF 
+		WHERE C.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND C.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		AND C.APP_NAME = 'RET'
+		AND C.USER_ID = #{userId,jdbcType=VARCHAR}
+		AND  C.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+		AND C.COMP_CODE = CIF.COMP_CODE
+		AND C.CIF_NO = CIF.CIF_NO
+	</sql>
+	
+
+	
+</mapper>

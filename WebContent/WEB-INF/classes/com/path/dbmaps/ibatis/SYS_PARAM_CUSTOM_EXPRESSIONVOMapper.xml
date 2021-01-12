@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_CUSTOM_EXPRESSION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" >
+    <id column="EXPRESSION_ID" property="EXPRESSION_ID" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="SHORT_NAME" property="SHORT_NAME" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" extends="BaseResultMap" >
+    <result column="EXPRESSION" property="EXPRESSION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EXPRESSION_ID, APP_NAME, SHORT_NAME, DESCRIPTION, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE
+  </sql>
+  <sql id="Blob_Column_List" >
+    EXPRESSION
+  </sql>
+  <select id="selectSYS_PARAM_CUSTOM_EXPRESSION" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_CUSTOM_EXPRESSION
+    where EXPRESSION_ID = #{EXPRESSION_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_CUSTOM_EXPRESSION" parameterType="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" >
+    delete from SYS_PARAM_CUSTOM_EXPRESSION
+    where EXPRESSION_ID = #{EXPRESSION_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_CUSTOM_EXPRESSION" parameterType="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="EXPRESSION_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(EXPRESSION_ID),0)+1</when><otherwise>NVL(MAX(EXPRESSION_ID),0)+1</otherwise></choose> FROM SYS_PARAM_CUSTOM_EXPRESSION
+    </selectKey>
+    insert into SYS_PARAM_CUSTOM_EXPRESSION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      EXPRESSION_ID,
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="SHORT_NAME != null and !&quot;&quot;.equals(SHORT_NAME)" >
+        SHORT_NAME,
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        DESCRIPTION,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="EXPRESSION != null" >
+        EXPRESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{EXPRESSION_ID},
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="SHORT_NAME != null and !&quot;&quot;.equals(SHORT_NAME)" >
+        #{SHORT_NAME},
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        #{DESCRIPTION},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="EXPRESSION != null" >
+        #{EXPRESSION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_CUSTOM_EXPRESSION" >
+    update SYS_PARAM_CUSTOM_EXPRESSION
+    <set >
+      <if test="APP_NAME != null" >
+        <choose >
+          <when test="APP_NAME.equals(&quot;&quot;)" >
+            APP_NAME = NULL ,
+          </when>
+          <otherwise >
+            APP_NAME = #{APP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHORT_NAME != null" >
+        <choose >
+          <when test="SHORT_NAME.equals(&quot;&quot;)" >
+            SHORT_NAME = NULL ,
+          </when>
+          <otherwise >
+            SHORT_NAME = #{SHORT_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESCRIPTION != null" >
+        <choose >
+          <when test="DESCRIPTION.equals(&quot;&quot;)" >
+            DESCRIPTION = NULL ,
+          </when>
+          <otherwise >
+            DESCRIPTION = #{DESCRIPTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="EXPRESSION != null" >
+        EXPRESSION = #{EXPRESSION},
+      </if>
+    </set>
+    where EXPRESSION_ID = #{EXPRESSION_ID}
+  </sql>
+  <update id="updateSYS_PARAM_CUSTOM_EXPRESSION" parameterType="com.path.dbmaps.vo.SYS_PARAM_CUSTOM_EXPRESSIONVO" >
+    <include refid="sql_updateSYS_PARAM_CUSTOM_EXPRESSION" />
+  </update>
+</mapper>

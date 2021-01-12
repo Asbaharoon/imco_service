@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        
+<mapper namespace="floatingRateCodeMapper">
+<sql id="floatingRateCodeListCommon">
+      <![CDATA[
+        SELECT 	DISTINCT
+			 	IBOR_HDR.IBOR_CODE,
+			 	IBOR_HDR.BRIEF_DESC_ENG,
+			 	COMP_CODE
+		FROM  	IBOR_HDR  
+		WHERE 	LINE_NUMBER	=	0
+		AND		COMP_CODE 	= 	#{compCode}
+	
+	                
+      ]]>   
+ </sql> 
+ 
+  
+ <resultMap id="floatingRateCodeListMap" type="floatingRateCodeVO">
+      <result property="IBOR_CODE" column="IBOR_CODE" />
+      <result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+      <result property="COMP_CODE" column="COMP_CODE" />
+      </resultMap>
+ 
+ <select id="floatingRateCodeList" resultMap="floatingRateCodeListMap" parameterType="floatingRateCodeSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="floatingRateCodeListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="floatingRateCodeListCount" resultType="int" parameterType="floatingRateCodeSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="floatingRateCodeListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+<select id="returnFloatingRateCodeById" parameterType="floatingRateCodeSC" resultType="floatingRateCodeVO">
+  		SELECT
+			 IBOR_HDR.IBOR_CODE,
+			 IBOR_HDR.BRIEF_DESC_ENG
+		FROM  IBOR_HDR 
+		WHERE IBOR_HDR.IBOR_CODE = #{IBOR_CODE} 
+		AND   IBOR_HDR.COMP_CODE  = #{compCode}
+		AND	  IBOR_HDR.LINE_NUMBER = 0
+ </select>
+</mapper>
+        

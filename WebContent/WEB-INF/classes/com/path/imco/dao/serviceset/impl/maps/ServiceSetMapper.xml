@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="serviceSetMapper">
+<resultMap id="resServiceSettingsMap" type="com.path.imco.vo.serviceset.ServiceSetCO">
+
+	<result property="syncConnVO.BR_CODE" column="BR_CODE"/>
+	<result property="syncConnVO.PROCESS" column="PROCESS"/>
+	<result property="subDescription" column="subDescription"/>
+	<result property="syncConnVO.TIMER" column="TIMER"/>
+	<result property="syncConnVO.STATUS" column="STATUS"/>
+	<result property="syncConnVO.RECONNECT" column="RECONNECT"/>
+	<result property="syncConnVO.ORIGIN_BR_I" column="ORIGIN_BR_I"/>
+	<result property="syncConnVO.ORIGIN_BR_U" column="ORIGIN_BR_U"/>
+	<result property="syncConnVO.ORIGIN_BR_D" column="ORIGIN_BR_D"/>
+	<result property="syncConnVO.ACTION_TYPE" column="ACTION_TYPE"/>
+	<result property="syncConnVO.ACTION_DATETIME" column="ACTION_DATETIME"/>
+	<result property="syncConnVO.PERIOD" column="PERIOD"/>
+	<result property="syncConnVO.PERIOD_TYPE" column="PERIOD_TYPE"/>
+	<result property="syncConnVO.PERIOD_DAY" column="PERIOD_DAY"/>
+	<result property="syncConnVO.LAST_ID" column="LAST_ID"/>
+
+</resultMap>
+<select id="returnServiceSettingsList" parameterType="com.path.imco.vo.serviceset.ServiceSetSC" resultMap="resServiceSettingsMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryServiceSettingsSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<sql id="queryServiceSettingsSQL">
+	SELECT  BR_CODE,
+			PROCESS,     
+            CASE WHEN PROCESS IN ('K','S','R') THEN 'In case of disconnection attempt to reconnect every' 
+            ELSE '' END subDescription,  
+  			TIMER,
+  			STATUS,
+  			RECONNECT,
+  			ORIGIN_BR_I,
+  			ORIGIN_BR_U,
+ 			ORIGIN_BR_D,
+  			ACTION_TYPE,
+ 		    ACTION_DATETIME,
+  			PERIOD,        
+ 		    PERIOD_TYPE,  
+  			PERIOD_DAY,   
+ 			LAST_ID  
+ 			
+FROM SYNC_CONNECTION
+	
+	</sql>
+</mapper>

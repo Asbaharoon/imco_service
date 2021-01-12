@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_TYPE_PARAM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_TYPE_PARAMVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="FROM_RANGE" property="FROM_RANGE" />
+    <result column="TO_RANGE" property="TO_RANGE" />
+    <result column="LAST_NUMBER" property="LAST_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, FROM_RANGE, TO_RANGE, LAST_NUMBER
+  </sql>
+  <select id="selectCIF_TYPE_PARAM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_TYPE_PARAMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_TYPE_PARAM
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIF_TYPE_PARAM" parameterType="com.path.dbmaps.vo.CIF_TYPE_PARAMVOKey" >
+    delete from CIF_TYPE_PARAM
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIF_TYPE_PARAM" parameterType="com.path.dbmaps.vo.CIF_TYPE_PARAMVO" >
+    insert into CIF_TYPE_PARAM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FROM_RANGE != null and FROM_RANGE != emptyBigDecimalValue" >
+        FROM_RANGE,
+      </if>
+      <if test="TO_RANGE != null and TO_RANGE != emptyBigDecimalValue" >
+        TO_RANGE,
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        LAST_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FROM_RANGE != null and FROM_RANGE != emptyBigDecimalValue" >
+        #{FROM_RANGE},
+      </if>
+      <if test="TO_RANGE != null and TO_RANGE != emptyBigDecimalValue" >
+        #{TO_RANGE},
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        #{LAST_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_TYPE_PARAM" >
+    update CIF_TYPE_PARAM
+    <set >
+      <if test="FROM_RANGE != null" >
+        <choose >
+          <when test="FROM_RANGE == emptyBigDecimalValue" >
+            FROM_RANGE = NULL ,
+          </when>
+          <otherwise >
+            FROM_RANGE = #{FROM_RANGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_RANGE != null" >
+        <choose >
+          <when test="TO_RANGE == emptyBigDecimalValue" >
+            TO_RANGE = NULL ,
+          </when>
+          <otherwise >
+            TO_RANGE = #{TO_RANGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LAST_NUMBER != null" >
+        <choose >
+          <when test="LAST_NUMBER == emptyBigDecimalValue" >
+            LAST_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LAST_NUMBER = #{LAST_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_TYPE_PARAM" parameterType="com.path.dbmaps.vo.CIF_TYPE_PARAMVO" >
+    <include refid="sql_updateCIF_TYPE_PARAM" />
+  </update>
+</mapper>

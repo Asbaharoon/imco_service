@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_AUDIT_MASK_FIELDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="FIELD_IDENTIFIER" property="FIELD_IDENTIFIER" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="CATEGORY" property="CATEGORY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, FIELD_IDENTIFIER, PROG_REF, CATEGORY
+  </sql>
+  <select id="selectS_AUDIT_MASK_FIELDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_AUDIT_MASK_FIELDS
+    where APP_NAME = #{APP_NAME}
+      and FIELD_IDENTIFIER = #{FIELD_IDENTIFIER}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteS_AUDIT_MASK_FIELDS" parameterType="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO" >
+    delete from S_AUDIT_MASK_FIELDS
+    where APP_NAME = #{APP_NAME}
+      and FIELD_IDENTIFIER = #{FIELD_IDENTIFIER}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertS_AUDIT_MASK_FIELDS" parameterType="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO" >
+    insert into S_AUDIT_MASK_FIELDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="FIELD_IDENTIFIER != null and FIELD_IDENTIFIER != emptyBigDecimalValue" >
+        FIELD_IDENTIFIER,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="CATEGORY != null" >
+        CATEGORY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="FIELD_IDENTIFIER != null and FIELD_IDENTIFIER != emptyBigDecimalValue" >
+        #{FIELD_IDENTIFIER},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="CATEGORY != null" >
+        #{CATEGORY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_AUDIT_MASK_FIELDS" >
+    update S_AUDIT_MASK_FIELDS
+    <set >
+      <if test="CATEGORY != null" >
+        CATEGORY = #{CATEGORY},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and FIELD_IDENTIFIER = #{FIELD_IDENTIFIER}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateS_AUDIT_MASK_FIELDS" parameterType="com.path.dbmaps.vo.S_AUDIT_MASK_FIELDSVO" >
+    <include refid="sql_updateS_AUDIT_MASK_FIELDS" />
+  </update>
+</mapper>

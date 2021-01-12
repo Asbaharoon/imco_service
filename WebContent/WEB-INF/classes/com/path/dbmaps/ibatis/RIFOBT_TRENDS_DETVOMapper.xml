@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFOBT_TRENDS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFOBT_TRENDS_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="OBLIGOR_CODE" property="OBLIGOR_CODE" />
+    <result column="CTSTRX_TYPE" property="CTSTRX_TYPE" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="PERIODICITY" property="PERIODICITY" />
+    <result column="SINGLE_TRX_AMT_CV" property="SINGLE_TRX_AMT_CV" />
+    <result column="TOTAL_TRX_AMT_CV" property="TOTAL_TRX_AMT_CV" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, OBLIGOR_CODE, CTSTRX_TYPE, PERIODICITY_TYPE, PERIODICITY, SINGLE_TRX_AMT_CV, 
+    TOTAL_TRX_AMT_CV
+  </sql>
+  <select id="selectRIFOBT_TRENDS_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFOBT_TRENDS_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFOBT_TRENDS_DET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and OBLIGOR_CODE = #{OBLIGOR_CODE}
+  </select>
+  <delete id="deleteRIFOBT_TRENDS_DET" parameterType="com.path.dbmaps.vo.RIFOBT_TRENDS_DETVOKey" >
+    delete from RIFOBT_TRENDS_DET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and OBLIGOR_CODE = #{OBLIGOR_CODE}
+  </delete>
+  <insert id="insertRIFOBT_TRENDS_DET" parameterType="com.path.dbmaps.vo.RIFOBT_TRENDS_DETVO" >
+    insert into RIFOBT_TRENDS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="OBLIGOR_CODE != null and OBLIGOR_CODE != emptyBigDecimalValue" >
+        OBLIGOR_CODE,
+      </if>
+      <if test="CTSTRX_TYPE != null and CTSTRX_TYPE != emptyBigDecimalValue" >
+        CTSTRX_TYPE,
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE,
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        PERIODICITY,
+      </if>
+      <if test="SINGLE_TRX_AMT_CV != null and SINGLE_TRX_AMT_CV != emptyBigDecimalValue" >
+        SINGLE_TRX_AMT_CV,
+      </if>
+      <if test="TOTAL_TRX_AMT_CV != null and TOTAL_TRX_AMT_CV != emptyBigDecimalValue" >
+        TOTAL_TRX_AMT_CV,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="OBLIGOR_CODE != null and OBLIGOR_CODE != emptyBigDecimalValue" >
+        #{OBLIGOR_CODE},
+      </if>
+      <if test="CTSTRX_TYPE != null and CTSTRX_TYPE != emptyBigDecimalValue" >
+        #{CTSTRX_TYPE},
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null and PERIODICITY != emptyBigDecimalValue" >
+        #{PERIODICITY},
+      </if>
+      <if test="SINGLE_TRX_AMT_CV != null and SINGLE_TRX_AMT_CV != emptyBigDecimalValue" >
+        #{SINGLE_TRX_AMT_CV},
+      </if>
+      <if test="TOTAL_TRX_AMT_CV != null and TOTAL_TRX_AMT_CV != emptyBigDecimalValue" >
+        #{TOTAL_TRX_AMT_CV},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFOBT_TRENDS_DET" >
+    update RIFOBT_TRENDS_DET
+    <set >
+      <if test="CTSTRX_TYPE != null" >
+        <choose >
+          <when test="CTSTRX_TYPE == emptyBigDecimalValue" >
+            CTSTRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CTSTRX_TYPE = #{CTSTRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE = #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY != null" >
+        <choose >
+          <when test="PERIODICITY == emptyBigDecimalValue" >
+            PERIODICITY = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY = #{PERIODICITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SINGLE_TRX_AMT_CV != null" >
+        <choose >
+          <when test="SINGLE_TRX_AMT_CV == emptyBigDecimalValue" >
+            SINGLE_TRX_AMT_CV = NULL ,
+          </when>
+          <otherwise >
+            SINGLE_TRX_AMT_CV = #{SINGLE_TRX_AMT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_TRX_AMT_CV != null" >
+        <choose >
+          <when test="TOTAL_TRX_AMT_CV == emptyBigDecimalValue" >
+            TOTAL_TRX_AMT_CV = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_TRX_AMT_CV = #{TOTAL_TRX_AMT_CV},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and OBLIGOR_CODE = #{OBLIGOR_CODE}
+  </sql>
+  <update id="updateRIFOBT_TRENDS_DET" parameterType="com.path.dbmaps.vo.RIFOBT_TRENDS_DETVO" >
+    <include refid="sql_updateRIFOBT_TRENDS_DET" />
+  </update>
+</mapper>

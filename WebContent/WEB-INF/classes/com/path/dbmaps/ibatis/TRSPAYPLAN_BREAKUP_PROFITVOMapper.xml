@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPAYPLAN_BREAKUP_PROFIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PLAN_NBR" property="PLAN_NBR" />
+    <id column="PLAN_SEQ" property="PLAN_SEQ" />
+    <result column="PROFIT_AMOUNT" property="PROFIT_AMOUNT" />
+    <result column="DEAL_AMOUNT" property="DEAL_AMOUNT" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="YIELD" property="YIELD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LINE_NO, PLAN_NBR, PLAN_SEQ, PROFIT_AMOUNT, DEAL_AMOUNT, FROM_DATE, 
+    TO_DATE, YIELD
+  </sql>
+  <select id="selectTRSPAYPLAN_BREAKUP_PROFIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPAYPLAN_BREAKUP_PROFIT
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </select>
+  <delete id="deleteTRSPAYPLAN_BREAKUP_PROFIT" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVOKey" >
+    delete from TRSPAYPLAN_BREAKUP_PROFIT
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </delete>
+  <insert id="insertTRSPAYPLAN_BREAKUP_PROFIT" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVO" >
+    insert into TRSPAYPLAN_BREAKUP_PROFIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PLAN_NBR != null and PLAN_NBR != emptyBigDecimalValue" >
+        PLAN_NBR,
+      </if>
+      <if test="PLAN_SEQ != null and PLAN_SEQ != emptyBigDecimalValue" >
+        PLAN_SEQ,
+      </if>
+      <if test="PROFIT_AMOUNT != null and PROFIT_AMOUNT != emptyBigDecimalValue" >
+        PROFIT_AMOUNT,
+      </if>
+      <if test="DEAL_AMOUNT != null and DEAL_AMOUNT != emptyBigDecimalValue" >
+        DEAL_AMOUNT,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        YIELD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PLAN_NBR != null and PLAN_NBR != emptyBigDecimalValue" >
+        #{PLAN_NBR},
+      </if>
+      <if test="PLAN_SEQ != null and PLAN_SEQ != emptyBigDecimalValue" >
+        #{PLAN_SEQ},
+      </if>
+      <if test="PROFIT_AMOUNT != null and PROFIT_AMOUNT != emptyBigDecimalValue" >
+        #{PROFIT_AMOUNT},
+      </if>
+      <if test="DEAL_AMOUNT != null and DEAL_AMOUNT != emptyBigDecimalValue" >
+        #{DEAL_AMOUNT},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        #{YIELD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPAYPLAN_BREAKUP_PROFIT" >
+    update TRSPAYPLAN_BREAKUP_PROFIT
+    <set >
+      <if test="PROFIT_AMOUNT != null" >
+        <choose >
+          <when test="PROFIT_AMOUNT == emptyBigDecimalValue" >
+            PROFIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            PROFIT_AMOUNT = #{PROFIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_AMOUNT != null" >
+        <choose >
+          <when test="DEAL_AMOUNT == emptyBigDecimalValue" >
+            DEAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            DEAL_AMOUNT = #{DEAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="YIELD != null" >
+        <choose >
+          <when test="YIELD == emptyBigDecimalValue" >
+            YIELD = NULL ,
+          </when>
+          <otherwise >
+            YIELD = #{YIELD},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </sql>
+  <update id="updateTRSPAYPLAN_BREAKUP_PROFIT" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_BREAKUP_PROFITVO" >
+    <include refid="sql_updateTRSPAYPLAN_BREAKUP_PROFIT" />
+  </update>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="safeboxesMapper">
+    <select id="getSafeboxesList"  resultMap="safeboxesListMap"  parameterType="dashboardSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="selectSafeboxList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="getSafeboxesListCount"  resultType="int" parameterType="dashboardSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="selectSafeboxList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+<sql id="selectSafeboxList" >
+SELECT CTS_SAFEBOX_TRX.BRANCH_CODE branch_code,
+       CTS_SAFEBOX_TRX.TRX_NO trx_no,
+       CTS_SAFEBOX.TYPE type,
+       CTS_SAFEBOX_TRX.SAFEBOX_NO safebox_no,
+       CTS_SAFEBOX.LOCATION location,
+       CTS_SAFEBOX_TRX.ACC_BR acc_br,
+       CTS_SAFEBOX_TRX.ACC_CY acc_cy,
+       CTS_SAFEBOX_TRX.ACC_GL acc_gl,
+       CTS_SAFEBOX_TRX.ACC_CIF acc_cif,
+       CTS_SAFEBOX_TRX.ACC_SL acc_sl,
+       CTS_SAFEBOX_TRX.ACC_ADD_REF acc_add_ref,
+       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS
+         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SAFEBOX_TRX.STATUS
+           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusdesc,
+       CTS_SAFEBOX_TRX.STATUS statusTrx,
+       (select AMF.LONG_NAME_ENG
+          from AMF
+         where CTS_SAFEBOX_TRX.COMP_CODE = AMF.COMP_CODE
+           AND CTS_SAFEBOX_TRX.ACC_BR = AMF.BRANCH_CODE
+           AND CTS_SAFEBOX_TRX.ACC_CY = AMF.CURRENCY_CODE
+           AND CTS_SAFEBOX_TRX.ACC_GL = AMF.GL_CODE
+           AND CTS_SAFEBOX_TRX.ACC_CIF = AMF.CIF_SUB_NO
+           AND CTS_SAFEBOX_TRX.ACC_SL = AMF.SL_NO) accountName,
+       CTS_SAFEBOX_TRX.DATE_FROM,
+       CTS_SAFEBOX_TRX.DATE_TO,
+       CTS_SAFEBOX.STATUS safeboxStatus,
+       (SELECT T2.PARAM_TYPE
+          FROM CTS_SAFEBOX_PARAM T2
+         WHERE T2.CODE = CTS_SAFEBOX.TYPE
+           AND T2.COMP_CODE = CTS_SAFEBOX_TRX.COMP_CODE
+           AND T2.PARAM_TYPE IN ('T', 'M')) PARAM_TYPE
+  FROM CTS_SAFEBOX_TRX, CTS_SAFEBOX
+ WHERE CTS_SAFEBOX_TRX.COMP_CODE = #{compCode}
+ <if test="branchCode!=null"> 
+   AND CTS_SAFEBOX_TRX.BRANCH_CODE = #{branchCode} 
+ </if> 
+   AND CTS_SAFEBOX.COMP_CODE = CTS_SAFEBOX_TRX.COMP_CODE
+   AND CTS_SAFEBOX.BRANCH_CODE = CTS_SAFEBOX_TRX.BRANCH_CODE
+   AND CTS_SAFEBOX.CODE = CTS_SAFEBOX_TRX.SAFEBOX_NO
+   AND CTS_SAFEBOX.TYPE = CTS_SAFEBOX_TRX.TYPE_CODE
+  <!-- AND CTS_SAFEBOX_TRX.CIF = #{cif_no}  -->
+   AND (CTS_SAFEBOX_TRX.ACC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+   AND CTS_SAFEBOX_TRX.STATUS	  <![CDATA[<>]]> 'D'
+   
+     AND NOT EXISTS (
+			SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+	         WHERE CTS_SAFEBOX_TRX.COMP_CODE = AccRest.COMP_CODE  
+	       	   AND  CTS_SAFEBOX_TRX.ACC_BR = AccRest.BRANCH_CODE 
+			   AND  CTS_SAFEBOX_TRX.ACC_CY = AccRest.CURRENCY_CODE 
+			   AND CTS_SAFEBOX_TRX.ACC_GL = AccRest.GL_CODE 
+			   AND  CTS_SAFEBOX_TRX.ACC_CIF = AccRest.CIF_SUB_NO 
+			   AND   CTS_SAFEBOX_TRX.ACC_SL= AccRest.SL_NO 
+			   AND  AccRest.USER_ID =  #{userId}
+			   AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			   AND  AccRest.APP_NAME = #{appName}
+			 )
+</sql> 
+
+
+<resultMap id="safeboxesListMap" type="safeboxesCO">
+	<result property="branch_code" 			column="branch_code"/> 
+	<result property="trx_no"      			column="trx_no"/>
+	<result property="type"        			column="type"/>
+	<result property="safebox_no"  			column="safebox_no"/>
+	<result property="location"    			column="location"/>
+	<result property="statusdesc"  			column="statusdesc"/>
+	<result property="acc_br"      			column="acc_br"/>
+	<result property="acc_cy"      			column="acc_cy"/>
+	<result property="acc_gl"     			column="acc_gl"/>
+	<result property="acc_cif"     			column="acc_cif"/>
+	<result property="acc_sl"      			column="acc_sl"/>
+	<result property="accountName" 			column="accountName"/>
+	<result property="dateFrom"    			column="DATE_FROM"/>
+	<result property="statusTrx"    		column="statusTrx"/>
+	<result property="dateTo"      			column="DATE_TO"/>
+	<result property="acc_add_ref"      	column="acc_add_ref"/>
+	<result property="ctsParamVO.PARAM_TYPE"      column="PARAM_TYPE"/>
+	<result property="ctsSafeboxVO.STATUS"      column="safeboxStatus"/>
+</resultMap>
+	
+</mapper>

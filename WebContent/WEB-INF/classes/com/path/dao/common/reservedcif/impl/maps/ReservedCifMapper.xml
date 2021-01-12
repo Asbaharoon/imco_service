@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="reservedCifMapper">
+
+<sql id="reservedCifListCommon" >
+	<![CDATA[
+	
+		SELECT 	
+	  			CIF_RESERVED.COMP_CODE,    
+         		CIF_RESERVED.CIF_NO, 
+         		CIF_RESERVED.ALLOCATED,   
+         		CIF_RESERVED.USER_ID  
+    ]]>	 
+ </sql>
+ 
+ <sql id="reservedCifListAttributes" >
+ 	
+	 	FROM  CIF_RESERVED  , CIFCONTROL
+	 	WHERE (  CIF_RESERVED.COMP_CODE 			= #{compCode}			 							) AND  
+	          (  CIF_RESERVED.ALLOCATED 			= '0' 			  		 							) AND
+			  (  CIFCONTROL.COMP_CODE   			= CIF_RESERVED.COMP_CODE 							) AND
+			  (  ( CIFCONTROL.CTRL_RESV_CIF_CIFTYPE = '0' OR CIFCONTROL.CTRL_RESV_CIF_CIFTYPE IS NULL   ) OR
+		  		 ( CIFCONTROL.CTRL_RESV_CIF_CIFTYPE = '1' AND EXISTS 
+			  		(SELECT 1 FROM CIF_TYPE_PARAM , CIF_TYPE_PARAM_DET 
+					  WHERE   CIF_TYPE_PARAM.COMP_CODE 		= CIF_RESERVED.COMP_CODE
+					  AND	  CIF_TYPE_PARAM.COMP_CODE 		= CIF_TYPE_PARAM_DET.COMP_CODE 
+				      AND	  CIF_TYPE_PARAM.CODE 	  		= CIF_TYPE_PARAM_DET.CODE 
+					  AND     CIF_TYPE_PARAM_DET.CIF_TYPE 	= #{cifType}
+					  AND     CIF_RESERVED.CIF_NO			BETWEEN CIF_TYPE_PARAM.FROM_RANGE AND  CIF_TYPE_PARAM.TO_RANGE       																
+				  )
+				  ) 
+			   ) 
+		
+		<if test="null != branchCode">
+			AND (CIF_RESERVED.BRANCH_CODE = #{branchCode} OR COALESCE(CIF_RESERVED.BRANCH_CODE,0) = 0)  
+		</if>
+ </sql>
+
+ <select id="reservedCifList" resultMap="CIF_RESERVED.BaseResultMap" parameterType="reservedCifSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="reservedCifListCommon"/>
+	<include refid="reservedCifListAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="reservedCifListCount" resultType="int" parameterType="reservedCifSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="reservedCifListCommon"/>
+	<include refid="reservedCifListAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+	  <select id="returnReservedCifCount" resultType="int" parameterType="reservedCifSC" > 
+		SELECT COUNT(1)
+		FROM CIF_RESERVED 
+		WHERE CIF_RESERVED.COMP_CODE = #{compCode}
+		AND 	CIF_RESERVED.CIF_NO = #{cifNo}
+		<if test="null != branchCode"><![CDATA[
+			AND CIF_RESERVED.BRANCH_CODE <> #{branchCode} ]]>
+		</if>
+ </select>
+ 
+</mapper>
+
+ 

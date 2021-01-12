@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IBISCOUNTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IBISCOUNTERVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="LAST_NO" property="LAST_NO" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRX_TYPE, LAST_NO, DESCRIPTION
+  </sql>
+  <select id="selectIBISCOUNTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.IBISCOUNTERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from IBISCOUNTER
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteIBISCOUNTER" parameterType="com.path.dbmaps.vo.IBISCOUNTERVO" >
+    delete from IBISCOUNTER
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertIBISCOUNTER" parameterType="com.path.dbmaps.vo.IBISCOUNTERVO" >
+    insert into IBISCOUNTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_TYPE != null" >
+        TRX_TYPE,
+      </if>
+      <if test="LAST_NO != null and LAST_NO != emptyBigDecimalValue" >
+        LAST_NO,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_TYPE != null" >
+        #{TRX_TYPE},
+      </if>
+      <if test="LAST_NO != null and LAST_NO != emptyBigDecimalValue" >
+        #{LAST_NO},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIBISCOUNTER" >
+    update IBISCOUNTER
+    <set >
+      <if test="LAST_NO != null" >
+        <choose >
+          <when test="LAST_NO == emptyBigDecimalValue" >
+            LAST_NO = NULL ,
+          </when>
+          <otherwise >
+            LAST_NO = #{LAST_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateIBISCOUNTER" parameterType="com.path.dbmaps.vo.IBISCOUNTERVO" >
+    <include refid="sql_updateIBISCOUNTER" />
+  </update>
+</mapper>

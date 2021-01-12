@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cardsDesignMapper">
+
+ <sql id="cardsDesignListCommon" >
+	<![CDATA[
+		SELECT	 CTSCARDS_DESIGN.CODE,
+			 	 CTSCARDS_DESIGN.DESC_ENG,
+			 	 CTSCARDS_DESIGN.DESC_ARAB
+		FROM  	 CTSCARDS_DESIGN  
+		WHERE	 CTSCARDS_DESIGN.COMP_CODE = #{compCode}
+	]]>	 
+ </sql>
+
+ <select id="cardsDesignList" resultMap="CTSCARDS_DESIGN.BaseResultMap" parameterType="cardTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cardsDesignListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cardsDesignListCount" resultType="int" parameterType="cardTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cardsDesignListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnCardsDesignById" parameterType="cardTypeSC" resultType="ctsCardsDesignVO">
+  		SELECT	 CODE,
+			 	 CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN DESC_ARAB ELSE DESC_ENG END DESC_ENG			 
+		FROM  	 CTSCARDS_DESIGN  
+		WHERE	 CTSCARDS_DESIGN.COMP_CODE = #{compCode}
+		AND   	 CTSCARDS_DESIGN.CODE      = #{code}
+  </select>
+ 
+</mapper>

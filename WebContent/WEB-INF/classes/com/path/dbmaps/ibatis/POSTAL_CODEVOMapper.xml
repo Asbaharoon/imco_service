@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="POSTAL_CODE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.POSTAL_CODEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="POST_CODE" property="POST_CODE" />
+    <id column="REGION_CODE" property="REGION_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="FETCH_KEY" property="FETCH_KEY" />
+    <result column="COUNTRY_CODE" property="COUNTRY_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, POST_CODE, REGION_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, 
+    LONG_NAME_ARAB, ADDITIONAL_REFERENCE, FETCH_KEY, COUNTRY_CODE
+  </sql>
+  <select id="selectPOSTAL_CODE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.POSTAL_CODEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from POSTAL_CODE
+    where COMP_CODE = #{COMP_CODE}
+      and POST_CODE = #{POST_CODE}
+      and REGION_CODE = #{REGION_CODE}
+  </select>
+  <delete id="deletePOSTAL_CODE" parameterType="com.path.dbmaps.vo.POSTAL_CODEVOKey" >
+    delete from POSTAL_CODE
+    where COMP_CODE = #{COMP_CODE}
+      and POST_CODE = #{POST_CODE}
+      and REGION_CODE = #{REGION_CODE}
+  </delete>
+  <insert id="insertPOSTAL_CODE" parameterType="com.path.dbmaps.vo.POSTAL_CODEVO" >
+    insert into POSTAL_CODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="POST_CODE != null" >
+        POST_CODE,
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        REGION_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="FETCH_KEY != null" >
+        FETCH_KEY,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="POST_CODE != null" >
+        #{POST_CODE},
+      </if>
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        #{REGION_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="FETCH_KEY != null" >
+        #{FETCH_KEY},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePOSTAL_CODE" >
+    update POSTAL_CODE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="FETCH_KEY != null" >
+        FETCH_KEY = #{FETCH_KEY},
+      </if>
+      <if test="COUNTRY_CODE != null" >
+        <choose >
+          <when test="COUNTRY_CODE == emptyBigDecimalValue" >
+            COUNTRY_CODE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_CODE = #{COUNTRY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and POST_CODE = #{POST_CODE}
+      and REGION_CODE = #{REGION_CODE}
+  </sql>
+  <update id="updatePOSTAL_CODE" parameterType="com.path.dbmaps.vo.POSTAL_CODEVO" >
+    <include refid="sql_updatePOSTAL_CODE" />
+  </update>
+</mapper>

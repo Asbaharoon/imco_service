@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ctsRequestMapper">
+
+ <sql id="ctsRequestTypeListCommon">
+	<![CDATA[
+	SELECT CTS_REQUEST_TYPE.CODE,
+       CTS_REQUEST_TYPE.APP_NAME,
+       CTS_REQUEST_TYPE.BRIEF_NAME_ENG,
+       CTS_REQUEST_TYPE.BRIEF_NAME_ARAB
+  	FROM CTS_REQUEST_TYPE
+ 	WHERE (CTS_REQUEST_TYPE.COMP_CODE = #{compCode})
+   		AND (CTS_REQUEST_TYPE.APP_NAME = CASE WHEN #{appName} = '@' THEN
+        CTS_REQUEST_TYPE.APP_NAME ELSE #{appName} END)
+	]]>	 
+ </sql>
+ <sql id="ctsRequestTypeListCommonUnique">
+  	<![CDATA[
+  		AND   	CTS_REQUEST_TYPE.CODE   =  #{code}
+  	]]>	 
+ </sql>
+
+ <select id="ctsRequestTypeList" resultMap="CTS_REQUEST_TYPE.BaseResultMap" parameterType="com.path.vo.common.requests.csm.CtsRequestSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="ctsRequestTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="ctsRequestTypeListCount" resultType="int" parameterType="com.path.vo.common.requests.csm.CtsRequestSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="ctsRequestTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="ctsRequestTypeById" parameterType="com.path.vo.common.requests.csm.CtsRequestSC" resultMap="CTS_REQUEST_TYPE.BaseResultMap">
+  	<include refid="ctsRequestTypeListCommon"/>
+  	<include refid="ctsRequestTypeListCommonUnique"/>
+ </select>
+ 
+ <resultMap id="ctsRequestList_ResMap" type="com.path.vo.common.requests.csm.CtsRequestCO"  >
+  		<result property="ctsRequestVO.BRANCH" column="BRANCH" />
+  		<result property="ctsRequestVO.COMP_CODE" column="COMP_CODE" />
+		<result property="ctsRequestVO.REQ_NO" column="REQ_NO" />
+		<result property="ctsRequestVO.TYPE" column="TYPE" />
+		<result property="ctsRequestVO.CIF_NO" column="CIF_NO" />
+		<result property="cifIdNoStr" column="cifIdNoStr" />
+		<result property="ctsRequestVO.REQ_REF" column="REQ_REF" />
+		<result property="ctsRequestVO.REQ_DESC" column="REQ_DESC" />
+		<result property="ctsRequestVO.STATUS" column="STATUS" />
+		<result property="statusDesc" column="statusDesc" />
+		<result property="ctsRequestVO.REQ_DATE" column="REQ_DATE" />
+		<result property="ctsRequestVO.APPLICATION_CODE" column="APPLICATION_CODE" />
+		<result property="ctsRequestVO.SAVED_AS_DRAFT" column="SAVED_AS_DRAFT" />
+		<result property="saveType" column="saveType" />
+		<result property="ctsRequestVO.PROCESS_BRANCH" column="PROCESS_BRANCH" />
+		
+		
+		
+		
+ </resultMap>
+   
+ <select id="ctsRequestList" resultMap="ctsRequestList_ResMap" parameterType="com.path.vo.common.requests.csm.CtsRequestSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="ctsRequestListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="ctsRequestListCount" resultType="int" parameterType="com.path.vo.common.requests.csm.CtsRequestSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="ctsRequestListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <sql id="ctsRequestListCommon">
+	 
+ 	SELECT CTS_REQUEST.COMP_CODE,
+		   CTS_REQUEST.BRANCH,
+		   CTS_REQUEST.REQ_NO,
+	       CTS_REQUEST.REQ_DATE,
+	       CTS_REQUEST.TYPE,
+	       CTS_REQUEST.CIF_NO,
+	       CIF.ID_NO cifIdNoStr,
+	       CTS_REQUEST.REQ_REF,
+	       CTS_REQUEST.REQ_DESC,
+	       CTS_REQUEST.STATUS,
+	
+	 	 <if test='tfaStatus==null'>
+	       (SELECT VALUE_DESC
+	        FROM SYS_PARAM_LOV_TRANS
+	 		WHERE LOV_TYPE_ID IN( 515)
+	 		 AND LANG_CODE 	= #{language}
+	 		 AND VALUE_CODE = CTS_REQUEST.STATUS) requestStatusDesc,
+	 		</if>
+	 	 <if test='tfaStatus!=null'>
+	       (SELECT VALUE_DESC
+	        FROM SYS_PARAM_LOV_TRANS
+	 		  WHERE (LOV_TYPE_ID = 515  ) 
+	 		 AND LANG_CODE 	= #{language}
+	 		 AND VALUE_CODE  = case when CTS_REQUEST.STATUS in('Y','J') then 'R' ELSE CTS_REQUEST.STATUS END  ) requestStatusDesc,
+	 		</if>
+	 		 
+	       CTS_REQUEST.APPLICATION_CODE,
+	       CTS_REQUEST.SAVED_AS_DRAFT,
+	       (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+	 		WHERE LOV_TYPE_ID = 510
+	 		 AND LANG_CODE 	= #{language}
+	  		 AND VALUE_CODE = CTS_REQUEST.SAVED_AS_DRAFT) saveType,	 		 
+               CTS_REQUEST.PROCESS_BRANCH  PROCESS_BRANCH ,
+               BRANCHES.BRIEF_DESC_ENG
+	  FROM CTS_REQUEST LEFT OUTER JOIN CIF ON CTS_REQUEST.COMP_CODE = CIF.COMP_CODE AND
+	  										  CTS_REQUEST.CIF_NO = CIF.CIF_NO	  										   
+	  										  LEFT OUTER JOIN BRANCHES ON CTS_REQUEST.COMP_CODE = BRANCHES.COMP_CODE                                        
+                                              AND CTS_REQUEST.PROCESS_BRANCH =BRANCHES.BRANCH_CODE    	
+	  										   
+	  WHERE(CTS_REQUEST.COMP_CODE = #{compCode})
+       AND (CTS_REQUEST.BRANCH = #{branchCode})
+       AND (CTS_REQUEST.APP_NAME = #{appName})
+       AND (CTS_REQUEST.SAVED_AS_DRAFT = CASE WHEN #{crudMode} = 'R' THEN
+            CTS_REQUEST.SAVED_AS_DRAFT ELSE 'N' END)
+      <if test="cifNo > 0">
+		<!-- if condition added by Richie since the requests from assets
+		 can be created without a cifNO so the record created won't be retrieved 
+		 in the grid if this condtion was added and the field CIF_NO is null -->
+       AND (CTS_REQUEST.CIF_NO = CASE WHEN CASE WHEN
+            #{cifNo} IS NULL THEN 0 ELSE #{cifNo} + 0 END = 0 THEN
+            CTS_REQUEST.CIF_NO ELSE #{cifNo} + 0 END)
+      </if>
+       AND (CTS_REQUEST.TYPE = #{requestType})
+          <if test='tfaStatus==null  or tfaStatus==""'>
+       AND ((CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'R') OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'P'  AND CTS_REQUEST.STATUS = 'A') OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'N'  AND CTS_REQUEST.STATUS IN ('L', 'G', 'W', 'P')) OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'UP' AND CTS_REQUEST.STATUS IN ('P')) OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'M'  AND CTS_REQUEST.TRADE_SERIAL_NBR IS NOT NULL) OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode}
+                END IN ('PIF','IO') AND CTS_REQUEST.REQ_NO IN (	SELECT 	FMSAPPL.REQ_NO 
+                										FROM 	FMSAPPL 
+                										WHERE 	FMSAPPL.COMP_CODE 	= CTS_REQUEST.COMP_CODE  
+                										AND 	FMSAPPL.REQ_BRANCH	= CTS_REQUEST.BRANCH
+                										AND 	FMSAPPL.REQ_NO 		= CTS_REQUEST.REQ_NO 
+                										AND 	STATUS 				= 'F' 
+                									   )
+                )
+                OR 
+				(CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode}
+                END IN ('K','CR') AND CTS_REQUEST.REQ_NO IN (	SELECT 	FMSAPPL.REQ_NO 
+                										FROM 	FMSAPPL 
+                										WHERE 	FMSAPPL.COMP_CODE 	= CTS_REQUEST.COMP_CODE  
+                										AND 	FMSAPPL.REQ_BRANCH	= CTS_REQUEST.BRANCH
+                										AND 	FMSAPPL.REQ_NO 		= CTS_REQUEST.REQ_NO 
+                										AND 	STATUS 				IN( 'F' ,'C')
+                									   )
+                )
+            OR
+            (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'X'  AND CTS_REQUEST.STATUS = 'A')
+            OR
+             (CASE WHEN #{crudMode} IS NULL THEN 'X' ELSE #{crudMode} END = 'UR'  AND CTS_REQUEST.STATUS = 'O'
+             AND
+                        CTS_REQUEST.REQ_NO IN
+                        (SELECT FMSAPPL.REQ_NO FROM FMSAPPL
+                           WHERE FMSAPPL.COMP_CODE = CTS_REQUEST.COMP_CODE
+                             AND FMSAPPL.BRANCH = CTS_REQUEST.PROCESS_BRANCH
+                             AND FMSAPPL.REQ_NO = CTS_REQUEST.REQ_NO
+                             AND FMSAPPL.STATUS = 'A')
+             )
+            )
+            </if>
+            
+      <![CDATA[
+      	AND ((#{iisAmentFalg} = 'A' AND CTS_REQUEST.REQ_PERIOD IS NOT NULL) OR #{iisAmentFalg} <> 'A')
+      ]]>	 
+    <if test="scannedCIFNo != null">
+		AND CTS_REQUEST.CIF_NO = #{scannedCIFNo,jdbcType=NUMERIC}
+ 	</if>
+ 	  <if test='tfaStatus!=null'>
+         
+                      <if test='crudMode=="R"'>							
+						    AND CTS_REQUEST.STATUS =CTS_REQUEST.STATUS	
+				     </if>                  
+			         <if test='crudMode!="R"'>			         
+								<if test='tfaStatus!= null and !"All".equals(tfaStatus)' >
+						        	 AND CTS_REQUEST.STATUS IN (${tfaStatus})
+							   	</if>							
+				     </if> 
+         </if>
+ 	
+ 	
+ 	
+            
+ </sql>
+  
+ <select id="returnLastTrsNbrFromCtsCtr" resultType="BigDecimal" parameterType="com.path.vo.common.requests.csm.CtsRequestSC"> 
+  	SELECT TRS_NO 
+	FROM  CTSCTR
+	WHERE COMP_CODE  = #{compCode}
+	 AND  BRANCH_CODE  = #{branchCode}
+	 AND  TRS_TYPE  = #{trsType}
+	 AND  CB_IND   = #{cbInd}
+ </select>
+ 
+ <select id="returnCtsRequestTypeCode" resultType="BigDecimal" parameterType="com.path.vo.common.requests.csm.CtsRequestSC">
+ 	SELECT CODE
+	FROM CTS_REQUEST_TYPE
+	WHERE COMP_CODE  = #{compCode}
+	AND	REFERENCE  = (<![CDATA[
+				SELECT CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF<>'ROOT' THEN
+				OPT.PARENT_REF ELSE OPT.PROG_REF END
+				FROM OPT 
+				WHERE OPT.PROG_REF=#{originalProgRef} )
+				 AND APP_NAME = #{appName}
+				 AND   STATUS     = 'F' ]]>	
+ </select>
+
+<resultMap id="ctsRqstInfoChargesDetMap"          type="com.path.vo.common.requests.csm.CtsRequestCO">
+	<result property="compCode"							column="COMP_CODE"/>
+	<result property="amfVO.BRANCH_CODE"	    		column="BRANCH_CODE"/>
+	<result property="amfVO.CURRENCY_CODE"	    		column="CURRENCY_CODE"/>
+	<result property="amfVO.GL_CODE"	    			column="GL_CODE"/>
+	<result property="amfVO.CIF_SUB_NO"	    			column="CIF_SUB_NO"/>
+	<result property="amfVO.SL_NO"	    				column="SL_NO"/>
+	<result property="amfVO.ADDITIONAL_REFERENCE"	    column="ADDITIONAL_REFERENCE"/>
+	<result property="paymentType"	    				column="PAYMNT_TYPE"/>
+	<result property="amfVO.BRIEF_NAME_ENG"	    		column="BRIEF_NAME_ENG"/>
+</resultMap>
+
+ <select id="returnCtsRqstInfoChargesDet" resultMap="ctsRqstInfoChargesDetMap">
+	 SELECT <if test="isSybase==1">TOP 1</if>
+	 		CTSREQ_CHARGES_DET.COMP_CODE,
+	 		CTSREQ_CHARGES_DET.PAYMNT_TYPE, 
+	       (CASE
+	         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+	          CTSREQ_CHARGES_DET.INV_ACC_BR
+	         ELSE
+	          NOSTRO_ACC_BR
+	       END) BRANCH_CODE,
+	       (CASE
+	         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+	          CTSREQ_CHARGES_DET.INV_ACC_CY
+	         ELSE
+	          NOSTRO_ACC_CY
+	       END) CURRENCY_CODE,
+	       (CASE
+	         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+	          CTSREQ_CHARGES_DET.INV_ACC_GL
+	         ELSE
+	          NOSTRO_ACC_GL
+	       END) GL_CODE,
+	       (CASE
+	         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+	          CTSREQ_CHARGES_DET.INV_ACC_CIF
+	         ELSE
+	          NOSTRO_ACC_CIF
+	       END) CIF_SUB_NO,
+	       (CASE
+	         WHEN CTSREQ_CHARGES_DET.PAYMNT_TYPE = 'D' THEN
+	          CTSREQ_CHARGES_DET.INV_ACC_SL
+	         ELSE
+	          NOSTRO_ACC_SL
+	       END) SL_NO,
+	       
+	       (CASE CTSREQ_CHARGES_DET.PAYMNT_TYPE
+	         WHEN 'D' THEN
+	          (SELECT AMF.ADDITIONAL_REFERENCE
+	             FROM AMF
+	            WHERE AMF.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+	              AND AMF.BRANCH_CODE = CTSREQ_CHARGES_DET.INV_ACC_BR
+	              AND AMF.CURRENCY_CODE = CTSREQ_CHARGES_DET.INV_ACC_CY
+	              AND AMF.GL_CODE = CTSREQ_CHARGES_DET.INV_ACC_GL
+	              AND AMF.CIF_SUB_NO = CTSREQ_CHARGES_DET.INV_ACC_CIF
+	              AND AMF.SL_NO = CTSREQ_CHARGES_DET.INV_ACC_SL)
+	         ELSE
+	          (SELECT AMF.ADDITIONAL_REFERENCE
+	             FROM AMF
+	            WHERE AMF.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+	              AND AMF.BRANCH_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_BR
+	              AND AMF.CURRENCY_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_CY
+	              AND AMF.GL_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_GL
+	              AND AMF.CIF_SUB_NO = CTSREQ_CHARGES_DET.NOSTRO_ACC_CIF
+	              AND AMF.SL_NO = CTSREQ_CHARGES_DET.NOSTRO_ACC_SL)
+	       END) ADDITIONAL_REFERENCE,
+	       
+	       (CASE CTSREQ_CHARGES_DET.PAYMNT_TYPE
+	         WHEN 'D' THEN
+	          (SELECT CASE WHEN #{preferredLanguage} = 'L' THEN AMF.BRIEF_NAME_ENG ELSE AMF.BRIEF_NAME_ARAB END
+	             FROM AMF
+	            WHERE AMF.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+	              AND AMF.BRANCH_CODE = CTSREQ_CHARGES_DET.INV_ACC_BR
+	              AND AMF.CURRENCY_CODE = CTSREQ_CHARGES_DET.INV_ACC_CY
+	              AND AMF.GL_CODE = CTSREQ_CHARGES_DET.INV_ACC_GL
+	              AND AMF.CIF_SUB_NO = CTSREQ_CHARGES_DET.INV_ACC_CIF
+	              AND AMF.SL_NO = CTSREQ_CHARGES_DET.INV_ACC_SL)
+	         ELSE
+	          (SELECT CASE WHEN #{preferredLanguage} = 'L' THEN AMF.BRIEF_NAME_ENG ELSE AMF.BRIEF_NAME_ARAB END
+	             FROM AMF
+	            WHERE AMF.COMP_CODE = CTSREQ_CHARGES_DET.COMP_CODE
+	              AND AMF.BRANCH_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_BR
+	              AND AMF.CURRENCY_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_CY
+	              AND AMF.GL_CODE = CTSREQ_CHARGES_DET.NOSTRO_ACC_GL
+	              AND AMF.CIF_SUB_NO = CTSREQ_CHARGES_DET.NOSTRO_ACC_CIF
+	              AND AMF.SL_NO = CTSREQ_CHARGES_DET.NOSTRO_ACC_SL)
+	       END) BRIEF_NAME_ENG
+	
+	  FROM CTSREQ_CHARGES_DET
+	WHERE COMP_CODE   = (#{compCode,jdbcType=NUMERIC})
+	 AND  BRANCH_CODE = (#{branchCode,jdbcType=NUMERIC})
+	 AND  REQ_NO      = (#{code,jdbcType=NUMERIC})
+     AND CHARGE_CODE > 0
+	 <if test="isOracle==1">AND ROWNUM = 1</if>
+ </select>
+ 
+ <delete id="deleteRequestChargesDetails" parameterType="com.path.vo.common.requests.csm.CtsRequestSC">
+		
+		
+		
+  <choose>
+	     <when test='"1".equals(waiveCharges)' >	
+	       UPDATE  CTSREQ_CHARGES_DET SET AMOUNT=0 ,AMOUNT_NEW=0,AMOUNT_FC_NEW=0	
+		</when>
+		  <otherwise>
+				DELETE  FROM	CTSREQ_CHARGES_DET
+	      </otherwise>
+  </choose>
+		
+		
+		WHERE
+			COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			AND REQ_NO = #{code,jdbcType=NUMERIC}
+	</delete>
+ 
+  
+</mapper>

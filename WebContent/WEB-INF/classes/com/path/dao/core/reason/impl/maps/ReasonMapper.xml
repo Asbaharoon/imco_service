@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="reasonMapper">
+
+ <sql id="select_reason">
+	<![CDATA[
+	
+	SELECT
+			 CTSREASONS.CODE,
+			 CTSREASONS.BRIEF_NAME_ENG,
+			 CTSREASONS.BRIEF_NAME_ARAB,
+			 CTSREASONS.REASON_TYPE
+	FROM  CTSREASONS
+	WHERE CTSREASONS.COMP_CODE  = #{compCode} 
+	]]>	 
+	<if test="reason_type != null">
+	AND	  (CTSREASONS.REASON_TYPE = #{reason_type} OR CTSREASONS.REASON_TYPE = CASE WHEN #{reason_type} = '22' THEN '32' ELSE #{reason_type} END)
+	</if>
+	<if test="code != null">
+	AND	  CTSREASONS.CODE = #{code}	
+	</if>
+	
+ </sql>
+
+ 
+<select id="reasonLookupRecords" 
+        resultType="reasonVO"
+        parameterType="reasonSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="select_reason"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+ 
+<select id="reasonLookupCount"  
+		resultType="int" 
+		parameterType="reasonSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="select_reason"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+
+
+<sql id="select_aml_reason">
+	SELECT
+			 AML_REASON.CODE CODE,
+			 AML_REASON.REASON_REF,
+			 AML_REASON.BRIEF_NAME_ENG BRIEF_NAME_ENG,
+			 AML_REASON.BRIEF_NAME_ARAB BRIEF_NAME_ARAB,
+			 AML_REASON.REASON_TYPE
+	FROM  AML_REASON
+	WHERE AML_REASON.REASON_TYPE = '33'	
+	<if test="code != null " >
+	AND	  AML_REASON.REASON_REF = #{code}	
+	</if>
+ </sql>
+
+
+<select id="amlReasonLookupRecords" 
+        resultType="com.path.dbmaps.vo.AML_REASONVO"
+        parameterType="reasonSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="select_aml_reason"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+ 
+<select id="amlReasonLookupCount"  
+		resultType="int" 
+		parameterType="reasonSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="select_aml_reason"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+<select id="returnReasonByCode" parameterType="reasonSC" resultType="reasonVO">
+  		<include refid="select_reason"/>
+</select>
+
+
+<sql id="billPurpose_sql">
+SELECT <choose>
+	<when test="preferredLanguage == null or preferredLanguage.equals(@com.path.bo.common.ConstantsCommon@PREFERED_LANG_LATIN) ">
+	t1.BRIEF_NAME_ENG
+	</when><otherwise> t1.BRIEF_NAME_ARAB </otherwise>
+</choose> BRIEF_NAME_ENG
+	,CODE
+	,BRIEF_NAME_ARAB
+	,LONG_NAME_ENG
+	,LONG_NAME_ARAB
+	,REASON_TYPE
+	,CHARGES_SCHEMA
+	,PRINT_LETTER
+	,DEDUCT_AVAIL_CHARGES
+	,SHOW_CHARGE
+	,ADDITIONAL_REFERENCE
+	,MINIMUM_NO_DAYS
+	,JUDICIAL_DECISION
+	,ADDITIONAL_VOID_REF
+	,CHECKING_BASED_ON
+  FROM CTSREASONS t1
+ WHERE t1.COMP_CODE = #{compCode} 
+   AND t1.REASON_TYPE = #{reason_type}
+</sql>
+
+
+<select id="returnReasonsRelatedToTrxType" parameterType="reasonSC" resultType="reasonVO">
+	<include refid="billPurpose_sql"/>
+   AND t1.CODE = #{code}
+   AND t1.CODE IN
+       (SELECT t2.CODE
+          FROM CTSREASONS t2
+         WHERE t2.COMP_CODE = t1.COMP_CODE
+           AND t2.REASON_TYPE = t1.REASON_TYPE
+           AND t2.CODE IN
+               (SELECT CTSREASONS_TRX.CODE
+                  FROM CTSREASONS_TRX
+                 WHERE CTSREASONS_TRX.COMP_CODE = t1.COMP_CODE
+                   AND CTSREASONS_TRX.TRX_CODE = #{trxType}))
+</select>
+
+
+<sql id="billPurposeDet_sql">
+	<include refid="billPurpose_sql"/>
+	<if test="trxType != null and trxType != emptyBigDecimalValue">
+   AND t1.CODE IN
+       (SELECT CTSREASONS_TRX.CODE
+          FROM CTSREASONS_TRX
+         WHERE CTSREASONS_TRX.COMP_CODE = t1.COMP_CODE
+           AND CTSREASONS_TRX.TRX_CODE = #{trxType})
+	</if>
+</sql>
+
+
+<select id="loadBillPurposeList" resultType="reasonVO" parameterType="reasonSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="billPurposeDet_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+ 
+<select id="loadBillPurposeCount" resultType="int" parameterType="reasonSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="billPurposeDet_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+</mapper>

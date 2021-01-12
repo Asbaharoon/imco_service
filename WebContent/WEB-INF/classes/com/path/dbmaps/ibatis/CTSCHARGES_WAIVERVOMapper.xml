@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCHARGES_WAIVER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCHARGES_WAIVERVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="EXEMPTION_TYPE" property="EXEMPTION_TYPE" />
+    <result column="AVERAGE_BAL_BASIS" property="AVERAGE_BAL_BASIS" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="FROM_BALANCE" property="FROM_BALANCE" />
+    <result column="TO_BALANCE" property="TO_BALANCE" />
+    <result column="WAIVER_PERCENTAGE" property="WAIVER_PERCENTAGE" />
+    <result column="WAIVER_AMOUNT" property="WAIVER_AMOUNT" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, ENTITY_CODE, ENTITY_TYPE, LINE_NO, EXEMPTION_TYPE, AVERAGE_BAL_BASIS, 
+    FROM_DATE, TO_DATE, FROM_BALANCE, TO_BALANCE, WAIVER_PERCENTAGE, WAIVER_AMOUNT, CREATED_DATE, 
+    CREATED_BY
+  </sql>
+  <select id="selectCTSCHARGES_WAIVER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCHARGES_WAIVER
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </select>
+  <delete id="deleteCTSCHARGES_WAIVER" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVERVOKey" >
+    delete from CTSCHARGES_WAIVER
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </delete>
+  <insert id="insertCTSCHARGES_WAIVER" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVERVO" >
+    insert into CTSCHARGES_WAIVER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ENTITY_CODE != null" >
+        ENTITY_CODE,
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="EXEMPTION_TYPE != null" >
+        EXEMPTION_TYPE,
+      </if>
+      <if test="AVERAGE_BAL_BASIS != null" >
+        AVERAGE_BAL_BASIS,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="FROM_BALANCE != null and FROM_BALANCE != emptyBigDecimalValue" >
+        FROM_BALANCE,
+      </if>
+      <if test="TO_BALANCE != null and TO_BALANCE != emptyBigDecimalValue" >
+        TO_BALANCE,
+      </if>
+      <if test="WAIVER_PERCENTAGE != null and WAIVER_PERCENTAGE != emptyBigDecimalValue" >
+        WAIVER_PERCENTAGE,
+      </if>
+      <if test="WAIVER_AMOUNT != null and WAIVER_AMOUNT != emptyBigDecimalValue" >
+        WAIVER_AMOUNT,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ENTITY_CODE != null" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="EXEMPTION_TYPE != null" >
+        #{EXEMPTION_TYPE},
+      </if>
+      <if test="AVERAGE_BAL_BASIS != null" >
+        #{AVERAGE_BAL_BASIS},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="FROM_BALANCE != null and FROM_BALANCE != emptyBigDecimalValue" >
+        #{FROM_BALANCE},
+      </if>
+      <if test="TO_BALANCE != null and TO_BALANCE != emptyBigDecimalValue" >
+        #{TO_BALANCE},
+      </if>
+      <if test="WAIVER_PERCENTAGE != null and WAIVER_PERCENTAGE != emptyBigDecimalValue" >
+        #{WAIVER_PERCENTAGE},
+      </if>
+      <if test="WAIVER_AMOUNT != null and WAIVER_AMOUNT != emptyBigDecimalValue" >
+        #{WAIVER_AMOUNT},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCHARGES_WAIVER" >
+    update CTSCHARGES_WAIVER
+    <set >
+      <if test="LINE_NO != null" >
+        <choose >
+          <when test="LINE_NO == emptyBigDecimalValue" >
+            LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            LINE_NO = #{LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXEMPTION_TYPE != null" >
+        EXEMPTION_TYPE = #{EXEMPTION_TYPE},
+      </if>
+      <if test="AVERAGE_BAL_BASIS != null" >
+        AVERAGE_BAL_BASIS = #{AVERAGE_BAL_BASIS},
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="FROM_BALANCE != null" >
+        <choose >
+          <when test="FROM_BALANCE == emptyBigDecimalValue" >
+            FROM_BALANCE = NULL ,
+          </when>
+          <otherwise >
+            FROM_BALANCE = #{FROM_BALANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BALANCE != null" >
+        <choose >
+          <when test="TO_BALANCE == emptyBigDecimalValue" >
+            TO_BALANCE = NULL ,
+          </when>
+          <otherwise >
+            TO_BALANCE = #{TO_BALANCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WAIVER_PERCENTAGE != null" >
+        <choose >
+          <when test="WAIVER_PERCENTAGE == emptyBigDecimalValue" >
+            WAIVER_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            WAIVER_PERCENTAGE = #{WAIVER_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WAIVER_AMOUNT != null" >
+        <choose >
+          <when test="WAIVER_AMOUNT == emptyBigDecimalValue" >
+            WAIVER_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            WAIVER_AMOUNT = #{WAIVER_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </sql>
+  <update id="updateCTSCHARGES_WAIVER" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVERVO" >
+    <include refid="sql_updateCTSCHARGES_WAIVER" />
+  </update>
+</mapper>

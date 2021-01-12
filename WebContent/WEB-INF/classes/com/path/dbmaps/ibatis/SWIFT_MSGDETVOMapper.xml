@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_MSGDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_MSGDETVO" >
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="MESSAGE_ORDER" property="MESSAGE_ORDER" />
+    <id column="MODULE" property="MODULE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="ORIGINAL_LINE" property="ORIGINAL_LINE" />
+    <result column="INFORMATION" property="INFORMATION" />
+    <result column="GROUP_NBR" property="GROUP_NBR" />
+    <result column="ACTION_IF_NULL" property="ACTION_IF_NULL" />
+    <result column="INCLUDE_TAG" property="INCLUDE_TAG" />
+    <result column="REPLACEMENT_LINE" property="REPLACEMENT_LINE" />
+    <result column="INCLUDE_HDR" property="INCLUDE_HDR" />
+    <result column="B_SKIP_COND" property="b_SKIP_COND" />
+    <result column="REPLACE_TAG_BY" property="REPLACE_TAG_BY" />
+    <result column="TAG_COND_FIELD_NAME" property="TAG_COND_FIELD_NAME" />
+    <result column="BEGIN_GRP" property="BEGIN_GRP" />
+    <result column="END_GRP" property="END_GRP" />
+    <result column="FIRST_LINE_IN_GRP" property="FIRST_LINE_IN_GRP" />
+    <result column="SKIP_SPECIAL_CHARS_YN" property="SKIP_SPECIAL_CHARS_YN" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_MSGDETVOWithBLOBs" extends="BaseResultMap" >
+    <result column="SKIP_COND" property="SKIP_COND" />
+    <result column="TAG_COND" property="TAG_COND" />
+    <result column="VALUE_COND" property="VALUE_COND" />
+    <result column="COLUMN_NAME" property="COLUMN_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINE_NO, MESSAGE_ORDER, MODULE, MSG_CODE, TRX_TYPE, ORIGINAL_LINE, INFORMATION, GROUP_NBR, 
+    ACTION_IF_NULL, INCLUDE_TAG, REPLACEMENT_LINE, INCLUDE_HDR, B_SKIP_COND, REPLACE_TAG_BY, 
+    TAG_COND_FIELD_NAME, BEGIN_GRP, END_GRP, FIRST_LINE_IN_GRP, SKIP_SPECIAL_CHARS_YN
+  </sql>
+  <sql id="Blob_Column_List" >
+    SKIP_COND, TAG_COND, VALUE_COND, COLUMN_NAME
+  </sql>
+  <select id="selectSWIFT_MSGDET" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_MSGDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_MSGDET
+    where LINE_NO = #{LINE_NO}
+      and MESSAGE_ORDER = #{MESSAGE_ORDER}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteSWIFT_MSGDET" parameterType="com.path.dbmaps.vo.SWIFT_MSGDETVOKey" >
+    delete from SWIFT_MSGDET
+    where LINE_NO = #{LINE_NO}
+      and MESSAGE_ORDER = #{MESSAGE_ORDER}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertSWIFT_MSGDET" parameterType="com.path.dbmaps.vo.SWIFT_MSGDETVOWithBLOBs" >
+    insert into SWIFT_MSGDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MESSAGE_ORDER != null and MESSAGE_ORDER != emptyBigDecimalValue" >
+        MESSAGE_ORDER,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="MSG_CODE != null" >
+        MSG_CODE,
+      </if>
+      <if test="TRX_TYPE != null" >
+        TRX_TYPE,
+      </if>
+      <if test="ORIGINAL_LINE != null and ORIGINAL_LINE != emptyBigDecimalValue" >
+        ORIGINAL_LINE,
+      </if>
+      <if test="INFORMATION != null" >
+        INFORMATION,
+      </if>
+      <if test="GROUP_NBR != null and GROUP_NBR != emptyBigDecimalValue" >
+        GROUP_NBR,
+      </if>
+      <if test="ACTION_IF_NULL != null" >
+        ACTION_IF_NULL,
+      </if>
+      <if test="INCLUDE_TAG != null and INCLUDE_TAG != emptyBigDecimalValue" >
+        INCLUDE_TAG,
+      </if>
+      <if test="REPLACEMENT_LINE != null and REPLACEMENT_LINE != emptyBigDecimalValue" >
+        REPLACEMENT_LINE,
+      </if>
+      <if test="INCLUDE_HDR != null and INCLUDE_HDR != emptyBigDecimalValue" >
+        INCLUDE_HDR,
+      </if>
+      <if test="b_SKIP_COND != null and b_SKIP_COND != emptyBigDecimalValue" >
+        B_SKIP_COND,
+      </if>
+      <if test="REPLACE_TAG_BY != null" >
+        REPLACE_TAG_BY,
+      </if>
+      <if test="TAG_COND_FIELD_NAME != null" >
+        TAG_COND_FIELD_NAME,
+      </if>
+      <if test="BEGIN_GRP != null and BEGIN_GRP != emptyBigDecimalValue" >
+        BEGIN_GRP,
+      </if>
+      <if test="END_GRP != null and END_GRP != emptyBigDecimalValue" >
+        END_GRP,
+      </if>
+      <if test="FIRST_LINE_IN_GRP != null and FIRST_LINE_IN_GRP != emptyBigDecimalValue" >
+        FIRST_LINE_IN_GRP,
+      </if>
+      <if test="SKIP_COND != null" >
+        SKIP_COND,
+      </if>
+      <if test="TAG_COND != null" >
+        TAG_COND,
+      </if>
+      <if test="VALUE_COND != null" >
+        VALUE_COND,
+      </if>
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME,
+      </if>
+      <if test="SKIP_SPECIAL_CHARS_YN != null" >
+        SKIP_SPECIAL_CHARS_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MESSAGE_ORDER != null and MESSAGE_ORDER != emptyBigDecimalValue" >
+        #{MESSAGE_ORDER},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="MSG_CODE != null" >
+        #{MSG_CODE},
+      </if>
+      <if test="TRX_TYPE != null" >
+        #{TRX_TYPE},
+      </if>
+      <if test="ORIGINAL_LINE != null and ORIGINAL_LINE != emptyBigDecimalValue" >
+        #{ORIGINAL_LINE},
+      </if>
+      <if test="INFORMATION != null" >
+        #{INFORMATION},
+      </if>
+      <if test="GROUP_NBR != null and GROUP_NBR != emptyBigDecimalValue" >
+        #{GROUP_NBR},
+      </if>
+      <if test="ACTION_IF_NULL != null" >
+        #{ACTION_IF_NULL},
+      </if>
+      <if test="INCLUDE_TAG != null and INCLUDE_TAG != emptyBigDecimalValue" >
+        #{INCLUDE_TAG},
+      </if>
+      <if test="REPLACEMENT_LINE != null and REPLACEMENT_LINE != emptyBigDecimalValue" >
+        #{REPLACEMENT_LINE},
+      </if>
+      <if test="INCLUDE_HDR != null and INCLUDE_HDR != emptyBigDecimalValue" >
+        #{INCLUDE_HDR},
+      </if>
+      <if test="b_SKIP_COND != null and b_SKIP_COND != emptyBigDecimalValue" >
+        #{b_SKIP_COND},
+      </if>
+      <if test="REPLACE_TAG_BY != null" >
+        #{REPLACE_TAG_BY},
+      </if>
+      <if test="TAG_COND_FIELD_NAME != null" >
+        #{TAG_COND_FIELD_NAME},
+      </if>
+      <if test="BEGIN_GRP != null and BEGIN_GRP != emptyBigDecimalValue" >
+        #{BEGIN_GRP},
+      </if>
+      <if test="END_GRP != null and END_GRP != emptyBigDecimalValue" >
+        #{END_GRP},
+      </if>
+      <if test="FIRST_LINE_IN_GRP != null and FIRST_LINE_IN_GRP != emptyBigDecimalValue" >
+        #{FIRST_LINE_IN_GRP},
+      </if>
+      <if test="SKIP_COND != null" >
+        #{SKIP_COND},
+      </if>
+      <if test="TAG_COND != null" >
+        #{TAG_COND},
+      </if>
+      <if test="VALUE_COND != null" >
+        #{VALUE_COND},
+      </if>
+      <if test="COLUMN_NAME != null" >
+        #{COLUMN_NAME},
+      </if>
+      <if test="SKIP_SPECIAL_CHARS_YN != null" >
+        #{SKIP_SPECIAL_CHARS_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_MSGDET" >
+    update SWIFT_MSGDET
+    <set >
+      <if test="ORIGINAL_LINE != null" >
+        <choose >
+          <when test="ORIGINAL_LINE == emptyBigDecimalValue" >
+            ORIGINAL_LINE = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_LINE = #{ORIGINAL_LINE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INFORMATION != null" >
+        INFORMATION = #{INFORMATION},
+      </if>
+      <if test="GROUP_NBR != null" >
+        <choose >
+          <when test="GROUP_NBR == emptyBigDecimalValue" >
+            GROUP_NBR = NULL ,
+          </when>
+          <otherwise >
+            GROUP_NBR = #{GROUP_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTION_IF_NULL != null" >
+        ACTION_IF_NULL = #{ACTION_IF_NULL},
+      </if>
+      <if test="INCLUDE_TAG != null" >
+        <choose >
+          <when test="INCLUDE_TAG == emptyBigDecimalValue" >
+            INCLUDE_TAG = NULL ,
+          </when>
+          <otherwise >
+            INCLUDE_TAG = #{INCLUDE_TAG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REPLACEMENT_LINE != null" >
+        <choose >
+          <when test="REPLACEMENT_LINE == emptyBigDecimalValue" >
+            REPLACEMENT_LINE = NULL ,
+          </when>
+          <otherwise >
+            REPLACEMENT_LINE = #{REPLACEMENT_LINE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INCLUDE_HDR != null" >
+        <choose >
+          <when test="INCLUDE_HDR == emptyBigDecimalValue" >
+            INCLUDE_HDR = NULL ,
+          </when>
+          <otherwise >
+            INCLUDE_HDR = #{INCLUDE_HDR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="b_SKIP_COND != null" >
+        <choose >
+          <when test="b_SKIP_COND == emptyBigDecimalValue" >
+            B_SKIP_COND = NULL ,
+          </when>
+          <otherwise >
+            B_SKIP_COND = #{b_SKIP_COND},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REPLACE_TAG_BY != null" >
+        REPLACE_TAG_BY = #{REPLACE_TAG_BY},
+      </if>
+      <if test="TAG_COND_FIELD_NAME != null" >
+        TAG_COND_FIELD_NAME = #{TAG_COND_FIELD_NAME},
+      </if>
+      <if test="BEGIN_GRP != null" >
+        <choose >
+          <when test="BEGIN_GRP == emptyBigDecimalValue" >
+            BEGIN_GRP = NULL ,
+          </when>
+          <otherwise >
+            BEGIN_GRP = #{BEGIN_GRP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="END_GRP != null" >
+        <choose >
+          <when test="END_GRP == emptyBigDecimalValue" >
+            END_GRP = NULL ,
+          </when>
+          <otherwise >
+            END_GRP = #{END_GRP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIRST_LINE_IN_GRP != null" >
+        <choose >
+          <when test="FIRST_LINE_IN_GRP == emptyBigDecimalValue" >
+            FIRST_LINE_IN_GRP = NULL ,
+          </when>
+          <otherwise >
+            FIRST_LINE_IN_GRP = #{FIRST_LINE_IN_GRP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SKIP_COND != null" >
+        SKIP_COND = #{SKIP_COND},
+      </if>
+      <if test="TAG_COND != null" >
+        TAG_COND = #{TAG_COND},
+      </if>
+      <if test="VALUE_COND != null" >
+        VALUE_COND = #{VALUE_COND},
+      </if>
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME = #{COLUMN_NAME},
+      </if>
+      <if test="SKIP_SPECIAL_CHARS_YN != null" >
+            SKIP_SPECIAL_CHARS_YN = #{SKIP_SPECIAL_CHARS_YN},
+      </if>
+    </set>
+    where LINE_NO = #{LINE_NO}
+      and MESSAGE_ORDER = #{MESSAGE_ORDER}
+      and MODULE = #{MODULE}
+      and MSG_CODE = #{MSG_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateSWIFT_MSGDET" parameterType="com.path.dbmaps.vo.SWIFT_MSGDETVOWithBLOBs" >
+    <include refid="sql_updateSWIFT_MSGDET" />
+  </update>
+</mapper>

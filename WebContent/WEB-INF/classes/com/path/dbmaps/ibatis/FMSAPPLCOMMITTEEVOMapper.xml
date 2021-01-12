@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLCOMMITTEE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLCOMMITTEEVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="COMMITTEE" property="COMMITTEE" />
+    <result column="APPROVE_RECOMMEND" property="APPROVE_RECOMMEND" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NBR, COMMITTEE, APPROVE_RECOMMEND
+  </sql>
+  <select id="selectFMSAPPLCOMMITTEE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLCOMMITTEEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLCOMMITTEE
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSAPPLCOMMITTEE" parameterType="com.path.dbmaps.vo.FMSAPPLCOMMITTEEVOKey" >
+    delete from FMSAPPLCOMMITTEE
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSAPPLCOMMITTEE" parameterType="com.path.dbmaps.vo.FMSAPPLCOMMITTEEVO" >
+    insert into FMSAPPLCOMMITTEE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="COMMITTEE != null and COMMITTEE != emptyBigDecimalValue" >
+        COMMITTEE,
+      </if>
+      <if test="APPROVE_RECOMMEND != null and !&quot;&quot;.equals(APPROVE_RECOMMEND)" >
+        APPROVE_RECOMMEND,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="COMMITTEE != null and COMMITTEE != emptyBigDecimalValue" >
+        #{COMMITTEE},
+      </if>
+      <if test="APPROVE_RECOMMEND != null and !&quot;&quot;.equals(APPROVE_RECOMMEND)" >
+        #{APPROVE_RECOMMEND},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLCOMMITTEE" >
+    update FMSAPPLCOMMITTEE
+    <set >
+      <if test="COMMITTEE != null" >
+        <choose >
+          <when test="COMMITTEE == emptyBigDecimalValue" >
+            COMMITTEE = NULL ,
+          </when>
+          <otherwise >
+            COMMITTEE = #{COMMITTEE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVE_RECOMMEND != null" >
+        <choose >
+          <when test="APPROVE_RECOMMEND.equals(&quot;&quot;)" >
+            APPROVE_RECOMMEND = NULL ,
+          </when>
+          <otherwise >
+            APPROVE_RECOMMEND = #{APPROVE_RECOMMEND},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSAPPLCOMMITTEE" parameterType="com.path.dbmaps.vo.FMSAPPLCOMMITTEEVO" >
+    <include refid="sql_updateFMSAPPLCOMMITTEE" />
+  </update>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GTW_CHANNEL_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.GTW_CHANNEL_DETVO" >
+    <id column="CHANNEL_ID" property="CHANNEL_ID" />
+    <id column="HOST_NAME" property="HOST_NAME" />
+    <result column="HASH_KEY" property="HASH_KEY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CHANNEL_ID, HOST_NAME, HASH_KEY
+  </sql>
+  <select id="selectGTW_CHANNEL_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.GTW_CHANNEL_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from GTW_CHANNEL_DET
+    where CHANNEL_ID = #{CHANNEL_ID}
+      and HOST_NAME = #{HOST_NAME}
+  </select>
+  <delete id="deleteGTW_CHANNEL_DET" parameterType="com.path.dbmaps.vo.GTW_CHANNEL_DETVO" >
+    delete from GTW_CHANNEL_DET
+    where CHANNEL_ID = #{CHANNEL_ID}
+      and HOST_NAME = #{HOST_NAME}
+  </delete>
+  <insert id="insertGTW_CHANNEL_DET" parameterType="com.path.dbmaps.vo.GTW_CHANNEL_DETVO" >
+    insert into GTW_CHANNEL_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CHANNEL_ID != null and CHANNEL_ID != emptyBigDecimalValue" >
+        CHANNEL_ID,
+      </if>
+      <if test="HOST_NAME != null and !&quot;&quot;.equals(HOST_NAME)" >
+        HOST_NAME,
+      </if>
+      <if test="HASH_KEY != null and !&quot;&quot;.equals(HASH_KEY)" >
+        HASH_KEY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CHANNEL_ID != null and CHANNEL_ID != emptyBigDecimalValue" >
+        #{CHANNEL_ID},
+      </if>
+      <if test="HOST_NAME != null and !&quot;&quot;.equals(HOST_NAME)" >
+        #{HOST_NAME},
+      </if>
+      <if test="HASH_KEY != null and !&quot;&quot;.equals(HASH_KEY)" >
+        #{HASH_KEY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateGTW_CHANNEL_DET" >
+    update GTW_CHANNEL_DET
+    <set >
+      <if test="HASH_KEY != null" >
+        <choose >
+          <when test="HASH_KEY.equals(&quot;&quot;)" >
+            HASH_KEY = NULL ,
+          </when>
+          <otherwise >
+            HASH_KEY = #{HASH_KEY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CHANNEL_ID = #{CHANNEL_ID}
+      and HOST_NAME = #{HOST_NAME}
+  </sql>
+  <update id="updateGTW_CHANNEL_DET" parameterType="com.path.dbmaps.vo.GTW_CHANNEL_DETVO" >
+    <include refid="sql_updateGTW_CHANNEL_DET" />
+  </update>
+</mapper>

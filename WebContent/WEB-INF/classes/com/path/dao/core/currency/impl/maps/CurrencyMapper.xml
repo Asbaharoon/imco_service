@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="currencyMapper">
+  <select id="checkCurrencyValidation" parameterType="currencySC" resultType="int">
+   SELECT 1	FROM CURRENCIES WHERE COMP_CODE = #{compCode} AND CURRENCY_CODE = #{currencyCode, jdbcType=NUMERIC} 	  
+  </select>  
+  <sql id="currencyCommon">
+      <if test="allCurrenciesFlag != null" >
+		SELECT 0 CURRENCY_CODE, 
+			VALUE_DESC BRIEF_DESC_ENG, 
+			VALUE_DESC LONG_DESC_ENG,
+			2 DECIMAL_POINTS,
+			1 UNIT,
+			'' BRIEF_DESC_ARAB,
+			'' LONG_DESC_ARAB,
+			'' ADDITIONAL_REFERENCE, 
+			'0' ISO_CODE
+		 FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = 41 
+		AND LANG_CODE = #{language} 
+		AND VALUE_CODE = 'A'
+		UNION
+	</if>
+	<![CDATA[
+        SELECT DISTINCT
+			 CURRENCIES.CURRENCY_CODE,
+			 CURRENCIES.BRIEF_DESC_ENG,
+			 CURRENCIES.LONG_DESC_ENG,
+			 CURRENCIES.DECIMAL_POINTS,
+			 CURRENCIES.UNIT,
+			 CURRENCIES.BRIEF_DESC_ARAB,
+			 CURRENCIES.LONG_DESC_ARAB,
+			 CURRENCIES.ADDITIONAL_REFERENCE,
+			 CURRENCIES.ISO_CODE
+	FROM  CURRENCIES 
+	WHERE	 (CURRENCIES.COMP_CODE  = #{compCode})
+	]]>  
+       
+ </sql>
+	 
+	 
+ 	<sql id="checkAllowedCy">
+       
+		      AND 
+		      (
+			      EXISTS 
+			      (
+				       SELECT 1 FROM CTS_TRXTYPE_ALLOWED_CY
+				      WHERE CTS_TRXTYPE_ALLOWED_CY.COMP_CODE = #{compCode}
+				      AND CTS_TRXTYPE_ALLOWED_CY.CY_CODE = CURRENCIES.CURRENCY_CODE
+				      AND CTS_TRXTYPE_ALLOWED_CY.COMP_CODE = CURRENCIES.COMP_CODE
+				      AND CTS_TRXTYPE_ALLOWED_CY.TRX_TYPE_CODE = #{trxType}
+			      )
+			      OR
+			      NOT EXISTS 
+			      (
+				      SELECT 1 FROM CTS_TRXTYPE_ALLOWED_CY
+				      WHERE CTS_TRXTYPE_ALLOWED_CY.COMP_CODE = #{compCode}
+				       AND CTS_TRXTYPE_ALLOWED_CY.COMP_CODE = CURRENCIES.COMP_CODE
+				      AND CTS_TRXTYPE_ALLOWED_CY.TRX_TYPE_CODE = #{trxType}
+			      ) 
+		      )
+		      
+ 	</sql>
+
+	<resultMap id="currencyListMap" type="currencyVO">
+		<result property="CURRENCY_CODE" column="CURRENCY_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+		<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+		<result property="DECIMAL_POINTS" column="DECIMAL_POINTS" />
+		<result property="UNIT" column="UNIT" />
+		<result property="ISO_CODE" column="ISO_CODE" />
+	</resultMap>
+ 
+ <select id="currencyList" resultMap="currencyListMap" parameterType="currencySC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="currencyCommon"/>
+       <if test='applyAllowedCy !=null and "1".equals(applyAllowedCy) and trxType != null'>
+     		 <include refid="checkAllowedCy"/>
+      </if>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="currencyListCount" resultType="int" parameterType="currencySC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="currencyCommon"/>
+      <if test='applyAllowedCy !=null and "1".equals(applyAllowedCy) and trxType != null'>
+	      <include refid="checkAllowedCy"/>
+      </if>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ <select id="returnCurrencyById" parameterType="currencySC" resultType="currencyVO">  		
+	SELECT 
+			 CURRENCY_CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN LONG_DESC_ARAB ELSE LONG_DESC_ENG END LONG_DESC_ENG,
+			 DECIMAL_POINTS		 
+	FROM  CURRENCIES 
+	WHERE COMP_CODE = #{compCode} AND CURRENCY_CODE = #{currencyCode} 
+ </select>
+ 
+ <select id="returnCurrencyInBranchById" parameterType="currencySC" resultType="currencyVO">
+ 	<include refid="currencyCommon"/>
+ 	AND (CURRENCIES.CURRENCY_CODE = #{currencyCode})
+ 	AND (SELECT COUNT(1)
+		   FROM AMF 
+		  WHERE BRANCH_CODE =  #{branchCode}
+		    AND CURRENCY_CODE = #{currencyCode}) != 0
+ </select>
+ 
+ <select id="returnCurrencyDescByCurrencyCode" parameterType="currencySC"
+		resultType="currencyVO">
+		SELECT CASE WHEN #{language} = 'L' THEN BRIEF_DESC_ENG ELSE	BRIEF_DESC_ARAB END BRIEF_DESC_ENG,
+			   DECIMAL_POINTS DECIMAL_POINTS,
+			   CASE WHEN APPLY_ROUNDING IS NULL THEN '0' ELSE APPLY_ROUNDING END APPLY_ROUNDING,
+			   UNIT,
+			   MULT_DIV_IND
+		  FROM CURRENCIES
+		 WHERE CURRENCIES.COMP_CODE = #{compCode}
+		   AND CURRENCIES.CURRENCY_CODE = #{currencyCode}
+	</select>
+	
+ <select id="currencyAddRefList" resultMap="currencyListMap" parameterType="currencySC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="currencyAddRefCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="currencyAddRefListCount" resultType="int" parameterType="currencySC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="currencyAddRefCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+	 <sql id="currencyAddRefCommon">
+      <![CDATA[
+      SELECT
+			 CURRENCIES.COMP_CODE,
+			 CURRENCIES.CURRENCY_CODE,
+			 CURRENCIES.BRIEF_DESC_ENG,
+			 CURRENCIES.LONG_DESC_ENG,
+			 CURRENCIES.BRIEF_DESC_ARAB,
+			 CURRENCIES.LONG_DESC_ARAB,
+			 CURRENCIES.ADDITIONAL_REFERENCE
+	FROM  CURRENCIES 
+	WHERE	 CURRENCIES.COMP_CODE  = #{compCode}
+      ]]>   
+ </sql>
+
+
+<sql id="currencyAmfList_sql">
+SELECT DISTINCT CURRENCIES.CURRENCY_CODE,
+                CURRENCIES.BRIEF_DESC_ENG,
+                CURRENCIES.LONG_DESC_ENG,
+                CURRENCIES.DECIMAL_POINTS,
+                CURRENCIES.UNIT
+  FROM CURRENCIES, AMF
+ WHERE (CURRENCIES.COMP_CODE = AMF.COMP_CODE)
+   AND (CURRENCIES.CURRENCY_CODE = AMF.CURRENCY_CODE)
+   AND ((CURRENCIES.COMP_CODE = #{compCode}) AND
+       (AMF.STATUS IN ('A', 'I', 'T', 'P')) AND
+       (AMF.BRANCH_CODE = #{branchCode}) AND
+       (AMF.ACC_BC = CASE #{accBrCode} WHEN 1 THEN 'B' WHEN 2 THEN 'C' WHEN
+         3 THEN AMF.ACC_BC END))
+
+</sql>
+
+
+<select id="currencyAmfList" resultMap="currencyListMap" parameterType="currencySC">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="currencyAmfList_sql" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+<select id="currencyAmfListCount" resultType="int" parameterType="currencySC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="currencyAmfList_sql" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<select id="currencyFmsList" resultMap="currencyListMap" parameterType="currencySC">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="currencyCommonFms" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+<select id="currencyFmsListCount" resultType="int" parameterType="currencySC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="currencyCommonFms" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+ <sql id="currencyCommonFms">
+      <![CDATA[
+	
+	  SELECT DISTINCT CURRENCIES.CURRENCY_CODE,
+                  CASE
+                    WHEN (SELECT ENABLE_LANGUAGE
+                            FROM S_APP
+                           WHERE APP_NAME = 'FMS') = 'AR' THEN
+                     CURRENCIES.BRIEF_DESC_ARAB
+                    ELSE
+                     CURRENCIES.BRIEF_DESC_ENG
+                  END BRIEF_DESC_ENG,
+                  
+                   CASE
+                    WHEN (SELECT ENABLE_LANGUAGE
+                            FROM S_APP
+                           WHERE APP_NAME = 'FMS') = 'AR' THEN
+                     CURRENCIES.LONG_DESC_ARAB
+                    ELSE
+                     CURRENCIES.LONG_DESC_ENG
+                  END LONG_DESC_ENG,
+                  
+                  CURRENCIES.DECIMAL_POINTS,
+                  CURRENCIES.UNIT
+    FROM CURRENCIES
+   WHERE (CURRENCIES.COMP_CODE = #{compCode})
+	                
+      ]]>   
+ </sql>
+ 
+ <select id="returnCurrencyByIdFms" parameterType="currencySC" resultType="currencyVO">  		
+	 SELECT DISTINCT CURRENCIES.CURRENCY_CODE,
+                  CASE
+                    WHEN (SELECT ENABLE_LANGUAGE
+                            FROM S_APP
+                           WHERE APP_NAME = 'FMS') = 'AR' THEN
+                     CURRENCIES.BRIEF_DESC_ARAB
+                    ELSE
+                     CURRENCIES.BRIEF_DESC_ENG
+                  END BRIEF_DESC_ENG,
+                  
+                  CASE
+                    WHEN (SELECT ENABLE_LANGUAGE
+                            FROM S_APP
+                           WHERE APP_NAME = 'FMS') = 'AR' THEN
+                     CURRENCIES.LONG_DESC_ARAB
+                    ELSE
+                     CURRENCIES.LONG_DESC_ENG
+                  END LONG_DESC_ENG,
+                  
+                  CURRENCIES.DECIMAL_POINTS,
+                  CURRENCIES.UNIT,
+                  CURRENCIES.MULT_DIV_IND
+    FROM CURRENCIES
+   WHERE CURRENCIES.COMP_CODE = #{compCode}  AND CURRENCIES.CURRENCY_CODE = #{currencyCode} 
+	
+
+ </select>
+
+ <select id="returnCurrencyBydesc" parameterType="currencyVO" resultType="currencyVO">  		
+	SELECT *
+	  FROM CURRENCIES
+	 WHERE COMP_CODE = #{COMP_CODE}
+	   AND BRIEF_DESC_ENG = #{BRIEF_DESC_ENG}
+ </select>
+ 
+ <select id="returnCurrencyByIsoCode" parameterType="currencyVO" resultType="currencyVO">  		
+	SELECT *
+	  FROM CURRENCIES
+	 WHERE COMP_CODE = #{COMP_CODE}
+	   AND ISO_CODE = #{ISO_CODE}
+ </select>
+ 
+ <select id="currencyListCountFAS" resultType="int" parameterType="currencySC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="currencyCommon"/>
+      <include refid="allCurrencyUnionFAS"/>
+      <include refid="otherCurrencyUnionFAS"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+
+  <select id="currencyListFAS" resultMap="currencyListMap" parameterType="currencySC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="currencyCommon"/>
+      <include refid="allCurrencyUnionFAS"/>
+      <include refid="otherCurrencyUnionFAS"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<sql id="allCurrencyUnionFAS">
+
+ UNION
+       SELECT  -1  CURRENCY_CODE,
+               'ALL'  BRIEF_DESC_ENG,
+               'ALL'  LONG_DESC_ENG,
+               2        DECIMAL_POINTS,
+               1   UNIT,
+               'ALL' BRIEF_DESC_ARAB,
+               'ALL'  LONG_DESC_ARAB,
+               'ALL' ADDITIONAL_REFERENCE,
+               '-1'  ISO_CODE
+       FROM  PTH_CTRL
+
+</sql>
+
+<sql id="otherCurrencyUnionFAS">
+
+       UNION SELECT   
+          0   CURRENCY_CODE,
+                'OTHERS'    BRIEF_DESC_ENG,
+                'OTHERS'    LONG_DESC_ENG,
+                2           DECIMAL_POINTS,
+                1           UNIT,
+                'OTHERS'    BRIEF_DESC_ARAB,
+                'OTHERS'    LONG_DESC_ARAB,
+                'OTHERS'    ADDITIONAL_REFERENCE,
+                '0'    ISO_CODE
+       FROM  PTH_CTRL
+
+</sql>
+
+
+<sql id="rateCurrencyListQuery">
+      <![CDATA[
+     
+    SELECT   
+			
+			CURRENCIES.CURRENCY_CODE,
+		    CASE WHEN #{language} = 'A' THEN CURRENCIES.BRIEF_DESC_ARAB ELSE CURRENCIES.BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+			CASE WHEN #{language} = 'A' THEN CURRENCIES.LONG_DESC_ARAB ELSE CURRENCIES.LONG_DESC_ENG END LONG_DESC_ENG,
+			CURRENCIES.DECIMAL_POINTS,
+            CURRENCIES.UNIT,
+            CURRENCIES.MULT_DIV_IND
+	FROM    
+	        CTSCITDET2 , CURRENCIES , RIFPFT
+	WHERE	
+	        CTSCITDET2.COMP_CODE  = #{compCode} 
+	 AND	CTSCITDET2.PROFIT_GROUP  =#{groupCode}
+	 AND 	CURRENCIES.COMP_CODE = CTSCITDET2.COMP_CODE
+	 AND 	CURRENCIES.CURRENCY_CODE = CTSCITDET2.CURRENCY
+	 AND	RIFPFT.COMP_CODE = CTSCITDET2.COMP_CODE
+	 AND	RIFPFT.GROUP_CODE = CTSCITDET2.PROFIT_GROUP
+	 
+      ]]>   
+ </sql>
+ 
+ <resultMap id="rateCurrencyListMap" type="currencyVO">
+		<result property="CURRENCY_CODE" column="CURRENCY_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+</resultMap>
+
+<select id="rateCurrencyList" resultMap="rateCurrencyListMap" parameterType="currencySC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="rateCurrencyListQuery"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+<select id="rateCurrencyListCount" resultType="int" parameterType="currencySC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="rateCurrencyListQuery" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_BILL_TYPE_PROVIDER_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_BILL_TYPE_PROVIDER_DETAILSVO" >
+    <id column="BILL_TYPE" property="BILL_TYPE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="BILL_REFERENCE_YN" property="BILL_REFERENCE_YN" />
+    <result column="MANDATORY_YN" property="MANDATORY_YN" />
+    <result column="FIELD_LENGTH_MIN" property="FIELD_LENGTH_MIN" />
+    <result column="FIELD_LENGTH_MAX" property="FIELD_LENGTH_MAX" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BILL_TYPE, COMP_CODE, LINE_NO, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, BILL_REFERENCE_YN, 
+    MANDATORY_YN, FIELD_LENGTH_MIN, FIELD_LENGTH_MAX
+  </sql>
+  <select id="selectCTS_BILL_TYPE_PROVIDER_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_PROVIDER_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_BILL_TYPE_PROVIDER_DETAILS
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_BILL_TYPE_PROVIDER_DETAILS" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_PROVIDER_DETAILSVOKey" >
+    delete from CTS_BILL_TYPE_PROVIDER_DETAILS
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_BILL_TYPE_PROVIDER_DETAILS" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_PROVIDER_DETAILSVO" >
+    insert into CTS_BILL_TYPE_PROVIDER_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BILL_TYPE != null and BILL_TYPE != emptyBigDecimalValue" >
+        BILL_TYPE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="BILL_REFERENCE_YN != null" >
+        BILL_REFERENCE_YN,
+      </if>
+      <if test="MANDATORY_YN != null" >
+        MANDATORY_YN,
+      </if>
+      <if test="FIELD_LENGTH_MIN != null and FIELD_LENGTH_MIN != emptyBigDecimalValue" >
+        FIELD_LENGTH_MIN,
+      </if>
+      <if test="FIELD_LENGTH_MAX != null and FIELD_LENGTH_MAX != emptyBigDecimalValue" >
+        FIELD_LENGTH_MAX,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BILL_TYPE != null and BILL_TYPE != emptyBigDecimalValue" >
+        #{BILL_TYPE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="BILL_REFERENCE_YN != null" >
+        #{BILL_REFERENCE_YN},
+      </if>
+      <if test="MANDATORY_YN != null" >
+        #{MANDATORY_YN},
+      </if>
+      <if test="FIELD_LENGTH_MIN != null and FIELD_LENGTH_MIN != emptyBigDecimalValue" >
+        #{FIELD_LENGTH_MIN},
+      </if>
+      <if test="FIELD_LENGTH_MAX != null and FIELD_LENGTH_MAX != emptyBigDecimalValue" >
+        #{FIELD_LENGTH_MAX},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_BILL_TYPE_PROVIDER_DETAILS" >
+    update CTS_BILL_TYPE_PROVIDER_DETAILS
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="BILL_REFERENCE_YN != null" >
+        BILL_REFERENCE_YN = #{BILL_REFERENCE_YN},
+      </if>
+      <if test="MANDATORY_YN != null" >
+        MANDATORY_YN = #{MANDATORY_YN},
+      </if>
+      <if test="FIELD_LENGTH_MIN != null" >
+        <choose >
+          <when test="FIELD_LENGTH_MIN == emptyBigDecimalValue" >
+            FIELD_LENGTH_MIN = NULL ,
+          </when>
+          <otherwise >
+            FIELD_LENGTH_MIN = #{FIELD_LENGTH_MIN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_LENGTH_MAX != null" >
+        <choose >
+          <when test="FIELD_LENGTH_MAX == emptyBigDecimalValue" >
+            FIELD_LENGTH_MAX = NULL ,
+          </when>
+          <otherwise >
+            FIELD_LENGTH_MAX = #{FIELD_LENGTH_MAX},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BILL_TYPE = #{BILL_TYPE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_BILL_TYPE_PROVIDER_DETAILS" parameterType="com.path.dbmaps.vo.CTS_BILL_TYPE_PROVIDER_DETAILSVO" >
+    <include refid="sql_updateCTS_BILL_TYPE_PROVIDER_DETAILS" />
+  </update>
+</mapper>

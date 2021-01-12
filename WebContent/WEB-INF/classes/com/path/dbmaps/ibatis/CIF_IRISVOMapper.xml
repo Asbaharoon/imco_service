@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_IRIS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_IRISVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIF_IRIS_ID" property="CIF_IRIS_ID" />
+    <result column="IRIS_STATUS" property="IRIS_STATUS" />
+    <result column="IRIS_SCAN_TYPE" property="IRIS_SCAN_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, CIF_IRIS_ID, IRIS_STATUS, IRIS_SCAN_TYPE
+  </sql>
+  <select id="selectCIF_IRIS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_IRISVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_IRIS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_IRIS" parameterType="com.path.dbmaps.vo.CIF_IRISVOKey" >
+    delete from CIF_IRIS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_IRIS" parameterType="com.path.dbmaps.vo.CIF_IRISVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT MAX(COMP_CODE)+1 FROM CIF_IRIS
+    </selectKey>
+    insert into CIF_IRIS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      COMP_CODE,
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_IRIS_ID != null" >
+        CIF_IRIS_ID,
+      </if>
+      <if test="IRIS_STATUS != null" >
+        IRIS_STATUS,
+      </if>
+      <if test="IRIS_SCAN_TYPE != null" >
+        IRIS_SCAN_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      #{COMP_CODE},
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_IRIS_ID != null" >
+        #{CIF_IRIS_ID},
+      </if>
+      <if test="IRIS_STATUS != null" >
+        #{IRIS_STATUS},
+      </if>
+      <if test="IRIS_SCAN_TYPE != null" >
+        #{IRIS_SCAN_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_IRIS" >
+    update CIF_IRIS
+    <set >
+      <if test="CIF_IRIS_ID != null" >
+        CIF_IRIS_ID = #{CIF_IRIS_ID},
+      </if>
+      <if test="IRIS_STATUS != null" >
+        IRIS_STATUS = #{IRIS_STATUS},
+      </if>
+      <if test="IRIS_SCAN_TYPE != null" >
+        IRIS_SCAN_TYPE = #{IRIS_SCAN_TYPE},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_IRIS" parameterType="com.path.dbmaps.vo.CIF_IRISVO" >
+    <include refid="sql_updateCIF_IRIS" />
+  </update>
+</mapper>

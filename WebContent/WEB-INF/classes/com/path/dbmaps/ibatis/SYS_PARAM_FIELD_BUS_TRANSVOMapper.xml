@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_FIELD_BUS_TRANS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_FIELD_BUS_TRANSVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="FLD_IDENTIFIER" property="FLD_IDENTIFIER" />
+    <id column="LANG_CODE" property="LANG_CODE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="TOOLTIP_VALUE" property="TOOLTIP_VALUE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, FLD_IDENTIFIER, LANG_CODE, PROG_REF, TOOLTIP_VALUE
+  </sql>
+  <select id="selectSYS_PARAM_FIELD_BUS_TRANS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_FIELD_BUS_TRANSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_FIELD_BUS_TRANS
+    where APP_NAME = #{APP_NAME}
+      and FLD_IDENTIFIER = #{FLD_IDENTIFIER}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteSYS_PARAM_FIELD_BUS_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_FIELD_BUS_TRANSVOKey" >
+    delete from SYS_PARAM_FIELD_BUS_TRANS
+    where APP_NAME = #{APP_NAME}
+      and FLD_IDENTIFIER = #{FLD_IDENTIFIER}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertSYS_PARAM_FIELD_BUS_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_FIELD_BUS_TRANSVO" >
+    insert into SYS_PARAM_FIELD_BUS_TRANS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="FLD_IDENTIFIER != null and FLD_IDENTIFIER != emptyBigDecimalValue" >
+        FLD_IDENTIFIER,
+      </if>
+      <if test="LANG_CODE != null" >
+        LANG_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="TOOLTIP_VALUE != null" >
+        TOOLTIP_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="FLD_IDENTIFIER != null and FLD_IDENTIFIER != emptyBigDecimalValue" >
+        #{FLD_IDENTIFIER},
+      </if>
+      <if test="LANG_CODE != null" >
+        #{LANG_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="TOOLTIP_VALUE != null" >
+        #{TOOLTIP_VALUE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_FIELD_BUS_TRANS" >
+    update SYS_PARAM_FIELD_BUS_TRANS
+    <set >
+      <if test="TOOLTIP_VALUE != null" >
+        TOOLTIP_VALUE = #{TOOLTIP_VALUE},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and FLD_IDENTIFIER = #{FLD_IDENTIFIER}
+      and LANG_CODE = #{LANG_CODE}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateSYS_PARAM_FIELD_BUS_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_FIELD_BUS_TRANSVO" >
+    <include refid="sql_updateSYS_PARAM_FIELD_BUS_TRANS" />
+  </update>
+</mapper>

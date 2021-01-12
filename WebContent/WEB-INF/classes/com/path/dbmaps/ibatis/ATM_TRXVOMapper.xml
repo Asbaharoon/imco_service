@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ATM_TRX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ATM_TRXVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="TRANSMISSION_DATE" property="TRANSMISSION_DATE" />
+    <result column="TRX_AMT" property="TRX_AMT" />
+    <result column="SETTL_AMT" property="SETTL_AMT" />
+    <result column="TRACE_NUM" property="TRACE_NUM" />
+    <result column="LOCAL_TIME" property="LOCAL_TIME" />
+    <result column="LOCAL_DATE" property="LOCAL_DATE" />
+    <result column="SETTL_DATE" property="SETTL_DATE" />
+    <result column="EXPIRY_DATE" property="EXPIRY_DATE" />
+    <result column="CAPTURE_DATE" property="CAPTURE_DATE" />
+    <result column="IID" property="IID" />
+    <result column="TRACK2" property="TRACK2" />
+    <result column="CARD_NO" property="CARD_NO" />
+    <result column="RET_REF_NO" property="RET_REF_NO" />
+    <result column="ACCEPTOR_TERM_ID" property="ACCEPTOR_TERM_ID" />
+    <result column="ACCEPTOR_ID_CODE" property="ACCEPTOR_ID_CODE" />
+    <result column="ACCEPTOR_NAME" property="ACCEPTOR_NAME" />
+    <result column="TRX_CURRENCY" property="TRX_CURRENCY" />
+    <result column="SETTL_CURRENCY" property="SETTL_CURRENCY" />
+    <result column="TERMINAL_DATA" property="TERMINAL_DATA" />
+    <result column="POS_RESPONSE_CODE" property="POS_RESPONSE_CODE" />
+    <result column="POS_SETTL_DATA" property="POS_SETTL_DATA" />
+    <result column="REPLACEMENT_AMT" property="REPLACEMENT_AMT" />
+    <result column="REPLACEMENT_AMT_FC" property="REPLACEMENT_AMT_FC" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="AUTH_CODE" property="AUTH_CODE" />
+    <result column="FROM_ACC" property="FROM_ACC" />
+    <result column="TO_ACC" property="TO_ACC" />
+    <result column="FWD_CODE" property="FWD_CODE" />
+    <result column="M_TYPE" property="m_TYPE" />
+    <result column="PROCESS_CODE" property="PROCESS_CODE" />
+    <result column="CHOLDER_AMT_BILLING" property="CHOLDER_AMT_BILLING" />
+    <result column="ACQ_INST_CODE" property="ACQ_INST_CODE" />
+    <result column="FWD_INST_CODE" property="FWD_INST_CODE" />
+    <result column="FEE_CURRENCY" property="FEE_CURRENCY" />
+    <result column="FEE_TRX_PROCESS" property="FEE_TRX_PROCESS" />
+    <result column="FEE_TRX" property="FEE_TRX" />
+    <result column="CY_CODE_BILLING" property="CY_CODE_BILLING" />
+    <result column="CREDIT_NBR" property="CREDIT_NBR" />
+    <result column="ORG_DATA" property="ORG_DATA" />
+    <result column="FILE_NAME" property="FILE_NAME" />
+    <result column="CTS_TRS_BR" property="CTS_TRS_BR" />
+    <result column="CTS_TRS_NO" property="CTS_TRS_NO" />
+    <result column="NEW_TRX_NO" property="NEW_TRX_NO" />
+    <result column="INTERFACE_CODE" property="INTERFACE_CODE" />
+    <result column="TRX_OVERDRAWN_ACC" property="TRX_OVERDRAWN_ACC" />
+    <result column="MSG_TYPE" property="MSG_TYPE" />
+    <result column="END_DATE" property="END_DATE" />
+    <result column="START_DATE" property="START_DATE" />
+    <result column="TIME_OUT" property="TIME_OUT" />
+    <result column="SETTL_RATE" property="SETTL_RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, TRX_NO, TRANSMISSION_DATE, TRX_AMT, SETTL_AMT, TRACE_NUM, LOCAL_TIME, 
+    LOCAL_DATE, SETTL_DATE, EXPIRY_DATE, CAPTURE_DATE, IID, TRACK2, CARD_NO, RET_REF_NO, 
+    ACCEPTOR_TERM_ID, ACCEPTOR_ID_CODE, ACCEPTOR_NAME, TRX_CURRENCY, SETTL_CURRENCY, 
+    TERMINAL_DATA, POS_RESPONSE_CODE, POS_SETTL_DATA, REPLACEMENT_AMT, REPLACEMENT_AMT_FC, 
+    STATUS, TRX_TYPE, AUTH_CODE, FROM_ACC, TO_ACC, FWD_CODE, M_TYPE, PROCESS_CODE, CHOLDER_AMT_BILLING, 
+    ACQ_INST_CODE, FWD_INST_CODE, FEE_CURRENCY, FEE_TRX_PROCESS, FEE_TRX, CY_CODE_BILLING, 
+    CREDIT_NBR, ORG_DATA, FILE_NAME, CTS_TRS_BR, CTS_TRS_NO, NEW_TRX_NO, INTERFACE_CODE, 
+    TRX_OVERDRAWN_ACC, MSG_TYPE, END_DATE, START_DATE, TIME_OUT, SETTL_RATE
+  </sql>
+  <select id="selectATM_TRX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ATM_TRXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from ATM_TRX
+    where COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteATM_TRX" parameterType="com.path.dbmaps.vo.ATM_TRXVOKey" >
+    delete from ATM_TRX
+    where COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertATM_TRX" parameterType="com.path.dbmaps.vo.ATM_TRXVO" >
+    insert into ATM_TRX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="TRANSMISSION_DATE != null" >
+        TRANSMISSION_DATE,
+      </if>
+      <if test="TRX_AMT != null and TRX_AMT != emptyBigDecimalValue" >
+        TRX_AMT,
+      </if>
+      <if test="SETTL_AMT != null and SETTL_AMT != emptyBigDecimalValue" >
+        SETTL_AMT,
+      </if>
+      <if test="TRACE_NUM != null and TRACE_NUM != emptyBigDecimalValue" >
+        TRACE_NUM,
+      </if>
+      <if test="LOCAL_TIME != null" >
+        LOCAL_TIME,
+      </if>
+      <if test="LOCAL_DATE != null" >
+        LOCAL_DATE,
+      </if>
+      <if test="SETTL_DATE != null" >
+        SETTL_DATE,
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE,
+      </if>
+      <if test="CAPTURE_DATE != null" >
+        CAPTURE_DATE,
+      </if>
+      <if test="IID != null" >
+        IID,
+      </if>
+      <if test="TRACK2 != null" >
+        TRACK2,
+      </if>
+      <if test="CARD_NO != null" >
+        CARD_NO,
+      </if>
+      <if test="RET_REF_NO != null" >
+        RET_REF_NO,
+      </if>
+      <if test="ACCEPTOR_TERM_ID != null" >
+        ACCEPTOR_TERM_ID,
+      </if>
+      <if test="ACCEPTOR_ID_CODE != null" >
+        ACCEPTOR_ID_CODE,
+      </if>
+      <if test="ACCEPTOR_NAME != null" >
+        ACCEPTOR_NAME,
+      </if>
+      <if test="TRX_CURRENCY != null" >
+        TRX_CURRENCY,
+      </if>
+      <if test="SETTL_CURRENCY != null" >
+        SETTL_CURRENCY,
+      </if>
+      <if test="TERMINAL_DATA != null" >
+        TERMINAL_DATA,
+      </if>
+      <if test="POS_RESPONSE_CODE != null" >
+        POS_RESPONSE_CODE,
+      </if>
+      <if test="POS_SETTL_DATA != null" >
+        POS_SETTL_DATA,
+      </if>
+      <if test="REPLACEMENT_AMT != null and REPLACEMENT_AMT != emptyBigDecimalValue" >
+        REPLACEMENT_AMT,
+      </if>
+      <if test="REPLACEMENT_AMT_FC != null and REPLACEMENT_AMT_FC != emptyBigDecimalValue" >
+        REPLACEMENT_AMT_FC,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TRX_TYPE != null" >
+        TRX_TYPE,
+      </if>
+      <if test="AUTH_CODE != null" >
+        AUTH_CODE,
+      </if>
+      <if test="FROM_ACC != null" >
+        FROM_ACC,
+      </if>
+      <if test="TO_ACC != null" >
+        TO_ACC,
+      </if>
+      <if test="FWD_CODE != null" >
+        FWD_CODE,
+      </if>
+      <if test="m_TYPE != null" >
+        M_TYPE,
+      </if>
+      <if test="PROCESS_CODE != null" >
+        PROCESS_CODE,
+      </if>
+      <if test="CHOLDER_AMT_BILLING != null and CHOLDER_AMT_BILLING != emptyBigDecimalValue" >
+        CHOLDER_AMT_BILLING,
+      </if>
+      <if test="ACQ_INST_CODE != null and ACQ_INST_CODE != emptyBigDecimalValue" >
+        ACQ_INST_CODE,
+      </if>
+      <if test="FWD_INST_CODE != null and FWD_INST_CODE != emptyBigDecimalValue" >
+        FWD_INST_CODE,
+      </if>
+      <if test="FEE_CURRENCY != null" >
+        FEE_CURRENCY,
+      </if>
+      <if test="FEE_TRX_PROCESS != null" >
+        FEE_TRX_PROCESS,
+      </if>
+      <if test="FEE_TRX != null" >
+        FEE_TRX,
+      </if>
+      <if test="CY_CODE_BILLING != null" >
+        CY_CODE_BILLING,
+      </if>
+      <if test="CREDIT_NBR != null and CREDIT_NBR != emptyBigDecimalValue" >
+        CREDIT_NBR,
+      </if>
+      <if test="ORG_DATA != null" >
+        ORG_DATA,
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME,
+      </if>
+      <if test="CTS_TRS_BR != null and CTS_TRS_BR != emptyBigDecimalValue" >
+        CTS_TRS_BR,
+      </if>
+      <if test="CTS_TRS_NO != null and CTS_TRS_NO != emptyBigDecimalValue" >
+        CTS_TRS_NO,
+      </if>
+      <if test="NEW_TRX_NO != null and NEW_TRX_NO != emptyBigDecimalValue" >
+        NEW_TRX_NO,
+      </if>
+      <if test="INTERFACE_CODE != null and INTERFACE_CODE != emptyBigDecimalValue" >
+        INTERFACE_CODE,
+      </if>
+      <if test="TRX_OVERDRAWN_ACC != null and TRX_OVERDRAWN_ACC != emptyBigDecimalValue" >
+        TRX_OVERDRAWN_ACC,
+      </if>
+      <if test="MSG_TYPE != null and MSG_TYPE != emptyBigDecimalValue" >
+        MSG_TYPE,
+      </if>
+      <if test="END_DATE != null" >
+        END_DATE,
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE,
+      </if>
+      <if test="TIME_OUT != null and TIME_OUT != emptyBigDecimalValue" >
+        TIME_OUT,
+      </if>
+      <if test="SETTL_RATE != null and SETTL_RATE != emptyBigDecimalValue" >
+        SETTL_RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="TRANSMISSION_DATE != null" >
+        #{TRANSMISSION_DATE},
+      </if>
+      <if test="TRX_AMT != null and TRX_AMT != emptyBigDecimalValue" >
+        #{TRX_AMT},
+      </if>
+      <if test="SETTL_AMT != null and SETTL_AMT != emptyBigDecimalValue" >
+        #{SETTL_AMT},
+      </if>
+      <if test="TRACE_NUM != null and TRACE_NUM != emptyBigDecimalValue" >
+        #{TRACE_NUM},
+      </if>
+      <if test="LOCAL_TIME != null" >
+        #{LOCAL_TIME},
+      </if>
+      <if test="LOCAL_DATE != null" >
+        #{LOCAL_DATE},
+      </if>
+      <if test="SETTL_DATE != null" >
+        #{SETTL_DATE},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        #{EXPIRY_DATE},
+      </if>
+      <if test="CAPTURE_DATE != null" >
+        #{CAPTURE_DATE},
+      </if>
+      <if test="IID != null" >
+        #{IID},
+      </if>
+      <if test="TRACK2 != null" >
+        #{TRACK2},
+      </if>
+      <if test="CARD_NO != null" >
+        #{CARD_NO},
+      </if>
+      <if test="RET_REF_NO != null" >
+        #{RET_REF_NO},
+      </if>
+      <if test="ACCEPTOR_TERM_ID != null" >
+        #{ACCEPTOR_TERM_ID},
+      </if>
+      <if test="ACCEPTOR_ID_CODE != null" >
+        #{ACCEPTOR_ID_CODE},
+      </if>
+      <if test="ACCEPTOR_NAME != null" >
+        #{ACCEPTOR_NAME},
+      </if>
+      <if test="TRX_CURRENCY != null" >
+        #{TRX_CURRENCY},
+      </if>
+      <if test="SETTL_CURRENCY != null" >
+        #{SETTL_CURRENCY},
+      </if>
+      <if test="TERMINAL_DATA != null" >
+        #{TERMINAL_DATA},
+      </if>
+      <if test="POS_RESPONSE_CODE != null" >
+        #{POS_RESPONSE_CODE},
+      </if>
+      <if test="POS_SETTL_DATA != null" >
+        #{POS_SETTL_DATA},
+      </if>
+      <if test="REPLACEMENT_AMT != null and REPLACEMENT_AMT != emptyBigDecimalValue" >
+        #{REPLACEMENT_AMT},
+      </if>
+      <if test="REPLACEMENT_AMT_FC != null and REPLACEMENT_AMT_FC != emptyBigDecimalValue" >
+        #{REPLACEMENT_AMT_FC},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TRX_TYPE != null" >
+        #{TRX_TYPE},
+      </if>
+      <if test="AUTH_CODE != null" >
+        #{AUTH_CODE},
+      </if>
+      <if test="FROM_ACC != null" >
+        #{FROM_ACC},
+      </if>
+      <if test="TO_ACC != null" >
+        #{TO_ACC},
+      </if>
+      <if test="FWD_CODE != null" >
+        #{FWD_CODE},
+      </if>
+      <if test="m_TYPE != null" >
+        #{m_TYPE},
+      </if>
+      <if test="PROCESS_CODE != null" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="CHOLDER_AMT_BILLING != null and CHOLDER_AMT_BILLING != emptyBigDecimalValue" >
+        #{CHOLDER_AMT_BILLING},
+      </if>
+      <if test="ACQ_INST_CODE != null and ACQ_INST_CODE != emptyBigDecimalValue" >
+        #{ACQ_INST_CODE},
+      </if>
+      <if test="FWD_INST_CODE != null and FWD_INST_CODE != emptyBigDecimalValue" >
+        #{FWD_INST_CODE},
+      </if>
+      <if test="FEE_CURRENCY != null" >
+        #{FEE_CURRENCY},
+      </if>
+      <if test="FEE_TRX_PROCESS != null" >
+        #{FEE_TRX_PROCESS},
+      </if>
+      <if test="FEE_TRX != null" >
+        #{FEE_TRX},
+      </if>
+      <if test="CY_CODE_BILLING != null" >
+        #{CY_CODE_BILLING},
+      </if>
+      <if test="CREDIT_NBR != null and CREDIT_NBR != emptyBigDecimalValue" >
+        #{CREDIT_NBR},
+      </if>
+      <if test="ORG_DATA != null" >
+        #{ORG_DATA},
+      </if>
+      <if test="FILE_NAME != null" >
+        #{FILE_NAME},
+      </if>
+      <if test="CTS_TRS_BR != null and CTS_TRS_BR != emptyBigDecimalValue" >
+        #{CTS_TRS_BR},
+      </if>
+      <if test="CTS_TRS_NO != null and CTS_TRS_NO != emptyBigDecimalValue" >
+        #{CTS_TRS_NO},
+      </if>
+      <if test="NEW_TRX_NO != null and NEW_TRX_NO != emptyBigDecimalValue" >
+        #{NEW_TRX_NO},
+      </if>
+      <if test="INTERFACE_CODE != null and INTERFACE_CODE != emptyBigDecimalValue" >
+        #{INTERFACE_CODE},
+      </if>
+      <if test="TRX_OVERDRAWN_ACC != null and TRX_OVERDRAWN_ACC != emptyBigDecimalValue" >
+        #{TRX_OVERDRAWN_ACC},
+      </if>
+      <if test="MSG_TYPE != null and MSG_TYPE != emptyBigDecimalValue" >
+        #{MSG_TYPE},
+      </if>
+      <if test="END_DATE != null" >
+        #{END_DATE},
+      </if>
+      <if test="START_DATE != null" >
+        #{START_DATE},
+      </if>
+      <if test="TIME_OUT != null and TIME_OUT != emptyBigDecimalValue" >
+        #{TIME_OUT},
+      </if>
+      <if test="SETTL_RATE != null and SETTL_RATE != emptyBigDecimalValue" >
+        #{SETTL_RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateATM_TRX" >
+    update ATM_TRX
+    <set >
+      <if test="TRANSMISSION_DATE != null" >
+        TRANSMISSION_DATE = #{TRANSMISSION_DATE},
+      </if>
+      <if test="TRX_AMT != null" >
+        <choose >
+          <when test="TRX_AMT == emptyBigDecimalValue" >
+            TRX_AMT = NULL ,
+          </when>
+          <otherwise >
+            TRX_AMT = #{TRX_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTL_AMT != null" >
+        <choose >
+          <when test="SETTL_AMT == emptyBigDecimalValue" >
+            SETTL_AMT = NULL ,
+          </when>
+          <otherwise >
+            SETTL_AMT = #{SETTL_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRACE_NUM != null" >
+        <choose >
+          <when test="TRACE_NUM == emptyBigDecimalValue" >
+            TRACE_NUM = NULL ,
+          </when>
+          <otherwise >
+            TRACE_NUM = #{TRACE_NUM},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOCAL_TIME != null" >
+        LOCAL_TIME = #{LOCAL_TIME},
+      </if>
+      <if test="LOCAL_DATE != null" >
+        LOCAL_DATE = #{LOCAL_DATE},
+      </if>
+      <if test="SETTL_DATE != null" >
+        SETTL_DATE = #{SETTL_DATE},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE = #{EXPIRY_DATE},
+      </if>
+      <if test="CAPTURE_DATE != null" >
+        CAPTURE_DATE = #{CAPTURE_DATE},
+      </if>
+      <if test="IID != null" >
+        IID = #{IID},
+      </if>
+      <if test="TRACK2 != null" >
+        TRACK2 = #{TRACK2},
+      </if>
+      <if test="CARD_NO != null" >
+        CARD_NO = #{CARD_NO},
+      </if>
+      <if test="RET_REF_NO != null" >
+        RET_REF_NO = #{RET_REF_NO},
+      </if>
+      <if test="ACCEPTOR_TERM_ID != null" >
+        ACCEPTOR_TERM_ID = #{ACCEPTOR_TERM_ID},
+      </if>
+      <if test="ACCEPTOR_ID_CODE != null" >
+        ACCEPTOR_ID_CODE = #{ACCEPTOR_ID_CODE},
+      </if>
+      <if test="ACCEPTOR_NAME != null" >
+        ACCEPTOR_NAME = #{ACCEPTOR_NAME},
+      </if>
+      <if test="TRX_CURRENCY != null" >
+        TRX_CURRENCY = #{TRX_CURRENCY},
+      </if>
+      <if test="SETTL_CURRENCY != null" >
+        SETTL_CURRENCY = #{SETTL_CURRENCY},
+      </if>
+      <if test="TERMINAL_DATA != null" >
+        TERMINAL_DATA = #{TERMINAL_DATA},
+      </if>
+      <if test="POS_RESPONSE_CODE != null" >
+        POS_RESPONSE_CODE = #{POS_RESPONSE_CODE},
+      </if>
+      <if test="POS_SETTL_DATA != null" >
+        POS_SETTL_DATA = #{POS_SETTL_DATA},
+      </if>
+      <if test="REPLACEMENT_AMT != null" >
+        <choose >
+          <when test="REPLACEMENT_AMT == emptyBigDecimalValue" >
+            REPLACEMENT_AMT = NULL ,
+          </when>
+          <otherwise >
+            REPLACEMENT_AMT = #{REPLACEMENT_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REPLACEMENT_AMT_FC != null" >
+        <choose >
+          <when test="REPLACEMENT_AMT_FC == emptyBigDecimalValue" >
+            REPLACEMENT_AMT_FC = NULL ,
+          </when>
+          <otherwise >
+            REPLACEMENT_AMT_FC = #{REPLACEMENT_AMT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TRX_TYPE != null" >
+        TRX_TYPE = #{TRX_TYPE},
+      </if>
+      <if test="AUTH_CODE != null" >
+        AUTH_CODE = #{AUTH_CODE},
+      </if>
+      <if test="FROM_ACC != null" >
+        FROM_ACC = #{FROM_ACC},
+      </if>
+      <if test="TO_ACC != null" >
+        TO_ACC = #{TO_ACC},
+      </if>
+      <if test="FWD_CODE != null" >
+        FWD_CODE = #{FWD_CODE},
+      </if>
+      <if test="m_TYPE != null" >
+        M_TYPE = #{m_TYPE},
+      </if>
+      <if test="PROCESS_CODE != null" >
+        PROCESS_CODE = #{PROCESS_CODE},
+      </if>
+      <if test="CHOLDER_AMT_BILLING != null" >
+        <choose >
+          <when test="CHOLDER_AMT_BILLING == emptyBigDecimalValue" >
+            CHOLDER_AMT_BILLING = NULL ,
+          </when>
+          <otherwise >
+            CHOLDER_AMT_BILLING = #{CHOLDER_AMT_BILLING},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACQ_INST_CODE != null" >
+        <choose >
+          <when test="ACQ_INST_CODE == emptyBigDecimalValue" >
+            ACQ_INST_CODE = NULL ,
+          </when>
+          <otherwise >
+            ACQ_INST_CODE = #{ACQ_INST_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FWD_INST_CODE != null" >
+        <choose >
+          <when test="FWD_INST_CODE == emptyBigDecimalValue" >
+            FWD_INST_CODE = NULL ,
+          </when>
+          <otherwise >
+            FWD_INST_CODE = #{FWD_INST_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FEE_CURRENCY != null" >
+        FEE_CURRENCY = #{FEE_CURRENCY},
+      </if>
+      <if test="FEE_TRX_PROCESS != null" >
+        FEE_TRX_PROCESS = #{FEE_TRX_PROCESS},
+      </if>
+      <if test="FEE_TRX != null" >
+        FEE_TRX = #{FEE_TRX},
+      </if>
+      <if test="CY_CODE_BILLING != null" >
+        CY_CODE_BILLING = #{CY_CODE_BILLING},
+      </if>
+      <if test="CREDIT_NBR != null" >
+        <choose >
+          <when test="CREDIT_NBR == emptyBigDecimalValue" >
+            CREDIT_NBR = NULL ,
+          </when>
+          <otherwise >
+            CREDIT_NBR = #{CREDIT_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORG_DATA != null" >
+        ORG_DATA = #{ORG_DATA},
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME = #{FILE_NAME},
+      </if>
+      <if test="CTS_TRS_BR != null" >
+        <choose >
+          <when test="CTS_TRS_BR == emptyBigDecimalValue" >
+            CTS_TRS_BR = NULL ,
+          </when>
+          <otherwise >
+            CTS_TRS_BR = #{CTS_TRS_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CTS_TRS_NO != null" >
+        <choose >
+          <when test="CTS_TRS_NO == emptyBigDecimalValue" >
+            CTS_TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            CTS_TRS_NO = #{CTS_TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NEW_TRX_NO != null" >
+        <choose >
+          <when test="NEW_TRX_NO == emptyBigDecimalValue" >
+            NEW_TRX_NO = NULL ,
+          </when>
+          <otherwise >
+            NEW_TRX_NO = #{NEW_TRX_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INTERFACE_CODE != null" >
+        <choose >
+          <when test="INTERFACE_CODE == emptyBigDecimalValue" >
+            INTERFACE_CODE = NULL ,
+          </when>
+          <otherwise >
+            INTERFACE_CODE = #{INTERFACE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_OVERDRAWN_ACC != null" >
+        <choose >
+          <when test="TRX_OVERDRAWN_ACC == emptyBigDecimalValue" >
+            TRX_OVERDRAWN_ACC = NULL ,
+          </when>
+          <otherwise >
+            TRX_OVERDRAWN_ACC = #{TRX_OVERDRAWN_ACC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MSG_TYPE != null" >
+        <choose >
+          <when test="MSG_TYPE == emptyBigDecimalValue" >
+            MSG_TYPE = NULL ,
+          </when>
+          <otherwise >
+            MSG_TYPE = #{MSG_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="END_DATE != null" >
+        END_DATE = #{END_DATE},
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE = #{START_DATE},
+      </if>
+      <if test="TIME_OUT != null" >
+        <choose >
+          <when test="TIME_OUT == emptyBigDecimalValue" >
+            TIME_OUT = NULL ,
+          </when>
+          <otherwise >
+            TIME_OUT = #{TIME_OUT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTL_RATE != null" >
+        <choose >
+          <when test="SETTL_RATE == emptyBigDecimalValue" >
+            SETTL_RATE = NULL ,
+          </when>
+          <otherwise >
+            SETTL_RATE = #{SETTL_RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateATM_TRX" parameterType="com.path.dbmaps.vo.ATM_TRXVO" >
+    <include refid="sql_updateATM_TRX" />
+  </update>
+</mapper>

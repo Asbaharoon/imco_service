@@ -1,0 +1,1475 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="buttonCustomizationMapper" >
+
+	<resultMap id="buttonCustGridMap" type="buttonCustomizationCO">
+		 <result property="sysParamBtnCustVO.BTN_ID"       		column="BTN_ID"/>
+		 <result property="sysParamBtnCustVO.PROG_REF"     		column="PROG_REF"/>
+		 <result property="sysParamBtnCustVO.TOOLBAR_ID"  		column="TOOLBAR_ID"/>
+		 <result property="sysParamBtnCustVO.LABEL_KEY"  		column="LABEL_KEY"/>
+		 <result property="sysParamBtnCustVO.BTN_ORDER" 		column="BTN_ORDER"/>
+		 <result property="sysParamBtnCustVO.DESCRIPTION" 		column="DESCRIPTION"/>
+		 <result property="sysParamBtnCustVO.RESULT_EXPR" 		column="RESULT_EXPR"/>
+		 <result property="sysParamBtnCustVO.ICON_IMAGE" 		column="ICON_IMAGE"/>
+		 <result property="REPORT_PROG_REF" 					column="BTN_ID"/>
+		 <result property="DYN_SCREEN_ID" 						column="BTN_ID"/>
+	</resultMap>
+	
+	<sql id="select_buttonCustGridList">
+    	SELECT S.BTN_ID,
+        	S.PROG_REF,
+        	S.TOOLBAR_ID,
+        	S.LABEL_KEY,
+       		S.BTN_ORDER,
+       		S.DESCRIPTION,
+       		S.RESULT_EXPR,
+       		S.ICON_IMAGE
+		FROM SYS_PARAM_BTN_CUST S
+		WHERE 
+		     S.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		     AND S.COMP_CODE = 0
+		     <choose>
+			      <when test='buttonsByParentRef != null and "1".equals(buttonsByParentRef)'>
+						AND S.PROG_REF IN 
+						(
+							SELECT PROG_REF
+							FROM OPT
+							WHERE PARENT_REF IN (
+													SELECT M.PARENT_REF FROM 
+													(
+														SELECT O.PARENT_REF  
+									                    FROM OPT O
+									                    WHERE PROG_REF = #{progRef,jdbcType=VARCHAR}
+									                    AND APP_NAME = #{currAppName,jdbcType=VARCHAR}
+								                    
+								                    	UNION
+								                    	
+								                    	SELECT CASE
+														         WHEN OPTE.ADDITIONAL_PARENT_REF IS NOT NULL THEN
+														          OPTE.ADDITIONAL_PARENT_REF
+														         ELSE
+														          OP.PARENT_REF
+														       END PARENT_REF
+														  FROM OPT OP
+														  LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OP.APP_NAME
+														                                   AND OPTE.PROG_REF = OP.PROG_REF
+														 WHERE OP.PROG_REF = #{progRef,jdbcType=VARCHAR}
+														   AND OP.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+													 ) M
+							                    )
+							AND APP_NAME = #{currAppName,jdbcType=VARCHAR}
+							AND PROG_REF <![CDATA[ <> ]]> #{progRef,jdbcType=VARCHAR}
+						)
+			      </when>
+			      <otherwise>
+			      		AND S.PROG_REF = #{progRef,jdbcType=VARCHAR}
+			      </otherwise>
+      		 </choose>
+		     
+		     <if test=' toolBarId != null and !"".equals(toolBarId) '>
+        		AND S.TOOLBAR_ID = #{toolBarId,jdbcType=VARCHAR}
+        	 </if>
+        	 <if test=' buttonId != null'>
+        		AND S.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+        	 </if>
+        	 
+	</sql>
+	
+	
+    
+	<select id="buttonCustGridList" resultMap="buttonCustGridMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_buttonCustGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="buttonCustGridCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_buttonCustGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	<resultMap id="buttonActionsDetails" type="buttonCustomizationCO">
+	<result property="sysParamBtnCustActionsVO.OP_ID"     		 column="OP_ID"/>
+	<result property="sysParamBtnCustActionsVO.OP_TYPE"  	 	 column="OP_TYPE"/>
+	<result property="sysParamActionArgMapVO.MAP_VALUE"          column="MAP_VALUE"/>
+	<result property="sysParamActionArgMapVO.MAP_TYPE"           column="MAP_TYPE"/>
+	<result property="imImalApiVO.SERVICE_TYPE"  				 column="SERVICE_TYPE"/>
+	<result property="sysParamBtnCustActionsVO.COND_EXPR" 		 column="COND_EXPR"/>
+	<result property="sysParamBtnCustActionsVO.API_CODE"     	 column="API_CODE"/>
+	<result property="sysParamScreenElementsVO.FIELD_DATA_TYPE"  column="FIELD_DATA_TYPE"/>
+	<result property="fieldDesc"     	                         column="VO_CO_REFERENCE"/>
+	<result property="propertyName"     	                     column="VO_PROPERTY_NAME"/>
+	</resultMap>
+	<resultMap id="buttonActionsGridMap" type="buttonCustomizationCO">
+		 <result property="sysParamBtnCustActionsVO.OP_ID"     		 column="OP_ID"/>
+		 
+		 <result property="sysParamBtnCustActionsVO.OP_TYPE"  	 	 column="OP_TYPE"/>
+		 <result property="imImalApiVO.SERVICE_TYPE"  				 column="SERVICE_TYPE"/>
+		 <result property="operationDesc"  							 column="OP_TYPE_DESC"/>
+		 <result property="sysParamBtnCustActionsVO.DESCRIPTION" 	 column="DESCRIPTION"/>
+		 <result property="sysParamBtnCustActionsVO.SCREEN_WIDTH" 	 column="SCREEN_WIDTH"/>
+		 <result property="sysParamBtnCustActionsVO.SCREEN_HEIGHT" 	 column="SCREEN_HEIGHT"/>
+		 <result property="sysParamBtnCustActionsVO.SCREEN_TITLE" 	 column="SCREEN_TITLE"/>
+		 
+		 <result property="sysParamBtnCustActionsVO.PARENT_OP_ID" 	 column="PARENT_OP_ID"/>
+		 <result property="sysParamBtnCustActionsVO.COND_EXPR" 		 column="COND_EXPR"/>
+		 <!--TP#983067 Option to load JS Method to be called from js File located on the server-->
+		 <result property="sysParamBtnCustActionsVO.SCRIPT_URL" 		 column="SCRIPT_URL"/>
+		 <result property="sysParamBtnCustActionsVO.API_CODE"     	 column="API_CODE"/>
+		 <result property="sysParamBtnCustActionsVO.REPORT_PROG_REF" column="REPORT_PROG_REF"/>
+		 <result property="sysParamBtnCustActionsVO.REPORT_APP_NAME" column="REPORT_APP_NAME"/>
+		 <result property="sysParamBtnCustActionsVO.COMPONENT_ID" 		 column="COMPONENT_ID"/>
+		 <result property="imImalApiVO.DESCRIPTION"    			     column="API_DESCRIPTION"/>
+		 <result property="readonlyParentOp"    			         column="READ_ONLY"/>
+		 <result property="parentOperationDesc"    			         column="PARENT_OP_DESC"/>
+		 <result property="serviceTypeDesc"    			         column="SERVICE_TYPE_DESC"/>
+	</resultMap>
+	
+	<sql id="select_buttonActionsGridList">
+    	
+    	 SELECT A.OP_ID,
+		       A.OP_TYPE,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = A.OP_TYPE
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{statusLovTypeId,jdbcType=NUMERIC}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) OP_TYPE_DESC,
+		       (CASE
+		         WHEN A.OP_TYPE = 'A' THEN
+		            
+				 (
+				   CASE WHEN A.API_TYPE = '2'  THEN 'I' 
+		                WHEN A.API_TYPE = '3'  THEN 'D' 	
+		           ELSE (SELECT I.SERVICE_TYPE
+		                     FROM IM_IMAL_API I
+		                    WHERE I.API_CODE = A.API_CODE) 
+		           END			         
+		         )
+		         ELSE
+		          ''
+		       END) SERVICE_TYPE,
+		       
+		       (CASE
+		         WHEN A.OP_TYPE = 'A' THEN
+		          (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		             FROM SYS_PARAM_LOV_TRANS
+		            WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE =
+		                  (
+		                     CASE WHEN A.API_TYPE = '2'  THEN 'I' 
+		                     	  WHEN A.API_TYPE = '3'  THEN 'D' 	
+		                     ELSE
+		                  		( SELECT I.SERVICE_TYPE
+		                     	  FROM IM_IMAL_API I
+		                    	  WHERE I.API_CODE = A.API_CODE )
+		                     END
+		                  )
+		              AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		              AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR})
+		         ELSE
+		          ''
+		       END) SERVICE_TYPE_DESC,
+		       ( CASE
+		          WHEN A.REPORT_PROG_REF IS NOT NULL THEN
+		           (SELECT I.REPORT_NAME
+		              FROM IRP_AD_HOC_REPORT I
+		             WHERE I.PROG_REF = A.REPORT_PROG_REF
+		               AND I.APP_NAME = A.REPORT_APP_NAME)
+		          ELSE
+		           (SELECT I.DESCRIPTION
+		              FROM IM_IMAL_API I
+		             WHERE I.API_CODE = A.API_CODE)
+		         END ) API_DESCRIPTION,
+		       A.DESCRIPTION,
+		       A.SCREEN_WIDTH,
+		       A.SCREEN_HEIGHT,
+		       A.SCREEN_TITLE,
+		       A.PARENT_OP_ID,
+		       A.COND_EXPR,
+		       A.API_CODE,
+		       A.REPORT_PROG_REF,
+		       <!--TP#983067 Option to load JS Method to be called from js File located on the server-->
+		       SCRIPT_URL,
+		       <!-- TP 1062269 Loading Report Assigned by Customization into provided Div or iFrame ID - Customization Enhancement-->
+	           (CASE
+                WHEN A.OP_TYPE = 'A' AND A.API_TYPE = '2' THEN
+                 COMPONENT_ID ELSE '' END) COMPONENT_ID,
+		       A.REPORT_APP_NAME,
+		       (SELECT max(1)
+                    FROM SYS_PARAM_ACTION_COND_MAP C
+                   WHERE C.BTN_ID = A.BTN_ID
+                    AND C.RESULT_OP_ID = A.OP_ID) READ_ONLY,
+               (
+              		SELECT B.DESCRIPTION FROM SYS_PARAM_BTN_CUST_ACTIONS B 
+              		WHERE B.BTN_ID = A.BTN_ID AND A.PARENT_OP_ID = B.OP_ID
+           	   ) PARENT_OP_DESC         
+		
+		  FROM SYS_PARAM_BTN_CUST_ACTIONS A
+		 WHERE A.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+		 
+		 <if test=' operationId != null' >
+         	AND A.OP_ID = #{operationId,jdbcType=NUMERIC}
+      	 </if>
+      	 
+      	 <if test='dependentOpId != null'>
+		    AND  A.OP_ID <![CDATA[ <> ]]> #{dependentOpId,jdbcType=NUMERIC}
+		 </if>
+      	 
+	</sql>
+	<select id="returnButtonActionDetails" resultMap="buttonActionsDetails" parameterType="buttonCustomizationSC">
+	 SELECT 
+              S.OP_ID,
+              S.OP_TYPE,
+              S.SERVICE_TYPE,
+              S.COND_EXPR,
+              S.API_CODE,
+              S.MAP_VALUE,
+              S.MAP_TYPE,
+              (CASE
+             WHEN S.MAP_TYPE = '1' THEN
+              (SELECT DISTINCT E.FIELD_DATA_TYPE
+                 FROM SYS_PARAM_SCREEN_ELEMENTS E
+                WHERE E.APP_NAME = S.RELATED_APP
+                  AND (E.PROG_REF = #{progRef} OR
+                      E.PROG_REF =
+                      (SELECT PARENT_REF
+                          FROM OPT
+                         WHERE PROG_REF = #{progRef}
+                           AND APP_NAME = E.APP_NAME
+                           AND PARENT_REF IS NOT NULL))
+                           <choose >
+ 				<when test="isSybase == 1" >
+    				AND E.FLD_IDENTIFIER = CONVERT(NUMERIC,S.MAP_VALUE))
+ 				</when>
+ 				<otherwise >
+    				AND E.FLD_IDENTIFIER = TO_NUMBER(S.MAP_VALUE))
+				</otherwise>
+		     </choose>
+           END)FIELD_DATA_TYPE,
+             (CASE
+             WHEN S.MAP_TYPE = '1' THEN
+              (SELECT DISTINCT E.VO_CO_REFERENCE
+                 FROM FIELD_TECH_DETAILS E
+                WHERE
+                <choose >
+ 				<when test="isSybase == 1" >
+    				      E.FLD_IDENTIFIER = CONVERT(NUMERIC,S.MAP_VALUE))
+ 				</when>
+ 				<otherwise >
+    				      E.FLD_IDENTIFIER = TO_NUMBER(S.MAP_VALUE))
+				</otherwise>
+		     </choose> 
+           END)VO_CO_REFERENCE,
+           (CASE
+             WHEN S.MAP_TYPE = '1' THEN
+              (SELECT DISTINCT E.VO_PROPERTY_NAME
+                 FROM FIELD_TECH_DETAILS E
+                WHERE
+                <choose >
+ 				<when test="isSybase == 1" >
+    				 E.FLD_IDENTIFIER = CONVERT(NUMERIC,S.MAP_VALUE))
+ 				</when>
+ 				<otherwise >
+    				 E.FLD_IDENTIFIER = TO_NUMBER(S.MAP_VALUE))
+				</otherwise>
+		     </choose> 
+           END)VO_PROPERTY_NAME
+             FROM (SELECT A.OP_ID,
+                          A.OP_TYPE,
+                          P.MAP_TYPE,
+                          C.RELATED_APP,
+                          (CASE
+                            WHEN A.OP_TYPE = 'A' THEN
+                             (CASE
+                            WHEN A.API_TYPE = '2' THEN
+                             'I'
+                            WHEN A.API_TYPE = '3' THEN
+                             'D'
+                            ELSE
+                             (SELECT I.SERVICE_TYPE
+                                FROM IM_IMAL_API I
+                               WHERE I.API_CODE = A.API_CODE)
+                          END) ELSE '' END) SERVICE_TYPE,
+                          A.COND_EXPR,
+                          A.API_CODE,
+                          P.MAP_VALUE FROM SYS_PARAM_BTN_CUST_ACTIONS A LEFT JOIN IM_IMAL_API C ON A.API_CODE = C.API_CODE LEFT JOIN SYS_PARAM_ACTION_ARG_MAP P
+                    ON  P.OP_ID = A.OP_ID 
+                    AND P.BTN_ID = A.BTN_ID 
+                    WHERE A.BTN_ID = #{buttonId}) S
+	</select>
+    
+	<select id="buttonActionsGridList" resultMap="buttonActionsGridMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_buttonActionsGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="buttonActionsGridCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_buttonActionsGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+
+	<resultMap id="actionsListMap" type="buttonCustomizationCO">
+		 <result property="imImalApiVO.API_CODE"       		column="API_CODE"/>
+		 <result property="imImalApiVO.DESCRIPTION"     	column="DESCRIPTION"/>
+		 <result property="imImalApiVO.PROCEDURE_NAME"  	column="PROCEDURE_NAME"/>
+		 <result property="imImalApiVO.SERVICE_TYPE"  			column="SERVICE_TYPE"/>
+		 <result property="sysParamActionArgMapVO.LINK_API_CODE"  			column="LINK_API_CODE"/>
+		 <result property="REPORT_PROG_REF"       			column="API_CODE"/>
+		 <result property="sysParamBtnCustActionsVO.OP_ID"       				column="OP_ID"/>
+		 <result property="linkOpId"       										column="LINK_OP_ID"/>
+		 <result property="sysParamBtnCustActionsVO.DESCRIPTION"       			column="BTN_DESCRIPTION"/>
+		 <result property="sysParamBtnCustActionsVO.API_CODE"       			column="BTN_API_CODE"/>
+		 <result property="sysParamBtnCustActionsVO.API_TYPE"       			column="API_TYPE"/>
+		 <result property="btnApiDescription"       							column="BTN_API_DESCRIPTION"/>
+	</resultMap>
+	
+	<sql id="select_actionsList">
+		<choose>
+		 	<when test="linkToPreviousAction != null and buttonId != null">
+		 	 	SELECT M.OP_ID API_CODE,
+	               S.DESCRIPTION,
+	               S.PROCEDURE_NAME,
+	               (
+					  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				      FROM SYS_PARAM_LOV_TRANS
+				      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = S.SERVICE_TYPE
+				        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+				        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+				   ) SERVICE_TYPE,
+	            M.API_CODE LINK_API_CODE   
+	          	FROM SYS_PARAM_BTN_CUST_ACTIONS M, IM_IMAL_API S
+	         	WHERE M.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+	         	AND S.RELATED_APP IN (#{currAppName,jdbcType=VARCHAR}, 'IMAL')
+	           	AND S.API_CODE = M.API_CODE
+	           	AND M.OP_TYPE = 'A'
+	           	AND M.OP_ID IN (SELECT OP_ID FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC})
+	           	 <if test=' operationId != null'>
+	           	 	AND  M.OP_ID <![CDATA[ <> ]]> #{operationId,jdbcType=NUMERIC}
+	           	</if>
+	           	<if test='dependentOpId != null'>
+		        	AND  M.OP_ID = #{dependentOpId,jdbcType=NUMERIC}
+		        </if>
+           	</when>
+           	<when test="globalParamMap != null and buttonId != null">
+           	SELECT A.OP_ID,
+           		A.DESCRIPTION BTN_DESCRIPTION,
+           		A.API_CODE BTN_API_CODE,
+           		A.API_TYPE,
+           		B.DESCRIPTION BTN_API_DESCRIPTION
+           		FROM SYS_PARAM_BTN_CUST_ACTIONS A,IM_IMAL_API B 
+                          WHERE A.API_CODE = B.API_CODE AND A.BTN_ID = #{buttonId,jdbcType=NUMERIC} AND A.API_TYPE = '1'   
+            <if test='dependentOpId != null'>
+		        	AND  A.OP_ID = #{dependentOpId,jdbcType=NUMERIC}
+		    </if>              
+                          
+            UNION                
+            
+            SELECT A.OP_ID,
+           		A.DESCRIPTION BTN_DESCRIPTION,
+           		A.API_CODE BTN_API_CODE,
+           		A.API_TYPE,
+           		B.DYN_SCREEN_DESC BTN_API_DESCRIPTION
+           		FROM SYS_PARAM_BTN_CUST_ACTIONS A, SYS_DYN_SCREEN_DEF B 
+                          WHERE A.API_CODE = B.DYN_SCREEN_ID AND A.BTN_ID = #{buttonId,jdbcType=NUMERIC} AND A.API_TYPE = '3'          
+            <if test='dependentOpId != null'>
+		        	AND  A.OP_ID = #{dependentOpId,jdbcType=NUMERIC}
+		    </if>
+		    
+		     UNION
+		     
+           SELECT A.OP_ID,
+               A.DESCRIPTION BTN_DESCRIPTION,
+               B.REPORT_ID BTN_API_CODE,
+               A.API_TYPE,
+               B.REPORT_NAME BTN_API_DESCRIPTION
+               FROM SYS_PARAM_BTN_CUST_ACTIONS A , IRP_AD_HOC_REPORT B
+               WHERE A.REPORT_PROG_REF = B.PROG_REF
+                AND A.BTN_ID = #{buttonId,jdbcType=NUMERIC} AND A.API_TYPE = '2' 
+            <if test='dependentOpId != null'>
+		          AND  A.OP_ID = #{dependentOpId,jdbcType=NUMERIC}
+		    </if>
+           	</when>
+		 	<otherwise>
+		 		SELECT S.API_CODE,
+        			S.DESCRIPTION,
+        			S.PROCEDURE_NAME,
+        			(
+					  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				      FROM SYS_PARAM_LOV_TRANS
+				      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = S.SERVICE_TYPE
+				        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+				        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+				   ) SERVICE_TYPE
+		 			FROM IM_IMAL_API S 
+						WHERE S.RELATED_APP IN (#{currAppName,jdbcType=VARCHAR}, 'IMAL')
+				<if test=' actionId != null'>
+        			AND S.API_CODE = #{actionId,jdbcType=NUMERIC}
+        		</if>
+        		<if test=' actionType != null and !"".equals(actionType)'>
+        			AND S.SERVICE_TYPE = #{actionType,jdbcType=VARCHAR}
+        		</if>
+		 	</otherwise>
+		</choose>		 	
+        
+    </sql>
+	
+	<select id="returnActionsList" resultMap="actionsListMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_actionsList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnActionsListCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_actionsList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+
+    
+  <resultMap id="returnActionArgumentsMap" type="buttonCustomizationCO">
+		<result property="imApiArgumentVO.ARG_ID" column="ARG_ID"/>
+		<result property="imApiArgumentVO.ARG_NAME" column="ARG_NAME"/>
+		<result property="imApiArgumentVO.ARG_TYPE" column="ARG_TYPE"/>
+		<result property="imApiArgumentVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="imApiArgumentVO.STATUS" column="STATUS"/>
+		
+		<result property="imApiArgumentVO.DEFAULT_VALUE" column="DEFAULT_VALUE"/>
+		<result property="imApiArgumentVO.REQ_ARG" column="REQ_ARG"/>
+		
+		<result property="sysParamActionArgMapVO.ARG_ID" column="ARG_ID"/>
+		<result property="sysParamActionArgMapVO.OP_ID" column="OP_ID"/>
+		<result property="sysParamActionArgMapVO.MAP_TYPE" column="MAP_TYPE"/>
+		<result property="sysParamActionArgMapVO.MAP_EXPRESSION" column="MAP_EXPRESSION"/>
+		<result property="sysParamActionArgMapVO.MAP_VALUE" column="MAP_VALUE"/>
+		<result property="sysParamActionArgMapVO.NESTED" column="NESTED"/>
+		<result property="fieldDesc" column="FIELD_KEY_LABEL_CODE"/>
+		<result property="actionDesc" column="LINK_ACTION_DESC"/>
+		<result property="argDesc" column="LINK_ARG_DESC"/>
+		
+		<result property="sysParamActionArgMapVO.LINK_OP_ID" column="LINK_OP_ID"/>
+		<result property="sysParamActionArgMapVO.LINK_ARG_ID" column="LINK_ARG_ID"/>
+		<result property="sysParamActionArgMapVO.LINK_API_CODE" column="LINK_API_CODE"/>
+		
+		<result property="translatedArgType" column="TRANS_ARG_TYPE"/>
+		<result property="translatedArgStatus" column="TRANS_STATUS"/>
+		
+  </resultMap>	
+
+  <select id="returnActionArguments" resultMap="returnActionArgumentsMap" parameterType="buttonCustomizationSC">
+	
+	SELECT
+		 R.ARG_ID,
+         R.ARG_NAME,
+         R.ARG_TYPE,
+         R.DEFAULT_VALUE,
+       	 R.REQ_ARG,
+         R.DESCRIPTION,
+         R.STATUS,
+         R.API_CODE,
+         #{operationId,jdbcType=NUMERIC} OP_ID,
+         M.MAP_TYPE,
+         M.MAP_VALUE,
+         M.NESTED,
+         M.MAP_EXPRESSION,
+          (
+           CASE
+             WHEN M.MAP_TYPE = '1' THEN
+              (SELECT DISTINCT E.FIELD_KEY_LABEL_CODE
+                 FROM SYS_PARAM_SCREEN_ELEMENTS E, SYS_PARAM_BTN_CUST B
+                WHERE E.APP_NAME = B.APP_NAME
+                  AND (E.PROG_REF = #{progRef,jdbcType=VARCHAR}
+                   OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{progRef,jdbcType=VARCHAR} AND APP_NAME =  E.APP_NAME AND PARENT_REF IS NOT NULL)
+                	)
+                    <choose >
+		 				<when test="isSybase == 1" >
+		    				AND E.FLD_IDENTIFIER = CONVERT(NUMERIC,M.MAP_VALUE)
+		 				</when>
+		 				<otherwise >
+		    				AND E.FLD_IDENTIFIER = TO_NUMBER(M.MAP_VALUE)
+						</otherwise>
+				   </choose>
+                  AND B.BTN_ID = #{buttonId,jdbcType=NUMERIC} )
+             ELSE ''
+           END
+         ) FIELD_KEY_LABEL_CODE,
+         M.LINK_OP_ID,
+         M.LINK_ARG_ID,
+         M.LINK_API_CODE,
+         (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = R.ARG_TYPE 
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+		 )TRANS_ARG_TYPE,
+		 (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = R.STATUS 
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{statusLovTypeId,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+		 )TRANS_STATUS,
+		 (
+	         CASE
+	           WHEN M.MAP_TYPE = '4' AND M.LINK_OP_ID IS NOT NULL THEN
+	            (SELECT DESCRIPTION
+	               FROM IM_IMAL_API
+	              WHERE API_CODE = (SELECT API_CODE
+	                                  FROM SYS_PARAM_BTN_CUST_ACTIONS
+	                                 WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+	                                 AND OP_ID = M.LINK_OP_ID))
+	           ELSE
+	            ''
+	         END
+         ) LINK_ACTION_DESC,
+         (
+	         CASE
+	           WHEN M.MAP_TYPE = '4' AND M.LINK_ARG_ID IS NOT NULL THEN
+	            (SELECT DESCRIPTION
+	               FROM IM_API_ARGUMENT
+	              WHERE ARG_ID = M.LINK_ARG_ID
+	                AND API_CODE = (SELECT API_CODE
+	                                  FROM SYS_PARAM_BTN_CUST_ACTIONS
+	                                 WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+	                                 AND OP_ID = M.LINK_OP_ID))
+	           ELSE
+	            ''
+	         END
+         ) LINK_ARG_DESC
+		 
+    FROM IM_API_ARGUMENT R
+    LEFT JOIN SYS_PARAM_ACTION_ARG_MAP M ON M.BTN_ID = #{buttonId,jdbcType=NUMERIC}  
+                                            AND M.OP_ID = #{operationId,jdbcType=NUMERIC}
+                                        	AND M.ARG_ID = R.ARG_ID
+    WHERE R.API_CODE = #{actionId,jdbcType=NUMERIC}
+    ORDER BY R.ARG_ID
+	
+  </select>	
+	  
+	  
+   <select id="returnReportArguments" resultMap="returnActionArgumentsMap" parameterType="buttonCustomizationSC">
+   
+	SELECT
+		 R.ARGUMENT_ID ARG_ID,
+         R.ARGUMENT_NAME ARG_NAME,
+         (
+          CASE WHEN R.ARGUMENT_TYPE = 'NUMBER'   THEN 'N' 
+               WHEN R.ARGUMENT_TYPE = 'VARCHAR2' THEN 'V'
+               WHEN R.ARGUMENT_TYPE = 'DATE'     THEN 'T'
+               WHEN R.ARGUMENT_TYPE = 'DATETIME' THEN 'T' 
+          END) ARG_TYPE,
+         R.ARGUMENT_VALUE DEFAULT_VALUE,
+         R.ARGUMENT_LABEL DESCRIPTION,
+         
+         --R.API_CODE,
+         #{operationId,jdbcType=NUMERIC} OP_ID,
+         M.MAP_TYPE,
+         M.MAP_VALUE,
+         M.NESTED,
+         M.MAP_EXPRESSION,
+          (
+           CASE
+             WHEN M.MAP_TYPE = '1' THEN
+              (SELECT DISTINCT E.FIELD_KEY_LABEL_CODE
+                 FROM SYS_PARAM_SCREEN_ELEMENTS E, SYS_PARAM_BTN_CUST B
+                WHERE E.APP_NAME = B.APP_NAME
+                  AND (E.PROG_REF = #{progRef,jdbcType=VARCHAR}
+                   OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{progRef,jdbcType=VARCHAR} AND APP_NAME =  E.APP_NAME AND PARENT_REF IS NOT NULL)
+                )
+                  <choose >
+		 				<when test="isSybase == 1" >
+		    				AND E.FLD_IDENTIFIER = CONVERT(NUMERIC,M.MAP_VALUE)
+		 				</when>
+		 				<otherwise >
+		    				AND E.FLD_IDENTIFIER = TO_NUMBER(M.MAP_VALUE)
+						</otherwise>
+				   </choose>
+                  AND B.BTN_ID = #{buttonId,jdbcType=NUMERIC} )
+             ELSE ''
+           END
+         ) FIELD_KEY_LABEL_CODE,
+         M.LINK_OP_ID,
+         M.LINK_ARG_ID,
+         M.LINK_API_CODE,
+         (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = (
+                                                      CASE WHEN R.ARGUMENT_TYPE = 'NUMBER'   THEN 'N' 
+                                                           WHEN R.ARGUMENT_TYPE = 'VARCHAR2' THEN 'V'
+                                                           WHEN R.ARGUMENT_TYPE = 'DATE'     THEN 'T'
+                                                           WHEN R.ARGUMENT_TYPE = 'DATETIME' THEN 'T' 
+                                                      END) 
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+		 )TRANS_ARG_TYPE,
+		 (
+			  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		      FROM SYS_PARAM_LOV_TRANS
+		      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = 'I' 
+		        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{statusLovTypeId,jdbcType=NUMERIC}
+		        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR}
+		 )TRANS_STATUS,
+		 (
+	         CASE
+	           WHEN M.MAP_TYPE = '4' AND M.LINK_OP_ID IS NOT NULL THEN
+	            (SELECT DESCRIPTION
+	               FROM IM_IMAL_API
+	              WHERE API_CODE = (SELECT API_CODE
+	                                  FROM SYS_PARAM_BTN_CUST_ACTIONS
+	                                 WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+	                                 AND OP_ID = M.LINK_OP_ID))
+	           ELSE
+	            ''
+	         END
+         ) LINK_ACTION_DESC,
+         (
+	         CASE
+	           WHEN M.MAP_TYPE = '4' AND M.LINK_ARG_ID IS NOT NULL THEN
+	            (SELECT DESCRIPTION
+	               FROM IM_API_ARGUMENT
+	              WHERE ARG_ID = M.LINK_ARG_ID
+	                AND API_CODE = (SELECT API_CODE
+	                                  FROM SYS_PARAM_BTN_CUST_ACTIONS
+	                                 WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+	                                 AND OP_ID = M.LINK_OP_ID))
+	           ELSE
+	            ''
+	         END
+         ) LINK_ARG_DESC
+    FROM IRP_REP_ARGUMENTS R
+    LEFT JOIN SYS_PARAM_ACTION_ARG_MAP M ON M.BTN_ID = #{buttonId,jdbcType=NUMERIC}  
+                                            AND M.OP_ID = #{operationId,jdbcType=NUMERIC} 
+                                        	AND M.ARG_ID = R.ARGUMENT_ID
+    WHERE R.REPORT_ID = ( SELECT REPORT_ID FROM IRP_AD_HOC_REPORT WHERE PROG_REF = #{reportRef,jdbcType=VARCHAR} AND (APP_NAME = #{currAppName,jdbcType=VARCHAR} or #{currAppName,jdbcType=VARCHAR} = 'IMAL') ) 
+    ORDER BY R.ARGUMENT_ID
+   
+   </select>
+	  
+
+
+   <select id="dynamicProcedureCall" parameterType="buttonCustomizationSC" statementType="CALLABLE">
+	{ 
+		CALL ${procedureName}   
+		(
+			${procedureParams}
+		)
+	}
+	</select>	  
+	  
+	  
+   <resultMap id="returnScreenElementMap" type="com.path.dbmaps.vo.SYS_PARAM_SCREEN_ELEMENTSVO">
+		<result property="FLD_IDENTIFIER" column="FLD_IDENTIFIER"/>
+		<result property="FIELD_ID" column="FIELD_ID"/>
+		<result property="FIELD_KEY_LABEL_CODE" column="FIELD_KEY_LABEL_CODE"/>
+		<result property="FIELD_TYPE" column="FIELD_TYPE"/>
+		<result property="FROM_SOURCE" column="FROM_SOURCE"/>
+   </resultMap>	   	  
+   
+   <sql id="select_returnScreenElement">
+   
+	  SELECT FLD_IDENTIFIER, 
+	   		  FIELD_ID, 
+	   		  FIELD_KEY_LABEL_CODE, 
+	   		  FIELD_TYPE,
+	   		  FROM_SOURCE
+	  FROM SYS_PARAM_SCREEN_ELEMENTS E
+	  WHERE E.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+	  AND (E.PROG_REF = #{progRef,jdbcType=VARCHAR} OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{progRef,jdbcType=VARCHAR} AND APP_NAME =  #{currAppName,jdbcType=VARCHAR} AND PARENT_REF IS NOT NULL))
+   	  <if test=' fldIdentifier != null'>
+         AND E.FLD_IDENTIFIER = #{fldIdentifier,jdbcType=NUMERIC}
+      </if>
+   </sql>	
+       
+	<select id="returnScreenElementGridList" resultMap="returnScreenElementMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_returnScreenElement"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnScreenElementGridCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_returnScreenElement"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+		
+	
+	<resultMap id="argListMap" type="buttonCustomizationCO">
+		 <result property="imApiArgumentVO.ARG_ID"       	column="ARG_ID"/>
+		 <result property="imApiArgumentVO.ARG_NAME"     	column="ARG_NAME"/>
+		 <result property="imApiArgumentVO.DESCRIPTION"     column="DESCRIPTION"/>
+		 <result property="imApiArgumentVO.ARG_TYPE"  		column="ARG_TYPE"/>
+		 <result property="imApiArgumentVO.STATUS"  		column="STATUS"/>
+	</resultMap>
+	
+	<sql id="select_argList">
+	<choose>
+		<when test='"2".equals(apiType)'>
+			SELECT R.ARGUMENT_ID ARG_ID, 
+				R.ARGUMENT_NAME ARG_NAME, 
+				R.ARGUMENT_LABEL DESCRIPTION,
+				R.ARGUMENT_TYPE ARG_TYPE,
+   				R.ARGUMENT_SOURCE STATUS
+			FROM IRP_REP_ARGUMENTS R,IRP_AD_HOC_REPORT D
+ 			WHERE D.PROG_REF = ( SELECT REPORT_PROG_REF FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE OP_ID  = #{operationId,jdbcType=NUMERIC} AND BTN_ID =  #{buttonId,jdbcType=NUMERIC} AND API_TYPE = '2' ) 
+  			AND R.REPORT_ID = D.REPORT_ID
+  			<if test=' argType != null and !"".equals(argType)'>
+	         AND R.ARGUMENT_TYPE = #{argType,jdbcType=VARCHAR}
+	        </if>
+  			<if test=' argId != null'>
+	         AND R.ARGUMENT_ID = #{argId,jdbcType=NUMERIC}
+	      </if>
+		</when>
+		<otherwise>
+			SELECT R.ARG_ID, 
+				R.ARG_NAME, 
+				R.DESCRIPTION,
+				(
+					  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				      FROM SYS_PARAM_LOV_TRANS
+				      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = R.ARG_TYPE 
+				        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+				        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+				)ARG_TYPE,
+				(
+					  SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				      FROM SYS_PARAM_LOV_TRANS
+				      WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = R.STATUS 
+				        AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{statusLovTypeId,jdbcType=NUMERIC}
+				        AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+				)STATUS
+			FROM IM_API_ARGUMENT R
+		 	WHERE R.API_CODE =
+		 	<choose>
+			<when test='apiCode != null and !"".equals(apiCode)'> 
+				#{apiCode,jdbcType=NUMERIC}
+			</when>
+			<otherwise>
+		 	( SELECT API_CODE FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE OP_ID  = #{operationId,jdbcType=NUMERIC} AND BTN_ID = #{buttonId,jdbcType=NUMERIC} ) 
+	 		</otherwise>
+	 		</choose>
+		 	  <if test=' argType != null and !"".equals(argType)'>
+		         AND R.ARG_TYPE = #{argType,jdbcType=VARCHAR}
+		      </if>
+		      <if test=' argId != null'>
+		         AND R.ARG_ID = #{argId,jdbcType=NUMERIC}
+		      </if>
+		      <if test=' mapDirection != null and "I".equals(mapDirection)'>
+		         	AND R.STATUS = #{mapDirection,jdbcType=VARCHAR}
+		      </if>
+		</otherwise>
+	</choose>
+ 	</sql>
+	
+	
+    
+	<select id="returnArgList" resultMap="argListMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_argList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnArgListCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_argList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+		 
+	<delete id="deleteButtonCustArgMapping" parameterType="buttonCustomizationSC" >
+	     DELETE FROM SYS_PARAM_ACTION_ARG_MAP 
+ 			WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 			AND OP_ID = #{operationId,jdbcType=NUMERIC}
+ 	</delete> 
+	 
+	<delete id="deleteButtonCustCondMapping" parameterType="buttonCustomizationSC" >
+	     
+ 			
+ 		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+				
+					UPDATE SYS_PARAM_BTN_CUST_ACTIONS SET PARENT_OP_ID = NULL WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 					AND OP_ID IN (SELECT RESULT_OP_ID FROM SYS_PARAM_ACTION_COND_MAP WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 								  AND OP_ID = #{operationId,jdbcType=NUMERIC} )
+ 					
+				
+					DELETE FROM SYS_PARAM_ACTION_COND_MAP 
+ 					WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 					AND OP_ID = #{operationId,jdbcType=NUMERIC}
+					
+									
+				END
+		 </when>
+		 <otherwise>
+		   		BEGIN
+					
+ 					UPDATE SYS_PARAM_BTN_CUST_ACTIONS SET PARENT_OP_ID = NULL WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 					AND OP_ID IN (SELECT RESULT_OP_ID FROM SYS_PARAM_ACTION_COND_MAP WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 								  AND OP_ID = #{operationId,jdbcType=NUMERIC} );
+					
+					DELETE FROM SYS_PARAM_ACTION_COND_MAP 
+ 					WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 					AND OP_ID = #{operationId,jdbcType=NUMERIC};
+ 					
+				END;
+		 </otherwise>
+	   </choose>	
+ 	</delete>  
+	 
+	<select id="countLinkedAction" resultType="int" parameterType="buttonCustomizationSC" > 
+		SELECT SUM(ct) from 
+		(
+			SELECT COUNT(1) ct FROM SYS_PARAM_ACTION_ARG_MAP M
+ 			 	WHERE M.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 			 	AND M.LINK_OP_ID = #{operationId,jdbcType=NUMERIC} 
+			UNION ALL
+			SELECT COUNT(1) ct FROM SYS_PARAM_BTN_CUST_ACTIONS N
+ 			 	WHERE N.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 		 		AND N.PARENT_OP_ID = #{operationId,jdbcType=NUMERIC} 
+		) T
+ 		 
+	</select>  
+	
+	<resultMap id="globalActivityLinkedScrMap" type="com.path.dbmaps.vo.SYS_PARAM_BTN_CUSTVO">
+		<result property="APP_NAME"  		column="APP_NAME"/>
+		<result property="PROG_REF"  		column="PROG_REF"/>
+	</resultMap>
+	<select id="globalActivityLinkedScr" parameterType="com.path.vo.common.customization.button.ButtonCustomizationCO" resultMap="globalActivityLinkedScrMap">
+    	SELECT DISTINCT APP_NAME, PROG_REF
+		FROM SYS_PARAM_ELEM_ACTIVITIES
+		WHERE ACTIVITY_TYPE IN ('2','4','5','6','7','8','9')
+		AND ACTIVITY_ID = #{sysParamBtnCustVO.BTN_ID, jdbcType=NUMERIC}
+	</select>
+	<delete id="deleteButtonCust" parameterType="buttonCustomizationSC" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+				
+					DELETE FROM SYS_PARAM_ACTION_COND_MAP  WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+					
+					DELETE FROM SYS_PARAM_ACTION_ARG_MAP  WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+					
+					DELETE FROM SYS_PARAM_BTN_CUST_OUTPUT_MAP WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+					
+ 					DELETE FROM SYS_PARAM_BTN_CUST_ACTIONS  WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+ 					
+ 					DELETE FROM SYS_PARAM_BTN_CUST  WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+									
+				END
+		 </when>
+		 <otherwise>
+		   		BEGIN
+					DELETE FROM SYS_PARAM_ACTION_COND_MAP C WHERE C.BTN_ID = #{buttonId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_ACTION_ARG_MAP M WHERE M.BTN_ID = #{buttonId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BTN_CUST_OUTPUT_MAP O WHERE O.BTN_ID = #{buttonId,jdbcType=NUMERIC};
+					DELETE FROM SYS_PARAM_BTN_CUST_ACTIONS A WHERE A.BTN_ID = #{buttonId,jdbcType=NUMERIC};
+ 					DELETE FROM SYS_PARAM_BTN_CUST B WHERE B.BTN_ID = #{buttonId,jdbcType=NUMERIC};
+				END;
+		 </otherwise>
+	   </choose>
+  	</delete> 
+	  
+	
+	<resultMap id="buttonCondGridMap" type="buttonCustomizationCO">
+		 <result property="sysParamActionCondMapVO.LINE_NO" column="LINE_NO"/>
+		 <result property="sysParamActionCondMapVO.RESULT" column="RESULT"/>
+		 <result property="sysParamActionCondMapVO.RESULT_OP_ID" column="RESULT_OP_ID"/>
+		 <result property="sysParamBtnCustActionsVO.DESCRIPTION" column="DESCRIPTION"/>
+	</resultMap>
+	
+	<sql id="select_buttonCondGridList">
+    	SELECT 
+    		   LINE_NO,
+    		   RESULT, 
+    	       RESULT_OP_ID, 
+    	(SELECT DESCRIPTION FROM SYS_PARAM_BTN_CUST_ACTIONS A WHERE  A.BTN_ID = C.BTN_ID AND A.OP_ID = C.RESULT_OP_ID) DESCRIPTION
+		  FROM SYS_PARAM_ACTION_COND_MAP C
+		 WHERE C.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+		   AND C.OP_ID = #{operationId,jdbcType=NUMERIC}
+	</sql>
+	
+	<select id="buttonCondGridList" resultMap="buttonCondGridMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_buttonCondGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="buttonCondGridCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_buttonCondGridList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<update id="updateParentOpIdByCondResult" parameterType="buttonCustomizationSC" >
+	  <choose>
+		 	<when test='"1".equals(updateToNull)'>
+				  UPDATE SYS_PARAM_BTN_CUST_ACTIONS
+		    	  SET PARENT_OP_ID = NULL
+		          WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+		          AND OP_ID = #{operationId,jdbcType=NUMERIC}
+			</when>
+		 	<otherwise>
+		  		  UPDATE SYS_PARAM_BTN_CUST_ACTIONS
+		    	  SET PARENT_OP_ID = -1
+		          WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+		          AND OP_ID IN (SELECT RESULT_OP_ID
+		                    FROM SYS_PARAM_ACTION_COND_MAP
+		                   WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}
+		                     AND OP_ID = #{operationId,jdbcType=NUMERIC} ) 		
+		 	</otherwise>
+	   </choose>
+    </update> 
+	 
+	<resultMap id="returnScreenElementsMap" type="buttonCustomizationCO">
+		 <result property="sysParamScreenElementsVO.FIELD_ID" column="FIELD_ID"/>
+		 <result property="sysParamScreenElementsVO.FIELD_KEY_LABEL_CODE" column="FIELD_KEY_LABEL_CODE"/>
+		 <result property="sysParamScreenElementsVO.FLD_IDENTIFIER" column="FLD_IDENTIFIER"/>
+		 <result property="sysParamScreenElementsVO.FIELD_DATA_TYPE" column="FIELD_DATA_TYPE"/>
+	</resultMap> 
+	 
+	<select id="returnScreenElements" resultMap="returnScreenElementsMap" parameterType="buttonCustomizationSC" > 
+		SELECT FLD_IDENTIFIER, 	
+			   FIELD_ID,
+			   FIELD_DATA_TYPE,
+			   FIELD_KEY_LABEL_CODE
+  		FROM SYS_PARAM_SCREEN_ELEMENTS
+ 		WHERE APP_NAME = #{currAppName,jdbcType=VARCHAR}
+   		AND ( PROG_REF = #{progRef,jdbcType=VARCHAR} 
+   		      OR PROG_REF IN (
+	   		      				SELECT M.PARENT_REF FROM 
+		                          (
+		                            SELECT O.PARENT_REF  
+		                                      FROM OPT O
+		                                      WHERE PROG_REF = #{progRef,jdbcType=VARCHAR}
+		                                      AND APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		                                    
+		                                      UNION
+		                                      
+		                                      SELECT CASE
+		                                     WHEN OPTE.ADDITIONAL_PARENT_REF IS NOT NULL THEN
+		                                      OPTE.ADDITIONAL_PARENT_REF
+		                                     ELSE
+		                                      OP.PARENT_REF
+		                                   END PARENT_REF
+		                              FROM OPT OP
+		                              LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OP.APP_NAME
+		                                                               AND OPTE.PROG_REF = OP.PROG_REF
+		                             WHERE OP.PROG_REF = #{progRef,jdbcType=VARCHAR}
+		            				 AND OP.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+								  ) M
+   		      				 )
+   		    )
+	</select> 
+	
+	
+	<insert id="copyButtonCust" parameterType="buttonCustomizationCO" >
+	    
+	    <selectKey resultType="java.math.BigDecimal" keyProperty="operationId" order="BEFORE" >
+	      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(BTN_ID),0)+1</when><otherwise>NVL(MAX(BTN_ID),0)+1</otherwise></choose> FROM SYS_PARAM_BTN_CUST
+	    </selectKey>
+	    
+	    BEGIN
+			 
+			 INSERT INTO SYS_PARAM_BTN_CUST
+			  (BTN_ID,
+			   APP_NAME,
+			   COMP_CODE,
+			   TOOLBAR_ID,
+			   PROG_REF,
+			   DESCRIPTION,
+			   LABEL_KEY,
+			   BTN_ORDER,
+			   APPLY_FORM_VALIDATION_YN,
+			   RESULT_EXPR,
+			   ICON_IMAGE,
+			   CREATED_BY)
+			  SELECT #{operationId},
+			         APP_NAME,
+			         COMP_CODE,
+			         #{toolbarId},
+			         #{progRef},
+			         DESCRIPTION,
+			         LABEL_KEY,
+			         BTN_ORDER,
+			         APPLY_FORM_VALIDATION_YN,
+			         RESULT_EXPR,
+			         ICON_IMAGE,
+			         #{userName}
+			    FROM SYS_PARAM_BTN_CUST
+			   WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+		
+			INSERT INTO SYS_PARAM_BTN_CUST_ACTIONS
+			  (BTN_ID,
+			   OP_ID,
+			   OP_TYPE,
+			   DESCRIPTION,
+			   PARENT_OP_ID,
+			   API_CODE,
+			   CREATED_BY,
+			   COND_EXPR,
+			   REPORT_PROG_REF,
+			   REPORT_APP_NAME)
+			  SELECT #{operationId},
+			         OP_ID,
+			         OP_TYPE,
+			         DESCRIPTION,
+			         PARENT_OP_ID,
+			         API_CODE,
+			         #{userName},
+			         COND_EXPR,
+			         REPORT_PROG_REF,
+			   		 REPORT_APP_NAME
+			    FROM SYS_PARAM_BTN_CUST_ACTIONS
+			   WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>	
+		
+			
+			INSERT INTO SYS_PARAM_ACTION_ARG_MAP
+				(ARG_ID, 
+				 BTN_ID, 
+				 OP_ID, 
+				 MAP_TYPE, 
+				 MAP_VALUE, 
+				 NESTED,
+				 MAP_EXPRESSION,
+				 LINK_OP_ID, 
+				 LINK_API_CODE, 
+				 LINK_ARG_ID, 
+				 CREATED_BY)
+				SELECT ARG_ID, 
+					 #{operationId}, 
+					 OP_ID, 
+					 MAP_TYPE, 
+					 MAP_VALUE, 
+					 NESTED,
+					 MAP_EXPRESSION,
+					 LINK_OP_ID, 
+					 LINK_API_CODE, 
+					 LINK_ARG_ID, 
+					 #{userName}
+				FROM SYS_PARAM_ACTION_ARG_MAP	
+				WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+		
+			
+			INSERT INTO SYS_PARAM_ACTION_COND_MAP
+				(BTN_ID, 
+				 LINE_NO, 
+				 OP_ID, 
+				 RESULT, 
+				 RESULT_OP_ID, 
+				 CREATED_BY)
+				SELECT #{operationId}, 
+					LINE_NO, 
+					OP_ID, 
+					RESULT, 
+					RESULT_OP_ID, 
+					#{userName}
+				FROM SYS_PARAM_ACTION_COND_MAP	
+				WHERE BTN_ID = #{buttonId,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+	    END<if test="isOracle == 1">;</if>
+    
+  </insert>
+	  
+  <select id="returnButtonCustomizationParamMap" resultMap="returnButtonCustParamMappingResultMap" parameterType="com.path.vo.common.customization.button.SysParamGlobalActArgMapSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="buttonCustomizationMapper.returnButtonCustomizationParamMapQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+  </select>
+  
+  <select id="returnButtonCustomizationParamMapCount"  resultType="int" parameterType="com.path.vo.common.customization.button.SysParamGlobalActArgMapSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.returnButtonCustomizationParamMapQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+  
+  <resultMap id="returnButtonCustParamMappingResultMap" type="com.path.vo.common.customization.button.SysParamGlobalActArgMapSC">
+	   <result property="sysParamGlobalActArgMapVO.MAP_ID"         						column="MAP_ID"/>
+	   <result property="sysParamGlobalActArgMapVO.ELEM_FLD_IDENTIFIER"         		column="ELEM_FLD_IDENTIFIER"/>
+	   <result property="sysParamGlobalActArgMapVO.APP_NAME"         					column="APP_NAME"/>
+	   <result property="sysParamGlobalActArgMapVO.PROG_REF"         					column="PROG_REF"/>
+	   <result property="sysParamGlobalActArgMapVO.BTN_ID"         						column="BTN_ID"/>
+	   <result property="sysParamGlobalActArgMapVO.MAP_DIRECTION"         				column="MAP_DIRECTION"/>
+	   <result property="sysParamGlobalActArgMapVO.OP_ID"         						column="OP_ID"/>
+	   <result property="sysParamGlobalActArgMapVO.ARG_ID"         						column="ARG_ID"/>
+	   <result property="sysParamGlobalActArgMapVO.MAP_TYPE"      						column="MAP_TYPE"/>
+	   <result property="sysParamGlobalActArgMapVO.MAP_VALUE"      						column="MAP_VALUE"/>
+	   <result property="sysParamGlobalActArgMapVO.SCREEN_FLD_IDENTIFIER"      			column="SCREEN_FLD_IDENTIFIER"/>
+	   <result property="sysParamGlobalActArgMapVO.DYN_ELEM_IDENTIFIER"      			column="DYN_ELEM_IDENTIFIER"/>
+	   <result property="sysParamGlobalActArgMapVO.CREATED_BY"      					column="CREATED_BY"/>
+	   <result property="sysParamGlobalActArgMapVO.CREATED_DATE"      					column="CREATED_DATE"/>
+	   <result property="sysParamGlobalActArgMapVO.MODIFIED_BY"      					column="MODIFIED_BY"/>
+	   <result property="sysParamGlobalActArgMapVO.MODIFIED_DATE"      					column="MODIFIED_DATE"/>
+	   <result property="sysParamGlobalActArgMapVO.DELIMITER"      						column="DELIMITER"/>
+	   <result property="sysParamGlobalActArgMapVO.SELECTION_TYPE"      				column="SELECTION_TYPE"/>
+	   <result property="sysParamGlobalActArgMapVO.ARG_ADDITIONAL_ATTR_YN"      		column="ARG_ADDITIONAL_ATTR_YN"/>
+	   <result property="mapDescription"      											column="MAP_DESCRIPTION"/>
+	   <result property="mapTypeDesc"      												column="MAP_TYPE_DESC"/>
+	   <result property="opIdDescription"      											column="OP_ID_DESC"/>
+	   <result property="apiType"      													column="API_TYPE"/>
+	   <result property="mapDirection"      											column="MAP_DIRECTION_DESC"/>
+	   <result property="apiCode"      													column="API_CODE"/>
+	   <result property="argDescription"      											column="ARG_DESCRIPTION"/>
+	   <result property="dynElemDescription"      										column="DYN_ELEM_DESCRIPTION"/>
+	   <result property="sysParamGlobalActArgMapVO.SCREEN_ELEM_PROG_REF"      			column="SCREEN_ELEM_PROG_REF"/>
+	   <result property="sysParamGlobalActArgMapVO.DYN_PARAM_TYPE"      				column="DYN_PARAM_TYPE"/>
+	   <result property="dynParamTypeDesc"      										column="DYN_PARAM_TYPE_DESC"/>
+	   <result property="fromSource"                                                   column="FROM_SOURCE" />
+</resultMap>
+	
+  <sql id="returnButtonCustomizationParamMapQuery">
+		
+	SELECT 
+	 S.MAP_ID,
+	 S.ELEM_FLD_IDENTIFIER,
+	 S.APP_NAME,
+	 S.PROG_REF,
+	 S.BTN_ID,
+	 S.MAP_DIRECTION,
+	 S.OP_ID,
+	 S.ARG_ID,
+	 S.MAP_TYPE,
+	 S.MAP_VALUE,
+	 S.DELIMITER,
+	 S.SELECTION_TYPE,
+	 S.ARG_ADDITIONAL_ATTR_YN,				
+	(SELECT FROM_SOURCE
+		    FROM SYS_PARAM_SCREEN_ELEMENTS E
+		         WHERE E.APP_NAME = S.APP_NAME
+		              AND E.FLD_IDENTIFIER = S.SCREEN_FLD_IDENTIFIER
+		              
+			                  <choose>
+								<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+										AND (E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR} OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME =  S.APP_NAME AND PARENT_REF IS NOT NULL))
+								</when>
+								<otherwise>
+									AND (E.PROG_REF = S.PROG_REF OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = S.PROG_REF AND APP_NAME =  S.APP_NAME AND PARENT_REF IS NOT NULL))
+								</otherwise>
+								</choose>
+			           ) FROM_SOURCE,
+	(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+	          FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = S.MAP_TYPE
+	           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) MAP_TYPE_DESC,
+	(CASE WHEN MAP_TYPE = '1' THEN (
+									<choose>
+										<when test='sysParamGlobalActArgMapVO.DYN_SCREEN_ID != null and sysParamGlobalActArgMapVO.DYN_SCREEN_ELEMENT_ID != null'> 	
+											SELECT SDSED.PROPERTY_VALUE FROM SYS_DYN_SCREEN_ELEMENTS_DET SDSED
+		       		  						WHERE SDSED.ELEMENT_ID = S.SCREEN_FLD_IDENTIFIER AND SDSED.PROPERTY_CODE = 'id'
+									    </when>
+									    <otherwise>
+									    	SELECT DISTINCT E.FIELD_KEY_LABEL_CODE
+									    	FROM SYS_PARAM_SCREEN_ELEMENTS E
+									    	WHERE E.APP_NAME = S.APP_NAME
+										  	<choose>
+											 	<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+											 		AND (E.PROG_REF = #{screenPageRef,jdbcType=VARCHAR}
+											 		 OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME =  E.APP_NAME AND PARENT_REF IS NOT NULL)
+                										)
+											 	</when>
+											 	<otherwise>
+													AND (E.PROG_REF =  S.SCREEN_ELEM_PROG_REF
+													 OR E.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = S.SCREEN_ELEM_PROG_REF AND APP_NAME =  E.APP_NAME AND PARENT_REF IS NOT NULL)
+                										)
+											 	</otherwise>
+											</choose>
+									      	AND   E.FLD_IDENTIFIER = S.SCREEN_FLD_IDENTIFIER
+									    </otherwise>
+									</choose>      	 
+								    ) 
+	 								ELSE '' 
+	 								END
+	 ) MAP_DESCRIPTION,
+	 (SELECT A.DESCRIPTION
+           		FROM SYS_PARAM_BTN_CUST_ACTIONS A 
+                          WHERE A.OP_ID = S.OP_ID AND A.BTN_ID = S.BTN_ID)OP_ID_DESC,
+     (SELECT A.API_TYPE
+           		FROM SYS_PARAM_BTN_CUST_ACTIONS A 
+                          WHERE A.OP_ID = S.OP_ID AND A.BTN_ID = S.BTN_ID)API_TYPE,
+     (SELECT A.API_CODE
+           		FROM SYS_PARAM_BTN_CUST_ACTIONS A 
+                          WHERE A.OP_ID = S.OP_ID AND A.BTN_ID = S.BTN_ID)API_CODE,
+	(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+	          FROM SYS_PARAM_LOV_TRANS
+	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = S.MAP_DIRECTION
+	           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovMapId,jdbcType=NUMERIC}
+	           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) MAP_DIRECTION_DESC,                    
+	 S.SCREEN_FLD_IDENTIFIER,
+	 S.DYN_ELEM_IDENTIFIER,
+	 S.CREATED_BY,
+	 S.CREATED_DATE,
+	 S.MODIFIED_BY,
+	 S.MODIFIED_DATE,
+	 S.SCREEN_ELEM_PROG_REF,
+	 CASE
+	         WHEN (SELECT A.API_TYPE
+           			FROM SYS_PARAM_BTN_CUST_ACTIONS A 
+                          WHERE A.OP_ID = S.OP_ID AND A.BTN_ID = S.BTN_ID) = '1' THEN
+	          (SELECT R.DESCRIPTION FROM IM_API_ARGUMENT R
+ 				WHERE R.API_CODE = ( SELECT API_CODE FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE OP_ID  =  S.OP_ID AND BTN_ID = #{sysParamGlobalActArgMapVO.BTN_ID,jdbcType=NUMERIC} ) 
+  				AND R.ARG_ID =  S.ARG_ID)
+	         ELSE
+	          (SELECT R.ARGUMENT_LABEL FROM IRP_REP_ARGUMENTS R,IRP_AD_HOC_REPORT D 
+	          	WHERE D.PROG_REF = ( SELECT REPORT_PROG_REF FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE OP_ID  = S.OP_ID AND BTN_ID =  #{sysParamGlobalActArgMapVO.BTN_ID,jdbcType=NUMERIC} AND API_TYPE = '2' ) 
+  				AND R.REPORT_ID = D.REPORT_ID 
+  				AND R.ARGUMENT_ID =  S.ARG_ID)
+	       END ARG_DESCRIPTION,
+  	( SELECT D.PROPERTY_VALUE ELEMENT_HTML_ID 
+  	 FROM SYS_DYN_SCREEN_ELEMENTS E LEFT JOIN SYS_DYN_SCREEN_ELEMENTS_DET D ON E.ELEMENT_ID = D.ELEMENT_ID AND D.PROPERTY_CODE = 'id'
+     WHERE E.ELEMENT_ID = S.DYN_ELEM_IDENTIFIER) DYN_ELEM_DESCRIPTION,
+     S.DYN_PARAM_TYPE,
+  	 (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+     	FROM SYS_PARAM_LOV_TRANS
+       WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = S.DYN_PARAM_TYPE
+     	 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovDynParamType,jdbcType=NUMERIC}
+       	 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) DYN_PARAM_TYPE_DESC
+     
+	 FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP S
+	 
+	 WHERE 
+	 <choose>
+		<when test='sysParamGlobalActArgMapVO.DYN_SCREEN_ID != null and sysParamGlobalActArgMapVO.DYN_SCREEN_ELEMENT_ID != null'> 
+			 DYN_SCREEN_ID = #{sysParamGlobalActArgMapVO.DYN_SCREEN_ID, jdbcType=NUMERIC}
+			 AND DYN_SCREEN_ELEMENT_ID = #{sysParamGlobalActArgMapVO.DYN_SCREEN_ELEMENT_ID, jdbcType=NUMERIC}
+		 	 AND BTN_ID =  #{sysParamGlobalActArgMapVO.BTN_ID,jdbcType=NUMERIC}
+		</when>
+		<otherwise>
+		     APP_NAME = #{sysParamGlobalActArgMapVO.APP_NAME}
+		    <if test="sysParamGlobalActArgMapVO.ELEM_FLD_IDENTIFIER != emptyBigDecimalValue">
+			 AND ELEM_FLD_IDENTIFIER = #{sysParamGlobalActArgMapVO.ELEM_FLD_IDENTIFIER,jdbcType=NUMERIC}
+			</if>
+		 	 <choose>
+				<when test=' screenPageRef != null and !screenPageRef.isEmpty()'>
+					AND (S.PROG_REF = #{screenPageRef,jdbcType=VARCHAR}
+					OR S.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{screenPageRef,jdbcType=VARCHAR} AND APP_NAME = S.APP_NAME AND PARENT_REF IS NOT NULL)
+					)
+				</when>
+				<otherwise>
+				AND (PROG_REF = #{sysParamGlobalActArgMapVO.PROG_REF}
+				OR S.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{sysParamGlobalActArgMapVO.PROG_REF,jdbcType=VARCHAR} AND APP_NAME = S.APP_NAME AND PARENT_REF IS NOT NULL)
+				)
+				</otherwise>
+			</choose>
+		 	 AND BTN_ID =  #{sysParamGlobalActArgMapVO.BTN_ID,jdbcType=NUMERIC}
+		 	 AND ELEM_SEQUENCE_ID = #{sysParamGlobalActArgMapVO.ELEM_SEQUENCE_ID,jdbcType=NUMERIC}
+	 	</otherwise>
+	 </choose>
+	 
+  </sql>
+  
+  <select id="returnBtnCustOutMap" resultMap="returnBtnCustOutMapResultMap" parameterType="com.path.vo.common.customization.button.SysParamBtnCustOutMapSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="buttonCustomizationMapper.returnBtnCustOutMapQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+  </select>
+  
+  <select id="returnBtnCustOutMapCount"  resultType="int" parameterType="com.path.vo.common.customization.button.SysParamBtnCustOutMapSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.returnBtnCustOutMapQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+  
+  <resultMap id="returnBtnCustOutMapResultMap" type="com.path.vo.common.customization.button.SysParamBtnCustOutMapSC">
+	   <result property="sysParamBtnCustOutMap.BTN_ID"         					column="BTN_ID"/>
+	   <result property="sysParamBtnCustOutMap.LINE_NO"         				column="LINE_NO"/>
+	   <result property="sysParamBtnCustOutMap.MAP_KEY"         				column="MAP_KEY"/>
+	   <result property="sysParamBtnCustOutMap.NESTED"         					column="NESTED"/>
+	   <result property="sysParamBtnCustOutMap.OP_ID"         					column="OP_ID"/>
+	   <result property="sysParamBtnCustOutMap.ARG_ID"         					column="ARG_ID"/>
+	   <result property="sysParamBtnCustOutMap.CREATED_BY"      				column="CREATED_BY"/>
+	   <result property="sysParamBtnCustOutMap.CREATED_DATE"      				column="CREATED_DATE"/>
+	   <result property="sysParamBtnCustOutMap.MODIFIED_BY"      				column="MODIFIED_BY"/>
+	   <result property="sysParamBtnCustOutMap.MODIFIED_DATE"      				column="MODIFIED_DATE"/>
+	   <result property="operationDescription"      							column="OP_DESC"/>
+	   <result property="argDescription"      									column="ARG_DESC"/>
+	</resultMap>
+	
+  <sql id="returnBtnCustOutMapQuery">
+	SELECT 
+	 S.BTN_ID,
+	 S.LINE_NO,
+	 S.MAP_KEY,
+	 S.NESTED,
+	 S.OP_ID,
+	 S.ARG_ID,
+	 S.CREATED_BY,
+	 S.CREATED_DATE,
+	 S.MODIFIED_BY,
+	 (SELECT DESCRIPTION FROM SYS_PARAM_BTN_CUST_ACTIONS WHERE BTN_ID = S.BTN_ID AND OP_ID = S.OP_ID) OP_DESC,
+  	 (SELECT A.DESCRIPTION FROM IM_API_ARGUMENT A, SYS_PARAM_BTN_CUST_ACTIONS B WHERE A.API_CODE = B.API_CODE AND B.BTN_ID = S.BTN_ID AND A.ARG_ID = S.ARG_ID AND S.OP_ID = B.OP_ID ) ARG_DESC
+	 FROM SYS_PARAM_BTN_CUST_OUTPUT_MAP S
+	 WHERE BTN_ID = #{sysParamBtnCustOutMap.BTN_ID,jdbcType=NUMERIC}
+	 <if test='sysParamBtnCustOutMap.OP_ID != null'>
+        	AND  OP_ID = #{sysParamBtnCustOutMap.OP_ID,jdbcType=NUMERIC}
+     </if>
+  </sql>
+  
+  
+  <resultMap id="actionsOutputListMap" type="buttonCustomizationCO">
+		 <result property="sysParamBtnCustActionsVO.OP_ID"       				column="OP_ID"/>
+		 <result property="sysParamBtnCustActionsVO.DESCRIPTION"       			column="DESCRIPTION"/>
+		 <result property="sysParamBtnCustActionsVO.API_CODE"       			column="API_CODE"/>
+		 <result property="btnApiDescription"       							column="BTN_API_DESCRIPTION"/>
+  </resultMap>
+	
+	<sql id="select_actionsOutMapList">
+ 	 	SELECT M.OP_ID,
+              M.DESCRIPTION,
+              M.API_CODE,
+              S.DESCRIPTION BTN_API_DESCRIPTION
+         	FROM SYS_PARAM_BTN_CUST_ACTIONS M, IM_IMAL_API S
+        	WHERE M.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+        	AND S.RELATED_APP IN (#{currAppName,jdbcType=VARCHAR},'IMAL')
+          	AND S.API_CODE = M.API_CODE
+          	AND M.OP_TYPE = 'A'
+          	AND S.SERVICE_TYPE <![CDATA[ <> ]]> 'C'
+          	<if test='dependentOpId != null'>
+        	AND  M.OP_ID = #{dependentOpId,jdbcType=NUMERIC}
+        </if>
+    </sql>
+	
+	<select id="returnActionsOutMapList" resultMap="actionsOutputListMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_actionsOutMapList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnActionsOutMapListCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_actionsOutMapList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+  <resultMap id="actionsArgListMap" type="com.path.vo.common.customization.button.SysParamActionArgListSC">
+		 <result property="sysParamActionArgListVO.BTN_ID"       				column="BTN_ID"/>
+		 <result property="sysParamActionArgListVO.OP_ID"       				column="OP_ID"/>
+		 <result property="sysParamActionArgListVO.ARG_ID"       				column="ARG_ID"/>
+		 <result property="sysParamActionArgListVO.LINE_NO"       				column="LINE_NO"/>
+		 <result property="sysParamActionArgListVO.LIST_TYPE"       			column="LIST_TYPE"/>
+		 <result property="sysParamActionArgListVO.LIST_VALUE"       			column="LIST_VALUE"/>
+		 <result property="sysParamActionArgListVO.CREATED_BY"       			column="CREATED_BY"/>
+		 <result property="sysParamActionArgListVO.CREATED_DATE"       			column="CREATED_DATE"/>
+		 <result property="sysParamActionArgListVO.MODIFIED_BY"       			column="MODIFIED_BY"/>
+		 <result property="sysParamActionArgListVO.MODIFIED_DATE"       		column="MODIFIED_DATE"/>
+		 <result property="listTypeDescription"       							column="TYPE_DESCRIPTION"/>
+  </resultMap>
+	
+	<sql id="actionsArgList">
+ 	 	SELECT M.BTN_ID,
+              M.OP_ID,
+              M.ARG_ID,
+              M.LINE_NO,
+              M.LIST_TYPE,
+              M.LIST_VALUE,
+              M.CREATED_BY,
+              M.CREATED_DATE,
+              M.MODIFIED_BY,
+              M.MODIFIED_DATE,
+              (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+	          	FROM SYS_PARAM_LOV_TRANS
+	           WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = M.LIST_TYPE
+	           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) TYPE_DESCRIPTION
+         	FROM SYS_PARAM_ACTION_ARG_LIST M
+        	WHERE M.BTN_ID = #{sysParamActionArgListVO.BTN_ID,jdbcType=NUMERIC}
+          	AND M.OP_ID = #{sysParamActionArgListVO.OP_ID,jdbcType=NUMERIC}
+          	AND M.ARG_ID = #{sysParamActionArgListVO.ARG_ID,jdbcType=NUMERIC}
+    </sql>
+	
+	<select id="returnActionsArgList" resultMap="actionsArgListMap" parameterType="com.path.vo.common.customization.button.SysParamActionArgListSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.actionsArgList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnActionsArgListCount" resultType="int" parameterType="com.path.vo.common.customization.button.SysParamActionArgListSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.actionsArgList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<delete id="deleteAllButtonActionArgList">
+	delete from SYS_PARAM_ACTION_ARG_LIST WHERE 
+		BTN_ID = #{sysParamActionArgListVO.BTN_ID,jdbcType=NUMERIC}
+		AND OP_ID = #{sysParamActionArgListVO.OP_ID,jdbcType=NUMERIC}
+		AND ARG_ID = #{sysParamActionArgListVO.ARG_ID,jdbcType=NUMERIC}
+	</delete>
+	
+	<resultMap id="returnWebServiceSecurityMap" type="com.path.vo.common.customization.button.WebServiceSecurityCO">
+		 <result property="AUTHENTICATION_TYPE"       				column="AUTHENTICATION_TYPE"/>
+		 <result property="USER_NAME"       						column="USER_NAME"/>
+		 <result property="PASSWORD"       							column="PASSWORD"/>
+	 	 <result property="TOKEN_REGISTRATION_URL"       			column="TOKEN_REGISTRATION_URL"/>
+	 	 <result property="TOKEN_REGISTRATION_APP_NAME"       		column="TOKEN_REGISTRATION_APP_NAME"/>
+	 	 <result property="TOKEN_REGISTRATION_APP_PWD"       		column="TOKEN_REGISTRATION_APP_PWD"/>
+		 <result property="TOKEN_GENERATION_URL"       				column="TOKEN_GENERATION_URL"/>
+		 <result property="API_CODE"       							column="API_CODE"/>
+	 	 <result property="TOKEN_AES_KEY"       					column="TOKEN_AES_KEY"/>
+		 <result property="TOKEN_LIFETIME"       					column="TOKEN_LIFETIME"/>
+  	</resultMap>
+  
+	<select id="returnWebServiceSecurity" resultMap="returnWebServiceSecurityMap" parameterType="com.path.vo.common.customization.button.WebServiceSecurityCO" > 
+		SELECT API_CODE,
+			AUTHENTICATION_TYPE,
+			USER_NAME,
+			PASSWORD,
+			TOKEN_REGISTRATION_URL,
+			TOKEN_REGISTRATION_APP_PWD,
+			TOKEN_REGISTRATION_APP_NAME,
+			TOKEN_GENERATION_URL,
+			TOKEN_AES_KEY,
+			TOKEN_LIFETIME
+		FROM IM_API_SECURITY 
+		WHERE API_CODE = #{API_CODE,jdbcType=NUMERIC}
+	</select> 
+		<select id="returnDynScreenElementGridList" resultMap="returnScreenElementMap" parameterType="buttonCustomizationSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="buttonCustomizationMapper.select_returnDynScreenElement"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnDynScreenElementGridCount" resultType="int" parameterType="buttonCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="buttonCustomizationMapper.select_returnDynScreenElement"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<sql id="select_returnDynScreenElement">
+   
+	  SELECT SED.ELEMENT_ID FLD_IDENTIFIER, 
+	   		 SED.PROPERTY_VALUE  FIELD_ID, 
+	   		 SED.PROPERTY_VALUE FIELD_KEY_LABEL_CODE, 
+	   		 SED.PROPERTY_EXPRESSION_VALUE FIELD_TYPE,
+	  		 SED.PROPERTY_EXPRESSION_VALUE FROM_SOURCE
+		FROM	SYS_DYN_SCREEN_ELEMENTS SE , SYS_DYN_SCREEN_ELEMENTS_DET SED	 		
+	  	WHERE	SE.DYN_SCREEN_ID = #{dynScreenId, jdbcType=NUMERIC}  
+		AND 	SE.ELEMENT_ID = SED.ELEMENT_ID 
+		AND     SED.PROPERTY_CODE='id'
+		<if test='sysParamGlobalActArgMapVO.DYN_SCREEN_ELEMENT_ID != null'>
+        	AND     SE.ELEMENT_ID = #{dynElementId, jdbcType=NUMERIC}
+     	</if>
+   </sql>
+</mapper>

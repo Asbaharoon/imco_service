@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CreditCardEncryptDecryptMapper">
+
+<select id="returnCreditCardEncryptKey" resultType="String" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		SELECT FIELD 
+		FROM 	FMSCREDITCARD_DETAILS  
+		WHERE 	COMP_CODE 				= #{compCode}
+		AND 	CREDIT_CARD_NUMBER	    = #{encryptedCardNo}
+</select>
+
+<select id="returnCreditCardMaskingDetails"  resultMap="CTSCONTROL.BaseResultMap" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+	SELECT MASK_CARD_POSITION ,  MASK_CARD_LENGTH  , MASK_CARD_CHAR
+	FROM CTSCONTROL 
+	WHERE COMP_CODE = #{compCode}
+	AND BRANCH_CODE = #{branchCode}
+</select>
+
+
+<select id="returnFmsCreditCardDetails" resultType="String" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+          SELECT FIELD 
+            FROM FMSCREDITCARD_DETAILS  
+           WHERE COMP_CODE             = #{CompCode,jdbcType=NUMERIC}
+         <if test="encodingString != null" >
+           AND CREDIT_CARD_NUMBER = #{encodingString,jdbcType=VARCHAR}
+         </if>
+         <if test="clearString != null" >
+           AND CARD_NUMBER = #{clearString,jdbcType=VARCHAR}
+         </if>
+</select>
+
+
+<select id="returnFmsCreditCardDetailsList" resultMap="creditCardDetailsList" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+			SELECT 
+              FMSAPPL.CIF CIF, 
+              FMSCREDITCARD_DETAILS.COMP_CODE COMP_CODE, 
+              FMSCREDITCARD_DETAILS.BRANCH_CODE BRANCH_CODE,
+              FMSCREDITCARD_DETAILS.APPLICATION_CODE APPLICATION_CODE,
+              FMSCREDITCARD_DETAILS.SUBLIMIT_LINE_NBR SUBLIMIT_LINE_NBR,
+              FMSCREDITCARD_DETAILS.LINE_NBR LINE_NBR,
+              FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP CARD_NUMBER_UNENC_TEMP, 
+              FMSCREDITCARD_DETAILS.FIELD FIELD, 
+              FMSCREDITCARD_DETAILS.CREDIT_CARD_NUMBER CREDIT_CARD_NUMBER   
+              FROM FMSCREDITCARD_DETAILS, FMSAPPL  
+              WHERE FMSCREDITCARD_DETAILS.COMP_CODE = FMSAPPL.COMP_CODE 
+              AND FMSCREDITCARD_DETAILS.BRANCH_CODE = FMSAPPL.BRANCH 
+              AND FMSCREDITCARD_DETAILS.APPLICATION_CODE = FMSAPPL.CODE
+         <if test="clearString != null" >
+           AND CARD_NUMBER = #{clearString,jdbcType=VARCHAR}
+         </if>
+</select>
+
+	<resultMap id="creditCardDetailsList" type="com.path.vo.common.general.CreditCardEncryptDecryptSC">
+		<result property="cif" column="CIF" />
+		<result property="compCode" column="COMP_CODE" />
+		<result property="branchCode" column="BRANCH_CODE" />
+		<result property="applCode" column="APPLICATION_CODE" />
+		<result property="subLimitLineNo" column="SUBLIMIT_LINE_NBR" />
+		<result property="lineNo" column="LINE_NBR" />
+		<result property="unEncryptedCardNumber" column="CARD_NUMBER_UNENC_TEMP" />
+		<result property="oldEncryptionKey" column="FIELD" />
+		<result property="encryptedData" column="CREDIT_CARD_NUMBER" />
+	</resultMap>
+
+   	
+	<update id="updateCreditCardDetailsAfsLog" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE T_IM_AFS_LOG_DETAILS
+				SET T_IM_AFS_LOG_DETAILS.CARD_NUMBER = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE T_IM_AFS_LOG_DETAILS.CARD_NUMBER = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+    
+	<update id="updateCreditCardDetailsAfsMonthly" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE T_IM_AFS_MONTHLY
+				SET T_IM_AFS_MONTHLY.CARD_NUMBER = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE T_IM_AFS_MONTHLY.CARD_NUMBER = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+
+	<update id="updateCreditCardDetailsTempAfsMonthly" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE T_IM_TMP_AFS_MONTHLY
+				SET T_IM_TMP_AFS_MONTHLY.CARD_NUMBER = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE T_IM_TMP_AFS_MONTHLY.CARD_NUMBER = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+
+
+	<update id="updateCreditCardDetailsDfDummySettle" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE DF_DUMMY_SETTLE
+				SET DF_DUMMY_SETTLE.CARD_NO = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE DF_DUMMY_SETTLE.CARD_NO = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+    
+    
+	<update id="updateCreditCardDetailsAfsMonthlyHist" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE T_IM_AFS_MONTHLY_HIST
+				SET T_IM_AFS_MONTHLY_HIST.CARD_NUMBER = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE T_IM_AFS_MONTHLY_HIST.CARD_NUMBER = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+
+		  
+	<update id="updateCreditCardDetailsAfsDaily" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+		UPDATE T_IM_AFS_DAILY
+				SET T_IM_AFS_DAILY.CARD_NUMBER = #{encryptedCardNo}
+				WHERE EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE T_IM_AFS_DAILY.CARD_NUMBER = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+    
+    <update id="updateCreditCardDetailsCtsTrs" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+						 UPDATE CTSTRS
+						SET CTSTRS.CARD_NO = #{encryptedCardNo}
+						 WHERE CTSTRS.COMP_CODE = #{compCode}
+						 AND EXISTS
+				(	SELECT 1 
+					FROM FMSCREDITCARD_DETAILS  
+					WHERE CTSTRS.CARD_NO = FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP
+           					AND FMSCREDITCARD_DETAILS.ACC_CIF IS NOT NULL 
+					AND FMSCREDITCARD_DETAILS.CARD_NUMBER_UNENC_TEMP =#{unEncryptedCardNumber}
+         				 )
+    </update>
+    
+    <update id="updateCreditCardDetailsFmsDrawdown" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+                                    UPDATE FMSDRWDWN
+                                SET LONG_NAME_ENG =   CONCAT('Generated from Prime' , #{encryptedCardNo}) 
+                WHERE LONG_NAME_ENG LIKE '%Generated from Prime%'
+					 AND  SUBSTR(LONG_NAME_ENG , 21) = #{unEncryptedCardNumber}
+   	</update>
+   	
+   	    <update id="updateCreditCardDetailsFmsDrawdownArab" parameterType="com.path.vo.common.general.CreditCardEncryptDecryptSC" >
+                                    UPDATE FMSDRWDWN
+                                SET LONG_NAME_ARAB =   CONCAT('Generated from Prime' , #{encryptedCardNo}) 
+                WHERE LONG_NAME_ARAB LIKE '%Generated from Prime%'
+					 AND  SUBSTR(LONG_NAME_ARAB , 21) = #{unEncryptedCardNumber}
+   	</update>
+</mapper>

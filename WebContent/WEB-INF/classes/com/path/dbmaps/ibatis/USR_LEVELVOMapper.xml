@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="USR_LEVEL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.USR_LEVELVO" >
+    <id column="CODE" property="CODE" />
+    <result column="DESC_ENG" property="DESC_ENG" />
+    <result column="DESC_ARAB" property="DESC_ARAB" />
+    <result column="LIMIT" property="LIMIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, DESC_ENG, DESC_ARAB, LIMIT
+  </sql>
+  <select id="selectUSR_LEVEL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.USR_LEVELVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from USR_LEVEL
+    where CODE = #{CODE}
+  </select>
+  <delete id="deleteUSR_LEVEL" parameterType="com.path.dbmaps.vo.USR_LEVELVO" >
+    delete from USR_LEVEL
+    where CODE = #{CODE}
+  </delete>
+  <insert id="insertUSR_LEVEL" parameterType="com.path.dbmaps.vo.USR_LEVELVO" >
+    insert into USR_LEVEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="DESC_ENG != null" >
+        DESC_ENG,
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB,
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        LIMIT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="DESC_ENG != null" >
+        #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        #{DESC_ARAB},
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        #{LIMIT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateUSR_LEVEL" >
+    update USR_LEVEL
+    <set >
+      <if test="DESC_ENG != null" >
+        DESC_ENG = #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB = #{DESC_ARAB},
+      </if>
+      <if test="LIMIT != null" >
+        <choose >
+          <when test="LIMIT == emptyBigDecimalValue" >
+            LIMIT = NULL ,
+          </when>
+          <otherwise >
+            LIMIT = #{LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+  </sql>
+  <update id="updateUSR_LEVEL" parameterType="com.path.dbmaps.vo.USR_LEVELVO" >
+    <include refid="sql_updateUSR_LEVEL" />
+  </update>
+</mapper>

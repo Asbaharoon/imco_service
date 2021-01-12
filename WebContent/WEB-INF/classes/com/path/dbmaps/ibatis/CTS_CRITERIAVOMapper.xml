@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_CRITERIA" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_CRITERIAVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CRITERIA_CODE" property="CRITERIA_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="CRITERIA_USAGE" property="CRITERIA_USAGE" />
+    <result column="QUERY_ID" property="QUERY_ID" />
+    <result column="PROCEDURE_ID" property="PROCEDURE_ID" />
+    <result column="CRITERIA_DESC" property="CRITERIA_DESC" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="SCORE" property="SCORE" />
+    <result column="CRITERIA_REFERENCE" property="CRITERIA_REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CRITERIA_CODE, BRANCH_CODE, CRITERIA_USAGE, QUERY_ID, PROCEDURE_ID, CRITERIA_DESC, 
+    CREATED_BY, DATE_CREATED, MODIFIED_BY, DATE_MODIFIED, DATE_UPDATED, SCORE,CRITERIA_REFERENCE
+  </sql>
+  <select id="selectCTS_CRITERIA" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_CRITERIAVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_CRITERIA
+    where COMP_CODE = #{COMP_CODE}
+      and CRITERIA_CODE = #{CRITERIA_CODE}
+  </select>
+  <delete id="deleteCTS_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_CRITERIAVOKey" >
+    delete from CTS_CRITERIA
+    where COMP_CODE = #{COMP_CODE}
+      and CRITERIA_CODE = #{CRITERIA_CODE}
+  </delete>
+  <insert id="insertCTS_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_CRITERIAVO" >
+    insert into CTS_CRITERIA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CRITERIA_CODE != null and CRITERIA_CODE != emptyBigDecimalValue" >
+        CRITERIA_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CRITERIA_USAGE != null" >
+        CRITERIA_USAGE,
+      </if>
+      <if test="QUERY_ID != null and QUERY_ID != emptyBigDecimalValue" >
+        QUERY_ID,
+      </if>
+      <if test="PROCEDURE_ID != null and PROCEDURE_ID != emptyBigDecimalValue" >
+        PROCEDURE_ID,
+      </if>
+      <if test="CRITERIA_DESC != null" >
+        CRITERIA_DESC,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      DATE_UPDATED,
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        SCORE,
+      </if>
+       <if test="CRITERIA_REFERENCE != null" >
+        CRITERIA_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CRITERIA_CODE != null and CRITERIA_CODE != emptyBigDecimalValue" >
+        #{CRITERIA_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CRITERIA_USAGE != null" >
+        #{CRITERIA_USAGE},
+      </if>
+      <if test="QUERY_ID != null and QUERY_ID != emptyBigDecimalValue" >
+        #{QUERY_ID},
+      </if>
+      <if test="PROCEDURE_ID != null and PROCEDURE_ID != emptyBigDecimalValue" >
+        #{PROCEDURE_ID},
+      </if>
+      <if test="CRITERIA_DESC != null" >
+        #{CRITERIA_DESC},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        #{SCORE},
+      </if>
+       <if test="CRITERIA_REFERENCE != null" >
+        #{CRITERIA_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_CRITERIA" >
+    update CTS_CRITERIA
+    <set >
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA_USAGE != null" >
+        CRITERIA_USAGE = #{CRITERIA_USAGE},
+      </if>
+      <if test="QUERY_ID != null" >
+        <choose >
+          <when test="QUERY_ID == emptyBigDecimalValue" >
+            QUERY_ID = NULL ,
+          </when>
+          <otherwise >
+            QUERY_ID = #{QUERY_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROCEDURE_ID != null" >
+        <choose >
+          <when test="PROCEDURE_ID == emptyBigDecimalValue" >
+            PROCEDURE_ID = NULL ,
+          </when>
+          <otherwise >
+            PROCEDURE_ID = #{PROCEDURE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA_DESC != null" >
+        CRITERIA_DESC = #{CRITERIA_DESC},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="SCORE != null" >
+        <choose >
+          <when test="SCORE == emptyBigDecimalValue" >
+            SCORE = NULL ,
+          </when>
+          <otherwise >
+            SCORE = #{SCORE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CRITERIA_REFERENCE != null" >
+        CRITERIA_REFERENCE = #{CRITERIA_REFERENCE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CRITERIA_CODE = #{CRITERIA_CODE}
+  </sql>
+  <update id="updateCTS_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_CRITERIAVO" >
+    <include refid="sql_updateCTS_CRITERIA" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

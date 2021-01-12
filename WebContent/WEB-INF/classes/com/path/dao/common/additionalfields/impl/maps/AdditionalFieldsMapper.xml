@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="additionalFieldsByType">
+	
+	<select id="returnAdditionalFieldsByType" resultMap="additionalFieldsByTypeCOListMap" parameterType="additionalFieldSC" >
+		<include refid="additionalFieldsByTypeListCommon"  />
+		<if test='entity!=null'>
+			<if test='entity.equals("CIF")'>
+				<include refid="cifDataAddFieldsList"  />
+			</if>
+			<if test='entity.equals("AMF")'>
+				<include refid="amfDataAddFieldsList"  />
+			</if>
+			<if test='entity.equals("CTSTRS") and !"CYEXCH".equals(usedFrom)'>
+				<include refid="ctstrsDataAddFieldsList"  />
+			</if>
+			<if test='entity.equals("CTSTRS") and "CYEXCH".equals(usedFrom)'>
+				<include refid="cyExchDataAddFieldsList"  />
+			</if>
+			<if test='entity.equals("CARD")'>
+				<include refid="cardDataAddFieldsList"  />
+			</if>
+		</if>
+ 	</select>
+ 	
+ 	<sql id="additionalFieldsByTypeListCommon" >
+	SELECT A.COMP_CODE,
+		A.CODE,
+		A.BRIEF_DESC_ENG,
+		A.BRIEF_DESC_ARAB,
+		A.LONG_DESC_ENG, 
+		A.LONG_DESC_ARAB,
+		A.ENTITY,
+		A.COLUMN_NUMBER,   
+		A.FIELD_LABEL,
+		A.FIELD_TYPE,   
+		A.FIELD_LENGHT,   
+		A.FIELD_FORMAT,     
+		A.MANDATORY,   
+		A.FIELD_SEQ,   
+		A.DATE_VALIDATION,   
+		A.DATE_LINK,   
+		A.DATE_VALIDATION_OPERATOR,   
+		A.PARAM1,   
+		A.PARAM2,   
+		A.PARAM3,   
+		A.PARAM4,   
+		A.PARAM5,   
+		A.PARAM_TYPE1,   
+		A.PARAM_TYPE2,   
+		A.PARAM_TYPE3,   
+		A.PARAM_TYPE4,   
+		A.PARAM_TYPE5,   
+		A.PARAM_VALUE1,   
+		A.PARAM_VALUE2,   
+		A.PARAM_VALUE3,   
+		A.PARAM_VALUE4,   
+		A.PARAM_VALUE5,   
+		A.TABLE_NAME,   
+		A.DESC_OUTPUT,   
+		A.LOOKUP_TYPE,   
+		A.DATAWINDOW ,
+		A.SHOW,
+		A.DATA_ENTRY,
+		A.PARAM1_LINK,
+		A.PARAM2_LINK,
+		A.PARAM3_LINK,
+		A.PARAM4_LINK,
+		A.PARAM5_LINK,
+		A.RELATED_TO_DEPOSITOR_INFO,
+		A.UNIQUE_YN,
+		A.MIN_FIELD_LENGTH
+ 	</sql>
+ 	<sql id="cifDataAddFieldsList" >
+ 			,D.CIF_NO CIF_DATA_CIF_NO,
+			D.COL_NO CIF_DATA_COL_NO,
+			D.ENTITY_TYPE CIF_DATA_ENTITY_TYPE,
+			D.ENTITY CIF_DATA_ENTITY,
+			D.COMP_CODE CIF_DATA_COMP_CODE,
+			D.ADD_NUM DATA_ADD_NUM,
+			D.ADD_VC DATA_ADD_VC,
+			D.ADD_DT DATA_ADD_DT,
+			D.ADD_DR DATA_ADD_DR,
+			D.IS_READONLY_YN IS_READONLY_YN
+ 		
+ 		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY 
+			LEFT JOIN CIF_DATA_ADD_FIELDS D ON D.COMP_CODE = 
+								   		<choose>
+								   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+								   			<otherwise>#{compCode}</otherwise>
+								   		</choose>
+										AND D.COL_NO = A.COLUMN_NUMBER
+										AND D.ENTITY = E.ENTITY
+										AND D.ENTITY_TYPE = E.ENTITY_TYPE
+										AND abs(D.COMP_CODE) = A.COMP_CODE
+										<choose>
+							 				<when test='cifNo != null and cifNo != emptyBigDecimalValue'>
+												AND D.CIF_NO = #{cifNo}
+											</when>
+											<otherwise>
+												AND D.CIF_NO IS NULL
+											</otherwise>
+										</choose>
+		WHERE A.COMP_CODE = #{compCode}  
+			AND A.ENTITY = 'CIF' AND E.COMP_CODE = A.COMP_CODE
+			AND E.ENTITY_TYPE = #{typeCode}
+			AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+			
+ 	</sql>
+ 	<sql id="amfDataAddFieldsList" >
+			,D.ENTITY_TYPE AMF_DATA_ENTITY_TYPE,
+			D.ENTITY AMF_DATA_ENTITY,
+			D.COL_NO AMF_DATA_COL_NO,
+			D.ACC_NO AMF_DATA_ACC_NO,
+			D.BRANCH_CODE AMF_DATA_BRANCH_CODE,
+			D.COMP_CODE AMF_DATA_COMP_CODE,
+			D.ADD_NUM DATA_ADD_NUM,
+			D.ADD_VC DATA_ADD_VC,
+			D.ADD_DT DATA_ADD_DT,
+			D.ADD_DR DATA_ADD_DR
+		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY 
+			LEFT JOIN AMF_DATA_ADD_FIELDS D ON D.COMP_CODE = A.COMP_CODE 
+			AND D.COL_NO = A.COLUMN_NUMBER AND D.ENTITY = E.ENTITY 
+			AND D.ENTITY_TYPE = E.ENTITY_TYPE
+			AND D.BRANCH_CODE = #{branchCode} 
+			<choose>
+ 				<when test='additionalReference != null and additionalReference != emptyBigDecimalValue'>
+					AND D.ACC_NO = #{additionalReference}
+				</when>
+				<otherwise>
+					AND D.ACC_NO = 0
+				</otherwise>
+			</choose>
+		WHERE A.COMP_CODE = #{compCode}  
+			AND A.ENTITY = 'AMF' AND E.COMP_CODE = A.COMP_CODE
+			AND E.ENTITY_TYPE = #{typeCode}
+			AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+		
+ 	</sql>
+ 	
+ 	 <sql id="cardDataAddFieldsList" >
+			,D.ENTITY_TYPE CARD_DATA_ENTITY_TYPE,
+			D.ENTITY CARD_DATA_ENTITY,
+			D.COL_NO CARD_DATA_COL_NO,
+			D.APPLICATION_ID CARD_DATA_APPLICATION_ID,
+			D.BRANCH_CODE CARD_DATA_BRANCH_CODE,
+			D.COMP_CODE CARD_DATA_COMP_CODE,
+			D.ADD_NUM DATA_ADD_NUM,
+			D.ADD_VC DATA_ADD_VC,
+			D.ADD_DT DATA_ADD_DT
+		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY 
+			LEFT JOIN CTSCARDS_DATA_ADD_FIELDS D ON D.COMP_CODE = A.COMP_CODE 
+			AND D.COL_NO = A.COLUMN_NUMBER AND D.ENTITY = E.ENTITY 
+			AND D.ENTITY_TYPE = E.ENTITY_TYPE
+			AND D.BRANCH_CODE = #{branchCode} 
+			AND D.APPLICATION_ID = #{applicationID}
+		WHERE A.COMP_CODE = #{compCode}  
+			AND A.ENTITY = 'CARD' AND E.COMP_CODE = A.COMP_CODE
+			AND E.ENTITY_TYPE = #{typeCode}
+			AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+		
+ 	</sql> 
+ 	
+ 	<sql id="ctstrsDataAddFieldsList" >
+ 			,D.BRANCH_CODE CTSTRS_DATA_BRANCH_CODE,
+ 			D.COL_NO CTSTRS_DATA_COL_NO,
+ 			D.COMP_CODE CTSTRS_DATA_COMP_CODE,
+ 			D.ENTITY CTSTRS_DATA_ENTITY,
+ 			D.ENTITY_TYPE CTSTRS_DATA_ENTITY_TYPE,
+			D.TRS_NO CTSTRS_DATA_TRS_NO,
+			D.ADD_NUM DATA_ADD_NUM,
+			D.ADD_VC DATA_ADD_VC,
+			D.ADD_DT DATA_ADD_DT,
+			D.ADD_DR DATA_ADD_DR
+		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY 
+			LEFT JOIN CTSTRS_DATA_ADD_FIELDS D ON D.COMP_CODE = A.COMP_CODE 
+			AND D.COL_NO = A.COLUMN_NUMBER AND D.ENTITY = E.ENTITY 
+			AND D.ENTITY_TYPE = E.ENTITY_TYPE
+			AND D.BRANCH_CODE = #{branchCode} 
+			<choose>
+ 				<when test='trsNo != null and trsNo != emptyBigDecimalValue'>
+					AND D.TRS_NO = #{trsNo}
+				</when>
+				<otherwise>
+					AND D.TRS_NO IS NULL
+				</otherwise>
+			</choose>
+		WHERE A.COMP_CODE = #{compCode}  
+			AND A.ENTITY = 'CTSTRS' AND E.COMP_CODE = A.COMP_CODE
+			AND E.ENTITY_TYPE = #{typeCode}
+			AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+		
+ 	</sql>
+ 	
+ 	<sql id="cyExchDataAddFieldsList" >
+ 			,D.BRANCH_CODE CTSTRS_DATA_BRANCH_CODE,
+ 			D.COL_NO CTSTRS_DATA_COL_NO,
+ 			D.COMP_CODE CTSTRS_DATA_COMP_CODE,
+ 			D.ENTITY CTSTRS_DATA_ENTITY,
+ 			D.ENTITY_TYPE CTSTRS_DATA_ENTITY_TYPE,
+			D.TRS_NO CTSTRS_DATA_TRS_NO,
+			D.ADD_NUM DATA_ADD_NUM,
+			D.ADD_VC DATA_ADD_VC,
+			D.ADD_DT DATA_ADD_DT,
+			D.ADD_DR DATA_ADD_DR
+		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY AND E.ENTITY = 'CTSTRS'
+			LEFT JOIN CTSTRS_DATA_ADD_FIELDS D ON D.COMP_CODE = A.COMP_CODE 
+			AND D.COL_NO = A.COLUMN_NUMBER AND D.ENTITY = 'CYEXCH'
+			AND D.ENTITY_TYPE = E.ENTITY_TYPE
+			AND D.BRANCH_CODE = #{branchCode} 
+			<choose>
+ 				<when test='trsNo != null and trsNo != emptyBigDecimalValue'>
+					AND D.TRS_NO = #{trsNo}
+				</when>
+				<otherwise>
+					AND D.TRS_NO IS NULL
+				</otherwise>
+			</choose>
+		WHERE A.COMP_CODE = #{compCode}
+		  AND E.COMP_CODE = A.COMP_CODE
+	   	  AND E.ENTITY_TYPE = #{typeCode}
+		  AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+		
+ 	</sql>
+ 	
+ 	<select id="returnAddFieldsParamList" resultMap="CTS_ADD_FIELDS.BaseResultMap" parameterType="additionalFieldSC">
+ 		SELECT 
+ 		A.PARAM_VALUE1,   
+		A.PARAM_VALUE2,   
+		A.PARAM_VALUE3,   
+		A.PARAM_VALUE4,   
+		A.PARAM_VALUE5,
+ 		A.PARAM1_LINK,
+		A.PARAM2_LINK,
+		A.PARAM3_LINK,
+		A.PARAM4_LINK,
+		A.PARAM5_LINK
+		FROM CTS_ADD_FIELDS A INNER JOIN  CTS_ADD_FIELDS_ENTITY E 
+			ON E.CODE = A.CODE	AND E.ENTITY = A.ENTITY 
+			WHERE A.COMP_CODE = #{compCode}  
+			AND A.ENTITY = #{entity} AND E.COMP_CODE = A.COMP_CODE
+			AND E.ENTITY_TYPE = #{typeCode}
+			AND A.FIELD_TYPE = 'N'
+			AND A.LOOKUP_TYPE = 'S'
+			
+			AND A.COLUMN_NUMBER >0
+		ORDER BY A.FIELD_SEQ
+		
+ 	</select>
+
+	
+	
+	<resultMap id="dynamicQueryListMap" type="additionalFieldsByTypeSC">
+	</resultMap>
+	
+	<select id="additionalFieldsbyTypeOptionQueryList" resultType ="java.util.LinkedHashMap" parameterType="map" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="additionalFieldsbyTypeOptionListCommon"  />
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 
+ 	<select id="additionalFieldsbyTypeOptionQueryListCount" resultType="int" parameterType="map" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		${dynamicQuery} 
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ 	</select>
+ 	
+ 	 <sql id="additionalFieldsbyTypeOptionListCommon" >
+		${dynamicQuery} 
+ 	</sql>
+
+	<select id="additionalFieldsbyTypeOptionByCode" resultType ="java.util.LinkedHashMap" parameterType="map" >
+		${dynamicQuery} 
+ 	</select>
+ 	
+ 	<select id="getElementId" resultMap="fieldTechDetailsMap" parameterType="fieldTechDetailsSC">
+		SELECT ELEMENT_ID, ELEMENT_NAME, VO_PROPERTY_NAME FROM FIELD_TECH_DETAILS WHERE ENTITY_TYPE = #{entityType} AND UPPER (PB_FIELD_NAME) = #{pbFieldName}
+		
+	</select>
+
+	<resultMap id="fieldTechDetailsMap" type="fieldTechDetailsSC">
+		<result property="elementId"     	column="ELEMENT_ID" />
+		<result property="elementName"     	column="ELEMENT_NAME" />
+		<result property="voPropertyName" 	column="VO_PROPERTY_NAME"/>
+	</resultMap>
+
+	<resultMap id="additionalFieldsByTypeCOListMap" type="additionalFieldsByTypeCO">
+		<result property="COMP_CODE"        		column="A.COMP_CODE" />
+		<result property="CODE"           			column="A.CODE" />
+		<result property="ENTITY"          			column="A.ENTITY" />
+		<result property="COLUMN_NUMBER"           	column="A.COLUMN_NUMBER" />
+		<result property="FIELD_LABEL"            	column="A.FIELD_LABEL" />
+		<result property="FIELD_TYPE"        		column="A.FIELD_TYPE" />
+		<result property="FIELD_LENGHT"              column="A.FIELD_LENGHT" />
+		<result property="FIELD_FORMAT"               column="A.FIELD_FORMAT" />
+		<result property="FIELD_SEQ"                 	column="A.FIELD_SEQ" />  
+		<result property="MANDATORY"                  column="A.MANDATORY" />
+ 		<result property="RELATED_TO_DEPOSITOR_INFO"  column="A.RELATED_TO_DEPOSITOR_INFO" />
+ 		
+ 		<result property="DATE_VALIDATION"               column="A.DATE_VALIDATION" />   
+        <result property="DATE_LINK"       				column="A.DATE_LINK" />   
+        <result property="DATE_VALIDATION_OPERATOR"   column="A.DATE_VALIDATION_OPERATOR" />   
+        
+        <result property="ctsAddFieldVO.PARAM1"           column="PARAM1" />
+        <result property="ctsAddFieldVO.PARAM2"           column="PARAM2" />
+		<result property="ctsAddFieldVO.PARAM3" 			column="PARAM3" />  
+		<result property="ctsAddFieldVO.PARAM4"          	column="PARAM4" />  
+		<result property="ctsAddFieldVO.PARAM5"          	column="PARAM5" />
+		
+		<result property="PARAM_TYPE1"       column="A.PARAM_TYPE1" />
+		<result property="PARAM_TYPE2"       column="A.PARAM_TYPE2" />
+		<result property="PARAM_TYPE3"       column="A.PARAM_TYPE3" />
+		<result property="PARAM_TYPE4"       column="A.PARAM_TYPE4" />
+		<result property="PARAM_TYPE5"       column="A.PARAM_TYPE5" />
+		
+		<result property="PARAM_VALUE1"       column="A.PARAM_VALUE1" />
+		<result property="PARAM_VALUE2"       column="A.PARAM_VALUE2" />
+		<result property="PARAM_VALUE3"       column="A.PARAM_VALUE3" />
+		<result property="PARAM_VALUE4"       column="A.PARAM_VALUE4" />
+		<result property="PARAM_VALUE5"       column="A.PARAM_VALUE5" />
+		
+		<result property="TABLE_NAME"       column="A.TABLE_NAME" />
+		<result property="DESC_OUTPUT"      column="A.DESC_OUTPUT" />
+		<result property="LOOKUP_TYPE"      column="A.LOOKUP_TYPE" />
+		<result property="DATAWINDOW"       column="A.DATAWINDOW" />
+	 	
+	 	<result property="SHOW"       		column="A.SHOW" />
+		<result property="DATA_ENTRY"       column="A.DATA_ENTRY" />
+		
+		<result property="PARAM1_LINK"       column="A.PARAM1_LINK" />
+		<result property="PARAM2_LINK"       column="A.PARAM2_LINK" />
+		<result property="PARAM3_LINK"       column="A.PARAM3_LINK" />
+		<result property="PARAM4_LINK"       column="A.PARAM4_LINK" />
+		<result property="PARAM5_LINK"       column="A.PARAM5_LINK" />
+	
+		<result property="cifDataAddFieldsVO.CIF_NO"       column="CIF_DATA_CIF_NO" />
+		<result property="cifDataAddFieldsVO.COL_NO"       column="CIF_DATA_COL_NO" />
+		<result property="cifDataAddFieldsVO.ENTITY_TYPE"  column="CIF_DATA_ENTITY_TYPE" />
+		<result property="cifDataAddFieldsVO.ENTITY"       column="CIF_DATA_ENTITY" />
+		<result property="cifDataAddFieldsVO.COMP_CODE"    column="CIF_DATA_COMP_CODE" />
+		<result property="IS_READONLY_YN"    			   column="IS_READONLY_YN" />
+		
+		<result property="amfDataAddFieldsVO.ENTITY_TYPE"  column="AMF_DATA_ENTITY_TYPE" />
+		<result property="amfDataAddFieldsVO.ENTITY"       column="AMF_DATA_ENTITY" />
+		<result property="amfDataAddFieldsVO.COL_NO"       column="AMF_DATA_COL_NO" />
+		<result property="amfDataAddFieldsVO.ACC_NO"       column="AMF_DATA_ACC_NO" />
+		<result property="amfDataAddFieldsVO.BRANCH_CODE"    column="AMF_DATA_BRANCH_CODE" />
+		<result property="amfDataAddFieldsVO.COMP_CODE"    column="AMF_DATA_COMP_CODE" />
+		
+		<result property="ctstrsDataAddFieldsVO.ENTITY_TYPE"  column="CTSTRS_DATA_ENTITY_TYPE" />
+		<result property="ctstrsDataAddFieldsVO.ENTITY"       column="CTSTRS_DATA_ENTITY" />
+		<result property="ctstrsDataAddFieldsVO.COL_NO"       column="CTSTRS_DATA_COL_NO" />
+		<result property="ctstrsDataAddFieldsVO.TRS_NO"       column="CTSTRS_DATA_TRS_NO" />
+		<result property="ctstrsDataAddFieldsVO.BRANCH_CODE"  column="CTSTRS_DATA_BRANCH_CODE" />
+		<result property="ctstrsDataAddFieldsVO.COMP_CODE"    column="CTSTRS_DATA_COMP_CODE" />
+		
+		<result property="ctsCardsDataAddFieldsVO.ENTITY_TYPE"  column="CARD_DATA_ENTITY_TYPE" />
+		<result property="ctsCardsDataAddFieldsVO.ENTITY"       column="CARD_DATA_ENTITY" />
+		<result property="ctsCardsDataAddFieldsVO.COL_NO"       column="CARD_DATA_COL_NO" />
+		<result property="ctsCardsDataAddFieldsVO.APPLICATION_ID"      column="CARD_DATA_APPLICATION_ID" />
+		<result property="ctsCardsDataAddFieldsVO.BRANCH_CODE"    column="CARD_DATA_BRANCH_CODE" />
+		<result property="ctsCardsDataAddFieldsVO.COMP_CODE"    column="CARD_DATA_COMP_CODE" />
+		
+		<result property="ADD_NUM"    column="DATA_ADD_NUM" />
+		<result property="ADD_VC"    column="DATA_ADD_VC" />
+		<result property="ADD_DT"    column="DATA_ADD_DT" />
+		<result property="ADD_DR"    column="DATA_ADD_DR" />
+		<result property="ctsAddFieldVO.UNIQUE_YN"    column="UNIQUE_YN" />
+		<result property="MIN_FIELD_LENGTH"              column="A.MIN_FIELD_LENGTH" />
+		
+	</resultMap>
+	
+		<select id="retrnElemsValAndExp"  parameterType="additionalFieldSC" resultType="sysParamScreenDisplayVO">
+		 
+    SELECT D.ELEMENT_NAME
+         , D.VO_PROPERTY_NAME
+         , D.VO_CO_REFERENCE
+         , SP.PROG_REF
+         , SP.IS_MANDATORY
+         , SP.IS_VISIBLE
+         , SP.IS_READONLY
+         , SP.ARABIC_DEPENDANT
+         , SP.MESSAGE_CODE
+         , SP.ZERO_NOT_ALLOWED
+         , SP.TRIM_STRING
+         , SP.LABEL_KEY
+         , SP.MAX_LENGTH
+         , SP.FLD_IDENTIFIER
+         , SP.BUS_RELATED
+         , SP.VISIBILITY_EXPR
+         , SP.READONLY_EXPR
+         , SP.MANDATORY_EXPR
+	     , SP.LABEL_KEY_EXPR
+	     , SP.ZERO_NOT_ALLOWED_EXPR
+	     , SP.MIN_LENGTH
+	     , SP.ACTIVITY_TYPE
+	     , SP.ACTIVITY_ID
+	     ,(CASE 
+     		WHEN SP.ACTIVITY_TYPE = '1' THEN ( SELECT DYN_SCREEN_DESC FROM SYS_DYN_SCREEN_DEF WHERE DYN_SCREEN_ID = SP.ACTIVITY_ID )  
+     		WHEN SP.ACTIVITY_TYPE = '2' THEN ( SELECT DESCRIPTION FROM SYS_PARAM_BTN_CUST WHERE BTN_ID = SP.ACTIVITY_ID )
+     		ELSE ''
+       	   END)ACTIVITY_DESC
+       	 , SP.ENABLE_FIELD_AUDIT_YN	
+       FROM SYS_PARAM_SCREEN_DISPLAY SP ,FIELD_TECH_DETAILS D
+       WHERE SP.FLD_IDENTIFIER = D.FLD_IDENTIFIER       
+       <choose>
+          <when test="progRef!=null">
+			   AND (
+			         (SP.PROG_REF = #{progRef} 
+			          AND
+			          NOT EXISTS(SELECT 1
+			                       FROM SYS_PARAM_SCREEN_DISPLAY SP1
+			                      WHERE SP1.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+			                        AND SP1.COMP_CODE   = 0
+			                        AND SP1.APP_NAME    = #{currAppName}
+			                        AND SP1.BUS_RELATED = 1
+			                        AND SP1.PROG_REF    = #{progRef})
+			         )
+			         OR
+			         (SP.PROG_REF = #{progRef} 
+			          AND EXISTS(SELECT 1
+			                       FROM SYS_PARAM_SCREEN_DISPLAY SP1
+			                      WHERE SP1.FLD_IDENTIFIER = D.FLD_IDENTIFIER
+			                        AND SP1.COMP_CODE   = 0
+			                        AND SP1.APP_NAME    = #{currAppName}
+			                        AND SP1.BUS_RELATED = 1
+			                        AND SP1.PROG_REF    = #{progRef}))
+			       )            
+          </when>
+          <otherwise>
+            AND SP.PROG_REF = #{progRef}
+          </otherwise>
+       </choose>
+       AND SP.COMP_CODE = 0
+       AND SP.APP_NAME = #{currAppName}
+       AND D.ELEMENT_NAME = #{elementName}
+	</select>
+<select id="returnctsAddFieldsEntity" resultMap="CTS_ADD_FIELDS_ENTITY.BaseResultMap" parameterType="additionalFieldSC" >
+SELECT 
+		A.COMP_CODE,
+		A.CODE,
+		A.ENTITY,
+		A.ENTITY_TYPE
+		FROM CTS_ADD_FIELDS_ENTITY A
+		WHERE 
+			A.COMP_CODE= #{compCode}  
+			AND A.ENTITY = #{entity} 
+			AND A.ENTITY_TYPE =  #{typeCode}
+</select>	
+
+<!-- DropDownList -->
+<resultMap type="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" id="returnctsAddFieldsDropDownListMap">
+	<result property="COMP_CODE" column="COMP_CODE" />
+	<result property="LIST_CODE" column="LIST_CODE" />
+	<result property="LINE_NO" column="LINE_NO" />
+	<result property="FIELD_LABEL" column="FIELD_LABEL" />
+	<result property="FIELD_SEQ" column="FIELD_SEQ" />
+</resultMap>
+
+	<sql id="SelectCtsAddFieldsDropDownList">
+
+		SELECT CTS_ADD_FIELD_DROPDOWN_LST_DEF.COMP_CODE,
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF.LIST_CODE,
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF.LINE_NO,
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF.FIELD_LABEL,
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF.FIELD_SEQ
+		FROM
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF
+		WHERE COMP_CODE =#{compCode}
+		AND
+		CTS_ADD_FIELD_DROPDOWN_LST_DEF.LIST_CODE =
+		       (SELECT LIST_CODE
+		          FROM CTS_ADD_FIELDS
+		         WHERE FIELD_TYPE = 'R'
+		           AND CODE = #{CTS_ADD_FIELDSVO_CODE}
+		           AND COLUMN_NUMBER = #{COLUMN_NUMBER})
+	</sql>
+
+	<select id="returnCtsAddFieldsDropDownList" resultMap="returnctsAddFieldsDropDownListMap"
+		parameterType="additionalFieldsByTypeSC">
+		<include refid="SelectCtsAddFieldsDropDownList" />
+	</select>
+	
+	<select id="checkAdditionalFieldsUniqueness" resultType="int" parameterType="trxMgntSC"> 
+		SELECT CASE WHEN EXISTS  
+			(SELECT 1 FROM
+			   CTS_ADD_FIELDS A, CTS_ADD_FIELDS_ENTITY E, CTSTRS_DATA_ADD_FIELDS B
+			 WHERE E.CODE = A.CODE
+			   AND E.ENTITY = A.ENTITY
+			   AND B.COMP_CODE = E.COMP_CODE
+			   AND B.COL_NO = A.COLUMN_NUMBER
+			   AND B.ENTITY = E.ENTITY
+			   AND B.ENTITY_TYPE = E.ENTITY_TYPE
+			   AND B.ENTITY_TYPE = #{entityType}
+			   	<if test="addNum !=null">
+		      		AND B.ADD_NUM = #{addNum}
+		   		</if>
+		   		<if test="addString !=null">
+		      		AND B.ADD_VC = #{addString}
+		   		</if>	
+		   		) THEN 1 ELSE 0 END FROM DUAL
+	 </select>
+
+
+</mapper>

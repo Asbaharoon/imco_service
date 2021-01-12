@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCERTIFICATE_TRXTYPES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCERTIFICATE_TRXTYPESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CERTIFICATE_CODE" property="CERTIFICATE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="NUMBER_OF_BILLS" property="NUMBER_OF_BILLS" />
+    <result column="SUM_OF_BILLS" property="SUM_OF_BILLS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CERTIFICATE_CODE, COMP_CODE, TRX_TYPE, NUMBER_OF_BILLS, SUM_OF_BILLS
+  </sql>
+  <select id="selectCTSCERTIFICATE_TRXTYPES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCERTIFICATE_TRXTYPESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCERTIFICATE_TRXTYPES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteCTSCERTIFICATE_TRXTYPES" parameterType="com.path.dbmaps.vo.CTSCERTIFICATE_TRXTYPESVOKey" >
+    delete from CTSCERTIFICATE_TRXTYPES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertCTSCERTIFICATE_TRXTYPES" parameterType="com.path.dbmaps.vo.CTSCERTIFICATE_TRXTYPESVO" >
+    insert into CTSCERTIFICATE_TRXTYPES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CERTIFICATE_CODE != null and CERTIFICATE_CODE != emptyBigDecimalValue" >
+        CERTIFICATE_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        NUMBER_OF_BILLS,
+      </if>
+      <if test="SUM_OF_BILLS != null and SUM_OF_BILLS != emptyBigDecimalValue" >
+        SUM_OF_BILLS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CERTIFICATE_CODE != null and CERTIFICATE_CODE != emptyBigDecimalValue" >
+        #{CERTIFICATE_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="NUMBER_OF_BILLS != null and NUMBER_OF_BILLS != emptyBigDecimalValue" >
+        #{NUMBER_OF_BILLS},
+      </if>
+      <if test="SUM_OF_BILLS != null and SUM_OF_BILLS != emptyBigDecimalValue" >
+        #{SUM_OF_BILLS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCERTIFICATE_TRXTYPES" >
+    update CTSCERTIFICATE_TRXTYPES
+    <set >
+      <if test="NUMBER_OF_BILLS != null" >
+        <choose >
+          <when test="NUMBER_OF_BILLS == emptyBigDecimalValue" >
+            NUMBER_OF_BILLS = NULL ,
+          </when>
+          <otherwise >
+            NUMBER_OF_BILLS = #{NUMBER_OF_BILLS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUM_OF_BILLS != null" >
+        <choose >
+          <when test="SUM_OF_BILLS == emptyBigDecimalValue" >
+            SUM_OF_BILLS = NULL ,
+          </when>
+          <otherwise >
+            SUM_OF_BILLS = #{SUM_OF_BILLS},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CERTIFICATE_CODE = #{CERTIFICATE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateCTSCERTIFICATE_TRXTYPES" parameterType="com.path.dbmaps.vo.CTSCERTIFICATE_TRXTYPESVO" >
+    <include refid="sql_updateCTSCERTIFICATE_TRXTYPES" />
+  </update>
+</mapper>

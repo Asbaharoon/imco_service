@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="tellerMapper">
+	<sql id="tellerListQuery">
+	<![CDATA[
+			SELECT      
+			CTSTELLER.CODE,
+			CTSTELLER.BRIEF_NAME_ENG,
+			CTSTELLER.LONG_NAME_ENG,
+			CTSTELLER.BRIEF_NAME_ARAB,
+			CTSTELLER.LONG_NAME_ARAB,
+			CTSTELLER.STATUS,
+			CTSTELLER.USER_ID,
+			CTSTELLER.TELLER_TYPE,
+			CTSTELLER.PRIVILEGE_LEVEL,
+			CTSTELLER.DIVISION_CODE,
+			CTSTELLER.DEPT_CODE,
+			CTSTELLER.ROLE_CODE	
+	FROM CTSTELLER LEFT OUTER JOIN CTSCONTROL  ON   CTSTELLER.COMP_CODE = CTSCONTROL.COMP_CODE
+	AND  CTSTELLER.BRANCH_CODE = CTSCONTROL.BRANCH_CODE	
+	WHERE ( CTSTELLER.COMP_CODE   = #{compCode})
+	AND ( CTSTELLER.BRANCH_CODE = #{branchCode}   )
+	AND ((#{privilegeLevel} = 0 ) Or(#{privilegeLevel} <> 0  and 
+	(CASE WHEN CTSTELLER.PRIVILEGE_LEVEL IS NULL THEN 0 ELSE CTSTELLER.PRIVILEGE_LEVEL END) = #{privilegeLevel}))
+	AND (CTSTELLER.STATUS = (CASE WHEN #{status} = 'P' THEN 'I'
+	WHEN #{status} = 'R' THEN CTSTELLER.STATUS
+	WHEN #{status} = 'S' THEN 'A'
+	WHEN #{status} = 'A' THEN 'S'
+	WHEN #{status} = 'T' THEN 'A' ELSE CTSTELLER.STATUS END))
+	AND ( (CASE WHEN #{tellerType} IS NULL THEN 'X' ELSE #{tellerType} END = 'X'  ) OR
+	(CASE WHEN CTSTELLER.TELLER_TYPE IS NULL THEN 0 ELSE CTSTELLER.TELLER_TYPE END = 0 ) OR
+	(CASE WHEN #{tellerType} IS NULL THEN 'X' ELSE #{tellerType} END = 'T' AND CTSTELLER.TELLER_TYPE <> 
+	CASE WHEN CTSCONTROL.VAULT_TYPE IS NULL THEN 0 ELSE CTSCONTROL.VAULT_TYPE END   ) OR
+	(CASE WHEN #{tellerType} IS NULL THEN 'X' ELSE #{tellerType} END = 'V' AND CTSTELLER.TELLER_TYPE =  
+	CASE WHEN CTSCONTROL.VAULT_TYPE IS NULL THEN 0 ELSE CTSCONTROL.VAULT_TYPE END   ))
+
+]]>
+	<if test='"1".equals(restrictTransferVaultATM)'>	 
+		AND NOT EXISTS (SELECT 1 FROM SERVICES WHERE SERVICES.COMP_CODE = CTSTELLER.COMP_CODE
+		                   AND SERVICES.TRX_BR_CODE = CTSTELLER.BRANCH_CODE
+		                   AND SERVICES.TELLER_ID = CTSTELLER.CODE)	                         
+    </if>
+	</sql>
+	
+	<sql id="atmUsersListQuery">
+    SELECT
+		    CTSTELLER.CODE,
+		    CTSTELLER.LONG_NAME_ENG,
+			CTSTELLER.LONG_NAME_ARAB,
+		    CTSTELLER.USER_ID
+    FROM CTSTELLER_ALLOWED_USERS,CTSTELLER 
+    WHERE CTSTELLER.COMP_CODE = CTSTELLER_ALLOWED_USERS.COMP_CODE
+		AND CTSTELLER.BRANCH_CODE = CTSTELLER_ALLOWED_USERS.BRANCH_CODE
+		AND CTSTELLER.USER_ID = CTSTELLER_ALLOWED_USERS.USER_ID
+        AND CTSTELLER_ALLOWED_USERS.COMP_CODE = #{compCode}
+        AND CTSTELLER_ALLOWED_USERS.BRANCH_CODE = #{branchCode}
+        AND CTSTELLER_ALLOWED_USERS.TELLER_CODE =#{tellerCode}
+        AND CTSTELLER_ALLOWED_USERS.LINK_TYPE = 'ATM'
+    UNION
+     SELECT
+	    CTSTELLER.CODE,
+	    CTSTELLER.LONG_NAME_ENG,
+		CTSTELLER.LONG_NAME_ARAB,
+	    CTSTELLER.USER_ID 
+	    FROM CTSTELLER WHERE CTSTELLER.COMP_CODE = #{compCode}
+	        AND CTSTELLER.BRANCH_CODE = #{branchCode}
+	        AND CTSTELLER.CODE =#{tellerCode}
+	</sql>	
+	
+	<select id="returnATMUsersLookupData" resultMap="tellerListMap" parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="atmUsersListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnATmUsersLookupCount" resultType="int" parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="atmUsersListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="tellerListMap" type="com.path.dbmaps.vo.CTSTELLERVO">
+		<result property="CODE" column="CODE" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		<result property="STATUS" column="STATUS" />
+		<result property="USER_ID" column="USER_ID" />
+		<result property="PRIVILEGE_LEVEL" column="PRIVILEGE_LEVEL" />
+		<result property="DIVISION_CODE" column="DIVISION_CODE" />
+		<result property="DEPT_CODE" column="DEPT_CODE" />
+		<result property="ROLE_CODE" column="ROLE_CODE" />
+	</resultMap>
+	
+	<select id="returnTellerLookupData" resultMap="tellerListMap"
+		parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="tellerListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnTellerLookupCount" resultType="int"
+		parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="tellerListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnRoleById" parameterType="com.path.vo.core.teller.TellerSC" resultType="com.path.dbmaps.vo.CTSTELLERVO">
+	  SELECT
+			 CASE WHEN ROLE_CODE IS NULL THEN 0 ELSE ROLE_CODE END ROLE_CODE,
+			 CASE WHEN CHECK_ROLE IS NULL THEN  '0' ELSE CHECK_ROLE END CHECK_ROLE 
+	  FROM   CTSTELLER
+	  WHERE	 CTSTELLER.COMP_CODE    = #{compCode}
+	  AND	 CTSTELLER.BRANCH_CODE  = #{branchCode}
+	  AND	 CTSTELLER.CODE         = #{tellerCode}
+	</select>
+	
+	<select id="returnShowBranchCondition" parameterType="com.path.vo.core.teller.TellerSC" resultType="String">
+		SELECT	
+				CASE WHEN #{tellerType} = 'CIF' THEN CTSTELLER.SHOW_CIF_BR 
+					 WHEN #{tellerType} = 'ACC' THEN CTSTELLER.SHOW_ACC_BR   END
+		FROM	CTSTELLER 
+		WHERE	CTSTELLER.COMP_CODE    = #{compCode}
+	  	AND	 	CTSTELLER.BRANCH_CODE  = #{branchCode}
+	  	AND	 	CTSTELLER.CODE         = #{tellerCode}
+	</select>
+	
+	<select id="getAllTellerBranches" parameterType="com.path.vo.core.teller.TellerSC" resultType="java.math.BigDecimal">
+		SELECT	LOC.BRANCH_CODE   
+		FROM	LOC   
+		WHERE	LOC.COMP_CODE	=	#{compCode}
+		AND		LOC.USER_ID 	= 	#{userId}
+	</select>
+	
+	
+	<select id="returnCifReservedNo" parameterType="com.path.vo.core.teller.TellerSC" resultType="String">
+		SELECT	
+				CASE WHEN CTSTELLER.CIF_RESERVED_NO IS NULL THEN '0' ELSE CTSTELLER.CIF_RESERVED_NO END CIF_RESERVED_NO
+		FROM	CTSTELLER 
+		WHERE	CTSTELLER.COMP_CODE    = #{compCode}
+	  	AND	 	CTSTELLER.BRANCH_CODE  = #{branchCode}
+	  	AND	 	CTSTELLER.CODE         = #{tellerCode}
+	</select>
+  
+
+  	<resultMap id="representiveListMap" type="com.path.vo.core.teller.TellerCO">
+		  <result property="ctsTellerDetVO.USER_ID" column="USER_ID" />
+		  <result property="ctsTellerDetVO.SUB_TELLER_CODE" column="SUB_TELLER_CODE" />
+		  <result property="representiveDesc" column="representiveDesc" /> 
+	</resultMap>
+	
+	<select id="returnRepresentiveLookupData" resultMap="representiveListMap"
+		parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="representiveListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnRepresentiveLookupCount" resultType="int" parameterType="com.path.vo.core.teller.TellerSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="representiveListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnRepresentiveLookupDataByID" resultMap="representiveListMap">
+		<include refid="representiveListQuery" />
+	</select>
+	
+	<sql id="representiveListQuery">
+		   
+		 SELECT CTSTELLERDET.USER_ID,
+		        CTSTELLERDET.BRANCH_CODE,
+		        CTSTELLERDET.SUB_TELLER_CODE,
+		        (USR.FIRST_NAME || ',' || USR.MIDDLE_NAME || ',' || USR.LAST_NAME) representiveDesc
+		   FROM CTSTELLERDET, USR
+		  WHERE CTSTELLERDET.USER_ID = USR.USER_ID
+		    AND (CTSTELLERDET.COMP_CODE = #{compCode})
+		    AND (CTSTELLERDET.BRANCH_CODE = #{branchCode})
+		    AND (CTSTELLERDET.CODE = #{loggedInUserCode})
+				
+			<if test="userId != null">
+					AND	CTSTELLERDET.USER_ID  = #{userId}
+			</if> 
+				
+			 <if test="subTellerBranch != null">
+				AND CTSTELLERDET.SUB_TELLER_BRANCH  = #{subTellerBranch}
+			</if>
+	
+   	</sql>
+   	
+</mapper>

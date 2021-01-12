@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOLLATERAL_INSUR_COLL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOLLATERAL_INSUR_COLLVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL_NO" property="COLLATERAL_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="INSUR_COLLATERAL_BRANCH" property="INSUR_COLLATERAL_BRANCH" />
+    <result column="INSUR_COLLATERAL_NO" property="INSUR_COLLATERAL_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COLLATERAL_NO, COMP_CODE, LINE_NO, INSUR_COLLATERAL_BRANCH, INSUR_COLLATERAL_NO
+  </sql>
+  <select id="selectFMSCOLLATERAL_INSUR_COLL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_INSUR_COLLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOLLATERAL_INSUR_COLL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSCOLLATERAL_INSUR_COLL" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_INSUR_COLLVOKey" >
+    delete from FMSCOLLATERAL_INSUR_COLL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSCOLLATERAL_INSUR_COLL" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_INSUR_COLLVO" >
+    insert into FMSCOLLATERAL_INSUR_COLL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        COLLATERAL_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="INSUR_COLLATERAL_BRANCH != null and INSUR_COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        INSUR_COLLATERAL_BRANCH,
+      </if>
+      <if test="INSUR_COLLATERAL_NO != null and INSUR_COLLATERAL_NO != emptyBigDecimalValue" >
+        INSUR_COLLATERAL_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        #{COLLATERAL_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="INSUR_COLLATERAL_BRANCH != null and INSUR_COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        #{INSUR_COLLATERAL_BRANCH},
+      </if>
+      <if test="INSUR_COLLATERAL_NO != null and INSUR_COLLATERAL_NO != emptyBigDecimalValue" >
+        #{INSUR_COLLATERAL_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOLLATERAL_INSUR_COLL" >
+    update FMSCOLLATERAL_INSUR_COLL
+    <set >
+      <if test="INSUR_COLLATERAL_BRANCH != null" >
+        <choose >
+          <when test="INSUR_COLLATERAL_BRANCH == emptyBigDecimalValue" >
+            INSUR_COLLATERAL_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            INSUR_COLLATERAL_BRANCH = #{INSUR_COLLATERAL_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INSUR_COLLATERAL_NO != null" >
+        <choose >
+          <when test="INSUR_COLLATERAL_NO == emptyBigDecimalValue" >
+            INSUR_COLLATERAL_NO = NULL ,
+          </when>
+          <otherwise >
+            INSUR_COLLATERAL_NO = #{INSUR_COLLATERAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSCOLLATERAL_INSUR_COLL" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_INSUR_COLLVO" >
+    <include refid="sql_updateFMSCOLLATERAL_INSUR_COLL" />
+  </update>
+</mapper>

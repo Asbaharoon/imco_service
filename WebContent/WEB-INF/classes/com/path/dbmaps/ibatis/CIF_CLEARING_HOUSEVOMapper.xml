@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CLEARING_HOUSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CLEARING_HOUSEVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="CLEARING_HOUSE" property="CLEARING_HOUSE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, CURRENCY_CODE, CLEARING_HOUSE
+  </sql>
+  <select id="selectCIF_CLEARING_HOUSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CLEARING_HOUSEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CLEARING_HOUSE
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </select>
+  <delete id="deleteCIF_CLEARING_HOUSE" parameterType="com.path.dbmaps.vo.CIF_CLEARING_HOUSEVOKey" >
+    delete from CIF_CLEARING_HOUSE
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </delete>
+  <insert id="insertCIF_CLEARING_HOUSE" parameterType="com.path.dbmaps.vo.CIF_CLEARING_HOUSEVO" >
+    insert into CIF_CLEARING_HOUSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+       <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+       COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="CLEARING_HOUSE != null and CLEARING_HOUSE != emptyBigDecimalValue" >
+        CLEARING_HOUSE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+       <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+       #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="CLEARING_HOUSE != null and CLEARING_HOUSE != emptyBigDecimalValue" >
+        #{CLEARING_HOUSE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CLEARING_HOUSE" >
+    update CIF_CLEARING_HOUSE
+    <set >
+      <if test="CLEARING_HOUSE != null" >
+        <choose >
+          <when test="CLEARING_HOUSE == emptyBigDecimalValue" >
+            CLEARING_HOUSE = NULL ,
+          </when>
+          <otherwise >
+            CLEARING_HOUSE = #{CLEARING_HOUSE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </sql>
+  <update id="updateCIF_CLEARING_HOUSE" parameterType="com.path.dbmaps.vo.CIF_CLEARING_HOUSEVO" >
+    <include refid="sql_updateCIF_CLEARING_HOUSE" />
+  </update>
+</mapper>

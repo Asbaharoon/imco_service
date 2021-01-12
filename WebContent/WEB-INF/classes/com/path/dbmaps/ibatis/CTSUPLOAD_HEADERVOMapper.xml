@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSUPLOAD_HEADER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSUPLOAD_HEADERVO" >
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="UPLOAD_DATE" property="UPLOAD_DATE" />
+    <result column="UPLOAD_TIME" property="UPLOAD_TIME" />
+    <result column="FILE_PATH" property="FILE_PATH" />
+    <result column="STATUS" property="STATUS" />
+    <result column="FILE_NAME" property="FILE_NAME" />
+    <result column="BATCH_TYPE" property="BATCH_TYPE" />
+    <result column="DAILY_BATCH_NO" property="DAILY_BATCH_NO" />
+    <result column="HASH_TOTAL_REFERENCE" property="HASH_TOTAL_REFERENCE" />
+    <result column="HASH_TOTAL_TRS_AMNT" property="HASH_TOTAL_TRS_AMNT" />
+    <result column="UPLOADED_BY" property="UPLOADED_BY" />    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_NO, BRANCH_CODE, COMP_CODE, UPLOAD_DATE, UPLOAD_TIME, FILE_PATH, STATUS, FILE_NAME, 
+    BATCH_TYPE, DAILY_BATCH_NO, HASH_TOTAL_REFERENCE, HASH_TOTAL_TRS_AMNT,UPLOADED_BY
+  </sql>
+  <select id="selectCTSUPLOAD_HEADER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSUPLOAD_HEADERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSUPLOAD_HEADER
+    where BATCH_NO = #{BATCH_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSUPLOAD_HEADER" parameterType="com.path.dbmaps.vo.CTSUPLOAD_HEADERVOKey" >
+    delete from CTSUPLOAD_HEADER
+    where BATCH_NO = #{BATCH_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSUPLOAD_HEADER" parameterType="com.path.dbmaps.vo.CTSUPLOAD_HEADERVO" >
+    insert into CTSUPLOAD_HEADER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="UPLOAD_DATE != null" >
+        UPLOAD_DATE,
+      </if>
+      <if test="UPLOAD_TIME != null" >
+        UPLOAD_TIME,
+      </if>
+      <if test="FILE_PATH != null" >
+        FILE_PATH,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME,
+      </if>
+      <if test="BATCH_TYPE != null and BATCH_TYPE != emptyBigDecimalValue" >
+        BATCH_TYPE,
+      </if>
+      <if test="DAILY_BATCH_NO != null and DAILY_BATCH_NO != emptyBigDecimalValue" >
+        DAILY_BATCH_NO,
+      </if>
+      <if test="HASH_TOTAL_REFERENCE != null and HASH_TOTAL_REFERENCE != emptyBigDecimalValue" >
+        HASH_TOTAL_REFERENCE,
+      </if>
+      <if test="HASH_TOTAL_TRS_AMNT != null and HASH_TOTAL_TRS_AMNT != emptyBigDecimalValue" >
+        HASH_TOTAL_TRS_AMNT,
+      </if>
+      <if test="UPLOADED_BY != null" >
+        UPLOADED_BY,
+      </if>      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="UPLOAD_DATE != null" >
+        #{UPLOAD_DATE},
+      </if>
+      <if test="UPLOAD_TIME != null" >
+        #{UPLOAD_TIME},
+      </if>
+      <if test="FILE_PATH != null" >
+        #{FILE_PATH},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="FILE_NAME != null" >
+        #{FILE_NAME},
+      </if>
+      <if test="BATCH_TYPE != null and BATCH_TYPE != emptyBigDecimalValue" >
+        #{BATCH_TYPE},
+      </if>
+      <if test="DAILY_BATCH_NO != null and DAILY_BATCH_NO != emptyBigDecimalValue" >
+        #{DAILY_BATCH_NO},
+      </if>
+      <if test="HASH_TOTAL_REFERENCE != null and HASH_TOTAL_REFERENCE != emptyBigDecimalValue" >
+        #{HASH_TOTAL_REFERENCE},
+      </if>
+      <if test="HASH_TOTAL_TRS_AMNT != null and HASH_TOTAL_TRS_AMNT != emptyBigDecimalValue" >
+        #{HASH_TOTAL_TRS_AMNT},
+      </if>
+      <if test="UPLOADED_BY != null" >
+        #{UPLOADED_BY},
+      </if>      
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSUPLOAD_HEADER" >
+    update CTSUPLOAD_HEADER
+    <set >
+      <if test="UPLOAD_DATE != null" >
+        UPLOAD_DATE = #{UPLOAD_DATE},
+      </if>
+      <if test="UPLOAD_TIME != null" >
+        UPLOAD_TIME = #{UPLOAD_TIME},
+      </if>
+      <if test="FILE_PATH != null" >
+        FILE_PATH = #{FILE_PATH},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="FILE_NAME != null" >
+        FILE_NAME = #{FILE_NAME},
+      </if>
+      <if test="BATCH_TYPE != null" >
+        <choose >
+          <when test="BATCH_TYPE == emptyBigDecimalValue" >
+            BATCH_TYPE = NULL ,
+          </when>
+          <otherwise >
+            BATCH_TYPE = #{BATCH_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DAILY_BATCH_NO != null" >
+        <choose >
+          <when test="DAILY_BATCH_NO == emptyBigDecimalValue" >
+            DAILY_BATCH_NO = NULL ,
+          </when>
+          <otherwise >
+            DAILY_BATCH_NO = #{DAILY_BATCH_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HASH_TOTAL_REFERENCE != null" >
+        <choose >
+          <when test="HASH_TOTAL_REFERENCE == emptyBigDecimalValue" >
+            HASH_TOTAL_REFERENCE = NULL ,
+          </when>
+          <otherwise >
+            HASH_TOTAL_REFERENCE = #{HASH_TOTAL_REFERENCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HASH_TOTAL_TRS_AMNT != null" >
+        <choose >
+          <when test="HASH_TOTAL_TRS_AMNT == emptyBigDecimalValue" >
+            HASH_TOTAL_TRS_AMNT = NULL ,
+          </when>
+          <otherwise >
+            HASH_TOTAL_TRS_AMNT = #{HASH_TOTAL_TRS_AMNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UPLOADED_BY != null" >
+        UPLOADED_BY = #{UPLOADED_BY},
+      </if>      
+    </set>
+    where BATCH_NO = #{BATCH_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSUPLOAD_HEADER" parameterType="com.path.dbmaps.vo.CTSUPLOAD_HEADERVO" >
+    <include refid="sql_updateCTSUPLOAD_HEADER" />
+  </update>
+</mapper>

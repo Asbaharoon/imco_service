@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_XML_MSG_TAGS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_XML_MSG_TAGSVO" >
+    <id column="DGTL_XML_MSG_TAGS_ID" property="DGTL_XML_MSG_TAGS_ID" />
+    <result column="DGTL_MSG_DEF_ID" property="DGTL_MSG_DEF_ID" />
+    <result column="PARENT_TAG_NAME" property="PARENT_TAG_NAME" />
+    <result column="COMPLEX_TYPE" property="COMPLEX_TYPE" />
+    <result column="TAG_NAME" property="TAG_NAME" />
+    <result column="TAG_TYPE" property="TAG_TYPE" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="IS_LEAF_YN" property="IS_LEAF_YN" />
+    <result column="IS_MANDATORY_YN" property="IS_MANDATORY_YN" />
+    <result column="HIERARCHY" property="HIERARCHY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DGTL_XML_MSG_TAGS_ID, DGTL_MSG_DEF_ID, PARENT_TAG_NAME, COMPLEX_TYPE, TAG_NAME, TAG_TYPE, 
+    DESCRIPTION,IS_LEAF_YN,IS_MANDATORY_YN,HIERARCHY
+  </sql>
+  <select id="selectDGTL_XML_MSG_TAGS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DGTL_XML_MSG_TAGSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DGTL_XML_MSG_TAGS
+    where DGTL_XML_MSG_TAGS_ID = #{DGTL_XML_MSG_TAGS_ID}
+  </select>
+  <delete id="deleteDGTL_XML_MSG_TAGS" parameterType="com.path.dbmaps.vo.DGTL_XML_MSG_TAGSVO" >
+    delete from DGTL_XML_MSG_TAGS
+    where DGTL_XML_MSG_TAGS_ID = #{DGTL_XML_MSG_TAGS_ID}
+  </delete>
+    <insert id="insertDGTL_XML_MSG_TAGS" parameterType="com.path.dbmaps.vo.DGTL_XML_MSG_TAGSVO" >
+   
+   	<selectKey resultType="java.math.BigDecimal"
+		keyProperty="DGTL_XML_MSG_TAGS_ID" order="BEFORE">
+		<if test="isOracle == 1">
+			SELECT DGTL_XML_MSG_TAGS_SEQ.NEXTVAL FROM dual
+		</if>
+		<if test="isSybase == 1 and isSQLServer != 1 ">
+			SELECT next_identity('DGTL_XML_MSG_TAGS')
+		</if>
+		<if test="isSQLServer == 1 ">
+			SELECT IDENT_CURRENT ('DGTL_XML_MSG_TAGS') + 1
+		</if>
+	</selectKey>
+
+    insert into DGTL_XML_MSG_TAGS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isOracle == 1">
+      	DGTL_XML_MSG_TAGS_ID,
+      </if>	
+      <if test="DGTL_MSG_DEF_ID != null and DGTL_MSG_DEF_ID != emptyBigDecimalValue" >
+        DGTL_MSG_DEF_ID,
+      </if>
+      <if test="PARENT_TAG_NAME != null and !&quot;&quot;.equals(PARENT_TAG_NAME)" >
+        PARENT_TAG_NAME,
+      </if>
+      <if test="COMPLEX_TYPE != null and !&quot;&quot;.equals(COMPLEX_TYPE)" >
+        COMPLEX_TYPE,
+      </if>
+      <if test="TAG_NAME != null and !&quot;&quot;.equals(TAG_NAME)" >
+        TAG_NAME,
+      </if>
+      <if test="TAG_TYPE != null and !&quot;&quot;.equals(TAG_TYPE)" >
+        TAG_TYPE,
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        DESCRIPTION,
+      </if>
+      <if test="IS_LEAF_YN != null and !&quot;&quot;.equals(IS_LEAF_YN)" >
+        IS_LEAF_YN,
+      </if>
+      <if test="IS_MANDATORY_YN != null and !&quot;&quot;.equals(IS_MANDATORY_YN)" >
+        IS_MANDATORY_YN,
+      </if>
+      <if test="HIERARCHY != null and !&quot;&quot;.equals(HIERARCHY)" >
+        HIERARCHY,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="isOracle == 1">
+      	#{DGTL_XML_MSG_TAGS_ID},
+      </if>
+      
+      <if test="DGTL_MSG_DEF_ID != null and DGTL_MSG_DEF_ID != emptyBigDecimalValue" >
+        #{DGTL_MSG_DEF_ID},
+      </if>
+      <if test="PARENT_TAG_NAME != null and !&quot;&quot;.equals(PARENT_TAG_NAME)" >
+        #{PARENT_TAG_NAME},
+      </if>
+      <if test="COMPLEX_TYPE != null and !&quot;&quot;.equals(COMPLEX_TYPE)" >
+        #{COMPLEX_TYPE},
+      </if>
+      <if test="TAG_NAME != null and !&quot;&quot;.equals(TAG_NAME)" >
+        #{TAG_NAME},
+      </if>
+      <if test="TAG_TYPE != null and !&quot;&quot;.equals(TAG_TYPE)" >
+        #{TAG_TYPE},
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        #{DESCRIPTION},
+      </if>
+      <if test="IS_LEAF_YN != null and !&quot;&quot;.equals(IS_LEAF_YN)" >
+        #{IS_LEAF_YN},
+      </if>
+      <if test="IS_MANDATORY_YN != null and !&quot;&quot;.equals(IS_MANDATORY_YN)" >
+        #{IS_MANDATORY_YN},
+      </if>
+      <if test="HIERARCHY != null and !&quot;&quot;.equals(HIERARCHY)" >
+        #{HIERARCHY},
+      </if>
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_XML_MSG_TAGS" >
+    update DGTL_XML_MSG_TAGS
+    <set >
+      <if test="DGTL_MSG_DEF_ID != null" >
+        <choose >
+          <when test="DGTL_MSG_DEF_ID == emptyBigDecimalValue" >
+            DGTL_MSG_DEF_ID = NULL ,
+          </when>
+          <otherwise >
+            DGTL_MSG_DEF_ID = #{DGTL_MSG_DEF_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PARENT_TAG_NAME != null" >
+        <choose >
+          <when test="PARENT_TAG_NAME.equals(&quot;&quot;)" >
+            PARENT_TAG_NAME = NULL ,
+          </when>
+          <otherwise >
+            PARENT_TAG_NAME = #{PARENT_TAG_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMPLEX_TYPE != null" >
+        <choose >
+          <when test="COMPLEX_TYPE.equals(&quot;&quot;)" >
+            COMPLEX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            COMPLEX_TYPE = #{COMPLEX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TAG_NAME != null" >
+        <choose >
+          <when test="TAG_NAME.equals(&quot;&quot;)" >
+            TAG_NAME = NULL ,
+          </when>
+          <otherwise >
+            TAG_NAME = #{TAG_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TAG_TYPE != null" >
+        <choose >
+          <when test="TAG_TYPE.equals(&quot;&quot;)" >
+            TAG_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TAG_TYPE = #{TAG_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESCRIPTION != null" >
+        <choose >
+          <when test="DESCRIPTION.equals(&quot;&quot;)" >
+            DESCRIPTION = NULL ,
+          </when>
+          <otherwise >
+            DESCRIPTION = #{DESCRIPTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_LEAF_YN != null" >
+        <choose >
+          <when test="IS_LEAF_YN.equals(&quot;&quot;)" >
+            IS_LEAF_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_LEAF_YN = #{IS_LEAF_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_MANDATORY_YN != null" >
+        <choose >
+          <when test="IS_MANDATORY_YN.equals(&quot;&quot;)" >
+            IS_MANDATORY_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_MANDATORY_YN = #{IS_MANDATORY_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test=" != null" >
+        <choose >
+          <when test="HIERARCHY.equals(&quot;&quot;)" >
+            HIERARCHY = NULL ,
+          </when>
+          <otherwise >
+            HIERARCHY = #{HIERARCHY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where DGTL_XML_MSG_TAGS_ID = #{DGTL_XML_MSG_TAGS_ID}
+  </sql>
+  <update id="updateDGTL_XML_MSG_TAGS" parameterType="com.path.dbmaps.vo.DGTL_XML_MSG_TAGSVO" >
+    <include refid="sql_updateDGTL_XML_MSG_TAGS" />
+  </update>
+</mapper>

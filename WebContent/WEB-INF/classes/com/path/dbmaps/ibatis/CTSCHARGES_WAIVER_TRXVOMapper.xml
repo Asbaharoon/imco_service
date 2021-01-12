@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCHARGES_WAIVER_TRX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCHARGES_WAIVER_TRXVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, ENTITY_CODE, ENTITY_TYPE, LINE_NO, TRX_TYPE
+  </sql>
+  <select id="selectCTSCHARGES_WAIVER_TRX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVER_TRXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCHARGES_WAIVER_TRX
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </select>
+  <delete id="deleteCTSCHARGES_WAIVER_TRX" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVER_TRXVOKey" >
+    delete from CTSCHARGES_WAIVER_TRX
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </delete>
+  <insert id="insertCTSCHARGES_WAIVER_TRX" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVER_TRXVO" >
+    insert into CTSCHARGES_WAIVER_TRX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ENTITY_CODE != null" >
+        ENTITY_CODE,
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ENTITY_CODE != null" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCHARGES_WAIVER_TRX" >
+    update CTSCHARGES_WAIVER_TRX
+    <set >
+      <if test="LINE_NO != null" >
+        <choose >
+          <when test="LINE_NO == emptyBigDecimalValue" >
+            LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            LINE_NO = #{LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+  </sql>
+  <update id="updateCTSCHARGES_WAIVER_TRX" parameterType="com.path.dbmaps.vo.CTSCHARGES_WAIVER_TRXVO" >
+    <include refid="sql_updateCTSCHARGES_WAIVER_TRX" />
+  </update>
+</mapper>

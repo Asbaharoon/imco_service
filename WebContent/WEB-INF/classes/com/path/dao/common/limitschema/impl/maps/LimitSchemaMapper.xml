@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="limitSchema">
+	
+	<resultMap id="limitSchemaResultMap" type="limitSchemaCO" >
+	    <id column="LINE" property="limitSchemaVO.LINE" />
+	    
+	    <result column="LIMIT_AMT" property="limitSchemaVO.LIMIT_AMT" />
+	    <result column="TRX_TYPE" property="limitSchemaVO.TRX_TYPE" />
+	    <result column="GROUP1" property="limitSchemaVO.GROUP1" />
+	    <result column="GROUP2" property="limitSchemaVO.GROUP2" />
+	    <result column="GROUP3" property="limitSchemaVO.GROUP3" />
+	    <result column="GROUP4" property="limitSchemaVO.GROUP4" />
+	    <result column="GROUP5" property="limitSchemaVO.GROUP5" />
+	    <result column="GROUP6" property="limitSchemaVO.GROUP6" />
+	    <result column="GROUP7" property="limitSchemaVO.GROUP7" />
+	    <result column="GROUP8" property="limitSchemaVO.GROUP8" />
+	    <result column="GROUP9" property="limitSchemaVO.GROUP9" />
+	    <result column="GROUP10" property="limitSchemaVO.GROUP10" />
+	    <result column="STATUS" property="limitSchemaVO.STATUS" />
+	    <result column="NEVER_EXPIRE" property="limitSchemaVO.NEVER_EXPIRE" />
+	    <result column="EFFECTIVE_TO" property="limitSchemaVO.EFFECTIVE_TO" />
+	    <result column="EFFECTIVE_FROM" property="limitSchemaVO.EFFECTIVE_FROM" />
+	    <result column="UNLIMITED" property="unlimited" />
+	    <result column="NEVER_EXPIRE_TEMP" property="neverExpire" />
+	    <result column="TRX_DESC" property="transactionDesc" />
+	    <result column="ORIGIN" property="origin" />
+	    <result column="STATUS" property="limitSchemaVO.STATUS" />
+  	</resultMap>
+  
+	<select id="limitSchemaGridList" resultMap="limitSchemaResultMap" parameterType="limitSchemaSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="limitSchemaGridListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	 
+	<select id="limitSchemaGridListCount" resultType="int" parameterType="limitSchemaSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="limitSchemaGridListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<sql id="limitSchemaGridListCommon">
+	
+		SELECT LIMIT_SCHEMA.COMP_CODE COMP_CODE,
+		 LIMIT_SCHEMA.ACC_BR ACC_BR,
+		 LIMIT_SCHEMA.ACC_CY ACC_CY,
+		 LIMIT_SCHEMA.ACC_GL ACC_GL,
+		 LIMIT_SCHEMA.ACC_CIF ACC_CIF,
+		 LIMIT_SCHEMA.ACC_SL ACC_SL,
+		 LIMIT_SCHEMA.LINE LINE,
+		 LIMIT_SCHEMA.GROUP1 GROUP1,
+		 LIMIT_SCHEMA.GROUP2 GROUP2,
+		 LIMIT_SCHEMA.GROUP3 GROUP3,
+		 LIMIT_SCHEMA.GROUP4 GROUP4,
+          LIMIT_SCHEMA.GROUP5 GROUP5,
+          LIMIT_SCHEMA.GROUP6 GROUP6,
+		LIMIT_SCHEMA.GROUP7 GROUP7,
+		LIMIT_SCHEMA.GROUP8 GROUP8,
+         LIMIT_SCHEMA.GROUP9 GROUP9,
+         LIMIT_SCHEMA.GROUP10 GROUP10,
+		 LIMIT_SCHEMA.LIMIT_AMT LIMIT_AMT,
+		 LIMIT_SCHEMA.TRX_TYPE TRX_TYPE,
+          ' ' CHECKED,
+          '1' ORIGIN,
+          ' ' MODIF,
+         LIMIT_SCHEMA.NEVER_EXPIRE NEVER_EXPIRE,
+          LIMIT_SCHEMA.EFFECTIVE_FROM EFFECTIVE_FROM,
+          LIMIT_SCHEMA.EFFECTIVE_TO EFFECTIVE_TO,
+           CASE
+                WHEN LIMIT_SCHEMA.LIMIT_AMT IS NULL OR LIMIT_SCHEMA.LIMIT_AMT = 0
+                THEN 'Y'
+                ELSE 'N'
+             END       UNLIMITED,
+             CASE
+                WHEN LIMIT_SCHEMA.TRX_TYPE IS NULL OR LIMIT_SCHEMA.TRX_TYPE = 0
+                THEN ''
+                ELSE ( SELECT CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END 
+						FROM    CTSTRXTYPE 
+						WHERE	COMP_CODE  	= #{compCode}
+ 						AND 	CODE 		= LIMIT_SCHEMA.TRX_TYPE 
+ 					 )
+             END       TRX_DESC,
+              CASE
+                WHEN LIMIT_SCHEMA.NEVER_EXPIRE = 1
+                THEN 'Y'
+                ELSE 'N'
+             END       NEVER_EXPIRE_TEMP,
+             LIMIT_SCHEMA.STATUS STATUS
+             
+FROM LIMIT_SCHEMA
+WHERE LIMIT_SCHEMA.COMP_CODE = 
+	   		<choose>
+	   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+	   			<otherwise>#{compCode}</otherwise>
+	   		</choose>
+AND 	LIMIT_SCHEMA.ACC_BR    = #{branchCode}
+AND  	LIMIT_SCHEMA.ACC_CY	  = #{currencyCode}
+AND 	LIMIT_SCHEMA.ACC_GL	  = #{glCode}
+AND	   LIMIT_SCHEMA.ACC_CIF	  = #{cifSubNo}
+AND   LIMIT_SCHEMA.ACC_SL	  = #{slNo}
+	<![CDATA[
+AND(   LIMIT_SCHEMA.STATUS <>'D' or  LIMIT_SCHEMA.STATUS IS NULL )]]>
+AND  LINE NOT IN (SELECT  CASE WHEN LIMIT_SCHEMA_TEMP.ORIGIN_LINE  IS NULL THEN -1 ELSE
+                                                LIMIT_SCHEMA_TEMP.ORIGIN_LINE END 
+                                                FROM LIMIT_SCHEMA_TEMP
+                                                 WHERE LIMIT_SCHEMA_TEMP.COMP_CODE = #{compCode}
+											AND 	LIMIT_SCHEMA_TEMP.ACC_BR    = #{branchCode}
+											AND  	LIMIT_SCHEMA_TEMP.ACC_CY	  = #{currencyCode}
+											AND 	LIMIT_SCHEMA_TEMP.ACC_GL	  = #{glCode}
+											AND	    LIMIT_SCHEMA_TEMP.ACC_CIF	  = #{cifSubNo}
+											AND     LIMIT_SCHEMA_TEMP.ACC_SL	  =  #{slNo})
+<if test='openedFromSign'>
+UNION
+
+SELECT LIMIT_SCHEMA_TEMP.COMP_CODE COMP_CODE,
+		 LIMIT_SCHEMA_TEMP.ACC_BR ACC_BR,
+		 LIMIT_SCHEMA_TEMP.ACC_CY ACC_CY,
+		 LIMIT_SCHEMA_TEMP.ACC_GL ACC_GL,
+		 LIMIT_SCHEMA_TEMP.ACC_CIF ACC_CIF,
+		 LIMIT_SCHEMA_TEMP.ACC_SL ACC_SL,
+		 LIMIT_SCHEMA_TEMP.LINE LINE,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP1 GROUP1,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP2 GROUP2,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP3 GROUP3,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP4 GROUP4,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP5 GROUP5,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP6 GROUP6,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP7 GROUP7,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP8 GROUP8,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP9 GROUP9,
+		 LIMIT_SCHEMA_TEMP.TO_BE_GROUP10 GROUP10,
+		 LIMIT_SCHEMA_TEMP.TO_BE_LIMIT_AMT LIMIT_AMT,
+		 LIMIT_SCHEMA_TEMP.TO_BE_TRX_TYPE TRX_TYPE,
+          ' ' CHECKED,
+          '2' ORIGIN,
+          ' ' MODIF,
+         LIMIT_SCHEMA_TEMP.NEVER_EXPIRE NEVER_EXPIRE,
+          LIMIT_SCHEMA_TEMP.TO_EFFECTIVE_FROM EFFECTIVE_FROM,
+          LIMIT_SCHEMA_TEMP.TO_EFFECTIVE_TO EFFECTIVE_TO,
+            CASE
+                WHEN LIMIT_SCHEMA_TEMP.TO_BE_LIMIT_AMT IS NULL OR LIMIT_SCHEMA_TEMP.TO_BE_LIMIT_AMT = 0
+                THEN 'Y'
+                ELSE 'N'
+             END       UNLIMITED,
+             CASE
+                WHEN LIMIT_SCHEMA_TEMP.TO_BE_TRX_TYPE IS NULL OR LIMIT_SCHEMA_TEMP.TO_BE_TRX_TYPE = 0
+                THEN ''
+                ELSE ( SELECT CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END 
+						FROM    CTSTRXTYPE 
+						WHERE	COMP_CODE  	= #{compCode}
+ 						AND 	CODE 		= LIMIT_SCHEMA_TEMP.TO_BE_TRX_TYPE 
+ 					 )
+             END       TRX_DESC,
+              CASE
+                WHEN LIMIT_SCHEMA_TEMP.NEVER_EXPIRE = 1
+                THEN 'Y'
+                ELSE 'N'
+             END       NEVER_EXPIRE_TEMP,
+             LIMIT_SCHEMA_TEMP.TO_BE_STATUS STATUS
+FROM LIMIT_SCHEMA_TEMP
+WHERE LIMIT_SCHEMA_TEMP.COMP_CODE = 
+	   		<choose>
+	   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+	   			<otherwise>#{compCode}</otherwise>
+	   		</choose>
+AND 	LIMIT_SCHEMA_TEMP.ACC_BR    = #{branchCode}
+AND	LIMIT_SCHEMA_TEMP.ACC_CY	  = #{currencyCode}
+AND 	LIMIT_SCHEMA_TEMP.ACC_GL	  =#{glCode}
+AND	LIMIT_SCHEMA_TEMP.ACC_CIF	  = #{cifSubNo}
+AND	LIMIT_SCHEMA_TEMP.ACC_SL	  = #{slNo}
+<![CDATA[
+AND   LIMIT_SCHEMA_TEMP.TO_BE_STATUS <>'D']]>
+
+</if>		
+		 
+		
+	</sql>
+
+	 <sql id="deleteLimitSchemaListQuery">
+		DELETE FROM LIMIT_SCHEMA 
+        WHERE LIMIT_SCHEMA.COMP_CODE 	= 	
+	   		<choose>
+	   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+	   			<otherwise>#{compCode}</otherwise>
+	   		</choose>
+			AND LIMIT_SCHEMA.ACC_BR    		= 	#{branchCode}
+			AND	LIMIT_SCHEMA.ACC_CY	  		= 	#{currencyCode}
+			AND LIMIT_SCHEMA.ACC_GL	 		= 	#{glCode}
+			AND	LIMIT_SCHEMA.ACC_CIF	  	= 	#{cifSubNo}
+			AND	LIMIT_SCHEMA.ACC_SL	  		= 	#{slNo}
+	 </sql>
+     
+	<delete id="deleteLimitSchemaList" parameterType="limitSchemaSC">
+		<include refid="deleteLimitSchemaListQuery"/>
+	</delete>
+	
+	<select id="limitSchemaCountForACCOrCIF" resultType="int" parameterType="signatureSC" >
+		<include refid="sqlLimitSchemaCountForACCorCIF"/>		 
+	</select>
+	
+	<select id="limitSchemaForACCOrCIF" resultMap="limitSchemaResultMap" parameterType="signatureSC" >
+		<include refid="sqlLimitSchemaForACCorCIF"/>		 
+	</select>
+	
+	<sql id="sqlLimitSchemaCountForACCorCIF">
+		
+		SELECT COUNT(1)
+			FROM LIMIT_SCHEMA WHERE COMP_CODE = #{compCode}
+							AND 	ACC_BR	 = #{branchCode}
+							AND 	ACC_CIF	 = #{cifNo}
+							 <choose>
+    							<when test='signatureTp.equals("C")'>
+    								AND 	ACC_CY	 = 0
+									AND 	ACC_GL	 = 0						 
+									AND 	ACC_SL	 = 0  
+    							</when>
+    							<otherwise>
+    		 							AND 	ACC_CY	 = #{currencyCode}
+										AND 	ACC_GL	 = #{glCode}						 
+										AND 	ACC_SL	 = #{slNo}
+    							</otherwise>
+    	 					</choose>   
+    	 					<![CDATA[
+							AND (STATUS <>'D' OR STATUS IS NULL)
+							AND    ( ( #{filterSign} = '1' AND( ( NEVER_EXPIRE= 0 AND EFFECTIVE_TO >= #{validationDate,jdbcType=DATE} AND EFFECTIVE_FROM <= #{validationDate,jdbcType=DATE}) OR(NEVER_EXPIRE =  1)) 
+							AND  (TRX_TYPE = 0 OR TRX_TYPE = #{trxType}) AND  (LIMIT_AMT >= #{amount,jdbcType=NUMERIC} OR LIMIT_AMT  = 0))
+									OR
+							( #{filterSign} = '0'))
+		]]>
+	</sql>
+	
+		
+	<sql id="sqlLimitSchemaForACCorCIF">
+		
+		SELECT
+		 LIMIT_SCHEMA.COMP_CODE COMP_CODE,
+		 LIMIT_SCHEMA.ACC_BR ACC_BR,
+		 LIMIT_SCHEMA.ACC_CY ACC_CY,
+		 LIMIT_SCHEMA.ACC_GL ACC_GL,
+		 LIMIT_SCHEMA.ACC_CIF ACC_CIF,
+		 LIMIT_SCHEMA.ACC_SL ACC_SL,
+		 LIMIT_SCHEMA.LINE LINE,
+		 LIMIT_SCHEMA.GROUP1 GROUP1,
+		 LIMIT_SCHEMA.GROUP2 GROUP2,
+		 LIMIT_SCHEMA.GROUP3 GROUP3,
+		 LIMIT_SCHEMA.GROUP4 GROUP4,
+         LIMIT_SCHEMA.GROUP5 GROUP5,
+         LIMIT_SCHEMA.GROUP6 GROUP6,
+		 LIMIT_SCHEMA.GROUP7 GROUP7,
+		 LIMIT_SCHEMA.GROUP8 GROUP8,
+         LIMIT_SCHEMA.GROUP9 GROUP9,
+         LIMIT_SCHEMA.GROUP10 GROUP10,
+		 LIMIT_SCHEMA.LIMIT_AMT LIMIT_AMT,
+		 LIMIT_SCHEMA.TRX_TYPE TRX_TYPE
+		 FROM LIMIT_SCHEMA WHERE COMP_CODE = #{compCode}
+							AND 	ACC_BR	 = #{branchCode}
+							AND 	ACC_CIF	 = #{cifNo}
+							 <choose>
+    							<when test='signatureTp.equals("C")'>
+    								AND 	ACC_CY	 = 0
+									AND 	ACC_GL	 = 0						 
+									AND 	ACC_SL	 = 0  
+    							</when>
+    							<otherwise>
+    		 							AND 	ACC_CY	 = #{currencyCode}
+										AND 	ACC_GL	 = #{glCode}						 
+										AND 	ACC_SL	 = #{slNo}
+    							</otherwise>
+    	 					</choose>
+    	 					<![CDATA[   
+							AND (STATUS <>'D' OR STATUS IS NULL)
+							AND    ( ( #{filterSign} = '1' AND( ( NEVER_EXPIRE= 0 AND EFFECTIVE_TO >= #{validationDate,jdbcType=DATE} AND EFFECTIVE_FROM <= #{validationDate,jdbcType=DATE}) OR(NEVER_EXPIRE =  1)) 
+							AND  (TRX_TYPE = 0 OR TRX_TYPE = #{trxType}) AND  (LIMIT_AMT >= #{amount} OR LIMIT_AMT  = 0))
+									OR
+							( #{filterSign} = '0'))
+								]]>
+	
+	</sql>
+	
+	
+	<select id="selectMaxOfLimitSchema" resultType="int" parameterType="limitSchemaVO">
+		SELECT CASE WHEN MAX(LINE)IS NULL THEN 0 ELSE MAX(LINE) END FROM  LIMIT_SCHEMA
+				WHERE 	LIMIT_SCHEMA.COMP_CODE = #{COMP_CODE}
+				AND 	LIMIT_SCHEMA.ACC_BR    = #{ACC_BR}
+				AND	    LIMIT_SCHEMA.ACC_CY	   = #{ACC_CY}
+				AND 	LIMIT_SCHEMA.ACC_GL	   = #{ACC_GL}
+				AND	    LIMIT_SCHEMA.ACC_CIF   = #{ACC_CIF}
+				AND  	LIMIT_SCHEMA.ACC_SL	   = #{ACC_SL}
+	
+	</select>
+	
+	<select id="selectMaxOfLimitSchemaTemp" resultType="int" parameterType="limitSchemaVO">
+		SELECT CASE WHEN MAX(LINE)IS NULL THEN 0 ELSE MAX(LINE) END FROM  LIMIT_SCHEMA_TEMP 
+				WHERE 	LIMIT_SCHEMA_TEMP.COMP_CODE   = #{COMP_CODE}
+				AND 	LIMIT_SCHEMA_TEMP.ACC_BR      = #{ACC_BR}
+				AND	    LIMIT_SCHEMA_TEMP.ACC_CY	  = #{ACC_CY}
+				AND 	LIMIT_SCHEMA_TEMP.ACC_GL	  = #{ACC_GL}
+				AND	    LIMIT_SCHEMA_TEMP.ACC_CIF	  = #{ACC_CIF}
+				AND  	LIMIT_SCHEMA_TEMP.ACC_SL	  = #{ACC_SL}
+	</select>
+	
+	
+	<sql id="deleteLimitSchemaTemp">
+	 DELETE FROM LIMIT_SCHEMA_TEMP
+    		WHERE ACC_BR = #{ACC_BR}
+    		AND ACC_CIF = #{ACC_CIF}
+     		AND ACC_CY = #{ACC_CY}
+      		AND ACC_GL = #{ACC_GL}
+      		AND ACC_SL = #{ACC_SL}
+      		AND COMP_CODE = #{COMP_CODE}     		 
+	
+	</sql>
+	
+	<delete id="deleteLimitSchemaTemp" parameterType="limitSchemaVO">
+		<include refid="deleteLimitSchemaTemp"/>
+	</delete>
+	
+
+	
+	
+	
+</mapper>

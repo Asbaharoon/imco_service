@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_BPM_DOC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" >
+    <id column="DOC_ID" property="DOC_ID" />
+    <id column="PROCESS_INSTANCE_ID" property="PROCESS_INSTANCE_ID" />
+    <result column="DOC_NAME" property="DOC_NAME" />
+    <result column="DOC_TYPE" property="DOC_TYPE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" extends="BaseResultMap" >
+    <result column="DOC_BYTES" property="DOC_BYTES" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DOC_ID, PROCESS_INSTANCE_ID, DOC_NAME, DOC_TYPE, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE
+  </sql>
+  <sql id="Blob_Column_List" >
+    DOC_BYTES
+  </sql>
+  <select id="selectSYS_PARAM_BPM_DOC" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_BPM_DOC
+    where DOC_ID = #{DOC_ID}
+      and PROCESS_INSTANCE_ID = #{PROCESS_INSTANCE_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_BPM_DOC" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" >
+    delete from SYS_PARAM_BPM_DOC
+    where DOC_ID = #{DOC_ID}
+      and PROCESS_INSTANCE_ID = #{PROCESS_INSTANCE_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_BPM_DOC" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="DOC_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(DOC_ID),0)+1</when><otherwise>NVL(MAX(DOC_ID),0)+1</otherwise></choose> FROM SYS_PARAM_BPM_DOC
+    </selectKey>
+    insert into SYS_PARAM_BPM_DOC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      DOC_ID,
+      <if test="PROCESS_INSTANCE_ID != null and PROCESS_INSTANCE_ID != emptyBigDecimalValue" >
+        PROCESS_INSTANCE_ID,
+      </if>
+      <if test="DOC_NAME != null" >
+        DOC_NAME,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="DOC_BYTES != null" >
+        DOC_BYTES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{DOC_ID},
+      <if test="PROCESS_INSTANCE_ID != null and PROCESS_INSTANCE_ID != emptyBigDecimalValue" >
+        #{PROCESS_INSTANCE_ID},
+      </if>
+      <if test="DOC_NAME != null" >
+        #{DOC_NAME},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="DOC_BYTES != null" >
+        #{DOC_BYTES},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_BPM_DOC" >
+    update SYS_PARAM_BPM_DOC
+    <set >
+      <if test="DOC_NAME != null" >
+        DOC_NAME = #{DOC_NAME},
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE = #{DOC_TYPE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="DOC_BYTES != null" >
+        DOC_BYTES = #{DOC_BYTES},
+      </if>
+    </set>
+    where DOC_ID = #{DOC_ID}
+      and PROCESS_INSTANCE_ID = #{PROCESS_INSTANCE_ID}
+  </sql>
+  <update id="updateSYS_PARAM_BPM_DOC" parameterType="com.path.dbmaps.vo.SYS_PARAM_BPM_DOCVO" >
+    <include refid="sql_updateSYS_PARAM_BPM_DOC" />
+  </update>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_KEY_LABEL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="KEY_LABEL_CODE" property="KEY_LABEL_CODE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="KEY_GROUP_ID" property="KEY_GROUP_ID" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" extends="BaseResultMap" >
+    <result column="KEY_LABEL_DESC" property="KEY_LABEL_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, KEY_LABEL_CODE, PROG_REF, KEY_GROUP_ID
+  </sql>
+  <sql id="Blob_Column_List" >
+    KEY_LABEL_DESC
+  </sql>
+  <select id="selectSYS_PARAM_KEY_LABEL" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_KEY_LABEL
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteSYS_PARAM_KEY_LABEL" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" >
+    delete from SYS_PARAM_KEY_LABEL
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertSYS_PARAM_KEY_LABEL" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" >
+    insert into SYS_PARAM_KEY_LABEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="KEY_LABEL_CODE != null" >
+        KEY_LABEL_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="KEY_GROUP_ID != null and KEY_GROUP_ID != emptyBigDecimalValue" >
+        KEY_GROUP_ID,
+      </if>
+      <if test="KEY_LABEL_DESC != null" >
+        KEY_LABEL_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="KEY_LABEL_CODE != null" >
+        #{KEY_LABEL_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="KEY_GROUP_ID != null and KEY_GROUP_ID != emptyBigDecimalValue" >
+        #{KEY_GROUP_ID},
+      </if>
+      <if test="KEY_LABEL_DESC != null" >
+        #{KEY_LABEL_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_KEY_LABEL" >
+    update SYS_PARAM_KEY_LABEL
+    <set >
+      <if test="KEY_GROUP_ID != null" >
+        <choose >
+          <when test="KEY_GROUP_ID == emptyBigDecimalValue" >
+            KEY_GROUP_ID = NULL ,
+          </when>
+          <otherwise >
+            KEY_GROUP_ID = #{KEY_GROUP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="KEY_LABEL_DESC != null" >
+        KEY_LABEL_DESC = #{KEY_LABEL_DESC},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and KEY_LABEL_CODE = #{KEY_LABEL_CODE}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateSYS_PARAM_KEY_LABEL" parameterType="com.path.dbmaps.vo.SYS_PARAM_KEY_LABELVO" >
+    <include refid="sql_updateSYS_PARAM_KEY_LABEL" />
+  </update>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_CHARGES_FEES_POLICY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_CHARGES_FEES_POLICY_DETVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ENTITY_TYPE2" property="ENTITY_TYPE2" />
+    <result column="ENTITY_CODE2" property="ENTITY_CODE2" />
+    <result column="AMOUNT" property="AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, ENTITY_CODE, ENTITY_TYPE, LINE_NO, ENTITY_TYPE2, ENTITY_CODE2, AMOUNT
+  </sql>
+  <select id="selectCTS_CHARGES_FEES_POLICY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_CHARGES_FEES_POLICY_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_CHARGES_FEES_POLICY_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_CHARGES_FEES_POLICY_DET" parameterType="com.path.dbmaps.vo.CTS_CHARGES_FEES_POLICY_DETVOKey" >
+    delete from CTS_CHARGES_FEES_POLICY_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_CHARGES_FEES_POLICY_DET" parameterType="com.path.dbmaps.vo.CTS_CHARGES_FEES_POLICY_DETVO" >
+    insert into CTS_CHARGES_FEES_POLICY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        ENTITY_CODE,
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="ENTITY_TYPE2 != null" >
+        ENTITY_TYPE2,
+      </if>
+      <if test="ENTITY_CODE2 != null and ENTITY_CODE2 != emptyBigDecimalValue" >
+        ENTITY_CODE2,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+       <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="ENTITY_TYPE2 != null" >
+        #{ENTITY_TYPE2},
+      </if>
+      <if test="ENTITY_CODE2 != null and ENTITY_CODE2 != emptyBigDecimalValue" >
+        #{ENTITY_CODE2},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_CHARGES_FEES_POLICY_DET" >
+    update CTS_CHARGES_FEES_POLICY_DET
+    <set >
+      <if test="ENTITY_TYPE2 != null" >
+        ENTITY_TYPE2 = #{ENTITY_TYPE2},
+      </if>
+      <if test="ENTITY_CODE2 != null" >
+        <choose >
+          <when test="ENTITY_CODE2 == emptyBigDecimalValue" >
+            ENTITY_CODE2 = NULL ,
+          </when>
+          <otherwise >
+            ENTITY_CODE2 = #{ENTITY_CODE2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_CHARGES_FEES_POLICY_DET" parameterType="com.path.dbmaps.vo.CTS_CHARGES_FEES_POLICY_DETVO" >
+    <include refid="sql_updateCTS_CHARGES_FEES_POLICY_DET" />
+  </update>
+</mapper>

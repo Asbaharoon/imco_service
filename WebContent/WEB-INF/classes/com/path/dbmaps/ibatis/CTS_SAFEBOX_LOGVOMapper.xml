@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SAFEBOX_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SAFEBOX_LOGVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="DATE_FROM" property="DATE_FROM" />
+    <result column="DATE_TO" property="DATE_TO" />
+    <result column="COMMENTS" property="COMMENTS" />
+    <result column="VISITOR_NAME" property="VISITOR_NAME" />
+    <result column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, TRX_NO, DATE_FROM, DATE_TO, COMMENTS, VISITOR_NAME, 
+    USER_ID
+  </sql>
+  <select id="selectCTS_SAFEBOX_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_LOGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SAFEBOX_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteCTS_SAFEBOX_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_LOGVOKey" >
+    delete from CTS_SAFEBOX_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertCTS_SAFEBOX_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_LOGVO" >
+    insert into CTS_SAFEBOX_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="DATE_FROM != null" >
+        DATE_FROM,
+      </if>
+      <if test="DATE_TO != null" >
+        DATE_TO,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+      <if test="VISITOR_NAME != null" >
+        VISITOR_NAME,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="DATE_FROM != null" >
+        #{DATE_FROM},
+      </if>
+      <if test="DATE_TO != null" >
+        #{DATE_TO},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+      <if test="VISITOR_NAME != null" >
+        #{VISITOR_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SAFEBOX_LOG" >
+    update CTS_SAFEBOX_LOG
+    <set >
+      <if test="DATE_FROM != null" >
+        DATE_FROM = #{DATE_FROM},
+      </if>
+      <if test="DATE_TO != null" >
+        DATE_TO = #{DATE_TO},
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+      <if test="VISITOR_NAME != null" >
+        VISITOR_NAME = #{VISITOR_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateCTS_SAFEBOX_LOG" parameterType="com.path.dbmaps.vo.CTS_SAFEBOX_LOGVO" >
+    <include refid="sql_updateCTS_SAFEBOX_LOG" />
+  </update>
+</mapper>

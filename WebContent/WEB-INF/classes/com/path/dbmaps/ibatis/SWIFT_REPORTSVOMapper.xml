@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_REPORTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_REPORTSVO" >
+    <id column="REP_ID" property="REP_ID" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="REP_TITLE" property="REP_TITLE" />
+    <result column="REP_OBJ_NAME" property="REP_OBJ_NAME" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="QUERY_TYPE" property="QUERY_TYPE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_REPORTSVO" extends="BaseResultMap" >
+    <result column="REP_SQL" property="REP_SQL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REP_ID, COMP_CODE, BRANCH_CODE, REP_TITLE, REP_OBJ_NAME, APP_NAME, USER_ID, QUERY_TYPE
+  </sql>
+  <sql id="Blob_Column_List" >
+    REP_SQL
+  </sql>
+  <select id="selectSWIFT_REPORTS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_REPORTSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_REPORTS
+    where REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteSWIFT_REPORTS" parameterType="com.path.dbmaps.vo.SWIFT_REPORTSVO" >
+    delete from SWIFT_REPORTS
+    where REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertSWIFT_REPORTS" parameterType="com.path.dbmaps.vo.SWIFT_REPORTSVO" >
+    insert into SWIFT_REPORTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="REP_TITLE != null" >
+        REP_TITLE,
+      </if>
+      <if test="REP_OBJ_NAME != null" >
+        REP_OBJ_NAME,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="QUERY_TYPE != null" >
+        QUERY_TYPE,
+      </if>
+      <if test="REP_SQL != null" >
+        REP_SQL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="REP_TITLE != null" >
+        #{REP_TITLE},
+      </if>
+      <if test="REP_OBJ_NAME != null" >
+        #{REP_OBJ_NAME},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="QUERY_TYPE != null" >
+        #{QUERY_TYPE},
+      </if>
+      <if test="REP_SQL != null" >
+        #{REP_SQL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_REPORTS" >
+    update SWIFT_REPORTS
+    <set >
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_TITLE != null" >
+        REP_TITLE = #{REP_TITLE},
+      </if>
+      <if test="REP_OBJ_NAME != null" >
+        REP_OBJ_NAME = #{REP_OBJ_NAME},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="QUERY_TYPE != null" >
+        QUERY_TYPE = #{QUERY_TYPE},
+      </if>
+      <if test="REP_SQL != null" >
+        REP_SQL = #{REP_SQL},
+      </if>
+    </set>
+    where REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateSWIFT_REPORTS" parameterType="com.path.dbmaps.vo.SWIFT_REPORTSVO" >
+    <include refid="sql_updateSWIFT_REPORTS" />
+  </update>
+</mapper>

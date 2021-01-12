@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFPCT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFPCTVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PRIORITY_CODE" property="PRIORITY_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="CIF_RESERVED_NO" property="CIF_RESERVED_NO" />
+    <result column="VIP_ALERT" property="VIP_ALERT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, PRIORITY_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ARAB, 
+    ADDITIONAL_REFERENCE, CIF_RESERVED_NO, VIP_ALERT
+  </sql>
+  <select id="selectRIFPCT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFPCTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFPCT
+    where COMP_CODE = #{COMP_CODE}
+      and PRIORITY_CODE = #{PRIORITY_CODE}
+  </select>
+  <delete id="deleteRIFPCT" parameterType="com.path.dbmaps.vo.RIFPCTVOKey" >
+    delete from RIFPCT
+    where COMP_CODE = #{COMP_CODE}
+      and PRIORITY_CODE = #{PRIORITY_CODE}
+  </delete>
+  <insert id="insertRIFPCT" parameterType="com.path.dbmaps.vo.RIFPCTVO" >
+    insert into RIFPCT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PRIORITY_CODE != null and PRIORITY_CODE != emptyBigDecimalValue" >
+        PRIORITY_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="CIF_RESERVED_NO != null" >
+        CIF_RESERVED_NO,
+      </if>
+      <if test="VIP_ALERT != null" >
+        VIP_ALERT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PRIORITY_CODE != null and PRIORITY_CODE != emptyBigDecimalValue" >
+        #{PRIORITY_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="CIF_RESERVED_NO != null" >
+        #{CIF_RESERVED_NO},
+      </if>
+      <if test="VIP_ALERT != null" >
+        #{VIP_ALERT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFPCT" >
+    update RIFPCT
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="CIF_RESERVED_NO != null" >
+        CIF_RESERVED_NO = #{CIF_RESERVED_NO},
+      </if>
+      <if test="VIP_ALERT != null" >
+        VIP_ALERT = #{VIP_ALERT},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and PRIORITY_CODE = #{PRIORITY_CODE}
+  </sql>
+  <update id="updateRIFPCT" parameterType="com.path.dbmaps.vo.RIFPCTVO" >
+    <include refid="sql_updateRIFPCT" />
+  </update>
+</mapper>

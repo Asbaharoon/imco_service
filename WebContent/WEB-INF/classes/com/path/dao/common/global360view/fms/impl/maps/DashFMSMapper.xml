@@ -1,0 +1,1088 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashFMSMapper">
+<!-- ** Collaterals ** -->
+<!-- ************************************************** Query for  dw_cust_security Start ************************************************-->	
+	<sql id="dw_cust_securityQuery_Fields">
+	  SELECT FMSCOLLATERAL.CODE ,  
+		   	 FMSCOLLATERAL.BRANCH ,             
+	       	 FMSCOLLATERAL.BRIEF_NAME_ENG ,            
+		     FMSFACILITY.FROM_APPLICATION,
+			 FMSAPPCOLLATERALS.COVERAGE ,
+			 FMSCOLLATERAL.ACCEPT_VALUE ,
+			 FMSCOLLATERAL.STATUS ,
+			 FMSCOLLATERAL.CURRENCY ,
+			 CURRENCIES.BRIEF_DESC_ENG,
+	         CURRENCIES.DECIMAL_POINTS,
+	         (SELECT VALUE_DESC 
+			         FROM SYS_PARAM_LOV_TRANS 
+			         WHERE LOV_TYPE_ID 	= #{lovType}
+			         AND LANG_CODE 		= #{langCode}
+			         AND VALUE_CODE 	= FMSCOLLATERAL.STATUS) STATUS_DESC  
+	</sql>
+	<sql id="dw_cust_securityQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSCOLLATERAL.CURRENCY ,
+			   CURRENCIES.BRIEF_DESC_ENG,
+			   FMSFACILITY.CIF
+	</sql>
+	<sql id="dw_cust_securityQuery_Condition">
+		FROM FMSFACILITY,   
+	         FMSCOLLATERAL,   
+	         FMSAPPCOLLATERALS,
+	         CURRENCIES         
+	   WHERE ( FMSAPPCOLLATERALS.COMP_CODE   = FMSFACILITY.COMP_CODE        ) AND  
+	         ( FMSAPPCOLLATERALS.BRANCH_CODE = FMSFACILITY.BRANCH           ) AND  
+	         ( FMSAPPCOLLATERALS.APP_REF     = FMSFACILITY.FROM_APPLICATION ) AND 			
+	         ( FMSAPPCOLLATERALS.COMP_CODE   = FMSCOLLATERAL.COMP_CODE  	) AND  
+	         ( FMSAPPCOLLATERALS.BRANCH_CODE = FMSCOLLATERAL.BRANCH     	) AND 
+	         ( FMSAPPCOLLATERALS.COLLATERAL  = FMSCOLLATERAL.CODE       	) AND 
+			 ( FMSCOLLATERAL.COMP_CODE       = CURRENCIES.COMP_CODE     	) AND
+	         ( FMSCOLLATERAL.CURRENCY        = CURRENCIES.CURRENCY_CODE 	) AND 
+	         ( FMSFACILITY.COMP_CODE   		 = #{compCode}     				) AND  
+	         ( FMSFACILITY.CIF         		 = #{cif_no}        			) AND
+	         ( FMSFACILITY.STATUS		  	 IN ('A', 'P') )
+	         <if test="loginTypeByBr == 1">
+				AND FMSFACILITY.BRANCH 		 = #{branchCode,jdbcType=NUMERIC}
+			 </if>
+	</sql>
+	<sql id="dw_cust_securityQuery_CurrencyCondition">
+		AND  ( FMSCOLLATERAL.CURRENCY		 = #{baseCurrencyCode} 	   		)
+	</sql>
+	
+	<resultMap id="dw_cust_securityMap" type="fmsCO" >
+		<id column="CODE" property="fmsCollateralVO.CODE" />
+		<id column="BRANCH" property="fmsCollateralVO.BRANCH" />
+		<id column="BRIEF_NAME_ENG" property="fmsCollateralVO.BRIEF_NAME_ENG" />
+		<id column="FROM_APPLICATION" property="fmsFacilityVO.FROM_APPLICATION" />
+	    <id column="COVERAGE" property="fmsAppCollateralVO.COVERAGE" />
+	    <id column="ACCEPT_VALUE" property="fmsCollateralVO.ACCEPT_VALUE" />
+	    <id column="STATUS" property="fmsCollateralVO.STATUS" />
+	    <id column="CURRENCY" property="fmsCollateralVO.CURRENCY" />
+	    <id column="BRIEF_DESC_ENG" property="currencyDesc" />
+	    <id column="DECIMAL_POINTS" property="curDecimalPoints" />
+	    <id column="CIF" property="fmsFacilityVO.CIF" />
+	    <id column="STATUS_DESC" property="statusDesc" />
+	    
+	</resultMap>
+	<select id="dw_cust_securityList" parameterType="dashboardSC" resultMap="dw_cust_securityMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_cust_securityQuery_Fields"/>
+		<include refid="dw_cust_securityQuery_Condition"/>
+		<include refid="dw_cust_securityQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dw_cust_securityListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dw_cust_securityQuery_Fields"/>
+		<include refid="dw_cust_securityQuery_Condition"/>
+		<include refid="dw_cust_securityQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	<select id="dw_cust_securityCurrencies" parameterType="dashboardSC" resultMap="dw_cust_securityMap">
+		<include refid="dw_cust_securityQuery_UniqueByCurrency"/>
+		<include refid="dw_cust_securityQuery_Condition"/>
+	</select>
+	
+<!-- ************************************************** Query for  dw_cust_security End   ************************************************-->
+<!-- ** New Applications ** -->	
+<!-- **************************************************    Query for  dw_new_app Start    ************************************************-->		
+	
+	<sql id="dw_new_appQuery_Fields">
+	  SELECT FMSAPPL.BRANCH,
+			 FMSAPPL.CODE,
+			 FMSAPPL.CURRENCY,
+			 FMSAPPL.VALUE,
+			 FMSAPPL.DATE_CREATED,
+			 FMSAPPL.CURRENCY_MULT_DIV,
+			 FMSAPPL.CURRENCY_UNIT,
+			 FMSAPPL.CURRENCY_RATE,
+			 CURRENCIES.BRIEF_DESC_ENG,
+			 CURRENCIES.DECIMAL_POINTS,
+			 FMSAPPL.STATUS,
+			 FMSAPPL.APPLICATION_FOR,
+			 FMSAPPL.LOAN_TYPE,
+			 CASE WHEN FMSAPPL.DATE_DELETED IS NULL THEN FMSAPPL.DATE_CREATED ELSE  FMSAPPL.DATE_DELETED END DATE_DELETED,
+			 CASE WHEN FMSAPPL.DATE_REJECTED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.DATE_REJECTED  END DATE_REJECTED,
+			 CASE WHEN FMSAPPL.OFFER_DATE_ISSUED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.OFFER_DATE_ISSUED END  OFFER_DATE_ISSUED,
+			 CASE WHEN FMSAPPL.FINAL_APPROVAL_DATE  IS NULL THEN FMSAPPL.DATE_CREATED ELSE  FMSAPPL.FINAL_APPROVAL_DATE END FINAL_APPROVAL_DATE,
+			 CASE WHEN FMSAPPL.DATE_UPDATED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.DATE_UPDATED END DATE_UPDATED,
+			 CASE WHEN FMSAPPL.DATE_APPROVED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.DATE_APPROVED END  DATE_APPROVED,
+			 CASE WHEN FMSAPPL.DATE_AUTHORIZED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.DATE_AUTHORIZED END DATE_AUTHORIZED,
+			 CASE WHEN FMSAPPL.OFFER_DATE_REPLIED  IS NULL THEN FMSAPPL.DATE_CREATED ELSE  FMSAPPL.OFFER_DATE_REPLIED END OFFER_DATE_REPLIED,
+			 CASE WHEN FMSAPPL.FINAL_REJECTED_DATE  IS NULL THEN FMSAPPL.DATE_CREATED ELSE FMSAPPL.FINAL_REJECTED_DATE END FINAL_REJECTED_DATE,
+			 FMSFACILITYTYPE.BRIEF_NAME_ENG,
+			(SELECT CASE WHEN MAX(ACTION_DATE) IS NULL THEN FMSAPPL.DATE_CREATED END FROM FMSAPPL_HISTORY_LOG  WHERE FMSAPPL_HISTORY_LOG.COMP_CODE  =  #{compCode} and FMSAPPL_HISTORY_LOG.BRANCH = FMSAPPL.BRANCH and FMSAPPL_HISTORY_LOG.CODE =  FMSAPPL.CODE)  MAX_DATE,
+			(SELECT VALUE_DESC 
+			        FROM 	SYS_PARAM_LOV_TRANS 
+			        WHERE 	LOV_TYPE_ID 	= #{lovType}
+			        AND 	LANG_CODE 		= #{langCode}
+			        AND 	VALUE_CODE 		= FMSAPPL.STATUS) STATUS_DESC,
+			(SELECT VALUE_DESC 
+			        FROM 	SYS_PARAM_LOV_TRANS 
+			        WHERE 	LOV_TYPE_ID 	= #{appForlovType}
+			        AND 	LANG_CODE 		= #{langCode}
+			        AND 	VALUE_CODE 		= FMSAPPL.APPLICATION_FOR) APPLICATION_FOR_DESC  
+	</sql>
+	<sql id="dw_new_appQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSAPPL.CURRENCY,
+			   CURRENCIES.BRIEF_DESC_ENG,
+			   FMSAPPL.CIF
+	</sql>
+	<sql id="dw_new_appQuery_Condition">
+	 FROM    FMSAPPL,
+		     CURRENCIES,
+		     FMSFACILITYTYPE 
+	 WHERE	(FMSAPPL.COMP_CODE  = CURRENCIES.COMP_CODE		)
+	 AND	(FMSAPPL.CURRENCY  	= CURRENCIES.CURRENCY_CODE	)
+	 AND    (FMSAPPL.COMP_CODE  = FMSFACILITYTYPE.COMP_CODE	)
+	 AND	(FMSAPPL.LOAN_TYPE  = FMSFACILITYTYPE.CODE		)
+	 AND	(FMSAPPL.COMP_CODE  = #{compCode} 				)
+	 AND	(FMSAPPL.CIF  		= #{cif_no}  				)
+	 AND	((FMSAPPL.APPLICATION_FOR  = 'N') OR (FMSAPPL.APPLICATION_FOR  = 'A'))
+	 AND	(FMSAPPL.STATUS  IN ('A','P','F','T','M','Y','C','U'))
+	 <if test="loginTypeByBr == 1">
+			AND FMSAPPL.BRANCH 		 = #{branchCode,jdbcType=NUMERIC}
+	 </if>
+	</sql>
+	<sql id="dw_new_appQuery_CurrencyCondition">
+		AND  ( FMSAPPL.CURRENCY		 = #{baseCurrencyCode} 	)
+	</sql>
+	<resultMap id="dw_new_appMap" type="fmsCO" >
+		<id column="BRIEF_DESC_ENG" property="currencyDesc" />
+		<id column="CIF" property="fmsApplVO.CIF" />
+		<id column="BRANCH" property="fmsApplVO.BRANCH" />
+		<id column="CODE" property="fmsApplVO.CODE" />
+		<id column="CURRENCY" property="fmsApplVO.CURRENCY" />
+		<id column="VALUE" property="fmsApplVO.VALUE" />
+		<id column="DATE_CREATED" property="fmsApplVO.DATE_CREATED" />
+		<id column="CURRENCY_MULT_DIV" property="fmsApplVO.CURRENCY_MULT_DIV" />
+		<id column="CURRENCY_UNIT" property="fmsApplVO.CURRENCY_UNIT" />
+		<id column="CURRENCY_RATE" property="fmsApplVO.CURRENCY_RATE" />
+		<id column="STATUS" property="fmsApplVO.STATUS" />
+		<id column="APPLICATION_FOR" property="fmsApplVO.APPLICATION_FOR" />
+		<id column="LOAN_TYPE" property="fmsApplVO.LOAN_TYPE" />
+		<id column="DATE_DELETED" property="fmsApplVO.DATE_DELETED" />
+		<id column="DATE_REJECTED" property="fmsApplVO.DATE_REJECTED" />
+		<id column="OFFER_DATE_ISSUED" property="fmsApplVO.OFFER_DATE_ISSUED" />
+		<id column="FINAL_APPROVAL_DATE" property="fmsApplVO.FINAL_APPROVAL_DATE" />
+		<id column="DATE_UPDATED" property="fmsApplVO.DATE_UPDATED" />
+		<id column="DATE_APPROVED" property="fmsApplVO.DATE_APPROVED" />
+		<id column="DATE_AUTHORIZED" property="fmsApplVO.DATE_AUTHORIZED" />
+		<id column="OFFER_DATE_REPLIED" property="fmsApplVO.OFFER_DATE_REPLIED" />
+		<id column="FINAL_REJECTED_DATE" property="fmsApplVO.FINAL_REJECTED_DATE" />
+		<id column="BRIEF_NAME_ENG" property="fmsFacilityTypeVO.BRIEF_NAME_ENG" />
+		<id column="DECIMAL_POINTS" property="curDecimalPoints" />
+		<id column="STATUS_DESC" property="statusDesc" />
+		<id column="APPLICATION_FOR_DESC" property="appForDesc" />
+		<id column="MAX_DATE" property="newAppMaxDate" />
+	</resultMap>
+	<select id="dw_new_appList" parameterType="dashboardSC" resultMap="dw_new_appMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_new_appQuery_Fields"/>
+		<include refid="dw_new_appQuery_Condition"/>
+		<include refid="dw_new_appQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dw_new_appListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dw_new_appQuery_Fields"/>
+		<include refid="dw_new_appQuery_Condition"/>
+		<include refid="dw_new_appQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	<select id="dw_new_appCurrencies" parameterType="dashboardSC" resultMap="dw_new_appMap">
+		<include refid="dw_new_appQuery_UniqueByCurrency"/>
+		<include refid="dw_new_appQuery_Condition"/>
+	</select>
+	
+<!-- **************************************************    Query for  dw_new_app End    ************************************************-->	
+<!-- ** Blocked or Suspended Facilities ** -->	
+<!-- *****************************  Query for  dw_cif_facilities - Blocked or Suspended Facilities Start *******************************-->
+	<sql id="dw_cif_facilitiesQuery_Fields">
+	  SELECT 	
+			FMSFACILITY.BRANCH,
+      		FMSFACILITY.CODE,
+      		FMSFACILITY.CIF,
+			FMSFACILITY.FROM_APPLICATION,
+			FMSFACILITY.LOAN_TYPE,
+			FMSFACILITY.LOAN_CATEGORY,
+         	CASE WHEN (SELECT ENABLE_LANGUAGE FROM S_APP WHERE APP_NAME ='FMS') ='AR' THEN
+                  FMSCATEGORY.BRIEF_NAME_ARAB
+         	ELSE
+		        FMSCATEGORY.BRIEF_NAME_ENG
+         	END FMSCATEGORY_BRIEF_NAME_ENG,
+         	CASE WHEN (SELECT ENABLE_LANGUAGE FROM S_APP WHERE APP_NAME ='FMS') ='AR' THEN
+                 FMSFACILITYTYPE.BRIEF_NAME_ARAB
+         	ELSE
+		        FMSFACILITYTYPE.BRIEF_NAME_ENG
+         	END FMSFACILITYTYPE_BRIEF_NAME_ENG,
+         		(
+				CASE WHEN FMSFACILITY.STATUS = 'S' THEN
+				<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY.FACILITY_VALUE,0)
+				ELSE 
+				<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(BLOCKED_AMT,0)
+				<![CDATA[ - ]]>
+				<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(RELEASED_AMT,0)
+				END 
+				)
+			AS FACILITY_VALUE,
+			FMSFACILITY.CURRENCY,
+			FMSFACILITY.STATUS,
+         	CASE WHEN (SELECT ENABLE_LANGUAGE FROM S_APP WHERE APP_NAME ='FMS') ='AR' THEN
+                CURRENCIES.BRIEF_DESC_ARAB
+         	ELSE
+		        CURRENCIES.BRIEF_DESC_ENG
+         	END BRIEF_DESC_ENG,
+         	CURRENCIES.DECIMAL_POINTS,
+			CASE WHEN FMSFACILITY.DATE_CREATED IS NULL THEN  FMSFACILITY.DATE_CREATED ELSE FMSFACILITY.DATE_CREATED END DATE_CREATED,
+			CASE WHEN FMSFACILITY.DATE_DELETED  IS NULL THEN  FMSFACILITY.DATE_CREATED ELSE  FMSFACILITY.DATE_DELETED END DATE_DELETED, 
+			CASE WHEN FMSFACILITY.DATE_UPDATED  IS NULL THEN  FMSFACILITY.DATE_CREATED ELSE FMSFACILITY.DATE_UPDATED END DATE_UPDATED, 
+			CASE WHEN FMSFACILITY.DATE_APPROVED  IS NULL THEN  FMSFACILITY.DATE_CREATED ELSE FMSFACILITY.DATE_APPROVED END DATE_APPROVED ,
+			CASE WHEN FMSFACILITY.DATE_REVERSED  IS NULL THEN FMSFACILITY.DATE_CREATED ELSE FMSFACILITY.DATE_REVERSED  END DATE_REVERSED,
+			(SELECT VALUE_DESC 
+			        FROM 	SYS_PARAM_LOV_TRANS 
+			        WHERE 	LOV_TYPE_ID 	= #{lovType}
+			        AND 	LANG_CODE 		= #{langCode}
+			        AND 	VALUE_CODE 		= FMSFACILITY.STATUS) STATUS_DESC  
+	</sql>
+	<sql id="dw_cif_facilitiesQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSFACILITY.CURRENCY ,
+			   CASE WHEN (SELECT ENABLE_LANGUAGE FROM S_APP WHERE APP_NAME ='FMS') ='AR' THEN
+               		CURRENCIES.BRIEF_DESC_ARAB
+         	   ELSE
+		       		CURRENCIES.BRIEF_DESC_ENG
+         	   END BRIEF_DESC_ENG,
+			   FMSFACILITY.CIF
+	</sql>
+	<sql id="dw_cif_facilitiesQuery_Condition">
+		FROM    FMSFACILITY
+		LEFT 	JOIN 	
+				FMSFACILITY_BLOCK_AMT
+		ON    	FMSFACILITY.COMP_CODE   = 	FMSFACILITY_BLOCK_AMT.COMP_CODE       
+		AND     FMSFACILITY.BRANCH      = 	FMSFACILITY_BLOCK_AMT.BRANCH_CODE  
+		AND     FMSFACILITY.CODE        = 	FMSFACILITY_BLOCK_AMT.FACILITY_CODE 
+		JOIN	CURRENCIES 
+		ON		FMSFACILITY.COMP_CODE   = 	CURRENCIES.COMP_CODE   	 
+		AND		FMSFACILITY.CURRENCY	= 	CURRENCIES.CURRENCY_CODE	
+		WHERE	FMSFACILITY.COMP_CODE 	= 	#{compCode}  
+		<if test="loginTypeByBr == 1">      
+		AND		FMSFACILITY.BRANCH		= 	#{branchCode,jdbcType=NUMERIC}
+		</if>
+		AND    	FMSFACILITY.CIF       	= 	#{cif_no} 
+		AND		( ( FMSFACILITY_BLOCK_AMT.STATUS IN ('P','L') AND FMSFACILITY_BLOCK_AMT.BLOCKED_AMT <![CDATA[>]]> 0 ) OR FMSFACILITY.STATUS = 'S')
+    </sql>
+	<sql id="dw_cif_facilitiesQuery_CurrencyCondition">
+		 AND 	( FMSFACILITY.CURRENCY		= #{baseCurrencyCode} 		 )
+	</sql>
+	<sql id="dw_cif_facilitiesQuery_ConditionForList">
+		FROM    FMSFACILITY
+		LEFT 	JOIN 	
+				FMSFACILITY_BLOCK_AMT
+		ON    	FMSFACILITY.COMP_CODE   	= 	FMSFACILITY_BLOCK_AMT.COMP_CODE       
+		AND     FMSFACILITY.BRANCH      	= 	FMSFACILITY_BLOCK_AMT.BRANCH_CODE  
+		AND     FMSFACILITY.CODE        	= 	FMSFACILITY_BLOCK_AMT.FACILITY_CODE       
+		JOIN	CURRENCIES
+		ON		FMSFACILITY.COMP_CODE   	= 	CURRENCIES.COMP_CODE   	 
+		AND		FMSFACILITY.CURRENCY		= 	CURRENCIES.CURRENCY_CODE	 
+		JOIN	FMSCATEGORY
+		ON		FMSFACILITY.COMP_CODE		= 	FMSCATEGORY.COMP_CODE		 
+		AND		FMSFACILITY.LOAN_CATEGORY 	= 	FMSCATEGORY.CODE		
+		JOIN	FMSFACILITYTYPE
+		ON		FMSFACILITY.COMP_CODE     	=	FMSFACILITYTYPE.COMP_CODE	 
+		AND		FMSFACILITY.LOAN_TYPE 		= 	FMSFACILITYTYPE.CODE	  	 
+		WHERE	FMSFACILITY.COMP_CODE 		= 	#{compCode}  
+		<if test="loginTypeByBr == 1">      
+		AND		FMSFACILITY.BRANCH			= 	#{branchCode,jdbcType=NUMERIC}
+		</if>
+		AND    	FMSFACILITY.CIF       		= 	#{cif_no}  
+		AND 	FMSFACILITY.CURRENCY		= 	#{baseCurrencyCode}		 
+	    AND		( ( FMSFACILITY_BLOCK_AMT.STATUS IN ('P','L') AND FMSFACILITY_BLOCK_AMT.BLOCKED_AMT <![CDATA[>]]> 0 ) OR FMSFACILITY.STATUS = 'S')
+    </sql>
+	<resultMap id="dw_cif_facilitiesMap" type="fmsCO" >
+		<id column="CIF" property="fmsFacilityVO.CIF" />
+		<id column="BRANCH" property="fmsFacilityVO.BRANCH" />
+		<id column="CODE" property="fmsFacilityVO.CODE" />
+		<id column="FROM_APPLICATION" property="fmsFacilityVO.FROM_APPLICATION" />
+		<id column="LOAN_TYPE" property="fmsFacilityVO.LOAN_TYPE" />
+		<id column="LOAN_CATEGORY" property="fmsFacilityVO.LOAN_CATEGORY" />
+		<id column="FMSCATEGORY_BRIEF_NAME_ENG" property="fmsCategoryVO.BRIEF_NAME_ENG" />
+		<id column="FMSFACILITYTYPE_BRIEF_NAME_ENG" property="fmsFacilityTypeVO.BRIEF_NAME_ENG" />
+		<id column="FACILITY_VALUE" property="fmsFacilityVO.FACILITY_VALUE" />
+		<id column="INDICATOR_AMOUNT" property="INDICATOR_AMOUNT" />
+		<id column="CURRENCY" property="fmsFacilityVO.CURRENCY" />
+		<id column="STATUS" property="fmsFacilityVO.STATUS" />
+		<id column="BRIEF_DESC_ENG" property="currencyDesc" />
+		<id column="DECIMAL_POINTS" property="curDecimalPoints" />
+		<id column="DATE_CREATED" property="fmsFacilityVO.DATE_CREATED" />
+		<id column="DATE_DELETED" property="fmsFacilityVO.DATE_DELETED" />
+		<id column="DATE_UPDATED" property="fmsFacilityVO.DATE_UPDATED" />
+		<id column="DATE_APPROVED" property="fmsFacilityVO.DATE_APPROVED" />
+		<id column="DATE_REVERSED" property="fmsFacilityVO.DATE_REVERSED" />
+		<id column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+	<select id="dw_cif_facilitiesList" parameterType="dashboardSC" resultMap="dw_cif_facilitiesMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_cif_facilitiesQuery_Fields"/>
+		<include refid="dw_cif_facilitiesQuery_ConditionForList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dw_cif_facilitiesListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dw_cif_facilitiesQuery_Fields"/>
+		<include refid="dw_cif_facilitiesQuery_ConditionForList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	<select id="dw_cif_facilitiesCurrencies" parameterType="dashboardSC" resultMap="dw_cif_facilitiesMap">
+		<include refid="dw_cif_facilitiesQuery_UniqueByCurrency"/>
+		<include refid="dw_cif_facilitiesQuery_Condition"/>
+	</select>
+
+<!-- *****************************  Query for  dw_cif_facilities - Blocked or Suspended Facilities End *******************************-->
+<!-- ** Guarantees ** -->	
+<!-- ***********************************************    Query for  dw_cif_guarantor Start  *******************************************-->	
+
+<sql id="dw_cif_guarantorQuery_Fields">
+	  SELECT 	
+			FMSFACILITY.CODE,  
+			FMSFACILITYGUAR.GUARANTOR_CIF CIF,      
+			FMSFACILITY.FROM_APPLICATION,
+			FMSFACILITY.LOAN_TYPE,
+			FMSFACILITY.LOAN_CATEGORY,
+			FMSCATEGORY.BRIEF_NAME_ENG FMSCATEGORY_BRIEF_NAME_ENG,
+			FMSFACILITYTYPE.BRIEF_NAME_ENG FMSFACILITYTYPE_BRIEF_NAME_ENG,
+			FMSFACILITY.FACILITY_VALUE,
+			FMSFACILITYGUAR.INDICATOR_AMOUNT,
+			FMSFACILITY.CURRENCY,
+			FMSFACILITY.STATUS,
+			CURRENCIES.BRIEF_DESC_ENG,
+			CURRENCIES.DECIMAL_POINTS,
+			FMSFACILITY.DATE_CREATED,
+			CASE WHEN FMSFACILITY.DATE_DELETED IS NULL THEN FMSFACILITY.DATE_CREATED ELSE FMSFACILITY.DATE_DELETED END DATE_DELETED ,  
+			CASE WHEN FMSFACILITY.DATE_UPDATED IS NULL THEN FMSFACILITY.DATE_CREATED  ELSE FMSFACILITY.DATE_UPDATED END DATE_UPDATED ,    
+			CASE WHEN FMSFACILITY.DATE_APPROVED IS NULL THEN FMSFACILITY.DATE_CREATED  ELSE FMSFACILITY.DATE_APPROVED END DATE_APPROVED ,  
+			CASE WHEN FMSFACILITY.DATE_REVERSED IS NULL THEN FMSFACILITY.DATE_CREATED ELSE  FMSFACILITY.DATE_REVERSED END  DATE_REVERSED ,
+			(SELECT VALUE_DESC 
+			        FROM 	SYS_PARAM_LOV_TRANS 
+			        WHERE 	LOV_TYPE_ID 	= #{lovType}
+			        AND 	LANG_CODE 		= #{langCode}
+			        AND 	VALUE_CODE 		= FMSFACILITY.STATUS) STATUS_DESC    
+	</sql>
+	<sql id="dw_cif_guarantorQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSFACILITY.CURRENCY ,
+			   CURRENCIES.BRIEF_DESC_ENG,
+			   FMSFACILITY.CIF CIF
+	</sql>
+	<sql id="dw_cif_guarantorQuery_Condition">
+		FROM 	FMSFACILITYGUAR,
+				FMSFACILITY,
+				FMSFACILITYTYPE,
+				CURRENCIES,
+				FMSCATEGORY
+	 	WHERE   ( FMSFACILITYGUAR.COMP_CODE      = FMSFACILITY.COMP_CODE  	) 	   
+		AND		( FMSFACILITYGUAR.BRANCH         = FMSFACILITY.BRANCH     	)
+		AND		( FMSFACILITYGUAR.CODE           = FMSFACILITY.CODE       	)
+		AND		( FMSFACILITYGUAR.COMP_CODE      = #{compCode} 	          	)
+		<if test="loginTypeByBr == 1">   
+		AND		( FMSFACILITYGUAR.BRANCH         = #{branchCode,jdbcType=NUMERIC}       		)
+		</if>
+		AND		( FMSFACILITY.CIF				 = #{cif_no}                )
+		AND		( FMSFACILITY.COMP_CODE          = FMSFACILITYTYPE.COMP_CODE)
+		AND		( FMSFACILITY.LOAN_TYPE 		 = FMSFACILITYTYPE.CODE		) 
+		AND		( FMSFACILITY.COMP_CODE          = CURRENCIES.COMP_CODE   	) 
+		AND		( FMSFACILITY.CURRENCY			 = CURRENCIES.CURRENCY_CODE	)
+		AND		( FMSFACILITY.COMP_CODE		 	 = FMSCATEGORY.COMP_CODE	) 	
+		AND		( FMSFACILITY.LOAN_CATEGORY 	 = FMSCATEGORY.CODE			)
+		AND     (  FMSFACILITY.STATUS		  	 IN ('A', 'P')				)
+	</sql>
+	<sql id="dw_cif_guarantorQuery_CurrencyCondition">
+		 AND 	( FMSFACILITY.CURRENCY			= #{baseCurrencyCode} 		 )
+	</sql>
+	<select id="dw_cif_guarantorList" parameterType="dashboardSC" resultMap="dw_cif_facilitiesMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_cif_guarantorQuery_Fields"/>
+		<include refid="dw_cif_guarantorQuery_Condition"/>
+		<include refid="dw_cif_guarantorQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dw_cif_guarantorListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dw_cif_guarantorQuery_Fields"/>
+		<include refid="dw_cif_guarantorQuery_Condition"/>
+		<include refid="dw_cif_guarantorQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	<select id="dw_cif_guarantorCurrencies" parameterType="dashboardSC" resultMap="dw_cif_facilitiesMap">
+		<include refid="dw_cif_guarantorQuery_UniqueByCurrency"/>
+		<include refid="dw_cif_guarantorQuery_Condition"/>
+	</select>
+
+<!-- ***********************************************    Query for  dw_cif_guarantor End    *******************************************-->
+<!-- ** Approved Lines ** -->	
+<!-- ***********************************************    Query for  dw_approved_lines Start  *******************************************-->
+	<sql id="dw_approved_lines_CustomQuery_Fields">
+		SELECT 
+				FMSFACILITY.CODE,
+				FMSFACILITY.CIF ,
+				FMSFACILITY.BRANCH,
+				FMSFACILITY.DATE_EFFECTIVE_UNTIL,
+				FMSFACILITY.REVIEW_DATE,
+				FMSFACILITY.REVOLVING_ONEOFF,
+				FMSFACILITY.CURRENCY,
+				FMSFACILITY.CURRENCY_RATE,
+				FMSFACILITY.CURRENCY_UNIT,
+				FMSFACILITY.CURRENCY_MULT_DIV,
+				FMSFACILITY.FACILITY_VALUE, 
+				FMSFACILITY.FACILITY_TYPE,
+				CURRENCIES.BRIEF_DESC_ENG,  
+				CURRENCIES.DECIMAL_POINTS,
+				(	SELECT 	SUM
+					(
+						<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(BLOCKED_AMT,0)
+						<![CDATA[ - ]]>
+						<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(RELEASED_AMT,0)
+					)
+					FROM	FMSFACILITY_BLOCK_AMT
+					WHERE	FMSFACILITY.COMP_CODE   = 	FMSFACILITY_BLOCK_AMT.COMP_CODE       
+					AND     FMSFACILITY.BRANCH      = 	FMSFACILITY_BLOCK_AMT.BRANCH_CODE  
+					AND     FMSFACILITY.CODE        = 	FMSFACILITY_BLOCK_AMT.FACILITY_CODE     
+					AND		FMSFACILITY_BLOCK_AMT.STATUS IN ('P','L')
+				) 
+				AS BLOCKED_AMOUNT,
+				SUM(CASE WHEN AMF.FACILITY_NO > 0 THEN  AMF.CV_AVAIL_BAL ELSE
+ 				<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSDRWDWN.TOTAL_DEAL_AMOUNT,0) *(CASE WHEN FMSDRWDWN.CURRENCY_MULT_DIV='D' THEN  (1 /FMSDRWDWN.CURRENCY_RATE )ELSE FMSDRWDWN.CURRENCY_RATE END ) END ) AS UTILIZED_AMOUNT			 
+	</sql>
+	<sql id="dw_approved_lines_CustomQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSFACILITY.CURRENCY ,
+			   CURRENCIES.BRIEF_DESC_ENG,
+			   FMSFACILITY.CIF   
+	</sql>
+	<sql id="dw_approved_lines_CustomQuery_UniqueByCurrencyCondition">
+		FROM    FMSFACILITY
+	    JOIN	CURRENCIES
+		ON  	FMSFACILITY.COMP_CODE 	= 	CURRENCIES.COMP_CODE        
+		AND  	FMSFACILITY.CURRENCY  	= 	CURRENCIES.CURRENCY_CODE    
+		WHERE   FMSFACILITY.COMP_CODE 	= 	#{compCode} 	           
+		AND     FMSFACILITY.CIF       	= 	#{cif_no}      
+		AND     FMSFACILITY.STATUS    	= 	'P' 
+		<if test="loginTypeByBr == 1">
+			AND FMSFACILITY.BRANCH 		= #{branchCode,jdbcType=NUMERIC}
+		</if>   
+		
+	</sql>
+	<sql id="dw_approved_lines_CustomQuery_Condition">
+		FROM    FMSFACILITY
+    
+	    LEFT 	OUTER JOIN FMSDRWDWN 
+	    ON    	FMSFACILITY.COMP_CODE   = 	FMSDRWDWN.COMP_CODE       
+	    AND     FMSFACILITY.BRANCH      = 	FMSDRWDWN.FACILITY_BRANCH  
+	    AND     FMSFACILITY.CODE        = 	FMSDRWDWN.FROM_FACILITY       
+	    AND     FMSDRWDWN.STATUS     	= 	'P'   
+	    JOIN	CURRENCIES
+		ON  	FMSFACILITY.COMP_CODE 	= 	CURRENCIES.COMP_CODE        
+		AND  	FMSFACILITY.CURRENCY  	= 	CURRENCIES.CURRENCY_CODE  
+		LEFT 	OUTER JOIN AMF ON 
+         		FMSDRWDWN.COMP_CODE = AMF.COMP_CODE AND 
+         		FMSDRWDWN.FACILITY_BRANCH = AMF.FACILITY_BRANCH AND
+         		FMSDRWDWN.FROM_FACILITY = AMF.FACILITY_NO AND
+         		FMSDRWDWN.FACILITY_TYPE_CLASS = AMF.FACILITY_SUB_LIMIT AND
+         		FMSDRWDWN.CODE = AMF.DRWDWN_NO      
+		WHERE   FMSFACILITY.COMP_CODE 	= 	#{compCode}          
+		AND     FMSFACILITY.CIF       	= 	#{cif_no}       
+		AND     FMSFACILITY.STATUS    	= 	'P'   
+		AND		FMSFACILITY.CURRENCY	=	#{baseCurrencyCode}
+		<if test="loginTypeByBr == 1">
+			AND FMSFACILITY.BRANCH 		= #{branchCode,jdbcType=NUMERIC}
+		</if>
+		GROUP BY
+				FMSFACILITY.COMP_CODE,
+				FMSFACILITY.BRANCH ,
+			 	FMSFACILITY.CODE,
+				FMSFACILITY.CIF ,
+				FMSFACILITY.BRANCH,
+				FMSFACILITY.DATE_EFFECTIVE_UNTIL,
+				FMSFACILITY.REVIEW_DATE,
+				FMSFACILITY.REVOLVING_ONEOFF,
+				FMSFACILITY.CURRENCY,
+				FMSFACILITY.CURRENCY_RATE,
+				FMSFACILITY.CURRENCY_UNIT,
+				FMSFACILITY.CURRENCY_MULT_DIV,
+				FMSFACILITY.FACILITY_VALUE, 
+				FMSFACILITY.FACILITY_TYPE,
+				CURRENCIES.BRIEF_DESC_ENG,  
+				CURRENCIES.DECIMAL_POINTS		
+	</sql>
+	<sql id="dw_approved_lines_CustomQuery_CurrencyCondition">
+		AND 	( FMSFACILITY.CURRENCY			= #{baseCurrencyCode} 		 )
+	</sql>
+	<resultMap id="dw_approved_linesMap" type="fmsCO" >
+		<id column="CODE" property="fmsFacilityVO.CODE" />
+		<id column="CIF" property="fmsFacilityVO.CIF" />
+		<id column="BRANCH" property="fmsFacilityVO.BRANCH" />
+		<id column="DATE_EFFECTIVE_UNTIL" property="fmsFacilityVO.DATE_EFFECTIVE_UNTIL" />
+		<id column="REVIEW_DATE" property="fmsFacilityVO.REVIEW_DATE" />
+		<id column="REVOLVING_ONEOFF" property="fmsFacilityVO.REVOLVING_ONEOFF" />
+		<id column="CURRENCY" property="fmsFacilityVO.CURRENCY" />
+		<id column="CURRENCY_RATE" property="fmsFacilityVO.CURRENCY_RATE" />
+		<id column="CURRENCY_UNIT" property="fmsFacilityVO.CURRENCY_UNIT" />
+		<id column="CURRENCY_MULT_DIV" property="fmsFacilityVO.CURRENCY_MULT_DIV" />
+		<id column="FACILITY_VALUE" property="fmsFacilityVO.FACILITY_VALUE" />
+		<id column="FACILITY_TYPE" property="fmsFacilityVO.FACILITY_TYPE" />
+		<id column="BRIEF_DESC_ENG" property="currencyDesc" />
+		<id column="DECIMAL_POINTS" property="curDecimalPoints" />
+		<id column="TOTAL_DEAL_AMOUNT" property="DEAL_AMOUNT" />
+		<id column="BLOCKED_AMOUNT" property="BLOCKED_AMOUNT" />
+		<id column="UTILIZED_AMOUNT" property="UTILIZED_AMOUNT" />
+		<id column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+	
+	<select id="dw_approved_linesList" parameterType="dashboardSC" resultMap="dw_approved_linesMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_approved_lines_CustomQuery_Fields"/>
+		<include refid="dw_approved_lines_CustomQuery_Condition"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	<select id="dw_approved_linesCurrencies" parameterType="dashboardSC" resultMap="dw_approved_linesMap">
+		<include refid="dw_approved_lines_CustomQuery_UniqueByCurrency"/>
+		<include refid="dw_approved_lines_CustomQuery_UniqueByCurrencyCondition"/>
+	</select>
+	
+	<sql id="dw_approved_lines_DetailCustomQuery">
+		 SELECT  	FMSFACILITYDET.LINE_NBR,
+					FMSFACILITYDET.CLASS,
+					CASE WHEN FMSFACILITYDET.GENERAL_FACILITY_TYPE IS NULL THEN 'X' ELSE FMSFACILITYDET.GENERAL_FACILITY_TYPE END GENERAL_FACILITY_TYPE,
+					(SELECT VALUE_DESC 
+			                FROM SYS_PARAM_LOV_TRANS 
+			                WHERE LOV_TYPE_ID = #{lovType}
+			                AND LANG_CODE = #{langCode}
+			                AND VALUE_CODE = CASE WHEN FMSFACILITYDET.GENERAL_FACILITY_TYPE IS NULL THEN 'X' ELSE FMSFACILITYDET.GENERAL_FACILITY_TYPE END ) GENERAL_FACILITY_TYPE_DESC , 
+					(CASE GENERAL_FACILITY_TYPE 	
+							WHEN 'P' THEN (SELECT TRSCLASS.BRIEF_NAME_ENG FROM TRSCLASS WHERE COMP_CODE = #{compCode} AND TRSCLASS.CODE = FMSFACILITYDET.CLASS )
+							WHEN 'C' THEN CASE WHEN FMSFACILITYDET.CLASS = 0 THEN  (SELECT TFSDOCTYPE.BRIEF_NAME_ENG FROM TFSDOCTYPE WHERE COMP_CODE = #{compCode} AND TFSDOCTYPE.CODE = FMSFACILITYDET.CLASS_TYPE
+							AND   TFSDOCTYPE.DOC_TYPE = 'I')
+										   ELSE (SELECT TRSCLASS.BRIEF_NAME_ENG FROM TRSCLASS WHERE COMP_CODE = #{compCode} AND TRSCLASS.CODE = FMSFACILITYDET.CLASS) END
+							WHEN 'G' THEN CASE WHEN FMSFACILITYDET.CLASS = 0 THEN  (SELECT TFSDOCTYPE.BRIEF_NAME_ENG FROM TFSDOCTYPE WHERE COMP_CODE = #{compCode} AND TFSDOCTYPE.CODE = FMSFACILITYDET.CLASS_TYPE
+									AND   TFSDOCTYPE.DOC_TYPE = 'G')
+										   ELSE  (SELECT TRSCLASS.BRIEF_NAME_ENG FROM TRSCLASS WHERE COMP_CODE = #{compCode} AND TRSCLASS.CODE = FMSFACILITYDET.CLASS) END      
+							WHEN 'O' THEN  CASE WHEN FMSFACILITYDET.CLASS = 0 THEN  (SELECT TFSDOCTYPE.BRIEF_NAME_ENG FROM TFSDOCTYPE WHERE COMP_CODE = #{compCode} AND TFSDOCTYPE.CODE = FMSFACILITYDET.CLASS_TYPE
+									AND   TFSDOCTYPE.DOC_TYPE = 'O') 
+										   ELSE (SELECT TRSCLASS.BRIEF_NAME_ENG FROM TRSCLASS WHERE COMP_CODE = #{compCode} AND TRSCLASS.CODE = FMSFACILITYDET.CLASS ) END
+							END ) CLASS_NAME,
+					FMSFACILITYDET.FACILITY_VALUE, 
+					SUM(CASE WHEN AMF.FACILITY_NO > 0 THEN  AMF.CV_AVAIL_BAL ELSE<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSDRWDWN.TOTAL_DEAL_AMOUNT,0) * (CASE WHEN CURRENCY_MULT_DIV='D' THEN  1 /CURRENCY_RATE ELSE CURRENCY_RATE END	) END) AS UTILIZED_AMOUNT
+	    FROM      	
+	    			FMSFACILITYDET LEFT OUTER JOIN FMSDRWDWN ON 
+	         		FMSFACILITYDET.COMP_CODE   = FMSDRWDWN.COMP_CODE       		AND
+	         		FMSFACILITYDET.BRANCH      = FMSDRWDWN.FACILITY_BRANCH  	AND
+	         		FMSFACILITYDET.CODE        = FMSDRWDWN.FROM_FACILITY       	AND
+	         		FMSFACILITYDET.LINE_NBR    = FMSDRWDWN.FACILITY_TYPE_CLASS 	AND
+	         		FMSDRWDWN.STATUS      	   = 'P' 
+	    LEFT OUTER JOIN AMF ON 
+         			FMSDRWDWN.COMP_CODE = AMF.COMP_CODE AND 
+         			FMSDRWDWN.FACILITY_BRANCH = AMF.FACILITY_BRANCH AND
+			        FMSDRWDWN.FROM_FACILITY = AMF.FACILITY_NO AND
+			        FMSDRWDWN.FACILITY_TYPE_CLASS = AMF.FACILITY_SUB_LIMIT AND
+			        FMSDRWDWN.CODE = AMF.DRWDWN_NO        
+	    WHERE  
+		     		FMSFACILITYDET.COMP_CODE 	= #{compCode}		AND
+	           		FMSFACILITYDET.BRANCH       = #{branchCode}     AND         
+	           		FMSFACILITYDET.CODE 		= #{facilityCode}    
+	    GROUP BY 	FMSFACILITYDET.LINE_NBR,
+					FMSFACILITYDET.CLASS,
+					FMSFACILITYDET.FACILITY_VALUE,
+                	GENERAL_FACILITY_TYPE,
+                	FMSFACILITYDET.CLASS ,
+                	FMSFACILITYDET.CLASS_TYPE
+	</sql>
+	<resultMap id="dw_approved_linesDetailedListMap" type="fmsCO" >
+		<id column="LINE_NBR" property="fmsFacilityDetVO.LINE_NBR" />
+		<id column="CLASS" property="fmsFacilityDetVO.CLASS" />
+		<id column="GENERAL_FACILITY_TYPE" property="fmsFacilityDetVO.GENERAL_FACILITY_TYPE" />
+		<id column="CLASS_NAME" property="className" />
+		<id column="FACILITY_VALUE" property="fmsFacilityDetVO.FACILITY_VALUE" />
+		<id column="UTILIZED_AMOUNT" property="UTILIZED_AMOUNT" />
+		<id column="GENERAL_FACILITY_TYPE_DESC" property="statusDesc" />
+	</resultMap>
+	<select id="dw_approved_linesDetailedList" parameterType="dashboardSC" resultMap="dw_approved_linesDetailedListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_approved_lines_DetailCustomQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+<!-- ***********************************************    Query for  dw_approved_lines End  *******************************************-->
+
+
+<sql id="sum_APPROVED_LINES_QUERY">
+	<!--
+		SELECT 	SUM( CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN FMSFACILITY.FACILITY_VALUE
+					 ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN (FMSFACILITY.FACILITY_VALUE <![CDATA[ * ]]> 	CURRENCY_RATE ) <![CDATA[ / ]]>  CURRENCY_UNIT
+					 ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN (FMSFACILITY.FACILITY_VALUE <![CDATA[ * ]]> 	CURRENCY_UNIT ) <![CDATA[ / ]]>  CURRENCY_RATE
+					 END  END END 
+				   )
+		FROM   	FMSFACILITY
+		JOIN	COMPANIES
+		ON		COMPANIES.COMP_CODE	=	FMSFACILITY.COMP_CODE	
+		WHERE  	FMSFACILITY.STATUS    	= 	'P'          
+		AND	   	FMSFACILITY.COMP_CODE 	= 	#{compCode}        
+		AND		FMSFACILITY.BRANCH		= 	#{branchCode}
+		AND    	FMSFACILITY.CIF       	= 	#{cif_no}
+	-->
+	SELECT 	SUM( 
+				 ROUND(CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN 
+				 	   <choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY.FACILITY_VALUE,0)
+				 	   ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN (FMSFACILITY.FACILITY_VALUE <![CDATA[ * ]]> 	CURRENCY_RATE ) <![CDATA[ / ]]>  CURRENCY_UNIT
+				 	   ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN (FMSFACILITY.FACILITY_VALUE <![CDATA[ * ]]> 	CURRENCY_UNIT ) <![CDATA[ / ]]>  CURRENCY_RATE
+				 	   END  END END 
+			    ,  DECIMAL_POINTS  )
+			    )
+	FROM   	FMSFACILITY
+	JOIN	COMPANIES
+	ON		COMPANIES.COMP_CODE		=	FMSFACILITY.COMP_CODE	
+	JOIN	CURRENCIES 
+	ON		COMPANIES.COMP_CODE		=	CURRENCIES.COMP_CODE
+	AND		COMPANIES.BASE_CURRENCY	=	CURRENCIES. CURRENCY_CODE 
+	WHERE  	FMSFACILITY.STATUS    	= 	'P'          
+	AND	   	FMSFACILITY.COMP_CODE 	= 	#{compCode}        
+	AND		FMSFACILITY.BRANCH		= 	#{branchCode}
+	AND    	FMSFACILITY.CIF       	= 	#{cif_no}
+</sql>
+<select id="sum_APPROVED_LINES" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_APPROVED_LINES_QUERY"/>
+</select>
+
+<sql id="sum_NEW_APPLICATIONS_QUERY">
+	<!--
+		SELECT 	SUM(FMSAPPL.VALUE)
+		FROM  	FMSAPPL
+		WHERE	FMSAPPL.APPLICATION_FOR  	= 'N' 
+		OR 		FMSAPPL.APPLICATION_FOR  	= 'A'
+		AND		FMSAPPL.STATUS  			IN ('A','P','F','T','M','Y','C','U')
+		AND		FMSAPPL.COMP_CODE  			=	#{compCode}   
+		AND		FMSAPPL.BRANCH				=	#{branchCode}
+		AND		FMSAPPL.CIF  				= 	#{cif_no}
+	-->
+	SELECT 	SUM
+			 (
+				 ROUND( CASE WHEN  FMSAPPL.CURRENCY =  BASE_CURRENCY THEN 
+				 		<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSAPPL.VALUE,0)
+				 		ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN (FMSAPPL.VALUE  <![CDATA[ * ]]>	    CURRENCY_RATE )  <![CDATA[ / ]]>  CURRENCY_UNIT
+				 		ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN (FMSAPPL.VALUE  <![CDATA[ * ]]>  	CURRENCY_UNIT )  <![CDATA[ / ]]>  CURRENCY_RATE
+				 		END  END END 
+			     ,  DECIMAL_POINTS  )
+			  )
+	FROM  	FMSAPPL
+	JOIN	COMPANIES
+	ON		COMPANIES.COMP_CODE			=	FMSAPPL.COMP_CODE	
+	JOIN	CURRENCIES 
+	ON		COMPANIES.COMP_CODE			=	CURRENCIES.COMP_CODE
+	AND		COMPANIES.BASE_CURRENCY		=	CURRENCIES. CURRENCY_CODE 
+	WHERE	FMSAPPL.APPLICATION_FOR  	=   'N' 
+	OR 		FMSAPPL.APPLICATION_FOR  	=   'A'
+	AND		FMSAPPL.STATUS  		    IN  ('A','P','F','T','M','Y','C','U')
+	AND		FMSAPPL.COMP_CODE  			=	#{compCode}   
+	AND		FMSAPPL.BRANCH				=	#{branchCode}
+	AND		FMSAPPL.CIF  				= 	#{cif_no}
+	
+</sql>
+<select id="sum_NEW_APPLICATIONS" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_NEW_APPLICATIONS_QUERY"/>
+</select>
+
+<sql id="sum_BLOCKED_AND_SUSPENDED_AMOUNT_QUERY">
+	<!--
+		SELECT 	
+				SUM(
+					CASE WHEN FMSFACILITY.STATUS = 'S' THEN
+					<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY.FACILITY_VALUE,0)
+					ELSE 
+					<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(BLOCKED_AMT,0)
+					<![CDATA[ - ]]>
+					<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(RELEASED_AMT,0)
+					END 
+				)AS BLOCKED_AMOUNT
+		FROM    FMSFACILITY
+		LEFT 	JOIN 	
+				FMSFACILITY_BLOCK_AMT
+		ON    	FMSFACILITY.COMP_CODE   = 	FMSFACILITY_BLOCK_AMT.COMP_CODE       
+		AND     FMSFACILITY.BRANCH      = 	FMSFACILITY_BLOCK_AMT.BRANCH_CODE  
+		AND     FMSFACILITY.CODE        = 	FMSFACILITY_BLOCK_AMT.FACILITY_CODE  
+		WHERE	FMSFACILITY.COMP_CODE 	= 	#{compCode}        
+		AND		FMSFACILITY.BRANCH		= 	#{branchCode}
+		AND    	FMSFACILITY.CIF       	= 	#{cif_no}
+		AND		( ( FMSFACILITY_BLOCK_AMT.STATUS IN ('P','L') AND FMSFACILITY_BLOCK_AMT.BLOCKED_AMT <![CDATA[>]]> 0 ) OR FMSFACILITY.STATUS = 'S')
+	-->
+
+	  SELECT 	
+			SUM(
+				CASE WHEN FMSFACILITY.STATUS = 'S' THEN
+					 ROUND
+					 (
+					   CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN 
+					   <choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY.FACILITY_VALUE,0)
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN  (FMSFACILITY.FACILITY_VALUE  <![CDATA[ * ]]>	    CURRENCY_RATE )  <![CDATA[ / ]]>  CURRENCY_UNIT
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN  (FMSFACILITY.FACILITY_VALUE  <![CDATA[ * ]]>	    CURRENCY_UNIT )  <![CDATA[ / ]]>  CURRENCY_RATE
+					   END  END END ,  DECIMAL_POINTS  
+					 )
+				 ELSE 
+					 ROUND
+					 (
+					   CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN 
+					   <choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY_BLOCK_AMT.BLOCKED_AMT,0)
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN  (FMSFACILITY_BLOCK_AMT.BLOCKED_AMT  <![CDATA[ * ]]>	    CURRENCY_RATE )  <![CDATA[ / ]]>  CURRENCY_UNIT
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN  (FMSFACILITY_BLOCK_AMT.BLOCKED_AMT  <![CDATA[ * ]]>	    CURRENCY_UNIT )  <![CDATA[ / ]]>  CURRENCY_RATE
+					   END  END END ,  DECIMAL_POINTS  
+					 )
+					 <![CDATA[ - ]]>
+					 ROUND
+					 ( 
+					   CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN 
+					   <choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITY_BLOCK_AMT.RELEASED_AMT,0)
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN  (FMSFACILITY_BLOCK_AMT.RELEASED_AMT  <![CDATA[ * ]]>	    CURRENCY_RATE )  <![CDATA[ / ]]>  CURRENCY_UNIT
+					   ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN  (FMSFACILITY_BLOCK_AMT.RELEASED_AMT  <![CDATA[ * ]]>	    CURRENCY_UNIT )  <![CDATA[ / ]]>  CURRENCY_RATE
+					   END  END END ,  DECIMAL_POINTS  
+					 )  
+				END 
+			)AS BLOCKED_AMOUNT
+	FROM    FMSFACILITY
+	LEFT 	JOIN 	
+			FMSFACILITY_BLOCK_AMT
+	ON    	FMSFACILITY.COMP_CODE   			= 	FMSFACILITY_BLOCK_AMT.COMP_CODE       
+	AND     FMSFACILITY.BRANCH      			= 	FMSFACILITY_BLOCK_AMT.BRANCH_CODE  
+	AND     FMSFACILITY.CODE        			= 	FMSFACILITY_BLOCK_AMT.FACILITY_CODE  
+	JOIN	COMPANIES
+	ON		COMPANIES.COMP_CODE					=	FMSFACILITY.COMP_CODE	
+	JOIN	CURRENCIES 
+	ON		COMPANIES.COMP_CODE					=	CURRENCIES.COMP_CODE
+	AND		COMPANIES.BASE_CURRENCY				=	CURRENCIES. CURRENCY_CODE 
+	WHERE	FMSFACILITY.COMP_CODE 				= 	#{compCode}        
+	AND		FMSFACILITY.BRANCH					= 	#{branchCode}
+	AND    	FMSFACILITY.CIF       				= 	#{cif_no}
+	AND		( ( FMSFACILITY_BLOCK_AMT.STATUS IN ('P','L') AND FMSFACILITY_BLOCK_AMT.BLOCKED_AMT <![CDATA[>]]> 0 ) OR FMSFACILITY.STATUS = 'S')
+
+</sql>
+<select id="sum_BLOCKED_AND_SUSPENDED_AMOUNT" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_BLOCKED_AND_SUSPENDED_AMOUNT_QUERY"/>
+</select>
+
+
+<sql id="sum_DRAWDOWNS_QUERY">
+	SELECT  SUM(FMSDRWDWN.VALUE)
+	FROM 	FMSDRWDWN 
+	JOIN	FMSFACILITY
+	ON		FMSFACILITY.COMP_CODE 		=	FMSDRWDWN.COMP_CODE
+	AND		FMSFACILITY.BRANCH			=	FMSDRWDWN.FACILITY_BRANCH
+	AND		FMSFACILITY.CODE			=	FMSDRWDWN.FROM_FACILITY
+	WHERE	FMSDRWDWN.STATUS 			=   'P'
+	AND		FMSDRWDWN.COMP_CODE 		= 	#{compCode}    
+	AND		FMSDRWDWN.BRANCH	   		= 	#{branchCode} 
+	AND		FMSFACILITY.CIF				=	#{cif_no}
+</sql>
+<select id="sum_DRAWDOWNS" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_DRAWDOWNS_QUERY"/>
+</select>
+
+<sql id="sum_COLLATERALS_QUERY">
+	<!--
+		SELECT 	SUM(FMSCOLLATERAL.ACCEPT_VALUE)
+		FROM 	FMSFACILITY
+		JOIN	FMSAPPCOLLATERALS
+		ON		FMSAPPCOLLATERALS.COMP_CODE   		= 	FMSFACILITY.COMP_CODE        
+		AND     FMSAPPCOLLATERALS.BRANCH_CODE 		= 	FMSFACILITY.BRANCH           
+		AND     FMSAPPCOLLATERALS.APP_REF    		= 	FMSFACILITY.FROM_APPLICATION             
+		JOIN	FMSCOLLATERAL
+		ON		FMSAPPCOLLATERALS.COMP_CODE   		= 	FMSCOLLATERAL.COMP_CODE  
+		AND     FMSAPPCOLLATERALS.BRANCH_CODE 		= 	FMSCOLLATERAL.BRANCH     
+		AND     FMSAPPCOLLATERALS.COLLATERAL  		= 	FMSCOLLATERAL.CODE       
+		WHERE  	FMSFACILITY.COMP_CODE   			= 	#{compCode}  
+		AND		FMSFACILITY.BRANCH					=	#{branchCode}           
+		AND  	FMSFACILITY.CIF   				    = 	#{cif_no}    
+		AND     FMSFACILITY.STATUS		  			IN ('A', 'P')
+	-->
+	SELECT 	SUM
+			 (
+				 ROUND( CASE WHEN  FMSCOLLATERAL.CURRENCY =  BASE_CURRENCY THEN 
+				 		<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSCOLLATERAL.ACCEPT_VALUE,0)
+				 		ELSE CASE WHEN ACCEPT_MULT_DIV = 'M' THEN (FMSCOLLATERAL.ACCEPT_VALUE  <![CDATA[ * ]]> 	ACCEPT_CY_RATE ) <![CDATA[ / ]]> ACCEPT_CY_UNIT   
+				 		ELSE CASE WHEN ACCEPT_MULT_DIV = 'D' THEN (FMSCOLLATERAL.ACCEPT_VALUE  <![CDATA[ * ]]> 	ACCEPT_CY_UNIT ) <![CDATA[ / ]]> ACCEPT_CY_RATE
+				 		END  END END 
+			   	 ,  DECIMAL_POINTS  )
+			  )
+	FROM 	FMSFACILITY
+	JOIN	FMSAPPCOLLATERALS
+	ON		FMSAPPCOLLATERALS.COMP_CODE   		= 	FMSFACILITY.COMP_CODE        
+	AND     FMSAPPCOLLATERALS.BRANCH_CODE 		= 	FMSFACILITY.BRANCH           
+	AND     FMSAPPCOLLATERALS.APP_REF    		= 	FMSFACILITY.FROM_APPLICATION             
+	JOIN	FMSCOLLATERAL
+	ON		FMSAPPCOLLATERALS.COMP_CODE   		= 	FMSCOLLATERAL.COMP_CODE  
+	AND     FMSAPPCOLLATERALS.BRANCH_CODE 		= 	FMSCOLLATERAL.BRANCH     
+	AND     FMSAPPCOLLATERALS.COLLATERAL  		= 	FMSCOLLATERAL.CODE       
+	JOIN	COMPANIES
+	ON		COMPANIES.COMP_CODE					=	FMSFACILITY.COMP_CODE	
+	JOIN	CURRENCIES 
+	ON		COMPANIES.COMP_CODE					=	CURRENCIES.COMP_CODE
+	AND		COMPANIES.BASE_CURRENCY				=	CURRENCIES. CURRENCY_CODE 
+	WHERE  	FMSFACILITY.COMP_CODE   			= 	#{compCode}  
+	AND		FMSFACILITY.BRANCH					=	#{branchCode}           
+	AND  	FMSFACILITY.CIF   				    = 	#{cif_no} 
+	AND     FMSFACILITY.STATUS		  			IN ('A', 'P')
+</sql>
+<select id="sum_COLLATERALS" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_COLLATERALS_QUERY"/>
+</select>
+
+<sql id="sum_GUARANTOR_QUERY">
+	<!--
+		SELECT 	SUM(FMSFACILITYGUAR.INDICATOR_AMOUNT)
+		FROM 	FMSFACILITYGUAR
+		JOIN	FMSFACILITY
+		ON		FMSFACILITYGUAR.COMP_CODE      		= 	FMSFACILITY.COMP_CODE  
+		AND  	FMSFACILITYGUAR.BRANCH   	    	= 	FMSFACILITY.BRANCH    
+		AND  	FMSFACILITYGUAR.CODE     	      	= 	FMSFACILITY.CODE      
+		WHERE 	FMSFACILITYGUAR.COMP_CODE      		=	#{compCode}        
+		AND  	FMSFACILITYGUAR.BRANCH         		= 	#{branchCode}      
+		AND  	FMSFACILITY.CIF				  		= 	#{cif_no}            
+		AND     FMSFACILITY.STATUS		  			IN ('A', 'P')
+	-->
+		
+		SELECT 	SUM
+		      ( 
+				 ROUND( CASE WHEN  FMSFACILITY.CURRENCY =  BASE_CURRENCY THEN 
+				 		<choose><when test="isSybase == 1" >ISNULL</when><otherwise>NVL</otherwise></choose>(FMSFACILITYGUAR.INDICATOR_AMOUNT,0)
+				 		ELSE CASE WHEN CURRENCY_MULT_DIV = 'M' THEN (FMSFACILITYGUAR.INDICATOR_AMOUNT  <![CDATA[ * ]]>	    CURRENCY_RATE )  <![CDATA[ / ]]>  CURRENCY_UNIT
+				 		ELSE CASE WHEN CURRENCY_MULT_DIV = 'D' THEN (FMSFACILITYGUAR.INDICATOR_AMOUNT  <![CDATA[ * ]]>  	CURRENCY_UNIT )  <![CDATA[ / ]]>  CURRENCY_RATE
+				 		END  END END 
+				 ,  DECIMAL_POINTS  )
+			   )
+		FROM 	FMSFACILITYGUAR
+		JOIN	FMSFACILITY
+		ON		FMSFACILITYGUAR.COMP_CODE      		= 	FMSFACILITY.COMP_CODE  
+		AND  	FMSFACILITYGUAR.BRANCH   	    	= 	FMSFACILITY.BRANCH    
+		AND  	FMSFACILITYGUAR.CODE     	      	= 	FMSFACILITY.CODE      
+		JOIN	COMPANIES
+		ON		COMPANIES.COMP_CODE					=	FMSFACILITY.COMP_CODE	
+		JOIN	CURRENCIES 
+		ON		COMPANIES.COMP_CODE					=	CURRENCIES.COMP_CODE
+		AND		COMPANIES.BASE_CURRENCY				=	CURRENCIES.CURRENCY_CODE 
+		WHERE 	FMSFACILITYGUAR.COMP_CODE      		=	#{compCode}        
+		AND  	FMSFACILITYGUAR.BRANCH         		= 	#{branchCode}      
+		AND  	FMSFACILITY.CIF				  		= 	#{cif_no}            
+		AND     FMSFACILITY.STATUS		  			IN ('A', 'P')
+</sql>
+<select id="sum_GUARANTOR" parameterType="dashboardSC" resultType="java.math.BigDecimal">
+	<include refid="sum_GUARANTOR_QUERY"/>
+</select>
+
+<select id="dw_drawdown_detailsCurrencies" parameterType="dashboardSC" resultMap="dw_drawdown_detailsMap">
+		<include refid="dw_drawdown_detailsQuery_UniqueByCurrency"/>
+		<include refid="dw_drawdown_detailsQuery_Condition"/>
+	</select>
+	
+	<resultMap id="dw_drawdown_detailsMap" type="fmsCO" >
+		<id column="CODE" property="fmsDrwDwnVO.CODE" />
+		<id column="BRANCH" property="fmsDrwDwnVO.BRANCH" />
+		<id column="LONG_NAME_ENG" property="fmsDrwDwnVO.LONG_NAME_ENG" />
+		<id column="FROM_FACILITY" property="fmsDrwDwnVO.FROM_FACILITY" />
+	    <id column="DATE_EFFECTIVE_UNTIL" property="fmsFacilityVO.DATE_EFFECTIVE_UNTIL" />
+	    <id column="DD_AMOUNT_FC" property="fmsDrwDwnVO.DD_AMOUNT_FC" />
+	    <id column="VALUE" property="fmsDrwDwnVO.VALUE" />
+	    <id column="DEAL_AMOUNT" property="fmsDrwDwnVO.DEAL_AMOUNT" />
+	    <id column="STATUS" property="fmsDrwDwnVO.STATUS" />
+	    <id column="CURRENCY" property="fmsDrwDwnVO.CURRENCY" />
+	    <id column="BRIEF_DESC_ENG" property="currencyDesc" />
+	    <id column="DECIMAL_POINTS" property="curDecimalPoints" />
+	    <id column="CIF" property="fmsDrwDwnVO.CIF" />
+	    <id column="STATUS_DESC" property="statusDesc" />
+	    <id column="LOAN_TYPE" property="fmsFacilityVO.LOAN_TYPE" />
+	    <id column="BRIEF_NAME_ENG" property="fmsFacilityTypeVO.BRIEF_NAME_ENG" />
+	    <id column="CURRENCY_MULT_DIV" property="fmsDrwDwnVO.CURRENCY_MULT_DIV" />
+		<id column="CURRENCY_UNIT" property="fmsDrwDwnVO.CURRENCY_UNIT" />
+		<id column="CURRENCY_RATE" property="fmsDrwDwnVO.CURRENCY_RATE" />
+		<id column="FACILITY_CATEG" property="fmsFacilityTypeVO.FACILITY_CATEG" />
+	</resultMap>
+	
+	<sql id="dw_drawdown_detailsQuery_UniqueByCurrency">
+		SELECT 
+		       DISTINCT FMSDRWDWN.CURRENCY ,
+			   CURRENCIES.BRIEF_DESC_ENG,
+			   FMSFACILITY.CIF
+	</sql>
+	
+	<sql id="dw_drawdown_detailsQuery_Condition">
+		FROM  FMSDRWDWN,
+			 CURRENCIES,
+			 FMSFACILITY,
+			FMSFACILITYTYPE 
+		WHERE	 FMSDRWDWN.COMP_CODE  = #{compCode} 
+		 AND	FMSDRWDWN.CIF  = #{cif_no} 
+		 AND	FMSDRWDWN.STATUS  NOT IN ( 'D'  , 'J'  , 'N'  , 'Y'  , 'V' ,'C' )
+		 AND	CURRENCIES.COMP_CODE  = FMSDRWDWN.COMP_CODE
+		 AND	CURRENCIES.CURRENCY_CODE  = FMSDRWDWN.CURRENCY
+		 AND	FMSFACILITY.COMP_CODE  = FMSDRWDWN.COMP_CODE
+		 AND	FMSFACILITY.BRANCH  = FMSDRWDWN.FACILITY_BRANCH
+		 AND	FMSFACILITY.CODE  = FMSDRWDWN.FROM_FACILITY
+		 AND FMSFACILITY.COMP_CODE          = FMSFACILITYTYPE.COMP_CODE 	 
+		 AND FMSFACILITY.LOAN_TYPE 		   = FMSFACILITYTYPE.CODE	 		 
+		 AND  FMSFACILITY.STATUS <![CDATA[ <> ]]> 'C'
+	         <if test="loginTypeByBr == 1">
+				AND FMSFACILITY.BRANCH 		 = #{branchCode,jdbcType=NUMERIC}
+			 </if>
+	</sql>
+	
+	<select id="dw_drawdown_detailsListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="dw_drawdown_detailsQuery_Fields"/>
+		<include refid="dw_drawdown_detailsQuery_Condition"/>
+		<include refid="dw_drawdown_detailsQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="dw_drawdown_detailsQuery_Fields">
+		SELECT FMSDRWDWN.BRANCH,
+			 FMSDRWDWN.CODE,
+			 FMSDRWDWN.FROM_FACILITY,
+			 FMSDRWDWN.DRAWDOWN_TYPE,
+			 FMSDRWDWN.LONG_NAME_ENG,
+			 FMSDRWDWN.LONG_NAME_ARAB,
+	         (SELECT VALUE_DESC 
+			         FROM SYS_PARAM_LOV_TRANS 
+			         WHERE LOV_TYPE_ID 	= #{lovType}
+			         AND LANG_CODE 		= #{langCode}
+			         AND VALUE_CODE 	= FMSDRWDWN.STATUS) STATUS_DESC,  
+			 FMSDRWDWN.CURRENCY, 
+			 FMSDRWDWN.CURRENCY_RATE,
+			 FMSDRWDWN.CURRENCY_UNIT,
+			 FMSDRWDWN.CURRENCY_MULT_DIV,
+			 FMSDRWDWN.VALUE,
+			 FMSDRWDWN.TOTAL_DEAL_AMOUNT,
+			 FMSDRWDWN.VALUE_CV,
+			 FMSDRWDWN.DEAL_YIELD,
+			 CURRENCIES.DECIMAL_POINTS,
+			 FMSFACILITY.DATE_EFFECTIVE_UNTIL,
+			 FMSDRWDWN.DD_AMOUNT_FC,
+			FMSDRWDWN.DEAL_AMOUNT,
+			 CURRENCIES.BRIEF_DESC_ENG,
+			CASE WHEN FMSDRWDWN.DATE_SUBMITTED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE DATE_SUBMITTED END DATE_SUBMITTED,
+			CASE WHEN FMSDRWDWN.DATE_DELETED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_DELETED END DATE_DELETED,
+			CASE WHEN FMSDRWDWN.DATE_APPROVED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_APPROVED END DATE_APPROVED,
+			CASE WHEN FMSDRWDWN.DATE_REVERSED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_REVERSED END DATE_REVERSED,
+			CASE WHEN FMSDRWDWN.DATE_VALIDATED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_VALIDATED END DATE_VALIDATED,
+			CASE WHEN FMSDRWDWN.DATE_REJECTED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_REJECTED END DATE_REJECTED,
+			CASE WHEN FMSDRWDWN.DATE_EXECUTED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_EXECUTED END DATE_EXECUTED,
+			CASE WHEN FMSDRWDWN.DATE_CANCELED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_CANCELED END DATE_CANCELED,
+			CASE WHEN FMSDRWDWN.DATE_UPDATED IS NULL THEN FMSDRWDWN.DATE_SUBMITTED  ELSE FMSDRWDWN.DATE_UPDATED END DATE_UPDATED,
+			FMSFACILITY.LOAN_TYPE,
+			FMSFACILITYTYPE.BRIEF_NAME_ENG,
+			FMSFACILITY.CIF,
+			FMSFACILITYTYPE.FACILITY_CATEG
+	</sql>
+	
+	<sql id="dw_drawdown_detailsQuery_CurrencyCondition">
+		AND  ( FMSDRWDWN.CURRENCY		 = #{baseCurrencyCode} 	   		)
+	</sql>
+	
+	<select id="dw_drawdown_detailsList" parameterType="dashboardSC" resultMap="dw_drawdown_detailsMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_drawdown_detailsQuery_Fields"/>
+		<include refid="dw_drawdown_detailsQuery_Condition"/>
+		<include refid="dw_drawdown_detailsQuery_CurrencyCondition"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	 <resultMap id="dw_drawdown_approved_linesDetailedListMap" type="fmsCO" >
+		<id column="BRANCH" 				property="fmsDrwDwnVO.BRANCH" />
+		<id column="CODE" 					property="fmsDrwDwnVO.CODE" />
+		<id column="LONG_NAME_ENG"  		property="fmsDrwDwnVO.LONG_NAME_ENG" />
+		<id column="TOTAL_DEAL_AMOUNT_CV" 	property="fmsDrwDwnVO.TOTAL_DEAL_AMOUNT_CV" />
+		<id column="PAID_AMT_CV" 			property="fmsDrwDwnVO.PAID_AMT_CV" />
+		<id column="VALUE_CV" 				property="fmsDrwDwnVO.VALUE_CV" />
+		<id column="CURRENCY" 				property="fmsDrwDwnVO.CURRENCY" />
+		<id column="UTILIZED_AMOUNT" 		property="UTILIZED_AMOUNT" />
+		<id column="UNUTILIZED_AMOUNT" 		property="UNUTILIZED_AMOUNT" />
+		<id column="FACILITY_CATEG" 		property="fmsFacilityTypeVO.FACILITY_CATEG" />
+		<id column="CIF" 				    property="fmsFacilityVO.CIF" />
+	</resultMap>
+	
+	<select id="dw_drawdown_approved_linesDetailedList" parameterType="dashboardSC" resultMap="dw_drawdown_approved_linesDetailedListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="dw_drawdown_approved_lines_DetailCustomQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	 <sql id="dw_drawdown_approved_lines_DetailCustomQuery">
+	   SELECT 
+	   FMSDRWDWN.BRANCH,
+       FMSDRWDWN.CODE,
+       FMSDRWDWN.LONG_NAME_ENG,
+       FMSDRWDWN.TOTAL_DEAL_AMOUNT_CV,
+       FMSDRWDWN.PAID_AMT_CV,
+       FMSDRWDWN.VALUE_CV,
+       FMSDRWDWN.CURRENCY,
+       (CASE
+         WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN
+          0
+         ELSE
+          FMSDRWDWN.TOTAL_DEAL_AMOUNT
+       END) as UTILIZED_AMOUNT,
+       
+       ((CASE
+         WHEN FMSDRWDWN.VALUE_CV IS NULL THEN
+          0
+         ELSE
+          FMSDRWDWN.VALUE_CV
+       END - CASE
+         WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN
+          0
+         ELSE
+          FMSDRWDWN.TOTAL_DEAL_AMOUNT
+       END)) as UNUTILIZED_AMOUNT,
+       FMSFACILITYTYPE.FACILITY_CATEG,
+       FMSFACILITY.CIF
+    FROM FMSDRWDWN ,FMSFACILITY , FMSFACILITYTYPE        
+    WHERE
+			( FMSFACILITY.COMP_CODE   = FMSDRWDWN.COMP_CODE           ) AND
+			( FMSFACILITY.BRANCH         = FMSDRWDWN.FACILITY_BRANCH   ) AND
+			( FMSFACILITY.CODE             = FMSDRWDWN.FROM_FACILITY      ) AND
+			( FMSDRWDWN.COMP_CODE 				= #{compCode}   ) AND
+			( FMSDRWDWN.FACILITY_BRANCH   		= #{branchCode}	         ) AND         
+			( FMSDRWDWN.FROM_FACILITY			= #{facilityCode}		) AND
+			( FMSDRWDWN.STATUS = 'P')  
+			 	 AND FMSFACILITY.COMP_CODE          = FMSFACILITYTYPE.COMP_CODE 	 
+	 AND FMSFACILITY.LOAN_TYPE 		   = FMSFACILITYTYPE.CODE	 	
+			AND
+			 (( FMSDRWDWN.FACILITY_TYPE_CLASS  =  #{lineNbr}   AND FMSFACILITY.FACILITY_TYPE = 'N'    )
+			 OR ( FMSFACILITY.FACILITY_TYPE <![CDATA[ <> ]]> 'N')) 
+			AND
+			((#{showFullySettledDD} = 0 
+				AND ( ( FMSFACILITY.REVOLVING_ONEOFF = 'R' 
+				AND CASE WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN 0 ELSE FMSDRWDWN.TOTAL_DEAL_AMOUNT END  > 0)
+			OR ( FMSFACILITY.REVOLVING_ONEOFF = 'O' 
+				AND  CASE WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN 0 ELSE FMSDRWDWN.TOTAL_DEAL_AMOUNT END  > 
+				CASE WHEN FMSDRWDWN.PAID_AMT IS NULL THEN 0 ELSE FMSDRWDWN.PAID_AMT END) ))
+			OR
+			(#{showFullySettledDD} = 1 
+			AND ( ( FMSFACILITY.REVOLVING_ONEOFF = 'R' 
+			AND CASE WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN 0 ELSE FMSDRWDWN.TOTAL_DEAL_AMOUNT END  = 0)
+			OR ( FMSFACILITY.REVOLVING_ONEOFF = 'O' 
+			AND CASE WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN 0 ELSE FMSDRWDWN.TOTAL_DEAL_AMOUNT END   > 0  
+			AND CASE WHEN FMSDRWDWN.TOTAL_DEAL_AMOUNT IS NULL THEN 0 ELSE FMSDRWDWN.TOTAL_DEAL_AMOUNT END  = 
+			CASE WHEN FMSDRWDWN.PAID_AMT IS NULL THEN 0 ELSE FMSDRWDWN.PAID_AMT END) )))
+	 </sql>
+</mapper>

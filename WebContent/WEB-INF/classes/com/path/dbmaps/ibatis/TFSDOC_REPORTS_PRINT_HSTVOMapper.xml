@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSDOC_REPORTS_PRINT_HST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSDOC_REPORTS_PRINT_HSTVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_NBR" property="DOC_NBR" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="DOC_YEAR" property="DOC_YEAR" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="REP_ID" property="REP_ID" />
+    <result column="TRX_NBR" property="TRX_NBR" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="TRX_DATE" property="TRX_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, DOC_NBR, DOC_TYPE, DOC_YEAR, PROG_REF, REP_ID, TRX_NBR, TRX_TYPE, 
+    TRX_DATE
+  </sql>
+  <select id="selectTFSDOC_REPORTS_PRINT_HST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTS_PRINT_HSTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSDOC_REPORTS_PRINT_HST
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and DOC_YEAR = #{DOC_YEAR}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteTFSDOC_REPORTS_PRINT_HST" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTS_PRINT_HSTVO" >
+    delete from TFSDOC_REPORTS_PRINT_HST
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and DOC_YEAR = #{DOC_YEAR}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertTFSDOC_REPORTS_PRINT_HST" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTS_PRINT_HSTVO" >
+    insert into TFSDOC_REPORTS_PRINT_HST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_NBR != null and DOC_NBR != emptyBigDecimalValue" >
+        DOC_NBR,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="DOC_YEAR != null and DOC_YEAR != emptyBigDecimalValue" >
+        DOC_YEAR,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        TRX_NBR,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_NBR != null and DOC_NBR != emptyBigDecimalValue" >
+        #{DOC_NBR},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="DOC_YEAR != null and DOC_YEAR != emptyBigDecimalValue" >
+        #{DOC_YEAR},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        #{TRX_NBR},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="TRX_DATE != null" >
+        #{TRX_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSDOC_REPORTS_PRINT_HST" >
+    update TFSDOC_REPORTS_PRINT_HST
+    <set >
+      <if test="TRX_NBR != null" >
+        <choose >
+          <when test="TRX_NBR == emptyBigDecimalValue" >
+            TRX_NBR = NULL ,
+          </when>
+          <otherwise >
+            TRX_NBR = #{TRX_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE = #{TRX_DATE},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and DOC_YEAR = #{DOC_YEAR}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateTFSDOC_REPORTS_PRINT_HST" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTS_PRINT_HSTVO" >
+    <include refid="sql_updateTFSDOC_REPORTS_PRINT_HST" />
+  </update>
+</mapper>

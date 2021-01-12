@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_CIF_MEMBERS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_CIF_MEMBERS_DETVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="MEMBER_LINE_NO" property="MEMBER_LINE_NO" />
+    <result column="MOTHERS_NAME" property="MOTHERS_NAME" />
+    <result column="RESIDENCY_CODE" property="RESIDENCY_CODE" />
+    <result column="SIGNATURE_INSTRUCTIONS" property="SIGNATURE_INSTRUCTIONS" />
+    <result column="SIGNATURE_GROUP" property="SIGNATURE_GROUP" />
+    <result column="SIGNATURE_TYPE" property="SIGNATURE_TYPE" />
+    <result column="ANNUAL_INCOME" property="ANNUAL_INCOME" />
+    <result column="IS_MINOR_YN" property="IS_MINOR_YN" />
+    <result column="IS_MARRIED_YN" property="IS_MARRIED_YN" />
+    <result column="PROFESSION" property="PROFESSION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, MEMBER_LINE_NO, MOTHERS_NAME, RESIDENCY_CODE, SIGNATURE_INSTRUCTIONS, 
+    SIGNATURE_GROUP, SIGNATURE_TYPE, ANNUAL_INCOME, IS_MINOR_YN, IS_MARRIED_YN, PROFESSION
+  </sql>
+  <select id="selectCTS_CIF_MEMBERS_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_CIF_MEMBERS_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </select>
+  <delete id="deleteCTS_CIF_MEMBERS_DET" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_DETVOKey" >
+    delete from CTS_CIF_MEMBERS_DET
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </delete>
+  <insert id="insertCTS_CIF_MEMBERS_DET" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_DETVO" >
+    insert into CTS_CIF_MEMBERS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MEMBER_LINE_NO != null and MEMBER_LINE_NO != emptyBigDecimalValue" >
+        MEMBER_LINE_NO,
+      </if>
+      <if test="MOTHERS_NAME != null" >
+        MOTHERS_NAME,
+      </if>
+      <if test="RESIDENCY_CODE != null and RESIDENCY_CODE != emptyBigDecimalValue" >
+        RESIDENCY_CODE,
+      </if>
+      <if test="SIGNATURE_INSTRUCTIONS != null" >
+        SIGNATURE_INSTRUCTIONS,
+      </if>
+      <if test="SIGNATURE_GROUP != null" >
+        SIGNATURE_GROUP,
+      </if>
+      <if test="SIGNATURE_TYPE != null" >
+        SIGNATURE_TYPE,
+      </if>
+      <if test="ANNUAL_INCOME != null and ANNUAL_INCOME != emptyBigDecimalValue" >
+        ANNUAL_INCOME,
+      </if>
+      <if test="IS_MINOR_YN != null" >
+        IS_MINOR_YN,
+      </if>
+      <if test="IS_MARRIED_YN != null" >
+        IS_MARRIED_YN,
+      </if>
+      <if test="PROFESSION != null" >
+        PROFESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MEMBER_LINE_NO != null and MEMBER_LINE_NO != emptyBigDecimalValue" >
+        #{MEMBER_LINE_NO},
+      </if>
+      <if test="MOTHERS_NAME != null" >
+        #{MOTHERS_NAME},
+      </if>
+      <if test="RESIDENCY_CODE != null and RESIDENCY_CODE != emptyBigDecimalValue" >
+        #{RESIDENCY_CODE},
+      </if>
+      <if test="SIGNATURE_INSTRUCTIONS != null" >
+        #{SIGNATURE_INSTRUCTIONS},
+      </if>
+      <if test="SIGNATURE_GROUP != null" >
+        #{SIGNATURE_GROUP},
+      </if>
+      <if test="SIGNATURE_TYPE != null" >
+        #{SIGNATURE_TYPE},
+      </if>
+      <if test="ANNUAL_INCOME != null and ANNUAL_INCOME != emptyBigDecimalValue" >
+        #{ANNUAL_INCOME},
+      </if>
+      <if test="IS_MINOR_YN != null" >
+        #{IS_MINOR_YN},
+      </if>
+      <if test="IS_MARRIED_YN != null" >
+        #{IS_MARRIED_YN},
+      </if>
+      <if test="PROFESSION != null" >
+        #{PROFESSION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_CIF_MEMBERS_DET" >
+    update CTS_CIF_MEMBERS_DET
+    <set >
+      <if test="MOTHERS_NAME != null" >
+        MOTHERS_NAME = #{MOTHERS_NAME},
+      </if>
+      <if test="RESIDENCY_CODE != null" >
+        <choose >
+          <when test="RESIDENCY_CODE == emptyBigDecimalValue" >
+            RESIDENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            RESIDENCY_CODE = #{RESIDENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SIGNATURE_INSTRUCTIONS != null" >
+        SIGNATURE_INSTRUCTIONS = #{SIGNATURE_INSTRUCTIONS},
+      </if>
+      <if test="SIGNATURE_GROUP != null" >
+        SIGNATURE_GROUP = #{SIGNATURE_GROUP},
+      </if>
+      <if test="SIGNATURE_TYPE != null" >
+        SIGNATURE_TYPE = #{SIGNATURE_TYPE},
+      </if>
+      <if test="ANNUAL_INCOME != null" >
+        <choose >
+          <when test="ANNUAL_INCOME == emptyBigDecimalValue" >
+            ANNUAL_INCOME = NULL ,
+          </when>
+          <otherwise >
+            ANNUAL_INCOME = #{ANNUAL_INCOME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_MINOR_YN != null" >
+        IS_MINOR_YN = #{IS_MINOR_YN},
+      </if>
+      <if test="IS_MARRIED_YN != null" >
+        IS_MARRIED_YN = #{IS_MARRIED_YN},
+      </if>
+      <if test="PROFESSION != null" >
+        PROFESSION = #{PROFESSION},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and MEMBER_LINE_NO = #{MEMBER_LINE_NO}
+  </sql>
+  <update id="updateCTS_CIF_MEMBERS_DET" parameterType="com.path.dbmaps.vo.CTS_CIF_MEMBERS_DETVO" >
+    <include refid="sql_updateCTS_CIF_MEMBERS_DET" />
+  </update>
+</mapper>

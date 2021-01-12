@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_CTRL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_CTRLVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY" property="CURRENCY" />
+    <result column="CIF_NO" property="CIF_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CURRENCY, CIF_NO
+  </sql>
+  <select id="selectSWIFT_CTRL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_CTRLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_CTRL
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+  </select>
+  <delete id="deleteSWIFT_CTRL" parameterType="com.path.dbmaps.vo.SWIFT_CTRLVOKey" >
+    delete from SWIFT_CTRL
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+  </delete>
+  <insert id="insertSWIFT_CTRL" parameterType="com.path.dbmaps.vo.SWIFT_CTRLVO" >
+    insert into SWIFT_CTRL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_CTRL" >
+    update SWIFT_CTRL
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY = #{CURRENCY}
+  </sql>
+  <update id="updateSWIFT_CTRL" parameterType="com.path.dbmaps.vo.SWIFT_CTRLVO" >
+    <include refid="sql_updateSWIFT_CTRL" />
+  </update>
+</mapper>

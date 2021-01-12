@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="profileMapper" >
+ 
+  
+ <resultMap id="getOptList_ResMap" type="com.path.dbmaps.vo.OPTVO" >
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="MENU_TITLE_ENG" property="MENU_TITLE_ENG" />
+    <result column="DISP_ORDER" property="DISP_ORDER" />
+    <result column="PROG_ORDER" property="level" />
+    <result column="PARENT_REF" property="parent" />
+    <result column="ISLEAF" property="isLeaf" />
+ 
+ 
+ </resultMap>
+  
+ <select id="getOptList"  resultMap="getOptList_ResMap" parameterType="profileSC">
+    <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="optListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getOptCount"  resultType="int" parameterType="profileSC" > 
+  	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="profileListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	
+</select>
+   
+  
+<sql id="optListCommon" >
+ <![CDATA[
+SELECT PROG_REF , 
+	   MENU_TITLE_ENG,
+	   PROG_ORDER,
+	   DISP_ORDER,
+	   PARENT_REF,
+	   CASE WHEN rtrim(PROG_REF, '0123456789') = PROG_REF THEN 'true' ELSE 'false' END ISLEAF
+	    	      
+FROM OPT
+ WHERE APP_NAME = 'ACC'
+  AND PARENT_REF =  #{progRef}    AND DISP_ORDER IS NOT NULL
+]]>	
+</sql>
+
+<!--******************************************PROFILE**************************************-->
+
+ <resultMap id="getProfileList_ResMap" type="profileVO" >
+    <id column="PROFILE_ID" property="PROFILE_ID" />
+    <result column="PROFILE_NAME" property="PROFILE_NAME" />
+ </resultMap>
+ 
+ <sql id="profileListCommon" >
+<![CDATA[
+	SELECT ROLE_NAME  PROFILE_ID, LONG_NAME PROFILE_NAME FROM S_ROLE WHERE ROLE_NAME IN ('45','124','125')
+	]]>	
+</sql>
+
+ <select id="getProfileList"  resultMap="getProfileList_ResMap" parameterType="profileSC">
+	    <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="profileListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getProfileCount"  resultType="int" parameterType="profileSC" > 
+ 
+	
+	  	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="profileListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	
+</select>
+  
+</mapper>

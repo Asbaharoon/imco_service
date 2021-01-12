@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_TRSFR_ACC_PRODUCT_TYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_TRSFR_ACC_PRODUCT_TYPEVO" >
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PRODUCT" property="PRODUCT" />
+    <result column="FROM_TYPE" property="FROM_TYPE" />
+    <result column="TO_TYPE" property="TO_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_NO, COMP_CODE, LINE_NO, PRODUCT, FROM_TYPE, TO_TYPE
+  </sql>
+  <select id="selectCTS_TRSFR_ACC_PRODUCT_TYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_PRODUCT_TYPEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_TRSFR_ACC_PRODUCT_TYPE
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRODUCT = #{PRODUCT}
+  </select>
+  <delete id="deleteCTS_TRSFR_ACC_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_PRODUCT_TYPEVOKey" >
+    delete from CTS_TRSFR_ACC_PRODUCT_TYPE
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRODUCT = #{PRODUCT}
+  </delete>
+  <insert id="insertCTS_TRSFR_ACC_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_PRODUCT_TYPEVO" >
+    insert into CTS_TRSFR_ACC_PRODUCT_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PRODUCT != null and !&quot;&quot;.equals(PRODUCT)" >
+        PRODUCT,
+      </if>
+      <if test="FROM_TYPE != null and FROM_TYPE != emptyBigDecimalValue" >
+        FROM_TYPE,
+      </if>
+      <if test="TO_TYPE != null and TO_TYPE != emptyBigDecimalValue" >
+        TO_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PRODUCT != null and !&quot;&quot;.equals(PRODUCT)" >
+        #{PRODUCT},
+      </if>
+      <if test="FROM_TYPE != null and FROM_TYPE != emptyBigDecimalValue" >
+        #{FROM_TYPE},
+      </if>
+      <if test="TO_TYPE != null and TO_TYPE != emptyBigDecimalValue" >
+        #{TO_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_TRSFR_ACC_PRODUCT_TYPE" >
+    update CTS_TRSFR_ACC_PRODUCT_TYPE
+    <set >
+      <if test="FROM_TYPE != null" >
+        <choose >
+          <when test="FROM_TYPE == emptyBigDecimalValue" >
+            FROM_TYPE = NULL ,
+          </when>
+          <otherwise >
+            FROM_TYPE = #{FROM_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_TYPE != null" >
+        <choose >
+          <when test="TO_TYPE == emptyBigDecimalValue" >
+            TO_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TO_TYPE = #{TO_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRODUCT = #{PRODUCT}
+  </sql>
+  <update id="updateCTS_TRSFR_ACC_PRODUCT_TYPE" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_PRODUCT_TYPEVO" >
+    <include refid="sql_updateCTS_TRSFR_ACC_PRODUCT_TYPE" />
+  </update>
+</mapper>

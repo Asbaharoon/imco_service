@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCHARGESVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CHARGE_TYPE" property="CHARGE_TYPE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="ACC_BR" property="ACC_BR" />
+    <result column="ACC_CY" property="ACC_CY" />
+    <result column="ACC_GL" property="ACC_GL" />
+    <result column="ACC_CIF" property="ACC_CIF" />
+    <result column="ACC_SL" property="ACC_SL" />
+    <result column="DEDUCT_FROM_TRX" property="DEDUCT_FROM_TRX" />
+    <result column="ALLOW_MODIFY" property="ALLOW_MODIFY" />
+    <result column="ALLOW_CLEARING" property="ALLOW_CLEARING" />
+    <result column="BASED_ON_MOSARAFA" property="BASED_ON_MOSARAFA" />
+    <result column="CHRG_ON_EXCEED" property="CHRG_ON_EXCEED" />
+    <result column="EXCEED_AMT" property="EXCEED_AMT" />
+    <result column="CHRG_PERCENTAGE" property="CHRG_PERCENTAGE" />
+    <result column="MIN_AMT" property="MIN_AMT" />
+    <result column="MAX_AMT" property="MAX_AMT" />
+    <result column="PASS_SEPARATELY" property="PASS_SEPARATELY" />
+    <result column="APPLY_TVA" property="APPLY_TVA" />
+    <result column="VAT_CODE" property="VAT_CODE" />
+    <result column="CHRG_BR" property="CHRG_BR" />
+    <result column="DR_ACC_CIF" property="DR_ACC_CIF" />
+    <result column="DR_ACC_GL" property="DR_ACC_GL" />
+    <result column="DR_ACC_SL" property="DR_ACC_SL" />
+    <result column="DR_CRITERIA" property="DR_CRITERIA" />
+    <result column="FIX_CHARGES" property="FIX_CHARGES" />
+    <result column="CONSIDER_ONCE_FOR_MULTI_TRX" property="CONSIDER_ONCE_FOR_MULTI_TRX" />
+    <result column="DUES_COLLECTION_TYPE" property="DUES_COLLECTION_TYPE" />
+    <result column="DUES_MODE_PAY" property="DUES_MODE_PAY" />
+    <result column="HOF_REASON" property="HOF_REASON" />
+    <result column="HOF_TRX_TYPE" property="HOF_TRX_TYPE" />
+    <result column="SEG_SUBJECT_OF_NEGOTIATION" property="SEG_SUBJECT_OF_NEGOTIATION" />
+    
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, CHARGE_TYPE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ARAB, 
+    AMOUNT, ACC_BR, ACC_CY, ACC_GL, ACC_CIF, ACC_SL, DEDUCT_FROM_TRX, ALLOW_MODIFY, ALLOW_CLEARING, 
+    BASED_ON_MOSARAFA, CHRG_ON_EXCEED, EXCEED_AMT, CHRG_PERCENTAGE, MIN_AMT, MAX_AMT, 
+    PASS_SEPARATELY, APPLY_TVA, VAT_CODE, CHRG_BR, DR_ACC_CIF, DR_ACC_GL, DR_ACC_SL, 
+    DR_CRITERIA, FIX_CHARGES, CONSIDER_ONCE_FOR_MULTI_TRX, DUES_COLLECTION_TYPE, DUES_MODE_PAY, 
+    HOF_REASON, HOF_TRX_TYPE, SEG_SUBJECT_OF_NEGOTIATION
+  </sql>
+  <select id="selectCTSCHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCHARGES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCHARGES" parameterType="com.path.dbmaps.vo.CTSCHARGESVOKey" >
+    delete from CTSCHARGES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCHARGES" parameterType="com.path.dbmaps.vo.CTSCHARGESVO" >
+    insert into CTSCHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        CHARGE_TYPE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        ACC_BR,
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        ACC_CY,
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        ACC_GL,
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        ACC_CIF,
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        ACC_SL,
+      </if>
+      <if test="DEDUCT_FROM_TRX != null" >
+        DEDUCT_FROM_TRX,
+      </if>
+      <if test="ALLOW_MODIFY != null" >
+        ALLOW_MODIFY,
+      </if>
+      <if test="ALLOW_CLEARING != null" >
+        ALLOW_CLEARING,
+      </if>
+      <if test="BASED_ON_MOSARAFA != null" >
+        BASED_ON_MOSARAFA,
+      </if>
+      <if test="CHRG_ON_EXCEED != null" >
+        CHRG_ON_EXCEED,
+      </if>
+      <if test="EXCEED_AMT != null and EXCEED_AMT != emptyBigDecimalValue" >
+        EXCEED_AMT,
+      </if>
+      <if test="CHRG_PERCENTAGE != null and CHRG_PERCENTAGE != emptyBigDecimalValue" >
+        CHRG_PERCENTAGE,
+      </if>
+      <if test="MIN_AMT != null and MIN_AMT != emptyBigDecimalValue" >
+        MIN_AMT,
+      </if>
+      <if test="MAX_AMT != null and MAX_AMT != emptyBigDecimalValue" >
+        MAX_AMT,
+      </if>
+      <if test="PASS_SEPARATELY != null" >
+        PASS_SEPARATELY,
+      </if>
+      <if test="APPLY_TVA != null" >
+        APPLY_TVA,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="CHRG_BR != null" >
+        CHRG_BR,
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        DR_ACC_CIF,
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        DR_ACC_GL,
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        DR_ACC_SL,
+      </if>
+      <if test="DR_CRITERIA != null" >
+        DR_CRITERIA,
+      </if>
+      <if test="FIX_CHARGES != null" >
+        FIX_CHARGES,
+      </if>
+      <if test="CONSIDER_ONCE_FOR_MULTI_TRX != null" >
+        CONSIDER_ONCE_FOR_MULTI_TRX,
+      </if>
+      <if test="DUES_COLLECTION_TYPE != null" >
+        DUES_COLLECTION_TYPE,
+      </if>
+      <if test="DUES_MODE_PAY != null" >
+        DUES_MODE_PAY,
+      </if>
+      <if test="HOF_REASON != null and HOF_REASON != emptyBigDecimalValue" >
+        HOF_REASON,
+      </if>
+      <if test="HOF_TRX_TYPE != null and HOF_TRX_TYPE != emptyBigDecimalValue" >
+        HOF_TRX_TYPE,
+      </if>
+      <if test="SEG_SUBJECT_OF_NEGOTIATION != null" >
+        SEG_SUBJECT_OF_NEGOTIATION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        #{CHARGE_TYPE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        #{ACC_BR},
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        #{ACC_CY},
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        #{ACC_GL},
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        #{ACC_CIF},
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        #{ACC_SL},
+      </if>
+      <if test="DEDUCT_FROM_TRX != null" >
+        #{DEDUCT_FROM_TRX},
+      </if>
+      <if test="ALLOW_MODIFY != null" >
+        #{ALLOW_MODIFY},
+      </if>
+      <if test="ALLOW_CLEARING != null" >
+        #{ALLOW_CLEARING},
+      </if>
+      <if test="BASED_ON_MOSARAFA != null" >
+        #{BASED_ON_MOSARAFA},
+      </if>
+      <if test="CHRG_ON_EXCEED != null" >
+        #{CHRG_ON_EXCEED},
+      </if>
+      <if test="EXCEED_AMT != null and EXCEED_AMT != emptyBigDecimalValue" >
+        #{EXCEED_AMT},
+      </if>
+      <if test="CHRG_PERCENTAGE != null and CHRG_PERCENTAGE != emptyBigDecimalValue" >
+        #{CHRG_PERCENTAGE},
+      </if>
+      <if test="MIN_AMT != null and MIN_AMT != emptyBigDecimalValue" >
+        #{MIN_AMT},
+      </if>
+      <if test="MAX_AMT != null and MAX_AMT != emptyBigDecimalValue" >
+        #{MAX_AMT},
+      </if>
+      <if test="PASS_SEPARATELY != null" >
+        #{PASS_SEPARATELY},
+      </if>
+      <if test="APPLY_TVA != null" >
+        #{APPLY_TVA},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="CHRG_BR != null" >
+        #{CHRG_BR},
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        #{DR_ACC_CIF},
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        #{DR_ACC_GL},
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        #{DR_ACC_SL},
+      </if>
+      <if test="DR_CRITERIA != null" >
+        #{DR_CRITERIA},
+      </if>
+      <if test="FIX_CHARGES != null" >
+        #{FIX_CHARGES},
+      </if>
+      <if test="CONSIDER_ONCE_FOR_MULTI_TRX != null" >
+        #{CONSIDER_ONCE_FOR_MULTI_TRX},
+      </if>
+      <if test="DUES_COLLECTION_TYPE != null" >
+        #{DUES_COLLECTION_TYPE},
+      </if>
+      <if test="DUES_MODE_PAY != null" >
+        #{DUES_MODE_PAY},
+      </if>
+      <if test="HOF_REASON != null and HOF_REASON != emptyBigDecimalValue" >
+        #{HOF_REASON},
+      </if>
+      <if test="HOF_TRX_TYPE != null and HOF_TRX_TYPE != emptyBigDecimalValue" >
+        #{HOF_TRX_TYPE},
+      </if>
+       <if test="SEG_SUBJECT_OF_NEGOTIATION != null" >
+        #{SEG_SUBJECT_OF_NEGOTIATION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCHARGES" >
+    update CTSCHARGES
+    <set >
+      <if test="CHARGE_TYPE != null" >
+        CHARGE_TYPE = #{CHARGE_TYPE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_BR != null" >
+        <choose >
+          <when test="ACC_BR == emptyBigDecimalValue" >
+            ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_BR = #{ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CY != null" >
+        <choose >
+          <when test="ACC_CY == emptyBigDecimalValue" >
+            ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            ACC_CY = #{ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_GL != null" >
+        <choose >
+          <when test="ACC_GL == emptyBigDecimalValue" >
+            ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_GL = #{ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CIF != null" >
+        <choose >
+          <when test="ACC_CIF == emptyBigDecimalValue" >
+            ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_CIF = #{ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_SL != null" >
+        <choose >
+          <when test="ACC_SL == emptyBigDecimalValue" >
+            ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_SL = #{ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEDUCT_FROM_TRX != null" >
+        DEDUCT_FROM_TRX = #{DEDUCT_FROM_TRX},
+      </if>
+      <if test="ALLOW_MODIFY != null" >
+        ALLOW_MODIFY = #{ALLOW_MODIFY},
+      </if>
+      <if test="ALLOW_CLEARING != null" >
+        ALLOW_CLEARING = #{ALLOW_CLEARING},
+      </if>
+      <if test="BASED_ON_MOSARAFA != null" >
+        BASED_ON_MOSARAFA = #{BASED_ON_MOSARAFA},
+      </if>
+      <if test="CHRG_ON_EXCEED != null" >
+        CHRG_ON_EXCEED = #{CHRG_ON_EXCEED},
+      </if>
+      <if test="EXCEED_AMT != null" >
+        <choose >
+          <when test="EXCEED_AMT == emptyBigDecimalValue" >
+            EXCEED_AMT = NULL ,
+          </when>
+          <otherwise >
+            EXCEED_AMT = #{EXCEED_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHRG_PERCENTAGE != null" >
+        <choose >
+          <when test="CHRG_PERCENTAGE == emptyBigDecimalValue" >
+            CHRG_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            CHRG_PERCENTAGE = #{CHRG_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_AMT != null" >
+        <choose >
+          <when test="MIN_AMT == emptyBigDecimalValue" >
+            MIN_AMT = NULL ,
+          </when>
+          <otherwise >
+            MIN_AMT = #{MIN_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_AMT != null" >
+        <choose >
+          <when test="MAX_AMT == emptyBigDecimalValue" >
+            MAX_AMT = NULL ,
+          </when>
+          <otherwise >
+            MAX_AMT = #{MAX_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PASS_SEPARATELY != null" >
+        PASS_SEPARATELY = #{PASS_SEPARATELY},
+      </if>
+      <if test="APPLY_TVA != null" >
+        APPLY_TVA = #{APPLY_TVA},
+      </if>
+      <if test="VAT_CODE != null" >
+        <choose >
+          <when test="VAT_CODE == emptyBigDecimalValue" >
+            VAT_CODE = NULL ,
+          </when>
+          <otherwise >
+            VAT_CODE = #{VAT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHRG_BR != null" >
+        CHRG_BR = #{CHRG_BR},
+      </if>
+      <if test="DR_ACC_CIF != null" >
+        <choose >
+          <when test="DR_ACC_CIF == emptyBigDecimalValue" >
+            DR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_CIF = #{DR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_ACC_GL != null" >
+        <choose >
+          <when test="DR_ACC_GL == emptyBigDecimalValue" >
+            DR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_GL = #{DR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_ACC_SL != null" >
+        <choose >
+          <when test="DR_ACC_SL == emptyBigDecimalValue" >
+            DR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_SL = #{DR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_CRITERIA != null" >
+        DR_CRITERIA = #{DR_CRITERIA},
+      </if>
+      <if test="FIX_CHARGES != null" >
+        FIX_CHARGES = #{FIX_CHARGES},
+      </if>
+      <if test="CONSIDER_ONCE_FOR_MULTI_TRX != null" >
+        CONSIDER_ONCE_FOR_MULTI_TRX = #{CONSIDER_ONCE_FOR_MULTI_TRX},
+      </if>
+      <if test="DUES_COLLECTION_TYPE != null" >
+        DUES_COLLECTION_TYPE = #{DUES_COLLECTION_TYPE},
+      </if>
+      <if test="DUES_MODE_PAY != null" >
+        DUES_MODE_PAY = #{DUES_MODE_PAY},
+      </if>
+      <if test="HOF_REASON != null" >
+        <choose >
+          <when test="HOF_REASON == emptyBigDecimalValue" >
+            HOF_REASON = NULL ,
+          </when>
+          <otherwise >
+            HOF_REASON = #{HOF_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HOF_TRX_TYPE != null" >
+        <choose >
+          <when test="HOF_TRX_TYPE == emptyBigDecimalValue" >
+            HOF_TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            HOF_TRX_TYPE = #{HOF_TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SEG_SUBJECT_OF_NEGOTIATION != null" >
+        SEG_SUBJECT_OF_NEGOTIATION = #{SEG_SUBJECT_OF_NEGOTIATION},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCHARGES" parameterType="com.path.dbmaps.vo.CTSCHARGESVO" >
+    <include refid="sql_updateCTSCHARGES" />
+  </update>
+</mapper>

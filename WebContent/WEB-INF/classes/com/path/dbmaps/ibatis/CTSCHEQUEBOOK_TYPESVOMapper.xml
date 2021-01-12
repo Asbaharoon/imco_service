@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCHEQUEBOOK_TYPES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCHEQUEBOOK_TYPESVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="DESC_ENG" property="DESC_ENG" />
+    <result column="DESC_ARAB" property="DESC_ARAB" />
+    <result column="TYPES" property="TYPES" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, DESC_ENG, DESC_ARAB, TYPES
+  </sql>
+  <select id="selectCTSCHEQUEBOOK_TYPES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_TYPESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCHEQUEBOOK_TYPES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCHEQUEBOOK_TYPES" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_TYPESVOKey" >
+    delete from CTSCHEQUEBOOK_TYPES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCHEQUEBOOK_TYPES" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_TYPESVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="COMP_CODE" order="BEFORE" >
+      SELECT MAX(COMP_CODE)+1 FROM CTSCHEQUEBOOK_TYPES
+    </selectKey>
+    insert into CTSCHEQUEBOOK_TYPES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      COMP_CODE,
+      <if test="DESC_ENG != null" >
+        DESC_ENG,
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB,
+      </if>
+      <if test="TYPES != null" >
+        TYPES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      #{COMP_CODE},
+      <if test="DESC_ENG != null" >
+        #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        #{DESC_ARAB},
+      </if>
+      <if test="TYPES != null" >
+        #{TYPES},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCHEQUEBOOK_TYPES" >
+    update CTSCHEQUEBOOK_TYPES
+    <set >
+      <if test="DESC_ENG != null" >
+        DESC_ENG = #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB = #{DESC_ARAB},
+      </if>
+      <if test="TYPES != null" >
+        TYPES = #{TYPES},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCHEQUEBOOK_TYPES" parameterType="com.path.dbmaps.vo.CTSCHEQUEBOOK_TYPESVO" >
+    <include refid="sql_updateCTSCHEQUEBOOK_TYPES" />
+  </update>
+</mapper>

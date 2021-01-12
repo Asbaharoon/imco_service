@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_VEND_INCENTIVE_CIF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_VEND_INCENTIVE_CIFVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="INCENTIVE_CODE" property="INCENTIVE_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, INCENTIVE_CODE, LINE_NO, CIF_NO
+  </sql>
+  <select id="selectTRS_VEND_INCENTIVE_CIF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_VEND_INCENTIVE_CIFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_VEND_INCENTIVE_CIF
+    where COMP_CODE = #{COMP_CODE}
+      and INCENTIVE_CODE = #{INCENTIVE_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRS_VEND_INCENTIVE_CIF" parameterType="com.path.dbmaps.vo.TRS_VEND_INCENTIVE_CIFVOKey" >
+    delete from TRS_VEND_INCENTIVE_CIF
+    where COMP_CODE = #{COMP_CODE}
+      and INCENTIVE_CODE = #{INCENTIVE_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRS_VEND_INCENTIVE_CIF" parameterType="com.path.dbmaps.vo.TRS_VEND_INCENTIVE_CIFVO" >
+    insert into TRS_VEND_INCENTIVE_CIF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="INCENTIVE_CODE != null and INCENTIVE_CODE != emptyBigDecimalValue" >
+        INCENTIVE_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="INCENTIVE_CODE != null and INCENTIVE_CODE != emptyBigDecimalValue" >
+        #{INCENTIVE_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_VEND_INCENTIVE_CIF" >
+    update TRS_VEND_INCENTIVE_CIF
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and INCENTIVE_CODE = #{INCENTIVE_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRS_VEND_INCENTIVE_CIF" parameterType="com.path.dbmaps.vo.TRS_VEND_INCENTIVE_CIFVO" >
+    <include refid="sql_updateTRS_VEND_INCENTIVE_CIF" />
+  </update>
+</mapper>

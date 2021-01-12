@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CREDIT_EVALUATION_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CREDIT_EVALUATION_LOGVO" >
+  	<id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />   
+    <id column="EVALUATION_YEAR" property="EVALUATION_YEAR" />
+    <id column="EVALUATION_TYPE" property="EVALUATION_TYPE" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <id column="LOG_ID" property="LOG_ID" />
+    <result column="ACTION" property="ACTION" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="ACTION_DATE" property="ACTION_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CIF_NO, EVALUATION_YEAR, EVALUATION_TYPE, LINE_NUMBER, LOG_ID, ACTION, USER_ID,
+    ACTION_DATE
+  </sql>
+  <select id="selectCIF_CREDIT_EVALUATION_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATION_LOGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CREDIT_EVALUATION_LOG
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and LOG_ID = #{LOG_ID}
+  </select>
+  <delete id="deleteCIF_CREDIT_EVALUATION_LOG" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATION_LOGVOKey" >
+    delete from CIF_CREDIT_EVALUATION_LOG
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and LOG_ID = #{LOG_ID}
+  </delete>
+  <insert id="insertCIF_CREDIT_EVALUATION_LOG" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATION_LOGVO" >
+    insert into CIF_CREDIT_EVALUATION_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        EVALUATION_YEAR,
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        EVALUATION_TYPE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+        LINE_NUMBER,
+      </if>
+      <if test="LOG_ID != null and LOG_ID != emptyBigDecimalValue" >
+        LOG_ID,
+      </if>
+      <if test="ACTION != null">
+        ACTION,
+      </if>
+      <if test="USER_ID != null">
+        USER_ID,
+      </if>
+      <if test="ACTION_DATE != null" >
+        ACTION_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+       <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        #{EVALUATION_YEAR},
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        #{EVALUATION_TYPE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+        #{LINE_NUMBER},
+      </if>
+      <if test="LOG_ID != null and LOG_ID != emptyBigDecimalValue" >
+        #{LOG_ID},
+      </if>
+      <if test="ACTION != null">
+        #{ACTION},
+      </if>
+      <if test="USER_ID != null">
+        #{USER_ID},
+      </if>
+      <if test="ACTION_DATE != null" >
+        #{ACTION_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CREDIT_EVALUATION_LOG" >
+    update CREDIT_EVALUATION_LOG
+    <set >
+      <if test="ACTION != null" >
+        ACTION = #{ACTION},
+      </if>
+      <if test="USER_ID != null" >
+ 		USER_ID = #{USER_ID},
+      </if>
+      <if test="ACTION_DATE != null" >
+ 		ACTION_DATE = #{ACTION_DATE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+      and LOG_ID = #{LOG_ID}
+  </sql>
+  <update id="updateCIF_CREDIT_EVALUATION_LOG" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATION_LOGVO" >
+    <include refid="sql_updateCIF_CREDIT_EVALUATION_LOG" />
+  </update>
+</mapper>

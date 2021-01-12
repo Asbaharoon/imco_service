@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPCOLLATERALS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPCOLLATERALSVO" >
+    <id column="APP_REF" property="APP_REF" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL" property="COLLATERAL" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="COVERAGE" property="COVERAGE" />
+    <result column="AMOUNT_TYPE" property="AMOUNT_TYPE" />
+    <result column="ALLOCATED_AMT" property="ALLOCATED_AMT" />
+    <result column="ORIGINAL_ALLOCATED_AMT" property="ORIGINAL_ALLOCATED_AMT" />
+    <result column="CUMULATIVE_REINSTATE_AMT" property="CUMULATIVE_REINSTATE_AMT" />
+    <result column="CUMULATIVE_REALLOCATE_AMT" property="CUMULATIVE_REALLOCATE_AMT" />
+	
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_REF, BRANCH_CODE, COLLATERAL, COMP_CODE, LINE_NO, COVERAGE, AMOUNT_TYPE, ALLOCATED_AMT,
+	ORIGINAL_ALLOCATED_AMT,CUMULATIVE_REINSTATE_AMT,CUMULATIVE_REALLOCATE_AMT
+  </sql>
+  <select id="selectFMSAPPCOLLATERALS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPCOLLATERALSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPCOLLATERALS
+    where APP_REF = #{APP_REF}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL = #{COLLATERAL}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSAPPCOLLATERALS" parameterType="com.path.dbmaps.vo.FMSAPPCOLLATERALSVOKey" >
+    delete from FMSAPPCOLLATERALS
+    where APP_REF = #{APP_REF}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL = #{COLLATERAL}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSAPPCOLLATERALS" parameterType="com.path.dbmaps.vo.FMSAPPCOLLATERALSVO" >
+    insert into FMSAPPCOLLATERALS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        APP_REF,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL != null and COLLATERAL != emptyBigDecimalValue" >
+        COLLATERAL,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="COVERAGE != null and COVERAGE != emptyBigDecimalValue" >
+        COVERAGE,
+      </if>
+      <if test="AMOUNT_TYPE != null and !&quot;&quot;.equals(AMOUNT_TYPE)" >
+        AMOUNT_TYPE,
+      </if>
+      <if test="ALLOCATED_AMT != null and ALLOCATED_AMT != emptyBigDecimalValue" >
+        ALLOCATED_AMT,
+      </if>
+      <if test="ORIGINAL_ALLOCATED_AMT != null and ORIGINAL_ALLOCATED_AMT != emptyBigDecimalValue" >
+        ORIGINAL_ALLOCATED_AMT,
+      </if>
+
+      <if test="CUMULATIVE_REINSTATE_AMT != null and CUMULATIVE_REINSTATE_AMT != emptyBigDecimalValue" >
+        CUMULATIVE_REINSTATE_AMT,
+      </if>
+
+      <if test="CUMULATIVE_REALLOCATE_AMT != null and CUMULATIVE_REALLOCATE_AMT != emptyBigDecimalValue" >
+        CUMULATIVE_REALLOCATE_AMT,
+      </if>
+	  
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        #{APP_REF},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL != null and COLLATERAL != emptyBigDecimalValue" >
+        #{COLLATERAL},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="COVERAGE != null and COVERAGE != emptyBigDecimalValue" >
+        #{COVERAGE},
+      </if>
+      <if test="AMOUNT_TYPE != null and !&quot;&quot;.equals(AMOUNT_TYPE)" >
+        #{AMOUNT_TYPE},
+      </if>
+      <if test="ALLOCATED_AMT != null and ALLOCATED_AMT != emptyBigDecimalValue" >
+        #{ALLOCATED_AMT},
+      </if>
+	  
+	  <if test="ORIGINAL_ALLOCATED_AMT != null and ORIGINAL_ALLOCATED_AMT != emptyBigDecimalValue" >
+        #{ORIGINAL_ALLOCATED_AMT},
+      </if>
+
+	  <if test="CUMULATIVE_REINSTATE_AMT != null and CUMULATIVE_REINSTATE_AMT != emptyBigDecimalValue" >
+        #{CUMULATIVE_REINSTATE_AMT},
+      </if>
+
+	  <if test="CUMULATIVE_REALLOCATE_AMT != null and CUMULATIVE_REALLOCATE_AMT != emptyBigDecimalValue" >
+        #{CUMULATIVE_REALLOCATE_AMT},
+      </if>
+
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPCOLLATERALS" >
+    update FMSAPPCOLLATERALS
+    <set >
+      <if test="COVERAGE != null" >
+        <choose >
+          <when test="COVERAGE == emptyBigDecimalValue" >
+            COVERAGE = NULL ,
+          </when>
+          <otherwise >
+            COVERAGE = #{COVERAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_TYPE != null" >
+        <choose >
+          <when test="AMOUNT_TYPE.equals(&quot;&quot;)" >
+            AMOUNT_TYPE = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_TYPE = #{AMOUNT_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALLOCATED_AMT != null" >
+        <choose >
+          <when test="ALLOCATED_AMT == emptyBigDecimalValue" >
+            ALLOCATED_AMT = NULL ,
+          </when>
+          <otherwise >
+            ALLOCATED_AMT = #{ALLOCATED_AMT},
+          </otherwise>
+        </choose>
+      </if>
+	  
+	  <if test="ORIGINAL_ALLOCATED_AMT != null" >
+        <choose >
+          <when test="ORIGINAL_ALLOCATED_AMT == emptyBigDecimalValue" >
+            ORIGINAL_ALLOCATED_AMT = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_ALLOCATED_AMT = #{ORIGINAL_ALLOCATED_AMT},
+          </otherwise>
+        </choose>
+      </if>
+
+	  <if test="CUMULATIVE_REINSTATE_AMT != null" >
+        <choose >
+          <when test="CUMULATIVE_REINSTATE_AMT == emptyBigDecimalValue" >
+            CUMULATIVE_REINSTATE_AMT = NULL ,
+          </when>
+          <otherwise >
+            CUMULATIVE_REINSTATE_AMT = #{CUMULATIVE_REINSTATE_AMT},
+          </otherwise>
+        </choose>
+      </if>
+
+	  <if test="CUMULATIVE_REALLOCATE_AMT != null" >
+        <choose >
+          <when test="CUMULATIVE_REALLOCATE_AMT == emptyBigDecimalValue" >
+            CUMULATIVE_REALLOCATE_AMT = NULL ,
+          </when>
+          <otherwise >
+            CUMULATIVE_REALLOCATE_AMT = #{CUMULATIVE_REALLOCATE_AMT},
+          </otherwise>
+        </choose>
+      </if>
+
+    </set>
+    where APP_REF = #{APP_REF}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL = #{COLLATERAL}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSAPPCOLLATERALS" parameterType="com.path.dbmaps.vo.FMSAPPCOLLATERALSVO" >
+    <include refid="sql_updateFMSAPPCOLLATERALS" />
+  </update>
+</mapper>

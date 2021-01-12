@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_CIF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_CIFVO" >
+    <id column="CARD_CODE" property="CARD_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="MAX_SL" property="MAX_SL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CARD_CODE, CIF_NO, COMP_CODE, MAX_SL
+  </sql>
+  <select id="selectCTSCARDS_CIF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_CIFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_CIF
+    where CARD_CODE = #{CARD_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCARDS_CIF" parameterType="com.path.dbmaps.vo.CTSCARDS_CIFVOKey" >
+    delete from CTSCARDS_CIF
+    where CARD_CODE = #{CARD_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCARDS_CIF" parameterType="com.path.dbmaps.vo.CTSCARDS_CIFVO" >
+    insert into CTSCARDS_CIF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CARD_CODE != null and CARD_CODE != emptyBigDecimalValue" >
+        CARD_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="MAX_SL != null and MAX_SL != emptyBigDecimalValue" >
+        MAX_SL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CARD_CODE != null and CARD_CODE != emptyBigDecimalValue" >
+        #{CARD_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="MAX_SL != null and MAX_SL != emptyBigDecimalValue" >
+        #{MAX_SL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_CIF" >
+    update CTSCARDS_CIF
+    <set >
+      <if test="MAX_SL != null" >
+        <choose >
+          <when test="MAX_SL == emptyBigDecimalValue" >
+            MAX_SL = NULL ,
+          </when>
+          <otherwise >
+            MAX_SL = #{MAX_SL},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CARD_CODE = #{CARD_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCARDS_CIF" parameterType="com.path.dbmaps.vo.CTSCARDS_CIFVO" >
+    <include refid="sql_updateCTSCARDS_CIF" />
+  </update>
+</mapper>

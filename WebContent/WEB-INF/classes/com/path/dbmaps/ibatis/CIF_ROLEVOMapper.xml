@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_ROLE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_ROLEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ROLE_CODE" property="ROLE_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, ROLE_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    ADDITIONAL_REFERENCE
+  </sql>
+  <select id="selectCIF_ROLE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_ROLEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_ROLE
+    where COMP_CODE = #{COMP_CODE}
+      and ROLE_CODE = #{ROLE_CODE}
+  </select>
+  <delete id="deleteCIF_ROLE" parameterType="com.path.dbmaps.vo.CIF_ROLEVOKey" >
+    delete from CIF_ROLE
+    where COMP_CODE = #{COMP_CODE}
+      and ROLE_CODE = #{ROLE_CODE}
+  </delete>
+  <insert id="insertCIF_ROLE" parameterType="com.path.dbmaps.vo.CIF_ROLEVO" >
+    insert into CIF_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ROLE_CODE != null and ROLE_CODE != emptyBigDecimalValue" >
+        ROLE_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ROLE_CODE != null and ROLE_CODE != emptyBigDecimalValue" >
+        #{ROLE_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_ROLE" >
+    update CIF_ROLE
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and ROLE_CODE = #{ROLE_CODE}
+  </sql>
+  <update id="updateCIF_ROLE" parameterType="com.path.dbmaps.vo.CIF_ROLEVO" >
+    <include refid="sql_updateCIF_ROLE" />
+  </update>
+</mapper>

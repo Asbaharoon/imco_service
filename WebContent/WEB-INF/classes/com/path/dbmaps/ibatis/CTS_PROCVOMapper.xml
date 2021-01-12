@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_PROC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_PROCVO" >
+    <id column="PROC_ID" property="PROC_ID" />
+    <result column="PROC_NAME" property="PROC_NAME" />
+    <result column="PROC_DESC" property="PROC_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PROC_ID, PROC_NAME, PROC_DESC
+  </sql>
+  <select id="selectCTS_PROC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_PROCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_PROC
+    where PROC_ID = #{PROC_ID}
+  </select>
+  <delete id="deleteCTS_PROC" parameterType="com.path.dbmaps.vo.CTS_PROCVOKey" >
+    delete from CTS_PROC
+    where PROC_ID = #{PROC_ID}
+  </delete>
+  <insert id="insertCTS_PROC" parameterType="com.path.dbmaps.vo.CTS_PROCVO" >
+    insert into CTS_PROC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="PROC_ID != null and PROC_ID != emptyBigDecimalValue" >
+        PROC_ID,
+      </if>
+      <if test="PROC_NAME != null" >
+        PROC_NAME,
+      </if>
+      <if test="PROC_DESC != null" >
+        PROC_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="PROC_ID != null and PROC_ID != emptyBigDecimalValue" >
+        #{PROC_ID},
+      </if>
+      <if test="PROC_NAME != null" >
+        #{PROC_NAME},
+      </if>
+      <if test="PROC_DESC != null" >
+        #{PROC_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_PROC" >
+    update CTS_PROC
+    <set >
+      <if test="PROC_NAME != null" >
+        PROC_NAME = #{PROC_NAME},
+      </if>
+      <if test="PROC_DESC != null" >
+        PROC_DESC = #{PROC_DESC},
+      </if>
+    </set>
+    where PROC_ID = #{PROC_ID}
+  </sql>
+  <update id="updateCTS_PROC" parameterType="com.path.dbmaps.vo.CTS_PROCVO" >
+    <include refid="sql_updateCTS_PROC" />
+  </update>
+</mapper>

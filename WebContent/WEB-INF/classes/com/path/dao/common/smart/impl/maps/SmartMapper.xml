@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="smart">
+
+	<!--
+		Map for the main query that returns the defined smart fields list
+	-->
+
+	<resultMap id="smartCOMap" type="SmartCO">
+		<id column="S_ADDITIONS_DETAILS.APP_NAME" property="appName" />
+		<id column="S_ADDITIONS_DETAILS.PROG_REFERENCE" property="progRef" />
+		<id column="S_ADDITIONS_DETAILS.TRX_NBR" property="trxNbr" />
+
+		<result column="S_ADD_OPTIONS_BRIEF_NAME_ARAB" property="saddOptionsBriefNameArab" />
+		<result column="S_ADD_OPTIONS_BRIEF_NAME_ENG1" property="saddOptionsBriefNameEng" />
+			<result column="S_ADD_DTL_S_ADD_OPTION_CODE" property="sAdditionsDetailsVO.s_ADD_OPTION_CODE" />
+			<result column="MANUAL_REFERENCE" property="sAdditionsDetailsVO.MANUAL_REFERENCE" />
+			<result column="APP_NAME" property="sAdditionsDetailsVO.APP_NAME" />
+			<result column="PROG_REFERENCE" property="sAdditionsDetailsVO.PROG_REFERENCE" />
+			<result column="TRX_NBR" property="sAdditionsDetailsVO.TRX_NBR" />
+			<result column="S_ADD_TYPE_CODE" property="sAdditionsDetailsVO.s_ADD_TYPE_CODE" />
+			<result column="ADDITION_TEXT" property="sAdditionsDetailsVO.ADDITION_TEXT" />
+			<result column="ADDITION_DATE" property="sAdditionsDetailsVO.ADDITION_DATE" />
+			<result column="ADDITION_NUMBER" property="sAdditionsDetailsVO.ADDITION_NUMBER" />
+			<result column="THIRD_PARTY_LOCATION" property="sAdditionsDetailsVO.THIRD_PARTY_LOCATION" />
+			<result column="S_ADD_OPTIONS_BRIEF_NAME_ENG" property="sAdditionsOptionsVO.BRIEF_NAME_ENG" />
+			<result column="LONG_NAME_ENG" property="sAdditionsOptionsVO.LONG_NAME_ENG" />
+			<result column="PROG_SAVE" property="sAdditionsOptionsVO.PROG_SAVE" />
+			<result column="OPTION_LENGTH" property="sAdditionsOptionsVO.OPTION_LENGTH" />
+			<result column="OPTION_MASK" property="sAdditionsOptionsVO.OPTION_MASK" />
+			<result column="OPTION_TYPE" property="sAdditionsOptionsVO.OPTION_TYPE" />
+			<result column="FILE_EXTENSION" property="sAdditionsOptionsVO.FILE_EXTENSION" />
+			<result column="MAX_FILE_SIZE" property="sAdditionsOptionsVO.MAX_FILE_SIZE" />
+			<result column="SAVE_FILE_IN" property="sAdditionsOptionsVO.SAVE_FILE_IN" />
+			<result column="FIXED_LOCATION" property="sAdditionsOptionsVO.FIXED_LOCATION" />
+			<result column="DYNAMIC_LOCATION_THIRD_PARTY" property="sAdditionsOptionsVO.DYNAMIC_LOCATION_THIRD_PARTY" />
+			<result column="S_ADD_TYPE_BRIEF_NAME_ENG" property="sAdditionsTypeVO.BRIEF_NAME_ENG" />
+			<result column="S_ADD_TYPE_S_ADD_OPTION_CODE" property="sAdditionsTypeVO.s_ADD_OPTION_CODE" />
+			<result column="MANDATORY" property="sAdditionsTypeVO.MANDATORY" />
+			<result column="MANDATORY_EXPRESSION" property="sAdditionsTypeVO.MANDATORY_EXPRESSION" />
+	</resultMap>
+
+	<!-- The main query that returns the defined smart fields list -->
+	<sql id="smartCOListCommon">
+	<![CDATA[
+	SELECT
+                (CASE WHEN #{language} = 'AR' THEN 
+                	(CASE WHEN S_ADDITIONS_TYPE.BRIEF_NAME_ARAB IS NULL THEN S_ADDITIONS_TYPE.BRIEF_NAME_ENG ELSE S_ADDITIONS_TYPE.BRIEF_NAME_ARAB END ) 
+                	ELSE S_ADDITIONS_TYPE.BRIEF_NAME_ENG END) S_ADD_TYPE_BRIEF_NAME_ENG,
+                S_ADDITIONS_DETAILS.S_ADD_OPTION_CODE S_ADD_DTL_S_ADD_OPTION_CODE,
+                S_ADDITIONS_DETAILS.MANUAL_REFERENCE,
+                S_ADDITIONS_DETAILS.APP_NAME,
+                S_ADDITIONS_DETAILS.PROG_REFERENCE,
+                
+                S_ADDITIONS_DETAILS.TRX_NBR,
+                S_ADDITIONS_DETAILS.S_ADD_TYPE_CODE,
+                ' ' S_OPTION_DESC,
+                S_ADDITIONS_OPTIONS.OPTION_TYPE,
+                S_ADDITIONS_OPTIONS.PROG_SAVE,
+ 
+                
+                S_ADDITIONS_OPTIONS.OPTION_LENGTH,
+				S_ADDITIONS_OPTIONS.OPTION_MASK,
+                S_ADDITIONS_OPTIONS.FILE_EXTENSION,
+                S_ADDITIONS_OPTIONS.MAX_FILE_SIZE,
+                S_ADDITIONS_OPTIONS.SAVE_FILE_IN,
+                S_ADDITIONS_OPTIONS.FIXED_LOCATION,
+                S_ADDITIONS_OPTIONS.DYNAMIC_LOCATION_THIRD_PARTY,
+                S_ADDITIONS_DETAILS.ADDITION_TEXT,
+                S_ADDITIONS_DETAILS.ADDITION_DATE,
+                S_ADDITIONS_DETAILS.ADDITION_NUMBER,
+                S_ADDITIONS_DETAILS.THIRD_PARTY_LOCATION,
+                S_ADDITIONS_OPTIONS.BRIEF_NAME_ENG S_ADD_OPTIONS_BRIEF_NAME_ENG,
+                S_ADDITIONS_OPTIONS.LONG_NAME_ENG,
+                S_ADDITIONS_TYPE.S_ADD_OPTION_CODE S_ADD_TYPE_S_ADD_OPTION_CODE,
+                S_ADDITIONS_TYPE.MANDATORY,
+                S_ADDITIONS_TYPE.MANDATORY_EXPRESSION,
+                CASE
+                WHEN S_ADDITIONS_DETAILS.S_ADD_OPTION_CODE <> 0
+                THEN (SELECT S_ADDITIONS_OPTIONS.BRIEF_NAME_ARAB
+                FROM  S_ADDITIONS_TYPE ,S_ADDITIONS_OPTIONS
+                WHERE S_ADDITIONS_OPTIONS.OPTION_SERIAL  = S_ADDITIONS_DETAILS.S_ADD_OPTION_CODE
+                AND       S_ADDITIONS_TYPE.APP_NAME  = #{appName} AND     S_ADDITIONS_TYPE.PROG_REFERENCE  = #{progRef}
+                AND       S_ADDITIONS_TYPE.S_ADD_TYPE_CODE  =S_ADDITIONS_DETAILS.S_ADD_TYPE_CODE
+                AND  S_ADDITIONS_OPTIONS.OPTION_CODE =S_ADDITIONS_TYPE.S_ADD_OPTION_CODE)
+                ELSE ''
+                END       S_ADD_OPTIONS_BRIEF_NAME_ARAB,
+ 
+				CASE
+				WHEN S_ADDITIONS_DETAILS.S_ADD_OPTION_CODE <> 0
+				THEN (SELECT S_ADDITIONS_OPTIONS.BRIEF_NAME_ENG
+				FROM  S_ADDITIONS_TYPE ,S_ADDITIONS_OPTIONS
+				WHERE S_ADDITIONS_OPTIONS.OPTION_SERIAL  = S_ADDITIONS_DETAILS.S_ADD_OPTION_CODE
+				AND       S_ADDITIONS_TYPE.APP_NAME  = #{appName} AND     S_ADDITIONS_TYPE.PROG_REFERENCE  = #{progRef}
+				AND       S_ADDITIONS_TYPE.S_ADD_TYPE_CODE  =S_ADDITIONS_DETAILS.S_ADD_TYPE_CODE
+				AND S_ADDITIONS_OPTIONS.OPTION_CODE =S_ADDITIONS_TYPE.S_ADD_OPTION_CODE)
+				ELSE ''
+				END       S_ADD_OPTIONS_BRIEF_NAME_ENG1
+ 
+				FROM  S_ADDITIONS_TYPE, S_ADDITIONS_DETAILS, S_ADDITIONS_OPTIONS
+				WHERE (S_ADDITIONS_OPTIONS.OPTION_CODE  = S_ADDITIONS_TYPE.S_ADD_OPTION_CODE)
+				AND       S_ADDITIONS_TYPE.APP_NAME  = S_ADDITIONS_DETAILS.APP_NAME
+				AND       S_ADDITIONS_TYPE.PROG_REFERENCE  = S_ADDITIONS_DETAILS.PROG_REFERENCE
+				AND       S_ADDITIONS_TYPE.S_ADD_TYPE_CODE  = S_ADDITIONS_DETAILS.S_ADD_TYPE_CODE
+				AND       (S_ADDITIONS_DETAILS.APP_NAME  = #{appName})
+				AND       (S_ADDITIONS_DETAILS.PROG_REFERENCE  = #{progRef})
+				AND       (S_ADDITIONS_DETAILS.TRX_NBR  = #{trxNbr})
+				AND       (S_ADDITIONS_OPTIONS.OPTION_SERIAL  = 0)
+				AND       (S_ADDITIONS_TYPE.HIDE  <> '1')
+			]]>
+				<if test="saddTypeCode !=null">
+				<![CDATA[
+				AND 	  (S_ADDITIONS_DETAILS.S_ADD_TYPE_CODE  = #{saddTypeCode})
+				]]>
+				</if>
+			
+			<![CDATA[
+				ORDER BY S_ADD_TYPE_CODE
+	]]>
+	</sql>
+
+	<select id="getSMARTFieldsList" resultMap="smartCOMap"
+		parameterType="SmartSC">
+		<include refid="smartCOListCommon" />
+	</select>
+	<!-- The query to select the Smart OPTs filled from SADS -->
+	<select id="selectSmartOPT" resultType="String" parameterType="SmartSC">
+		SELECT DISTINCT B_TABLE.PROG_REF
+		FROM (
+		<include refid="commonLibMapper.select_Common_Priveleges" />
+		) B_TABLE
+		WHERE B_TABLE.PROG_REF IN
+		
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="s_view != null">
+					#{s_view},
+		      </if>
+		      <if test="s_scan != null">
+					#{s_scan},
+		      </if>
+		      <if test="s_detach != null">
+					#{s_detach},
+		      </if>
+		      <if test="s_edit != null">
+					#{s_edit},
+		      </if>
+		      <if test="s_update != null">
+					#{s_update},
+		      </if>
+		</trim>
+	</select>
+
+	<!-- getSmartParentRef -->
+	<sql id="smartParentRef">
+	<![CDATA[
+		SELECT CASE WHEN OPTE.ADDITIONAL_PARENT_REF IS NOT NULL THEN OPTE.ADDITIONAL_PARENT_REF ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF<>'ROOT' THEN
+		OPT.PARENT_REF ELSE OPT.PROG_REF END) END PARENT_REF
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF=#{progRef}
+		AND OPT.APP_NAME = #{appName}
+		]]>
+	</sql>
+	<select id="getSmartParentRef" resultType="String"
+		parameterType="SmartSC">
+		<include refid="smartParentRef" />
+	</select>
+	<!--
+		The main update method updating all the changes within the smart
+		screen
+	-->
+	<update id="updateSMARTFieldsList" parameterType="SAdditionsDetailsCO">
+		<if test="isSybase != 1">begin</if>
+		<foreach collection="sAdditionsDetailsVOList" item="S_ADDITIONS_DETAILSVO">
+			UPDATE S_ADDITIONS_DETAILS
+			<set>
+				S_ADD_OPTION_CODE =
+				#{S_ADDITIONS_DETAILSVO.s_ADD_OPTION_CODE,jdbcType=NUMERIC},
+				ADDITION_TEXT =
+				#{S_ADDITIONS_DETAILSVO.ADDITION_TEXT,jdbcType=VARCHAR},
+				ADDITION_NUMBER =
+				#{S_ADDITIONS_DETAILSVO.ADDITION_NUMBER,jdbcType=NUMERIC},
+				ADDITION_DATE =
+				#{S_ADDITIONS_DETAILSVO.ADDITION_DATE,jdbcType=DATE},
+				MANUAL_REFERENCE =
+				#{S_ADDITIONS_DETAILSVO.MANUAL_REFERENCE,jdbcType=VARCHAR},
+				THIRD_PARTY_LOCATION =
+				#{S_ADDITIONS_DETAILSVO.THIRD_PARTY_LOCATION,jdbcType=VARCHAR}
+      		</set>
+			WHERE APP_NAME = #{S_ADDITIONS_DETAILSVO.APP_NAME}
+			AND PROG_REFERENCE
+			= #{S_ADDITIONS_DETAILSVO.PROG_REFERENCE}
+			AND S_ADD_TYPE_CODE =
+			#{S_ADDITIONS_DETAILSVO.s_ADD_TYPE_CODE}
+			AND TRX_NBR =
+			#{S_ADDITIONS_DETAILSVO.TRX_NBR}
+			<if test="isSybase != 1">;</if>
+		</foreach>
+		<if test="isSybase != 1">end;</if>
+	</update>
+
+	<!--
+		The main update method updating all the changes within the smart
+		screen
+	-->
+	<update id="updateSMARTAdditionNumber" parameterType="smartSC">
+		UPDATE S_ADDITIONS_DETAILS
+		<set>
+			ADDITION_NUMBER = #{maxObjCode},
+      		</set>
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE = #{progRef}
+		AND TRX_NBR
+		= #{trxNbr}
+		AND S_ADD_TYPE_CODE = #{saddTypeCode}
+	</update>
+
+	<!--  query to insert the smart fields history -->
+	<insert id="insertSMARTFieldsListHst" parameterType="SAdditionsDetailsCO">
+		<if test="isSybase != 1">begin</if>
+		<foreach collection="sAdditionsDetailsVOList" item="S_ADDITIONS_DETAILSVO">
+			insert into S_ADDITIONS_DETAILS_HST
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				APP_NAME,
+				PROG_REFERENCE,
+				S_ADD_PROG_REF,
+				S_ADD_DATE,
+				S_ADD_TYPE_CODE,
+				TRX_NBR,
+				USER_ID,
+				<if test="S_ADDITIONS_DETAILSVO.s_ADD_OPTION_CODE != null">
+					S_ADD_OPTION_CODE,
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.MANUAL_REFERENCE != null">
+					MANUAL_REFERENCE,
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_TEXT != null">
+					ADDITION_TEXT,
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_NUMBER != null">
+					ADDITION_NUMBER,
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_DATE != null">
+					ADDITION_DATE,
+		      </if>
+				<if test="sAddRunDate != null">
+					S_ADD_RUN_DATE ,
+		      </if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{S_ADDITIONS_DETAILSVO.APP_NAME},
+				#{S_ADDITIONS_DETAILSVO.PROG_REFERENCE},
+				#{S_ADDITIONS_DETAILSVO.PROG_REFERENCE},
+				#{sAddDate},
+				#{S_ADDITIONS_DETAILSVO.s_ADD_TYPE_CODE},
+				#{S_ADDITIONS_DETAILSVO.TRX_NBR},
+				#{userID},
+
+				<if test="S_ADDITIONS_DETAILSVO.s_ADD_OPTION_CODE != null">
+					#{S_ADDITIONS_DETAILSVO.s_ADD_OPTION_CODE},
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.MANUAL_REFERENCE != null">
+					#{S_ADDITIONS_DETAILSVO.MANUAL_REFERENCE},
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_TEXT != null">
+					#{S_ADDITIONS_DETAILSVO.ADDITION_TEXT},
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_NUMBER != null">
+					#{S_ADDITIONS_DETAILSVO.ADDITION_NUMBER},
+		      </if>
+				<if test="S_ADDITIONS_DETAILSVO.ADDITION_DATE != null">
+					#{S_ADDITIONS_DETAILSVO.ADDITION_DATE},
+		      </if>
+				<if test="sAddRunDate != null">
+					#{sAddRunDate},
+		      </if>
+
+			</trim>
+			<if test="isSybase != 1">;</if>
+		</foreach>
+		<if test="isSybase != 1">end;</if>
+	</insert>
+
+	<!-- query to return the smart details count -->
+	<select id="checkSmartDetailsCount" parameterType="SmartSC"
+		resultType="int">
+  		<![CDATA[
+		 SELECT COUNT(1)
+		  FROM S_ADDITIONS_TYPE 
+		 WHERE APP_NAME = #{appName}
+		 AND PROG_REFERENCE =#{progRef}
+		 AND HIDE  <> '1'
+		]]>
+
+	</select>
+	<!--
+		The map for the query returning the audit options enabled for the
+		specified screen
+	-->
+	<resultMap id="smartAuditValMap" type="OPTVO">
+		<result property="AUDIT_SAVE" column="AUDIT_SAVE" />
+		<result property="AUDIT_DELETE" column="AUDIT_DELETE" />
+		<result property="AUDIT_RETRIEVE" column="AUDIT_RETRIEVE" />
+	</resultMap>
+	<!--
+		The query returning the audit options enabled for the specified screen
+	-->
+	<select id="checkAuditSmart" parameterType="SmartSC" resultMap="smartAuditValMap">
+		SELECT AUDIT_SAVE,
+		AUDIT_DELETE,
+		AUDIT_RETRIEVE
+		FROM OPT
+		WHERE
+		APP_NAME =
+		#{appName}
+		AND PROG_REF = #{progRef}
+	</select>
+	<!--
+		The map for the query returning smart type code for the defined smart
+		fields used to compare the existing/to be inserted fields
+	-->
+	<resultMap id="smartTypeMap" type="SmartTypesVO">
+		<result column="S_ADD_TYPE_CODE" property="S_ADD_TYPE_CODE" />
+	</resultMap>
+	<select id="getAdditionsType" parameterType="SmartSC" resultMap="smartTypeMap">
+		SELECT S_ADDITIONS_TYPE.S_ADD_TYPE_CODE
+		FROM S_ADDITIONS_TYPE
+		WHERE
+		S_ADDITIONS_TYPE.APP_NAME = #{appName}
+		AND
+		S_ADDITIONS_TYPE.PROG_REFERENCE = #{progRef}
+		AND
+		S_ADDITIONS_TYPE.S_ADD_TYPE_CODE > 0
+		AND
+		S_ADDITIONS_TYPE.HIDE != '1'
+	</select>
+	<!-- Query used to insert the missing smart fields from the screen -->
+	<insert id="insertSMARTDetails"	parameterType="SAdditionsDetailsCO">
+		<if test="isSybase != 1">begin</if>
+		<foreach collection="sAdditionsDetailsVOList" item="S_ADDITIONS_DETAILSVO">
+
+			insert into S_ADDITIONS_DETAILS
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="S_ADDITIONS_DETAILSVO.APP_NAME != null">
+					APP_NAME,
+				</if>
+				<if test="S_ADDITIONS_DETAILSVO.PROG_REFERENCE != null">
+					PROG_REFERENCE,
+				</if>
+				<if test="S_ADDITIONS_DETAILSVO.TRX_NBR != null">
+					TRX_NBR,
+				</if>
+				<if test="S_ADDITIONS_DETAILSVO.S_ADD_TYPE_CODE != null">
+					S_ADD_TYPE_CODE,
+				</if>
+			</trim>
+			SELECT
+			<if test="S_ADDITIONS_DETAILSVO.APP_NAME != null">
+				#{S_ADDITIONS_DETAILSVO.APP_NAME},
+			</if>
+			<if test="S_ADDITIONS_DETAILSVO.PROG_REFERENCE != null">
+				#{S_ADDITIONS_DETAILSVO.PROG_REFERENCE},
+			</if>
+			<if test="S_ADDITIONS_DETAILSVO.TRX_NBR != null">
+				#{S_ADDITIONS_DETAILSVO.TRX_NBR},
+			</if>
+			<if test="S_ADDITIONS_DETAILSVO.s_ADD_TYPE_CODE != null">
+				#{S_ADDITIONS_DETAILSVO.s_ADD_TYPE_CODE}
+			</if>
+			<if test="isSybase != 1">FROM DUAL </if>
+
+			WHERE NOT EXISTS (SELECT 1 FROM S_ADDITIONS_DETAILS SAD
+			WHERE SAD.APP_NAME = #{S_ADDITIONS_DETAILSVO.APP_NAME}
+			AND SAD.PROG_REFERENCE = #{S_ADDITIONS_DETAILSVO.PROG_REFERENCE}
+			AND SAD.TRX_NBR = #{S_ADDITIONS_DETAILSVO.TRX_NBR}
+			AND SAD.S_ADD_TYPE_CODE = #{S_ADDITIONS_DETAILSVO.s_ADD_TYPE_CODE})
+
+			<if test="isSybase != 1">;</if>
+		</foreach>
+		<if test="isSybase != 1">end;</if>
+	</insert>
+	<!-- Query to delete the BLOB for a defined smart field by type code -->
+	<delete id="deleteSObject" parameterType="SmartSC">
+		DELETE FROM S_OBJECT
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH_CODE = #{branchCode}
+		AND CODE =
+		(SELECT ADDITION_NUMBER
+		FROM S_ADDITIONS_DETAILS
+		WHERE APP_NAME =
+		#{appName}
+		AND PROG_REFERENCE =
+		#{progRef}
+		AND TRX_NBR = #{trxNbr}
+		AND
+		S_ADD_TYPE_CODE =
+		#{saddTypeCode})
+	</delete>
+	<!--
+		Query to update the ADDITION_NUMBER to null after deleting/detaching a
+		blob from S_OBJECT
+	-->
+	<update id="setAdditionNbrNull" parameterType="smartSC">
+		UPDATE S_ADDITIONS_DETAILS
+		<set>
+			ADDITION_NUMBER = null,
+			ADDITION_TEXT = null,
+      		</set>
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE = #{progRef}
+		AND TRX_NBR
+		= #{trxNbr}
+		AND S_ADD_TYPE_CODE = #{saddTypeCode}
+	</update>
+
+	<!-- Query to delete the smart fields by transaction number -->
+	<delete id="deleteSmartDet" parameterType="SmartSC">
+		DELETE FROM
+		S_ADDITIONS_DETAILS
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE =
+		#{progRef}
+		AND TRX_NBR = #{trxNbr}
+	</delete>
+	<!--
+		The map that returns the blob object for a defined smart field by type
+		code
+	-->
+	<resultMap id="ResultMapWithBLOBs" type="SmartSC">
+		<result column="OLE_OBJECT" property="OLE_OBJECT" />
+	</resultMap>
+	<select id="returnSmartBlob" parameterType="SmartSC" resultMap="ResultMapWithBLOBs">
+
+		SELECT OLE_OBJECT
+		FROM S_OBJECT
+		WHERE COMP_CODE = #{compCode}
+		AND
+		BRANCH_CODE = #{branchCode}
+		AND CODE =
+		(SELECT ADDITION_NUMBER FROM
+		S_ADDITIONS_DETAILS
+		WHERE APP_NAME = #{appName}
+		AND PROG_REFERENCE =
+		#{progRef}
+		AND TRX_NBR = #{trxNbr}
+		AND S_ADD_TYPE_CODE =
+		#{saddTypeCode})
+	</select>
+	<!-- Query that returns the latest smart counter -->
+	<select id="SmartObjCounter" parameterType="SmartSC" resultType="int">
+		SELECT COUNT(1)
+		FROM COUNTER
+		WHERE COMP_CODE = 0
+		AND
+		BRANCH_CODE = 0
+		AND TRX_TYPE = 900 
+	</select>
+	<!-- Query that returns the LAST_NUMBER for smart counter -->
+	<select id="SmartObjLastNumber" parameterType="SmartSC" resultType="int">
+		SELECT LAST_NUMBER
+		FROM COUNTER
+		WHERE COMP_CODE = 0
+		AND
+		BRANCH_CODE = 0
+		AND TRX_TYPE = 900 
+	</select>
+	<!-- Query to insert the smart counter if none existing -->
+	<insert id="insertSmartObjCounter" parameterType="SmartSC">
+		insert into COUNTER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			COMP_CODE,
+			BRANCH_CODE,
+			TRX_TYPE,
+			LAST_NUMBER,
+			</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			0,
+			0,
+			900,
+			1,
+			</trim>
+	</insert>
+	<!--
+		Query to update the counter and lock it for the current smart screen
+		update
+	-->
+	<update id="lockSmartObjCounter" parameterType="SmartSC">
+		UPDATE COUNTER
+		<set>
+			LAST_NUMBER = LAST_NUMBER + 1
+		</set>
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH_CODE = #{branchCode}
+		AND
+		TRX_TYPE = 900
+	</update>
+	<!-- Query to update the BLOB in S_OBJECT table -->
+	<update id="updateSmartBlob" parameterType="SmartSC">
+		update S_OBJECT
+		<set>
+			<if test="OLE_OBJECT != null">
+				OLE_OBJECT = #{OLE_OBJECT},
+      </if>
+		</set>
+		where COMP_CODE = #{compCode}
+		and BRANCH_CODE = #{branchCode}
+		and CODE =
+		#{maxObjCode}
+	</update>
+	<!-- Method to check if the SMART object is moved to company & branch 0 -->
+	<select id="countSmartZeroBlob"  parameterType="SmartSC" resultType="int">
+	select count(1)
+	from S_OBJECT
+	where COMP_CODE = 0
+	and BRANCH_CODE = 0
+	and CODE = #{maxObjCode}
+	</select>
+	
+	<insert id="insertSmartBlob" parameterType="SmartSC">
+		insert into S_OBJECT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				BRANCH_CODE,
+			<if test="maxObjCode != null and maxObjCode != emptyBigDecimalValue">
+				CODE,
+      </if>
+				COMP_CODE,
+			<if test="OLE_OBJECT != null">
+				OLE_OBJECT,
+      </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			0,
+			<if test="maxObjCode != null and maxObjCode != -9999999">
+				#{maxObjCode},
+      </if>
+			0,
+			<if test="OLE_OBJECT != null">
+				#{OLE_OBJECT},
+      </if>
+		</trim>
+	</insert>
+
+	<select id="getSMARTFieldsNewList" resultMap="smartCOMap"
+		parameterType="SmartSC">
+		<include refid="smartCOListNewCommon" />
+	</select>
+
+	<sql id="smartCOListNewCommon">
+	<![CDATA[
+	SELECT
+                (CASE WHEN #{language} = 'AR' THEN 
+                	(CASE WHEN S_ADDITIONS_TYPE.BRIEF_NAME_ARAB IS NULL THEN S_ADDITIONS_TYPE.BRIEF_NAME_ENG ELSE S_ADDITIONS_TYPE.BRIEF_NAME_ARAB END ) 
+                	ELSE S_ADDITIONS_TYPE.BRIEF_NAME_ENG END) S_ADD_TYPE_BRIEF_NAME_ENG,
+                CASE WHEN S_ADDITIONS_OPTIONS.OPTION_SERIAL <> 0 THEN S_ADDITIONS_OPTIONS.OPTION_SERIAL ELSE NULL END S_ADD_DTL_S_ADD_OPTION_CODE,
+                S_ADDITIONS_TYPE.S_ADD_TYPE_CODE S_ADD_TYPE_CODE,
+                S_ADDITIONS_TYPE.APP_NAME APP_NAME,
+                S_ADDITIONS_TYPE.PROG_REFERENCE PROG_REFERENCE,
+                ' ' S_OPTION_DESC,
+                S_ADDITIONS_OPTIONS.OPTION_TYPE,
+                S_ADDITIONS_OPTIONS.PROG_SAVE,
+                
+                S_ADDITIONS_OPTIONS.OPTION_LENGTH,
+                S_ADDITIONS_OPTIONS.OPTION_MASK,
+                S_ADDITIONS_OPTIONS.FILE_EXTENSION,
+                S_ADDITIONS_OPTIONS.MAX_FILE_SIZE,
+                S_ADDITIONS_OPTIONS.SAVE_FILE_IN,
+                S_ADDITIONS_OPTIONS.FIXED_LOCATION,
+                S_ADDITIONS_OPTIONS.DYNAMIC_LOCATION_THIRD_PARTY,
+                S_ADDITIONS_OPTIONS.BRIEF_NAME_ENG S_ADD_OPTIONS_BRIEF_NAME_ENG,
+                S_ADDITIONS_OPTIONS.LONG_NAME_ENG,
+                S_ADDITIONS_TYPE.S_ADD_OPTION_CODE S_ADD_TYPE_S_ADD_OPTION_CODE,
+                S_ADDITIONS_TYPE.MANDATORY,
+                S_ADDITIONS_TYPE.MANDATORY_EXPRESSION
+ 
+				FROM  S_ADDITIONS_TYPE  ,S_ADDITIONS_OPTIONS
+				WHERE (S_ADDITIONS_OPTIONS.OPTION_CODE  = S_ADDITIONS_TYPE.S_ADD_OPTION_CODE)
+				AND       (S_ADDITIONS_TYPE.APP_NAME  = #{appName})
+				AND       (S_ADDITIONS_TYPE.PROG_REFERENCE  = #{progRef})
+				AND       (S_ADDITIONS_OPTIONS.OPTION_SERIAL  = 0)
+				AND       (S_ADDITIONS_TYPE.HIDE  <> '1')
+				ORDER BY S_ADD_TYPE_CODE
+	]]>
+	</sql>	
+	
+	<resultMap id="smartScreenParamsMap" type="selectCO">
+		<result column="FIELD_ID" property="code" />
+		<result column="CIF_NO_YN" property="descValue" />
+	</resultMap>
+  
+  
+	<select id="returnSmartScreenParams" resultMap="smartScreenParamsMap" parameterType="SmartSC"> 
+	SELECT 
+	SPSE.FIELD_ID, SACP.CIF_NO_YN
+	FROM S_ADDITIONS_SCREEN_PARAMS SACP, SYS_PARAM_SCREEN_ELEMENTS SPSE
+	WHERE 
+	SACP.APP_NAME = SPSE.APP_NAME 				AND
+	SACP.PROG_REF = SPSE.PROG_REF 				AND
+	SACP.FLD_IDENTIFIER = SPSE.FLD_IDENTIFIER	AND
+	SACP.APP_NAME = #{appName} 					AND
+	SACP.PROG_REF = #{progRef}
+		
+	
+	</select>
+	
+	<resultMap id="smartSObjectMap" type="SmartCO">
+		<result column="COMP_CODE" property="smartObjCompany" />
+		<result column="BRANCH_CODE" property="smartObjBranch" />
+	</resultMap>
+	<select id="returnSmartObjCompBr" parameterType="SmartSC" resultMap="smartSObjectMap" >
+	SELECT <if test="isSybase == 1">TOP 1</if>  COMP_CODE, BRANCH_CODE
+	FROM  S_OBJECT    		
+	WHERE CODE = #{code}
+	<if test="isOracle == 1">AND ROWNUM = 1</if>
+</select>
+	
+</mapper>

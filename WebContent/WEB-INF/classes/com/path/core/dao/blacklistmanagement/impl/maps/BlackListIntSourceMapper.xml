@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackListIntSourceMapper">
+
+<resultMap id="matchedCIFListMap" type="com.path.vo.core.blacklistmanagement.BlackListIntSourceCO">
+	<result property="cifVO.CIF_NO" 				column="cifNO" />
+	<result property="rowId" 						column="rowIdd" />
+	<result property="cif_BlackListVO.BL_CHECKED" 	column="BL_CHECKED" />
+	<result property="cifVO.COMP_CODE" 				column="COMP_CODE" />
+	<result property="cifVO.LONG_NAME_ENG" 			column="LONG_NAME_ENG" />
+	<result property="LONG_NAME"					column="LONG_NAME" />
+	<result property="un_MainVO.UN_TYPE" 			column="BL_TYPE" />
+	<result property="cif_BlackListVO.BL_CODE" 		column="BL_CODE" />
+	<result property="statusDesc" 					column="statusDesc" />
+	<result property="un_MainVO.NATIONALITY" 		column="nationality"/>
+	<result property="un_MainVO.PASSPORT_NO" 		column="PASSPORT_NO" />
+	<result property="STR_DOB" 						column="STR_DOB" />
+	<result property="cifVO.LONG_NAME_ARAB" 		column="LONG_NAME_AR" />
+	<result property="REFERENCE_NUMBER" 			column="REFERENCE_NUMBER" />
+	
+</resultMap>
+
+
+
+<!-- SQLs -->
+
+<sql id="whiteListSql">
+select tbl.CIF_NO cifNO,
+	   tbl.REFERENCE_NUMBER,
+	<choose>
+		<when test="isSybase == 1" >
+			rtrim(convert(char(10),tbl.CIF_NO)) ||';'||convert(char(5),tbl.COMP_CODE) rowIdd,
+		</when>
+		<otherwise>
+			rtrim(to_char(tbl.CIF_NO)) ||';'||to_char( tbl.COMP_CODE) "rowIdd",
+		</otherwise>
+	</choose>
+		tbl.LONG_NAME_ENG LONG_NAME_ENG,
+		tbl.BL_TYPE BL_TYPE,
+       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS
+         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = <choose> <when test="isSybase == 1" >
+         												convert(char(1), tbl.CIF_BLACK_LISTED1)
+       												</when> <otherwise>
+         												to_char(tbl.CIF_BLACK_LISTED1)
+       												</otherwise>
+         										</choose>
+           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage}) statusDesc
+           
+  from (SELECT DISTINCT 0 CHECKED,
+                        CIF.COMP_CODE,
+                        CIF.CIF_NO,
+                        CASE  WHEN CIF_BLACKLIST.BL_TYPE IN ('U','E','H')  THEN UN_MAIN.REFERENCE_NUMBER              
+                        ELSE <choose> <when test="isSybase == 1" >
+         												convert(char(10), CIF_BLACKLIST.BL_CODE)
+       												</when> <otherwise>
+         												to_char(CIF_BLACKLIST.BL_CODE)
+       												</otherwise>
+         										</choose>
+                        END REFERENCE_NUMBER, 
+                        CIF.LONG_NAME_ENG LONG_NAME_ENG, 
+                        CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+                        coalesce(CIF.BLACK_LISTED, 0) CIF_BLACK_LISTED1,
+                        CASE  WHEN CIF_BLACKLIST.BL_TYPE = 'U' THEN 'UN'
+	                          WHEN CIF_BLACKLIST.BL_TYPE = 'O' THEN 'OFAC'
+	                          WHEN CIF_BLACKLIST.BL_TYPE = 'E' THEN 'EU'
+	                          WHEN CIF_BLACKLIST.BL_TYPE = 'M' THEN 'BLM'
+	                          WHEN CIF_BLACKLIST.BL_TYPE = 'H' THEN 'HM'   
+                          ELSE CIF_BLACKLIST.BL_TYPE
+                        END BL_TYPE 
+          FROM CIF, CIF_BLACKLIST LEFT JOIN UN_MAIN ON CIF_BLACKLIST.BL_CODE= UN_MAIN.ENT_NUM
+         WHERE CIF.COMP_CODE = #{compCode}
+           AND CIF_BLACKLIST.COMP_CODE = CIF.COMP_CODE
+           AND CIF_BLACKLIST.CIF_NO = CIF.CIF_NO
+           AND CIF.STATUS IN ('A', 'I')
+           AND CASE WHEN CIF.BLACK_LISTED IS NULL THEN 0 ELSE CIF.BLACK_LISTED END IN (0, 2) AND NOT EXISTS (SELECT 1
+                                                                                                              FROM MOSBLACKLIST M
+                                                                                                             WHERE M.COMP_CODE =
+                                                                                                                   CIF.COMP_CODE
+                                                                                                               AND CASE WHEN
+                                                                                                             M.CIF IS NULL THEN 0 ELSE M.CIF END = CIF.CIF_NO AND M.STATUS = 'P')
+        
+        ) tbl
+</sql>
+
+<sql id="matchedCIFListSql">
+SELECT tbl.CIF_NO cifNO,
+       tbl.LONG_NAME_ENG LONG_NAME_ENG,
+	   (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		  FROM SYS_PARAM_LOV_TRANS
+		 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = <choose> <when test="isSybase == 1" >
+         												convert(char(1), tbl.CIF_BLACK_LISTED)
+       												</when> <otherwise>
+         												to_char(tbl.CIF_BLACK_LISTED)
+       												</otherwise>
+         										</choose>
+		   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = 102
+		   AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage}) statusDesc ,
+       tbl.BL_TYPE BL_TYPE,
+       tbl.BL_CODE BL_CODE,
+       tbl.REFERENCE_NUMBER REFERENCE_NUMBER,
+       tbl.LONG_NAME LONG_NAME,
+       tbl.NATION nationality,
+       tbl.PASSPORT_NO PASSPORT_NO,
+       tbl.STR_DOB STR_DOB,
+       tbl.LONG_NAME_AR LONG_NAME_AR,
+	<choose>
+		<when test="isSybase == 1" >
+			rtrim(convert(char(10),tbl.CIF_NO)) ||';'||convert(char(5),tbl.COMP_CODE) rowIdd
+		</when>
+		<otherwise>
+			rtrim(to_char(tbl.CIF_NO)) ||';'||to_char( tbl.COMP_CODE) "rowIdd"
+		</otherwise>
+	</choose>
+from( SELECT 0 CHECKED,
+       L.COMP_CODE,
+       L.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       L.BL_CODE,
+       <choose> <when test="isSybase == 1" >
+         			convert(char(10), L.BL_CODE) REFERENCE_NUMBER,
+       			</when> <otherwise>
+         			to_char(L.BL_CODE) REFERENCE_NUMBER,
+       			       </otherwise>
+       </choose>
+       O.SDN_NAME LONG_NAME,
+       '' LONG_NAME_AR,
+       O.TITLE TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1) DATE_DOB,
+       '' POB,
+       O.PROGRAM NATION,
+       O.PROGRAM NATION_ARAB,
+       '' PASSPORT_NO,
+       'OFAC' BL_TYPE,
+       L.BL_CHECKED,
+       coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED,
+       0 CIFNO
+  FROM CIF, 
+	  	CIF_BLACKLIST L, 
+	  	OFAC_MAIN O
+ WHERE CIF.CIF_NO = L.CIF_NO
+   AND L.BL_CODE = O.OFAC_NUM
+   AND L.COMP_CODE = CIF.COMP_CODE
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (0, 1)
+   AND L.BL_TYPE = 'O'
+   and CIF.COMP_CODE = #{compCode}
+
+UNION
+
+SELECT 0 CHECKED,
+       L.COMP_CODE,
+       L.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       L.BL_CODE,
+       U.REFERENCE_NUMBER REFERENCE_NUMBER,
+       RTRIM(LTRIM(CASE WHEN LOWER(U.NAME1) = 'na' THEN ''
+                     ELSE U.NAME1 || ' '
+                   END || CASE WHEN LOWER(U.NAME2) = 'na' THEN ''
+                     ELSE  U.NAME2 || ' '
+                   END || CASE WHEN LOWER(U.NAME3) = 'na' THEN ''
+                     ELSE U.NAME3 || ' '
+                   END || CASE WHEN LOWER(U.NAME4) = 'na' THEN ''
+                     ELSE U.NAME4
+                   END)) LONG_NAME,
+       U.NAME_ARAB LONG_NAME_AR,
+       U.TITLE TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1) DATE_DOB,
+       U.POB POB,
+  U.NATIONALITY NATION,
+  U.NATIONALITY NATION_ARAB,
+  U.PASSPORT_NO PASSPORT_NO, 
+   'UN'  
+  BL_TYPE , 
+  L.BL_CHECKED, 
+  coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED, 
+  0 CIFNO
+  FROM CIF, 
+       CIF_BLACKLIST L, 
+       UN_MAIN U
+ WHERE CIF.COMP_CODE = #{compCode}
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (0, 1)
+   AND L.COMP_CODE = CIF.COMP_CODE
+   AND L.CIF_NO = CIF.CIF_NO
+   AND L.BL_CODE = U.ENT_NUM
+   AND L.BL_TYPE = 'U'
+   AND U.UN_TYPE IS NULL
+
+UNION
+
+SELECT 0 CHECKED,
+       L.COMP_CODE,
+       L.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       L.BL_CODE,
+       RTRIM(LTRIM(CASE WHEN LOWER(U.NAME1) = 'na' THEN ''
+                     ELSE U.NAME1 || ' '
+                   END || CASE WHEN LOWER(U.NAME2) = 'na' THEN ''
+                     ELSE U.NAME2 || ' '
+                   END || CASE WHEN LOWER(U.NAME3) = 'na' THEN ''
+                     ELSE U.NAME3 || ' '
+                   END || CASE WHEN LOWER(U.NAME4) = 'na' THEN ''
+                     ELSE U.NAME4
+                   END)) LONG_NAME,
+       U.NAME_ARAB LONG_NAME_AR,
+       U.TITLE TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       (SELECT RUN_DATE FROM BRANCHES WHERE 0 = 1) DATE_DOB,
+       U.POB POB,
+  U.NATIONALITY NATION,
+  U.NATIONALITY NATION_ARAB,
+  U.PASSPORT_NO PASSPORT_NO, 
+   CASE BL_TYPE WHEN 'U' THEN 'UN'
+  WHEN 'E' THEN 'EU'
+  WHEN 'H' THEN 'HM'
+  ELSE BL_TYPE
+  END, 
+  L.BL_CHECKED, 
+  coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED, 
+  0 CIFNO
+  FROM CIF, 
+       CIF_BLACKLIST L, 
+       UN_MAIN U
+ WHERE CIF.COMP_CODE = #{compCode}
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (0, 1)
+   AND L.COMP_CODE = CIF.COMP_CODE
+   AND L.CIF_NO = CIF.CIF_NO
+   AND L.BL_CODE = U.ENT_NUM
+   AND L.BL_TYPE =U.UN_TYPE 
+   AND U.UN_TYPE IS NOT NULL
+   AND DOWNLOAD_DATE = (SELECT MAX(DOWNLOAD_DATE)
+                          FROM UN_MAIN
+                         WHERE UN_TYPE is not null
+                           AND DOWNLOAD_DATE IS NOT NULL
+                           AND UN_TYPE=U.UN_TYPE)
+
+UNION
+
+SELECT 0 CHECKED,
+       L.COMP_CODE,
+       L.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       L.BL_CODE,
+       <choose> <when test="isSybase == 1" >
+         			convert(char(10), L.BL_CODE) REFERENCE_NUMBER,
+       			</when> <otherwise>
+         			to_char(L.BL_CODE) REFERENCE_NUMBER,
+       			        </otherwise>
+       </choose>
+       T.LONG_NAME_ENG LONG_NAME,
+       T.LONG_NAME_ARAB LONG_NAME_AR,
+       '' TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       T.DATE_OF_BIRTH DATE_DOB,
+       T.CIF_PLACE_OF_BIRTH POB,
+       (SELECT NATIONALITY.LONG_DESC_ARAB
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+           AND (NATIONALITY.CODE = T.CIF_NATION_CODE)) NATION,
+       (SELECT NATIONALITY.LONG_DESC_ENG
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = T.COMP_CODE)
+           AND (NATIONALITY.CODE = T.CIF_NATION_CODE)) NATION_ARAB,
+       '' PASSPORT_NO,
+       'BLM' BL_TYPE,
+       L.BL_CHECKED,
+       coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED,
+       T.CIF CIFNO
+  FROM CIF, 
+       CIF_BLACKLIST L, 
+       MOSBLACKLIST T
+ WHERE CIF.COMP_CODE = #{compCode}
+   AND CIF.CIF_NO = L.CIF_NO
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (0, 1)
+   AND L.COMP_CODE = T.COMP_CODE
+   AND L.BL_CODE = T.CODE
+   AND L.BL_TYPE = 'M'
+   AND L.COMP_CODE = CIF.COMP_CODE
+
+UNION
+
+SELECT 0 CHECKED,
+       L.COMP_CODE,
+       L.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       L.BL_CODE,
+       <choose> <when test="isSybase == 1" >
+         			convert(char(10), L.BL_CODE) REFERENCE_NUMBER,
+       			</when> <otherwise>
+         			to_char(L.BL_CODE) REFERENCE_NUMBER,
+       			       </otherwise>
+       </choose>
+       CIF.LONG_NAME_ENG LONG_NAME,
+       CIF.LONG_NAME_ARAB LONG_NAME_AR,
+       '' TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       CIF.BIRTH_DATE DATE_DOB,
+       CIF.PLACE_OF_BIRTH POB,
+       (SELECT NATIONALITY.LONG_DESC_ARAB
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = CIF.COMP_CODE)
+           AND (NATIONALITY.CODE = CIF.NATION_CODE)) NATION,
+       (SELECT NATIONALITY.LONG_DESC_ENG
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = CIF.COMP_CODE)
+           AND (NATIONALITY.CODE = CIF.NATION_CODE)) NATION_ARAB,
+       '' PASSPORT_NO,
+       '1' BL_TYPE,
+       L.BL_CHECKED,
+       coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED,
+       0
+  FROM CIF, 
+       CIF_BLACKLIST L
+ WHERE CIF.COMP_CODE = #{compCode}
+   AND CIF.CIF_NO = L.CIF_NO
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (0, 1)
+   AND L.BL_CODE = 0
+   AND L.BL_TYPE = '1'
+   AND L.COMP_CODE = CIF.COMP_CODE
+
+UNION
+
+SELECT 0 CHECKED,
+       #{compCode},
+       CIF.CIF_NO,
+       CIF.LONG_NAME_ENG LONG_NAME_ENG,
+       CIF.LONG_NAME_ARAB LONG_NAME_ARAB,
+       0,
+       '0',
+       '' LONG_NAME,
+       '' LONG_NAME_AR,
+       '' TITLE,
+       '' DESIGNATION,
+       '' STR_DOB,
+       CIF.BIRTH_DATE DATE_DOB,
+       CIF.PLACE_OF_BIRTH POB,
+       (SELECT NATIONALITY.LONG_DESC_ARAB
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = CIF.COMP_CODE)
+           AND (NATIONALITY.CODE = CIF.NATION_CODE)) NATION,
+       (SELECT NATIONALITY.LONG_DESC_ENG
+          FROM NATIONALITY
+         WHERE (NATIONALITY.COMP_CODE = CIF.COMP_CODE)
+           AND (NATIONALITY.CODE = CIF.NATION_CODE)) NATION_ARAB,
+       '' PASSPORT_NO,
+       '0' BL_TYPE,
+       '0',
+       coalesce(BLACK_LISTED, 0) CIF_BLACK_LISTED,
+       0
+  FROM CIF CIF
+ WHERE CIF.COMP_CODE = #{compCode}
+   AND CIF.STATUS IN ('A', 'I')
+   AND coalesce(BLACK_LISTED, 0) IN (1, 2)
+   AND NOT EXISTS (SELECT 1
+          FROM CIF_BLACKLIST L
+         WHERE COMP_CODE = #{compCode}
+           AND L.CIF_NO = CIF.CIF_NO)
+)tbl
+</sql>
+
+
+<!-- SELECTs -->
+<select id="getMatchedCIFListCount" resultType="Integer" parameterType="blackListIntSourceSC" >
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="matchedCIFListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+<select id="getMatchedCIFList" resultMap="matchedCIFListMap" parameterType="blackListIntSourceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="matchedCIFListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+    <if test="!sortOrder">
+    order by cifNO
+    </if>
+</select>
+
+
+<select id="getWhiteListCount" resultType="Integer" parameterType="blackListIntSourceSC" >
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="whiteListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+<select id="getWhiteList" resultMap="matchedCIFListMap" parameterType="blackListIntSourceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="whiteListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="checkCIFBlackListed" resultType="Integer" parameterType="blackListIntSourceSC" >
+	SELECT COUNT(1) FROM MOSBLACKLIST WHERE  COMP_CODE =  #{compCode} AND  CIF = #{blckListCifNo} AND MOSBLACKLIST.STATUS = 'P'
+</select>
+
+
+<!-- DELETE, INSERT, UPDATE -->
+
+<update id="switchCIFListStatus_update" parameterType="blackListIntSourceCO" >
+UPDATE CIF
+   SET BLACK_LISTED = #{cifVO.BLACK_LISTED}
+ WHERE COMP_CODE = #{cifVO.COMP_CODE}
+   AND CIF_NO = #{cifVO.CIF_NO}
+   AND coalesce(BLACK_LISTED,0) = #{oldBlackListed}
+</update>
+
+<insert id="switchCIFListStatus_insert" parameterType="blackListIntSourceCO">
+INSERT INTO CTS_CIF_AUDIT
+  (COMP_CODE,
+   CIF_NO,
+   AUDIT_DATE,
+   AUDIT_TIME,
+   USERID,
+   BLACK_LISTED,
+   SOURCE_CODE)
+SELECT 
+  #{cifVO.COMP_CODE},
+   #{cifVO.CIF_NO},
+   <include refid="commonLibMapper.systemDate"/>,
+   #{currentDate},
+   #{loginUserId},
+   #{cifVO.BLACK_LISTED},
+   1
+  FROM DUAL
+  WHERE NOT EXISTS (
+      SELECT 1 FROM CTS_CIF_AUDIT
+      WHERE COMP_CODE = #{cifVO.COMP_CODE} AND CIF_NO=#{cifVO.CIF_NO}
+AND AUDIT_DATE =  <include refid="commonLibMapper.systemDate"/> AND AUDIT_TIME=#{currentDate}
+AND USERID = #{loginUserId} AND BLACK_LISTED = #{cifVO.BLACK_LISTED} AND SOURCE_CODE = 1  
+  )
+  
+   
+</insert>
+
+
+<delete id="callSoundexPrepare" parameterType="blackListIntSourceSC" >
+begin
+<choose>
+<when test='as_source == "O"' >
+	delete from OFAC_MAIN<if test="isOracle == 1">;</if>
+</when>
+
+<otherwise>
+	delete from UN_MAIN  WHERE UN_TYPE = #{as_source} <if test="isOracle == 1">;</if>
+</otherwise>
+</choose>
+
+end<if test="isOracle == 1">;</if>
+</delete>
+
+
+<resultMap id="dynFilesListUploadMap" type="com.path.vo.core.blacklistmanagement.BlackListIntSourceCO">
+		<result property="dfDataFileVO.FILE_CODE"	column="FILE_CODE"/>
+		<result property="dfDataFileVO.FILE_DESC"	column="FILE_DESC"/>
+	</resultMap>
+
+<sql id="selectDynFilesBlackListedList" >
+	SELECT FILE_CODE,FILE_DESC
+	FROM DF_DATA_FILE
+	WHERE CATEGORY = '1' 
+</sql>
+
+<select id="getDynFilesBlackListedListCount" resultType="int" parameterType="blackListIntSourceSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="selectDynFilesBlackListedList" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<select id="getDynFilesBlackListedList" resultMap="dynFilesListUploadMap" parameterType="blackListIntSourceSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="selectDynFilesBlackListedList" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	ORDER BY FILE_CODE
+</select>
+
+<resultMap id="dynFilesDetailsMap" type="com.path.vo.core.blacklistmanagement.BlackListIntSourceCO">
+		<result property="dfDataFileVO.FILE_CODE"	column="FILE_CODE"/>
+		<result property="dfDataFileVO.FILE_DESC"	column="FILE_DESC"/>
+		<result property="dfDataFileVO.STRUCT_CODE"	column="STRUCT_CODE"/>
+		<result property="dfDataFileVO.LINK"		column="LINK"/>
+		<result property="dfDataFileVO.LINK_LABEL"	column="LINK_LABEL"/>
+		<result property="dfDataFileVO.TYPE"		column="TYPE"/>
+		<result property="dfDataFileVO.HEADER"		column="HEADER"/>
+		<result property="dfDataFileVO.DETAILS"		column="DETAILS"/>
+	</resultMap>
+
+<sql id="selectBlackListDynFileDetails" >
+	SELECT FILE_CODE, FILE_DESC, STRUCT_CODE, LINK, LINK_LABEL, TYPE, HEADER, DETAILS
+	FROM DF_DATA_FILE
+	WHERE CATEGORY = '1' 
+	AND FILE_CODE = #{fileCode, jdbcType=VARCHAR}
+</sql>
+
+<select id="getBlackListDynFileDetails" resultMap="dynFilesDetailsMap" parameterType="blackListIntSourceSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="selectBlackListDynFileDetails" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+
+</mapper>

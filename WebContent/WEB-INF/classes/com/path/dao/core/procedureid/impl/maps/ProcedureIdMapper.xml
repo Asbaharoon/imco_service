@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSPROCEDURE_IDMapper">
+
+	 <sql id="procedureIdListCommon" >
+		 <![CDATA[
+			SELECT CTS_PROC.PROC_ID,
+			       CTS_PROC.PROC_NAME
+			FROM CTS_PROC
+			]]>	
+	</sql>
+
+	<sql id="proceduresListCommon">
+		<choose>
+			<when test="isSybase==1">
+				Select sysobjects.name AS PROC_NAME, sysobjects.name AS PROC_DESC
+				from sysobjects
+				where sysobjects.type = 'P'
+				<if test='procNames != null and !("").equals(procNames)'>
+					AND sysobjects.name = #{procNames}
+				</if>
+			</when>
+			<otherwise>
+				SELECT OBJECT_NAME AS PROC_NAME, OBJECT_NAME AS PROC_DESC
+				FROM USER_PROCEDURES
+				WHERE OBJECT_TYPE = 'PROCEDURE'
+				<if test='procNames != null and !("").equals(procNames)'>
+					AND OBJECT_NAME = #{procNames}
+				</if>
+			</otherwise>
+		</choose>
+
+	</sql>
+
+	<sql id="procedureIdCondition">
+		<if test="procId != null">
+			WHERE CTS_PROC.PROC_ID = #{procId}
+		</if>
+	</sql>
+
+
+	<resultMap id="getIdList_ResMap" type="com.path.vo.core.procedureid.ProcedureIdCO" >
+	    <result column="PROC_ID" 			property="procId" />
+	    <result column="PROC_NAME" 		    property="procName" />
+	</resultMap>
+    
+    <resultMap id="getProceduresList_ResMap" type="com.path.vo.core.procedureid.ProcedureIdCO" >
+	    <result column="PROC_NAME" 			property="procNames" />
+	    <result column="PROC_DESC" 		    property="procDesc" />
+	</resultMap>
+
+	<select id="getIdList"  resultMap="getIdList_ResMap" parameterType="com.path.vo.core.procedureid.ProcedureIdSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="procedureIdListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+
+	<select id="getIdCount"  resultType="int" parameterType="com.path.vo.core.procedureid.ProcedureIdSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="procedureIdListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+	<select id="getProcId"  resultMap="getIdList_ResMap" parameterType="com.path.vo.core.procedureid.ProcedureIdSC" > 
+		<include refid="procedureIdListCommon"/>
+		<include refid="procedureIdCondition"/>
+	</select>
+
+	<select id="getProcNames"  resultMap="getProceduresList_ResMap" parameterType="com.path.vo.core.procedureid.ProcedureIdSC" > 
+		<include refid="proceduresListCommon"/>
+	</select>
+
+	<select id="getProceduresList"  resultMap="getProceduresList_ResMap" parameterType="com.path.vo.core.procedureid.ProcedureIdSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="proceduresListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+
+	<select id="getProceduresCount"  resultType="int" parameterType="com.path.vo.core.procedureid.ProcedureIdSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="proceduresListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFSEC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFSECVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SECTOR_CODE" property="SECTOR_CODE" />
+    <id column="SUB_SECTOR_CODE" property="SUB_SECTOR_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="LIMIT" property="LIMIT" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, SECTOR_CODE, SUB_SECTOR_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG, BRIEF_DESC_ARAB, 
+    LONG_DESC_ARAB, LIMIT, ADDITIONAL_REFERENCE
+  </sql>
+  <select id="selectRIFSEC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFSECVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFSEC
+    where COMP_CODE = #{COMP_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+      and SUB_SECTOR_CODE = #{SUB_SECTOR_CODE}
+  </select>
+  <delete id="deleteRIFSEC" parameterType="com.path.dbmaps.vo.RIFSECVOKey" >
+    delete from RIFSEC
+    where COMP_CODE = #{COMP_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+      and SUB_SECTOR_CODE = #{SUB_SECTOR_CODE}
+  </delete>
+  <insert id="insertRIFSEC" parameterType="com.path.dbmaps.vo.RIFSECVO" >
+    insert into RIFSEC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        SECTOR_CODE,
+      </if>
+      <if test="SUB_SECTOR_CODE != null and SUB_SECTOR_CODE != emptyBigDecimalValue" >
+        SUB_SECTOR_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        LIMIT,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        #{SECTOR_CODE},
+      </if>
+      <if test="SUB_SECTOR_CODE != null and SUB_SECTOR_CODE != emptyBigDecimalValue" >
+        #{SUB_SECTOR_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        #{LIMIT},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFSEC" >
+    update RIFSEC
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="LIMIT != null" >
+        <choose >
+          <when test="LIMIT == emptyBigDecimalValue" >
+            LIMIT = NULL ,
+          </when>
+          <otherwise >
+            LIMIT = #{LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and SECTOR_CODE = #{SECTOR_CODE}
+      and SUB_SECTOR_CODE = #{SUB_SECTOR_CODE}
+  </sql>
+  <update id="updateRIFSEC" parameterType="com.path.dbmaps.vo.RIFSECVO" >
+    <include refid="sql_updateRIFSEC" />
+  </update>
+</mapper>

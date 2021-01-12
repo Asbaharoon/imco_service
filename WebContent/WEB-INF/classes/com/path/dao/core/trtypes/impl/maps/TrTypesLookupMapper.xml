@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="TrTypesLookupMapper">
+
+	<!-- Trx Types mapper -->
+	<resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TR_TYPESVO">
+		<id column="COMP_CODE" property="COMP_CODE" />
+		<id column="TR_CODE" property="TR_CODE" />
+		<result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+		<result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+		<result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+		<result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		COMP_CODE, TR_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG,
+		BRIEF_DESC_ARAB,
+		LONG_DESC_ARAB
+  	</sql>
+
+	<select id="returnTrTypesList" resultMap="BaseResultMap"
+		parameterType="trTypesSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM TR_TYPES
+		WHERE COMP_CODE = #{compCode ,jdbcType=NUMERIC}
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnTrTypesListCount" resultType="int" parameterType="trTypesSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+			SELECT
+			<include refid="Base_Column_List" />
+			FROM TR_TYPES
+			WHERE COMP_CODE = #{compCode ,jdbcType=NUMERIC}
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<resultMap id="trTypesDescMap" type="trTypesVO" >
+	    <id column="TR_CODE" property="TR_CODE" />
+		<result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+  	 </resultMap>
+  	
+	 <sql id="selectTrTypesDesc">
+	    SELECT DISTINCT 
+	    		TR_TYPES.TR_CODE,
+	    		<choose>
+				  	<when test="isRTLDir == 1">                                 
+						TR_TYPES.BRIEF_DESC_ARAB
+				  	</when>
+					<otherwise>
+				      	TR_TYPES.BRIEF_DESC_ENG 
+				 	</otherwise>
+				</choose>  
+				BRIEF_DESC_ENG
+		FROM TR_TYPES
+		WHERE COMP_CODE = #{compCode ,jdbcType=NUMERIC}
+		  AND TR_CODE 	= #{trCode ,jdbcType=NUMERIC}
+	 </sql>
+	 
+	<select id="returnTrTypeDetails" resultMap="trTypesDescMap" parameterType="trTypesSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="TrTypesLookupMapper.selectTrTypesDesc" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_ISO_FLDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_ISO_FLDSVO" >
+    <id column="ID" property="ID" />
+    <result column="LENGTH" property="LENGTH" />
+    <result column="NAME" property="NAME" />
+    <result column="FIELD_TYPE" property="FIELD_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, LENGTH, NAME, FIELD_TYPE
+  </sql>
+  <select id="selectSYS_PARAM_ISO_FLDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_FLDSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_ISO_FLDS
+    where ID = #{ID}
+  </select>
+  <delete id="deleteSYS_PARAM_ISO_FLDS" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_FLDSVO" >
+    delete from SYS_PARAM_ISO_FLDS
+    where ID = #{ID}
+  </delete>
+  <insert id="insertSYS_PARAM_ISO_FLDS" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_FLDSVO" >
+    insert into SYS_PARAM_ISO_FLDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="LENGTH != null and LENGTH != emptyBigDecimalValue" >
+        LENGTH,
+      </if>
+      <if test="NAME != null and !&quot;&quot;.equals(NAME)" >
+        NAME,
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        FIELD_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="LENGTH != null and LENGTH != emptyBigDecimalValue" >
+        #{LENGTH},
+      </if>
+      <if test="NAME != null and !&quot;&quot;.equals(NAME)" >
+        #{NAME},
+      </if>
+      <if test="FIELD_TYPE != null and !&quot;&quot;.equals(FIELD_TYPE)" >
+        #{FIELD_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_ISO_FLDS" >
+    update SYS_PARAM_ISO_FLDS
+    <set >
+      <if test="LENGTH != null" >
+        <choose >
+          <when test="LENGTH == emptyBigDecimalValue" >
+            LENGTH = NULL ,
+          </when>
+          <otherwise >
+            LENGTH = #{LENGTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NAME != null" >
+        <choose >
+          <when test="NAME.equals(&quot;&quot;)" >
+            NAME = NULL ,
+          </when>
+          <otherwise >
+            NAME = #{NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_TYPE != null" >
+        <choose >
+          <when test="FIELD_TYPE.equals(&quot;&quot;)" >
+            FIELD_TYPE = NULL ,
+          </when>
+          <otherwise >
+            FIELD_TYPE = #{FIELD_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ID = #{ID}
+  </sql>
+  <update id="updateSYS_PARAM_ISO_FLDS" parameterType="com.path.dbmaps.vo.SYS_PARAM_ISO_FLDSVO" >
+    <include refid="sql_updateSYS_PARAM_ISO_FLDS" />
+  </update>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_PROV_GROUP_AMORTIZATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_PROV_GROUP_AMORTIZATIONVO" >
+    <id column="COLLATERAL_TYPE_CODE" property="COLLATERAL_TYPE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PROV_GROUP_CODE" property="PROV_GROUP_CODE" />
+    <result column="YEARLY_PERCENTAGE" property="YEARLY_PERCENTAGE" />
+    <result column="APPLY_AFTER_PERIOD" property="APPLY_AFTER_PERIOD" />
+    <result column="APPLY_AFTER_PERIOD_TYPE" property="APPLY_AFTER_PERIOD_TYPE" />
+    <result column="APPLY_FULL_AFTER_PERIOD" property="APPLY_FULL_AFTER_PERIOD" />
+    <result column="APPLY_FULL_AFTER_PERIOD_TYPE" property="APPLY_FULL_AFTER_PERIOD_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COLLATERAL_TYPE_CODE, COMP_CODE, LINE_NO, PROV_GROUP_CODE, YEARLY_PERCENTAGE, APPLY_AFTER_PERIOD, 
+    APPLY_AFTER_PERIOD_TYPE, APPLY_FULL_AFTER_PERIOD, APPLY_FULL_AFTER_PERIOD_TYPE
+  </sql>
+  <select id="selectTRS_PROV_GROUP_AMORTIZATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_PROV_GROUP_AMORTIZATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_PROV_GROUP_AMORTIZATION
+    where COLLATERAL_TYPE_CODE = #{COLLATERAL_TYPE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROV_GROUP_CODE = #{PROV_GROUP_CODE}
+  </select>
+  <delete id="deleteTRS_PROV_GROUP_AMORTIZATION" parameterType="com.path.dbmaps.vo.TRS_PROV_GROUP_AMORTIZATIONVOKey" >
+    delete from TRS_PROV_GROUP_AMORTIZATION
+    where COLLATERAL_TYPE_CODE = #{COLLATERAL_TYPE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROV_GROUP_CODE = #{PROV_GROUP_CODE}
+  </delete>
+  <insert id="insertTRS_PROV_GROUP_AMORTIZATION" parameterType="com.path.dbmaps.vo.TRS_PROV_GROUP_AMORTIZATIONVO" >
+    insert into TRS_PROV_GROUP_AMORTIZATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COLLATERAL_TYPE_CODE != null and COLLATERAL_TYPE_CODE != emptyBigDecimalValue" >
+        COLLATERAL_TYPE_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PROV_GROUP_CODE != null and PROV_GROUP_CODE != emptyBigDecimalValue" >
+        PROV_GROUP_CODE,
+      </if>
+      <if test="YEARLY_PERCENTAGE != null and YEARLY_PERCENTAGE != emptyBigDecimalValue" >
+        YEARLY_PERCENTAGE,
+      </if>
+      <if test="APPLY_AFTER_PERIOD != null and APPLY_AFTER_PERIOD != emptyBigDecimalValue" >
+        APPLY_AFTER_PERIOD,
+      </if>
+      <if test="APPLY_AFTER_PERIOD_TYPE != null" >
+        APPLY_AFTER_PERIOD_TYPE,
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD != null and APPLY_FULL_AFTER_PERIOD != emptyBigDecimalValue" >
+        APPLY_FULL_AFTER_PERIOD,
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD_TYPE != null" >
+        APPLY_FULL_AFTER_PERIOD_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COLLATERAL_TYPE_CODE != null and COLLATERAL_TYPE_CODE != emptyBigDecimalValue" >
+        #{COLLATERAL_TYPE_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PROV_GROUP_CODE != null and PROV_GROUP_CODE != emptyBigDecimalValue" >
+        #{PROV_GROUP_CODE},
+      </if>
+      <if test="YEARLY_PERCENTAGE != null and YEARLY_PERCENTAGE != emptyBigDecimalValue" >
+        #{YEARLY_PERCENTAGE},
+      </if>
+      <if test="APPLY_AFTER_PERIOD != null and APPLY_AFTER_PERIOD != emptyBigDecimalValue" >
+        #{APPLY_AFTER_PERIOD},
+      </if>
+      <if test="APPLY_AFTER_PERIOD_TYPE != null" >
+        #{APPLY_AFTER_PERIOD_TYPE},
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD != null and APPLY_FULL_AFTER_PERIOD != emptyBigDecimalValue" >
+        #{APPLY_FULL_AFTER_PERIOD},
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD_TYPE != null" >
+        #{APPLY_FULL_AFTER_PERIOD_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_PROV_GROUP_AMORTIZATION" >
+    update TRS_PROV_GROUP_AMORTIZATION
+    <set >
+      <if test="YEARLY_PERCENTAGE != null" >
+        <choose >
+          <when test="YEARLY_PERCENTAGE == emptyBigDecimalValue" >
+            YEARLY_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            YEARLY_PERCENTAGE = #{YEARLY_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLY_AFTER_PERIOD != null" >
+        <choose >
+          <when test="APPLY_AFTER_PERIOD == emptyBigDecimalValue" >
+            APPLY_AFTER_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            APPLY_AFTER_PERIOD = #{APPLY_AFTER_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLY_AFTER_PERIOD_TYPE != null" >
+        APPLY_AFTER_PERIOD_TYPE = #{APPLY_AFTER_PERIOD_TYPE},
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD != null" >
+        <choose >
+          <when test="APPLY_FULL_AFTER_PERIOD == emptyBigDecimalValue" >
+            APPLY_FULL_AFTER_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            APPLY_FULL_AFTER_PERIOD = #{APPLY_FULL_AFTER_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLY_FULL_AFTER_PERIOD_TYPE != null" >
+        APPLY_FULL_AFTER_PERIOD_TYPE = #{APPLY_FULL_AFTER_PERIOD_TYPE},
+      </if>
+    </set>
+    where COLLATERAL_TYPE_CODE = #{COLLATERAL_TYPE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PROV_GROUP_CODE = #{PROV_GROUP_CODE}
+  </sql>
+  <update id="updateTRS_PROV_GROUP_AMORTIZATION" parameterType="com.path.dbmaps.vo.TRS_PROV_GROUP_AMORTIZATIONVO" >
+    <include refid="sql_updateTRS_PROV_GROUP_AMORTIZATION" />
+  </update>
+</mapper>

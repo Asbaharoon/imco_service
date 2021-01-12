@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="religionMapper">
+
+ <sql id="religionListCommon" >
+	<![CDATA[
+		SELECT RELIGION.RELIGION_CODE,   
+         	RELIGION.BRIEF_DESC_ENG,   
+         	RELIGION.BRIEF_DESC_ARAB  
+    	FROM RELIGION  
+   		WHERE (RELIGION.COMP_CODE  = #{compCode})
+	]]>	 
+ </sql>
+ 
+  <sql id="religionListCommonOrder" >
+	<![CDATA[
+     ORDER BY RELIGION.RELIGION_CODE ASC
+	]]>	 
+ </sql>
+ 
+ <resultMap id="religionListMap" type="religionVO">
+	<id property="RELIGION_CODE" column="RELIGION_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="religionList" resultMap="religionListMap" parameterType="religionSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="religionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="religionListCount" resultType="int" parameterType="religionSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="religionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+  <select id="returnReligionById" parameterType="religionSC" resultType="religionVO">
+  		SELECT
+			 RELIGION_CODE,
+			 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  RELIGION 
+		WHERE RELIGION.RELIGION_CODE = #{religionCode} 
+		AND   RELIGION.COMP_CODE  = #{compCode}
+  </select>
+ 
+</mapper>

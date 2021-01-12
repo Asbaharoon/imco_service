@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifRoleMapper">
+
+ <sql id="cifRoleListCommon" >
+	<![CDATA[
+		SELECT
+			 CIF_ROLE.ROLE_CODE,
+			 CIF_ROLE.ADDITIONAL_REFERENCE,
+			 CIF_ROLE.BRIEF_DESC_ENG,
+			 CIF_ROLE.LONG_DESC_ENG,
+			 CIF_ROLE.BRIEF_DESC_ARAB,
+			 CIF_ROLE.LONG_DESC_ARAB,
+			 CIF_ROLE.COMP_CODE
+		FROM  CIF_ROLE 
+		WHERE CIF_ROLE.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ 
+ <resultMap id="cifRoleListMap" type="cifRoleVO">
+	<id property="ROLE_CODE" column="ROLE_CODE" />
+	<result property="COMP_CODE" column="COMP_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="cifRoleList" resultMap="cifRoleListMap" parameterType="cifRoleSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifRoleListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cifRoleListCount" resultType="int" parameterType="cifRoleSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifRoleListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnRoleById" parameterType="cifRoleSC" resultType="cifRoleVO">
+  		SELECT ROLE_CODE, CASE WHEN #{language} = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END BRIEF_DESC_ENG
+		FROM   CIF_ROLE 
+		WHERE  CIF_ROLE.ROLE_CODE = #{roleCode} 
+		AND    CIF_ROLE.COMP_CODE  = #{compCode}
+  </select>
+ 
+</mapper>

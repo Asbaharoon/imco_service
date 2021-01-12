@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="categoryMapper">
+ 
+ <sql id="categoryListCommon" >
+	 	  SELECT CATEG_ID,
+		         CASE WHEN #{preferredLanguage} = 'AR' 
+	                    THEN CATEG_DESC_AR 
+	                    WHEN #{preferredLanguage} = 'FR'
+	                    THEN CATEG_DESC_FR
+	                    ELSE CATEG_DESC_ENG
+	             END AS CATEG_DESC_ENG
+		  FROM OPT_CATEGORY T
+		  WHERE CATEG_ID IN (SELECT DISTINCT CATEG_ID
+		                      FROM OPT T
+		                     WHERE PARENT_REF = 'ROOT'
+		                       AND APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		                       AND CATEG_ID IS NOT NULL)
+		  <if test="categId != null and categId != emptyBigDecimalValue">
+		  		AND CATEG_ID = #{categId,jdbcType=NUMERIC}
+		  </if>	
+</sql>
+
+ <resultMap id="returnCategoryList_ResMap" type="com.path.dbmaps.vo.OPT_CATEGORYVO" >
+    <id column="CATEG_ID" property="CATEG_ID" />
+    <result column="CATEG_DESC_ENG" property="CATEG_DESC_ENG" />
+ </resultMap>
+ 
+ <select id="returnCategoryList"  resultMap="returnCategoryList_ResMap" parameterType="com.path.vo.admin.category.CategorySC">
+     <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="categoryListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="returnCategoryCount"  resultType="int" parameterType="com.path.vo.admin.category.CategorySC" > 
+ 	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="categoryListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+</mapper>

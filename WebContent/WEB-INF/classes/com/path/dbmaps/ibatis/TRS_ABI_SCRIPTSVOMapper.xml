@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_ABI_SCRIPTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_ABI_SCRIPTSVO" >
+    <id column="ABI_NUMBER" property="ABI_NUMBER" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="DEAL_BRANCH_CODE" property="DEAL_BRANCH_CODE" />
+    <result column="DEAL_NO" property="DEAL_NO" />
+    <result column="REC_DRAFT_DATE" property="REC_DRAFT_DATE" />
+    <result column="BLOCK_YN" property="BLOCK_YN" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ABI_NUMBER, COMP_CODE, DEAL_BRANCH_CODE, DEAL_NO, REC_DRAFT_DATE, BLOCK_YN, MODIFIED_BY, 
+    DATE_MODIFIED
+  </sql>
+  <select id="selectTRS_ABI_SCRIPTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_ABI_SCRIPTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_ABI_SCRIPTS
+    where ABI_NUMBER = #{ABI_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTRS_ABI_SCRIPTS" parameterType="com.path.dbmaps.vo.TRS_ABI_SCRIPTSVOKey" >
+    delete from TRS_ABI_SCRIPTS
+    where ABI_NUMBER = #{ABI_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTRS_ABI_SCRIPTS" parameterType="com.path.dbmaps.vo.TRS_ABI_SCRIPTSVO" >
+    insert into TRS_ABI_SCRIPTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ABI_NUMBER != null" >
+        ABI_NUMBER,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_BRANCH_CODE != null and DEAL_BRANCH_CODE != emptyBigDecimalValue" >
+        DEAL_BRANCH_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="REC_DRAFT_DATE != null" >
+        REC_DRAFT_DATE,
+      </if>
+      <if test="BLOCK_YN != null" >
+        BLOCK_YN,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ABI_NUMBER != null" >
+        #{ABI_NUMBER},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_BRANCH_CODE != null and DEAL_BRANCH_CODE != emptyBigDecimalValue" >
+        #{DEAL_BRANCH_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="REC_DRAFT_DATE != null" >
+        #{REC_DRAFT_DATE},
+      </if>
+      <if test="BLOCK_YN != null" >
+        #{BLOCK_YN},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_ABI_SCRIPTS" >
+    update TRS_ABI_SCRIPTS
+    <set >
+      <if test="DEAL_BRANCH_CODE != null" >
+        <choose >
+          <when test="DEAL_BRANCH_CODE == emptyBigDecimalValue" >
+            DEAL_BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            DEAL_BRANCH_CODE = #{DEAL_BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_NO != null" >
+        <choose >
+          <when test="DEAL_NO == emptyBigDecimalValue" >
+            DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NO = #{DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REC_DRAFT_DATE != null" >
+        REC_DRAFT_DATE = #{REC_DRAFT_DATE},
+      </if>
+      <if test="BLOCK_YN != null" >
+        BLOCK_YN = #{BLOCK_YN},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+    </set>
+    where ABI_NUMBER = #{ABI_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTRS_ABI_SCRIPTS" parameterType="com.path.dbmaps.vo.TRS_ABI_SCRIPTSVO" >
+    <include refid="sql_updateTRS_ABI_SCRIPTS" />
+  </update>
+</mapper>

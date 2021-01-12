@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="criteriaMapper">
+
+	<sql id="select_criteria">
+		SELECT CTS_CRITERIA.CRITERIA_CODE,CTS_CRITERIA.CRITERIA_DESC,CRITERIA_REFERENCE
+		FROM CTS_CRITERIA
+		WHERE  COMP_CODE = #{compCode}
+		<if test='appName == "AML"'>
+			AND CRITERIA_USAGE = #{isSegmentationScore, jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="select_criteriaDetails">
+		SELECT	CTS_CRITERIA.CRITERIA_CODE,
+			    CTS_CRITERIA.CRITERIA_DESC,
+				CTS_CRITERIA.CRITERIA_USAGE,
+				CTS_CRITERIA.QUERY_ID,
+				CTS_CRITERIA.BRANCH_CODE,
+				CTS_CRITERIA.CRITERIA_REFERENCE,
+				(select QUERY_NAME from
+				IRP_AD_HOC_QUERY where
+				IRP_AD_HOC_QUERY.QUERY_ID = CTS_CRITERIA.QUERY_ID) queryName,
+				CTS_CRITERIA.PROCEDURE_ID,
+				(select
+				PROC_NAME from CTS_PROC where
+				CTS_PROC.PROC_ID=CTS_CRITERIA.PROCEDURE_ID) procName,
+				SCORE
+		FROM CTS_CRITERIA
+		WHERE CTS_CRITERIA.COMP_CODE = #{compCode}
+		AND CTS_CRITERIA.CRITERIA_CODE = (#{CRITERIA_CODE})
+	</sql>
+
+
+	<sql id="select_procedure">
+		<choose>
+			<when test="isSybase == 1">
+				SELECT sysobjects.name AS PROC_NAME, sysobjects.name AS PROC_DESC
+		        FROM sysobjects 
+		        WHERE sysobjects.type = 'P' 
+	        </when>
+	        <otherwise>
+				SELECT OBJECT_NAME AS PROC_NAME, OBJECT_NAME AS PROC_DESC
+				FROM USER_PROCEDURES
+				WHERE OBJECT_TYPE = 'PROCEDURE'
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="updateCounter">
+		UPDATE IRP_COUNTER SET LAST_NO=LAST_NO+1 WHERE
+		UPPER(TABLE_NAME) =
+		UPPER(#{tableName})
+</sql>
+
+	<sql id="insertCounter">
+			INSERT INTO IRP_COUNTER (TABLE_NAME, LAST_NO)
+			VALUES(UPPER(#{tableName}), 1)
+	</sql>
+
+	<sql id="retCounterVal">
+		SELECT LAST_NO
+		FROM IRP_COUNTER
+		WHERE UPPER(TABLE_NAME) =
+		UPPER(#{tableName})
+</sql>
+
+	<sql id="returnProcValue">
+
+		SELECT COUNT(1)
+		FROM CTS_PROC
+		WHERE UPPER(PROC_NAME) =
+		UPPER(#{VALUE})
+
+</sql>
+
+	<select id="checkduplicateCriteriaCode"
+		parameterType="com.path.vo.core.criteria.CriteriaCO"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM CTS_CRITERIA
+		WHERE
+		CTS_CRITERIA.COMP_CODE = #{ctsCriteriaVO.COMP_CODE,jdbcType=NUMERIC}
+		AND CTS_CRITERIA .CRITERIA_CODE = #{ctsCriteriaVO.CRITERIA_CODE}
+	</select>
+
+	<sql id="select_CriteriaParam">
+			<choose>
+				<when test="isSybase == 1">
+					SELECT col.name AS PARAM_NAME,
+				       col.colid AS PARAM_ORDER,
+				       ty.name AS PARAM_TYPE,
+				
+				       CTS_CRITERIA_PARAM.BRANCH_CODE,
+				       CTS_CRITERIA_PARAM.CRITERIA_CODE,
+				       CTS_CRITERIA_PARAM.ENTITY_TYPE,
+				
+				       CTS_CRITERIA_PARAM.PARAM_VALUE,
+				       CTS_CRITERIA_PARAM.SESSION_ATTR_NAME,
+				       CTS_CRITERIA_PARAM.PARAM_CLASS,
+				       CTS_CRITERIA_PARAM.PARAM_QUERY_ID,
+				       CTS_CRITERIA_PARAM.ENTITY_ID
+				  FROM sysobjects t , systypes ty , syscolumns col
+				    LEFT OUTER JOIN CTS_CRITERIA_PARAM ON (CTS_CRITERIA_PARAM.PARAM_ORDER = col.colid
+                                                       <!--   AND CTS_CRITERIA_PARAM.PARAM_TYPE = ty.name  -->
+                                                          AND  CTS_CRITERIA_PARAM.PARAM_NAME = col.name AND
+				                                        CTS_CRITERIA_PARAM.COMP_CODE =  #{compCode} AND
+				                                        CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=VARCHAR} AND
+				                                        CTS_CRITERIA_PARAM.ENTITY_TYPE= #{ENTITY_TYPE} AND
+				                                        CTS_CRITERIA_PARAM.ENTITY_ID= #{ENTITY_ID}
+				                                        )
+				  where t.id=col.id 
+				  and ty.usertype=col.usertype 
+				  AND t.name = #{entityName}
+				  AND col.status2 = 1
+			     ORDER BY PARAM_ORDER ASC
+		        </when>
+		        <otherwise>
+					SELECT USER_ARGUMENTS.ARGUMENT_NAME AS PARAM_NAME,
+					       USER_ARGUMENTS.POSITION AS PARAM_ORDER,
+					       USER_ARGUMENTS.DATA_TYPE AS PARAM_TYPE,
+					
+					       CTS_CRITERIA_PARAM.BRANCH_CODE,
+					       CTS_CRITERIA_PARAM.CRITERIA_CODE,
+					       CTS_CRITERIA_PARAM.ENTITY_TYPE,
+					
+					       CTS_CRITERIA_PARAM.PARAM_VALUE,
+					       CTS_CRITERIA_PARAM.SESSION_ATTR_NAME,
+					       CTS_CRITERIA_PARAM.PARAM_CLASS,
+				       	   CTS_CRITERIA_PARAM.PARAM_QUERY_ID,
+				       	   CTS_CRITERIA_PARAM.ENTITY_ID
+					  FROM USER_ARGUMENTS
+					  LEFT OUTER JOIN CTS_CRITERIA_PARAM ON (CTS_CRITERIA_PARAM.PARAM_ORDER = USER_ARGUMENTS.POSITION
+					  										 AND CTS_CRITERIA_PARAM.PARAM_TYPE = USER_ARGUMENTS.DATA_TYPE
+					  										  AND  CTS_CRITERIA_PARAM.PARAM_NAME = USER_ARGUMENTS.ARGUMENT_NAME AND
+					                                        CTS_CRITERIA_PARAM.COMP_CODE =  #{compCode} AND
+					                                        CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=VARCHAR} AND
+					                                        CTS_CRITERIA_PARAM.ENTITY_TYPE= #{ENTITY_TYPE} AND
+					                                        CTS_CRITERIA_PARAM.ENTITY_ID= #{ENTITY_ID}
+					                                        )
+					WHERE USER_ARGUMENTS.OBJECT_NAME = #{entityName}
+					AND IN_OUT = 'IN'
+					ORDER BY PARAM_ORDER ASC
+				</otherwise>
+			</choose>
+                                   
+	</sql>
+	
+	
+		<sql id="select_QueryParam">
+                                  Select CTS_CRITERIA_PARAM.PARAM_NAME AS PARAM_NAME,
+                                         CTS_CRITERIA_PARAM.PARAM_CLASS AS PARAM_CLASS,
+                                         CTS_CRITERIA_PARAM.SESSION_ATTR_NAME AS SESSION_ATTR_NAME,
+                                         CTS_CRITERIA_PARAM.PARAM_VALUE AS PARAM_VALUE,
+                                         CTS_CRITERIA_PARAM.PARAM_ORDER AS PARAM_ORDER,
+                                         CTS_CRITERIA_PARAM.PARAM_TYPE AS PARAM_TYPE
+
+                                   from   CTS_CRITERIA_PARAM
+                                   where  CTS_CRITERIA_PARAM.COMP_CODE = #{compCode}  AND
+                                          CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=VARCHAR} AND
+                                          CTS_CRITERIA_PARAM.ENTITY_TYPE= #{ENTITY_TYPE} AND
+                                          CTS_CRITERIA_PARAM.ENTITY_ID= #{ENTITY_ID} 
+                                 ORDER BY PARAM_ORDER
+	</sql>
+	
+<!--  
+	<sql id="select_newCriteriaParam">
+
+		SELECT ARGUMENT_NAME AS PARAM_NAME, POSITION AS
+		PARAM_ORDER, DATA_TYPE AS
+		PARAM_TYPE
+		FROM USER_ARGUMENTS
+		WHERE
+		USER_ARGUMENTS.OBJECT_NAME= #{entityName}
+	
+	</sql>
+
+-->
+
+	<delete id="deleteCriteriaParam" parameterType="com.path.vo.core.criteria.CriteriaCO">
+		DELETE FROM CTS_CRITERIA_PARAM
+		WHERE COMP_CODE = #{loginCompCode}
+		AND CRITERIA_CODE= #{ctsCriteriaVO.CRITERIA_CODE}
+		AND ENTITY_TYPE = #{ENTITY_TYPE}
+  </delete>
+
+	<resultMap id="criteriaResultMap"
+		type="com.path.vo.core.criteria.CriteriaCO">
+		<result property="ctsCriteriaVO.CRITERIA_CODE" column="CRITERIA_CODE" />
+		<result property="ctsCriteriaVO.CRITERIA_DESC" column="CRITERIA_DESC" />
+		<result property="ctsCriteriaVO.CRITERIA_REFERENCE" column="CRITERIA_REFERENCE" />
+	</resultMap>
+
+	<resultMap id="criteriaDetailsResultMap"
+		type="com.path.vo.core.criteria.CriteriaCO">
+		<result property="ctsCriteriaVO.CRITERIA_CODE" column="CRITERIA_CODE" />
+		<result property="ctsCriteriaVO.CRITERIA_DESC" column="CRITERIA_DESC" />
+		<result property="ctsCriteriaVO.CRITERIA_USAGE" column="CRITERIA_USAGE" />
+		<result property="ctsCriteriaVO.QUERY_ID" column="QUERY_ID" />
+		<result property="ctsCriteriaVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="ctsCriteriaVO.PROCEDURE_ID" column="PROCEDURE_ID" />
+		<result property="queryIdCO.queryName" column="queryName" />
+		<result property="procedureIdCO.procName" column="procName" />
+		<result property="ctsCriteriaVO.SCORE" column="SCORE" />
+		<result property="ctsCriteriaVO.CRITERIA_REFERENCE" column="CRITERIA_REFERENCE" />
+	</resultMap>
+
+	<resultMap id="resProcedureListMap" type="com.path.vo.core.procedureid.ProcedureIdCO">
+		<result property="procNames" column="PROC_NAME" />
+		<result property="procDesc" column="PROC_DESC" />
+	</resultMap>
+
+	<resultMap id="criteriaParamResultMap"
+		type="com.path.vo.core.criteria.CriteriaParamCO">
+		<result property="ctsCriteriaParamVO.PARAM_NAME" column="PARAM_NAME" />
+		<result property="ctsCriteriaParamVO.PARAM_ORDER" column="PARAM_ORDER" />
+		<result property="ctsCriteriaParamVO.PARAM_VALUE" column="PARAM_VALUE" />
+		<result property="ctsCriteriaParamVO.PARAM_TYPE" column="PARAM_TYPE" />
+	</resultMap>
+	
+	
+	<resultMap id="queryParamResultMap"
+		type="com.path.vo.core.criteria.CriteriaParamCO">
+		<result property="ctsCriteriaParamVO.PARAM_NAME" column="PARAM_NAME" />
+		<result property="ctsCriteriaParamVO.PARAM_ORDER" column="PARAM_ORDER" />
+		<result property="ctsCriteriaParamVO.PARAM_VALUE" column="PARAM_VALUE" />
+		<result property="ctsCriteriaParamVO.PARAM_TYPE" column="PARAM_TYPE" />
+		<result property="ctsCriteriaParamVO.PARAM_CLASS" column="PARAM_CLASS" />
+		<result property="ctsCriteriaParamVO.SESSION_ATTR_NAME" column="SESSION_ATTR_NAME" />
+	</resultMap>
+	
+
+	<resultMap id="criteriaOldParamResultMap"
+	type="com.path.vo.core.criteria.CriteriaParamCO">
+		<result property="ctsCriteriaParamVO.PARAM_NAME" column="PARAM_NAME" />
+		<result property="ctsCriteriaParamVO.PARAM_ORDER" column="PARAM_ORDER" />
+		<result property="ctsCriteriaParamVO.PARAM_VALUE" column="PARAM_VALUE" />
+		<result property="ctsCriteriaParamVO.PARAM_TYPE" column="PARAM_TYPE" />
+		<result property="ctsCriteriaParamVO.PARAM_CLASS" column="PARAM_CLASS" />
+		<result property="ctsCriteriaParamVO.SESSION_ATTR_NAME" column="SESSION_ATTR_NAME" />
+		<result property="ctsCriteriaParamVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="ctsCriteriaParamVO.PARAM_QUERY_ID" column="PARAM_QUERY_ID" />
+		<result property="ctsCriteriaParamVO.CRITERIA_CODE" column="CRITERIA_CODE" />
+		<result property="ctsCriteriaParamVO.ENTITY_TYPE" column="ENTITY_TYPE" />
+		<result property="ctsCriteriaParamVO.ENTITY_ID" column="ENTITY_ID" />
+		<result property="ctsCriteriaParamVO.COMP_CODE" column="COMP_CODE" />
+	</resultMap>
+
+
+	<select id="returnCriteriaList" resultMap="criteriaResultMap"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_criteria" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnCriteriaListCount" resultType="int"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_criteria" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnCriteriaDetails" resultMap="criteriaDetailsResultMap"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="select_criteriaDetails" />
+	</select>
+
+	<select id="returnProcedureListCount" parameterType="com.path.vo.core.criteria.CriteriaSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_procedure" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnProcedureList" parameterType="com.path.vo.core.criteria.CriteriaSC"
+		resultMap="resProcedureListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_procedure" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+
+	<update id="updateCounterVal" parameterType="java.lang.String">
+		<include refid="updateCounter" />
+	</update>
+	
+	<!-- By Bilal For TP#750884  -->
+	<update id="insertCounterVal" parameterType="java.lang.String">
+		<include refid="insertCounter" />
+	</update>
+
+	<select id="returnCounterVal" parameterType="java.lang.String"
+		resultType="int">
+		<include refid="retCounterVal" />
+	</select>
+
+
+	<select id="returnProcValue" parameterType="java.lang.String"
+		resultType="int">
+		<include refid="returnProcValue" />
+	</select>
+
+<!--  
+	<select id="returnCriteriaNewPramList" resultMap="criteriaParamResultMap"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_newCriteriaParam" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnCriteriaNewParamListCount" resultType="int"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_newCriteriaParam" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	-->
+
+	<select id="returnCriteriaParamList" resultMap="criteriaOldParamResultMap" parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_CriteriaParam" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	
+	<select id="returnQueryParamList" resultMap="queryParamResultMap" parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_QueryParam" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+
+	<select id="returnCriteriaParamListCount" resultType="int" parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_CriteriaParam" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+
+
+	<insert id="saveProcedureDetails" parameterType="com.path.vo.core.procedureid.ProcedureIdCO">
+
+		INSERT INTO CTS_PROC (PROC_ID, PROC_NAME, PROC_DESC)
+		VALUES (#{procId,jdbcType=NUMERIC}, #{procNames,jdbcType=VARCHAR}, #{procDesc,jdbcType=VARCHAR})
+    </insert>
+    
+    
+    <select id="returnArgumentDetails" parameterType="com.path.vo.core.criteria.CriteriaSC" resultMap="criteriaOldParamResultMap" >
+    		SELECT  CTS_CRITERIA_PARAM.COMP_CODE,
+    			   CTS_CRITERIA_PARAM.BRANCH_CODE,
+			       CTS_CRITERIA_PARAM.CRITERIA_CODE,
+			       CTS_CRITERIA_PARAM.ENTITY_TYPE,
+			       CTS_CRITERIA_PARAM.PARAM_VALUE,
+			       CTS_CRITERIA_PARAM.SESSION_ATTR_NAME,
+			       CTS_CRITERIA_PARAM.PARAM_CLASS,
+			       CTS_CRITERIA_PARAM.PARAM_QUERY_ID,
+			       CTS_CRITERIA_PARAM.ENTITY_ID
+        FROM CTS_CRITERIA_PARAM
+    		WHERE CTS_CRITERIA_PARAM.COMP_CODE =  #{compCode} AND
+	                CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=VARCHAR} AND
+	                CTS_CRITERIA_PARAM.ENTITY_TYPE= #{ENTITY_TYPE} AND
+  					CTS_CRITERIA_PARAM.PARAM_NAME = #{paramName} 
+  					<choose>
+					<when test='"M".equals(ENTITY_TYPE)'>
+						AND CTS_CRITERIA_PARAM.PARAM_QUERY_ID = #{ENTITY_ID}
+					</when>
+					<otherwise>
+						AND CTS_CRITERIA_PARAM.ENTITY_ID= #{ENTITY_ID}
+					</otherwise>
+					</choose>
+			ORDER BY CTS_CRITERIA_PARAM.PARAM_ORDER ASC		
+    </select>
+    
+    <select id="returnCountCriteriaLinkSegment" parameterType="com.path.vo.core.criteria.CriteriaCO" resultType="int" >
+    		SELECT COUNT(1)
+    		FROM   CTS_SEGMENT_DET
+    		WHERE  COMP_CODE 		=  #{ctsCriteriaVO.COMP_CODE}
+    		  AND  CRITERIA_CODE 	= #{ctsCriteriaVO.CRITERIA_CODE}
+    </select>
+    
+    <resultMap id="dependencyByScoreValueMap" type="com.path.vo.core.criteria.CriteriaCO">
+		<result property="cifcontrolDefineScoreRangeVO.FROM_SCORE" column="FROM_SCORE" />
+		<result property="cifcontrolDefineScoreRangeVO.TO_SCORE" column="TO_SCORE" />
+	</resultMap>
+	
+    <select id="dependencyByScoreValue" parameterType="com.path.vo.core.criteria.CriteriaCO" resultMap="dependencyByScoreValueMap" >
+    		SELECT FROM_SCORE, TO_SCORE
+    		FROM   CIFCONTROL_DEFINE_SCORE_RANGE
+    		WHERE  COMP_CODE 		=  #{ctsCriteriaVO.COMP_CODE}
+    		ORDER BY FROM_SCORE
+    </select>
+   
+   <!-- By Bilal For TP#750884  -->
+    <resultMap id="multiSelectResultMap"
+		type="com.path.dbmaps.vo.AML_PARAM_MAPPINGVO">
+		<result property="PARAM_VALUE" column="PARAM_VALUE" />
+	</resultMap>
+	
+	<select id="returnMaxLineNo" parameterType="com.path.vo.core.criteria.CriteriaSC"
+	resultType="int">
+		<include refid="returnMaxLineNoMapping" />
+	</select>
+	
+	<sql id="returnMaxLineNoMapping">
+		SELECT MAX(LINE_NO)
+		FROM AML_PARAM_MAPPING
+	</sql>
+	
+	<select id="loadMultiSelectListGrid" resultMap="multiSelectResultMap"
+		parameterType="com.path.vo.core.criteria.CriteriaSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="loadMultiselect_values" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	 <sql id="loadMultiselect_values">
+		SELECT DISTINCT PARAM_VALUE
+		FROM AML_PARAM_MAPPING
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		AND CRITERIA_CODE = #{CRITERIA_CODE,jdbcType=NUMERIC}
+		AND QUERY_PARAM_ID = #{queryId,jdbcType=NUMERIC}
+		AND PARAM_ENTITY_TYPE = #{ENTITY_TYPE,jdbcType=VARCHAR}
+		AND BUSINESS_RULE_CODE = 0
+	</sql>
+
+	<delete id="deleteOldListSelected" parameterType="com.path.vo.core.criteria.CriteriaCO">
+		DELETE FROM AML_PARAM_MAPPING
+		WHERE COMP_CODE = #{loginCompCode}
+		AND BRANCH_CODE = #{loginBraCode,jdbcType=NUMERIC}
+		AND CRITERIA_CODE= #{ctsCriteriaVO.CRITERIA_CODE}
+		AND QUERY_PARAM_ID = #{queryParamId,jdbcType=NUMERIC}
+		AND PARAM_ENTITY_TYPE = #{ENTITY_TYPE,jdbcType=VARCHAR}
+		AND BUSINESS_RULE_CODE = 0
+  </delete>
+  
+   <select id="returnReplaceArgumentSelect" parameterType="com.path.vo.core.criteria.CriteriaSC" resultMap="criteriaOldParamResultMap" >
+    		SELECT  CTS_CRITERIA_PARAM.COMP_CODE,
+    			   CTS_CRITERIA_PARAM.BRANCH_CODE,
+			       CTS_CRITERIA_PARAM.CRITERIA_CODE,
+			       CTS_CRITERIA_PARAM.ENTITY_TYPE,
+			       CTS_CRITERIA_PARAM.PARAM_VALUE,
+			       CTS_CRITERIA_PARAM.SESSION_ATTR_NAME,
+			       CTS_CRITERIA_PARAM.PARAM_CLASS,
+			       CTS_CRITERIA_PARAM.PARAM_NAME,
+			       CTS_CRITERIA_PARAM.PARAM_QUERY_ID
+        FROM CTS_CRITERIA_PARAM
+    		WHERE CTS_CRITERIA_PARAM.COMP_CODE =  #{compCode,jdbcType=NUMERIC} AND
+    				CTS_CRITERIA_PARAM.BRANCH_CODE =  #{branchCode,jdbcType=NUMERIC} AND 
+	                CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=NUMERIC} AND
+	                CTS_CRITERIA_PARAM.ENTITY_TYPE= #{ENTITY_TYPE,jdbcType=VARCHAR} AND
+	                CTS_CRITERIA_PARAM.ENTITY_ID= #{criteriaEntityId,jdbcType=NUMERIC} AND
+	                CTS_CRITERIA_PARAM.PARAM_QUERY_ID= #{queryId,jdbcType=NUMERIC}
+	    
+    </select>
+  
+  <select id="returnArgumentSelectDetails" parameterType="com.path.vo.core.criteria.CriteriaSC" resultMap="criteriaParamResultMap" >
+    		SELECT  CTS_CRITERIA_PARAM.PARAM_NAME,
+			       CTS_CRITERIA_PARAM.PARAM_VALUE,
+			       CTS_CRITERIA_PARAM.PARAM_ORDER,
+			       CTS_CRITERIA_PARAM.PARAM_TYPE
+        FROM CTS_CRITERIA_PARAM
+    		WHERE CTS_CRITERIA_PARAM.COMP_CODE =  #{compCode,jdbcType=NUMERIC} AND
+	                CTS_CRITERIA_PARAM.CRITERIA_CODE= #{CRITERIA_CODE,jdbcType=VARCHAR} AND
+	                CTS_CRITERIA_PARAM.ENTITY_TYPE= 'M' 
+  					AND CTS_CRITERIA_PARAM.PARAM_QUERY_ID = #{paramQueryId,jdbcType=NUMERIC}
+    </select>
+    
+	<select id="returnMaxCriteriaCode"
+		parameterType="com.path.vo.core.criteria.CriteriaCO"
+		resultType="int">
+		SELECT (CASE WHEN MAX(CRITERIA_CODE) IS NULL THEN 0 ELSE MAX(CRITERIA_CODE) END) + 1
+		FROM CTS_CRITERIA
+		WHERE
+		CTS_CRITERIA.COMP_CODE = #{ctsCriteriaVO.COMP_CODE,jdbcType=NUMERIC}	
+	</select>
+	
+	<select id="checkCriteriaReferenceUniqueness"
+		parameterType="com.path.vo.core.criteria.CriteriaCO"
+		resultType="int">
+		SELECT COUNT(1)
+		FROM CTS_CRITERIA
+		WHERE CTS_CRITERIA.COMP_CODE = #{loginCompCode,jdbcType=NUMERIC}
+		<if test='ctsCriteriaVO.CRITERIA_CODE != null '>
+			AND	CTS_CRITERIA.CRITERIA_CODE != #{ctsCriteriaVO.CRITERIA_CODE , jdbcType=VARCHAR}
+		</if>
+		AND	UPPER(CTS_CRITERIA.CRITERIA_REFERENCE) = #{criteriaReference , jdbcType=VARCHAR}
+		AND	CTS_CRITERIA.CRITERIA_USAGE =#{ctsCriteriaVO.CRITERIA_USAGE , jdbcType=VARCHAR}
+			
+	</select>
+	
+<!-- 	 by bilal for BUG#974752 -->
+    <select id="getArgumentQueryId"  resultType="int" parameterType="com.path.vo.core.criteria.CriteriaSC" > 
+		<include refid="criteriaArgQueryIdList"/>
+	</select>
+	
+	<sql id="criteriaArgQueryIdList" >
+		SELECT COUNT(1) FROM IRP_QUERY_ARG_MAPPING
+		WHERE QUERY_ID = #{queryId,jdbcType=NUMERIC}
+		AND QUERY_ID IN (SELECT QUERY_ID FROM IRP_AD_HOC_QUERY)
+	</sql>
+	
+	<select id="getArgumentPrcId"  resultType="int" parameterType="com.path.vo.core.criteria.CriteriaSC" > 
+		<include refid="criteriaArgPrcIdList"/>
+	</select>
+	
+	<sql id="criteriaArgPrcIdList" >
+		<choose>
+		<when test="isSybase == 1">
+			SELECT COUNT(1) 
+			FROM sysobjects t , systypes ty , syscolumns col
+					  where t.id=col.id 
+					  and ty.usertype=col.usertype 
+					  AND t.name = #{entityName}
+					  AND col.status2 = 1
+		</when>
+		<otherwise>
+			SELECT COUNT(1) 
+			FROM USER_ARGUMENTS
+			WHERE USER_ARGUMENTS.OBJECT_NAME = #{entityName}
+			AND IN_OUT = 'IN'
+		</otherwise>
+		</choose>
+	</sql>
+	<!-- 	 end by bilal for BUG#974752 -->
+    
+</mapper>

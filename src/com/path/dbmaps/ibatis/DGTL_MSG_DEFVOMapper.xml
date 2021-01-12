@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_MSG_DEF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_MSG_DEFVO" >
+    <id column="DGTL_MSG_DEF_ID" property="DGTL_MSG_DEF_ID" />
+    <result column="BRIEF_NAME" property="BRIEF_NAME" />
+    <result column="LONG_NAME" property="LONG_NAME" />
+    <result column="MSG_TYPE" property="MSG_TYPE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+    <result column="STATUS" property="STATUS" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.DGTL_MSG_DEFVO" extends="BaseResultMap" >
+    <result column="MSG_SCHEMA" property="MSG_SCHEMA" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DGTL_MSG_DEF_ID, BRIEF_NAME, LONG_NAME, MSG_TYPE, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE, APPROVED_BY, APPROVED_DATE, DATE_UPDATED, DELETED_BY, DELETED_DATE, 
+    STATUS
+  </sql>
+  <sql id="Blob_Column_List" >
+    MSG_SCHEMA
+  </sql>
+  <select id="selectDGTL_MSG_DEF" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.DGTL_MSG_DEFVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from DGTL_MSG_DEF
+    where DGTL_MSG_DEF_ID = #{DGTL_MSG_DEF_ID}
+  </select>
+  <delete id="deleteDGTL_MSG_DEF" parameterType="com.path.dbmaps.vo.DGTL_MSG_DEFVO" >
+    delete from DGTL_MSG_DEF
+    where DGTL_MSG_DEF_ID = #{DGTL_MSG_DEF_ID}
+  </delete>
+  <insert id="insertDGTL_MSG_DEF" parameterType="com.path.dbmaps.vo.DGTL_MSG_DEFVO" >
+
+	<selectKey resultType="java.math.BigDecimal"
+		keyProperty="DGTL_MSG_DEF_ID" order="BEFORE">
+		<if test="isOracle == 1">
+			SELECT DGTL_MSG_DEF_SEQ.NEXTVAL FROM dual
+		</if>
+		<if test="isSybase == 1 and isSQLServer != 1 ">
+			SELECT next_identity('DGTL_MSG_DEF')
+		</if>
+		<if test="isSQLServer == 1 ">
+			SELECT IDENT_CURRENT ('DGTL_MSG_DEF') + 1
+		</if>
+	</selectKey>
+			
+    insert into DGTL_MSG_DEF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+       <if test="isOracle == 1">
+       	 DGTL_MSG_DEF_ID,
+       </if>
+      <if test="BRIEF_NAME != null and !&quot;&quot;.equals(BRIEF_NAME)" >
+        BRIEF_NAME,
+      </if>
+      <if test="LONG_NAME != null and !&quot;&quot;.equals(LONG_NAME)" >
+        LONG_NAME,
+      </if>
+      <if test="MSG_TYPE != null and !&quot;&quot;.equals(MSG_TYPE)" >
+        MSG_TYPE,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      DATE_UPDATED,
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="MSG_SCHEMA != null" >
+        MSG_SCHEMA,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+   	  <if test="isOracle == 1">
+    	 	#{DGTL_MSG_DEF_ID},
+      </if>
+      <if test="BRIEF_NAME != null and !&quot;&quot;.equals(BRIEF_NAME)" >
+        #{BRIEF_NAME},
+      </if>
+      <if test="LONG_NAME != null and !&quot;&quot;.equals(LONG_NAME)" >
+        #{LONG_NAME},
+      </if>
+      <if test="MSG_TYPE != null and !&quot;&quot;.equals(MSG_TYPE)" >
+        #{MSG_TYPE},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="MSG_SCHEMA != null" >
+        #{MSG_SCHEMA},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_MSG_DEF" >
+    update DGTL_MSG_DEF
+    <set >
+      <if test="BRIEF_NAME != null" >
+        <choose >
+          <when test="BRIEF_NAME.equals(&quot;&quot;)" >
+            BRIEF_NAME = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_NAME = #{BRIEF_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME != null" >
+        <choose >
+          <when test="LONG_NAME.equals(&quot;&quot;)" >
+            LONG_NAME = NULL ,
+          </when>
+          <otherwise >
+            LONG_NAME = #{LONG_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MSG_TYPE != null" >
+        <choose >
+          <when test="MSG_TYPE.equals(&quot;&quot;)" >
+            MSG_TYPE = NULL ,
+          </when>
+          <otherwise >
+            MSG_TYPE = #{MSG_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MSG_SCHEMA != null" >
+        MSG_SCHEMA = #{MSG_SCHEMA},
+      </if>
+    </set>
+    where DGTL_MSG_DEF_ID = #{DGTL_MSG_DEF_ID}
+  </sql>
+  <update id="updateDGTL_MSG_DEF" parameterType="com.path.dbmaps.vo.DGTL_MSG_DEFVO" >
+    <include refid="sql_updateDGTL_MSG_DEF" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IM_API_ARGUMENT">
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IM_API_ARGUMENTVO">
+    <id column="API_CODE" property="API_CODE" />
+    <id column="ARG_ID" property="ARG_ID" />
+    <result column="ARG_NAME" property="ARG_NAME" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="ARG_TYPE" property="ARG_TYPE" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DEFAULT_VALUE" property="DEFAULT_VALUE" />
+    <result column="REQ_ARG" property="REQ_ARG" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    API_CODE, ARG_ID, ARG_NAME, DESCRIPTION, ARG_TYPE, STATUS, DEFAULT_VALUE, REQ_ARG
+  </sql>
+  <select id="selectIM_API_ARGUMENT" parameterType="com.path.dbmaps.vo.IM_API_ARGUMENTVOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from IM_API_ARGUMENT
+    where API_CODE = #{API_CODE}
+      and ARG_ID = #{ARG_ID}
+  </select>
+  <delete id="deleteIM_API_ARGUMENT" parameterType="com.path.dbmaps.vo.IM_API_ARGUMENTVOKey">
+    delete from IM_API_ARGUMENT
+    where API_CODE = #{API_CODE}
+      and ARG_ID = #{ARG_ID}
+  </delete>
+  <insert id="insertIM_API_ARGUMENT" parameterType="com.path.dbmaps.vo.IM_API_ARGUMENTVO">
+    insert into IM_API_ARGUMENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="API_CODE != null">
+        API_CODE,
+      </if>
+      <if test="ARG_ID != null">
+        ARG_ID,
+      </if>
+      <if test="ARG_NAME != null">
+        ARG_NAME,
+      </if>
+      <if test="DESCRIPTION != null">
+        DESCRIPTION,
+      </if>
+      <if test="ARG_TYPE != null">
+        ARG_TYPE,
+      </if>
+      <if test="STATUS != null">
+        STATUS,
+      </if>
+      <if test="DEFAULT_VALUE != null">
+        DEFAULT_VALUE,
+      </if>
+      <if test="REQ_ARG != null">
+        REQ_ARG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="API_CODE != null">
+        #{API_CODE},
+      </if>
+      <if test="ARG_ID != null">
+        #{ARG_ID},
+      </if>
+      <if test="ARG_NAME != null">
+        #{ARG_NAME},
+      </if>
+      <if test="DESCRIPTION != null">
+        #{DESCRIPTION},
+      </if>
+      <if test="ARG_TYPE != null">
+        #{ARG_TYPE},
+      </if>
+      <if test="STATUS != null">
+        #{STATUS},
+      </if>
+      <if test="DEFAULT_VALUE != null">
+        #{DEFAULT_VALUE},
+      </if>
+      <if test="REQ_ARG != null">
+        #{REQ_ARG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIM_API_ARGUMENT">
+    update IM_API_ARGUMENT
+    <set>
+      <if test="ARG_NAME != null">
+        ARG_NAME = #{ARG_NAME},
+      </if>
+      <if test="DESCRIPTION != null">
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="ARG_TYPE != null">
+        ARG_TYPE = #{ARG_TYPE},
+      </if>
+      <if test="STATUS != null">
+        STATUS = #{STATUS},
+      </if>
+      <if test="DEFAULT_VALUE != null">
+        DEFAULT_VALUE = #{DEFAULT_VALUE},
+      </if>
+      <if test="REQ_ARG != null">
+        REQ_ARG = #{REQ_ARG},
+      </if>
+    </set>
+    where API_CODE = #{API_CODE}
+      and ARG_ID = #{ARG_ID}
+  </sql>
+  <update id="updateIM_API_ARGUMENT" parameterType="com.path.dbmaps.vo.IM_API_ARGUMENTVO">
+    <include refid="sql_updateIM_API_ARGUMENT" />
+  </update>
+</mapper>

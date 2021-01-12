@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOUNTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOUNTERVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TYPE" property="TYPE" />
+    <result column="LAST_NBR" property="LAST_NBR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, TYPE, LAST_NBR
+  </sql>
+  <select id="selectFMSCOUNTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOUNTERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </select>
+  <delete id="deleteFMSCOUNTER" parameterType="com.path.dbmaps.vo.FMSCOUNTERVOKey" >
+    delete from FMSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </delete>
+  <insert id="insertFMSCOUNTER" parameterType="com.path.dbmaps.vo.FMSCOUNTERVO" >
+    insert into FMSCOUNTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="LAST_NBR != null and LAST_NBR != emptyBigDecimalValue" >
+        LAST_NBR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="LAST_NBR != null and LAST_NBR != emptyBigDecimalValue" >
+        #{LAST_NBR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOUNTER" >
+    update FMSCOUNTER
+    <set >
+      <if test="LAST_NBR != null" >
+        <choose >
+          <when test="LAST_NBR == emptyBigDecimalValue" >
+            LAST_NBR = NULL ,
+          </when>
+          <otherwise >
+            LAST_NBR = #{LAST_NBR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </sql>
+  <update id="updateFMSCOUNTER" parameterType="com.path.dbmaps.vo.FMSCOUNTERVO" >
+    <include refid="sql_updateFMSCOUNTER" />
+  </update>
+</mapper>

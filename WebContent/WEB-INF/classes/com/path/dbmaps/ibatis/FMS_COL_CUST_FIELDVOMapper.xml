@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_COL_CUST_FIELD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_COL_CUST_FIELDVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ALPHANUMERIC" property="ALPHANUMERIC" />
+    <result column="NUMERIC_1" property="NUMERIC_1" />
+    <result column="DATE_1" property="DATE_1" />
+    <result column="LABEL" property="LABEL" />
+    <result column="ORDER_NUMBER" property="ORDER_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NO, ALPHANUMERIC, NUMERIC_1, DATE_1, LABEL, ORDER_NUMBER
+  </sql>
+  <select id="selectFMS_COL_CUST_FIELD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_COL_CUST_FIELDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_COL_CUST_FIELD
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMS_COL_CUST_FIELD" parameterType="com.path.dbmaps.vo.FMS_COL_CUST_FIELDVOKey" >
+    delete from FMS_COL_CUST_FIELD
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMS_COL_CUST_FIELD" parameterType="com.path.dbmaps.vo.FMS_COL_CUST_FIELDVO" >
+    insert into FMS_COL_CUST_FIELD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="ALPHANUMERIC != null and !&quot;&quot;.equals(ALPHANUMERIC)" >
+        ALPHANUMERIC,
+      </if>
+      <if test="NUMERIC_1 != null and NUMERIC_1 != emptyBigDecimalValue" >
+        NUMERIC_1,
+      </if>
+      <if test="DATE_1 != null" >
+        DATE_1,
+      </if>
+      <if test="LABEL != null and !&quot;&quot;.equals(LABEL)" >
+        LABEL,
+      </if>
+      <if test="ORDER_NUMBER != null and ORDER_NUMBER != emptyBigDecimalValue" >
+        ORDER_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="ALPHANUMERIC != null and !&quot;&quot;.equals(ALPHANUMERIC)" >
+        #{ALPHANUMERIC},
+      </if>
+      <if test="NUMERIC_1 != null and NUMERIC_1 != emptyBigDecimalValue" >
+        #{NUMERIC_1},
+      </if>
+      <if test="DATE_1 != null" >
+        #{DATE_1},
+      </if>
+      <if test="LABEL != null and !&quot;&quot;.equals(LABEL)" >
+        #{LABEL},
+      </if>
+      <if test="ORDER_NUMBER != null and ORDER_NUMBER != emptyBigDecimalValue" >
+        #{ORDER_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_COL_CUST_FIELD" >
+    update FMS_COL_CUST_FIELD
+    <set >
+      <if test="ALPHANUMERIC != null" >
+        <choose >
+          <when test="ALPHANUMERIC.equals(&quot;&quot;)" >
+            ALPHANUMERIC = NULL ,
+          </when>
+          <otherwise >
+            ALPHANUMERIC = #{ALPHANUMERIC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NUMERIC_1 != null" >
+        <choose >
+          <when test="NUMERIC_1 == emptyBigDecimalValue" >
+            NUMERIC_1 = NULL ,
+          </when>
+          <otherwise >
+            NUMERIC_1 = #{NUMERIC_1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_1 != null" >
+        DATE_1 = #{DATE_1},
+      </if>
+      <if test="LABEL != null" >
+        <choose >
+          <when test="LABEL.equals(&quot;&quot;)" >
+            LABEL = NULL ,
+          </when>
+          <otherwise >
+            LABEL = #{LABEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORDER_NUMBER != null" >
+        <choose >
+          <when test="ORDER_NUMBER == emptyBigDecimalValue" >
+            ORDER_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            ORDER_NUMBER = #{ORDER_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMS_COL_CUST_FIELD" parameterType="com.path.dbmaps.vo.FMS_COL_CUST_FIELDVO" >
+    <include refid="sql_updateFMS_COL_CUST_FIELD" />
+  </update>
+</mapper>

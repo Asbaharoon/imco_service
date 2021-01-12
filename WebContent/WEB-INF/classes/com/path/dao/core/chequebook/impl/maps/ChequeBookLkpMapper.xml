@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chequeBookLkpMapper">
+
+	<resultMap id="chequeBookLkpMap" type="chequeBookVO">
+		<result property="COMP_CODE" 			column="COMP_CODE"/>
+		<result property="BRANCH_CODE" 			column="BRANCH_CODE"/>
+		<result property="CHEQUE_CODE" 			column="CHEQUE_CODE"/>
+		<result property="CODE" 				column="CODE"/>
+		<result property="ACC_BR" 				column="ACC_BR"/>
+		<result property="ACC_CY" 				column="ACC_CY"/>
+		<result property="ACC_GL" 				column="ACC_GL"/>
+		<result property="ACC_CIF" 				column="ACC_CIF"/>
+		<result property="ACC_SL" 				column="ACC_SL"/>
+		<result property="ACC_ADD_REF" 			column="ACC_ADD_REF"/>
+		<result property="FROM_NUMBER" 			column="FROM_NUMBER"/>
+		<result property="NUMBER_TO" 			column="NUMBER_TO"/>
+		<result property="STATUS" 				column="STATUS"/>
+		<result property="NUMBER_OF_CHEQUES" 	column="NUMBER_OF_CHEQUES"/>
+		
+	</resultMap>
+
+	<select id="chequeBookLkpList" resultMap="chequeBookLkpMap" parameterType="chequeBookSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="chequeBookLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	 </select>
+	<select id="chequeBookLkpCount" resultType="int" parameterType="chequeBookSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="chequeBookLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<sql id="commonChequeBookSelect">
+	
+	SELECT CTSCHEQUEBOOK.COMP_CODE,
+		       CTSCHEQUEBOOK.BRANCH_CODE,
+		       CTSCHEQUEBOOK.CHEQUE_CODE,
+		       CTSCHEQUEBOOK.CODE,
+		       CTSCHEQUEBOOK.NUMBER_OF_CHEQUES,
+		       CTSCHEQUEBOOK.ACC_BR,
+		       CTSCHEQUEBOOK.ACC_CY,
+		       CTSCHEQUEBOOK.ACC_GL,
+		       CTSCHEQUEBOOK.ACC_CIF,
+		       CTSCHEQUEBOOK.ACC_SL,
+		       CTSCHEQUEBOOK.ACC_ADD_REF,
+		       CTSCHEQUEBOOK.FROM_NUMBER,
+		       CTSCHEQUEBOOK.NUMBER_TO,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+		       	  FROM SYS_PARAM_LOV_TRANS
+		       	 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTSCHEQUEBOOK.STATUS 
+		       	   AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+		       	   AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{lang} ) STATUS
+	FROM CTSCHEQUEBOOK
+	WHERE (CTSCHEQUEBOOK.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+	
+	</sql>
+	
+	<sql id="chequeBookLkp">
+	
+		<include refid="commonChequeBookSelect"/>
+		
+		<if test="CHQBOOK_NUM != null and CHQBOOK_NUM != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.CODE  = #{CHQBOOK_NUM,jdbcType=NUMERIC}
+		</if>
+		<if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.ACC_BR  = #{ACC_BR,jdbcType=NUMERIC}
+		</if>
+		<if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.ACC_CY  = #{ACC_CY,jdbcType=NUMERIC}
+		</if>
+		<if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.ACC_GL  = #{ACC_GL,jdbcType=NUMERIC}
+		</if>
+		<if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.ACC_CIF = #{ACC_CIF,jdbcType=NUMERIC}
+		</if>
+		<if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+			AND	CTSCHEQUEBOOK.ACC_SL  = #{ACC_SL,jdbcType=NUMERIC}
+		</if>
+		<if test="addReference != null and !''.equals(addReference)" >
+			AND	CTSCHEQUEBOOK.ACC_ADD_REF  = #{addReference,jdbcType=VARCHAR}
+		</if>
+		<if test="''.equals(addReference)" >
+			AND	CTSCHEQUEBOOK.ACC_ADD_REF IS NULL
+		</if>
+		<if test='screenName != null and "ACCOUNTS_CLOSURE".equals(screenName)' >
+			AND	CTSCHEQUEBOOK.STATUS  = 'B'
+		</if>
+
+		<if test="isBills!= emptyBigDecimalValue and  0== isBills" >
+             AND EXISTS (SELECT 1 from CTSCHEQUES
+             where CTSCHEQUES.CODE = CTSCHEQUEBOOK.CODE
+             and CTSCHEQUES.COMP_CODE  = CTSCHEQUEBOOK.COMP_CODE
+             and CTSCHEQUES.CHEQUE_BILL_YN = '0')
+		</if>
+		<if test="isBills!= emptyBigDecimalValue and  1== isBills" >
+             AND EXISTS (SELECT 1 from CTSCHEQUES
+             where CTSCHEQUES.CODE = CTSCHEQUEBOOK.CODE
+             and CTSCHEQUES.COMP_CODE  = CTSCHEQUEBOOK.COMP_CODE
+             and CTSCHEQUES.CHEQUE_BILL_YN = '1')
+		</if>
+	</sql>
+	
+	<select id="chequeBookPortalLkpList" resultMap="chequeBookLkpMap" parameterType="chequeBookSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="chequeBookPortalLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	 </select>
+	
+	<select id="chequeBookPortalLkpCount" resultType="int" parameterType="chequeBookSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="chequeBookPortalLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>	
+	
+	<sql id="chequeBookPortalLkp">
+	
+		<include refid="commonChequeBookSelect"/>
+		
+		<if test="branchCode != null" >
+			AND	(CTSCHEQUEBOOK.BRANCH_CODE  = CASE WHEN #{branchCode,jdbcType=NUMERIC} > 0 THEN #{branchCode,jdbcType=NUMERIC} ELSE CTSCHEQUEBOOK.BRANCH_CODE END)
+	 	</if>
+	 	
+	 	<if test="ACC_CIF != null" >
+			AND	CTSCHEQUEBOOK.ACC_CIF = #{ACC_CIF,jdbcType=NUMERIC}
+		</if>
+		
+		<if test=" portal != 1" >
+			<if test=' !"true".equals(all) '>
+	 		AND	CTSCHEQUEBOOK.ACC_BR  = #{ACC_BR,jdbcType=NUMERIC}
+	 		</if>
+			AND	CTSCHEQUEBOOK.ACC_CY  = #{ACC_CY,jdbcType=NUMERIC}
+			AND	CTSCHEQUEBOOK.ACC_GL  = #{ACC_GL,jdbcType=NUMERIC}
+			AND	CTSCHEQUEBOOK.ACC_SL  = #{ACC_SL,jdbcType=NUMERIC}
+		</if>
+		
+		<if test=" status != null" >
+			AND	CTSCHEQUEBOOK.STATUS  = #{status,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<resultMap id="resultTfaChqLkpMap" type="chequeBookCO">
+		<result property="ctsTrsVO.COMP_CODE"			column="COMP_CODE" />
+		<result property="ctsTrsVO.BRANCH_CODE" 		column="BRANCH_CODE" />
+		<result property="ctsTrsVO.STATUS" 		 		column="STATUS" />
+		<result property="statusDesc"   				column="statusDesc" />
+		<result property="ctsTrsVO.TRS_TYPE" 			column="TRS_TYPE" />
+		<result property="ctsTrsVO.CB_IND" 				column="CB_IND" />
+		<result property="ctsTrsVO.TRS_NO" 				column="TRS_NO" />
+		<result property="ctsTrsVO.TRS_DATE" 			column="TRS_DATE" />
+		<result property="ctsTrsVO.VALUE_DATE" 			column="VALUE_DATE" />
+		<result property="ctsTrsVO.DATE_REQUESTED" 		column="DATE_REQUESTED" />
+		<result property="ctsTrsVO.RELEASE_DATE" 		column="RELEASE_DATE" />
+		<result property="ctsTrsVO.TRS_AC_BR" 			column="TRS_AC_BR" />
+		<result property="ctsTrsVO.TRS_AC_CY" 			column="TRS_AC_CY" />
+		<result property="ctsTrsVO.TRS_AC_GL" 			column="TRS_AC_GL" />
+		<result property="ctsTrsVO.TRS_AC_CIF" 			column="TRS_AC_CIF" />
+		<result property="ctsTrsVO.TRS_AC_SL" 			column="TRS_AC_SL" />
+		<result property="ctsTrsVO.AMOUNT" 				column="AMOUNT" />
+		<result property="ctsTrsVO.TRS_CY" 				column="TRS_CY" />
+		<result property="ctsTrsVO.TRS_AC_AMOUNT" 		column="TRS_AC_AMOUNT" />
+		<result property="ctsTrsVO.CHQ_NUM" 			column="CHQ_NUM" />
+		<result property="ctsTrsVO.JV_OP_NO" 			column="JV_OP_NO" />
+		<result property="ctsTrsVO.REMITTANCE_FR_NUM" 	column="REMITTANCE_FR_NUM" />
+		<result property="ctsTrsVO.REMITTANCE_TO_NUM" 	column="REMITTANCE_TO_NUM" />
+		<result property="ctsTrsVO.SO_REFERENCE" 		column="SO_REFERENCE" />
+		<result property="ctsTrsVO.TRX_TYPE" 			column="TRX_TYPE" />
+		<result property="ctsTrsVO.TRS_AC_CIF" 			column="TRS_AC_CIF" />
+	</resultMap>
+	
+	<select id="returnTfaChqTrxLkpList" resultMap="resultTfaChqLkpMap"  parameterType="chequeBookSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="select_TfaChqTrxLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnTfaChqTrxLkpCount" resultType="int" parameterType="chequeBookSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="select_TfaChqTrxLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<sql id="select_TfaChqTrxLkp">
+		<include refid="select_TrxChq"/>
+		, CTSTRXTYPE
+		WHERE CTSTRS.COMP_CODE 		= CTSTRXTYPE.COMP_CODE
+		AND CTSTRS.TRX_TYPE 	= CTSTRXTYPE.CODE
+		AND CTSTRS.COMP_CODE 	= #{compCode,jdbcType=NUMERIC}
+		AND CTSTRS.BRANCH_CODE 	= #{defaultBranch,jdbcType=NUMERIC}
+		AND CTSTRS.STATUS 		= 'P'
+		AND CTSTRS.TRS_TYPE 	= 'R'
+		AND CTSTRS.CB_IND 		= 'C'
+		AND CTSTRS.TRS_AC_CIF 	= #{cif_no,jdbcType=NUMERIC}
+		AND ((#{trsNo,jdbcType=NUMERIC} > 0 AND #{trsNo,jdbcType=NUMERIC} BETWEEN
+			    CASE WHEN CTSTRS.REMITTANCE_FR_NUM IS NULL THEN 0 ELSE CTSTRS.REMITTANCE_FR_NUM END AND
+			    CASE WHEN CTSTRS.REMITTANCE_TO_NUM IS NULL THEN 0 ELSE CTSTRS.REMITTANCE_TO_NUM END) 
+			 OR #{trsNo,jdbcType=NUMERIC} = 0)
+		AND CTSTRXTYPE.REMITT_TYPE IN 
+			(SELECT DISTINCT(REMITTANCE.CODE)
+            	FROM REMITTANCE
+             	WHERE REMITTANCE.COMP_CODE = CTSTRXTYPE.COMP_CODE
+             		AND REMITTANCE.REMITTANCE_TYPE = 'DD')
+		
+	</sql>
+	
+	<sql id="select_TrxChq">
+		SELECT CTSTRS.COMP_CODE,   
+	      CTSTRS.BRANCH_CODE,   
+	      CTSTRS.TRS_TYPE,   
+	      CTSTRS.CB_IND,   
+	      CTSTRS.TRS_NO,   
+	      CTSTRS.STATUS,    
+	      ( SELECT VALUE_DESC 
+				FROM SYS_PARAM_LOV_TRANS 
+				WHERE LOV_TYPE_ID = #{lovType,jdbcType=NUMERIC}
+					AND LANG_CODE = #{lang,jdbcType=VARCHAR}
+		            AND VALUE_CODE = CTSTRS.STATUS 
+	         ) statusDesc,   
+	      CTSTRS.TRS_DATE,
+	      CTSTRS.VALUE_DATE,
+	      CTSTRS.DATE_REQUESTED,   
+	      CTSTRS.RELEASE_DATE,   
+	      CTSTRS.TRS_AC_BR,   
+	      CTSTRS.TRS_AC_CY,   
+	      CTSTRS.TRS_AC_GL,   
+	      CTSTRS.TRS_AC_CIF,   
+	      CTSTRS.TRS_AC_SL,   
+	      CTSTRS.AMOUNT,   
+	      CTSTRS.TRS_CY,   
+	      CTSTRS.TRS_AC_AMOUNT,
+	      CTSTRS.CHQ_NUM,
+	      CTSTRS.JV_OP_NO,
+	      CTSTRS.REMITTANCE_FR_NUM,
+	      CTSTRS.REMITTANCE_TO_NUM,
+	      CTSTRS.SO_REFERENCE,
+	      CTSTRS.TRX_TYPE
+	    FROM CTSTRS
+	</sql>
+	
+	
+	<select id="returnTfaChqLkpList" resultMap="resultTfaChqLkpMap" parameterType="chequeBookSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="select_TfaChqLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnTfaChqLkpCount" resultType="int" parameterType="chequeBookSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="select_TfaChqLkp"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<sql id="select_TfaChqLkp">
+		<include refid="select_TrxChq"/>
+		WHERE CTSTRS.COMP_CODE     	= #{compCode,jdbcType=NUMERIC}
+			AND CTSTRS.BRANCH_CODE	= #{defaultBranch,jdbcType=NUMERIC}
+			AND CTSTRS.STATUS     	= 'P'      
+			AND CTSTRS.TRS_NO     	=  
+			        	(SELECT MAX(TFSTRX.DD_TRS_NO)
+				          	FROM TFSTRX
+				          	WHERE TFSTRX.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+					            AND TFSTRX.BRANCH = #{defaultBranch,jdbcType=NUMERIC}
+					            AND TFSTRX.LC_TYPE =#{docType,jdbcType=VARCHAR}
+					            AND TFSTRX.TRX_TYPE = #{trxType,jdbcType=NUMERIC}
+					            AND TFSTRX.LC_YEAR = 0
+					            AND TFSTRX.STATUS <![CDATA[<>]]> 'P'	
+					            AND TFSTRX.LC_NBR = #{lcNbr,jdbcType=NUMERIC}
+					            AND TFSTRX.REMITTANCE_TYPE =
+				              		(SELECT MAX(CTSTRXTYPE.REMITT_TYPE)
+						                FROM CTSTRXTYPE
+						                WHERE CTSTRXTYPE.COMP_CODE	= #{compCode,jdbcType=NUMERIC}
+						                  AND CTSTRXTYPE.STATUS     = 'P' 
+						                  AND CTSTRXTYPE.TYPE     	= 'T'
+						                  AND CTSTRXTYPE.MULTI_TRX	= '0'
+						                  AND CTSTRXTYPE.CODE		= 
+						                  <choose>
+						                  	<when test="trxTypeRemittType == 0 or trxTypeRemittType == null">
+						                  		( SELECT CTS_REMITT_TRXTYPE.TRX_TYPE
+													FROM CTS_REMITT_TRXTYPE
+													WHERE CTS_REMITT_TRXTYPE.COMP_CODE		= #{compCode,jdbcType=NUMERIC}
+														AND CTS_REMITT_TRXTYPE.REMITT_TYPE	= #{remittType,jdbcType=NUMERIC}
+														AND CTS_REMITT_TRXTYPE.CURRENCY		= 0
+												)
+						                  	</when>
+						                  	<otherwise> #{trxTypeRemittType,jdbcType=NUMERIC}</otherwise>
+						                  </choose>
+						                   
+				              		)
+			        	)
+	</sql>
+	
+	<select id="returnCtsRemittTrxType" resultType="BigDecimal" parameterType="chequeBookSC" > 
+		SELECT CTS_REMITT_TRXTYPE.TRX_TYPE
+		FROM CTS_REMITT_TRXTYPE
+		WHERE CTS_REMITT_TRXTYPE.COMP_CODE		= #{compCode,jdbcType=NUMERIC}
+			AND CTS_REMITT_TRXTYPE.REMITT_TYPE	= #{remittType,jdbcType=NUMERIC}
+			AND CTS_REMITT_TRXTYPE.CURRENCY		= #{trxCy,jdbcType=NUMERIC}	
+	</select>
+	
+</mapper>	

@@ -1,0 +1,923 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memoMapper">
+
+	<update id="reviewMemo" parameterType="com.path.dbmaps.vo.CTSMEMO_DETVOKey">	
+	 UPDATE CTSMEMO_DET  SET LAST_REVIEW_NO =  
+	 (CASE
+            WHEN LAST_REVIEW_NO is null 
+                THEN 1
+            ELSE
+               LAST_REVIEW_NO+1
+             END)
+      WHERE (CTSMEMO_DET.COMP_CODE	= #{COMP_CODE})  AND (CTSMEMO_DET.BRANCH_CODE = #{BRANCH_CODE})
+		AND (CTSMEMO_DET.TRX_NO = #{TRX_NO})
+	</update>
+
+	<sql id="select_memoList">				
+		<![CDATA[ SELECT CTSMEMO_DET.TRX_NO TRX_NO,    
+			         	 CTSMEMO_DET.MEMO_CODE MEMO_CODE,     
+			        	 CTSMEMO_DET.ENG_COMENT ENG_COMENT,   
+						 CTSMEMO_DET.LAST_REVIEW_NO LAST_REVIEW_NO,
+						 CTSMEMO_DET.BRANCH_CODE BRANCH_CODE,
+			             CTSMEMO.BRIEF_DESC_ENG BRIEF_DESC_ENG,
+			             (CASE WHEN CTSMEMO.CODE = 0 THEN CTSMEMO_DET.COMMON_DESC_ENG ELSE CTSMEMO.COMMON_DESC_ENG END) COMMON_DESC_ENG,
+             			 (CASE WHEN CTSMEMO.CODE = 0 THEN CTSMEMO_DET.COMMON_DESC_ENG ELSE CTSMEMO.LONG_DESC_ENG END) LONG_DESC_ENG,
+						 (CASE WHEN CTSMEMO.CODE = 0 THEN CTSMEMO_DET.COMMON_DESC_ARAB ELSE CTSMEMO.COMMON_DESC_ARAB END) COMMON_DESC_ARAB,
+						 (CASE WHEN CTSMEMO.CODE = 0 THEN CTSMEMO_DET.COMMON_DESC_ARAB ELSE CTSMEMO.LONG_DESC_ARAB END) LONG_DESC_ARAB,
+						 CTSMEMO_DET.ARAB_COMENT ARAB_COMENT,
+						 CTSMEMO.CIF_SPECIFIC CIF_SPECIFIC,
+						 CTSMEMO_DET.ACC_BR ACC_BR,
+						 CTSMEMO_DET.ACC_CY ACC_CY,
+						 CTSMEMO_DET.ACC_GL ACC_GL,
+						 CTSMEMO_DET.ACC_CIF ACC_CIF,
+						 CTSMEMO_DET.ACC_SL ACC_SL,
+						 CTSMEMO_DET.CIF_NO CIF_NO,
+						 CTSMEMO_DET.CREATED_BY,
+						 CTSMEMO_DET.MODIFIED_BY,	
+	                     (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = CTSMEMO.TYPE AND LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode})  
+                         TYPE,					 
+						 CTSMEMO.APP_SPECIFIC APP_SPECIFIC,
+						 CTSMEMO.APP_NAME APP_NAME,
+						 CTSMEMO_DET.COND_AUTOMATION_CODE COND_AUTOMATION_CODE,
+						 (SELECT EVENT_TYPE 
+		  					FROM CTS_CONDITIONAL_AUTOMATION 
+		  					WHERE COMP_CODE = CTSMEMO.COMP_CODE
+	  		  				AND ENTITY_TYPE = 'S'
+			  				AND DELETE_SPECIAL_COND = 1
+			  				AND LINKED_COND_AUTOMATION_CODE = CTSMEMO_DET.COND_AUTOMATION_CODE
+			  				AND CIF_TYPE = (SELECT CIF_TYPE FROM CIF WHERE COMP_CODE = CTSMEMO.COMP_CODE AND CIF_NO = CTSMEMO_DET.CIF_NO)
+	   			  		 ) EVENT_TYPE,
+	   			  		 CTSMEMO.SEGMENT_SPECIFIC_YN SEGMENT_SPECIFIC_YN,
+	   			  		 CTSMEMO_DET.SEGMENT_CODE
+			]]>
+	</sql>
+	
+	<sql id="select_memoConditions">
+	<![CDATA[
+	FROM CTSMEMO_DET,CTSMEMO		   			
+		  WHERE ( CTSMEMO_DET.COMP_CODE = CTSMEMO.COMP_CODE ) AND  
+         		  ( CTSMEMO_DET.MEMO_CODE = CTSMEMO.CODE ) AND  
+         		  ( CTSMEMO_DET.COMP_CODE = #{compCode} ) AND  
+         		  ( CTSMEMO_DET.STATUS = 'P' ) AND 
+				  ((CTSMEMO.DATE_INTERVAL = '0' ) 
+				  						OR
+					 (CTSMEMO.DATE_INTERVAL = '1' AND  
+					 CTSMEMO_DET.FROM_DATE <= #{runningDate} AND
+					 CTSMEMO_DET.DATE_TO   >= #{runningDate})) AND
+         		  (CTSMEMO.NUMBER_REVIEWS = 0 OR CTSMEMO_DET.LAST_REVIEW_NO <  CTSMEMO.NUMBER_REVIEWS)  AND
+         		]]>
+        <if test="skipAppName == null"> 		
+		( (
+		
+		 CTSMEMO.TYPE IN ('A','L')  <!-- checking application type -->
+		    <if test="appType!=null">
+			  OR CTSMEMO.TYPE =#{appType}
+			</if>			
+			 AND #{appName} in ( 'RET' , 'RADM' ) 
+			
+		   )
+		   OR  ( CTSMEMO.TYPE='S' and EXISTS ( SELECT 1 FROM CTSMEMO_MODULE,CTSMEMO
+				 WHERE CTSMEMO_MODULE.COMP_CODE=CTSMEMO.COMP_CODE 
+				 AND CTSMEMO_MODULE.MEMO_CODE =CTSMEMO.CODE 
+                 AND CTSMEMO.COMP_CODE = CTSMEMO_DET.COMP_CODE
+                 AND CTSMEMO.CODE = CTSMEMO_DET.MEMO_CODE
+				 AND CTSMEMO_MODULE.APP_NAME = CASE WHEN #{appName}  = 'RADM' THEN 'RET' ELSE #{appName}  END 
+				 AND CTSMEMO_MODULE.ALLOW_MEMO_MODULE = '1' ))
+
+		) AND						 <!--checking cif and account  --> <!-- IIAB120195 - iMAL Memo Alert -->
+		</if>
+		(
+			 <choose>
+	           	<when test="memoList == null or memoList.size() == 0">
+				   	( CTSMEMO.CIF_SPECIFIC = '1' and CTSMEMO_DET.CIF_NO = #{cifNo,jdbcType=NUMERIC})
+					
+					OR ( (CTSMEMO.SEGMENT_SPECIFIC_YN = '1') 
+					AND (CTSMEMO_DET.SEGMENT_CODE IN (SELECT SEGMENT_CODE FROM CIF_EXTENDED C WHERE C.COMP_CODE = CTSMEMO_DET.COMP_CODE AND C.SEGMENT_CODE = CTSMEMO_DET.SEGMENT_CODE
+						AND C.CIF_NO = #{cifNo, jdbcType=NUMERIC}))
+					)
+					<if test='"A".equals(forAccOrCif) and accBR != null and accCY != null and accGL != null and accCIF != null and accSL != null'>
+					OR
+						( (CTSMEMO.ACC_SPECIFIC = '1')
+						AND ( CTSMEMO_DET.ACC_BR  = #{accBR, jdbcType=NUMERIC})
+						AND ( CTSMEMO_DET.ACC_CY  = #{accCY, jdbcType=NUMERIC})
+						AND ( CTSMEMO_DET.ACC_GL  = #{accGL, jdbcType=NUMERIC})
+						AND ( CTSMEMO_DET.ACC_CIF = #{accCIF, jdbcType=NUMERIC})
+						AND ( CTSMEMO_DET.ACC_SL  = #{accSL, jdbcType=NUMERIC})
+						)			  
+					</if>
+				</when>
+           		<otherwise>
+           			 <foreach item="item" index="index" open="(" close=")" separator="OR" collection="memoList" > 
+	        		    ( CTSMEMO.CIF_SPECIFIC = '1' and CTSMEMO_DET.CIF_NO = #{item.cifNo, jdbcType=NUMERIC})
+						OR ( (CTSMEMO.SEGMENT_SPECIFIC_YN = '1') 
+							AND (CTSMEMO_DET.SEGMENT_CODE IN (SELECT SEGMENT_CODE FROM CIF_EXTENDED C WHERE C.COMP_CODE = CTSMEMO_DET.COMP_CODE AND C.SEGMENT_CODE = CTSMEMO_DET.SEGMENT_CODE
+							AND C.CIF_NO = #{item.cifNo, jdbcType=NUMERIC}))
+							)						
+						<if test='item.forAccOrCif.equals("A") and item.accBR != null and item.accCY != null and item.accGL != null and item.accCIF != null and item.accSL != null'>
+						OR
+							( (CTSMEMO.ACC_SPECIFIC = '1')
+							AND ( CTSMEMO_DET.ACC_BR  = #{item.accBR, jdbcType=NUMERIC})
+							AND ( CTSMEMO_DET.ACC_CY  = #{item.accCY, jdbcType=NUMERIC})
+							AND ( CTSMEMO_DET.ACC_GL  = #{item.accGL, jdbcType=NUMERIC})
+							AND ( CTSMEMO_DET.ACC_CIF = #{item.accCIF, jdbcType=NUMERIC})
+							AND ( CTSMEMO_DET.ACC_SL  = #{item.accSL, jdbcType=NUMERIC})
+							)
+						</if>
+		        	 </foreach>
+           		</otherwise>
+           	</choose>
+
+		) AND 						<!-- checking transaction -->
+		( (CTSMEMO.SHOW_ALL_TRX = '1'
+			   <!-- FIX ISSUE #178608
+			   <if test="optRef!=null">
+			   	AND	#{optRef} = 'D001MEM'
+			   </if>
+			    -->
+		   )
+		   OR (CTSMEMO.SHOW_ALL_TRX = '0' 
+			   <if test="trxType!=null">
+			   		AND ( CTSMEMO.CTS_TRXTYPE = #{trxType} OR CTSMEMO.CTS_TRXTYPE = #{defaultTrxType} )
+			   </if>
+			   <if test="trxType==null">
+			    	AND ( CTSMEMO.CTS_TRXTYPE IS NULL OR CTSMEMO.CTS_TRXTYPE = #{defaultTrxType} )
+			   </if>
+		   ) 
+		
+		)
+	</sql>
+	
+	
+	<sql id="select_isAvailableMemo">				
+		SELECT count(1)				 						 						 
+	</sql>
+	
+	<sql id="select_memoDtlTrxList">		
+	SELECT
+			 CTSMEMO_DET.COMP_CODE,
+			 CTSMEMO_DET.BRANCH_CODE,
+			 CTSMEMO_DET.TRX_NO ,
+			 CTSMEMO_DET.MEMO_CODE,
+			 CTSMEMO_DET.ENG_COMENT,
+			 CTSMEMO_DET.ARAB_COMENT,
+			 CTSMEMO_DET.CIF_NO,
+			 CTSMEMO_DET.LAST_REVIEW_NO,
+			 CTSMEMO_DET.STATUS,
+			 CTSMEMO_DET.CIF_ROLE,
+			 CTSMEMO_DET.PROD_CLASS,
+			 CTSMEMO_DET.TRX_REF,
+			 CTSMEMO_DET.APP_NAME,
+			 CTSMEMO_DET.TRX_TYPE,
+			 CTSMEMO_DET.TRX_STATUS,
+			 CTSMEMO_DET.TRX_LINE_NO,
+			 CTSMEMO_DET.CURRENCY,
+			 CTSMEMO_DET.AMOUNT,
+			 CTSMEMO_DET.YIELD,
+			 CTSMEMO_DET.VALUE_DATE,
+			 CTSMEMO_DET.MATURITY_DATE 
+	FROM  CTSMEMO_DET,
+		 CTSMEMO 
+	WHERE	 (CTSMEMO_DET.COMP_CODE  = #{compCode})
+	 AND	(CTSMEMO_DET.BRANCH_CODE  = #{branchCode} )
+	 AND	(CTSMEMO_DET.COMP_CODE  = CTSMEMO.COMP_CODE)
+	 AND	(CTSMEMO_DET.MEMO_CODE  = CTSMEMO.CODE)
+	 AND	(CTSMEMO_DET.CIF_NO  = #{accCIF} )
+	 AND	(CTSMEMO_DET.MEMO_CODE  = #{memoCode}  )
+	 AND	(CASE WHEN CTSMEMO_DET.LAST_REVIEW_NO IS NULL THEN  0 ELSE CTSMEMO_DET.LAST_REVIEW_NO END   = 0)
+	 AND	(CTSMEMO_DET.STATUS  = 'P')
+	 </sql>
+	 
+	<sql id="select_memoDtlList">	
+		SELECT CTSMEMO_DET.TRX_NO TRX_NO,
+			CTSMEMO_DET.MEMO_CODE MEMO_CODE,
+			CTSMEMO_DET.ENG_COMENT ENG_COMENT,
+			CTSMEMO_DET.ARAB_COMENT ARAB_COMENT,
+			CTSMEMO_DET.LAST_REVIEW_NO
+			LAST_REVIEW_NO,
+			CTSMEMO_DET.CIF_NO CIF_NO,
+			CTSMEMO_DET.ACC_BR ACC_BR,
+			CTSMEMO_DET.ACC_CY ACC_CY,
+			CTSMEMO_DET.ACC_GL ACC_GL,
+			CTSMEMO_DET.ACC_CIF ACC_CIF,
+			CTSMEMO_DET.ACC_SL ACC_SL,
+			CTSMEMO_DET.FROM_DATE FROM_DATE,
+			CTSMEMO_DET.DATE_TO DATE_TO,			
+			CTSMEMO.CIF_SPECIFIC CIF_SPECIFIC,
+			CTSMEMO.APP_SPECIFIC APP_SPECIFIC,
+			CTSMEMO.APP_NAME APP_NAME,
+			CTSMEMO_DET.BRANCH_CODE BRANCH_CODE,
+			(SELECT	VALUE_DESC FROM SYS_PARAM_LOV_TRANS	WHERE LOV_TYPE_ID = #{lovType} AND LANG_CODE = #{langCode}	AND VALUE_CODE = CTSMEMO_DET.STATUS)
+			 AS STATUS,
+			CTSMEMO_DET.STATUS AS STATUS_CODE,
+			CTSMEMO_DET.TRX_REF,
+			CTSMEMO_DET.AMOUNT,
+			CTSMEMO_DET.TRX_TYPE ,	
+			 (CASE  WHEN CTSMEMO_DET.TRX_TYPE = 'IBILL' THEN 'inwardBillApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'OBILL' THEN 'outwardBillApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'APPL' THEN 'applicationForFacility'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'APPLRECOM' THEN 'recommandationOfCommittyForFacility'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'FACILITY' THEN 'facilityApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'DRAWDOWN' THEN 'drawDownApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'FACLOSURE' THEN 'closureOfFacility'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'APPLOFFER' THEN 'issueOfferOfApplicationForFacility'
+              WHEN CTSMEMO_DET.TRX_TYPE = '1010' THEN 'LCApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'REQUEST' THEN 'requestForLCApplication'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'RLG' THEN 'RequestOfLG'
+              WHEN CTSMEMO_DET.TRX_TYPE = 'ILG' THEN 'issuanceOfLG'
+     				END) TRX_DESC, 
+     		CTSMEMO_DET.COMMON_REF,
+     		CTSMEMO_DET.CIF_ROLE,   				
+     		CURRENCIES.DECIMAL_POINTS CURRENCIES_DECIMAL_POINTS,
+     		CURRENCIES.BRIEF_DESC_ENG CURRENCIES_BRIEF_DESC_ENG,
+     		CURRENCIES.FLAG_CTR CURRENCIES_FLAG_CTR
+     		
+			FROM CTSMEMO
+			<if test='ivCrud != "R"'>			
+			,SYS_PARAM_LOV_LK_OPT LOVOPT
+			</if>
+			, CTSMEMO_DET LEFT OUTER JOIN CURRENCIES
+			ON CTSMEMO_DET.CURRENCY = CURRENCIES.CURRENCY_CODE	
+			AND CTSMEMO_DET.COMP_CODE = CURRENCIES.COMP_CODE
+						
+				WHERE CTSMEMO_DET.COMP_CODE = CTSMEMO.COMP_CODE  AND
+					 CTSMEMO_DET.MEMO_CODE	= CTSMEMO.CODE  AND
+					 CTSMEMO_DET.COMP_CODE = #{compCode}  AND
+					 CTSMEMO_DET.BRANCH_CODE = #{branchCode}  AND		 
+					 <![CDATA[CTSMEMO.TYPE  <> 'L'   AND
+					 CTSMEMO_DET.MEMO_CODE <>0 ]]>
+					 <if test='ivCrud != "R"'>
+					 AND CTSMEMO_DET.STATUS = LOVOPT.VALUE_CODE
+			         AND LOVOPT.LOV_TYPE_ID = #{lovType}
+			         AND LOVOPT.PROG_REF    = #{progRef}
+			         AND LOVOPT.APP_NAME    = #{appName}
+			        </if> 	
+        
+         <!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+		 <include refid="memoRestriction"/> 
+	</sql>
+	
+	<sql id="memoRestriction">
+ 		 AND NOT EXISTS (
+			   SELECT 1 FROM 
+			   <choose>
+			   		<when test="isSybase != 1">  ACC_RESTRICTION_TEMP tmpTbl   </when>
+			   		<otherwise> #ACC_RESTRICTION_TEMP tmpTbl</otherwise>
+			   </choose>
+			   WHERE tmpTbl.COMP_CODE  		= CTSMEMO_DET.COMP_CODE  
+				AND tmpTbl.BRANCH_CODE  	= CTSMEMO_DET.ACC_BR 
+				AND tmpTbl.CURRENCY_CODE  	= CTSMEMO_DET.ACC_CY  
+				AND tmpTbl.GL_CODE 			= CTSMEMO_DET.ACC_GL     
+				AND tmpTbl.CIF_SUB_NO 		= CTSMEMO_DET.ACC_CIF   
+				AND tmpTbl.SL_NO  			= CTSMEMO_DET.ACC_SL          
+				AND tmpTbl.USER_ID 			= #{userId}
+				AND tmpTbl.PROG_REF 		= #{pageRef,jdbcType=VARCHAR}
+				AND tmpTbl.APP_NAME 		= #{currAppName,jdbcType=VARCHAR}
+				)	
+	</sql>
+	
+
+	<sql id="select_memoFormData">
+		SELECT  CMD.BRANCH_CODE, 
+				CMD.COMP_CODE, 
+				CMD.TRX_NO, 
+				CMD.MEMO_CODE,
+				CMD.ENG_COMENT,
+				CMD.ARAB_COMENT,
+				CMD.CIF_NO,
+				CMD.ACC_ADD_REF,
+				CMD.ACC_BR,
+				CMD.ACC_CY,
+				CMD.ACC_GL,
+				CMD.ACC_CIF,
+				CMD.ACC_SL,
+				AMF.BRIEF_NAME_ENG,
+				CMD.FROM_DATE,
+				CMD.DATE_TO,
+				CMD.LAST_REVIEW_NO,
+				CMD.STATUS,	
+				CMD.DATE_UPDATED,
+				CMD.APPROVED_BY,
+				CMD.DATE_CREATED,
+				CMD.CREATED_BY,
+				CMD.MODIFIED_BY,
+				CMD.TOBE_CANCELLED_BY,
+				CMD.TOBE_REACTIVATED_BY,
+				CMD.TOBE_SUSPENDED_BY,							
+				(SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = #{lovType}
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CMD.STATUS)
+				AS STATUS_DESC,
+				CM.BRIEF_DESC_ENG,
+				CIF.LONG_NAME_ENG,
+			    CM.TYPE,   
+			 	CM.EXP_REVIEW,   
+				CM.NUMBER_REVIEWS,   
+				CM.DATE_INTERVAL,   
+				CM.ACC_SPECIFIC,   
+				CM.CIF_SPECIFIC,
+				CMD.SEGMENT_CODE,
+				(SELECT SEGMENT_DESC FROM CTS_SEGMENT C WHERE C.COMP_CODE = CMD.COMP_CODE AND C.SEGMENT_CODE = CMD.SEGMENT_CODE) segmentDesc,
+				CM.SEGMENT_SPECIFIC_YN				  
+		FROM CTSMEMO CM,CTSMEMO_DET CMD 
+			LEFT JOIN CIF CIF	ON  CIF.CIF_NO=CMD.CIF_NO AND CIF.COMP_CODE=CMD.COMP_CODE	
+			LEFT JOIN AMF AMF ON AMF.BRANCH_CODE=CMD.ACC_BR AND	AMF.CURRENCY_CODE=CMD.ACC_CY AND AMF.GL_CODE=CMD.ACC_GL AND	AMF.CIF_SUB_NO=CMD.ACC_CIF AND AMF.SL_NO=CMD.ACC_SL AND AMF.COMP_CODE=#{ctsMemoDetVO.COMP_CODE}	
+		WHERE 
+			CM.CODE=CMD.MEMO_CODE AND
+			CM.COMP_CODE=CMD.COMP_CODE AND
+			CMD.TRX_NO=#{ctsMemoDetVO.TRX_NO} AND CMD.COMP_CODE=#{ctsMemoDetVO.COMP_CODE} AND
+			CMD.BRANCH_CODE=#{ctsMemoDetVO.BRANCH_CODE}	
+	</sql> 
+	
+		<sql id="select_memoData">
+		SELECT 
+		<!-- CASE WHEN :gno_common.ic_preferredlanguage = 'L' THEN CTSMEMO.BRIEF_DESC_ENG WHEN :gno_common.ic_preferredlanguage = 'A' THEN CTSMEMO.BRIEF_DESC_ARAB END, -->   
+     		CTSMEMO.CODE,
+ 		 CTSMEMO.BRIEF_DESC_ENG,
+ 		 CTSMEMO.TYPE,   
+	 	 CTSMEMO.EXP_REVIEW,   
+		 CTSMEMO.NUMBER_REVIEWS,   
+		 CTSMEMO.DATE_INTERVAL,   
+		 CTSMEMO.ACC_SPECIFIC,   
+		 CTSMEMO.CIF_SPECIFIC,
+		 CTSMEMO.SEGMENT_SPECIFIC_YN 
+		FROM   CTSMEMO  
+		WHERE ( CTSMEMO.COMP_CODE = #{COMP_CODE}  )
+		AND  	( CTSMEMO.CODE = #{CODE} )
+		<!-- Bassam Eid - Issue found when doing unit test of BUG# 681623 (entered memo code = 0 which is not retreived in the lookup "selectCTSMEMO" sql) -->
+		AND	CODE NOT IN (SELECT CODE FROM CTSMEMO WHERE CTSMEMO.COMP_CODE = #{COMP_CODE} AND NOT (CTSMEMO.TRX_TYPE <![CDATA[ < ]]> 0))
+		<!--****************************************** -->
+	</sql> 
+	
+   <sql id="selectCTSMEMO" >
+    select 
+     CODE, COMP_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ARAB, TYPE,
+     (SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = 25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.EXP_REVIEW) AS EXP_REVIEW, 
+     NUMBER_REVIEWS,
+     (SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = 25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.DATE_INTERVAL) AS DATE_INTERVAL, 
+     (SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID =25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.ACC_SPECIFIC) AS ACC_SPECIFIC,  
+     (SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = 25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.CIF_SPECIFIC) AS CIF_SPECIFIC,
+					
+	(SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = 25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.SEGMENT_SPECIFIC_YN) AS SEGMENT_SPECIFIC_YN,
+					
+										
+     (SELECT VALUE_DESC
+					FROM SYS_PARAM_LOV_TRANS
+					WHERE LOV_TYPE_ID = 25
+					AND LANG_CODE = #{langCode}
+					AND VALUE_CODE = CM.APP_SPECIFIC) AS APP_SPECIFIC, 
+    APP_NAME, TRX_TYPE, COMMON_DESC_ENG, COMMON_DESC_ARAB, COMMON_TYPE, SHOW_ALL_TRX, 
+    CTS_TRXTYPE, MESSAGE_ENG, MESSAGE_ARABIC, SEND_SMS, DAYS_BEFORE, REP_NUM, SEND_EMAIL, 
+    MARKETING
+    from CTSMEMO CM WHERE  COMP_CODE = #{compCode}
+       AND	(#{type}  = 'A' OR	(#{type}  = 'NR'	 AND	CODE  NOT IN 
+    	(SELECT CODE  FROM  CTSMEMO	WHERE CTSMEMO.COMP_CODE  = #{compCode}	 AND	NOT (CTSMEMO.TRX_TYPE <![CDATA[ < ]]> 0) ) )
+          )
+ 
+    
+  </sql>
+  
+   <sql id="selectCTSMEMO_LOG" >
+  SELECT
+			 CTSMEMO_LOG.COMP_CODE ,
+			 CTSMEMO_LOG.BRANCH_CODE,
+			 CTSMEMO_LOG.TRX_NO,
+			 CTSMEMO_LOG.LINE_NO,
+			 CTSMEMO_LOG.MEMO_DATE,
+			 CTSMEMO_LOG.CIF_NO,
+			 CTSMEMO_LOG.ACC_BR,
+			 CTSMEMO_LOG.ACC_CY,
+			 CTSMEMO_LOG.ACC_GL,
+			 CTSMEMO_LOG.ACC_CIF,
+			 CTSMEMO_LOG.ACC_SL,
+			 CTSMEMO_DET.ENG_COMENT,
+			 CTSMEMO.CODE,
+			 CTSMEMO.BRIEF_DESC_ENG,
+			 CTSMEMO_LOG.USER_ID
+	FROM  CTSMEMO_LOG,
+		 CTSMEMO_DET,
+		 CTSMEMO 
+	WHERE	 (CTSMEMO_LOG.COMP_CODE  = #{compCode})
+	 AND	(CTSMEMO_DET.COMP_CODE  = CTSMEMO_LOG.COMP_CODE)
+	 AND	(CTSMEMO_DET.BRANCH_CODE  = CTSMEMO_LOG.BRANCH_CODE)
+	 AND	(CTSMEMO_DET.TRX_NO  = CTSMEMO_LOG.TRX_NO)
+	 AND	(CTSMEMO.COMP_CODE  = CTSMEMO_LOG.COMP_CODE)
+	 AND	(CTSMEMO.CODE  = CTSMEMO_DET.MEMO_CODE)	
+  </sql>
+  
+    <select id="selectCTSMEMOLOGCount" parameterType="memoSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectCTSMEMO_LOG" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<select id="selectCTSMEMOLOGList" parameterType="memoSC" resultMap="memoLogListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectCTSMEMO_LOG" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+  
+  <select id="selectCTSMEMOCount" parameterType="memoSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectCTSMEMO" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+
+	<select id="selectCTSMEMOList" parameterType="memoSC" resultMap="CTSMEMO.BaseResultMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectCTSMEMO" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+
+	<select id="memoDtlTrxListCount" parameterType="memoSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_memoDtlTrxList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="memoDtlTrxList" parameterType="memoSC" resultMap="memoTrxListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_memoDtlTrxList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+ 
+	<select id="memoDtlListCount" parameterType="memoSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_memoDtlList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="memoDtlList" parameterType="memoSC" resultMap="memoListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_memoDtlList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnCountAvailableMemo" parameterType="memoSC" resultType="int">
+		<include refid="select_isAvailableMemo" />
+		<include refid="select_memoConditions" />
+	</select>
+
+	<select id="memoCount" parameterType="memoSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_memoList" />
+		<include refid="select_memoConditions" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="memoList" parameterType="memoSC" resultMap="memoListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_memoList" />
+		<include refid="select_memoConditions" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="memoFormData" parameterType="com.path.vo.common.memo.MemoDtlCO" resultMap="memoFormMap">	 
+		<include refid="select_memoFormData" />		 
+	</select>
+ 
+ 	<select id="memoData" parameterType="com.path.dbmaps.vo.CTSMEMOVO" resultMap="memoMap">	 
+		<include refid="select_memoData" />		 
+	</select>
+ 
+ 
+	 <resultMap id="memoLogListMap" type="com.path.vo.common.memo.MemoDtlLogCO">
+		<result column="COMP_CODE" property="ctsMemoLogVO.COMP_CODE"/>
+		<result column="BRANCH_CODE" property="ctsMemoLogVO.BRANCH_CODE"/>
+		<result column="TRX_NO" property="ctsMemoLogVO.TRX_NO"/>
+		<result column="LINE_NO" property="ctsMemoLogVO.LINE_NO"/>
+		<result column="MEMO_DATE" property="ctsMemoLogVO.MEMO_DATE"/>
+		<result column="CIF_NO" property="ctsMemoLogVO.CIF_NO"/>
+		<result column="ACC_BR" property="ctsMemoLogVO.ACC_BR"/>
+		<result column="ACC_CY" property="ctsMemoLogVO.ACC_CY"/>
+		<result column="ACC_GL" property="ctsMemoLogVO.ACC_GL"/>
+		<result column="ACC_CIF" property="ctsMemoLogVO.ACC_CIF"/>
+		<result column="ACC_SL" property="ctsMemoLogVO.ACC_SL"/>
+		<result column="ENG_COMENT" property="ctsMemoDetVO.ENG_COMENT"/>
+		<result column="CODE" property="ctsMemoVO.CODE"/>
+		<result column="BRIEF_DESC_ENG" property="ctsMemoVO.BRIEF_DESC_ENG"/>
+		<result column="USER_ID" property="ctsMemoLogVO.USER_ID"/>
+	</resultMap>
+
+	<resultMap id="memoListMap" type="com.path.vo.common.memo.MemoCO">		
+		<result column="TRX_NO" property="TRX_NO" />
+		<result column="MEMO_CODE" property="MEMO_CODE" />
+		<result column="ENG_COMENT" property="ENG_COMENT" />
+		<result column="LAST_REVIEW_NO" property="LAST_REVIEW_NO" />
+		<result column="BRANCH_CODE" property="BRANCH_CODE" />
+		<result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+		<result column="COMMON_DESC_ENG" property="COMMON_DESC_ENG" />
+		<!-- <result column="0 C_VIEWED"     				property="LINK_CODE"/> -->
+		<result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+		<result column="COMMON_DESC_ARAB" property="COMMON_DESC_ARAB" />
+		<result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+		<result column="ARAB_COMENT" property="ARAB_COMENT" />
+		<result column="CREATED_BY" property="CREATED_BY" />
+		<result column="MODIFIED_BY" property="MODIFIED_BY" />
+		<result column="TYPE" property="TYPE" />
+		<result column="APP_SPECIFIC" property="APP_SPECIFIC" />
+		<result column="APP_NAME" property="APP_NAME" />
+		<result column="CIF_SPECIFIC" property="CIF_SPECIFIC" />
+		<result column="ACC_BR" property="ACC_BR" />
+		<result column="ACC_CY" property="ACC_CY" />
+		<result column="ACC_GL" property="ACC_GL" />
+		<result column="ACC_CIF" property="ACC_CIF" />
+		<result column="ACC_SL" property="ACC_SL" />
+		<result column="CIF_NO" property="CIF_NO" />
+		<result column="FROM_DATE" property="FROM_DATE" />
+		<result column="DATE_TO" property="DATE_TO" />
+		<result  column="STATUS" property="STATUS" />	
+		<result  column="COND_AUTOMATION_CODE" property="condAutomationCode" />	
+		<result  column="EVENT_TYPE" property="eventType" />
+		<result  column="AMOUNT" property="AMOUNT" />
+		<result  column="TRX_REF" property="TRX_REF" />
+		<result  column="TRX_TYPE" property="TRX_TYPE" />
+		<result  column="TRX_DESC" property="TRX_DESC" />
+		<result  column="CIF_ROLE" property="COMMON_REF" />
+		<result  column="COMMON_REF" property="COMMON_REF" />
+		<result  column="CURRENCIES_DECIMAL_POINTS" property="CURRENCIES_DECIMAL_POINTS" />
+		<result  column="CURRENCIES_BRIEF_DESC_ENG" property="CURRENCIES_BRIEF_DESC_ENG" />
+		<result  column="CURRENCIES_FLAG_CTR" property="CURRENCIES_FLAG_CTR" />
+		<result column="SEGMENT_SPECIFIC_YN" property="SEGMENT_SPECIFIC_YN" />
+		<result column="SEGMENT_CODE" property="ctsmemoDETVO.SEGMENT_CODE" />		
+		
+	</resultMap>
+	
+	
+	 <resultMap id="memoTrxListMap" type="com.path.vo.common.memo.MemoCO">	
+		<result column="COMP_CODE" property="ctsmemoDETVO.COMP_CODE" />	
+		<result column="BRANCH_CODE" property="ctsmemoDETVO.BRANCH_CODE" />
+		<result column="TRX_NO" property="ctsmemoDETVO.TRX_NO" />
+		<result column="MEMO_CODE" property="ctsmemoDETVO.MEMO_CODE" />
+		<result column="ENG_COMENT" property="ctsmemoDETVO.ENG_COMENT" />
+		<result column="ARAB_COMENT" property="ctsmemoDETVO.ARAB_COMENT" />
+		<result column="CIF_NO" property="ctsmemoDETVO.CIF_NO" />
+		<result column="LAST_REVIEW_NO" property="ctsmemoDETVO.LAST_REVIEW_NO" />
+		<result  column="STATUS" property="ctsmemoDETVO.STATUS" />	
+		<result  column="CIF_ROLE" property="ctsmemoDETVO.CIF_ROLE" />
+		<result  column="PROD_CLASS" property="ctsmemoDETVO.PROD_CLASS" />
+		<result  column="TRX_REF" property="ctsmemoDETVO.TRX_REF" />
+		<result column="APP_NAME" property="ctsmemoDETVO.APP_NAME" />
+		<result column="TRX_TYPE" property="ctsmemoDETVO.TRX_TYPE" />
+		<result column="TRX_STATUS" property="ctsmemoDETVO.TRX_STATUS" />
+		<result column="TRX_LINE_NO" property="ctsmemoDETVO.TRX_LINE_NO" />
+		<result column="CURRENCY" property="ctsmemoDETVO.CURRENCY" />
+		<result column="AMOUNT" property="ctsmemoDETVO.AMOUNT" />
+		<result column="YIELD" property="ctsmemoDETVO.YIELD" />
+		<result column="VALUE_DATE" property="ctsmemoDETVO.VALUE_DATE" />
+		<result column="MATURITY_DATE" property="ctsmemoDETVO.MATURITY_DATE" />
+	</resultMap>
+		
+	 <resultMap id="memoFormMap" type="com.path.vo.common.memo.MemoDtlCO">
+		<result column="TRX_NO" property="ctsMemoDetVO.TRX_NO"/>
+		<result column="BRANCH_CODE" property="ctsMemoDetVO.BRANCH_CODE"/>
+		<result column="COMP_CODE" property="ctsMemoDetVO.COMP_CODE"/>
+		<result column="MEMO_CODE" property="ctsMemoDetVO.MEMO_CODE"/>
+		<result column="ENG_COMENT" property="ctsMemoDetVO.ENG_COMENT"/>
+		<result column="ARAB_COMENT" property="ctsMemoDetVO.ARAB_COMENT"/>
+		<result column="CIF_NO" property="ctsMemoDetVO.CIF_NO"/>
+		<result column="ACC_ADD_REF" property="ctsMemoDetVO.ACC_ADD_REF"/>
+		<result column="ACC_BR" property="ctsMemoDetVO.ACC_BR"/>
+		<result column="ACC_CY" property="ctsMemoDetVO.ACC_CY"/>
+		<result column="ACC_BR" property="ctsMemoDetVO.ACC_BR"/>
+		<result column="ACC_GL" property="ctsMemoDetVO.ACC_GL"/>
+		<result column="ACC_CIF" property="ctsMemoDetVO.ACC_CIF"/>
+		<result column="ACC_SL" property="ctsMemoDetVO.ACC_SL"/>
+		<result column="BRIEF_NAME_ENG" property="AC_DESC"/>		
+		<result column="FROM_DATE" property="ctsMemoDetVO.FROM_DATE"/>
+		<result column="DATE_TO" property="ctsMemoDetVO.DATE_TO"/>
+		<result column="BRIEF_DESC_ENG" property="ctsMemoVO.BRIEF_DESC_ENG"/>
+		<result column="LAST_REVIEW_NO" property="ctsMemoDetVO.LAST_REVIEW_NO"/>		
+		<result column="LONG_NAME_ENG" property="cifDesc"/>
+		<result column="STATUS" property="ctsMemoDetVO.STATUS"/>	
+		<result column="STATUS_DESC" property="statusDesc"/>	
+		<result column="DATE_UPDATED" property="ctsMemoDetVO.DATE_UPDATED" />	
+		<result column="TYPE" property="ctsMemoVO.TYPE"/>
+		<result column="EXP_REVIEW" property="ctsMemoVO.EXP_REVIEW"/>
+		<result column="NUMBER_REVIEWS" property="ctsMemoVO.NUMBER_REVIEWS"/>
+		<result column="DATE_INTERVAL" property="ctsMemoVO.DATE_INTERVAL"/>
+		<result column="ACC_SPECIFIC" property="ctsMemoVO.ACC_SPECIFIC"/>
+		<result column="CIF_SPECIFIC" property="ctsMemoVO.CIF_SPECIFIC"/>
+		<result  column="APPROVED_BY" property="ctsMemoDetVO.APPROVED_BY" />	
+		<result  column="DATE_CREATED" property="ctsMemoDetVO.DATE_CREATED" />
+		<result  column="CREATED_BY" property="ctsMemoDetVO.CREATED_BY" />
+		<result  column="MODIFIED_BY" property="ctsMemoDetVO.MODIFIED_BY" />
+		<result  column="TOBE_CANCELLED_BY" property="ctsMemoDetVO.TOBE_CANCELLED_BY" />
+		<result  column="TOBE_REACTIVATED_BY" property="ctsMemoDetVO.TOBE_REACTIVATED_BY" />
+		<result  column="TOBE_SUSPENDED_BY" property="ctsMemoDetVO.TOBE_SUSPENDED_BY" />
+	</resultMap>
+	
+	<resultMap id="memoMap" type="com.path.dbmaps.vo.CTSMEMOVO">
+		<result column="TYPE" property="TYPE"/>
+		<result column="EXP_REVIEW" property="EXP_REVIEW"/>
+		<result column="NUMBER_REVIEWS" property="NUMBER_REVIEWS"/>
+		<result column="DATE_INTERVAL" property="DATE_INTERVAL"/>
+		<result column="ACC_SPECIFIC" property="ACC_SPECIFIC"/>
+		<result column="CIF_SPECIFIC" property="CIF_SPECIFIC"/>
+		<result column="CODE" property="CODE"/>
+	</resultMap>
+	
+<update id="updateStatus" parameterType="com.path.dbmaps.vo.CTSMEMO_DETVO">
+    <include refid="CTSMEMO_DET.sql_updateCTSMEMO_DET" />
+      <if test="DATE_UPDATED != null" > AND DATE_UPDATED = #{DATE_UPDATED} </if>
+	</update>
+	
+	
+	<resultMap id="loadAlertMemoDescriptionMap" type="com.path.vo.common.memo.MemoDtlCO">
+		<result column="CIF_NO" property="ctsMemoDetVO.CIF_NO"/>
+		<result column="ACC_BR" property="ctsMemoDetVO.ACC_BR"/>
+		<result column="ACC_CY" property="ctsMemoDetVO.ACC_CY"/>
+		<result column="ACC_GL" property="ctsMemoDetVO.ACC_GL"/>
+		<result column="ACC_CIF" property="ctsMemoDetVO.ACC_CIF"/>
+		<result column="ACC_SL" property="ctsMemoDetVO.ACC_SL"/>
+		<result column="MEMO_COMMENT" property="ctsMemoDetVO.ENG_COMENT"/>
+		<result column="CIF_SPECIFIC" property="ctsMemoVO.CIF_SPECIFIC"/>
+		<result column="ACC_SPECIFIC" property="ctsMemoVO.ACC_SPECIFIC"/>
+		<result column="COMMON_DESC_ENG" property="ctsMemoVO.BRIEF_DESC_ENG"/>
+		<result column="CIF_DESC" property="cifDesc"/>
+		<result column="ACC_DESC" property="AC_DESC"/>
+	</resultMap>
+	
+	<select id="loadAlertMemoDescription" resultMap="loadAlertMemoDescriptionMap" parameterType="memoSC">
+		
+	 SELECT  CASE   WHEN #{preferredLanguage} = 'L' Then
+        CASE WHEN MD.ENG_COMENT    IS NULL THEN  '' ELSE MD.ENG_COMENT   END
+      ELSE
+        CAse WHEN MD.ARAB_COMENT    IS NULL THEN  '' ELSE MD.ARAB_COMENT   END
+      END  MEMO_COMMENT, 
+      CASE WHEN M.ACC_SPECIFIC IS NULL THEN '0' ELSE M.ACC_SPECIFIC END ACC_SPECIFIC ,
+      CASE WHEN M.CIF_SPECIFIC IS NULL THEN '0' ELSE M.CIF_SPECIFIC END CIF_SPECIFIC ,
+      MD.CIF_NO ,
+      MD.ACC_BR ,
+      MD.ACC_CY ,
+      MD.ACC_GL ,
+      MD.ACC_CIF ,
+	  MD.ACC_SL ,
+			CASE 	WHEN #{preferredLanguage} = 'L' Then
+				CASE WHEN M.BRIEF_DESC_ENG  	IS NULL THEN  '' ELSE M.BRIEF_DESC_ENG 	END
+			ELSE
+				CAse WHEN M.BRIEF_DESC_ARAB  	IS NULL THEN  '' ELSE M.BRIEF_DESC_ARAB 	END
+			END COMMON_DESC_ENG,
+	   <![CDATA[
+      CASE 	WHEN #{preferredLanguage} = 'L' Then
+							Case When A.BRIEF_NAME_ENG	IS NULL THEN '' ELSE ' <Account_key> ' || A.BRIEF_NAME_ENG END 
+					ELSE
+							Case When A.BRIEF_NAME_ARAB  IS NULL THEN '' ELSE A.BRIEF_NAME_ARAB  || ' <Account_key> ' END 
+					END ACC_DESC, 
+      CASE 	WHEN #{preferredLanguage} = 'L' Then
+					Case When C.SHORT_NAME_ENG	IS NULL THEN '' ELSE ' <To_CIF_key> ' || C.SHORT_NAME_ENG END
+				ELSE
+					Case When C.SHORT_NAME_ARAB	IS NULL THEN '' ELSE  C.SHORT_NAME_ARAB || '<To_CIF_key>' END
+				END CIF_DESC
+      ]]>  
+      FROM 		CTSMEMO_DET MD LEFT JOIN CTSMEMO M ON MD.COMP_CODE		=	M.COMP_CODE
+                                               	AND		MD.MEMO_CODE 	=	M.CODE 
+                             LEFT JOIN  AMF A ON A.COMP_CODE			=	MD.COMP_CODE
+                                           		AND		A.BRANCH_CODE	=   MD.ACC_BR
+                                           		AND		A.CURRENCY_CODE	=	MD.ACC_CY
+                                           		AND		A.GL_CODE		=	MD.ACC_GL
+                                           		AND		A.CIF_SUB_NO	=   MD.ACC_CIF
+                                           		AND		A.SL_NO			=	MD.ACC_SL
+                             LEFT JOIN CIF C ON C.COMP_CODE 			=   MD.COMP_CODE
+	                                           	AND		C.CIF_NO		=   MD.ACC_CIF             
+        
+		WHERE 	MD.COMP_CODE	=	M.COMP_CODE
+		AND		MD.MEMO_CODE 	=	M.CODE
+		AND		MD.COMP_CODE	=  #{compCode}
+		AND 	MD.BRANCH_CODE	=  #{branchCode}
+		AND		MD.TRX_NO		=  #{trxNo}
+		
+	</select>
+	
+	<insert id="updateMemoLog" parameterType="com.path.vo.common.memo.MemoDtlCO">
+	   <choose>
+		 <when test="isSybase == 1">
+			BEGIN
+				DECLARE @V_MAX 						NUMERIC(6)
+				
+				SELECT @V_MAX = (CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE MAX(LINE_NO) END) + 1 
+					     FROM CTSMEMO_LOG
+					    WHERE COMP_CODE = #{ctsMemoDetVO.COMP_CODE}
+					      AND BRANCH_CODE = #{ctsMemoDetVO.BRANCH_CODE}
+					      AND TRX_NO = #{ctsMemoDetVO.TRX_NO}
+				
+				IF @V_MAX IS NOT NULL 
+				BEGIN
+				     INSERT INTO CTSMEMO_LOG  
+							( COMP_CODE,   
+							  BRANCH_CODE,   
+							  TRX_NO,   
+							  LINE_NO,   
+							  MEMO_DATE,   
+							  CIF_NO,
+						<if test='type!=null and type.equals("ACC")'>
+							  ACC_BR,   
+							  ACC_CY,   
+							  ACC_GL,   
+							  ACC_CIF,   
+							  ACC_SL,
+						</if>
+							  USER_ID)  
+					 VALUES ( #{ctsMemoDetVO.COMP_CODE},   
+							  #{ctsMemoDetVO.BRANCH_CODE},   
+							  #{ctsMemoDetVO.TRX_NO},   
+							  @V_MAX,   
+							  #{runningDate},
+							  #{ctsMemoDetVO.CIF_NO, jdbcType=NUMERIC},
+							  <if test='type!=null and type.equals("ACC")'>
+							  #{ctsMemoDetVO.ACC_BR, jdbcType=NUMERIC},
+							  #{ctsMemoDetVO.ACC_CY, jdbcType=NUMERIC},  
+							  #{ctsMemoDetVO.ACC_GL, jdbcType=NUMERIC},   
+							  #{ctsMemoDetVO.ACC_CIF, jdbcType=NUMERIC}, 
+							  #{ctsMemoDetVO.ACC_SL, jdbcType=NUMERIC},
+							  </if>
+							  #{userName} )
+				END 
+			END
+		 
+		 </when>
+		 <otherwise>
+		  DECLARE
+		   	V_MAX NUMBER;
+		   	BEGIN  
+				SELECT (CASE WHEN MAX(LINE_NO) IS NULL THEN 0 ELSE MAX(LINE_NO) END) + 1 INTO V_MAX
+					     FROM CTSMEMO_LOG
+					    WHERE COMP_CODE = #{ctsMemoDetVO.COMP_CODE}
+					      AND BRANCH_CODE = #{ctsMemoDetVO.BRANCH_CODE}
+					      AND TRX_NO = #{ctsMemoDetVO.TRX_NO};
+				IF V_MAX IS NOT NULL THEN 
+					 INSERT INTO CTSMEMO_LOG  
+							( COMP_CODE,   
+							  BRANCH_CODE,   
+							  TRX_NO,   
+							  LINE_NO,   
+							  MEMO_DATE,   
+							  CIF_NO,
+						<if test='type!=null and type.equals("ACC")'>
+							  ACC_BR,   
+							  ACC_CY,   
+							  ACC_GL,   
+							  ACC_CIF,   
+							  ACC_SL,
+						</if>
+							  USER_ID)  
+					 VALUES ( #{ctsMemoDetVO.COMP_CODE},   
+							  #{ctsMemoDetVO.BRANCH_CODE},   
+							  #{ctsMemoDetVO.TRX_NO},   
+							  V_MAX,   
+							  #{runningDate},
+							  #{ctsMemoDetVO.CIF_NO, jdbcType=NUMERIC},
+							  <if test='type!=null and type.equals("ACC")'>
+							  #{ctsMemoDetVO.ACC_BR, jdbcType=NUMERIC},
+							  #{ctsMemoDetVO.ACC_CY, jdbcType=NUMERIC},  
+							  #{ctsMemoDetVO.ACC_GL, jdbcType=NUMERIC},   
+							  #{ctsMemoDetVO.ACC_CIF, jdbcType=NUMERIC}, 
+							  #{ctsMemoDetVO.ACC_SL, jdbcType=NUMERIC},
+							  </if>
+							  #{userName} );
+		  		END IF;
+		  END;
+		  </otherwise>
+	   </choose>
+	</insert>
+
+  
+  	<sql id="updateMemoDetails">
+	 	 UPDATE CTSMEMO_DET 
+	 	 	SET CTSMEMO_DET.STATUS 		= #{ctsMemoDetVO.STATUS}
+		  WHERE CTSMEMO_DET.COMP_CODE 	= #{ctsMemoDetVO.COMP_CODE}
+			AND CTSMEMO_DET.BRANCH_CODE = #{ctsMemoDetVO.BRANCH_CODE}
+			AND CTSMEMO_DET.CIF_NO 		= #{ctsMemoDetVO.CIF_NO}
+			AND CTSMEMO_DET.MEMO_CODE 	= #{ctsMemoDetVO.MEMO_CODE}
+			<if test="ctsMemoDetVO.MEMO_CODE!=null">
+				AND COND_AUTOMATION_CODE= 0
+			</if>
+  	</sql>
+  	
+	<update id="updateMemoDetls" parameterType="com.path.vo.common.memo.MemoDtlCO">
+		<include refid="updateMemoDetails" />
+	</update>
+	
+	
+	<select id="recalcitrantIncompleteMemoList" parameterType="com.path.vo.common.memo.MemoDtlCO" resultType="com.path.dbmaps.vo.CTSMEMO_DETVO">
+		 SELECT CTSMEMO_DET.COND_AUTOMATION_CODE, CTSMEMO_DET.STATUS
+		   FROM CTSMEMO_DET
+		  WHERE CTSMEMO_DET.COMP_CODE   = #{loginCompCode,jdbcType=NUMERIC}
+		    AND CTSMEMO_DET.BRANCH_CODE = #{loginBraCode,jdbcType=NUMERIC}
+		    AND CTSMEMO_DET.CIF_NO 		= #{ctsMemoDetVO.CIF_NO,jdbcType=NUMERIC}
+			AND CTSMEMO_DET.MEMO_CODE   = #{ctsMemoDetVO.MEMO_CODE,jdbcType=NUMERIC}
+			 <if test='status!=null and "P".equals(status)'>
+			 	AND CTSMEMO_DET.STATUS = #{status,jdbcType=NUMERIC}
+			 </if>	
+		    AND (CASE WHEN CTSMEMO_DET.COND_AUTOMATION_CODE IS NULL 
+		    			THEN 0 
+		    		  ELSE  CTSMEMO_DET.COND_AUTOMATION_CODE END = (select CTS_CONDITIONAL_AUTOMATION.CODE 
+														              FROM CTS_CONDITIONAL_AUTOMATION
+														             WHERE CTS_CONDITIONAL_AUTOMATION.COMP_CODE   = #{loginCompCode,jdbcType=NUMERIC}
+														               AND CTS_CONDITIONAL_AUTOMATION.ENTITY_TYPE = #{type,jdbcType=VARCHAR} 
+														               AND CTS_CONDITIONAL_AUTOMATION.EVENT_TYPE  = #{event,jdbcType=NUMERIC} ))
+	</select>
+	
+	
+	
+	
+	<sql id="set_ctsmemoDetStatus">
+		UPDATE CTSMEMO_DET
+		   SET CTSMEMO_DET.STATUS = #{ctsMemoDetVO.STATUS}
+	</sql>
+	<sql id="set_ctsmemoDetCommonDesc">
+		UPDATE CTSMEMO_DET
+		   SET CTSMEMO_DET.COMMON_DESC_ENG = #{ctsMemoDetVO.COMMON_DESC_ENG}
+	</sql>
+	<sql id="updateCTSMEMODET_Common">
+		WHERE CTSMEMO_DET.COMP_CODE   = #{ctsMemoDetVO.COMP_CODE}
+		  AND CTSMEMO_DET.BRANCH_CODE = #{ctsMemoDetVO.BRANCH_CODE}
+		  AND CTSMEMO_DET.CIF_NO      =  #{ctsMemoDetVO.CIF_NO, jdbcType=NUMERIC}
+	      AND CTSMEMO_DET.MEMO_CODE   = 0
+	</sql>
+	<sql id="updateCTSMEMODET_Common_Del">
+		AND STATUS = 'D'
+		<if test="null != ctsMemoDetVO.COND_AUTOMATION_CODE">
+		AND CASE WHEN CTSMEMO_DET.COND_AUTOMATION_CODE IS NULL THEN 0 ELSE  CTSMEMO_DET.COND_AUTOMATION_CODE END = #{ctsMemoDetVO.COND_AUTOMATION_CODE}
+		</if>
+	</sql>
+	<update id="updateCTSMEMODET_Status" parameterType="com.path.vo.common.memo.MemoDtlCO">
+		<include refid="set_ctsmemoDetStatus" />
+		<include refid="updateCTSMEMODET_Common" />
+		<include refid="updateCTSMEMODET_Common_Del" />
+	</update>
+	<update id="updateCTSMEMODET_Desc" parameterType="com.path.vo.common.memo.MemoDtlCO">
+		<include refid="set_ctsmemoDetCommonDesc" />
+		<include refid="updateCTSMEMODET_Common" />
+		<include refid="updateCTSMEMODET_Common_Del" />
+	</update>
+	<update id="updateCTSMEMODET_FSDStatus" parameterType="com.path.vo.common.memo.MemoDtlCO">
+		<include refid="set_ctsmemoDetStatus" />
+		<include refid="updateCTSMEMODET_Common" />
+		<![CDATA[
+			AND STATUS <> 'D'
+		]]>	
+		AND CTSMEMO_DET.COND_AUTOMATION_CODE IN  
+							 (select CTS_CONDITIONAL_AUTOMATION.CODE 
+								FROM CTS_CONDITIONAL_AUTOMATION
+							   WHERE CTS_CONDITIONAL_AUTOMATION.COMP_CODE = #{ctsMemoDetVO.COMP_CODE}
+								 AND CTS_CONDITIONAL_AUTOMATION.ENTITY_TYPE = 'E'  
+								 AND CTS_CONDITIONAL_AUTOMATION.EVENT_TYPE  IN (7, 8 ))
+	</update>
+	
+	<!-- NABIL FEGHALI - IIAB110182 - IIAB100424 - Conditional Automation  -->
+	<update id="updateCTSMEMODET_CondAutoStatus" parameterType="com.path.vo.common.memo.MemoDtlCO">
+		<include refid="set_ctsmemoDetStatus" />
+		<include refid="updateCTSMEMODET_Common" />
+			AND ( CASE WHEN CTSMEMO_DET.COND_AUTOMATION_CODE IS NULL THEN 0 ELSE  CTSMEMO_DET.COND_AUTOMATION_CODE END  
+	 			  not in 
+                 (select CTS_CONDITIONAL_AUTOMATION.CODE 
+								FROM CTS_CONDITIONAL_AUTOMATION
+								WHERE CTS_CONDITIONAL_AUTOMATION.COMP_CODE =  #{ctsMemoDetVO.COMP_CODE}
+								AND      CTS_CONDITIONAL_AUTOMATION.ENTITY_TYPE = 'E'  
+								AND      CTS_CONDITIONAL_AUTOMATION.EVENT_TYPE  in( 7, 8))
+								)
+	</update>
+
+	<select id="getMinMemoCrmCode" parameterType="memoSC" resultType="BigDecimal">
+		SELECT MIN(CTSMEMO.CODE)
+	  	FROM  CTSMEMO 
+	  	WHERE CTSMEMO.COMP_CODE  = #{compCode}
+	  	AND   CTSMEMO.TYPE = 'M'
+	</select>	
+</mapper>

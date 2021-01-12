@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chargesSchemaMapper">
+
+ <sql id="chargesSchemaListCommon" >
+	<![CDATA[
+		SELECT	CTSCHARGES_SCHEMA.CODE,    
+         CTSCHARGES_SCHEMA.BRIEF_NAME_ENG,    
+         CTSCHARGES_SCHEMA.LONG_NAME_ENG,    
+         CTSCHARGES_SCHEMA.BRIEF_NAME_ARAB,    
+         CTSCHARGES_SCHEMA.LONG_NAME_ARAB   
+    FROM CTSCHARGES_SCHEMA   
+   WHERE CTSCHARGES_SCHEMA.COMP_CODE = #{compCode}    
+	AND   CTSCHARGES_SCHEMA.LINE_NO  = 0 
+	]]>	 
+ </sql>
+ 
+ <sql id="chargesSchemaDependencyByCode">
+ 	AND CTSCHARGES_SCHEMA.CODE = #{code}
+ </sql>
+ 
+
+ <resultMap id="chargesSchemaListMap" type="chargesschemaVO">
+ 	<id property="CODE" column="CODE" />
+	<id property="COMP_CODE" column="COMP_CODE" />
+	<id property="LINE_NO" column="LINE_NO" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="CHARGE_CODE" column="CHARGE_CODE" />
+	<result property="PROFIT_CHARGE" column="PROFIT_CHARGE" />
+	<result property="PASS_CHRG_SEP_FRM_TVA" column="PASS_CHRG_SEP_FRM_TVA" />
+ </resultMap>
+ 
+ <select id="chargesSchemaList" resultMap="chargesSchemaListMap" parameterType="chargesschemaSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chargesSchemaListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="chargesSchemaListCount" resultType="int" parameterType="chargesschemaSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chargesSchemaListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <select id="returnDependencyByCode" resultType="chargesschemaVO" parameterType="chargesschemaSC" >
+	<include refid="chargesSchemaListCommon"/>
+	<include refid="chargesSchemaDependencyByCode"/>
+ </select>
+
+ <select id="returnChargesSchemaDetailByCode" resultType="chargesschemaVO" parameterType="chargesschemaSC" >
+	SELECT
+				 CTSCHARGES_SCHEMA.COMP_CODE,
+				 CTSCHARGES_SCHEMA.CODE,
+				 CTSCHARGES_SCHEMA.LINE_NO,
+				 CTSCHARGES_SCHEMA.BRIEF_NAME_ENG,
+				 CTSCHARGES_SCHEMA.LONG_NAME_ENG,
+				 CTSCHARGES_SCHEMA.BRIEF_NAME_ARAB,
+				 CTSCHARGES_SCHEMA.LONG_NAME_ARAB,
+				 CTSCHARGES_SCHEMA.CHARGE_CODE,
+				 CTSCHARGES_SCHEMA.PROFIT_CHARGE,
+				 CTSCHARGES_SCHEMA.PASS_CHRG_SEP_FRM_TVA
+	FROM  		 CTSCHARGES_SCHEMA 
+	WHERE	 CTSCHARGES_SCHEMA.COMP_CODE  = #{compCode}    
+	AND		CTSCHARGES_SCHEMA.LINE_NO  = 0
+	AND		CTSCHARGES_SCHEMA.CODE  = #{code}
+ </select>
+ 
+  <resultMap id="ctsChargesCOMap" type="ctsChargesCO">
+ 	<id column="CODE" property="ctsChargesVO.CODE" />
+    <id column="COMP_CODE" property="ctsChargesVO.COMP_CODE" />
+    <result column="CHARGE_TYPE" property="ctsChargesVO.CHARGE_TYPE" />
+    <result column="BRIEF_NAME_ENG" property="ctsChargesVO.BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="ctsChargesVO.LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="ctsChargesVO.BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="ctsChargesVO.LONG_NAME_ARAB" />
+    <result column="AMOUNT" property="ctsChargesVO.AMOUNT" />
+    <result column="ACC_BR" property="ctsChargesVO.ACC_BR" />
+    <result column="ACC_CY" property="ctsChargesVO.ACC_CY" />
+    <result column="ACC_GL" property="ctsChargesVO.ACC_GL" />
+    <result column="ACC_CIF" property="ctsChargesVO.ACC_CIF" />
+    <result column="ACC_SL" property="ctsChargesVO.ACC_SL" />
+    <result column="DEDUCT_FROM_TRX" property="ctsChargesVO.DEDUCT_FROM_TRX" />
+    <result column="ALLOW_MODIFY" property="ctsChargesVO.ALLOW_MODIFY" />
+    <result column="ALLOW_CLEARING" property="ctsChargesVO.ALLOW_CLEARING" />
+    <result column="BASED_ON_MOSARAFA" property="ctsChargesVO.BASED_ON_MOSARAFA" />
+    <result column="CHRG_ON_EXCEED" property="ctsChargesVO.CHRG_ON_EXCEED" />
+    <result column="EXCEED_AMT" property="ctsChargesVO.EXCEED_AMT" />
+    <result column="CHRG_PERCENTAGE" property="ctsChargesVO.CHRG_PERCENTAGE" />
+    <result column="MIN_AMT" property="ctsChargesVO.MIN_AMT" />
+    <result column="MAX_AMT" property="ctsChargesVO.MAX_AMT" />
+    <result column="PASS_SEPARATELY" property="ctsChargesVO.PASS_SEPARATELY" />
+    <result column="APPLY_TVA" property="ctsChargesVO.APPLY_TVA" />
+    <result column="VAT_CODE" property="ctsChargesVO.VAT_CODE" />
+    <result column="CONSIDER_ONCE_FOR_MULTI_TRX" property="ctsChargesVO.CONSIDER_ONCE_FOR_MULTI_TRX" />
+    <result column="DUES_COLLECTION_TYPE" property="ctsChargesVO.DUES_COLLECTION_TYPE" />
+    <result column="SEG_SUBJECT_OF_NEGOTIATION" property="ctsChargesVO.SEG_SUBJECT_OF_NEGOTIATION" />
+    <result column="CHRG_BR" property="ctsChargesVO.CHRG_BR" />
+    <result column="DR_ACC_CIF" property="ctsChargesVO.DR_ACC_CIF" />
+    <result column="DR_ACC_GL" property="ctsChargesVO.DR_ACC_GL" />
+    <result column="DR_ACC_SL" property="ctsChargesVO.DR_ACC_SL" />
+    <result column="DR_CRITERIA" property="ctsChargesVO.DR_CRITERIA" />
+    <result column="FIX_CHARGES" property="ctsChargesVO.FIX_CHARGES" />
+    <result column="CONSIDER_ONCE_FOR_MULTI_TRX" property="ctsChargesVO.CONSIDER_ONCE_FOR_MULTI_TRX" />
+    <result column="CY_NAME" property="CY_NAME" />
+ </resultMap>
+ 
+ <select id="returnChargesDetailByCode" resultMap="ctsChargesCOMap" parameterType="chargesschemaSC" >
+  <![CDATA[
+	SELECT
+			COMP_CODE,
+			CHARGE_TYPE,
+			CODE,
+			BRIEF_NAME_ENG,
+			LONG_NAME_ENG,
+			BRIEF_NAME_ARAB,
+			LONG_NAME_ARAB, 
+			AMOUNT,
+			ACC_BR, 
+			ACC_CY,
+			ACC_GL,
+			ACC_CIF,
+			ACC_SL,	
+			'' ACC_NAME,		
+			DEDUCT_FROM_TRX,
+			ALLOW_MODIFY,
+			ALLOW_CLEARING,
+			BASED_ON_MOSARAFA,
+			CHRG_ON_EXCEED,
+			EXCEED_AMT,
+			CHRG_PERCENTAGE,
+			MIN_AMT,
+			MAX_AMT,
+			PASS_SEPARATELY,
+			APPLY_TVA,
+			VAT_CODE,
+			FIX_CHARGES,
+			DR_ACC_GL,
+			DR_ACC_CIF,
+			DR_ACC_SL,
+			DR_CRITERIA,
+			'' VAT_DESC,
+			'' DR_ACC_NAME,	
+			CONSIDER_ONCE_FOR_MULTI_TRX,
+			CHRG_BR,
+			DUES_COLLECTION_TYPE,
+			SEG_SUBJECT_OF_NEGOTIATION,
+			(SELECT CURRENCIES.BRIEF_DESC_ENG FROM CURRENCIES WHERE CURRENCIES.CURRENCY_CODE = #{currencyCode} AND CURRENCIES.COMP_CODE  = #{compCode}) CY_NAME
+	FROM   CTSCHARGES 
+	WHERE  CTSCHARGES.COMP_CODE  =  #{compCode}
+	AND	   CTSCHARGES.CODE  =  #{code}
+	
+		]]>	 
+ </select>
+  <select id="returnSegChargesDetailByCode" resultMap="ctsChargesCOMap" parameterType="chargesschemaSC" >
+  <![CDATA[
+	SELECT
+			COMP_CODE,
+			CHARGE_TYPE,
+			CODE,
+			BRIEF_NAME_ENG,
+			LONG_NAME_ENG,
+			BRIEF_NAME_ARAB,
+			LONG_NAME_ARAB, 
+			AMOUNT,
+			ACC_BR, 
+			ACC_CY,
+			ACC_GL,
+			ACC_CIF,
+			ACC_SL,	
+			'' ACC_NAME,		
+			DEDUCT_FROM_TRX,
+			ALLOW_MODIFY,
+			ALLOW_CLEARING,
+			BASED_ON_MOSARAFA,
+			CHRG_ON_EXCEED,
+			EXCEED_AMT,
+			CHRG_PERCENTAGE,
+			MIN_AMT,
+			MAX_AMT,
+			PASS_SEPARATELY,
+			APPLY_TVA,
+			VAT_CODE,
+			FIX_CHARGES,
+			DR_ACC_GL,
+			DR_ACC_CIF,
+			DR_ACC_SL,
+			DR_CRITERIA,
+			'' VAT_DESC,
+			'' DR_ACC_NAME,	
+			CONSIDER_ONCE_FOR_MULTI_TRX,
+			CHRG_BR,
+			DUES_COLLECTION_TYPE,
+			SEG_SUBJECT_OF_NEGOTIATION,
+			(SELECT CURRENCIES.BRIEF_DESC_ENG FROM CURRENCIES WHERE CURRENCIES.CURRENCY_CODE = #{currencyCode} AND CURRENCIES.COMP_CODE  = #{compCode}) CY_NAME
+	FROM   CTSCHARGES_TEMP 
+	WHERE  CTSCHARGES_TEMP.COMP_CODE  =  #{compCode}
+	AND	   CTSCHARGES_TEMP.CODE  =  #{code}
+	and USER_ID = #{USER_ID}
+	and ENTITY_TYPE = #{ENTITY_TYPE}
+	and ENTITY_CODE = #{ENTITY_CODE}
+	and PRODUCT_TYPE = #{PRODUCT_TYPE}
+	and PRODUCT_CODE = #{PRODUCT_CODE}
+	and SCHEMA_TYPE = #{SCHEMA_TYPE}
+	and SCHEMA_CODE = #{SCHEMA_CODE}
+		]]>	 
+ </select>
+ <resultMap id="CTSChargesCOMap" type="ctsChargesSchemaCO" >
+    <id column="CODE" property="ctsChargesSchemaVO.CODE" />
+    <id column="COMP_CODE" property="ctsChargesSchemaVO.COMP_CODE" />
+    <id column="LINE_NO" property="ctsChargesSchemaVO.LINE_NO" />
+    <result column="BRIEF_NAME_ENG" property="ctsChargesSchemaVO.BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="ctsChargesSchemaVO.LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="ctsChargesSchemaVO.BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="ctsChargesSchemaVO.LONG_NAME_ARAB" />
+    <result column="CHARGE_CODE" property="ctsChargesSchemaVO.CHARGE_CODE" />
+    <result column="PROFIT_CHARGE" property="ctsChargesSchemaVO.PROFIT_CHARGE" />
+    <result column="CHARGE_TYPE" property="ctsChargesSchemaVO.CHARGE_TYPE" />
+    <result column="PASS_CHRG_SEP_FRM_TVA" property="ctsChargesSchemaVO.PASS_CHRG_SEP_FRM_TVA" />
+     <result column="CHARGES_DESC" property="CHARGES_DESC" />
+    
+  </resultMap>
+ 
+ 
+  <sql id="returnTrxChargesSchemaDetailByCode" >
+  <![CDATA[
+	SELECT
+			 CTSCHARGES_SCHEMA.COMP_CODE,
+			 CTSCHARGES_SCHEMA.CODE,
+			 CTSCHARGES_SCHEMA.LINE_NO,
+			 CTSCHARGES_SCHEMA.BRIEF_NAME_ENG,
+			 CTSCHARGES_SCHEMA.LONG_NAME_ENG,
+			 CTSCHARGES_SCHEMA.BRIEF_NAME_ARAB,
+			 CTSCHARGES_SCHEMA.LONG_NAME_ARAB,
+			 CTSCHARGES_SCHEMA.CHARGE_CODE,
+              CTSCHARGES_SCHEMA.PROFIT_CHARGE,
+			 CTSCHARGES_SCHEMA.CHARGE_TYPE,
+			 
+			 CASE
+                WHEN CTSCHARGES_SCHEMA.CHARGE_CODE <> 0
+                THEN (SELECT 
+                CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_NAME_ARAB ELSE  BRIEF_NAME_ENG END 
+				FROM  CTSCHARGES 
+				WHERE	 (CTSCHARGES.COMP_CODE  = #{compCode})
+				AND	(CTSCHARGES.CODE  = CTSCHARGES_SCHEMA.CHARGE_CODE))
+                ELSE ''
+                END       CHARGES_DESC
+	FROM  CTSCHARGES_SCHEMA 
+	WHERE	 (CTSCHARGES_SCHEMA.COMP_CODE  = #{compCode})
+	 AND	(CTSCHARGES_SCHEMA.CODE  = #{code})
+	 AND	(CTSCHARGES_SCHEMA.LINE_NO  > 0)
+	]]>	 
+ </sql>
+ 
+  <select id="trxChargesSchemaList" resultMap="CTSChargesCOMap" parameterType="chargesschemaSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="returnTrxChargesSchemaDetailByCode"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="trxChargesSchemaListCount" resultType="int" parameterType="chargesschemaSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="returnTrxChargesSchemaDetailByCode"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ <sql id="returnMaintenenceDetails" >
+  <![CDATA[
+	SELECT  
+			 CTSCHARGES_ROSTER.COMP_CODE, 
+			 CTSCHARGES_ROSTER.CODE,  
+			 CTSCHARGES_ROSTER.SEQ,
+			 CTSCHARGES_ROSTER.FROM_AMT,
+			 CTSCHARGES_ROSTER.TO_AMT,
+			 CTSCHARGES_ROSTER.PERCENTAGE,
+			 CTSCHARGES_ROSTER.MIN_AMT,
+			 CTSCHARGES_ROSTER.MAX_AMT,
+         	 CTSCHARGES_ROSTER.CY_CODE,
+			 CTSCHARGES_ROSTER.DISC_AMT
+
+	FROM     CTSCHARGES_ROSTER
+	WHERE    CTSCHARGES_ROSTER.COMP_CODE  = #{compCode}
+    AND      CTSCHARGES_ROSTER.CY_CODE    = #{currencyCode}
+    AND      CTSCHARGES_ROSTER.COMP_CODE  = #{compCode}
+    AND		 CTSCHARGES_ROSTER.CODE       =  #{code}   
+	
+	  
+
+	]]>	 
+ </sql>
+ 
+  <select id="maintenenceChargesList" resultMap="CTSCHARGES_ROSTER.BaseResultMap" parameterType="chargesschemaSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="returnMaintenenceDetails"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="maintenenceChargesListCount" resultType="int" parameterType="chargesschemaSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="returnMaintenenceDetails"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ 
+ <resultMap id="exemptedInBranchesCOMap" type="exemptedInBranchesCO" >
+    <id column="COMP_CODE" property="ctsChargesExemptedBranchVO.COMP_CODE" />    
+    <result column="BRANCH_CODE" property="ctsChargesExemptedBranchVO.BRANCH_CODE" />    
+    <result column="BRANCH_DESC" property="BRANCH_DESC" />   
+    <result column="CHARGE_CODE" property="ctsChargesExemptedBranchVO.CHARGE_CODE" />
+    <result column="TRX_BR" property="ctsChargesExemptedBranchVO.TRX_BR" />
+    <result column="ACC_BR" property="ctsChargesExemptedBranchVO.ACC_BR" />
+  </resultMap>
+ 
+ 
+ 
+ <sql id="returnExemptedInBranches" >
+  <![CDATA[
+	SELECT 	CTSCHARGES_EXEMPTED_BRANCH.COMP_CODE,
+				CTSCHARGES_EXEMPTED_BRANCH.BRANCH_CODE,
+				CTSCHARGES_EXEMPTED_BRANCH.CHARGE_CODE,
+				CTSCHARGES_EXEMPTED_BRANCH.TRX_BR,
+				CTSCHARGES_EXEMPTED_BRANCH.ACC_BR,
+				 CASE
+                WHEN CTSCHARGES_EXEMPTED_BRANCH.BRANCH_CODE <> 0
+                THEN (SELECT 
+                CASE WHEN #{preferredLanguage} = 'A' THEN BRANCHES.BRIEF_DESC_ARAB ELSE  BRANCHES.BRIEF_DESC_ENG END 
+				FROM  BRANCHES 
+				WHERE	 (BRANCHES.COMP_CODE  = #{compCode})
+				AND	(BRANCHES.BRANCH_CODE  = CTSCHARGES_EXEMPTED_BRANCH.BRANCH_CODE))
+                ELSE ''
+                END       BRANCH_DESC
+                
+	FROM		CTSCHARGES_EXEMPTED_BRANCH
+	WHERE 		CTSCHARGES_EXEMPTED_BRANCH.COMP_CODE = #{compCode}
+	AND			CTSCHARGES_EXEMPTED_BRANCH.CHARGE_CODE = #{code}
+	
+	
+
+	]]>	 
+ </sql>
+ 
+  <select id="excemptedInBranchesList" resultMap="exemptedInBranchesCOMap" parameterType="chargesschemaSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="returnExemptedInBranches"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="excemptedInBranchesListCount" resultType="int" parameterType="chargesschemaSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="returnExemptedInBranches"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnVatDesc" resultMap="ctsChargesCOMap" parameterType="chargesschemaSC" >
+  <![CDATA[
+	SELECT BRIEF_DESC_ENG   
+			INTO :ls_desc
+			FROM ACC_VAT
+			WHERE COMP_CODE = #{compCode}
+			AND	VAT_CODE = #{vatCode}
+		]]>	 
+ </select>
+
+ <sql id="chargesSchemaForeignCYChargeListCommon" >	 	
+   SELECT CTSCHARGES_CURRENCY.COMP_CODE    ,  
+   		  CTSCHARGES_CURRENCY.CHARGE_CODE  , 
+		  CTSCHARGES_CURRENCY.CY_CODE      ,   
+		  CTSCHARGES_CURRENCY.LINE_NO      ,
+		  CTSCHARGES_CURRENCY.AMOUNT       ,
+       	  CURRENCIES.BRIEF_DESC_ENG        ,
+       	  CURRENCIES.DECIMAL_POINTS
+	FROM  CTSCHARGES_CURRENCY,CURRENCIES
+	WHERE CTSCHARGES_CURRENCY.COMP_CODE 	= CURRENCIES.COMP_CODE
+	AND   CTSCHARGES_CURRENCY.CY_CODE 		= CURRENCIES.CURRENCY_CODE 
+	AND   CTSCHARGES_CURRENCY.COMP_CODE 	= #{compCode}
+	AND   CTSCHARGES_CURRENCY.CHARGE_CODE 	= #{code}
+	AND   CTSCHARGES_CURRENCY.LINE_NO 		<![CDATA[>]]> 0 
+ </sql>
+ 
+  <resultMap id="ctsChargesCurrencyListMap" type="ctsChargesCurrencyCO">
+  	<result column="COMP_CODE" property="ctsChargesCurrencyVO.COMP_CODE" />
+  	<result column="CY_CODE" property="ctsChargesCurrencyVO.CY_CODE" />
+  	<result column="LINE_NO" property="ctsChargesCurrencyVO.LINE_NO" />
+  	<result column="CHARGE_CODE" property="ctsChargesCurrencyVO.CHARGE_CODE" />
+  	<result column="AMOUNT" property="ctsChargesCurrencyVO.AMOUNT" />
+  	<result column="BRIEF_DESC_ENG" property="currencyVO.BRIEF_DESC_ENG" />
+  	<result column="DECIMAL_POINTS" property="currencyVO.DECIMAL_POINTS" />
+ </resultMap>
+ 
+ <select id="chargesSchemaForeignCYChargeList" resultMap="ctsChargesCurrencyListMap" parameterType="chargesschemaSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chargesSchemaForeignCYChargeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="chargesSchemaForeignCYChargeListCount" resultType="int" parameterType="chargesschemaSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chargesSchemaForeignCYChargeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ 
+ 
+ <select id="isRosterChanged" resultType="int" parameterType="chargesschemaSC" >	 	
+    SELECT COUNT(1) 
+     FROM CTSCHARGES_ROSTER
+     WHERE COMP_CODE = #{compCode}
+     AND CODE = #{code}
+     AND CY_CODE =  #{currencyCode}
+     AND SEQ =  #{SEQ}
+     AND PERCENTAGE =  #{PERCENTAGE}
+     AND MIN_AMT =  #{MIN_AMT}
+     AND MAX_AMT = #{MAX_AMT}
+     AND DISC_AMT = #{DISC_AMT}
+   
+ </select>
+
+ <select id="isCurrencyChanged" resultType="int" parameterType="chargesschemaSC" >	 	
+    SELECT COUNT(1) 
+     FROM CTSCHARGES_CURRENCY
+     WHERE COMP_CODE = #{compCode}
+     AND CHARGE_CODE = #{code}
+     AND CY_CODE =  #{currencyCode}
+     AND LINE_NO =  #{LINE_NO}
+     AND AMOUNT =  #{AMOUNT}
+   
+ </select>
+
+       
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</mapper>

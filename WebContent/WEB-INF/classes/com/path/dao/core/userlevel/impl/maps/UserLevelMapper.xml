@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="userLevelListMapper">
+
+ <sql id="userLevelListCommon">
+	<![CDATA[	
+		SELECT
+			 USR_LEVEL.CODE,
+			 USR_LEVEL.DESC_ENG,
+			 USR_LEVEL.DESC_ARAB
+FROM  USR_LEVEL 
+		
+	]]>	 
+ </sql>
+ 
+ <resultMap id="userLevelListMap" type="userLevelVO">
+	<id property="CODE" column="CODE"/>	
+	<result property="DESC_ENG" column="DESC_ENG" />	
+	<result property="DESC_ARAB" column="DESC_ARAB" />
+	
+ </resultMap>
+ 
+ <select id="userLevelList" resultMap="userLevelListMap" parameterType="userLevelSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="userLevelListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="userLevelListCount" resultType="int" parameterType="userLevelSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userLevelListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ <select id="returnUserLevelById" parameterType="userLevelSC" resultType="userLevelVO">
+  		SELECT
+			  CODE,
+			  CASE WHEN #{preferredLanguage} = 'A' THEN DESC_ARAB ELSE DESC_ENG END DESC_ENG
+		FROM  USR_LEVEL 
+		WHERE CODE = #{code} 		
+ </select>
+ 
+
+</mapper>

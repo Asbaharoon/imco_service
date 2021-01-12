@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GTW_PWS_TMPLT_MASTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO" >
+    <id column="TEMPLATE_ID" property="TEMPLATE_ID" />
+    <result column="TEMPLATE_DESC" property="TEMPLATE_DESC" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="SERVER_CREATED_DATE" property="SERVER_CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="SERVER_MODIFIED_DATE" property="SERVER_MODIFIED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="SERVER_APPROVED_DATE" property="SERVER_APPROVED_DATE" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+    <result column="SERVER_DELETED_DATE" property="SERVER_DELETED_DATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TEMPLATE_ID, TEMPLATE_DESC, STATUS, CREATED_BY, CREATED_DATE, SERVER_CREATED_DATE, 
+    MODIFIED_BY, MODIFIED_DATE, SERVER_MODIFIED_DATE, APPROVED_BY, APPROVED_DATE, SERVER_APPROVED_DATE, 
+    DELETED_BY, DELETED_DATE, SERVER_DELETED_DATE, DATE_UPDATED
+  </sql>
+  <select id="selectGTW_PWS_TMPLT_MASTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from GTW_PWS_TMPLT_MASTER
+    where TEMPLATE_ID = #{TEMPLATE_ID}
+  </select>
+  <delete id="deleteGTW_PWS_TMPLT_MASTER" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO" >
+    delete from GTW_PWS_TMPLT_MASTER
+    where TEMPLATE_ID = #{TEMPLATE_ID}
+  </delete>
+  <insert id="insertGTW_PWS_TMPLT_MASTER" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO" >
+    insert into GTW_PWS_TMPLT_MASTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        TEMPLATE_ID,
+      </if>
+      <if test="TEMPLATE_DESC != null and !&quot;&quot;.equals(TEMPLATE_DESC)" >
+        TEMPLATE_DESC,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        SERVER_DELETED_DATE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        #{TEMPLATE_ID},
+      </if>
+      <if test="TEMPLATE_DESC != null and !&quot;&quot;.equals(TEMPLATE_DESC)" >
+        #{TEMPLATE_DESC},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        #{SERVER_CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        #{SERVER_MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        #{SERVER_DELETED_DATE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateGTW_PWS_TMPLT_MASTER" >
+    update GTW_PWS_TMPLT_MASTER
+    <set >
+      <if test="TEMPLATE_DESC != null" >
+        <choose >
+          <when test="TEMPLATE_DESC.equals(&quot;&quot;)" >
+            TEMPLATE_DESC = NULL ,
+          </when>
+          <otherwise >
+            TEMPLATE_DESC = #{TEMPLATE_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE = #{SERVER_CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE = #{SERVER_MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE = #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        SERVER_DELETED_DATE = #{SERVER_DELETED_DATE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where TEMPLATE_ID = #{TEMPLATE_ID}
+  </sql>
+  <update id="updateGTW_PWS_TMPLT_MASTER" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO" >
+    <include refid="sql_updateGTW_PWS_TMPLT_MASTER" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

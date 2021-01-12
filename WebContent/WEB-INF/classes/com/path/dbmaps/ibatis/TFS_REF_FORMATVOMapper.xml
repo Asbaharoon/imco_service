@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_REF_FORMAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_REF_FORMATVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TYPE" property="TYPE" />
+    <result column="FIELD_REF" property="FIELD_REF" />
+    <result column="FIELD_MASK" property="FIELD_MASK" />
+    <result column="FIELD_SEPARATOR" property="FIELD_SEPARATOR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, TYPE, FIELD_REF, FIELD_MASK, FIELD_SEPARATOR
+  </sql>
+  <select id="selectTFS_REF_FORMAT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_REF_FORMATVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_REF_FORMAT
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </select>
+  <delete id="deleteTFS_REF_FORMAT" parameterType="com.path.dbmaps.vo.TFS_REF_FORMATVO" >
+    delete from TFS_REF_FORMAT
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </delete>
+  <insert id="insertTFS_REF_FORMAT" parameterType="com.path.dbmaps.vo.TFS_REF_FORMATVO" >
+    insert into TFS_REF_FORMAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+      <if test="FIELD_REF != null" >
+        FIELD_REF,
+      </if>
+      <if test="FIELD_MASK != null" >
+        FIELD_MASK,
+      </if>
+      <if test="FIELD_SEPARATOR != null" >
+        FIELD_SEPARATOR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TYPE != null" >
+        #{TYPE},
+      </if>
+      <if test="FIELD_REF != null" >
+        #{FIELD_REF},
+      </if>
+      <if test="FIELD_MASK != null" >
+        #{FIELD_MASK},
+      </if>
+      <if test="FIELD_SEPARATOR != null" >
+        #{FIELD_SEPARATOR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_REF_FORMAT" >
+    update TFS_REF_FORMAT
+    <set >
+      <if test="FIELD_REF != null" >
+        FIELD_REF = #{FIELD_REF},
+      </if>
+      <if test="FIELD_MASK != null" >
+        FIELD_MASK = #{FIELD_MASK},
+      </if>
+      <if test="FIELD_SEPARATOR != null" >
+        FIELD_SEPARATOR = #{FIELD_SEPARATOR},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TYPE = #{TYPE}
+  </sql>
+  <update id="updateTFS_REF_FORMAT" parameterType="com.path.dbmaps.vo.TFS_REF_FORMATVO" >
+    <include refid="sql_updateTFS_REF_FORMAT" />
+  </update>
+</mapper>

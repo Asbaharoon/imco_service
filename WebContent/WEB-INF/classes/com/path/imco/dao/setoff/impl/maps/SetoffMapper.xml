@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="setoffMapper">
+	<resultMap id="resSetoffListMap" type="com.path.imco.vo.setoff.SetoffCO">
+		<result property="sActions" column="sActions" />
+		<result property="rActions" column="rActions" />
+		<result property="syncActionsVO.TERMINAL" column="TERMINAL" />
+		<result property="syncActionsVO.USER_ID" column="USER_ID" />
+		<result property="syncActionsVO.SYNC_ID" column="SYNC_ID" />
+		<result property="selected" column="selected" />
+	</resultMap>
+	<select id="returnSetoffList" parameterType="com.path.imco.vo.setoff.SetoffSC"
+		resultMap="resSetoffListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="querySetoffSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnSetoffListCount" parameterType="com.path.imco.vo.setoff.SetoffSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="querySetoffSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<sql id="querySetoffSQL">
+		SELECT ' ' as sActions,
+		' ' as rActions,
+		TERMINAL,
+		USER_ID,
+		SYNC_ID,
+		0 as SELECTED
+		FROM SYNC_ACTIONS
+		GROUP BY USER_ID,
+		SYNC_ID,
+		TERMINAL
+
+	</sql>
+
+
+
+	<resultMap id="resActionsListMap" type="com.path.imco.vo.setoff.SetoffCO">
+		<result property="syncActionsVO.ACTION" column="ACTION" />
+		<result property="syncActionsVO.PROCESS" column="PROCESS" />
+		<result property="syncActionsVO.TERMINAL" column="USER_ID" />
+		<result property="syncActionsVO.USER_ID" column="TERMINAL" />
+		<result property="syncActionsVO.SYNC_ID" column="SYNC_ID" />
+
+	</resultMap>
+
+	<select id="returnAction" parameterType="com.path.imco.vo.setoff.SetoffSC"
+		resultMap="resActionsListMap">
+		<include refid="queryActionsSQL" />
+	</select>
+
+	<sql id="queryActionsSQL">
+
+		SELECT
+		SYNC_ACTIONS.ACTION,
+		SYNC_ACTIONS.PROCESS,
+		SYNC_ACTIONS.USER_ID,
+		SYNC_ACTIONS.TERMINAL,
+		SYNC_ACTIONS.SYNC_ID
+		FROM SYNC_ACTIONS
+		WHERE USER_ID = #{userId}
+		AND TERMINAL = #{terminal}
+		AND SYNC_ID = #{syncId}
+
+	</sql>
+	
+	<delete id="deleteFromSetoff" parameterType="com.path.imco.vo.setoff.SetoffSC">
+		DELETE FROM SYNC_ACTIONS
+			WHERE  TERMINAL = #{terminal}
+				And USER_ID = #{userId}
+				And SYNC_ID = #{syncId}
+	</delete>
+	
+</mapper>

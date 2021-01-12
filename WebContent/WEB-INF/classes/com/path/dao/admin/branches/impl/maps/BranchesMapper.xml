@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="branchesMapper">
+
+
+			 
+			 
+
+
+<!-- BRANCHES List --> 
+ <sql id="branchesListCommon" >
+	 <![CDATA[
+		SELECT BRANCH_CODE , BRIEF_DESC_ENG
+		FROM BRANCHES
+		]]>	
+</sql>
+
+<sql id="branchDestination">
+	WHERE   
+        BRANCHES.COMP_CODE = #{compCode} 
+	AND  BRANCHES.IS_PHYSICAL = '1'	  	
+	<if test="multiHO == true">
+			AND ( BRANCHES.MAIN_HO_BR = #{hoBranch}
+				  OR BRANCHES.BRANCH_CODE = #{hoBranch}
+			     )
+	 </if>
+</sql>
+<sql id="branchDestinationOrder">
+	ORDER BY BRANCH_CODE
+</sql>
+
+<sql id="branchesListByCompCode">
+	SELECT BRANCH_CODE , BRIEF_DESC_ENG ,LONG_DESC_ENG,BRIEF_DESC_ARAB,LONG_DESC_ARAB, BASE_CURRENCY, REMARK
+	FROM BRANCHES WHERE COMP_CODE = #{compCode}
+	<!-- added by abbas for Bug#678018 -->
+	<if test="physicalBranch == true">
+		AND IS_PHYSICAL = '1'	  
+	</if>
+	<if test ='(( isHoBranch!= null and "B".equals(isHoBranch)) and (operationNature != null and "1".equals(operationNature)))
+	or(( isHoBranch!= null and "H".equals(isHoBranch)) and (operationNature != null and "2".equals(operationNature)))'>
+		AND BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+	</if>	
+</sql>
+
+<sql id="branchesListByFromVault">
+	SELECT A.BRANCH_CODE , A.BRIEF_DESC_ENG ,A.LONG_DESC_ENG,A.BRIEF_DESC_ARAB,A.LONG_DESC_ARAB, A.BASE_CURRENCY,A.REMARK
+	FROM BRANCHES A, CTSTELLER_LINKED_VAULT C
+	WHERE C.COMP_CODE = A.COMP_CODE
+	and C.VAULT_BRANCH = A.BRANCH_CODE
+	<if test ='( isHoBranch!= null and "H".equals(isHoBranch)) and (operationNature != null and "1".equals(operationNature))'>
+	AND A.BR_TYPE = 'B'
+	</if>
+	<if test ='( isHoBranch!= null and "B".equals(isHoBranch)) and (operationNature != null and "2".equals(operationNature))'>
+	AND BR_TYPE = 'H'
+	</if>	
+	AND A.COMP_CODE = #{compCode}	
+	AND C.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+	and C.TELLER_CODE = #{fromVaultCode,jdbcType=NUMERIC}
+</sql>
+
+<select id="getBranchesListByFromVault"  resultMap="getBranchesList_ResMap" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesListByFromVault"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getBranchesListCountByFromVault"  resultType="int" parameterType="branchesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesListByFromVault"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+<resultMap id="getBranchesList_ResMap" type="branchesVO" >
+    <id column="BRANCH_CODE" 		property="BRANCH_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG"  property="LONG_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ARAB"  property="LONG_DESC_ARAB" />
+    <result column="BASE_CURRENCY"  property="BASE_CURRENCY" />
+    <result column="REMARK"  		property="REMARK" />
+</resultMap>
+
+<select id="getBranchesList"  resultMap="getBranchesList_ResMap" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getBranchesCount"  resultType="int" parameterType="branchesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+<!-- Branches By User -->
+<sql id="branchesByUsrList">
+			SELECT BRANCH_CODE , BRIEF_DESC_ENG, MAIN_HO_BR 
+			FROM BRANCHES 
+			WHERE EXISTS (SELECT 1 
+              			  FROM LOC  
+              			  WHERE LOC.COMP_CODE = BRANCHES.COMP_CODE
+              			  AND LOC.BRANCH_CODE = BRANCHES.BRANCH_CODE
+              			  AND  LOC.COMP_CODE = #{compCode}
+              			  <if test="userId != null" >
+              			  	AND LOC.USER_ID = #{userId}
+					      </if>
+              			  )
+                <if test='"1".equals(allowMultiBr)' >			  
+		              AND EXISTS (
+		              	SELECT 1 FROM CTSTELLER_ALLOWED_BRANCH , CTSTELLER  
+		              	WHERE CTSTELLER_ALLOWED_BRANCH.COMP_CODE =  BRANCHES.COMP_CODE
+		              	AND  CTSTELLER_ALLOWED_BRANCH.COMP_CODE = #{compCode}
+		              
+		             	AND CTSTELLER_ALLOWED_BRANCH.ALLOWED_BRANCH_CODE = BRANCHES.BRANCH_CODE 
+		              	AND CTSTELLER.COMP_CODE = CTSTELLER_ALLOWED_BRANCH.COMP_CODE 
+		              	AND CTSTELLER.CODE = CTSTELLER_ALLOWED_BRANCH.CODE
+		              	AND CTSTELLER.BRANCH_CODE = CTSTELLER_ALLOWED_BRANCH.BRANCH_CODE 
+		              	AND CTSTELLER.USER_ID = #{userId}
+		              	)
+              	 </if>			  
+		
+</sql>
+
+
+ <resultMap id="getBranchesByUsrList_ResMap" type="branchesVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="MAIN_HO_BR" property="MAIN_HO_BR" />
+ </resultMap>
+
+ <select id="getBranchesByUsrList"  resultMap="getBranchesByUsrList_ResMap" parameterType="branchesSC">
+ 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesByUsrList"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	
+</select>
+
+<select id="getBranchesByUsrCount"  resultType="int" parameterType="branchesSC" > 
+  	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesByUsrList"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+	
+</select>
+
+<select id="getBranchesByUsrDetails"  resultMap="getBranchesByUsrList_ResMap" parameterType="branchesSC"> 
+	<include refid="branchesByUsrList"/>
+      	 AND BRANCH_CODE = #{branchCode}
+      	 AND COMP_CODE = #{compCode}
+      	 <if test="physicalBranch == true">
+      	 AND IS_PHYSICAL = '1'	  
+      	 </if>	
+</select>
+<select id="checkBranchValidation" parameterType="branchesSC" resultType="int">
+SELECT 1 FROM BRANCHES WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC} AND BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+</select>
+
+<select id="branchDestinationLstCount" resultType="int" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesListCommon"/>
+	<include refid="branchDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+<select id="branchDestinationLst" resultMap="getBranchesList_ResMap" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesListCommon"/>
+	<include refid="branchDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="getBranchDescByCode" parameterType="branchesSC" resultMap="getBranchesByUsrList_ResMap">
+	SELECT BRANCH_CODE, CASE WHEN #{language} = 'AR' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+	FROM 		BRANCHES 
+	WHERE  	COMP_CODE  = #{compCode} And BRANCH_CODE = #{branchCode}
+</select>
+
+<select id="getBranchDescByCodeAndPrefLang" parameterType="branchesSC" resultMap="getBranchesByUsrList_ResMap">
+	SELECT BRANCH_CODE, CASE WHEN #{preferredLanguage} = 'L' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END BRIEF_DESC_ENG
+	FROM 		BRANCHES 
+	WHERE  	COMP_CODE  = #{compCode} And BRANCH_CODE = #{branchCode}
+</select>
+
+<select id="getAllBranchId" parameterType="branchesSC" resultType="java.math.BigDecimal">
+	SELECT		BRANCH_CODE   
+	FROM 		BRANCHES   
+	WHERE 		BRANCHES.COMP_CODE	=	#{compCode}
+</select>
+
+<select id="getBranchesListByCompCode"  resultMap="getBranchesList_ResMap" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesListByCompCode"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getBranchesListCountByCompCode"  resultType="int" parameterType="branchesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesListByCompCode"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+	<select id="returnBranchCodeAIB" resultType="java.math.BigDecimal" parameterType="micrSC">
+		SELECT BRANCH_CODE  
+		FROM BRANCHES
+		WHERE COMP_CODE = #{compCode}
+			AND ADDITIONAL_REFERENCE = #{instRef}
+	</select>
+
+<sql id="allBranchUnion">
+	UNION
+	SELECT  000 BRANCH_CODE,   
+			'All Branches' BRIEF_DESC_ENG
+	FROM  PTH_CTRL
+</sql>
+
+<select id="getBranchesByCompCodeUnionAllBranches"  resultMap="getBranchesList_ResMap" parameterType="branchesSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="branchesListCommon"/>
+	WHERE COMP_CODE = #{compCode}
+	<include refid="allBranchUnion"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<select id="getBranchesByCompCodeUnionAllBranchesCount"  resultType="int" parameterType="branchesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="branchesListCommon"/>
+	WHERE COMP_CODE = #{compCode}
+	<include refid="allBranchUnion"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+ <select id="returnMultiHO" resultType="int" parameterType="branchesSC" > 
+	SELECT COUNT(1)
+	FROM BRANCHES 
+	WHERE COMP_CODE = #{compCode}
+	AND BR_TYPE = 'H'	
+ </select>
+
+</mapper>

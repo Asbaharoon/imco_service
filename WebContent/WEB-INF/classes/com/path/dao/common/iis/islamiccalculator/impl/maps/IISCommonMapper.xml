@@ -1,0 +1,2958 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="iisCommonMapper">
+	<sql id="getCifStatus">	
+		SELECT 	STATUS,BLACK_LISTED,CLIENT_STATUS
+		FROM  	CIF
+		WHERE	CIF.COMP_CODE  	= #{compCode}
+		AND		CIF.CIF_NO  	= #{cifNo}
+	</sql>
+	
+	<select id="selectCifStatus" parameterType="iisCommonCO" resultMap="resultCifStatusMap">
+		<include refid="getCifStatus" />		
+	</select>
+	
+	<resultMap id="resultCifStatusMap" type="iisCommonCO">
+		<result property="status" column="STATUS" />
+		<result property="blackListed"    column="BLACK_LISTED" />
+		<result property="clientStatus"   column="CLIENT_STATUS" />
+	</resultMap>
+
+	<sql id="getBlackListDetails">	
+			
+		SELECT
+			MOSBLACKLIST.BLACKLIST_TYPE,
+			MOSBLACKLIST_TYPE.LONG_NAME_ENG ,
+			MOSBLACKLIST.CODE_SOURCE,
+			MOSBLACKSOURCE.LONG_DESC_ENG,
+			MOSBLACKLIST.CODE,
+			MOSBLACKLIST.LONG_NAME_ARAB
+			FROM MOSBLACKLIST	
+			
+			LEFT OUTER JOIN MOSBLACKLIST_TYPE ON MOSBLACKLIST_TYPE.COMP_CODE = MOSBLACKLIST.COMP_CODE
+			AND MOSBLACKLIST_TYPE.CODE      = MOSBLACKLIST.BLACKLIST_TYPE
+			LEFT OUTER JOIN MOSBLACKSOURCE ON MOSBLACKSOURCE.COMP_CODE = MOSBLACKLIST.COMP_CODE
+			AND MOSBLACKSOURCE.CODE         = MOSBLACKLIST.CODE_SOURCE
+			WHERE MOSBLACKLIST.COMP_CODE    =  	#{compCode}  AND
+			MOSBLACKLIST.CIF                = 	#{cifNo} AND
+			MOSBLACKLIST.STATUS             = 	'P'
+	</sql>
+	
+	<select id="selectBlackListDetails" parameterType="iisCommonCO" resultMap="resultBlackListDetailsMap">
+		<include refid="getBlackListDetails" />		
+	</select>
+	
+	<resultMap id="resultBlackListDetailsMap" type="iisCommonCO">
+		<result property="blackListType" 		column="BLACKLIST_TYPE" />
+		<result property="blackListLongNameEng" column="LONG_NAME_ENG" />
+		<result property="blackListCodeSource"  column="CODE_SOURCE" />
+		<result property="blackListLongDescEng" column="LONG_DESC_ENG" />
+		<result property="blackListCode"   		column="CODE" />
+		<result property="blackListLongNameArab" column="LONG_NAME_ARAB" />
+	</resultMap>
+	
+	<sql id="isAllowBlackListed">				
+		SELECT ALLOW_BLACKLISTED_CIF_YN	FROM IISCTRL
+			WHERE	IISCTRL.COMP_CODE  	= #{compCode}
+			AND		IISCTRL.BRANCH_CODE = #{branchCode}
+	</sql>
+	
+	<select id="selectIsAllowBlackListed" parameterType="iisCommonCO" resultType="String">
+		<include refid="isAllowBlackListed" />		
+	</select>
+	
+	<sql id="getCif">				
+		SELECT CIF.CIF_NO FROM CIF WHERE CIF.COMP_CODE = #{compCode} AND CIF.ID_NO = #{idNo}
+	</sql>
+	
+	<select id="selectCif" parameterType="iisCommonCO" resultType="BigDecimal">
+		<include refid="getCif" />		
+	</select>
+	
+	<select id="getDaysAfterMaximumPeriod" parameterType="iisCommonCO" resultType="Long">
+	  SELECT DAYS_AFTER_MAX_PERIOD  FROM IISCTRL
+		WHERE IISCTRL.COMP_CODE	= #{compCode} AND IISCTRL.BRANCH_CODE = #{branchCode}
+	</select>
+
+	<select id="getHolidayActionDealDateYn" parameterType="iisCommonCO" resultType="String">
+	  SELECT HOLIDAY_ACTION_DEAL_VDATE_YN  FROM IISCTRL
+		WHERE IISCTRL.COMP_CODE	= #{compCode} AND IISCTRL.BRANCH_CODE = #{branchCode}
+    </select>
+    
+    <select id="getHolidayAction" parameterType="iisCommonCO" resultType="BigDecimal">
+	  SELECT   
+	  	CASE WHEN HOLIDAY_ACTION IS  NULL THEN  
+	  		0  
+	  	ELSE 
+	  		HOLIDAY_ACTION 	
+	  	END
+			 FROM TRSCLASS 
+				WHERE TRSCLASS.COMP_CODE  = #{compCode}
+					AND TRSCLASS.CODE =#{productClass}
+    </select>
+	 
+	<resultMap id="islamicCalculatorEventMgmtCOMap" type="islamicCalculatorEventMgmtCO">
+		<result property="allowEditFinanceCyInCalc" 	column="ALLOW_EDIT_FINANCE_CY_IN_CALC" />
+		<result property="allowEditYieldInCalc"    		column="ALLOW_EDIT_YIELD_IN_CALC" />
+		<result property="allowProfitRecoInCalc"   		column="ALLOW_PROFIT_RECO_IN_CALC" />
+		<result property="allowToEditProfitDistMthd"   	column="ALLOW_TO_EDIT_PROFIT_DIST_MTHD" />
+		<result property="calcDbrCalculationReqdYn" 	column="CALC_DBR_CALCULATION_REQD_YN" />
+		<result property="calcDisableStartDate" 		column="CALC_DISABLE_START_DATE" />
+		<result property="showCifIncome" 				column="SHOW_CIF_INCOME" />
+		<result property="calcShowCifIncomeInd" 		column="CALC_SHOW_CIF_INCOME_IND" />
+		<result property="showYieldInCalc" 				column="SHOW_YIELD_IN_CALC" />
+		<result property="yieldAmendRangeFrom" 			column="YIELD_AMEND_RANGE_FROM" />
+		<result property="yieldAmendRangeTo" 			column="YIELD_AMEND_RANGE_TO" />
+		<result property="disableBtnAfterCalc" 			column="DISABLE_CALCULATE_AFTER_CALC" />
+		<result property="calendarType" 				column="CALENDAR_TYPE" />
+		<result property="printCalcDetailYN" 			column="PRINT_CALC_DETAILS_YN" />
+		<result property="printCalcDetailScheduleYN" 	column="PRINT_CALC_DETAIL_SCHEDULE_YN" />
+	</resultMap>
+
+	<select id="getIISControlParams" parameterType="islamicCalculatorEventMgmtCO" resultMap="islamicCalculatorEventMgmtCOMap">
+		<include refid="iisCommonMapper.selectIISControlParams" />		
+	</select>
+	
+	<sql id="selectIISControlParams">
+	<![CDATA[
+		SELECT 
+			IISCTRL.ALLOW_EDIT_FINANCE_CY_IN_CALC,
+			IISCTRL.ALLOW_EDIT_YIELD_IN_CALC ,
+			IISCTRL.ALLOW_PROFIT_RECO_IN_CALC,
+			IISCTRL.ALLOW_TO_EDIT_PROFIT_DIST_MTHD,
+			IISCTRL.CALC_DBR_CALCULATION_REQD_YN,
+			IISCTRL.CALC_DISABLE_START_DATE,
+			IISCTRL.SHOW_CIF_INCOME,
+			IISCTRL.CALC_SHOW_CIF_INCOME_IND,
+			IISCTRL.SHOW_YIELD_IN_CALC,
+			IISCTRL.YIELD_AMEND_RANGE_FROM,
+			IISCTRL.YIELD_AMEND_RANGE_TO,
+			IISCTRL.DISABLE_CALCULATE_AFTER_CALC,
+			IISCTRL.TRADE_DEAL_UNIT_PRICE_ROUNDOFF,
+			CASE WHEN IISCTRL.CALENDAR_TYPE IS NULL THEN 'G' ELSE IISCTRL.CALENDAR_TYPE END CALENDAR_TYPE,
+			CASE WHEN PRINT_CALC_DETAILS_YN IS NULL THEN 'N' ELSE PRINT_CALC_DETAILS_YN END PRINT_CALC_DETAILS_YN,
+			CASE WHEN PRINT_CALC_DETAIL_SCHEDULE_YN IS NULL THEN 'N' ELSE PRINT_CALC_DETAIL_SCHEDULE_YN END PRINT_CALC_DETAIL_SCHEDULE_YN
+			 
+		FROM   IISCTRL
+				WHERE  COMP_CODE		= #{compCode}
+				AND    BRANCH_CODE 		= #{branchCode}
+	]]>
+	</sql>
+
+	<select id="selectCifIncome" parameterType="iisCommonCO"  resultMap="CIF_OCCUPATION.BaseResultMap">
+		<include refid="iisCommonMapper.getCifIncome" />		
+	</select>
+	
+	<sql id="getCifIncome">		
+	<choose>
+			<when test='calcShowCifIncomeInd == "F"'>		
+			SELECT
+			 		CASE WHEN CIF_OCCUPATION.MONTHLY_BASIC_SALARY IS NULL  THEN  
+			 			0 
+					ELSE 
+						CIF_OCCUPATION.MONTHLY_BASIC_SALARY 
+					END MONTHLY_BASIC_SALARY, 
+					CASE WHEN CIF_OCCUPATION.OTHER_INCOME IS NULL THEN 
+						0
+		 			ELSE 
+		 				CIF_OCCUPATION.OTHER_INCOME 
+		 			END OTHER_INCOME
+			FROM   CIF_OCCUPATION  
+			WHERE  ( CIF_OCCUPATION.COMP_CODE 	=  #{compCode} ) 
+			AND    ( CIF_OCCUPATION.CIF_NO 		= #{cifNo} ) 
+			AND 	 ( LINE_NO 							= (SELECT MIN(LINE_NO)  
+																FROM   CIF_OCCUPATION   
+																WHERE  COMP_CODE =  #{compCode}
+																AND    CIF_NO    = #{cifNo}
+																AND    (MONTHLY_BASIC_SALARY > 0)))
+		</when>
+		<otherwise>
+			SELECT
+			 		CASE WHEN CIF_OCCUPATION.MONTHLY_BASIC_SALARY IS NULL  THEN  
+			 			0 
+					ELSE 
+						CIF_OCCUPATION.MONTHLY_BASIC_SALARY 
+					END MONTHLY_BASIC_SALARY, 
+					CASE WHEN CIF_OCCUPATION.OTHER_INCOME IS NULL THEN 
+						0
+		 			ELSE 
+		 				CIF_OCCUPATION.OTHER_INCOME 
+		 			END OTHER_INCOME
+			FROM   CIF_OCCUPATION  
+			WHERE  ( CIF_OCCUPATION.COMP_CODE 	=  #{compCode} ) 
+			AND    ( CIF_OCCUPATION.CIF_NO 		= #{cifNo} ) 
+			AND 	 ( LINE_NO 							= (SELECT MAX(LINE_NO)  
+																FROM   CIF_OCCUPATION   
+																WHERE  COMP_CODE =  #{compCode}
+																AND    CIF_NO    = #{cifNo}
+																AND    (MONTHLY_BASIC_SALARY > 0)))
+		</otherwise>
+		</choose>
+	</sql>
+
+	<select id="selectRifStaff" parameterType="iisCommonCO" resultType="String">
+		<include refid="iisCommonMapper.getRifStaff" />		
+	</select>
+	
+	<sql id="getRifStaff">
+		SELECT RIFCTT.STAFF FROM   RIFCTT  
+			WHERE  (RIFCTT.COMP_CODE =  #{compCode} ) 
+				AND    (RIFCTT.TYPE_CODE = #{typeCode}) 
+	</sql>
+
+	<select id="selectCifType" parameterType="iisCommonCO" resultType="String">
+		<include refid="iisCommonMapper.getCifType" />		
+	</select>
+	<sql id="getCifType">
+		SELECT CIF_TYPE FROM CIF WHERE CIF.COMP_CODE = #{compCode}
+	<choose>
+		 <when test="cifNo != null and cifNo != emptyBigDecimalValue" > 
+			AND CIF.CIF_NO = #{cifNo}
+		</when>
+		<otherwise>
+		AND CIF.CIF_NO IS NULL
+		</otherwise>
+	</choose>
+		
+	</sql>
+	
+	<resultMap id="islamicCalculatorUsrAccessMap" type="iisCommonCO">
+		<result property="accessRestricted" 	column="ACCESS_RESTRICTED" />
+		<result property="cifNo"    			column="CIF_NO" />
+	</resultMap>
+	<select id="selectUsrAccess" parameterType="iisCommonCO" resultMap="islamicCalculatorUsrAccessMap">
+		<include refid="iisCommonMapper.checkUsrAccess" />		
+	</select>
+	<sql id="checkUsrAccess">
+		SELECT ACCESS_RESTRICTED,CIF_NO FROM USR WHERE  USR.USER_ID = #{idNo}
+	</sql>
+	
+	<select id="selectOutstandingDealAmount" parameterType="iisCommonCO" resultType="BigDecimal">
+		<include refid="iisCommonMapper.getOutstandingDealAmount" />		
+	</select>
+	<sql id="getOutstandingDealAmount">
+		<![CDATA[
+			SELECT
+				SUM(CASE WHEN TRSDEAL.DEAL_CY = COMPANIES.BASE_CURRENCY THEN
+						CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' 
+						ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN 
+							TRSPAYPLANDET.AMOUNT 
+						ELSE TRSPAYPLANDET.AMOUNT_NEW 
+						END
+					ELSE
+						CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN
+							CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END * TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						ELSE
+							CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END / TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						END
+					END
+				)
+			FROM TRSPAYPLANDET, TRSPAYPLAN, TRSDEAL, TRSCLASS, COMPANIES
+				WHERE TRSPAYPLANDET.COMP_CODE = TRSPAYPLAN.COMP_CODE
+				AND TRSPAYPLANDET.BRANCH = TRSPAYPLAN.BRANCH
+				AND TRSPAYPLANDET.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+				AND TRSPAYPLANDET.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+				AND TRSPAYPLANDET.LINE_NBR = (SELECT MIN(TPD2.LINE_NBR) FROM TRSPAYPLANDET TPD2
+					WHERE TPD2.COMP_CODE = TRSPAYPLAN.COMP_CODE
+					AND TPD2.BRANCH = TRSPAYPLAN.BRANCH
+					AND TPD2.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+					AND TPD2.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+					AND 
+					CASE WHEN
+							(CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TPD2.AMOUNT ELSE TPD2.AMOUNT_NEW END > 0
+					AND TPD2.VALUE_DATE > #{startDate})
+			
+					AND TRSPAYPLAN.COMP_CODE = TRSDEAL.COMP_CODE
+					AND TRSPAYPLAN.BRANCH = TRSDEAL.BRANCH_CODE
+					AND TRSPAYPLAN.TRX_NBR = TRSDEAL.SERIAL_NO
+					AND TRSPAYPLAN.STATUS = 'P'
+					AND (TRSPAYPLAN.TOTAL_AMT <> TRSPAYPLAN.TOTAL_AMT_PAID
+						OR (SELECT COUNT('X') FROM TRSSETLMT
+							WHERE TRSSETLMT.COMP_CODE = TRSPAYPLAN.COMP_CODE
+							AND TRSSETLMT.BRANCH = TRSPAYPLAN.BRANCH
+							AND TRSSETLMT.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+							AND TRSSETLMT.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+							AND TRSSETLMT.STATUS = 'A') > 0)
+						
+					AND TRSDEAL.COMP_CODE = TRSCLASS.COMP_CODE
+					AND TRSDEAL.CLASS = TRSCLASS.CODE
+					AND TRSDEAL.STATUS = 'P'
+					AND TRSDEAL.COMP_CODE = #{compCode}
+					AND TRSDEAL.CIF_NO = #{cifNo}
+					
+					AND TRSCLASS.COMP_CODE = COMPANIES.COMP_CODE
+				]]>
+	</sql>
+
+	<select id="selectOutstandingDealAmountForGuarantor" parameterType="iisCommonCO" resultType="BigDecimal">
+		<include refid="iisCommonMapper.getOutstandingDealAmountForGuarantor" />		
+	</select>	
+		
+	<sql id="getOutstandingDealAmountForGuarantor">
+		<![CDATA[		
+				SELECT
+					SUM(CASE WHEN TRSDEAL.DEAL_CY = COMPANIES.BASE_CURRENCY THEN
+						CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END
+					ELSE
+						CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN
+							CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END * TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						ELSE
+							CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END / TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						END
+					END) 
+				FROM TRSPAYPLANDET, TRSPAYPLAN, TRSDEAL_GUARANTOR, TRSDEAL, TRSCLASS, COMPANIES
+				WHERE TRSPAYPLANDET.COMP_CODE = TRSPAYPLAN.COMP_CODE
+				AND TRSPAYPLANDET.BRANCH = TRSPAYPLAN.BRANCH
+				AND TRSPAYPLANDET.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+				AND TRSPAYPLANDET.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+				AND TRSPAYPLANDET.LINE_NBR = (SELECT MIN(TPD2.LINE_NBR) FROM TRSPAYPLANDET TPD2
+					WHERE TPD2.COMP_CODE = TRSPAYPLAN.COMP_CODE
+					AND TPD2.BRANCH = TRSPAYPLAN.BRANCH
+					AND TPD2.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+					AND TPD2.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+					AND CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TPD2.AMOUNT ELSE TPD2.AMOUNT_NEW END > 0
+					AND TPD2.VALUE_DATE >  #{startDate})
+				
+				AND TRSPAYPLAN.COMP_CODE = TRSDEAL.COMP_CODE
+				AND TRSPAYPLAN.BRANCH = TRSDEAL.BRANCH_CODE
+				AND TRSPAYPLAN.TRX_NBR = TRSDEAL.SERIAL_NO
+				AND TRSPAYPLAN.STATUS = 'P'
+				AND (TRSPAYPLAN.TOTAL_AMT <> TRSPAYPLAN.TOTAL_AMT_PAID
+					OR (SELECT COUNT('X') FROM TRSSETLMT
+						WHERE TRSSETLMT.COMP_CODE = TRSPAYPLAN.COMP_CODE
+						AND TRSSETLMT.BRANCH = TRSPAYPLAN.BRANCH
+						AND TRSSETLMT.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+						AND TRSSETLMT.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+						AND TRSSETLMT.STATUS = 'A') > 0)			
+				AND TRSDEAL_GUARANTOR.COMP_CODE = TRSDEAL.COMP_CODE
+				AND TRSDEAL_GUARANTOR.BRANCH_CODE = TRSDEAL.BRANCH_CODE
+				AND TRSDEAL_GUARANTOR.SERIAL_NO = TRSDEAL.SERIAL_NO
+				AND TRSDEAL_GUARANTOR.GUARANTOR_CIF =  #{cifNo}
+				
+				AND TRSDEAL.COMP_CODE = TRSCLASS.COMP_CODE
+				AND TRSDEAL.CLASS = TRSCLASS.CODE
+				AND TRSDEAL.STATUS = 'P'
+				AND TRSDEAL.COMP_CODE =  #{compCode}	
+				AND TRSCLASS.COMP_CODE = COMPANIES.COMP_CODE
+	]]>
+	</sql>
+
+	<resultMap id="resultBBRatio" type="dBRatioSC">
+		<result property="dbrDetails"   column="CIF_INSTITUTION_NAME" />
+		<result property="dbrAmount"    column="MONTHLY_SETTLEMENT" />
+	</resultMap>
+	
+	<sql id="getDBRRatio">	
+		  SELECT  CIF_INSTITUTION_NAME, MONTHLY_SETTLEMENT    
+			  FROM CIF_FINANCE_ENG    
+				  WHERE COMP_CODE = #{compCode}  AND    CIF_NO = #{cifNo} 
+				  AND MONTHLY_SETTLEMENT IS NOT NULL  AND MONTHLY_SETTLEMENT>0
+				  ORDER BY LINE_NO ASC  
+	</sql>
+		
+	<select id="selectMonthlyInstallmentsByCif" parameterType="iisCommonCO" resultMap="resultBBRatio">
+		<include refid="getDBRRatio" />		
+	</select>
+
+	<select id="selectMaxDealInstPerOfSal" parameterType="iisCommonCO" resultType="Long">
+		SELECT (100-MAX_DEAL_INST_PERC_OF_SAL) FROM TRSCLASS WHERE COMP_CODE = #{compCode} AND CODE = #{productClass}
+	</select>	
+		
+	<select id="getRosterRegister" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT CODE FROM  TRSROSTER_REGISTER 
+			WHERE	 TRSROSTER_REGISTER.COMP_CODE  = #{compCode}
+			 AND	TRSROSTER_REGISTER.BRANCH_CODE  = #{branchCode}
+			 AND	TRSROSTER_REGISTER.PRODUCT_TYPE  = 'S'
+			 AND	TRSROSTER_REGISTER.PRODUCT_CLASS  =#{productClass}
+			 AND	TRSROSTER_REGISTER.PARTY_TYPE  = #{partyType}
+			 AND	TRSROSTER_REGISTER.STATUS  = 'P'
+	</select>
+	
+	<select id="getRosterRegisterWithOutClass" parameterType="iisCommonCO" resultType="BigDecimal">
+	 	SELECT CODE FROM  TRSROSTER_REGISTER 
+				WHERE	 TRSROSTER_REGISTER.COMP_CODE  = #{compCode}
+				 AND	TRSROSTER_REGISTER.BRANCH_CODE  = #{branchCode}
+				 AND	TRSROSTER_REGISTER.PRODUCT_TYPE  = 'A'
+				 AND	TRSROSTER_REGISTER.PARTY_TYPE  = #{partyType}
+				 AND	TRSROSTER_REGISTER.STATUS  = 'P'
+	</select>
+	
+	<select id="getCifType" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT CIF.CIF_TYPE FROM CIF WHERE CIF.COMP_CODE 	= #{compCode} 
+		<choose>
+		 <when test="cifNo != null and cifNo != emptyBigDecimalValue" > 
+			AND CIF.CIF_NO = #{cifNo}
+		</when>
+		<otherwise>
+		AND CIF.CIF_NO IS NULL
+		</otherwise>
+	</choose>
+		
+	</select>
+	
+	<select id="getYeildRegisterCif" parameterType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVOKey" resultType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVO">
+		SELECT
+			 TRSROSTER_REGISTER_DET.COMP_CODE,
+			 TRSROSTER_REGISTER_DET.BRANCH_CODE,
+			 TRSROSTER_REGISTER_DET.CODE,
+			 TRSROSTER_REGISTER_DET.ENTITY_TYPE,
+			 TRSROSTER_REGISTER_DET.LINE_NO,
+			 TRSROSTER_REGISTER_DET.ENTITY_CODE,
+			 TRSROSTER_REGISTER_DET.CURRENCY_TYPE,
+			 TRSROSTER_REGISTER_DET.CURRENCY_CODE,
+			 TRSROSTER_REGISTER_DET.ROSTER_CODE_YIELD,
+			 TRSROSTER_REGISTER_DET.ROSTER_CODE_MODARIB,
+			 TRSROSTER_REGISTER_DET.FROM_DATE,
+			 TRSROSTER_REGISTER_DET.TO_DATE,
+			 TRSROSTER_REGISTER_DET.STATUS,
+			 TRSROSTER_REGISTER_DET.CREATED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_CREATED,
+			 TRSROSTER_REGISTER_DET.MODIFIED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_MODIFIED,
+			 TRSROSTER_REGISTER_DET.APPROVED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_APPROVED,
+			 TRSROSTER_REGISTER_DET.SUSPENDED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_SUSPENDED,
+			 TRSROSTER_REGISTER_DET.REACTIVATED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_REACTIVATED,
+			 TRSROSTER_REGISTER_DET.PAY_PLAN_TMPLT_ID,
+			TRSROSTER_REGISTER_DET.PERIOD_NBR,
+			TRSROSTER_REGISTER_DET.PERIOD_TYPE,
+			TRSROSTER_REGISTER_DET.BALLOON_PERCENTAGE 
+
+			FROM  TRSROSTER_REGISTER_DET 
+			WHERE	 TRSROSTER_REGISTER_DET.COMP_CODE  = #{COMP_CODE}
+			 AND	TRSROSTER_REGISTER_DET.BRANCH_CODE  = #{BRANCH_CODE}
+			 AND	TRSROSTER_REGISTER_DET.CODE  = #{CODE}
+			 AND	TRSROSTER_REGISTER_DET.ENTITY_TYPE  = #{ENTITY_TYPE}
+			 AND	TRSROSTER_REGISTER_DET.ENTITY_CODE  = #{LINE_NO,jdbcType=NUMERIC}
+			ORDER BY CASE WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='D'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 1	
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='W'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 7
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='M'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 30
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='Y'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 365
+			ELSE
+					0
+			END DESC
+	</select>
+    
+    <select id="getYeildRegisterAllCif" parameterType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVOKey" resultType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVO">
+		SELECT
+				 TRSROSTER_REGISTER_DET.COMP_CODE,
+				 TRSROSTER_REGISTER_DET.BRANCH_CODE,
+				 TRSROSTER_REGISTER_DET.CODE,
+				 TRSROSTER_REGISTER_DET.ENTITY_TYPE,
+				 TRSROSTER_REGISTER_DET.LINE_NO,
+				 TRSROSTER_REGISTER_DET.ENTITY_CODE,
+				 TRSROSTER_REGISTER_DET.CURRENCY_TYPE,
+				 TRSROSTER_REGISTER_DET.CURRENCY_CODE,
+				 TRSROSTER_REGISTER_DET.ROSTER_CODE_YIELD,
+				 TRSROSTER_REGISTER_DET.ROSTER_CODE_MODARIB,
+				 TRSROSTER_REGISTER_DET.FROM_DATE,
+				 TRSROSTER_REGISTER_DET.TO_DATE,
+				 TRSROSTER_REGISTER_DET.STATUS,
+				 TRSROSTER_REGISTER_DET.CREATED_BY,
+				 TRSROSTER_REGISTER_DET.DATE_CREATED,
+				 TRSROSTER_REGISTER_DET.MODIFIED_BY,
+				 TRSROSTER_REGISTER_DET.DATE_MODIFIED,
+				 TRSROSTER_REGISTER_DET.APPROVED_BY,
+				 TRSROSTER_REGISTER_DET.DATE_APPROVED,
+				 TRSROSTER_REGISTER_DET.SUSPENDED_BY,
+				 TRSROSTER_REGISTER_DET.DATE_SUSPENDED,
+				 TRSROSTER_REGISTER_DET.REACTIVATED_BY,
+				 TRSROSTER_REGISTER_DET.DATE_REACTIVATED,
+				 TRSROSTER_REGISTER_DET.PAY_PLAN_TMPLT_ID,
+				TRSROSTER_REGISTER_DET.PERIOD_NBR,
+				TRSROSTER_REGISTER_DET.PERIOD_TYPE,
+				TRSROSTER_REGISTER_DET.BALLOON_PERCENTAGE 
+	
+			FROM  TRSROSTER_REGISTER_DET 
+			WHERE	 TRSROSTER_REGISTER_DET.COMP_CODE  = #{COMP_CODE}
+			 AND	TRSROSTER_REGISTER_DET.BRANCH_CODE  = #{BRANCH_CODE}
+			 AND	TRSROSTER_REGISTER_DET.CODE  = #{CODE}
+			 AND	TRSROSTER_REGISTER_DET.ENTITY_TYPE  = #{ENTITY_TYPE}
+			ORDER BY CASE WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='D'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 1	
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='W'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 7
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='M'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 30
+			 WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='Y'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 365
+			ELSE
+					0
+			END DESC
+	</select>
+    
+    <select id="getAccCifType" parameterType="iisCommonCO" resultType="BigDecimal">
+	      SELECT ACC_NV_CONTROL.CIF_TYPE FROM ACC_NV_CONTROL
+			WHERE ACC_NV_CONTROL.COMP_CODE = #{compCode}
+		 		AND  ACC_NV_CONTROL.BRANCH_CODE =#{branchCode}
+	</select>
+	
+	<select id="getMaintainsalaryAc" parameterType="iisCommonCO" resultType="String">
+		SELECT 	CASE WHEN MAINTAIN_SALARY_ACC IS NULL THEN '0' ELSE MAINTAIN_SALARY_ACC END FROM CIF 				
+			WHERE	CIF.COMP_CODE  	= #{compCode}
+	<choose>
+		 <when test="cifNo != null and cifNo != emptyBigDecimalValue" > 
+			AND CIF.CIF_NO = #{cifNo}
+		</when>
+		<otherwise>
+		AND CIF.CIF_NO IS NULL
+		</otherwise>
+	</choose>
+	
+	</select>
+	
+	<select id="getStaffYield" parameterType="iisCommonCO" resultType="BigDecimal">
+		 SELECT STAFF_YIELD 
+			FROM  TRSROSTERDET 
+			WHERE	 TRSROSTERDET.COMP_CODE  =#{compCode}
+			 AND	TRSROSTERDET.BRANCH_CODE  = #{branchCode}
+			 AND	TRSROSTERDET.CODE  = #{rosterCodeyield}
+			 AND	#{rosterDealAmount}  BETWEEN TRSROSTERDET.FROM_AMT  AND  TRSROSTERDET.TO_AMT	
+	</select>
+	
+	<select id="getYieldSalaryWithBank" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT CASE WHEN #{salaryWithBank} = 'N' THEN YIELD ELSE DOMICILE_YIELD END 
+		FROM  TRSROSTERDET 
+		WHERE	 TRSROSTERDET.COMP_CODE  = #{compCode}
+		 AND	TRSROSTERDET.BRANCH_CODE  = #{branchCode}
+		 AND	TRSROSTERDET.CODE  = #{rosterCodeyield}
+		 AND	#{rosterDealAmount}  BETWEEN TRSROSTERDET.FROM_AMT  AND  TRSROSTERDET.TO_AMT
+	</select>
+	
+	<select id="getCalcFirstPaymentDateYn" parameterType="iisCommonCO" resultType="String">
+		SELECT PLAN_CALC_FRSTPAYDT_PAYEVRY_YN FROM  TRSCLASS 
+			WHERE TRSCLASS.COMP_CODE  = #{compCode} AND TRSCLASS.CODE =#{productClass}
+	</select>
+
+	<select id="getYieldModarib" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT YIELD FROM  TRSROSTERDET 
+			WHERE	 TRSROSTERDET.COMP_CODE  = #{compCode}
+			 AND	TRSROSTERDET.BRANCH_CODE  =  #{branchCode}
+			 AND	TRSROSTERDET.CODE  = #{rosterCodeModarib}
+			 AND	#{rosterDealAmount} BETWEEN TRSROSTERDET.FROM_AMT  AND  TRSROSTERDET.TO_AMT
+	</select>
+	
+	<select id="getGracePeriodClass" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey" resultType="com.path.dbmaps.vo.TRSCLASSVO">
+		SELECT GRACE_PERIOD_MAX_NBR,GRACE_PERIOD_MAX_TYPE FROM TRSCLASS 
+			WHERE (TRSCLASS.COMP_CODE 		=  #{COMP_CODE}) AND ( TRSCLASS.CODE 	= #{CODE} )  
+    </select>
+    	
+	<select id="getVatPercentage" parameterType="iisCommonCO" resultType="Double">
+		<![CDATA[
+		SELECT PERCENTAGE FROM TRSVAT_PERIOD 
+			WHERE COMP_CODE		= #{compCode}
+				AND VAT_CODE	= #{vatCode} 
+				AND  FROM_DATE 	<= #{startDate} 
+				AND TO_DATE 	>= #{startDate}
+	]]>	
+	</select>
+	
+	<select id="getVatPercentageWithNoDate" parameterType="iisCommonCO" resultType="Double">
+		SELECT PERCENTAGE FROM TRSVAT_PERIOD 
+			WHERE COMP_CODE	=  #{compCode}
+			AND VAT_CODE	=  #{vatCode}
+			AND TO_DATE 	= (SELECT MAX(TO_DATE) 
+											FROM  TRSVAT_PERIOD
+											WHERE COMP_CODE	= #{compCode}
+											AND VAT_CODE	= #{vatCode}
+											)
+	</select>
+	
+	<select id="getBranchHoliday" parameterType="com.path.dbmaps.vo.BRANCH_HOLIDAYVO" resultType="com.path.dbmaps.vo.BRANCH_HOLIDAYVO">
+		SELECT BRANCH_HOLIDAY.DESCRIPTION FROM BRANCH_HOLIDAY 
+			WHERE BRANCH_HOLIDAY.COMP_CODE = #{COMP_CODE} 
+			AND   BRANCH_HOLIDAY.BRANCH_CODE = #{BRANCH_CODE} 
+			AND BRANCH_HOLIDAY.MM_HOL = #{MM_HOL} 
+			AND BRANCH_HOLIDAY.DD_HOL = #{DD_HOL} 
+			AND BRANCH_HOLIDAY.YYYY_HOL = #{YYYY_HOL}
+	</select>
+	
+	<select id="getCountryCalendar" parameterType="com.path.dbmaps.vo.COUNTRY_CALENDARVO" resultType="com.path.dbmaps.vo.COUNTRY_CALENDARVO">
+		SELECT COUNTRY_CALENDAR.HOL1, COUNTRY_CALENDAR.HOL2, COUNTRY_CALENDAR.HOL3, COUNTRY_CALENDAR.HOL4 
+		FROM COUNTRY_CALENDAR 
+			WHERE ( COUNTRY_CALENDAR.COMP_CODE = #{COMP_CODE} ) 
+			AND ( COUNTRY_CALENDAR.COUNTRY_CODE = #{COUNTRY_CODE} )
+	</select>
+	
+	<select id="getCountryCode" parameterType="com.path.dbmaps.vo.COUNTRY_CALENDARVO" resultType="Long">
+		SELECT CASE WHEN COMP_COUNTRY IS NULL THEN 0 ELSE COMP_COUNTRY END FROM COMPANIES 
+		WHERE COMPANIES.COMP_CODE = #{COMP_CODE}
+	</select>
+		
+	<select id="getCountryHoliday" parameterType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVO" resultType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVO">
+		SELECT COUNTRY_HOLIDAY.DESCRIPTION FROM COUNTRY_HOLIDAY 
+			WHERE COUNTRY_HOLIDAY.COMP_CODE = #{COMP_CODE} 
+			AND COUNTRY_HOLIDAY.COUNTRY_CODE = #{COUNTRY_CODE} 
+			AND COUNTRY_HOLIDAY.MM_HOL = #{MM_HOL}
+			AND COUNTRY_HOLIDAY.DD_HOL = #{DD_HOL} 
+			AND COUNTRY_HOLIDAY.YYYY_HOL = #{YYYY_HOL}
+	</select>
+	
+	<select id="getHolidayActions" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey" resultType="com.path.dbmaps.vo.TRSCLASSVO">
+		SELECT CASE WHEN HOLIDAY_ACTION	IS NULL THEN  0  ELSE HOLIDAY_ACTION END HOLIDAY_ACTION,
+		CASE WHEN HOLIDAY_ACTION_WARNING_IND IS NULL THEN 'N' ELSE HOLIDAY_ACTION_WARNING_IND 	END HOLIDAY_ACTION_WARNING_IND,
+		CASE WHEN DEAL_ALLOW_BACK_VDATE_TRANS_YN IS NULL THEN 'N' ELSE DEAL_ALLOW_BACK_VDATE_TRANS_YN END DEAL_ALLOW_BACK_VDATE_TRANS_YN
+		FROM TRSCLASS 
+			WHERE TRSCLASS.COMP_CODE  = #{COMP_CODE} AND TRSCLASS.CODE =#{CODE}
+	</select>
+	
+	<select id="getMaximumDateRate" parameterType="iisCommonCO" resultType="Date">	
+		<![CDATA[
+		SELECT MAX(EXCH_RAT.DATE_RATE) FROM  EXCH_RAT 
+			WHERE	 (EXCH_RAT.COMP_CODE  =#{compCode} )
+			AND	(EXCH_RAT.CURRENCY_CODE  = #{exchangeRateCurrency})
+			AND	(EXCH_RAT.DATE_RATE  <= #{exchangeDate})]]>	 
+	</select>	
+	
+	<select id="getExchangeRateWrtDate" parameterType="iisCommonCO" resultType="BigDecimal">	
+		<![CDATA[
+		SELECT EXCH_RAT.M_RATE FROM  EXCH_RAT 
+			WHERE	 (EXCH_RAT.COMP_CODE  = #{compCode} )
+			 AND	(EXCH_RAT.CURRENCY_CODE  = #{exchangeRateCurrency})
+			 AND	(EXCH_RAT.DATE_RATE  = #{maximumDateRate})
+			 AND	(
+			 	EXCH_RAT.TIME  =(
+			 		SELECT MAX(EXCH_RAT.TIME) FROM  EXCH_RAT 
+						WHERE (EXCH_RAT.COMP_CODE  = #{compCode})
+				 			AND	(EXCH_RAT.CURRENCY_CODE  = #{exchangeRateCurrency})
+				 			AND	(EXCH_RAT.DATE_RATE  = #{maximumDateRate}
+				)
+		))]]>	 
+	</select>	
+	
+	<select id="getCurrencyDetails" parameterType="com.path.dbmaps.vo.CURRENCIESVOKey" resultType="com.path.dbmaps.vo.CURRENCIESVO">
+		 SELECT CURRENCIES.UNIT, CURRENCIES.MULT_DIV_IND, CURRENCIES.DECIMAL_POINTS,CURRENCIES.BRIEF_DESC_ENG FROM  CURRENCIES 
+		 WHERE  (CURRENCIES.COMP_CODE  = #{COMP_CODE})
+		 AND	(CURRENCIES.CURRENCY_CODE  = #{CURRENCY_CODE})	
+	</select>
+	
+	<select id="getIISCTRL"  resultType="com.path.dbmaps.vo.IISCTRLVO" parameterType="com.path.dbmaps.vo.IISCTRLVOKey" >
+	SELECT 
+			TRADE_DEAL_UNIT_PRICE_ROUNDOFF,
+		  	TRADE_DEAL_ITEM_DETAILS, 
+		  	TRADE_DEAL_PRODUCT_SPECIFIC, 
+		  	INV_DEAL_SHOW_CONTRIB_DETAILS,
+		  	CHECK_CIF_EXISTING_DEALS_YN,
+		  	CHECK_USER_PRODUCT_CLASS_LIMIT,
+		  	ALLOW_MULTIPLE_CLASS_LIMIT,
+		  	CASE WHEN DEAL_ALLOW_TO_EDIT_FLOAT_RT IS NULL THEN 'N' ELSE  DEAL_ALLOW_TO_EDIT_FLOAT_RT END DEAL_ALLOW_TO_EDIT_FLOAT_RT,
+		  	CHECK_PARTY_PRODUCT_LIMIT ,
+		 	CHECK_USER_PRODUCT_CLASS_LIMIT ,
+		 	DEFINE_LIMIT_FOR_BORROWINGS_YN,
+		 	CASE WHEN CALC_ALLOW_ENTER_PROFIT_AMT IS NULL THEN 'N' ELSE CALC_ALLOW_ENTER_PROFIT_AMT END CALC_ALLOW_ENTER_PROFIT_AMT,
+		 	CASE WHEN CALENDAR_TYPE IS NULL THEN 'G' ELSE CALENDAR_TYPE END CALENDAR_TYPE,
+		 	PRINT_CALC_DETAIL_SCHEDULE_YN,
+			PRINT_CALC_DETAILS_YN,
+			CHECK_PARTY_LIMIT,
+			REPAYMENT_CRITERIA_YIELD_YN,
+			CALC_ALLOW_TO_EDIT_FLOAT_RT,
+			CUSTOMER_LIMIT_AMOUNT,
+			CUSTOMER_LIMIT_MESSAGE_TYPE 
+  	
+  	FROM   IISCTRL
+	WHERE  COMP_CODE   = #{COMP_CODE}
+	AND    BRANCH_CODE = #{BRANCH_CODE}
+	</select>
+	
+	<select id="getUsrDetailsIIS"  resultType="com.path.dbmaps.vo.USRVO" parameterType="com.path.dbmaps.vo.USRVO" >
+	SELECT 
+	CASE WHEN UNIT_CODE IS NULL THEN 0 ELSE UNIT_CODE END UNIT_CODE , 
+	CASE WHEN SHOW_CIF IS NULL THEN 0 ELSE SHOW_CIF END SHOW_CIF
+	FROM   USR
+	WHERE  USER_ID	= #{USER_ID}
+	</select>
+	
+	<select id="returnIISCONTROLValyByKey"  resultType="String" parameterType="commonLibSC" >
+	 SELECT IISCONTROL.FLAG_VALUE 
+	 FROM IISCONTROL
+	 WHERE IISCONTROL.SEQ_KEY = #{code}
+	 AND FLAG_NAME=#{flag}
+ 	</select>
+	
+	<select id="returnTrsDealCount" parameterType="com.path.dbmaps.vo.TRSDEALVOKey" resultType="BigDecimal">
+	SELECT COUNT(1) FROM TRSDEAL
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND BRANCH_CODE = #{BRANCH_CODE}
+	AND SERIAL_NO = #{SERIAL_NO}
+	</select>
+		
+	<select id="returnTrsClassCount" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey" resultType="BigDecimal">
+	SELECT COUNT(1) FROM TRSCLASS
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND CODE = #{CODE}
+	</select>
+	
+	<select id="returnSettlementDivision" parameterType="com.path.dbmaps.vo.TRSCLASSVOKey" resultType="BigDecimal">
+	SELECT SETTLEMENT_DIVISION FROM TRSCLASS
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND CODE = #{CODE}
+	</select>
+	
+	<select id="returnCountTrsSelmntAptNmt" parameterType="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVOKey" resultType="BigDecimal">
+	SELECT COUNT(1) FROM TRSDEAL_STLMT_APTNMT 
+	WHERE COMP_CODE = #{COMP_CODE} 
+	AND BRANCH_CODE = #{BRANCH_CODE} 
+	AND SERIAL_NO = #{SERIAL_NO}
+	</select>
+	
+	<select id="returnCurrenciesCount" parameterType="com.path.dbmaps.vo.CURRENCIESVOKey" resultType="BigDecimal">
+	SELECT COUNT(1) FROM CURRENCIES 
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND CURRENCY_CODE = #{CURRENCY_CODE}
+	</select>
+	
+	<select id="returnIISCtrlLimitBasedOn" parameterType="com.path.dbmaps.vo.IISCTRLVOKey" resultType="String">
+	SELECT LIMIT_REINSTATE_BASED_ON	FROM IISCTRL 
+	WHERE COMP_CODE = #{COMP_CODE} 
+	AND BRANCH_CODE = #{BRANCH_CODE}
+	</select>
+	
+	<select id="returnSumOfCapitalAmtAndCptlAmtBeforeXirr" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO">
+	SELECT SUM(CASE WHEN TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR IS NULL THEN 0 ELSE TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR END) CAPITAL_AMT_BEFORE_XIRR,
+	SUM(CASE WHEN TRSPAYPLANDET.CAPITAL_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.CAPITAL_AMT END) CAPITAL_AMT
+	FROM TRSPAYPLAN, TRSPAYPLANDET
+	WHERE TRSPAYPLAN.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+	AND TRSPAYPLAN.BRANCH = TRSPAYPLANDET.BRANCH
+	AND TRSPAYPLAN.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR
+	AND TRSPAYPLAN.PLAN_SEQ = TRSPAYPLANDET.PLAN_SEQ
+	AND TRSPAYPLAN.COMP_CODE = #{COMP_CODE}
+	AND TRSPAYPLAN.BRANCH = #{BRANCH}
+	AND TRSPAYPLAN.TRX_NBR = #{TRX_NBR}
+	AND TRSPAYPLAN.STATUS = 'P'
+	AND CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT END = 0
+	</select>
+	
+	<select id="returnTrsPayplanDetSumofValues" parameterType="com.path.dbmaps.vo.TRSPAYPLANVO" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO">
+	SELECT SUM(CASE WHEN TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR IS NULL THEN 0 ELSE TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR END) CAPITAL_AMT_BEFORE_XIRR,
+	SUM(CASE WHEN TRSPAYPLANDET.PROFIT_AMT_BEFORE_XIRR IS NULL THEN 0 ELSE TRSPAYPLANDET.PROFIT_AMT_BEFORE_XIRR END) PROFIT_AMT_BEFORE_XIRR,
+	SUM(CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT END) SETTLEMENT_AMOUNT,
+	SUM(CASE WHEN TRSPAYPLANDET.CAPITAL_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.CAPITAL_AMT END) CAPITAL_AMT,
+	SUM(CASE WHEN TRSPAYPLANDET.PROFIT_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.PROFIT_AMT END) PROFIT_AMT,
+	SUM(CASE WHEN TRSPAYPLANDET.SETTLED_CAPITAL_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLED_CAPITAL_AMT END) SETTLED_CAPITAL_AMT,
+	SUM(CASE WHEN TRSPAYPLANDET.SETTLED_PROFIT_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLED_PROFIT_AMT END) SETTLED_PROFIT_AMT,
+	SUM(CASE WHEN TRSPAYPLANDET.WAIVED_PROFIT_AMT IS NULL THEN 0 ELSE TRSPAYPLANDET.WAIVED_PROFIT_AMT END) WAIVED_PROFIT_AMT
+	FROM TRSPAYPLAN, TRSPAYPLANDET
+	WHERE TRSPAYPLAN.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+	AND TRSPAYPLAN.BRANCH = TRSPAYPLANDET.BRANCH
+	AND TRSPAYPLAN.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR
+	AND TRSPAYPLAN.PLAN_SEQ = TRSPAYPLANDET.PLAN_SEQ
+	AND TRSPAYPLAN.COMP_CODE = #{COMP_CODE}
+	AND TRSPAYPLAN.BRANCH = #{BRANCH}
+	AND TRSPAYPLAN.TRX_NBR = #{TRX_NBR}
+	AND TRSPAYPLAN.STATUS = 'P'
+	<![CDATA[ AND CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT END <> 0
+	AND CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT END
+	< CASE WHEN TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR IS NULL THEN 0 ELSE TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR END
+	+ CASE WHEN TRSPAYPLANDET.PROFIT_AMT_BEFORE_XIRR IS NULL THEN 0 ELSE TRSPAYPLANDET.PROFIT_AMT_BEFORE_XIRR END ]]>
+	</select>
+	
+<select id="returnOutstandingAmount" parameterType="iisCustomerLimitCO" resultType="BigDecimal">
+    SELECT       
+          SUM( ROUND(CASE WHEN TRSDEAL.DEAL_CY = COMPANIES.BASE_CURRENCY THEN (CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL OR  TRSPAYPLANDET.SETTLEMENT_AMOUNT = 0 THEN TRSPAYPLANDET.CAPITAL_AMT
+                ELSE (CASE WHEN TRSPAYPLANDET.CAPITAL_AMT = 0 THEN 0 ELSE (TRSPAYPLANDET.CAPITAL_AMT - ROUND ( ( (                                                                
+                            CASE WHEN  TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT  END                              
+                      )  * TRSPAYPLANDET.CAPITAL_AMT/
+                                  (CASE WHEN TRSCLASS.PROFIT_UPFRONT = 'N' THEN  TRSPAYPLANDET.AMOUNT_NEW  ELSE TRSPAYPLANDET.AMOUNT END )) ,3)) END)                
+           END)
+                ELSE 
+                             CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN
+                                        ( CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL OR  TRSPAYPLANDET.SETTLEMENT_AMOUNT = 0 THEN TRSPAYPLANDET.CAPITAL_AMT
+                                                    ELSE (CASE WHEN TRSPAYPLANDET.CAPITAL_AMT = 0 THEN 0 ELSE (TRSPAYPLANDET.CAPITAL_AMT - ROUND ( ( (                                                          
+                                                                CASE WHEN  TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT  END
+                                                          
+                                                          )  * TRSPAYPLANDET.CAPITAL_AMT/
+                                                                      (CASE WHEN TRSCLASS.PROFIT_UPFRONT = 'N' THEN  TRSPAYPLANDET.AMOUNT_NEW  ELSE TRSPAYPLANDET.AMOUNT END )),3)) END)                
+                                               END * TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT)
+                                  ELSE
+                                        (  CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL OR  TRSPAYPLANDET.SETTLEMENT_AMOUNT = 0 THEN TRSPAYPLANDET.CAPITAL_AMT
+                                        ELSE (CASE WHEN TRSPAYPLANDET.CAPITAL_AMT = 0 THEN 0 ELSE (TRSPAYPLANDET.CAPITAL_AMT - ROUND ( ( (                                                          
+                                                    CASE WHEN  TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT  END
+                                              
+                                               )  * TRSPAYPLANDET.CAPITAL_AMT/
+                                                          (CASE WHEN TRSCLASS.PROFIT_UPFRONT = 'N' THEN  TRSPAYPLANDET.AMOUNT_NEW  ELSE TRSPAYPLANDET.AMOUNT END )),3)) END)                
+                                   END / TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT)
+                END     
+          END, CURRENCIES.DECIMAL_POINTS))    Outstanding_Prnicipal               
+
+          FROM        TRSDEAL , TRSPAYPLAN , COMPANIES , TRSPAYPLANDET , TRSCLASS , CURRENCIES
+          WHERE       TRSDEAL.COMP_CODE                   = TRSPAYPLAN.COMP_CODE
+          AND        TRSDEAL.BRANCH_CODE           = TRSPAYPLAN.BRANCH
+          AND        TRSDEAL.SERIAL_NO                   = TRSPAYPLAN.TRX_NBR 
+          
+          AND         TRSDEAL.COMP_CODE                   = COMPANIES.COMP_CODE   
+          AND         TRSDEAL.STATUS      IN ('B', 'A', 'P')
+          AND         TRSPAYPLAN.STATUS   IN ('B', 'A', 'P')
+          AND         TRSPAYPLANDET.COMP_CODE       = TRSPAYPLAN.COMP_CODE
+          AND         TRSPAYPLANDET.BRANCH          = TRSPAYPLAN.BRANCH
+          AND         TRSPAYPLANDET.PLAN_NBR        = TRSPAYPLAN.PLAN_NBR
+          AND         TRSPAYPLANDET.PLAN_SEQ        = TRSPAYPLAN.PLAN_SEQ
+          AND         TRSDEAL.COMP_CODE                   = TRSCLASS.COMP_CODE
+          AND         TRSDEAL.CLASS                             = TRSCLASS.CODE
+          AND         TRSDEAL.COMP_CODE             =  CURRENCIES.COMP_CODE         
+          AND         TRSDEAL.DEAL_CY                     =  CURRENCIES.CURRENCY_CODE  
+          AND         TRSPAYPLAN.TOTAL_AMT - CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL THEN 0 ELSE TRSPAYPLAN.TOTAL_AMT_PAID END > 0
+          AND         CASE WHEN TRSCLASS.PROFIT_UPFRONT = 'N' THEN  TRSPAYPLANDET.AMOUNT_NEW  ELSE TRSPAYPLANDET.AMOUNT END - CASE WHEN  TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT  END > 0
+        AND   TRSDEAL.COMP_CODE   = #{compCode}
+        AND   TRSDEAL.CIF_NO      = #{cifNo}
+        <if test='dealNo != null'>   
+        AND   TRSDEAL.SERIAL_NO   <![CDATA[<> ]]>#{dealNo}
+        </if>
+      
+ </select>
+	
+<select id="returnClassLimitTenure" parameterType="iisCommonCO" resultType="com.path.dbmaps.vo.TRSCIFLIMITDETVO">
+		
+<choose>  
+<when test='allowMultipleClassLimit== "Y" and dealType != 19 and dealType != 23 and dealType != 25 and limitCode > 0 '>
+	SELECT  
+		TRSCIFLIMITDET.PERIODICITY_TYPE,   
+		TRSCIFLIMITDET.PERIODICITY_NBR ,
+		TRSCIFLIMITDET.PERIODICITY_TYPE_MIN,
+		TRSCIFLIMITDET.PERIODICITY_NBR_MIN ,
+		TRSCIFLIMITDET.CHECK_DEAL_TENURE_TYPE
+	
+	FROM   TRSCIFLIMITDET  
+	WHERE  TRSCIFLIMITDET.COMP_CODE     = #{compCode} 
+	AND  TRSCIFLIMITDET.BRANCH_CODE   = #{branchCode} 
+	AND  TRSCIFLIMITDET.CIF           = #{cifNo}        
+	AND  TRSCIFLIMITDET.CLASS         = #{productClass}    
+	AND  TRSCIFLIMITDET.DETAILED_FLAG = 'N'    
+	<![CDATA[   AND TRSCIFLIMITDET.STATUS <> 'D' ]]> 	
+	AND TRSCIFLIMITDET.SERIAL_NO  = #{limitCode}
+</when>
+<otherwise>
+		
+	SELECT  
+		TRSCIFLIMITDET.PERIODICITY_TYPE,   
+		TRSCIFLIMITDET.PERIODICITY_NBR ,
+		TRSCIFLIMITDET.PERIODICITY_TYPE_MIN,
+		TRSCIFLIMITDET.PERIODICITY_NBR_MIN ,
+		TRSCIFLIMITDET.CHECK_DEAL_TENURE_TYPE
+	
+	FROM   TRSCIFLIMITDET  
+	WHERE  TRSCIFLIMITDET.COMP_CODE     = #{compCode} 
+	AND    TRSCIFLIMITDET.BRANCH_CODE   = #{branchCode}   
+	AND    TRSCIFLIMITDET.CIF           = #{cifNo}      
+	AND    TRSCIFLIMITDET.CLASS         = #{productClass}      
+	AND    TRSCIFLIMITDET.DETAILED_FLAG = 'N'    
+	<![CDATA[   AND TRSCIFLIMITDET.STATUS <> 'D' ]]> 	 
+	</otherwise>
+</choose>	
+</select>
+		
+
+<select id="returnAccountByAccount" parameterType="com.path.dbmaps.vo.AMFVO" resultType="com.path.dbmaps.vo.AMFVO">
+		select   
+        BRANCH_CODE, 
+        CURRENCY_CODE, 
+        GL_CODE, 
+        CIF_SUB_NO, 
+        SL_NO  
+        FROM 	AMF 
+        WHERE 	COMP_CODE 	= #{COMP_CODE} 
+         AND 	BRANCH_CODE 	= #{BRANCH_CODE}
+         AND 	CURRENCY_CODE 	= #{CURRENCY_CODE}
+         AND 	GL_CODE  		= #{GL_CODE}
+         AND 	CIF_SUB_NO 		= #{CIF_SUB_NO}
+         AND 	SL_NO  			= #{SL_NO}
+</select>
+
+<select id="returnAccountByAdditionalRef" parameterType="com.path.dbmaps.vo.AMFVO" resultType="com.path.dbmaps.vo.AMFVO">
+		select   
+        BRANCH_CODE, 
+        CURRENCY_CODE, 
+        GL_CODE, 
+        CIF_SUB_NO, 
+        SL_NO,
+        BRIEF_NAME_ENG,
+        GMI_FLAG 
+        FROM 	AMF 
+        WHERE 	COMP_CODE 	= #{COMP_CODE} 
+        	AND 	ADDITIONAL_REFERENCE =	#{ADDITIONAL_REFERENCE} 
+</select>
+
+<!-- #TAR BB130030 ;Arun R Variyath ; 11/08/2015 [Start]-->
+<select id="returnCalcMatDteFlagValue" resultType="String">
+  SELECT IISCONTROL.FLAG_VALUE 
+  FROM IISCONTROL
+  WHERE IISCONTROL.SEQ_KEY = 11
+  AND IISCONTROL.FLAG_NAME = 'CALC_MAT_DTE'
+</select>
+<!-- #TAR BB130030 ;Arun R Variyath ; 11/08/2015 [End]-->
+	
+<!--TP# 222800BM140006 - Limit for Yield Roster in IIS Sreejith -->
+	
+	<select id="returnCodeFromTRSROSTER_REGISTER" resultType="BigDecimal"
+		parameterType="iisCommonCO">
+		SELECT CODE
+		FROM TRSROSTER_REGISTER 
+		WHERE TRSROSTER_REGISTER.COMP_CODE = #{compCode}
+		AND TRSROSTER_REGISTER.BRANCH_CODE = #{branchCode}
+		AND TRSROSTER_REGISTER.PRODUCT_TYPE = #{productType}
+		<if test="classCode != null">
+		AND TRSROSTER_REGISTER.PRODUCT_CLASS = #{classCode}
+		</if>
+		AND TRSROSTER_REGISTER.PARTY_TYPE = #{acPartyType}
+		AND TRSROSTER_REGISTER.STATUS = 'P'
+	</select>
+	
+	<select id="returnTRSROSTER_REGISTER_DETData" resultType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVO" parameterType="com.path.dbmaps.vo.TRSROSTER_REGISTER_DETVO">
+		SELECT
+			 TRSROSTER_REGISTER_DET.COMP_CODE,
+			 TRSROSTER_REGISTER_DET.BRANCH_CODE,
+			 TRSROSTER_REGISTER_DET.CODE,
+			 TRSROSTER_REGISTER_DET.ENTITY_TYPE,
+			 TRSROSTER_REGISTER_DET.LINE_NO,
+			 TRSROSTER_REGISTER_DET.ENTITY_CODE,
+			 TRSROSTER_REGISTER_DET.CURRENCY_TYPE,
+			 TRSROSTER_REGISTER_DET.CURRENCY_CODE,
+			 TRSROSTER_REGISTER_DET.ROSTER_CODE_YIELD,
+			 TRSROSTER_REGISTER_DET.ROSTER_CODE_MODARIB,
+			 TRSROSTER_REGISTER_DET.FROM_DATE,
+			 TRSROSTER_REGISTER_DET.TO_DATE,
+			 TRSROSTER_REGISTER_DET.STATUS,
+			 TRSROSTER_REGISTER_DET.CREATED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_CREATED,
+			 TRSROSTER_REGISTER_DET.MODIFIED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_MODIFIED,
+			 TRSROSTER_REGISTER_DET.APPROVED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_APPROVED,
+			 TRSROSTER_REGISTER_DET.SUSPENDED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_SUSPENDED,
+			 TRSROSTER_REGISTER_DET.REACTIVATED_BY,
+			 TRSROSTER_REGISTER_DET.DATE_REACTIVATED,
+			 '' CURRENCY_DESC,
+			 '' YIELD_DESC,
+			 '' MODARIB_DESC,
+			 '' CIF,
+				TRSROSTER_REGISTER_DET.PAY_PLAN_TMPLT_ID,
+			TRSROSTER_REGISTER_DET.PERIOD_NBR,
+			TRSROSTER_REGISTER_DET.PERIOD_TYPE,
+			TRSROSTER_REGISTER_DET.BALLOON_PERCENTAGE 
+			
+				FROM  TRSROSTER_REGISTER_DET 
+				WHERE	 TRSROSTER_REGISTER_DET.COMP_CODE  = #{COMP_CODE}
+				 AND	TRSROSTER_REGISTER_DET.BRANCH_CODE  = #{BRANCH_CODE}
+				 AND	TRSROSTER_REGISTER_DET.CODE  = #{CODE}
+				 AND	TRSROSTER_REGISTER_DET.ENTITY_TYPE  =#{ENTITY_TYPE}
+				<if test="ENTITY_CODE != null">
+				 AND	TRSROSTER_REGISTER_DET.ENTITY_CODE  = #{ENTITY_CODE}
+				</if>
+			ORDER BY CASE WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='D'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 1	
+							  WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='W'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 7
+							  WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='M'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 30
+							  WHEN TRSROSTER_REGISTER_DET.PERIOD_TYPE ='Y'  THEN  TRSROSTER_REGISTER_DET.PERIOD_NBR * 365
+						ELSE
+							0
+						END DESC
+	</select>
+	<select id="returnCifTypeAndMaintSalaryAcc" resultType="com.path.dbmaps.vo.CIFVO" parameterType="iisCommonCO">
+	SELECT CIF_TYPE, CASE WHEN MAINTAIN_SALARY_ACC IS NULL THEN '0' ELSE MAINTAIN_SALARY_ACC END 
+	FROM CIF
+	WHERE COMP_CODE = #{compCode}
+	AND CIF_NO = #{cifNo}
+	</select>
+	<select id="returnCifTypeFromACC_NV_CONTROL" resultType="BigDecimal" parameterType="iisCommonCO">
+	SELECT ACC_NV_CONTROL.CIF_TYPE
+	FROM ACC_NV_CONTROL
+	WHERE ACC_NV_CONTROL.COMP_CODE = #{compCode}
+	AND ACC_NV_CONTROL.BRANCH_CODE = #{branchCode}
+	</select>
+	
+	<select id="returnYieldFromTRSROSTERDET" resultType="iisCommonCO" parameterType="iisCommonCO">
+	SELECT STAFF_YIELD, STAFF_YIELD_MIN, STAFF_YIELD_MAX,YIELD,NON_DOMICILE_YIELD_MIN,NON_DOMICILE_YIELD_MAX,DOMICILE_YIELD,
+	DOMICILE_YIELD_MIN,DOMICILE_YIELD_MAX  
+		FROM TRSROSTERDET 
+		WHERE TRSROSTERDET.COMP_CODE = #{compCode}
+		AND TRSROSTERDET.BRANCH_CODE = #{branchCode}
+		AND TRSROSTERDET.CODE = #{rosterCodeYield}
+		AND #{amount} BETWEEN TRSROSTERDET.FROM_AMT AND TRSROSTERDET.TO_AMT
+	</select>
+	<select id="returnAllowEditOutSideRangeAndDefaultedYield" resultType="iisCommonCO" parameterType="iisCommonCO">
+	SELECT ALLOW_EDIT_YIELD_OUTSIDE_RANGE, ALLOW_EDIT_DEFAULTED_YIELD
+	FROM TRSROSTER
+	WHERE TRSROSTER.COMP_CODE = #{compCode}
+	AND TRSROSTER.BRANCH_CODE = #{branchCode}
+	AND TRSROSTER.CODE = #{rosterCodeYield}
+	</select>
+	<select id="returnRecCountFromTRSDEAL_YIELD_AMENDED" resultType="BigDecimal" parameterType="iisCommonCO">
+	SELECT COUNT(1) from TRSDEAL_YIELD_AMENDED  where  TRSDEAL_YIELD_AMENDED.COMP_CODE = #{compCode}  
+	and   TRSDEAL_YIELD_AMENDED.BRANCH_CODE = #{branchCode}
+	and   TRSDEAL_YIELD_AMENDED.DEAL_NO = #{dealNo}
+	</select>
+<!--TP# 222800BM140006 - Limit for Yield Roster in IIS Sreejith -->	
+
+<!-- TP 253158 -Renaming by product category - Sreejith -->
+	<select id="returnTrsClassLabelVOData" parameterType="iisCommonCO"	resultType="com.path.dbmaps.vo.TRSCLASS_KEY_LABELVO">
+		SELECT * FROM TRSCLASS_KEY_LABEL WHERE COMP_CODE= #{compCode} AND CLASS_CODE=#{classCode} 
+		<if test="progRef!=null">
+		 AND PROG_REF= #{progRef}
+		</if>
+	</select>
+	 <select id="returnParentRef" parameterType="iisCommonCO" resultType="String">
+	<![CDATA[
+		SELECT CASE WHEN OPTE.ADDITIONAL_PARENT_REF IS NOT NULL THEN OPTE.ADDITIONAL_PARENT_REF ELSE(CASE WHEN OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF<>'ROOT' THEN
+		OPT.PARENT_REF ELSE OPT.PROG_REF END) END PARENT_REF
+		FROM OPT LEFT OUTER JOIN OPT_EXTENDED OPTE ON OPTE.APP_NAME = OPT.APP_NAME AND OPTE.PROG_REF = OPT.PROG_REF
+		WHERE OPT.PROG_REF=#{progRef}
+		AND OPT.APP_NAME = #{appName}
+	]]>
+	</select>
+<!-- TP 253158 -Renaming by product category END - Sreejith -->	
+
+	<select id="getVatCountWithBranchAndC" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVO">
+	SELECT  COUNT(1)
+	FROM TRSVAT_PERIOD
+	WHERE COMP_CODE   = #{COMP_CODE}
+		AND	VAT_CODE  =	#{VAT_CODE}
+		AND (VAT_BRANCH > 0 or  VAT_CY > 0 ) 
+	</select>
+
+	<select id="returnVatRateByBranchAndCy" resultType="com.path.dbmaps.vo.TRSVAT_PERIODVO" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVO">
+	SELECT PERCENTAGE, VAT_CHARGE_PERCENT
+	FROM TRSVAT_PERIOD
+	WHERE	COMP_CODE 	= 	#{COMP_CODE}
+	AND	VAT_CODE		=	#{VAT_CODE}
+	<![CDATA[
+	AND	FROM_DATE		<=	#{FROM_DATE}
+	AND	TO_DATE			>=	#{FROM_DATE}
+	]]>
+	AND VAT_BRANCH 		= #{VAT_BRANCH}
+	AND VAT_CY 			= #{VAT_CY}
+	</select>
+
+	<select id="getVatCountWithBranchAndCy" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.TRSDETVO">
+	SELECT 	<if test="isSybase == 1"> TOP 1 </if>
+			MATR_AC_BR 
+	FROM TRSDET 
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND BRANCH_CODE = #{BRANCH_CODE}
+	AND SERIAL_NO = #{SERIAL_NO}
+	<if test="isOracle == 1"> AND	ROWNUM			=	1 </if>	
+	ORDER BY LINE_NO 
+	</select>
+	
+	
+	<select id="returnDealCurrencyCode" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.TRSDEALVO">
+		SELECT DEAL_CY
+		FROM TRSDEAL
+		WHERE COMP_CODE = #{COMP_CODE}
+		AND BRANCH_CODE = #{BRANCH_CODE}
+		AND SERIAL_NO = #{SERIAL_NO}
+	</select>
+
+	<select id="selectMaxInstPercentageSalary" parameterType="islamicCalculatorEventMgmtCO"	resultType="BigDecimal">
+		SELECT 	MAX_DEAL_INST_PERC_OF_SAL
+		FROM 	TRSCLASS
+		WHERE 	COMP_CODE 	= #{compCode}
+		AND 	CODE 		= #{productClass}
+	</select>	
+
+	<select id="returnMonthlyBasicSalary" parameterType="islamicCalculatorEventMgmtCO" resultType="BigDecimal">			
+		SELECT	MONTHLY_BASIC_SALARY
+		FROM 	CIF_OCCUPATION 
+		WHERE	COMP_CODE 	= 	#{compCode} 
+		AND 	CIF_NO 		= 	#{cifNo}
+		AND 	LINE_NO 	= 	(	SELECT  MIN(LINE_NO) 
+									FROM  	CIF_OCCUPATION   
+									WHERE 	COMP_CODE 	= #{compCode}
+									AND   	CIF_NO      = #{cifNo}
+									AND   	MONTHLY_BASIC_SALARY > 0 
+								)
+	</select>
+
+	<select id="selectSumOfInstallmentAmt" parameterType="islamicCalculatorEventMgmtCO"	resultType="BigDecimal">
+		SELECT	SUM ( SUM ( CASE WHEN TRSPAYPLANDET.CURRENCY = COMPANIES.BASE_CURRENCY
+								THEN
+									CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE
+										TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE
+										TRSPAYPLANDET.AMOUNT_NEW END - CASE WHEN
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT END
+									ELSE
+									CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN
+										CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE
+										TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE
+										TRSPAYPLANDET.AMOUNT_NEW END - CASE WHEN
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT END * TRSDEAL.DEAL_RATE /
+										TRSDEAL.DEAL_UNIT
+								ELSE
+									CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE
+									TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE
+										TRSPAYPLANDET.AMOUNT_NEW END - CASE WHEN
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE
+										TRSPAYPLANDET.SETTLEMENT_AMOUNT END / TRSDEAL.DEAL_RATE /
+										TRSDEAL.DEAL_UNIT
+										END
+									END
+							)
+					)
+		FROM 	TRSPAYPLANDET, 
+				TRSDEAL, 
+				TRSPAYPLAN, 
+				COMPANIES, 
+				TRSCLASS
+		WHERE 	TRSDEAL.COMP_CODE = TRSPAYPLAN.COMP_CODE
+		AND		TRSDEAL.BRANCH_CODE = TRSPAYPLAN.BRANCH
+		<if test='dealNo != null'>   
+	        	AND   TRSDEAL.SERIAL_NO   <![CDATA[<> ]]>#{dealNo}
+	    </if>
+		AND 	TRSDEAL.SERIAL_NO = TRSPAYPLAN.TRX_NBR	
+		AND 	TRSPAYPLANDET.COMP_CODE = TRSPAYPLAN.COMP_CODE
+		AND 	TRSPAYPLANDET.BRANCH = TRSPAYPLAN.BRANCH
+		AND 	TRSPAYPLANDET.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+		AND 	TRSPAYPLANDET.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+		AND 	TRSDEAL.COMP_CODE = TRSCLASS.COMP_CODE
+		AND 	TRSDEAL.CLASS = TRSCLASS.CODE
+		AND 	CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT IS NULL THEN 'Y' ELSE
+					TRSCLASS.PROFIT_UPFRONT END) = 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE
+					TRSPAYPLANDET.AMOUNT_NEW END > CASE WHEN
+					TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE
+					TRSPAYPLANDET.SETTLEMENT_AMOUNT END
+	 	<![CDATA[AND   TRSPAYPLANDET.BALLOON_PAYMENT <> 1 ]]>
+		AND 	TRSDEAL.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+		AND 	TRSDEAL.BRANCH_CODE = TRSPAYPLANDET.BRANCH
+		AND 	TRSPAYPLANDET.COMP_CODE = #{compCode}
+		AND TRSDEAL.CIF_NO = #{cifNo}
+		<choose>
+			<when test="isSybase == 1">
+				AND DATEPART(YY , TRSPAYPLANDET.VALUE_DATE ) = #{dateYear}
+				AND DATEPART(MM , TRSPAYPLANDET.VALUE_DATE ) = #{dateMonth}
+		</when>
+			<otherwise>
+				AND EXTRACT(YEAR FROM TRSPAYPLANDET.VALUE_DATE ) = #{dateYear}
+				AND EXTRACT(MONTH FROM TRSPAYPLANDET.VALUE_DATE ) = #{dateMonth}
+			</otherwise>
+		</choose>
+		AND 	COMPANIES.COMP_CODE = TRSDEAL.COMP_CODE
+		AND 	TRSDEAL.STATUS IN ('B','A', 'P')
+		AND 	TRSPAYPLAN.STATUS IN ('B','A', 'P')
+		GROUP BY   TRSPAYPLANDET.COMP_CODE ,
+				   TRSPAYPLANDET.BRANCH ,
+				   TRSPAYPLANDET.PLAN_NBR ,
+				   TRSPAYPLANDET.PLAN_SEQ ,  
+				   TRSPAYPLANDET.CURRENCY 
+	</select>
+	<select id="returnTRSCLASSDetails" resultType="com.path.dbmaps.vo.TRSCLASSVO"
+		parameterType="com.path.dbmaps.vo.TRSCLASSVOKey">
+		SELECT TRSCLASS.COMP_CODE,
+	       TRSCLASS.CODE,
+	       TRSCLASS.CATEGORY,
+	       TRSCLASS.BRIEF_NAME_ENG,
+	       TRSCLASS.LONG_NAME_ENG,
+	       TRSCLASS.BRIEF_NAME_ARAB,
+	       LONG_NAME_ARAB,
+	       EXPOSURE_LIMIT,
+	       LEASE_TYPE,
+	       CASE
+	         WHEN VALUE_DAYS IS NULL THEN
+	          0
+	         ELSE
+	          VALUE_DAYS
+	       END VALUE_DAYS,
+	       RECOGNIZE_MODARIB_PROFIT,
+	       CALCULATE_PROFIT,
+	       CASE
+	         WHEN FLOATING_RATE IS NULL THEN
+	          'N'
+	         ELSE
+	          FLOATING_RATE
+	       END FLOATING_RATE,
+	       CASE
+	         WHEN PROFIT_UPFRONT IS NULL THEN
+	          'N'
+	         ELSE
+	          PROFIT_UPFRONT
+	       END PROFIT_UPFRONT,
+	       OPEN_ENDED,
+	       MODIFY_VDATE,
+	       CALC_ACCRUALS_AT,
+	       NO_OF_PAYMENTS,
+	       ROUNDING_FACTOR,
+	       PAY_RES_AMT,
+	       PAYM_PERIOD_NBR,
+	       PAYM_PERIODICITY,
+	       PAYM_PERIOD_POS,
+	       GRACE_PERIOD_OPTION,
+	       GRACE_PERIOD,
+	       SET_OF_RATIO,
+	       GRACE_PERIODICITY,
+	       PAST_DUE_PERIOD,
+	       CASE
+	         WHEN LINK_TO_FAS IS NULL THEN
+	          0
+	         ELSE
+	          LINK_TO_FAS
+	       END LINK_TO_FAS,
+	       SETTLEMENT_DIVISION,
+	       PREFIX,
+	       IBOR_CODE,
+	       ACCRUE_PRFT_SHAREHLDR,
+	       ACCRUAL_BASIS,
+	       CASE
+	         WHEN LINK_TO_DEAL_STRUCT IS NULL THEN
+	          'N'
+	         ELSE
+	          LINK_TO_DEAL_STRUCT
+	       END LINK_TO_DEAL_STRUCT,
+	       ALL_ONBS,
+	       CASE
+	         WHEN TEMPLATE_TYPE_INVESTMENT IS NULL THEN
+	          2
+	         ELSE
+	          TEMPLATE_TYPE_INVESTMENT
+	       END TEMPLATE_TYPE_INVESTMENT,
+	       TEMPLATE_TYPE_SETTLEMENT,
+	       TEMPLATE_CODE_INVESTMENT,
+	       TEMPLATE_CODE_SETTLEMENT,
+	       CASE
+	         WHEN TEMPLATE_SHOW_DEAL IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_DEAL
+	       END TEMPLATE_SHOW_DEAL,
+	       CASE
+	         WHEN TEMPLATE_MODIF_DEAL IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_DEAL
+	       END TEMPLATE_MODIF_DEAL,
+	       CASE
+	         WHEN TEMPLATE_SHOW_SETTLEMENT IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_SETTLEMENT
+	       END TEMPLATE_SHOW_SETTLEMENT,
+	       CASE
+	         WHEN TEMPLATE_MODIF_SETTLEMENT IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_SETTLEMENT
+	       END TEMPLATE_MODIF_SETTLEMENT,
+	       OPT_REF,
+	       OPT_ORDER,
+	       CASE
+	         WHEN EXCLUDE_CHARGES IS NULL THEN
+	          'N'
+	         ELSE
+	          EXCLUDE_CHARGES
+	       END EXCLUDE_CHARGES,
+	       PROVISION_CLASS,
+	       TEMPLATE_TYPE_EOM,
+	       TEMPLATE_TYPE_EOY,
+	       TEMPLATE_CODE_EOM,
+	       TEMPLATE_CODE_EOY,
+	       CASE
+	         WHEN CONTRIBUTORS_TYPE IS NULL THEN
+	          'B'
+	         ELSE
+	          CONTRIBUTORS_TYPE
+	       END CONTRIBUTORS_TYPE,
+	       CASE
+	         WHEN SHOW_CONTRIBUTORS IS NULL THEN
+	          'Y'
+	         ELSE
+	          SHOW_CONTRIBUTORS
+	       END SHOW_CONTRIBUTORS,
+	       CASE
+	         WHEN SHOW_VALUE_DATE_DETAILS IS NULL THEN
+	          'Y'
+	         ELSE
+	          SHOW_VALUE_DATE_DETAILS
+	       END SHOW_VALUE_DATE_DETAILS,
+	       NOSTRO_CY,
+	       NOSTRO_GL,
+	       NOSTRO_CIF,
+	       NOSTRO_SL,
+	       RESERVE_METHOD,
+	       TEMPLATE_CODE_ACCRUAL,
+	       TEMPLATE_TYPE_ACCRUAL,
+	       PRINCIPAL_LAST,
+	       CASE
+	         WHEN SHOW_PARTY_ACC IS NULL THEN
+	          'N'
+	         ELSE
+	          SHOW_PARTY_ACC
+	       END SHOW_PARTY_ACC,
+	       CASE
+	         WHEN TEMPLATE_SHOW_EOM IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_EOM
+	       END TEMPLATE_SHOW_EOM,
+	       CASE
+	         WHEN TEMPLATE_MODIF_EOM IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_EOM
+	       END TEMPLATE_MODIF_EOM,
+	       CASE
+	         WHEN TEMPLATE_SHOW_EOY IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_EOY
+	       END TEMPLATE_SHOW_EOY,
+	       CASE
+	         WHEN TEMPLATE_MODIF_EOY IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_EOY
+	       END TEMPLATE_MODIF_EOY,
+	       CASE
+	         WHEN TEMPLATE_SHOW_ACCRUAL IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_ACCRUAL
+	       END TEMPLATE_SHOW_ACCRUAL,
+	       CASE
+	         WHEN TEMPLATE_MODIF_ACCRUAL IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_ACCRUAL
+	       END TEMPLATE_MODIF_ACCRUAL,
+	       TEMPLATE_TYPE_SWITCHING,
+	       TEMPLATE_CODE_SWITCHING,
+	       TEMPLATE_SHOW_SWITCHING,
+	       TEMPLATE_MODIF_SWITCHING,
+	       FAIMS_ITEM_CATEGORY,
+	       TEMPLATE_CODE_TRADE,
+	       PROFIT_TRANSFER_POSITION,
+	       CASE
+	         WHEN CALCULATE_PROFIT = 'D' THEN
+	          'R'
+	         ELSE
+	          'S'
+	       END PROFIT_CALCULATION_METHOD,
+	       CASE
+	         WHEN REPAYMENT_PLAN_METHOD IS NULL THEN
+	          'M'
+	         ELSE
+	          REPAYMENT_PLAN_METHOD
+	       END REPAYMENT_PLAN_METHOD,
+	       CASE
+	         WHEN VDATE_INSTRUCTION_METHOD IS NULL THEN
+	          'M'
+	         ELSE
+	          VDATE_INSTRUCTION_METHOD
+	       END VDATE_INSTRUCTION_METHOD,
+	       SETTLEMENT_TYPE,
+	       PROMISSORY_NOTES,
+	       PROMISSORY_NOTES_OPTION,
+	       CASE
+	         WHEN SHOW_PAY_SCHEDULE IS NULL THEN
+	          'N'
+	         ELSE
+	          SHOW_PAY_SCHEDULE
+	       END SHOW_PAY_SCHEDULE,
+	       CASE
+	         WHEN LIMIT_CY IS NULL THEN
+	          0
+	         ELSE
+	          LIMIT_CY
+	       END LIMIT_CY,
+	       CASE
+	         WHEN LIMIT_MIN IS NULL THEN
+	          0
+	         ELSE
+	          LIMIT_MIN
+	       END LIMIT_MIN,
+	       CASE
+	         WHEN LIMIT_MAX IS NULL THEN
+	          0
+	         ELSE
+	          LIMIT_MAX
+	       END LIMIT_MAX,
+	       CASE
+	         WHEN LIMIT_EXCEED_CREATE IS NULL THEN
+	          'N'
+	         ELSE
+	          LIMIT_EXCEED_CREATE
+	       END LIMIT_EXCEED_CREATE,
+	       CASE
+	         WHEN LIMIT_EXCEED_APPROVE IS NULL THEN
+	          'N'
+	         ELSE
+	          LIMIT_EXCEED_APPROVE
+	       END LIMIT_EXCEED_APPROVE,
+	       REPAYMENTS_MIN,
+	       REPAYMENTS_MAX,
+	       PRODUCT_TYPE,
+	       REPAYMENT_TEMPLATE,
+	       RATE_TYPE,
+	       CASE
+	         WHEN CHECK_COUNTER_PARTY_LIMIT IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_COUNTER_PARTY_LIMIT
+	       END CHECK_COUNTER_PARTY_LIMIT,
+	       PROFIT_DIST_METHOD,
+	       CASE
+	         WHEN YIELD_REQUIRED IS NULL THEN
+	          'Y'
+	         ELSE
+	          YIELD_REQUIRED
+	       END YIELD_REQUIRED,
+	       PROVISION_CLASS_2,
+	       SOLD_CY,
+	       BOUGHT_CY,
+	       LIMIT_SWAP_TYPE,
+	       RISK_RATIO,
+	       CASE
+	         WHEN AUTO_CREATE_SETTLEMENT IS NULL THEN
+	          'N'
+	         ELSE
+	          AUTO_CREATE_SETTLEMENT
+	       END AUTO_CREATE_SETTLEMENT,
+	       CASE
+	         WHEN CHECK_USER_LIMIT IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_USER_LIMIT
+	       END CHECK_USER_LIMIT,
+	       CASE
+	         WHEN THIRD_PARTY IS NULL THEN
+	          'N'
+	         ELSE
+	          THIRD_PARTY
+	       END THIRD_PARTY,
+	       ALLOW_BASE_CY_IN_FX_DEAL,
+	       RATE_TYPE_2,
+	       CASH_NONCASH,
+	       ITEM_CATEG,
+	       REIMBURSE_PROFIT_MIN_PERC,
+	       REIMBURSE_PROFIT_MAX_PERC,
+	       REIMBURSE_PROFIT_EXCEED_CRT,
+	       REIMBURSE_PROFIT_EXCEED_APPV,
+	       REIMBURSE_FOR_ADV_PMT,
+	       MIN_INSTLMNT_FOR_ADV_PMT,
+	       SECURITY_DEPOSIT_ACCRUAL,
+	       MINIMUM_SECURITY_DEPOSIT_TYPE,
+	       MINIMUM_SECURITY_DEPOSIT_AMT,
+	       EARLY_SETTLEMENT_PENALTY_TYPE,
+	       EARLY_SETTLEMENT_PENALTY_AMT,
+	       CASE
+	         WHEN REIMBURSE_PROFIT_RAND_PERC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          REIMBURSE_PROFIT_RAND_PERC_YN
+	       END REIMBURSE_PROFIT_RAND_PERC_YN,
+	       CASE
+	         WHEN REIMBURSE_PROFIT_EDIT_PERC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          REIMBURSE_PROFIT_EDIT_PERC_YN
+	       END REIMBURSE_PROFIT_EDIT_PERC_YN,
+	       CASE
+	         WHEN INITIAL_PAYMENT_TYPE IS NULL THEN
+	          'D'
+	         ELSE
+	          INITIAL_PAYMENT_TYPE
+	       END INITIAL_PAYMENT_TYPE,
+	       ADV_PMT_REIMBURSE_MIN_PERC,
+	       ADV_PMT_REIMBURSE_MAX_PERC,
+	       CASE
+	         WHEN ADV_PMT_REIMBURSE_RAND_PERC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ADV_PMT_REIMBURSE_RAND_PERC_YN
+	       END ADV_PMT_REIMBURSE_RAND_PERC_YN,
+	       CASE
+	         WHEN ADV_PMT_REIMBURSE_EDIT_PERC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ADV_PMT_REIMBURSE_EDIT_PERC_YN
+	       END ADV_PMT_REIMBURSE_EDIT_PERC_YN,
+	       FX_SPOT_FORWARD_IND,
+	       MAX_PRINCIPAL_PERC_PER_INSTAL,
+	       INVESTMENT_ACC_IN_BASE_CY_YN,
+	       CMR_IN_BASE_CY_YN,
+	       TEMPLATE_TYPE_LIMIT,
+	       TEMPLATE_CODE_LIMIT,
+	       TEMPLATE_SHOW_LIMIT,
+	       TEMPLATE_MODIF_LIMIT,
+	       CASE
+	         WHEN DEFAULT_SUSPENSE_ACC_TO_NOSTRO IS NULL THEN
+	          'N'
+	         ELSE
+	          DEFAULT_SUSPENSE_ACC_TO_NOSTRO
+	       END DEFAULT_SUSPENSE_ACC_TO_NOSTRO,
+	       MAX_DEAL_PERIOD_TYPE,
+	       MAX_DEAL_PERIOD_NBR,
+	       MAX_RESCHEDULE_PERIOD_TYPE,
+	       MAX_RESCHEDULE_PERIOD_NBR,
+	       SETTLEMENT_AMT_IND,
+	       ITEM_CODE,
+	       PERIODICITY_NBR,
+	       PERIODICITY_TYPE,
+	       TEMPLATE_TYPE_TRADE,
+	       CASE
+	         WHEN TEMPLATE_SHOW_TRADE IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_SHOW_TRADE
+	       END TEMPLATE_SHOW_TRADE,
+	       CASE
+	         WHEN TEMPLATE_MODIF_TRADE IS NULL THEN
+	          'N'
+	         ELSE
+	          TEMPLATE_MODIF_TRADE
+	       END TEMPLATE_MODIF_TRADE,
+	       TEMPLATE_TYPE_VENDOR_PAYMENT,
+	       TEMPLATE_CODE_VENDOR_PAYMENT,
+	       TEMPLATE_SHOW_VENDOR_PAYMENT,
+	       TEMPLATE_MODIF_VENDOR_PAYMENT,
+	       TEMPLATE_TYPE_DEAL_CLOSE,
+	       TEMPLATE_CODE_DEAL_CLOSE,
+	       TEMPLATE_TYPE_INSTALL_MATURITY,
+	       TEMPLATE_CODE_INSTALL_MATURITY,
+	       CASE
+	         WHEN ACCRUAL_AMOUNT_TYPE IS NULL THEN
+	          'P'
+	         ELSE
+	          ACCRUAL_AMOUNT_TYPE
+	       END ACCRUAL_AMOUNT_TYPE,
+	       APP_NAME,
+	       COLL_CURR_COVERAGE_METHOD,
+	       CASE
+	         WHEN DRAWDOWN_UTILIZATION_IND IS NULL THEN
+	          'P'
+	         ELSE
+	          DRAWDOWN_UTILIZATION_IND
+	       END DRAWDOWN_UTILIZATION_IND,
+	       DRAWDOWN_REINSTATION_METHOD,
+	       HOLIDAY_ACTION,
+	       CASE
+	         WHEN HOLIDAY_ACTION_WARNING_IND IS NULL THEN
+	          'W'
+	         ELSE
+	          HOLIDAY_ACTION_WARNING_IND
+	       END HOLIDAY_ACTION_WARNING_IND,
+	       CASE
+	         WHEN HOLIDAY_ACTION_RECALC_PROFIT IS NULL THEN
+	          'N'
+	         ELSE
+	          HOLIDAY_ACTION_RECALC_PROFIT
+	       END HOLIDAY_ACTION_RECALC_PROFIT,
+	       CASE
+	         WHEN DEAL_PERIOD_YIELD_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEAL_PERIOD_YIELD_YN
+	       END DEAL_PERIOD_YIELD_YN,
+	       TEMPLATE_TYPE_ADV_PRIN_SETLMT,
+	       TEMPLATE_CODE_ADV_PRIN_SETLMT,
+	       TEMPLATE_SHOW_ADV_PRIN_SETLMT,
+	       TEMPLATE_MODIF_ADV_PRIN_SETLMT,
+	       BALLOON_AMOUNT_MAX_PERC,
+	       HEDGE_CL_CONTRIB_IN_OTHER_CY,
+	       CASE
+	         WHEN SEGMENT_APPLIED_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          SEGMENT_APPLIED_YN
+	       END SEGMENT_APPLIED_YN,
+	       PENALTY_CALCULATION_METHOD,
+	       CHARGE_PENALTY_AT,
+	       EXCLUDE_AMOUNT_AT_EARLY_SETLMT,
+	       ACCRUE_ON_INSTALLMENT_DATE_YN,
+	       SETLMT_AFFECT_PREPAID_YN,
+	       CASE
+	         WHEN LEASED_ASSET_MANDATORY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          LEASED_ASSET_MANDATORY_YN
+	       END LEASED_ASSET_MANDATORY_YN,
+	       ACCRUETILLMAT_IFNOT_LASTINSTDT,
+	       CASE
+	         WHEN VALUE_DAYS_CONSIDER_BUSINESDYS IS NULL THEN
+	          'N'
+	         ELSE
+	          VALUE_DAYS_CONSIDER_BUSINESDYS
+	       END VALUE_DAYS_CONSIDER_BUSINESDYS,
+	       CASE
+	         WHEN MAT_DATE_BEF_HDAY_IF_MONTHEND IS NULL THEN
+	          'N'
+	         ELSE
+	          MAT_DATE_BEF_HDAY_IF_MONTHEND
+	       END MAT_DATE_BEF_HDAY_IF_MONTHEND,
+	       MIN_BALLOON_AMT_PERC,
+	       MAX_BALLOON_AMT_PERC,
+	       MIN_BALLOON_AMT_PERC_INST,
+	       MAX_BALLOON_AMT_PERC_INST,
+	       TOT_FINANCE_AMT_MAX_MULT_SAL,
+	       MAX_DEAL_INST_PERC_OF_SAL,
+	       GRACE_PERIOD_MAX_NBR,
+	       GRACE_PERIOD_MAX_TYPE,
+	       TEMPLATE_TYPE_EARLY_SETTLEMENT,
+	       TEMPLATE_CODE_EARLY_SETTLEMENT,
+	       TEMPLATE_SHOW_EARLY_SETTLEMENT,
+	       TEMPLATE_MODI_EARLY_SETTLEMENT,
+	       TRANSFER_PRFT_TO_ADV_PRFT_YN,
+	       CASE
+	         WHEN SETLMT_ALLOW_FORCE_DEBIT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          SETLMT_ALLOW_FORCE_DEBIT_YN
+	       END SETLMT_ALLOW_FORCE_DEBIT_YN,
+	       CASE
+	         WHEN EARLY_STLMT_COLLECT_PROFIT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EARLY_STLMT_COLLECT_PROFIT_YN
+	       END EARLY_STLMT_COLLECT_PROFIT_YN,
+	       EARLY_STLMT_PROFIT_PERIOD_NBR,
+	       EARLY_STLMT_PROFIT_PERIODICITY,
+	       CASE
+	         WHEN EARLY_STLMT_EDIT_PFT_PERIOD_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EARLY_STLMT_EDIT_PFT_PERIOD_YN
+	       END EARLY_STLMT_EDIT_PFT_PERIOD_YN,
+	       CASE
+	         WHEN SETLMT_EDIT_SETL_FRM_COV_AC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          SETLMT_EDIT_SETL_FRM_COV_AC_YN
+	       END SETLMT_EDIT_SETL_FRM_COV_AC_YN,
+	       VPMT_ALLOW_MULT_CLASS_DEALS_YN,
+	       CASE
+	         WHEN VPMT_DEFAULT_CUST_AC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          VPMT_DEFAULT_CUST_AC_YN
+	       END VPMT_DEFAULT_CUST_AC_YN,
+	       RATE_REVAL_INCL_SETLD_INST_YN,
+	       CASE
+	         WHEN TRADE_TIME_MANDATORY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          TRADE_TIME_MANDATORY_YN
+	       END TRADE_TIME_MANDATORY_YN,
+	       JV_CUSTOM_DESCRIPTION_YN,
+	       CASE
+	         WHEN DEAL_ALLOW_TO_CHANG_DEBIT_INST IS NULL THEN
+	          'N'
+	         ELSE
+	          DEAL_ALLOW_TO_CHANG_DEBIT_INST
+	       END DEAL_ALLOW_TO_CHANG_DEBIT_INST,
+	       TEMPLATE_TYPE_STL_OUT_PRIN_INS,
+	       TEMPLATE_CODE_STL_OUT_PRIN_INS,
+	       TEMPLATE_SHOW_STL_OUT_PRIN_INS,
+	       TEMPLATE_MODI_STL_OUT_PRIN_INS,
+	       CASE
+	         WHEN VAT_APPLICABLE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          VAT_APPLICABLE_YN
+	       END VAT_APPLICABLE_YN,
+	       VAT_CODE,
+	       CASE
+	         WHEN ALLOW_TO_EDIT_VAT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_TO_EDIT_VAT_YN
+	       END ALLOW_TO_EDIT_VAT_YN,
+	       CASE
+	         WHEN ALLOW_NEGATIVE_MARGIN_RATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_NEGATIVE_MARGIN_RATE_YN
+	       END ALLOW_NEGATIVE_MARGIN_RATE_YN,
+	       CASE
+	         WHEN BULK_TRADE_DEAL_APPLICABLE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          BULK_TRADE_DEAL_APPLICABLE_YN
+	       END BULK_TRADE_DEAL_APPLICABLE_YN,
+	       CASE
+	         WHEN PLAN_SHOW_PRINCIPAL_AMOUNT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          PLAN_SHOW_PRINCIPAL_AMOUNT_YN
+	       END PLAN_SHOW_PRINCIPAL_AMOUNT_YN,
+	       TEMPLATE_TYPE_PAYMENTS,
+	       TEMPLATE_CODE_PAYMENTS,
+	       TEMPLATE_SHOW_PAYMENTS,
+	       TEMPLATE_MODI_PAYMENTS,
+	       TEMPLATE_TYPE_RECEIPTS,
+	       TEMPLATE_CODE_RECEIPTS,
+	       TEMPLATE_SHOW_RECEIPTS,
+	       TEMPLATE_MODI_RECEIPTS,
+	       TEMPLATE_TYPE_BULK_TRADE,
+	       TEMPLATE_CODE_BULK_TRADE,
+	       TEMPLATE_SHOW_BULK_TRADE,
+	       TEMPLATE_MODI_BULK_TRADE,
+	       TEMPLATE_TYPE_BULK_EXPIRY,
+	       TEMPLATE_CODE_BULK_EXPIRY,
+	       AFFECT_CUST_PROCEED_PAYABLE_YN,
+	       CASE
+	         WHEN EQUAL_ACCRUAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EQUAL_ACCRUAL_YN
+	       END EQUAL_ACCRUAL_YN,
+	       ALLOW_DEAL_RESTRUCTURING_YN,
+	       CASE
+	         WHEN IBOR_PERIODICITY_NUMBER IS NULL THEN
+	          0
+	         ELSE
+	          IBOR_PERIODICITY_NUMBER
+	       END IBOR_PERIODICITY_NUMBER,
+	       CASE
+	         WHEN IBOR_PERIODICITY_TYPE IS NULL THEN
+	          'D'
+	         ELSE
+	          IBOR_PERIODICITY_TYPE
+	       END IBOR_PERIODICITY_TYPE,
+	       RATE_PERIODICITY_NUMBER,
+	       RATE_PERIODICITY_TYPE,
+	       CASE
+	         WHEN CHRG_PENALTY_AFTER_MATURITY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CHRG_PENALTY_AFTER_MATURITY_YN
+	       END CHRG_PENALTY_AFTER_MATURITY_YN,
+	       PENALTY_CODE,
+	       PFX_AUTOMATIC_EXERCISE,
+	       PFX_EXERCISE_DAYS_BEFORE,
+	       DEALERS_PROFIT_REQUIRED_YN,
+	       DOWN_PAYMENT_PERC,
+	       GRACE_PERIOD_COMPOUNDING_YNED,
+	       DEAL_PERIOD_COMPOUNDING_YNED,
+	       CASE
+	         WHEN CHECK_COLLATERAL_LINKED IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_COLLATERAL_LINKED
+	       END CHECK_COLLATERAL_LINKED,
+	       CASE
+	         WHEN CHECK_GUARANTOR_LINKED IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_GUARANTOR_LINKED
+	       END CHECK_GUARANTOR_LINKED,
+	       CASE
+	         WHEN MIN_FINANCING_AMT IS NULL THEN
+	          0
+	         ELSE
+	          MIN_FINANCING_AMT
+	       END MIN_FINANCING_AMT,
+	       CASE
+	         WHEN CHECK_MIN_FINANCING_AMT IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_MIN_FINANCING_AMT
+	       END CHECK_MIN_FINANCING_AMT,
+	       CASE
+	         WHEN MAX_FINANCING_AMT IS NULL THEN
+	          0
+	         ELSE
+	          MAX_FINANCING_AMT
+	       END MAX_FINANCING_AMT,
+	       CASE
+	         WHEN CHECK_MAX_FINANCING_AMT IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_MAX_FINANCING_AMT
+	       END CHECK_MAX_FINANCING_AMT,
+	       EARLY_SETLMT_CHECK_ACCRUAL_IND,
+	       CASE
+	         WHEN DEAL_ALLOW_BACK_VDATE_TRANS_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEAL_ALLOW_BACK_VDATE_TRANS_YN
+	       END DEAL_ALLOW_BACK_VDATE_TRANS_YN,
+	       CASE
+	         WHEN DEAL_CHECK_VDATE_ACC_PERD_IND IS NULL THEN
+	          'S'
+	         ELSE
+	          DEAL_CHECK_VDATE_ACC_PERD_IND
+	       END DEAL_CHECK_VDATE_ACC_PERD_IND,
+	       CASE
+	         WHEN PYMTINS_DEF_VDT_WITH_TDT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          PYMTINS_DEF_VDT_WITH_TDT_YN
+	       END PYMTINS_DEF_VDT_WITH_TDT_YN,
+	       CASE
+	         WHEN DISBURS_MAINTAIN_INDIV_PLAN_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DISBURS_MAINTAIN_INDIV_PLAN_YN
+	       END DISBURS_MAINTAIN_INDIV_PLAN_YN,
+	       PAYMENT_VIA,
+	       CASE
+	         WHEN FX_POSITION_APPLICABLE IS NULL THEN
+	          'N'
+	         ELSE
+	          FX_POSITION_APPLICABLE
+	       END FX_POSITION_APPLICABLE,
+	       FX_SPEC_LIMIT_CY,
+	       INTRA_DAY_LIMIT,
+	       OVER_NIGHT_LIMIT,
+	       STOP_LOSS_LIMIT,
+	       BOOK_REALIZED_PROFIT_YN,
+	       ROUND_GAINLOSS_ACC_POSENTRY_YN,
+	       CAPITALIZE_PROFIT_YN,
+	       RCOVR_REGUL_DEAL_SUSPD_PFT_YN,
+	       CASE
+	         WHEN ALLOW_EDIT_HOLIDAY_ACTION_YN IS NULL THEN
+	          'Y'
+	         ELSE
+	          ALLOW_EDIT_HOLIDAY_ACTION_YN
+	       END ALLOW_EDIT_HOLIDAY_ACTION_YN,
+	       CASE
+	         WHEN APPLY_FMS_FLOATING_RATE_YN IS NULL THEN
+	          'Y'
+	         ELSE
+	          APPLY_FMS_FLOATING_RATE_YN
+	       END APPLY_FMS_FLOATING_RATE_YN,
+	       REVAL_CHG_MAT_DTE_AMTPERPAYMT,
+	       CASE
+	         WHEN NOSTRO_ACC_FRM_FACILITY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          NOSTRO_ACC_FRM_FACILITY_YN
+	       END NOSTRO_ACC_FRM_FACILITY_YN,
+	       CAPITALIZE_PAYM_PERIOD_NBR,
+	       CAPITALIZE_PAYM_PERIODICITY,
+	       CAPITALIZE_PAYM_PERIOD_POS,
+	       CAPITALIZE_PAYM_DAY,
+	       PLAN_EDIT_SCHEDULE_DETAILS_YN,
+	       CASE
+	         WHEN DEAL_DISABLE_YIELD_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEAL_DISABLE_YIELD_YN
+	       END DEAL_DISABLE_YIELD_YN,
+	       PLAN_CALC_FRSTPAYDT_PAYEVRY_YN,
+	       RATE_REVAL_INCL_AUTOMATION_YN,
+	       CASE
+	         WHEN VAT_ACCRUE_WITHOUT_FISCAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          VAT_ACCRUE_WITHOUT_FISCAL_YN
+	       END VAT_ACCRUE_WITHOUT_FISCAL_YN,
+	       CASE
+	         WHEN AR_RAHNU_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AR_RAHNU_YN
+	       END AR_RAHNU_YN,
+	       CASE
+	         WHEN ACCRUE_CHARGE_DAILY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ACCRUE_CHARGE_DAILY_YN
+	       END ACCRUE_CHARGE_DAILY_YN,
+	       CASE
+	         WHEN FINANCING_BASED_ON_PROJECT_AMT IS NULL THEN
+	          'N'
+	         ELSE
+	          FINANCING_BASED_ON_PROJECT_AMT
+	       END FINANCING_BASED_ON_PROJECT_AMT,
+	       CASE
+	         WHEN TRSFR_EXCESS_TO_SD_ACC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          TRSFR_EXCESS_TO_SD_ACC_YN
+	       END TRSFR_EXCESS_TO_SD_ACC_YN,
+	       CASE
+	         WHEN BOOK_UNEARNED_INCOME_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          BOOK_UNEARNED_INCOME_YN
+	       END BOOK_UNEARNED_INCOME_YN,
+	       CASE
+	         WHEN ALLOW_PARTL_STLMT_DUEINST_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_PARTL_STLMT_DUEINST_YN
+	       END ALLOW_PARTL_STLMT_DUEINST_YN,
+	       CASE
+	         WHEN VENDOR_PYMT_ON_PI_APPROVAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          VENDOR_PYMT_ON_PI_APPROVAL_YN
+	       END VENDOR_PYMT_ON_PI_APPROVAL_YN,
+	       CASE
+	         WHEN CALC_PRFT_FRM_COMMENCE_DATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CALC_PRFT_FRM_COMMENCE_DATE_YN
+	       END CALC_PRFT_FRM_COMMENCE_DATE_YN,
+	       CASE
+	         WHEN ADV_STLMT_COLLECT_PROFIT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ADV_STLMT_COLLECT_PROFIT_YN
+	       END ADV_STLMT_COLLECT_PROFIT_YN,
+	       CASE
+	         WHEN ADV_STLMT_PROFIT_PERIOD_NBR IS NULL THEN
+	          0
+	         ELSE
+	          ADV_STLMT_PROFIT_PERIOD_NBR
+	       END ADV_STLMT_PROFIT_PERIOD_NBR,
+	       ADV_STLMT_PROFIT_PERIODICITY,
+	       CASE
+	         WHEN ADV_STLMT_EDIT_PFT_PERIOD_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ADV_STLMT_EDIT_PFT_PERIOD_YN
+	       END ADV_STLMT_EDIT_PFT_PERIOD_YN,
+	       CASE
+	         WHEN EARLY_STLMT_HIGH_TIER_RATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EARLY_STLMT_HIGH_TIER_RATE_YN
+	       END EARLY_STLMT_HIGH_TIER_RATE_YN,
+	       CASE
+	         WHEN DEFAULT_DEAL_CY IS NULL THEN
+	          0
+	         ELSE
+	          DEFAULT_DEAL_CY
+	       END DEFAULT_DEAL_CY,
+	       CASE
+	         WHEN NIDC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          NIDC_YN
+	       END NIDC_YN,
+	       MUDARABAH_RATE_CODE,
+	       CASE
+	         WHEN RATE_REVAL_AVG_RATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          RATE_REVAL_AVG_RATE_YN
+	       END RATE_REVAL_AVG_RATE_YN,
+	       CASE
+	         WHEN AFFECT_PORTFOLIO_ACC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AFFECT_PORTFOLIO_ACC_YN
+	       END AFFECT_PORTFOLIO_ACC_YN,
+	       CASE
+	         WHEN PORTFOLIO_MANDATORY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          PORTFOLIO_MANDATORY_YN
+	       END PORTFOLIO_MANDATORY_YN,
+	       CASE
+	         WHEN PORTFOLIO_BAL_TRANSFER_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          PORTFOLIO_BAL_TRANSFER_YN
+	       END PORTFOLIO_BAL_TRANSFER_YN,
+	       CASE
+	         WHEN LOCK_PERIOD_NBR IS NULL THEN
+	          0
+	         ELSE
+	          LOCK_PERIOD_NBR
+	       END LOCK_PERIOD_NBR,
+	       LOCK_PERIOD_TYPE,
+	       CASE
+	         WHEN ENABLE_SWAP_PTS_FOR_CORP_FX_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ENABLE_SWAP_PTS_FOR_CORP_FX_YN
+	       END ENABLE_SWAP_PTS_FOR_CORP_FX_YN,
+	       CASE
+	         WHEN UTILIZATION_DATE_MANDATORY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          UTILIZATION_DATE_MANDATORY_YN
+	       END UTILIZATION_DATE_MANDATORY_YN,
+	       CASE
+	         WHEN ALLOW_MULTIPLE_SETLMT_ACC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_MULTIPLE_SETLMT_ACC_YN
+	       END ALLOW_MULTIPLE_SETLMT_ACC_YN,
+	       CASE
+	         WHEN AFFECT_ASSET_APP_BROKER_CIF_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AFFECT_ASSET_APP_BROKER_CIF_YN
+	       END AFFECT_ASSET_APP_BROKER_CIF_YN,
+	       CASE
+	         WHEN EXCLUDE_LASTINST_FRMACCRUAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EXCLUDE_LASTINST_FRMACCRUAL_YN
+	       END EXCLUDE_LASTINST_FRMACCRUAL_YN,
+	       CASE
+	         WHEN AUTO_EXERCISE_SWAP_DEAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AUTO_EXERCISE_SWAP_DEAL_YN
+	       END AUTO_EXERCISE_SWAP_DEAL_YN,
+	       CASE
+	         WHEN MSG_ON_EDIT_DEFAULT_DATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          MSG_ON_EDIT_DEFAULT_DATE_YN
+	       END MSG_ON_EDIT_DEFAULT_DATE_YN,
+	       CASE
+	         WHEN REMITTANCE_THRU_CSM_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          REMITTANCE_THRU_CSM_YN
+	       END REMITTANCE_THRU_CSM_YN,
+	       CASE
+	         WHEN ABI_NUMBER_REQUIRED_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ABI_NUMBER_REQUIRED_YN
+	       END ABI_NUMBER_REQUIRED_YN,
+	       CASE
+	         WHEN DEFAULT_TENURE_FROM_FMS_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEFAULT_TENURE_FROM_FMS_YN
+	       END DEFAULT_TENURE_FROM_FMS_YN,
+	       CASE
+	         WHEN DEFAULT_VENDOR_AT_PYMT_DET_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEFAULT_VENDOR_AT_PYMT_DET_YN
+	       END DEFAULT_VENDOR_AT_PYMT_DET_YN,
+	       CASE
+	         WHEN BILLS_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          BILLS_YN
+	       END BILLS_YN,
+	       CASE
+	         WHEN DRAWDOWN_FACILITY_MAND_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DRAWDOWN_FACILITY_MAND_YN
+	       END DRAWDOWN_FACILITY_MAND_YN,
+	       CASE
+	         WHEN GRACE_PRD_CMPND_PFT_DEAL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          GRACE_PRD_CMPND_PFT_DEAL_YN
+	       END GRACE_PRD_CMPND_PFT_DEAL_YN,
+	       CASE
+	         WHEN DEF_AMT_BASED_INITIALPAYT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DEF_AMT_BASED_INITIALPAYT_YN
+	       END DEF_AMT_BASED_INITIALPAYT_YN,
+	       CASE
+	         WHEN CHK_REMITTANCE_STOCK_CSM_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_REMITTANCE_STOCK_CSM_YN
+	       END CHK_REMITTANCE_STOCK_CSM_YN,
+	       CASE
+	         WHEN REVAL_ACCRUAL_ADJ_ENTRY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          REVAL_ACCRUAL_ADJ_ENTRY_YN
+	       END REVAL_ACCRUAL_ADJ_ENTRY_YN,
+	       CASE
+	         WHEN CHK_EXPOSURE_LMT_IND IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_EXPOSURE_LMT_IND
+	       END CHK_EXPOSURE_LMT_IND,
+	       CASE
+	         WHEN CHK_MAT_ACC_BAL_1ST_INSTL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_MAT_ACC_BAL_1ST_INSTL_YN
+	       END CHK_MAT_ACC_BAL_1ST_INSTL_YN,
+	       CASE
+	         WHEN ACCRUE_PRFT_CONSTRCT_PERD_YN IS NULL THEN
+	          'Y'
+	         ELSE
+	          ACCRUE_PRFT_CONSTRCT_PERD_YN
+	       END ACCRUE_PRFT_CONSTRCT_PERD_YN,
+	       CASE
+	         WHEN ALLOW_EDIT_AMT_INDRCT_FIN_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_EDIT_AMT_INDRCT_FIN_YN
+	       END ALLOW_EDIT_AMT_INDRCT_FIN_YN,
+	       CASE
+	         WHEN CONSIDER_ONLINE_SAL_BLOCK_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CONSIDER_ONLINE_SAL_BLOCK_YN
+	       END CONSIDER_ONLINE_SAL_BLOCK_YN,
+	       CASE
+	         WHEN WARN_MSG_BASEDON_DEAL_CAT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          WARN_MSG_BASEDON_DEAL_CAT_YN
+	       END WARN_MSG_BASEDON_DEAL_CAT_YN,
+	       CASE
+	         WHEN CHK_DEAL_PERIOD_IND IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_DEAL_PERIOD_IND
+	       END CHK_DEAL_PERIOD_IND,
+	       PERIODICITY_NBR_MIN,
+	       PERIODICITY_TYPE_MIN,
+	       CASE
+	         WHEN PFT_CALC_BASED_TRADE_CY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          PFT_CALC_BASED_TRADE_CY_YN
+	       END PFT_CALC_BASED_TRADE_CY_YN,
+	       CASE
+	         WHEN ALLOW_EDIT_BUY_SELL_AMT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_EDIT_BUY_SELL_AMT_YN
+	       END ALLOW_EDIT_BUY_SELL_AMT_YN,
+	       CASE
+	         WHEN DISB_DEFA_LATST_FLOAT_RT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DISB_DEFA_LATST_FLOAT_RT_YN
+	       END DISB_DEFA_LATST_FLOAT_RT_YN,
+	       CASE
+	         WHEN DAILY_DEPRECIATION_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          DAILY_DEPRECIATION_YN
+	       END DAILY_DEPRECIATION_YN,
+	       CASE
+	         WHEN AUTO_DOWN_PAYMENT_AC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AUTO_DOWN_PAYMENT_AC_YN
+	       END AUTO_DOWN_PAYMENT_AC_YN,
+	       CASE
+	         WHEN ENBL_PFX_PARTIAL_EXT_CANC_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          ENBL_PFX_PARTIAL_EXT_CANC_YN
+	       END ENBL_PFX_PARTIAL_EXT_CANC_YN,
+	       CASE
+	         WHEN CHK_BROKER_MANDATORY_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_BROKER_MANDATORY_YN
+	       END CHK_BROKER_MANDATORY_YN,
+	       CASE
+	         WHEN MINIMUM_AGE IS NULL THEN
+	          0
+	         ELSE
+	          MINIMUM_AGE
+	       END MINIMUM_AGE,
+	       CASE
+	         WHEN MAXIMUM_AGE IS NULL THEN
+	          0
+	         ELSE
+	          MAXIMUM_AGE
+	       END MAXIMUM_AGE,
+	       CASE
+	         WHEN CHECK_MINIMUM_AGE_IND IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_MINIMUM_AGE_IND
+	       END CHECK_MINIMUM_AGE_IND,
+	       CASE
+	         WHEN CHECK_MAXIMUM_AGE_IND IS NULL THEN
+	          'N'
+	         ELSE
+	          CHECK_MAXIMUM_AGE_IND
+	       END CHECK_MAXIMUM_AGE_IND,
+	       CASE
+	         WHEN SEPARATE_GL_SPOT_TOM_TOD_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          SEPARATE_GL_SPOT_TOM_TOD_YN
+	       END SEPARATE_GL_SPOT_TOM_TOD_YN,
+	       CASE
+	         WHEN MAT_BASDON_LMT_CUST_AC_GL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          MAT_BASDON_LMT_CUST_AC_GL_YN
+	       END MAT_BASDON_LMT_CUST_AC_GL_YN,
+	       CASE
+	         WHEN AUTO_SETTLE_MAT_INS_TYPE IS NULL THEN
+	          'A'
+	         ELSE
+	          AUTO_SETTLE_MAT_INS_TYPE
+	       END AUTO_SETTLE_MAT_INS_TYPE,
+	       CASE
+	         WHEN WARN_FLOAT_RATE_DECREASE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          WARN_FLOAT_RATE_DECREASE_YN
+	       END WARN_FLOAT_RATE_DECREASE_YN,
+	       CASE
+	         WHEN DUEDAYS_BLOCK_STLMT_CHANNEL IS NULL THEN
+	          0
+	         ELSE
+	          DUEDAYS_BLOCK_STLMT_CHANNEL
+	       END DUEDAYS_BLOCK_STLMT_CHANNEL,
+	       CASE
+	         WHEN AFFECT_FUND_BY_PORTFOLIO_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          AFFECT_FUND_BY_PORTFOLIO_YN
+	       END AFFECT_FUND_BY_PORTFOLIO_YN,
+	       CASE
+	         WHEN DEFAULT_DISBURSEMENT_DATE IS NULL THEN
+	          'N'
+	         ELSE
+	          DEFAULT_DISBURSEMENT_DATE
+	       END DEFAULT_DISBURSEMENT_DATE,
+	       CASE
+	         WHEN CHK_RETIREMENT_AGE IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_RETIREMENT_AGE
+	       END CHK_RETIREMENT_AGE,
+	       CASE
+	         WHEN MAX_MARG_FINANCING_PERC IS NULL THEN
+	          0
+	         ELSE
+	          MAX_MARG_FINANCING_PERC
+	       END MAX_MARG_FINANCING_PERC,
+	       CASE
+	         WHEN CHK_MAX_MARG_FINANCING_PERC IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_MAX_MARG_FINANCING_PERC
+	       END CHK_MAX_MARG_FINANCING_PERC,
+	       CASE
+	         WHEN LIMIT_UTILIZE_LATEST_RATE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          LIMIT_UTILIZE_LATEST_RATE_YN
+	       END LIMIT_UTILIZE_LATEST_RATE_YN,
+	       CASE
+	         WHEN MNGT_FEE_CHNG_WITH_RATE IS NULL THEN
+	          'Y'
+	         ELSE
+	          MNGT_FEE_CHNG_WITH_RATE
+	       END MNGT_FEE_CHNG_WITH_RATE,
+	       CASE
+	         WHEN MTM_REAVL_APPLICABLE_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          MTM_REAVL_APPLICABLE_YN
+	       END MTM_REAVL_APPLICABLE_YN,
+	       CASE
+	         WHEN INCLUDE_VAT_IN_INSTL_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          INCLUDE_VAT_IN_INSTL_YN
+	       END INCLUDE_VAT_IN_INSTL_YN,
+	       CASE
+	         WHEN PASTDUE_TRANSFER_DUE_BASE_ON IS NULL THEN
+	          '0'
+	         ELSE
+	          PASTDUE_TRANSFER_DUE_BASE_ON
+	       END PASTDUE_TRANSFER_DUE_BASE_ON,
+	       CASE
+	         WHEN MAND_MIN_MAX_FLOAT_RT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          MAND_MIN_MAX_FLOAT_RT_YN
+	       END MAND_MIN_MAX_FLOAT_RT_YN,
+	       CASE
+	         WHEN CHK_ECO_SUBECO_SEC_REQ_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          CHK_ECO_SUBECO_SEC_REQ_YN
+	       END CHK_ECO_SUBECO_SEC_REQ_YN,
+	       CASE
+	         WHEN EXCL_PRFT_RECLC_DUE_INST_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          EXCL_PRFT_RECLC_DUE_INST_YN
+	       END EXCL_PRFT_RECLC_DUE_INST_YN,
+	       CASE
+	         WHEN CHK_MIN_FLOAT_RATE_DEAL IS NULL THEN
+	          'S'
+	         ELSE
+	          CHK_MIN_FLOAT_RATE_DEAL
+	       END CHK_MIN_FLOAT_RATE_DEAL,
+	       CASE
+	         WHEN INCIDENTAL_CHG_COLLECTION_TYPE IS NULL THEN
+	          'A'
+	         ELSE
+	          INCIDENTAL_CHG_COLLECTION_TYPE
+	       END INCIDENTAL_CHG_COLLECTION_TYPE,
+	       CASE
+	         WHEN MUSAWAMAH_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          MUSAWAMAH_YN
+	       END MUSAWAMAH_YN,
+	       CASE
+	         WHEN AUTO_ADVANCE_INS_RENEWAL IS NULL THEN
+	          'N'
+	         ELSE
+	          AUTO_ADVANCE_INS_RENEWAL
+	       END AUTO_ADVANCE_INS_RENEWAL,
+	       CASE
+	         WHEN ALLOW_EDITING_IN_DEAL IS NULL THEN
+	          'N'
+	         ELSE
+	          ALLOW_EDITING_IN_DEAL
+	       END ALLOW_EDITING_IN_DEAL,
+	       CASE
+	         WHEN APPLY_EFFECT_DATE_FLOAT_RATE IS NULL THEN
+	          'N'
+	         ELSE
+	          APPLY_EFFECT_DATE_FLOAT_RATE
+	       END APPLY_EFFECT_DATE_FLOAT_RATE,
+	       CASE
+	         WHEN PROCESS_MULT_PEND_REVAL_AUTO IS NULL THEN
+	          'N'
+	         ELSE
+	          PROCESS_MULT_PEND_REVAL_AUTO
+	       END PROCESS_MULT_PEND_REVAL_AUTO,
+	       CASE
+	         WHEN RECVER_EXCESS_SUSPND_PRFT_YN IS NULL THEN
+	          'N'
+	         ELSE
+	          RECVER_EXCESS_SUSPND_PRFT_YN
+	       END RECVER_EXCESS_SUSPND_PRFT_YN,
+	       MAX_INST_PERC_OF_SAL_MSG_TYPE
+	  FROM TRSCLASS
+	 WHERE TRSCLASS.COMP_CODE = #{COMP_CODE}
+	   AND TRSCLASS.CODE = #{CODE}
+	</select>
+	<select id="CifExistingDealCount"  resultType="islamicCalculatorEventMgmtCO" parameterType="islamicCalculatorEventMgmtCO" >	
+		SELECT SUM( CASE WHEN STATUS = 'A' THEN 1 ELSE 0 END) ACTIVE_DEAL_COUNT,
+		   SUM( CASE WHEN STATUS = 'P' THEN 1 ELSE 0 END) APPROVE_DEAL_COUNT,
+		   SUM( CASE WHEN STATUS = 'D' THEN 1 ELSE 0 END) DELETE_DEAL_COUNT,
+		   SUM( CASE WHEN STATUS = 'R' THEN 1 ELSE 0 END) REVERSE_DEAL_COUNT,
+		   SUM( CASE WHEN STATUS = 'J' THEN 1 ELSE 0 END) REJECT_DEAL_COUNT
+		FROM TRSDEAL
+		WHERE COMP_CODE = #{compCode}
+		AND CIF_NO = #{cifNo}		
+		AND STATUS IN ('A','P','D','R','J')
+		AND DEAL_TYPE NOT IN (17,30)
+	</select>
+	
+	<select id="selectExchangeRate" parameterType="commonLibSC" resultType="BigDecimal">
+
+	  <choose>
+		  <when test="isSybase == 1"> 
+			<![CDATA[
+				SELECT case when MAX(EX1.M_RATE) is null then 0 else MAX(EX1.M_RATE) end
+				FROM EXCH_RAT EX1
+				WHERE
+				EX1.COMP_CODE 			= #{companyCode}
+				AND EX1.CURRENCY_CODE 	= #{accCurrency}
+				AND CONVERT(DATETIME, CONVERT(VARCHAR,DATE_RATE,103 ) + '' + TIME ,103) =
+				(SELECT MAX(CONVERT(DATETIME,CONVERT(VARCHAR, DATE_RATE,103 ) + '' + TIME,103))
+				FROM EXCH_RAT EX2
+				WHERE EX2.COMP_CODE 	= #{companyCode}
+				AND EX2.CURRENCY_CODE 	= EX1.CURRENCY_CODE
+				AND EX2.DATE_RATE 		<= #{selectedDate}) 
+			]]>	 
+			</when>
+			<otherwise>
+				<![CDATA[
+			  SELECT case when MAX(EX1.M_RATE) is null then 0 else MAX(EX1.M_RATE) end
+				FROM EXCH_RAT EX1
+				WHERE
+				EX1.COMP_CODE 			= #{companyCode}
+				AND EX1.CURRENCY_CODE 	= #{accCurrency}
+			 AND    TO_DATE( TO_CHAR( DATE_RATE,'DD/MM/YYYY')||TIME, 'DD/MM/YYYYHH24:MI:SS') =
+	         (select   MAX(TO_DATE( TO_CHAR( DATE_RATE , 'DD/MM/YYYY')||TIME, 'DD/MM/YYYYHH24:MI:SS'))
+			 FROM EXCH_RAT EX2
+				WHERE EX2.COMP_CODE 	= #{companyCode}
+				AND EX2.CURRENCY_CODE 	= EX1.CURRENCY_CODE
+				AND EX2.DATE_RATE 		<= #{selectedDate}) 
+			]]>	 
+			</otherwise>
+		 </choose>		
+		
+	</select>
+	<select id="selectOutstandingAmountOfExistingDeals" parameterType="islamicCalculatorEventMgmtCO" resultType="BigDecimal">
+		
+		SELECT 
+			SUM ( CASE WHEN TRSDEAL.DEAL_CY = COMPANIES.BASE_CURRENCY 
+					THEN
+						TRSDEAL.DEAL_AMOUNT - ((TRSDEAL.DEAL_AMOUNT / TRSPAYPLAN.TOTAL_AMT) 
+												* (CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL  THEN 0 
+													ELSE TRSPAYPLAN.TOTAL_AMT_PAID END)  
+											)
+					ELSE 
+						CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN
+							(TRSDEAL.DEAL_AMOUNT - ((TRSDEAL.DEAL_AMOUNT / TRSPAYPLAN.TOTAL_AMT) 
+													* (CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL  THEN 0 
+														ELSE TRSPAYPLAN.TOTAL_AMT_PAID END
+												  	  )
+												    )
+							)* TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						ELSE
+							(TRSDEAL.DEAL_AMOUNT - ((TRSDEAL.DEAL_AMOUNT / TRSPAYPLAN.TOTAL_AMT) 
+													* (CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL  THEN 0 
+														ELSE TRSPAYPLAN.TOTAL_AMT_PAID END
+													  )
+												    )
+							)/ TRSDEAL.DEAL_RATE / TRSDEAL.DEAL_UNIT
+						END     
+					END
+			) 	Outstanding_Prnicipal			
+		
+	    FROM  TRSDEAL , TRSPAYPLAN , COMPANIES
+	    WHERE 
+	    	TRSDEAL.COMP_CODE   = TRSPAYPLAN.COMP_CODE
+			AND   TRSDEAL.BRANCH_CODE = TRSPAYPLAN.BRANCH
+	    	AND	 TRSDEAL.SERIAL_NO   = TRSPAYPLAN.TRX_NBR 
+			AND   TRSDEAL.COMP_CODE   = COMPANIES.COMP_CODE   
+	    	AND   TRSDEAL.STATUS      IN ('A', 'P')
+	    	AND   TRSPAYPLAN.STATUS   IN ('A', 'P')
+	    	AND   TRSDEAL.COMP_CODE   = #{compCode}
+	    	AND   TRSDEAL.CIF_NO      = #{cifNo}
+	      	<if test='dealNo != null'>   
+        	AND   TRSDEAL.SERIAL_NO   <![CDATA[<> ]]>#{dealNo}
+        	</if>
+	</select>
+	
+	<select id="returnCivilIdCount" parameterType="iisCommonCO" resultType="int">
+         SELECT COUNT(CIF.CIF_NO) FROM CIF WHERE CIF.COMP_CODE = #{compCode} AND CIF.ID_NO = #{idNo} 
+    </select>
+    	
+	<select id="returnRelatedCYCount"  parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO" resultType="int">
+		SELECT	COUNT(1)
+		FROM 	TRSCIFLIMITDET_DEAL_CY
+			WHERE COMP_CODE			=	#{compCode}
+			AND	BRANCH				=	#{branchCode}
+			AND	LIMIT_SERIAL_NO		= 	#{limitCode}
+			AND	CIF					=  	#{cifNo}
+			AND	(CURRENCY_CODE		=	#{currency}  OR CURRENCY_CODE =	0)
+	</select>
+	<select id="returnLimitCY" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO" resultType="BigDecimal">
+		SELECT 	CY
+		FROM 	TRSCIFLIMITDET
+		WHERE 	COMP_CODE			=	#{COMP_CODE}
+		AND		BRANCH_CODE			=	#{BRANCH_CODE}
+		AND		SERIAL_NO			= 	#{SERIAL_NO}
+	</select>
+	
+	<select id="returnInvestDealList" parameterType="com.path.vo.iis.common.IISInvestmentDealSC" resultType="com.path.vo.iis.common.IISInvestmentDealCO">
+		SELECT T.SERIAL_NO dealNo,
+	       T.CLASS productClass,
+	       T.DEAL_TYPE category,
+	       TRSCATEGORY.DESC_ENG  categoryDesc,
+	       T.DEAL_CY dealCurrency,
+	       T.CIF_NO cifNo,
+	       CIF.COUNTRY countryCode,
+	       COUNTRIES.BRIEF_DESC_ENG countryDesc,
+	       MIN(TRSPAYPLANDET.VALUE_DATE) installmentDate,
+	       CASE
+	         WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN
+	          SUM(TRSPAYPLANDET.AMOUNT)
+	         ELSE
+	          SUM(TRSPAYPLANDET.AMOUNT_NEW)
+	       END amortization,
+	       CASE
+	         WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN
+	          SUM(TRSPAYPLANDET.PROFIT_AMT)
+	         ELSE
+	          SUM(TRSPAYPLANDET.PROFIT_AMT_NEW)
+	       END income,
+	       TRSPAYPLAN.TOTAL_AMT - CASE
+	         WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL THEN
+	          0
+	         ELSE
+	          TRSPAYPLAN.TOTAL_AMT_PAID
+	       END principalAmount,
+	       COUNT(1) noOfInstallment,
+	       T.MATURITY_DATE maturityDate,
+	       CASE
+	         WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN
+	          T.YIELD
+	         ELSE
+	          T.DEAL_EXPECTED_YIELD + CASE
+	         WHEN T.LIBOR_RATE IS NULL THEN
+	          0
+	         ELSE
+	          T.LIBOR_RATE
+	       END END markUpPercentage
+	
+	  FROM TRSDEAL T, TRSDEAL2 T2, TRSCLASS, TRSPAYPLAN, TRSPAYPLANDET, CIF, COUNTRIES, TRSCATEGORY
+	 WHERE TRSPAYPLAN.COMP_CODE = T.COMP_CODE
+	   AND TRSPAYPLAN.BRANCH = T.BRANCH_CODE
+	   AND TRSPAYPLAN.TRX_NBR = T.SERIAL_NO
+	   AND TRSPAYPLAN.STATUS = 'P'
+	   AND TRSPAYPLAN.TOTAL_AMT - CASE
+	         WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL THEN
+	          0
+	         ELSE
+	          TRSPAYPLAN.TOTAL_AMT_PAID
+	       END  > 0
+	   AND TRSPAYPLAN.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+	   AND TRSPAYPLAN.BRANCH = TRSPAYPLANDET.BRANCH
+	   AND TRSPAYPLAN.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR
+	   AND TRSPAYPLAN.PLAN_SEQ = TRSPAYPLANDET.PLAN_SEQ
+	  
+	   <if test="fromDate != null">
+	   		AND TRSPAYPLANDET.VALUE_DATE <![CDATA[>= ]]> #{fromDate}
+	   </if>
+	   <if test="toDate != null">
+	   		AND TRSPAYPLANDET.VALUE_DATE <![CDATA[<= ]]> #{toDate}
+	   </if>
+	   <choose>
+		   <when test='"Y".equals(tangibleAsset)'>
+		     AND  T.DEAL_TYPE IN (11,12,24)
+		   </when>
+		   <otherwise> 
+		    AND	T.DEAL_TYPE NOT IN (11,12,24)
+		   </otherwise>
+	   </choose>
+	   
+	   AND T.COMP_CODE = T2.COMP_CODE
+	   AND T.BRANCH_CODE = T2.BRANCH_CODE
+	   AND T.SERIAL_NO = T2.SERIAL_NO
+	   AND TRSCLASS.COMP_CODE = T.COMP_CODE
+	   AND TRSCLASS.CODE = T.CLASS
+	   AND TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY
+       AND TRSCATEGORY.APP_NAME = TRSCLASS.APP_NAME
+	   AND CIF.COMP_CODE = T.COMP_CODE
+	   AND CIF.CIF_NO = T.CIF_NO
+	   AND COUNTRIES.COUNTRY_CODE  = CIF.COUNTRY  
+       AND COUNTRIES.COMP_CODE  = CIF.COMP_CODE
+	   AND T.COMP_CODE = #{compCode}
+	   AND T.BRANCH_CODE = #{branchCode}
+	   AND T.STATUS = 'P'
+	   AND T2.CONSIDER_FOR_ASSET_DASH_BOARD = 'Y'
+	   AND T2.UTILIZED_FROM_ASSET_DASH_BOARD <![CDATA[<> ]]> 'Y'
+	 GROUP BY T.SERIAL_NO,
+	          T.CLASS,
+	          T.DEAL_TYPE,
+	          TRSCATEGORY.DESC_ENG ,
+              T.DEAL_CY,
+              T.CIF_NO,
+	          CIF.COUNTRY,
+	          COUNTRIES.BRIEF_DESC_ENG,
+	          TRSPAYPLAN.TOTAL_AMT,
+	          TRSPAYPLAN.TOTAL_AMT_PAID,
+	          TRSPAYPLAN.NO_OF_PAYMENTS,
+	          T.MATURITY_DATE,
+	          TRSCLASS.PROFIT_UPFRONT,
+	          T.YIELD,
+	          T.DEAL_EXPECTED_YIELD,
+	          T.LIBOR_RATE,
+	          TRSPAYPLAN.PLAN_NBR,
+	          TRSPAYPLAN.PLAN_SEQ
+	<if test="!'Y'.equals(tangibleAsset)">
+	   UNION 
+	   
+	   SELECT T.SERIAL_NO dealNo,
+		       T.CLASS productClass,
+		       T.DEAL_TYPE category,
+		       TRSCATEGORY.DESC_ENG categoryDesc,
+		       T.DEAL_CY dealCurrency,
+		       T.CIF_NO cifNo,
+		       CIF.COUNTRY countryCode,
+		       COUNTRIES.BRIEF_DESC_ENG countryDesc,
+	         NULL installmentDate,
+	         NULL amortization,
+	         0 income,
+	         T.DEAL_AMOUNT principalAmount,
+		       NULL noOfInstallment,
+		       T.MATURITY_DATE maturityDate,
+		       NULL  markUpPercentage
+		  FROM TRSDEAL T, TRSDEAL2 T2, TRSCLASS, CIF, COUNTRIES, TRSCATEGORY
+		 WHERE 
+		   T.COMP_CODE = T2.COMP_CODE
+		   AND T.BRANCH_CODE = T2.BRANCH_CODE
+		   AND T.SERIAL_NO = T2.SERIAL_NO
+		   AND TRSCLASS.COMP_CODE = T.COMP_CODE
+		   AND TRSCLASS.CODE = T.CLASS
+		   AND TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+		   AND TRSCATEGORY.APP_NAME = TRSCLASS.APP_NAME 
+		   AND CIF.COMP_CODE = T.COMP_CODE
+		   AND CIF.CIF_NO = T.CIF_NO
+		   AND COUNTRIES.COUNTRY_CODE  = CIF.COUNTRY  
+	       AND COUNTRIES.COMP_CODE  = CIF.COMP_CODE
+		   AND T.COMP_CODE = #{compCode}
+		   AND T.BRANCH_CODE = #{branchCode}
+		   AND T.STATUS = 'P'
+   		   <if test="fromDate != null">
+		   		AND T.VALUE_DATE <![CDATA[>= ]]> #{fromDate}
+		   </if>
+		   <if test="toDate != null">
+		   		AND T.MATURITY_DATE <![CDATA[<= ]]> #{toDate}
+		   </if>
+		  AND  T.DEAL_TYPE IN (1,2)
+		   AND T2.CONSIDER_FOR_ASSET_DASH_BOARD = 'Y'
+		  AND T2.UTILIZED_FROM_ASSET_DASH_BOARD <![CDATA[<> ]]> 'Y'	
+	</if>
+	 ORDER BY dealNo
+	</select>
+	
+	<select id="returnNextLineInstallmentAmount" resultType="BigDecimal" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+
+		SELECT
+		<choose>
+			<when test='profitUpfront.equals("Y")'>
+				AMOUNT
+			</when>
+			<otherwise>
+				AMOUNT_NEW
+			</otherwise>
+		</choose>
+		FROM TRSPAYPLANDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH 		= #{branchCode}
+		AND PLAN_NBR 	= #{planNbr}
+		AND PLAN_SEQ 	= #{planSeq}		
+		AND	LINE_NBR = ( SELECT MIN(LINE_NBR)
+						FROM TRSPAYPLANDET
+						WHERE COMP_CODE	= #{compCode}
+						AND BRANCH = #{branchCode}
+						AND PLAN_NBR = #{planNbr}
+						AND	PLAN_SEQ = #{planSeq}
+						AND VALUE_DATE >=#{settlementDate} 
+						AND CASE WHEN #{profitUpfront} = 'Y' THEN
+							CASE WHEN AMOUNT IS NULL THEN 0 ELSE AMOUNT END ELSE	CASE WHEN AMOUNT_NEW IS NULL THEN 0 ELSE AMOUNT_NEW END  END > 0)
+
+	</select>
+	
+	<select id="returnFullySettledInstallmentDate" resultType="Date" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT MAX(VALUE_DATE)
+		FROM TRSPAYPLANDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH 		= #{branchCode}
+		AND PLAN_NBR 	= #{planNbr}
+		AND PLAN_SEQ 	= #{planSeq}
+		AND CASE WHEN #{profitUpfront} = 'Y' THEN
+			CASE WHEN AMOUNT IS NULL THEN 0 ELSE AMOUNT END ELSE	CASE WHEN AMOUNT_NEW IS NULL THEN 0 ELSE AMOUNT_NEW END  END > 0
+		AND SETTLEMENT_AMOUNT =
+		<choose>
+			<when test='profitUpfront.equals("Y")'>
+				AMOUNT
+			</when>
+			<otherwise>
+				AMOUNT_NEW
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="returnPartialSettlementLastFullySettledInstallmentDate" resultType="Date"	parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT	MAX(VALUE_DATE)
+		FROM 	TRSPAYPLANDET
+		WHERE	COMP_CODE			=	#{compCode}
+		AND		BRANCH				=	#{branchCode}
+		AND		PLAN_NBR			=	#{planNbr} 
+		AND		PLAN_SEQ			=	#{planSeq}
+		AND		SETTLEMENT_AMOUNT 	= 	CASE WHEN #{profitUpfront} = 'Y' THEN AMOUNT ELSE AMOUNT_NEW END 
+		AND  	VALUE_DATE <![CDATA[<]]> 	(	
+											SELECT MIN(VALUE_DATE) 
+											FROM 	TRSPAYPLANDET
+											WHERE	COMP_CODE			=	#{compCode}
+											AND		BRANCH				=	#{branchCode}
+											AND		PLAN_NBR			=	#{planNbr} 
+											AND		PLAN_SEQ			=	#{planSeq}
+											AND		SETTLEMENT_AMOUNT 	= 	0
+										)
+	</select>
+	
+	<select id="returnPartialSettledPlanLineNbr" resultType="BigDecimal" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT MAX(LINE_NBR)
+		FROM TRSPAYPLANDET
+		WHERE TRSPAYPLANDET.COMP_CODE 	= #{compCode}
+		AND TRSPAYPLANDET.BRANCH 		= #{branchCode}
+		AND	TRSPAYPLANDET.PLAN_NBR 		= #{planNbr}
+		AND TRSPAYPLANDET.PLAN_SEQ 		= #{planSeq}			
+		<![CDATA[
+		AND		SETTLEMENT_AMOUNT 		> 0  
+		AND		VALUE_DATE				> #{settlementDate}
+		]]>		
+
+	</select>
+	
+	<select id="returnPlanLastLineNbr" resultType="BigDecimal" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT 	MAX(LINE_NBR)
+		FROM 	TRSPAYPLANDET
+		WHERE 	COMP_CODE 	= #{compCode}
+		AND 	BRANCH   	= #{branchCode}
+		AND		PLAN_NBR	= #{planNbr}
+		AND 	PLAN_SEQ 	= #{planSeq}
+	</select>
+	
+	<select id="returnRemainingProfitForPartialSettlted" resultType="BigDecimal" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT
+		<choose>
+			<when test='profitUpfront.equals("Y")'>
+				SUM(PROFIT_AMT - CASE WHEN SETTLED_PROFIT_AMT IS NULL
+				THEN 0 ELSE SETTLED_PROFIT_AMT END)
+				</when>
+			<otherwise>
+				SUM(PROFIT_AMT_NEW - CASE WHEN WAIVED_PROFIT_AMT IS NULL
+				THEN 0 ELSE WAIVED_PROFIT_AMT END - CASE WHEN SETTLED_PROFIT_AMT IS
+				NULL THEN 0 ELSE SETTLED_PROFIT_AMT END)
+				</otherwise>
+		</choose>
+		FROM	TRSPAYPLANDET
+		WHERE	TRSPAYPLANDET.COMP_CODE		= 	#{compCode}
+		AND		TRSPAYPLANDET.BRANCH		= 	#{branchCode}
+		AND 	TRSPAYPLANDET.PLAN_NBR		=	#{planNbr}
+		AND 	TRSPAYPLANDET.PLAN_SEQ 		= 	#{planSeq}
+		AND		VALUE_DATE					>  #{settlementDate}			
+		AND		LINE_NBR					<![CDATA[>=]]>	#{lineNo}		
+		AND  	SETTLEMENT_AMOUNT 			<![CDATA[<>]]> CASE WHEN #{profitUpfront} = 'Y' THEN 	AMOUNT ELSE AMOUNT_NEW END		
+	</select>
+	
+	<select id="returnRemainingProfitFromTrsdealdet" resultType="BigDecimal" parameterType="com.path.vo.common.iis.islamiccalculator.IISCommonCO">
+		SELECT SUM(CASE WHEN REVENUE IS NULL THEN 0 ELSE REVENUE END +
+					CASE
+					WHEN MODARIB_PROFIT IS NULL THEN 0 ELSE MODARIB_PROFIT END +
+					CASE WHEN
+					CLIENT_REVENUE IS NULL THEN 0 ELSE CLIENT_REVENUE END -
+					CASE WHEN
+					WAIVED_PROFIT_AMT IS NULL THEN 0 ELSE WAIVED_PROFIT_AMT END)
+		
+				FROM TRSDEALDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH 		= #{branchCode}
+		AND DEAL_NO 	= #{dealNo}
+		<choose>
+			<when test='profitUpfront.equals("Y")'>
+		<![CDATA[
+		AND 	MATURITY_DATE 	>= #{settlementDate}
+		]]>
+			</when>
+			<otherwise>
+		<![CDATA[
+		AND 	TRADE_DATE 		>= #{settlementDate}
+		]]>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="returnApplicableTieRate" parameterType="iisCommonCO" resultType="BigDecimal">
+	  SELECT TIE_RATE  FROM TRS_TIE_RATE WHERE
+	  PRODUCT_CLASS=#{productClass} 
+	  AND COMP_CODE=#{compCode}
+	  AND STATUS = 'P'
+	  AND TRS_DATE=(SELECT MAX(TRS_DATE) FROM  TRS_TIE_RATE WHERE PRODUCT_CLASS=#{productClass} 
+	  AND COMP_CODE=#{compCode}
+			<![CDATA[
+	 AND  TRS_DATE <= #{valueDate})  ]]>
+	</select>
+ 
+ 
+ 
+ <select id="returnApplicableTieRateMinYield" parameterType="iisCommonCO" resultType="BigDecimal">
+	  SELECT MIN_YIELD  FROM TRS_TIE_RATE WHERE
+	  PRODUCT_CLASS=#{productClass} 
+	  AND COMP_CODE=#{compCode}
+	  AND STATUS = 'P'
+	  AND TRS_DATE=(SELECT MAX(TRS_DATE) FROM  TRS_TIE_RATE WHERE PRODUCT_CLASS=#{productClass} 
+	  AND COMP_CODE=#{compCode}
+			<![CDATA[
+	 AND  TRS_DATE <= #{valueDate})  ]]>
+	</select>
+	
+ <select id="returnTRSCLASSExtendedDetail" parameterType="com.path.dbmaps.vo.TRSCLASS_EXTENDEDVOKey" resultType="com.path.dbmaps.vo.TRSCLASS_EXTENDEDVO">
+		select * FROM TRSCLASS_EXTENDED  
+        WHERE COMP_CODE = #{COMP_CODE} 
+        AND CODE = #{CODE} 
+</select>
+ 
+ <select id="returnBlackListOverrideReasonMaxLineNbr" parameterType="com.path.dbmaps.vo.BLACKLIST_OVERRIDE_REASONVO" resultType="BigDecimal">
+	SELECT MAX(LINE_NO) 
+	FROM BLACKLIST_OVERRIDE_REASON 
+	WHERE COMP_CODE = #{COMP_CODE} 
+	AND  PARENT_REF = #{PARENT_REF} 
+	AND APP_NAME = #{APP_NAME}
+	
+	</select>
+
+<resultMap id="CifBlackListRestrictCOMap" type="com.path.vo.common.iis.islamiccalculator.CifBlackListRestrictCO">
+		<result property="blackListOverrideReasonVO.COMP_CODE" 	column="COMP_CODE" />
+		<result property="blackListOverrideReasonVO.PARENT_REF"    		column="PARENT_REF" />
+		<result property="blackListOverrideReasonVO.APP_NAME"   		column="APP_NAME" />
+		<result property="blackListOverrideReasonVO.LINE_NO"   	column="LINE_NO" />
+		<result property="blackListOverrideReasonVO.ENTITY_CODE" 	column="ENTITY_CODE" />
+		<result property="blackListOverrideReasonVO.BRANCH_CODE" 		column="BRANCH_CODE" />
+		<result property="blackListOverrideReasonVO.CURRENCY_CODE" 				column="CURRENCY_CODE" />
+		<result property="blackListOverrideReasonVO.GL_CODE" 		column="GL_CODE" />
+		<result property="blackListOverrideReasonVO.CIF_NO" 				column="CIF_NO" />
+		<result property="blackListOverrideReasonVO.SL_NO" 			column="SL_NO" />
+		<result property="blackListOverrideReasonVO.TRS_TYPE" 			column="TRS_TYPE" />
+		<result property="blackListOverrideReasonVO.USER_ID" 			column="USER_ID" />
+		<result property="blackListOverrideReasonVO.REASON_CODE" 				column="REASON_CODE" />
+		<result property="blackListOverrideReasonVO.DATE_UPDATED" 			column="DATE_UPDATED" />
+		<result property="blackListOverrideReasonVO.CREATED_DATE" 			column="CREATED_DATE" />
+		
+		<result property="blacklist_reason_desc" 	column="BRIEF_NAME_ENG" />
+</resultMap>
+	
+ <select id="returnBlackListOverrideReasonDet" parameterType="com.path.dbmaps.vo.BLACKLIST_OVERRIDE_REASONVO" resultMap="CifBlackListRestrictCOMap">
+		select BLACKLIST_OVERRIDE_REASON.COMP_CODE, BLACKLIST_OVERRIDE_REASON.PARENT_REF, BLACKLIST_OVERRIDE_REASON.APP_NAME, 
+		BLACKLIST_OVERRIDE_REASON.LINE_NO, BLACKLIST_OVERRIDE_REASON.ENTITY_CODE, BLACKLIST_OVERRIDE_REASON.BRANCH_CODE, 
+		BLACKLIST_OVERRIDE_REASON.CURRENCY_CODE, BLACKLIST_OVERRIDE_REASON.GL_CODE, BLACKLIST_OVERRIDE_REASON.CIF_NO, 
+		BLACKLIST_OVERRIDE_REASON.SL_NO, BLACKLIST_OVERRIDE_REASON.TRS_TYPE, BLACKLIST_OVERRIDE_REASON.CB_IND, 
+		BLACKLIST_OVERRIDE_REASON.REASON_CODE, BLACKLIST_OVERRIDE_REASON.DATE_UPDATED, BLACKLIST_OVERRIDE_REASON.USER_ID, 
+		BLACKLIST_OVERRIDE_REASON.CREATED_DATE, CTSREASONS.BRIEF_NAME_ENG
+		from BLACKLIST_OVERRIDE_REASON, CTSREASONS
+		WHERE BLACKLIST_OVERRIDE_REASON.COMP_CODE =  CTSREASONS.COMP_CODE
+		AND BLACKLIST_OVERRIDE_REASON.REASON_CODE =  CTSREASONS.CODE
+		AND BLACKLIST_OVERRIDE_REASON.COMP_CODE = #{COMP_CODE} 
+		AND BLACKLIST_OVERRIDE_REASON.PARENT_REF	=  #{PARENT_REF} 
+		AND BLACKLIST_OVERRIDE_REASON.APP_NAME 	= #{APP_NAME}
+		AND BLACKLIST_OVERRIDE_REASON.BRANCH_CODE =  #{BRANCH_CODE}
+		AND BLACKLIST_OVERRIDE_REASON.ENTITY_CODE =  #{ENTITY_CODE} 
+		
+</select>
+	
+ 
+ 
+ 
+ <update id="updatecifBlackListRestrict" parameterType="com.path.dbmaps.vo.BLACKLIST_OVERRIDE_REASONVO">
+		update BLACKLIST_OVERRIDE_REASON 
+		SET ENTITY_CODE = #{ENTITY_CODE} , 
+			REASON_CODE = #{REASON_CODE} , 
+			DATE_UPDATED = #{DATE_UPDATED} , 
+			CREATED_DATE = #{CREATED_DATE} ,
+		USER_ID = #{USER_ID} 
+ 		where APP_NAME = #{APP_NAME}  
+ 		and COMP_CODE = #{COMP_CODE}  
+ 		and LINE_NO = #{LINE_NO} 
+ 		and PARENT_REF =#{PARENT_REF} 
+ 		AND ENTITY_CODE = #{ENTITY_CODE}
+  </update>
+ 
+ 
+ <select id="execP_RET_CHECK_BLACKLIST_RESTRICT" parameterType="iisCommonCO"
+	statementType="CALLABLE">
+	
+	{CALL P_RET_CHECK_BLACKLIST_RESTRICT(
+		#{compCode,mode=IN,jdbcType=NUMERIC},
+		#{branchCode,mode=IN,jdbcType=NUMERIC},
+		#{restrictionFactor,mode=IN,jdbcType=VARCHAR},
+		#{trxNbr,mode=IN,jdbcType=NUMERIC},	
+		#{cifNo,mode=IN,jdbcType=NUMERIC},	
+		#{userId,mode=IN,jdbcType=VARCHAR},
+		#{cardType,mode=IN,jdbcType=VARCHAR},
+		#{defaultReason,mode=OUT,jdbcType=NUMERIC},	
+		#{returnCode,mode=OUT,jdbcType=NUMERIC},
+		#{paymPeriodNbr, mode=OUT,jdbcType=NUMERIC},
+		#{paymPeriodicity,mode=OUT,jdbcType=VARCHAR},
+		#{errorCode,mode=OUT,jdbcType=NUMERIC},
+		#{errorMessage,mode=OUT,jdbcType=VARCHAR},
+		#{errorMessage2,mode=OUT,jdbcType=VARCHAR})
+		}
+		
+	</select>
+
+	<select id="returnVatDeductionMethodOnCharge" parameterType="com.path.dbmaps.vo.TRSCHARGESVOKey" resultType="String">
+		select TRSCHARGES.VAT_DEDUCTION_METHOD 
+		from TRSCHARGES 
+		where COMP_CODE = #{COMP_CODE} 
+		AND CODE = #{CODE} 	
+	</select>
+	
+	<select id="execP_WRAP_CORE_GET_VAT_DETAILS_IIS" parameterType="iisCommonCO"
+	statementType="CALLABLE">
+    
+	{CALL P_WRAP_CORE_GET_VAT_DETAILS_IIS(
+		#{compCode,mode=IN,jdbcType=NUMERIC},
+		#{branchCode,mode=IN,jdbcType=NUMERIC},
+		#{userId,mode=IN,jdbcType=VARCHAR},
+		#{startDate, mode=IN,jdbcType=DATE} ,
+		#{vatCode,mode=IN,jdbcType=NUMERIC},	
+		#{dealNo,mode=IN,jdbcType=NUMERIC},	
+		#{accBr,mode=IN,jdbcType=NUMERIC},
+		#{accCy,mode=IN,jdbcType=NUMERIC},
+		#{accGl,mode=IN,jdbcType=NUMERIC},
+		#{cifNo,mode=IN,jdbcType=NUMERIC},
+		
+		#{vatRate,mode=OUT,jdbcType=NUMERIC},
+		#{vatMinRate,mode=OUT,jdbcType=NUMERIC},
+		#{vatMaxRate,mode=OUT,jdbcType=NUMERIC},
+		#{vatInputAcCy,mode=OUT,jdbcType=NUMERIC},
+		
+		#{vatInputAcGl,mode=OUT,jdbcType=NUMERIC},
+		#{vatInputAcCif,mode=OUT,jdbcType=NUMERIC},
+		#{vatInputAcSl,mode=OUT,jdbcType=NUMERIC},
+		#{vatOutputAcCy,mode=OUT,jdbcType=NUMERIC},
+		#{vatOutputAcGl,mode=OUT,jdbcType=NUMERIC},
+		#{vatOutputAcCif,mode=OUT,jdbcType=NUMERIC},
+		#{vatOutputAcSl,mode=OUT,jdbcType=NUMERIC},
+		
+		#{errorCode,mode=OUT,jdbcType=NUMERIC},
+		#{errorMessage,mode=OUT,jdbcType=VARCHAR})}
+		
+	</select>
+	
+	<select id="returnvatPercInd" parameterType="iisCommonCO" resultType="String">
+		SELECT NVL(TRSCLASS_EXTENDED.PERCENTAGE_IND, 'I')
+            FROM TRSCLASS_EXTENDED, TRSDEAL
+            WHERE TRSDEAL.COMP_CODE = #{compCode} 
+            AND TRSDEAL.BRANCH_CODE = #{branchCode} 
+            AND TRSDEAL.SERIAL_NO = #{dealNo} 
+            AND TRSDEAL.COMP_CODE = TRSCLASS_EXTENDED.COMP_CODE
+            AND TRSDEAL.CLASS = TRSCLASS_EXTENDED.CODE
+	</select>
+	
+	<select id="returnVatCodeChargesIncludeInst" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT MIN(TRSCHARGES.VAT_CODE) 
+        FROM TRSDEALCHARGES, TRSCHARGES
+        WHERE TRSDEALCHARGES.COMP_CODE = #{compCode} 
+        AND TRSDEALCHARGES.BRANCH_CODE = #{branchCode}  
+        AND TRSDEALCHARGES.SERIAL_NO = #{dealNo}
+        AND TRSDEALCHARGES.CHARGE_TYPE = 'Y'
+        AND TRSDEALCHARGES.COMP_CODE = TRSCHARGES.COMP_CODE
+        AND TRSDEALCHARGES.CHARGES_CODE = TRSCHARGES.CODE
+	</select>
+	
+	<select id="returnVatCountOtherCharge" parameterType="iisCommonCO" resultType="BigDecimal">
+		SELECT COUNT(1) 
+          FROM TRSDEALCHARGES, TRSCHARGES
+            WHERE TRSDEALCHARGES.COMP_CODE = #{compCode} 
+             AND TRSDEALCHARGES.BRANCH_CODE = #{branchCode}   
+             AND TRSDEALCHARGES.SERIAL_NO = #{dealNo} 
+             AND TRSDEALCHARGES.CHARGE_TYPE = 'Y'
+             AND TRSDEALCHARGES.COMP_CODE = TRSCHARGES.COMP_CODE
+             AND TRSDEALCHARGES.CHARGES_CODE = TRSCHARGES.CODE
+             <![CDATA[
+             AND NVL(TRSCHARGES.VAT_CODE,0) <> #{vatCode}
+             ]]>
+	</select>
+	
+
+	<select id="getVatCountWithBranchAndCy_ora" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.TRSDETVO">
+	SELECT MATR_AC_BR 
+	FROM TRSDET 
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND BRANCH_CODE = #{BRANCH_CODE}
+	AND SERIAL_NO = #{SERIAL_NO}
+	AND	ROWNUM			=	1
+	ORDER BY LINE_NO 
+	</select>
+	
+	<select id="getVatCountWithBranchAndCy_syb" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.TRSDETVO">
+	SELECT TOP 1 MATR_AC_BR 
+	FROM TRSDET 
+	WHERE COMP_CODE = #{COMP_CODE}
+	AND BRANCH_CODE = #{BRANCH_CODE}
+	AND SERIAL_NO = #{SERIAL_NO}
+	ORDER BY LINE_NO
+	</select>
+	
+
+   <select id="returnTrsPayPlanDetails" resultType="com.path.dbmaps.vo.TRSPAYPLANVO" parameterType="iisCommonCO">
+		SELECT  MAX(PLAN_NBR) PLAN_NBR,
+		MAX(PLAN_SEQ) PLAN_SEQ   
+		FROM TRSPAYPLAN WHERE COMP_CODE=#{compCode} AND BRANCH = #{branchCode} AND TRX_NBR =  #{dealNo}	AND STATUS IN ('A','P')
+	</select>
+    <select id="returnTrsPayPlanDetDetails" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO" parameterType="iisCommonCO">
+		SELECT * FROM TRSPAYPLANDET WHERE COMP_CODE=#{compCode} AND BRANCH = #{branchCode} AND PLAN_NBR =  #{planNo}	AND PLAN_SEQ = #{planSeq}
+	</select>
+	<select id="returnFmsPayPlanDetDetails" resultType="com.path.dbmaps.vo.TRSPAYPLANDETVO" parameterType="iisCommonCO">
+		SELECT * FROM FMSPAYPLANDET WHERE COMP_CODE=#{compCode} AND BRANCH = #{branchCode} AND PLAN_NBR =  #{planNo}	AND PLAN_SEQ = #{planSeq}
+	</select>
+	
+
+</mapper>

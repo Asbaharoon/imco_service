@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPL_PARTIES_INVOLVED" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPL_PARTIES_INVOLVEDVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="ROLE_CODE" property="ROLE_CODE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NO, CIF_NO, ROLE_CODE, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE
+  </sql>
+  <select id="selectFMSAPPL_PARTIES_INVOLVED" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPL_PARTIES_INVOLVEDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPL_PARTIES_INVOLVED
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSAPPL_PARTIES_INVOLVED" parameterType="com.path.dbmaps.vo.FMSAPPL_PARTIES_INVOLVEDVOKey" >
+    delete from FMSAPPL_PARTIES_INVOLVED
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSAPPL_PARTIES_INVOLVED" parameterType="com.path.dbmaps.vo.FMSAPPL_PARTIES_INVOLVEDVO" >
+    insert into FMSAPPL_PARTIES_INVOLVED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="ROLE_CODE != null and ROLE_CODE != emptyBigDecimalValue" >
+        ROLE_CODE,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="ROLE_CODE != null and ROLE_CODE != emptyBigDecimalValue" >
+        #{ROLE_CODE},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPL_PARTIES_INVOLVED" >
+    update FMSAPPL_PARTIES_INVOLVED
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ROLE_CODE != null" >
+        <choose >
+          <when test="ROLE_CODE == emptyBigDecimalValue" >
+            ROLE_CODE = NULL ,
+          </when>
+          <otherwise >
+            ROLE_CODE = #{ROLE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSAPPL_PARTIES_INVOLVED" parameterType="com.path.dbmaps.vo.FMSAPPL_PARTIES_INVOLVEDVO" >
+    <include refid="sql_updateFMSAPPL_PARTIES_INVOLVED" />
+  </update>
+</mapper>

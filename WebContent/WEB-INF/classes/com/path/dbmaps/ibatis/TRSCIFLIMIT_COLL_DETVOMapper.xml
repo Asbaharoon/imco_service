@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCIFLIMIT_COLL_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCIFLIMIT_COLL_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="LINE_POSITION" property="LINE_POSITION" />
+    <result column="COLLATERAL_NO" property="COLLATERAL_NO" />
+    <result column="GROUP_ID" property="GROUP_ID" />
+    <result column="COLLATERAL_FOR" property="COLLATERAL_FOR" />
+    <result column="COLLATERAL_BRANCH" property="COLLATERAL_BRANCH" />
+    <result column="COLLATERAL_LINKED_DATE" property="COLLATERAL_LINKED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_NO, COMP_CODE, LINE_NO, LINE_POSITION, COLLATERAL_NO, GROUP_ID, 
+    COLLATERAL_FOR, COLLATERAL_BRANCH, COLLATERAL_LINKED_DATE
+  </sql>
+  <select id="selectTRSCIFLIMIT_COLL_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_COLL_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCIFLIMIT_COLL_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LINE_POSITION = #{LINE_POSITION}
+  </select>
+  <delete id="deleteTRSCIFLIMIT_COLL_DET" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_COLL_DETVOKey" >
+    delete from TRSCIFLIMIT_COLL_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LINE_POSITION = #{LINE_POSITION}
+  </delete>
+  <insert id="insertTRSCIFLIMIT_COLL_DET" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_COLL_DETVO" >
+    insert into TRSCIFLIMIT_COLL_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="LINE_POSITION != null and LINE_POSITION != emptyBigDecimalValue" >
+        LINE_POSITION,
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        COLLATERAL_NO,
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        GROUP_ID,
+      </if>
+      <if test="COLLATERAL_FOR != null" >
+        COLLATERAL_FOR,
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        COLLATERAL_BRANCH,
+      </if>
+      <if test="COLLATERAL_LINKED_DATE != null" >
+        COLLATERAL_LINKED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="LINE_POSITION != null and LINE_POSITION != emptyBigDecimalValue" >
+        #{LINE_POSITION},
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        #{COLLATERAL_NO},
+      </if>
+      <if test="GROUP_ID != null and GROUP_ID != emptyBigDecimalValue" >
+        #{GROUP_ID},
+      </if>
+      <if test="COLLATERAL_FOR != null" >
+        #{COLLATERAL_FOR},
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        #{COLLATERAL_BRANCH},
+      </if>
+      <if test="COLLATERAL_LINKED_DATE != null" >
+        #{COLLATERAL_LINKED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCIFLIMIT_COLL_DET" >
+    update TRSCIFLIMIT_COLL_DET
+    <set >
+      <if test="COLLATERAL_NO != null" >
+        <choose >
+          <when test="COLLATERAL_NO == emptyBigDecimalValue" >
+            COLLATERAL_NO = NULL ,
+          </when>
+          <otherwise >
+            COLLATERAL_NO = #{COLLATERAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GROUP_ID != null" >
+        <choose >
+          <when test="GROUP_ID == emptyBigDecimalValue" >
+            GROUP_ID = NULL ,
+          </when>
+          <otherwise >
+            GROUP_ID = #{GROUP_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLLATERAL_FOR != null" >
+        COLLATERAL_FOR = #{COLLATERAL_FOR},
+      </if>
+      <if test="COLLATERAL_BRANCH != null" >
+        <choose >
+          <when test="COLLATERAL_BRANCH == emptyBigDecimalValue" >
+            COLLATERAL_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            COLLATERAL_BRANCH = #{COLLATERAL_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLLATERAL_LINKED_DATE != null" >
+        COLLATERAL_LINKED_DATE = #{COLLATERAL_LINKED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LINE_POSITION = #{LINE_POSITION}
+  </sql>
+  <update id="updateTRSCIFLIMIT_COLL_DET" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_COLL_DETVO" >
+    <include refid="sql_updateTRSCIFLIMIT_COLL_DET" />
+  </update>
+</mapper>

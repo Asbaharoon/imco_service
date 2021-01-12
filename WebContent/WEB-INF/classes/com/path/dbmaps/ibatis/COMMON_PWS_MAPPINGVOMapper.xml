@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COMMON_PWS_MAPPING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    <id column="MAPPING_ID" property="MAPPING_ID" />
+    <result column="WS_NAME" property="WS_NAME" />
+    <result column="OPER_NAME" property="OPER_NAME" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="API_CODE" property="API_CODE" />
+    <result column="SERVICE_APP_NAME" property="SERVICE_APP_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MAPPING_ID, WS_NAME, OPER_NAME, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, 
+    API_CODE, SERVICE_APP_NAME
+  </sql>
+  <select id="selectCOMMON_PWS_MAPPING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from COMMON_PWS_MAPPING
+    where MAPPING_ID = #{MAPPING_ID}
+  </select>
+  <delete id="deleteCOMMON_PWS_MAPPING" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    delete from COMMON_PWS_MAPPING
+    where MAPPING_ID = #{MAPPING_ID}
+  </delete>
+  <insert id="insertCOMMON_PWS_MAPPING" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    insert into COMMON_PWS_MAPPING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      MAPPING_ID,
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        WS_NAME,
+      </if>
+      <if test="OPER_NAME != null and !&quot;&quot;.equals(OPER_NAME)" >
+        OPER_NAME,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="API_CODE != null and API_CODE != emptyBigDecimalValue" >
+        API_CODE,
+      </if>
+      <if test="SERVICE_APP_NAME != null and !&quot;&quot;.equals(SERVICE_APP_NAME)" >
+        SERVICE_APP_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{MAPPING_ID},
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        #{WS_NAME},
+      </if>
+      <if test="OPER_NAME != null and !&quot;&quot;.equals(OPER_NAME)" >
+        #{OPER_NAME},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="API_CODE != null and API_CODE != emptyBigDecimalValue" >
+        #{API_CODE},
+      </if>
+      <if test="SERVICE_APP_NAME != null and !&quot;&quot;.equals(SERVICE_APP_NAME)" >
+        #{SERVICE_APP_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCOMMON_PWS_MAPPING" >
+    update COMMON_PWS_MAPPING
+    <set >
+      <if test="WS_NAME != null" >
+        <choose >
+          <when test="WS_NAME.equals(&quot;&quot;)" >
+            WS_NAME = NULL ,
+          </when>
+          <otherwise >
+            WS_NAME = #{WS_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OPER_NAME != null" >
+        <choose >
+          <when test="OPER_NAME.equals(&quot;&quot;)" >
+            OPER_NAME = NULL ,
+          </when>
+          <otherwise >
+            OPER_NAME = #{OPER_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="API_CODE != null" >
+        <choose >
+          <when test="API_CODE == emptyBigDecimalValue" >
+            API_CODE = NULL ,
+          </when>
+          <otherwise >
+            API_CODE = #{API_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SERVICE_APP_NAME != null" >
+        <choose >
+          <when test="SERVICE_APP_NAME.equals(&quot;&quot;)" >
+            SERVICE_APP_NAME = NULL ,
+          </when>
+          <otherwise >
+            SERVICE_APP_NAME = #{SERVICE_APP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where MAPPING_ID = #{MAPPING_ID}
+  </sql>
+  <update id="updateCOMMON_PWS_MAPPING" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    <include refid="sql_updateCOMMON_PWS_MAPPING" />
+  </update>
+</mapper>

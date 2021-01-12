@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTELLERDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTELLERDETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SUB_TELLER_CODE" property="SUB_TELLER_CODE" />
+    <result column="SUB_TELLER_BRANCH" property="SUB_TELLER_BRANCH" />
+    <result column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NO, SUB_TELLER_CODE, SUB_TELLER_BRANCH, USER_ID
+  </sql>
+  <select id="selectCTSTELLERDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTELLERDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTELLERDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSTELLERDET" parameterType="com.path.dbmaps.vo.CTSTELLERDETVOKey" >
+    delete from CTSTELLERDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTSTELLERDET" parameterType="com.path.dbmaps.vo.CTSTELLERDETVO" >
+    insert into CTSTELLERDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SUB_TELLER_CODE != null and SUB_TELLER_CODE != emptyBigDecimalValue" >
+        SUB_TELLER_CODE,
+      </if>
+      <if test="SUB_TELLER_BRANCH != null and SUB_TELLER_BRANCH != emptyBigDecimalValue" >
+        SUB_TELLER_BRANCH,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SUB_TELLER_CODE != null and SUB_TELLER_CODE != emptyBigDecimalValue" >
+        #{SUB_TELLER_CODE},
+      </if>
+      <if test="SUB_TELLER_BRANCH != null and SUB_TELLER_BRANCH != emptyBigDecimalValue" >
+        #{SUB_TELLER_BRANCH},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTELLERDET" >
+    update CTSTELLERDET
+    <set >
+      <if test="SUB_TELLER_CODE != null" >
+        <choose >
+          <when test="SUB_TELLER_CODE == emptyBigDecimalValue" >
+            SUB_TELLER_CODE = NULL ,
+          </when>
+          <otherwise >
+            SUB_TELLER_CODE = #{SUB_TELLER_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUB_TELLER_BRANCH != null" >
+        <choose >
+          <when test="SUB_TELLER_BRANCH == emptyBigDecimalValue" >
+            SUB_TELLER_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            SUB_TELLER_BRANCH = #{SUB_TELLER_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSTELLERDET" parameterType="com.path.dbmaps.vo.CTSTELLERDETVO" >
+    <include refid="sql_updateCTSTELLERDET" />
+  </update>
+</mapper>

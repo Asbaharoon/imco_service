@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_COUNTRY_ALLOW_MOBILE_CODE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_COUNTRY_ALLOW_MOBILE_CODEVO" >
+    <id column="ALLOWED_MOBILE_CODE" property="ALLOWED_MOBILE_CODE" />
+    <id column="COMPANY_CODE" property="COMPANY_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <result column="COUNTRY_FORMAT" property="COUNTRY_FORMAT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ALLOWED_MOBILE_CODE, COMPANY_CODE, COUNTRY_CODE, COUNTRY_FORMAT
+  </sql>
+  <select id="selectCTS_COUNTRY_ALLOW_MOBILE_CODE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_COUNTRY_ALLOW_MOBILE_CODEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_COUNTRY_ALLOW_MOBILE_CODE
+    where ALLOWED_MOBILE_CODE = #{ALLOWED_MOBILE_CODE}
+      and COMPANY_CODE = #{COMPANY_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </select>
+  <delete id="deleteCTS_COUNTRY_ALLOW_MOBILE_CODE" parameterType="com.path.dbmaps.vo.CTS_COUNTRY_ALLOW_MOBILE_CODEVOKey" >
+    delete from CTS_COUNTRY_ALLOW_MOBILE_CODE
+    where ALLOWED_MOBILE_CODE = #{ALLOWED_MOBILE_CODE}
+      and COMPANY_CODE = #{COMPANY_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </delete>
+  <insert id="insertCTS_COUNTRY_ALLOW_MOBILE_CODE" parameterType="com.path.dbmaps.vo.CTS_COUNTRY_ALLOW_MOBILE_CODEVO" >
+    insert into CTS_COUNTRY_ALLOW_MOBILE_CODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ALLOWED_MOBILE_CODE != null and !&quot;&quot;.equals(ALLOWED_MOBILE_CODE)" >
+        ALLOWED_MOBILE_CODE,
+      </if>
+      <if test="COMPANY_CODE != null" >
+        COMPANY_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null" >
+        COUNTRY_CODE,
+      </if>
+      <if test="COUNTRY_FORMAT != null and !&quot;&quot;.equals(COUNTRY_FORMAT)" >
+        COUNTRY_FORMAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ALLOWED_MOBILE_CODE != null and !&quot;&quot;.equals(ALLOWED_MOBILE_CODE)" >
+        #{ALLOWED_MOBILE_CODE},
+      </if>
+      <if test="COMPANY_CODE != null" >
+        #{COMPANY_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="COUNTRY_FORMAT != null and !&quot;&quot;.equals(COUNTRY_FORMAT)" >
+        #{COUNTRY_FORMAT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_COUNTRY_ALLOW_MOBILE_CODE" >
+    update CTS_COUNTRY_ALLOW_MOBILE_CODE
+    <set >
+      <if test="COUNTRY_FORMAT != null" >
+        <choose >
+          <when test="COUNTRY_FORMAT.equals(&quot;&quot;)" >
+            COUNTRY_FORMAT = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_FORMAT = #{COUNTRY_FORMAT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ALLOWED_MOBILE_CODE = #{ALLOWED_MOBILE_CODE}
+      and COMPANY_CODE = #{COMPANY_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </sql>
+  <update id="updateCTS_COUNTRY_ALLOW_MOBILE_CODE" parameterType="com.path.dbmaps.vo.CTS_COUNTRY_ALLOW_MOBILE_CODEVO" >
+    <include refid="sql_updateCTS_COUNTRY_ALLOW_MOBILE_CODE" />
+  </update>
+</mapper>

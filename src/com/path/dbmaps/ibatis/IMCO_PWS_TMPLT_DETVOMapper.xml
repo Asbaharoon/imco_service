@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IMCO_PWS_TMPLT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IMCO_PWS_TMPLT_DETVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="OPERATION" property="OPERATION" />
+    <id column="TEMPLATE_ID" property="TEMPLATE_ID" />
+    <id column="WS_NAME" property="WS_NAME" />
+    <result column="EXCLUDE_ACCESS_YN" property="EXCLUDE_ACCESS_YN" />
+    <result column="TYPE" property="TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, OPERATION, TEMPLATE_ID, WS_NAME, EXCLUDE_ACCESS_YN, TYPE
+  </sql>
+  <select id="selectIMCO_PWS_TMPLT_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.IMCO_PWS_TMPLT_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from IMCO_PWS_TMPLT_DET
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </select>
+  <delete id="deleteIMCO_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.IMCO_PWS_TMPLT_DETVO" >
+    delete from IMCO_PWS_TMPLT_DET
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </delete>
+  <insert id="insertIMCO_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.IMCO_PWS_TMPLT_DETVO" >
+    insert into IMCO_PWS_TMPLT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="OPERATION != null" >
+        OPERATION,
+      </if>
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        TEMPLATE_ID,
+      </if>
+      <if test="WS_NAME != null" >
+        WS_NAME,
+      </if>
+      <if test="EXCLUDE_ACCESS_YN != null" >
+        EXCLUDE_ACCESS_YN,
+      </if>
+      <if test="TYPE != null" >
+        TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="OPERATION != null" >
+        #{OPERATION},
+      </if>
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        #{TEMPLATE_ID},
+      </if>
+      <if test="WS_NAME != null" >
+        #{WS_NAME},
+      </if>
+      <if test="EXCLUDE_ACCESS_YN != null" >
+        #{EXCLUDE_ACCESS_YN},
+      </if>
+      <if test="TYPE != null" >
+        #{TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIMCO_PWS_TMPLT_DET" >
+    update IMCO_PWS_TMPLT_DET
+    <set >
+      <if test="EXCLUDE_ACCESS_YN != null" >
+        EXCLUDE_ACCESS_YN = #{EXCLUDE_ACCESS_YN},
+      </if>
+      <if test="TYPE != null" >
+        TYPE = #{TYPE},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </sql>
+  <update id="updateIMCO_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.IMCO_PWS_TMPLT_DETVO" >
+    <include refid="sql_updateIMCO_PWS_TMPLT_DET" />
+  </update>
+</mapper>

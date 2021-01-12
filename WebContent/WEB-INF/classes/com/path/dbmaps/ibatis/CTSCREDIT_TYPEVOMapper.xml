@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCREDIT_TYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCREDIT_TYPEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="DESC_ENG" property="DESC_ENG" />
+    <result column="DESC_ARAB" property="DESC_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, DESC_ENG, DESC_ARAB
+  </sql>
+  <select id="selectCTSCREDIT_TYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCREDIT_TYPEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCREDIT_TYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCREDIT_TYPE" parameterType="com.path.dbmaps.vo.CTSCREDIT_TYPEVOKey" >
+    delete from CTSCREDIT_TYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCREDIT_TYPE" parameterType="com.path.dbmaps.vo.CTSCREDIT_TYPEVO" >
+    insert into CTSCREDIT_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DESC_ENG != null" >
+        DESC_ENG,
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DESC_ENG != null" >
+        #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        #{DESC_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCREDIT_TYPE" >
+    update CTSCREDIT_TYPE
+    <set >
+      <if test="DESC_ENG != null" >
+        DESC_ENG = #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB = #{DESC_ARAB},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCREDIT_TYPE" parameterType="com.path.dbmaps.vo.CTSCREDIT_TYPEVO" >
+    <include refid="sql_updateCTSCREDIT_TYPE" />
+  </update>
+</mapper>

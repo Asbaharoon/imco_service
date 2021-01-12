@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSCHEQUEBOOK_TYPESMapper">
+
+
+<!-- TYPES List --> 
+ <sql id="chequeBookTypesListCommon" >
+	 <![CDATA[
+		SELECT CTSCHEQUEBOOK_TYPES.COMP_CODE,
+		       CTSCHEQUEBOOK_TYPES.CODE,
+		       CTSCHEQUEBOOK_TYPES.DESC_ENG,
+		       CTSCHEQUEBOOK_TYPES.DESC_ARAB,
+		       CTSCHEQUEBOOK_TYPES.TYPES
+		FROM CTSCHEQUEBOOK_TYPES
+		]]>	
+</sql>
+
+<sql id="chequeBookTypesDestination">
+	WHERE CTSCHEQUEBOOK_TYPES.COMP_CODE = #{compCode}
+	<if test="typesCode != null">
+		AND CTSCHEQUEBOOK_TYPES.CODE = #{typesCode}
+	</if>
+	
+</sql>
+<sql id="chequeBookTypesDestinationOrder">
+	ORDER BY CODE
+</sql>
+
+
+<resultMap id="getTypesList_ResMap" type="chequeBookTypeCO" >
+    <result column="COMP_CODE" 			property="COMP_CODE" />
+    <result column="CODE" 				property="CODE" />
+    <result column="DESC_ENG" 			property="DESC_ENG" />
+    <result column="DESC_ARAB" 			property="DESC_ARAB" />
+    <result column="TYPES" 				property="TYPES" />
+</resultMap>
+
+<select id="getTypesList"  resultMap="getTypesList_ResMap" parameterType="chequeBookTypeSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chequeBookTypesListCommon"/>
+	<include refid="chequeBookTypesDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getTypesCount"  resultType="int" parameterType="chequeBookTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chequeBookTypesListCommon"/>
+	<include refid="chequeBookTypesDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+
+</mapper>

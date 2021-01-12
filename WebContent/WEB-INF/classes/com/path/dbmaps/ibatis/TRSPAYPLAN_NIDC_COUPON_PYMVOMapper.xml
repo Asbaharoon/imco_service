@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPAYPLAN_NIDC_COUPON_PYM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_COUPON_PYMVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <result column="COUPON_PAYMENT_DATE" property="COUPON_PAYMENT_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, TRS_NO, COUPON_PAYMENT_DATE
+  </sql>
+  <select id="selectTRSPAYPLAN_NIDC_COUPON_PYM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_COUPON_PYMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPAYPLAN_NIDC_COUPON_PYM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRS_NO = #{TRS_NO}
+  </select>
+  <delete id="deleteTRSPAYPLAN_NIDC_COUPON_PYM" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_COUPON_PYMVOKey" >
+    delete from TRSPAYPLAN_NIDC_COUPON_PYM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRS_NO = #{TRS_NO}
+  </delete>
+  <insert id="insertTRSPAYPLAN_NIDC_COUPON_PYM" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_COUPON_PYMVO" >
+    insert into TRSPAYPLAN_NIDC_COUPON_PYM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="COUPON_PAYMENT_DATE != null" >
+        COUPON_PAYMENT_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="COUPON_PAYMENT_DATE != null" >
+        #{COUPON_PAYMENT_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPAYPLAN_NIDC_COUPON_PYM" >
+    update TRSPAYPLAN_NIDC_COUPON_PYM
+    <set >
+      <if test="COUPON_PAYMENT_DATE != null" >
+        COUPON_PAYMENT_DATE = #{COUPON_PAYMENT_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRS_NO = #{TRS_NO}
+  </sql>
+  <update id="updateTRSPAYPLAN_NIDC_COUPON_PYM" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_COUPON_PYMVO" >
+    <include refid="sql_updateTRSPAYPLAN_NIDC_COUPON_PYM" />
+  </update>
+</mapper>

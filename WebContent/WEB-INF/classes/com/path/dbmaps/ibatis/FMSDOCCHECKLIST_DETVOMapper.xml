@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSDOCCHECKLIST_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSDOCCHECKLIST_DETVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="DOC_TYPE" property="DOC_TYPE" />
+    <result column="IS_MANDATORY" property="IS_MANDATORY" />
+    <result column="REMARKS" property="REMARKS" />
+    <result column="DOC_TITLE" property="DOC_TITLE" />
+    <result column="ATTACHEMENT_MANDATORY_YN" property="ATTACHEMENT_MANDATORY_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, DOC_TYPE, IS_MANDATORY, REMARKS, DOC_TITLE, ATTACHEMENT_MANDATORY_YN
+  </sql>
+  <select id="selectFMSDOCCHECKLIST_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSDOCCHECKLIST_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSDOCCHECKLIST_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSDOCCHECKLIST_DET" parameterType="com.path.dbmaps.vo.FMSDOCCHECKLIST_DETVOKey" >
+    delete from FMSDOCCHECKLIST_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSDOCCHECKLIST_DET" parameterType="com.path.dbmaps.vo.FMSDOCCHECKLIST_DETVO" >
+    insert into FMSDOCCHECKLIST_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="DOC_TYPE != null and !&quot;&quot;.equals(DOC_TYPE)" >
+        DOC_TYPE,
+      </if>
+      <if test="IS_MANDATORY != null and !&quot;&quot;.equals(IS_MANDATORY)" >
+        IS_MANDATORY,
+      </if>
+      <if test="REMARKS != null and !&quot;&quot;.equals(REMARKS)" >
+        REMARKS,
+      </if>
+      <if test="DOC_TITLE != null and !&quot;&quot;.equals(DOC_TITLE)" >
+        DOC_TITLE,
+      </if>
+      <if test="ATTACHEMENT_MANDATORY_YN != null and !&quot;&quot;.equals(ATTACHEMENT_MANDATORY_YN)" >
+        ATTACHEMENT_MANDATORY_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="DOC_TYPE != null and !&quot;&quot;.equals(DOC_TYPE)" >
+        #{DOC_TYPE},
+      </if>
+      <if test="IS_MANDATORY != null and !&quot;&quot;.equals(IS_MANDATORY)" >
+        #{IS_MANDATORY},
+      </if>
+      <if test="REMARKS != null and !&quot;&quot;.equals(REMARKS)" >
+        #{REMARKS},
+      </if>
+      <if test="DOC_TITLE != null and !&quot;&quot;.equals(DOC_TITLE)" >
+        #{DOC_TITLE},
+      </if>
+      <if test="ATTACHEMENT_MANDATORY_YN != null and !&quot;&quot;.equals(ATTACHEMENT_MANDATORY_YN)" >
+        #{ATTACHEMENT_MANDATORY_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSDOCCHECKLIST_DET" >
+    update FMSDOCCHECKLIST_DET
+    <set >
+      <if test="DOC_TYPE != null" >
+        <choose >
+          <when test="DOC_TYPE.equals(&quot;&quot;)" >
+            DOC_TYPE = NULL ,
+          </when>
+          <otherwise >
+            DOC_TYPE = #{DOC_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_MANDATORY != null" >
+        <choose >
+          <when test="IS_MANDATORY.equals(&quot;&quot;)" >
+            IS_MANDATORY = NULL ,
+          </when>
+          <otherwise >
+            IS_MANDATORY = #{IS_MANDATORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REMARKS != null" >
+        <choose >
+          <when test="REMARKS.equals(&quot;&quot;)" >
+            REMARKS = NULL ,
+          </when>
+          <otherwise >
+            REMARKS = #{REMARKS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DOC_TITLE != null" >
+        <choose >
+          <when test="DOC_TITLE.equals(&quot;&quot;)" >
+            DOC_TITLE = NULL ,
+          </when>
+          <otherwise >
+            DOC_TITLE = #{DOC_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ATTACHEMENT_MANDATORY_YN != null" >
+        <choose >
+          <when test="ATTACHEMENT_MANDATORY_YN.equals(&quot;&quot;)" >
+            ATTACHEMENT_MANDATORY_YN = NULL ,
+          </when>
+          <otherwise >
+            ATTACHEMENT_MANDATORY_YN = #{ATTACHEMENT_MANDATORY_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSDOCCHECKLIST_DET" parameterType="com.path.dbmaps.vo.FMSDOCCHECKLIST_DETVO" >
+    <include refid="sql_updateFMSDOCCHECKLIST_DET" />
+  </update>
+</mapper>

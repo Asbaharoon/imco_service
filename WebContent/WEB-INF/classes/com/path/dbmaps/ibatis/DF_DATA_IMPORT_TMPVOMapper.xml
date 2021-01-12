@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_DATA_IMPORT_TMP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="PROCESSING_DATE" property="PROCESSING_DATE" />
+    <id column="SOURCE_SQL_NO" property="SOURCE_SQL_NO" />
+    <id column="USER_NAME" property="USER_NAME" />
+    <result column="STRUCT_CODE" property="STRUCT_CODE" />
+    <result column="LINE_NUMBER" property="LINE_NUMBER" />
+    <result column="DATA_COLUMN" property="DATA_COLUMN" />
+    <result column="STATEMENT" property="STATEMENT" />
+    <result column="DELIMITER" property="DELIMITER" />
+    <result column="STATUS" property="STATUS" />
+    <result column="EXECUTION_LOG" property="EXECUTION_LOG" />
+    <result column="THREAD_ID" property="THREAD_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, PROCESSING_DATE, SOURCE_SQL_NO, USER_NAME, STRUCT_CODE, LINE_NUMBER, DATA_COLUMN, 
+    STATEMENT, DELIMITER, STATUS, EXECUTION_LOG, THREAD_ID
+  </sql>
+  <select id="selectDF_DATA_IMPORT_TMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_DATA_IMPORT_TMP
+    where FILE_CODE = #{FILE_CODE}
+      and PROCESSING_DATE = #{PROCESSING_DATE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+      and USER_NAME = #{USER_NAME}
+  </select>
+  <delete id="deleteDF_DATA_IMPORT_TMP" parameterType="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVOKey" >
+    delete from DF_DATA_IMPORT_TMP
+    where FILE_CODE = #{FILE_CODE}
+      and PROCESSING_DATE = #{PROCESSING_DATE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+      and USER_NAME = #{USER_NAME}
+  </delete>
+  <insert id="insertDF_DATA_IMPORT_TMP" parameterType="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVO" >
+    insert into DF_DATA_IMPORT_TMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="PROCESSING_DATE != null" >
+        PROCESSING_DATE,
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        SOURCE_SQL_NO,
+      </if>
+      <if test="USER_NAME != null" >
+        USER_NAME,
+      </if>
+      <if test="STRUCT_CODE != null" >
+        STRUCT_CODE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        LINE_NUMBER,
+      </if>
+      <if test="DATA_COLUMN != null" >
+        DATA_COLUMN,
+      </if>
+      <if test="STATEMENT != null" >
+        STATEMENT,
+      </if>
+      <if test="DELIMITER != null" >
+        DELIMITER,
+      </if>
+      <if test="STATUS != null and STATUS != emptyBigDecimalValue" >
+        STATUS,
+      </if>
+      <if test="EXECUTION_LOG != null" >
+        EXECUTION_LOG,
+      </if>
+      <if test="THREAD_ID != null" >
+        THREAD_ID,
+      </if>      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="PROCESSING_DATE != null" >
+        #{PROCESSING_DATE},
+      </if>
+      <if test="SOURCE_SQL_NO != null" >
+        #{SOURCE_SQL_NO},
+      </if>
+      <if test="USER_NAME != null" >
+        #{USER_NAME},
+      </if>
+      <if test="STRUCT_CODE != null" >
+        #{STRUCT_CODE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        #{LINE_NUMBER},
+      </if>
+      <if test="DATA_COLUMN != null" >
+        #{DATA_COLUMN},
+      </if>
+      <if test="STATEMENT != null" >
+        #{STATEMENT},
+      </if>
+      <if test="DELIMITER != null" >
+        #{DELIMITER},
+      </if>
+      <if test="STATUS != null and STATUS != emptyBigDecimalValue" >
+        #{STATUS},
+      </if>
+      <if test="EXECUTION_LOG != null" >
+        #{EXECUTION_LOG},
+      </if>
+      <if test="THREAD_ID != null" >
+        #{THREAD_ID},
+      </if>      
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_DATA_IMPORT_TMP" >
+    update DF_DATA_IMPORT_TMP
+    <set >
+      <if test="STRUCT_CODE != null" >
+        STRUCT_CODE = #{STRUCT_CODE},
+      </if>
+      <if test="LINE_NUMBER != null" >
+        <choose >
+          <when test="LINE_NUMBER == emptyBigDecimalValue" >
+            LINE_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LINE_NUMBER = #{LINE_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATA_COLUMN != null" >
+        DATA_COLUMN = #{DATA_COLUMN},
+      </if>
+      <if test="STATEMENT != null" >
+        STATEMENT = #{STATEMENT},
+      </if>
+      <if test="DELIMITER != null" >
+        DELIMITER = #{DELIMITER},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS == emptyBigDecimalValue" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXECUTION_LOG != null" >
+        EXECUTION_LOG = #{EXECUTION_LOG},
+      </if>
+      <if test="THREAD_ID != null" >
+        THREAD_ID = #{THREAD_ID},
+      </if>      
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and PROCESSING_DATE = #{PROCESSING_DATE}
+      and SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+      and USER_NAME = #{USER_NAME}
+  </sql>
+  <update id="updateDF_DATA_IMPORT_TMP" parameterType="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVO" >
+    <include refid="sql_updateDF_DATA_IMPORT_TMP" />
+  </update>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_LANGUAGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_LANGUAGESVO" >
+    <id column="LANG_CODE" property="LANG_CODE" />
+    <result column="LANG_NAME" property="LANG_NAME" />
+    <result column="ISO_CODE" property="ISO_CODE" />
+    <result column="IS_RIGHT_LEFT_YN" property="IS_RIGHT_LEFT_YN" />
+    <result column="CONVERT_LIKE_LANG" property="CONVERT_LIKE_LANG" />
+    <result column="CONVERSION_METHOD_ID" property="CONVERSION_METHOD_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LANG_CODE, LANG_NAME, ISO_CODE, IS_RIGHT_LEFT_YN, CONVERT_LIKE_LANG, CONVERSION_METHOD_ID
+  </sql>
+  <select id="selectSYS_PARAM_LANGUAGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_LANGUAGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_LANGUAGES
+    where LANG_CODE = #{LANG_CODE}
+  </select>
+  <delete id="deleteSYS_PARAM_LANGUAGES" parameterType="com.path.dbmaps.vo.SYS_PARAM_LANGUAGESVOKey" >
+    delete from SYS_PARAM_LANGUAGES
+    where LANG_CODE = #{LANG_CODE}
+  </delete>
+  <insert id="insertSYS_PARAM_LANGUAGES" parameterType="com.path.dbmaps.vo.SYS_PARAM_LANGUAGESVO" >
+    insert into SYS_PARAM_LANGUAGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LANG_CODE != null" >
+        LANG_CODE,
+      </if>
+      <if test="LANG_NAME != null" >
+        LANG_NAME,
+      </if>
+      <if test="ISO_CODE != null" >
+        ISO_CODE,
+      </if>
+      <if test="IS_RIGHT_LEFT_YN != null" >
+        IS_RIGHT_LEFT_YN,
+      </if>
+      <if test="CONVERT_LIKE_LANG != null" >
+        CONVERT_LIKE_LANG,
+      </if>
+      <if test="CONVERSION_METHOD_ID != null" >
+        CONVERSION_METHOD_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LANG_CODE != null" >
+        #{LANG_CODE},
+      </if>
+      <if test="LANG_NAME != null" >
+        #{LANG_NAME},
+      </if>
+      <if test="ISO_CODE != null" >
+        #{ISO_CODE},
+      </if>
+      <if test="IS_RIGHT_LEFT_YN != null" >
+        #{IS_RIGHT_LEFT_YN},
+      </if>
+      <if test="CONVERT_LIKE_LANG != null" >
+        #{CONVERT_LIKE_LANG},
+      </if>
+      <if test="CONVERSION_METHOD_ID != null" >
+        #{CONVERSION_METHOD_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_LANGUAGES" >
+    update SYS_PARAM_LANGUAGES
+    <set >
+      <if test="LANG_NAME != null" >
+        LANG_NAME = #{LANG_NAME},
+      </if>
+      <if test="ISO_CODE != null" >
+        ISO_CODE = #{ISO_CODE},
+      </if>
+      <if test="IS_RIGHT_LEFT_YN != null" >
+        IS_RIGHT_LEFT_YN = #{IS_RIGHT_LEFT_YN},
+      </if>
+      <if test="CONVERT_LIKE_LANG != null" >
+        CONVERT_LIKE_LANG = #{CONVERT_LIKE_LANG},
+      </if>
+      <if test="CONVERSION_METHOD_ID != null" >
+        CONVERSION_METHOD_ID = #{CONVERSION_METHOD_ID},
+      </if>
+    </set>
+    where LANG_CODE = #{LANG_CODE}
+  </sql>
+  <update id="updateSYS_PARAM_LANGUAGES" parameterType="com.path.dbmaps.vo.SYS_PARAM_LANGUAGESVO" >
+    <include refid="sql_updateSYS_PARAM_LANGUAGES" />
+  </update>
+</mapper>

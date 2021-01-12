@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_MULTI_EFORM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_MULTI_EFORMVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="EFORM_CERTIFICATION_CODE_NO" property="EFORM_CERTIFICATION_CODE_NO" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="AMENDMENT_TYPE" property="AMENDMENT_TYPE" />
+    <result column="AMEND_OTHER_SL" property="AMEND_OTHER_SL" />
+    <result column="UTILIZED_AMOUNT" property="UTILIZED_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DOC_TYPE, EFORM_CERTIFICATION_CODE_NO, TRX_NBR, TRX_TYPE, 
+    AMENDMENT_TYPE, AMEND_OTHER_SL, UTILIZED_AMOUNT
+  </sql>
+  <select id="selectTFS_MULTI_EFORM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_MULTI_EFORMVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_MULTI_EFORM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and EFORM_CERTIFICATION_CODE_NO = #{EFORM_CERTIFICATION_CODE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteTFS_MULTI_EFORM" parameterType="com.path.dbmaps.vo.TFS_MULTI_EFORMVO" >
+    delete from TFS_MULTI_EFORM
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and EFORM_CERTIFICATION_CODE_NO = #{EFORM_CERTIFICATION_CODE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertTFS_MULTI_EFORM" parameterType="com.path.dbmaps.vo.TFS_MULTI_EFORMVO" >
+    insert into TFS_MULTI_EFORM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="EFORM_CERTIFICATION_CODE_NO != null and EFORM_CERTIFICATION_CODE_NO != emptyBigDecimalValue" >
+        EFORM_CERTIFICATION_CODE_NO,
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        TRX_NBR,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="AMENDMENT_TYPE != null" >
+        AMENDMENT_TYPE,
+      </if>
+      <if test="AMEND_OTHER_SL != null and AMEND_OTHER_SL != emptyBigDecimalValue" >
+        AMEND_OTHER_SL,
+      </if>
+      <if test="UTILIZED_AMOUNT != null and UTILIZED_AMOUNT != emptyBigDecimalValue" >
+        UTILIZED_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="EFORM_CERTIFICATION_CODE_NO != null and EFORM_CERTIFICATION_CODE_NO != emptyBigDecimalValue" >
+        #{EFORM_CERTIFICATION_CODE_NO},
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        #{TRX_NBR},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="AMENDMENT_TYPE != null" >
+        #{AMENDMENT_TYPE},
+      </if>
+      <if test="AMEND_OTHER_SL != null and AMEND_OTHER_SL != emptyBigDecimalValue" >
+        #{AMEND_OTHER_SL},
+      </if>
+      <if test="UTILIZED_AMOUNT != null and UTILIZED_AMOUNT != emptyBigDecimalValue" >
+        #{UTILIZED_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_MULTI_EFORM" >
+    update TFS_MULTI_EFORM
+    <set >
+      <if test="AMENDMENT_TYPE != null" >
+        AMENDMENT_TYPE = #{AMENDMENT_TYPE},
+      </if>
+      <if test="AMEND_OTHER_SL != null" >
+        <choose >
+          <when test="AMEND_OTHER_SL == emptyBigDecimalValue" >
+            AMEND_OTHER_SL = NULL ,
+          </when>
+          <otherwise >
+            AMEND_OTHER_SL = #{AMEND_OTHER_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTILIZED_AMOUNT != null" >
+        <choose >
+          <when test="UTILIZED_AMOUNT == emptyBigDecimalValue" >
+            UTILIZED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED_AMOUNT = #{UTILIZED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and EFORM_CERTIFICATION_CODE_NO = #{EFORM_CERTIFICATION_CODE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateTFS_MULTI_EFORM" parameterType="com.path.dbmaps.vo.TFS_MULTI_EFORMVO" >
+    <include refid="sql_updateTFS_MULTI_EFORM" />
+  </update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEALPFTDATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEALPFTDATEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="PROFIT_DECLARATION_DATE" property="PROFIT_DECLARATION_DATE" />
+    <result column="STATUS" property="STATUS" />
+    <result column="PROFIT_DECLARATION_NBR" property="PROFIT_DECLARATION_NBR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NBR, SERIAL_NO, PROFIT_DECLARATION_DATE, STATUS, PROFIT_DECLARATION_NBR
+  </sql>
+  <select id="selectTRSDEALPFTDATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEALPFTDATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEALPFTDATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEALPFTDATE" parameterType="com.path.dbmaps.vo.TRSDEALPFTDATEVOKey" >
+    delete from TRSDEALPFTDATE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEALPFTDATE" parameterType="com.path.dbmaps.vo.TRSDEALPFTDATEVO" >
+    insert into TRSDEALPFTDATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="PROFIT_DECLARATION_DATE != null" >
+        PROFIT_DECLARATION_DATE,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="PROFIT_DECLARATION_NBR != null and PROFIT_DECLARATION_NBR != emptyBigDecimalValue" >
+        PROFIT_DECLARATION_NBR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="PROFIT_DECLARATION_DATE != null" >
+        #{PROFIT_DECLARATION_DATE},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="PROFIT_DECLARATION_NBR != null and PROFIT_DECLARATION_NBR != emptyBigDecimalValue" >
+        #{PROFIT_DECLARATION_NBR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEALPFTDATE" >
+    update TRSDEALPFTDATE
+    <set >
+      <if test="PROFIT_DECLARATION_DATE != null" >
+        PROFIT_DECLARATION_DATE = #{PROFIT_DECLARATION_DATE},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="PROFIT_DECLARATION_NBR != null" >
+        <choose >
+          <when test="PROFIT_DECLARATION_NBR == emptyBigDecimalValue" >
+            PROFIT_DECLARATION_NBR = NULL ,
+          </when>
+          <otherwise >
+            PROFIT_DECLARATION_NBR = #{PROFIT_DECLARATION_NBR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEALPFTDATE" parameterType="com.path.dbmaps.vo.TRSDEALPFTDATEVO" >
+    <include refid="sql_updateTRSDEALPFTDATE" />
+  </update>
+</mapper>

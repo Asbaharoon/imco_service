@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="trxFieldsNameMapper">
+	<resultMap id="trxFieldsNameLookupMap" type="com.path.vo.core.trxfieldsname.TrxFieldsNameCO">
+		<result property="ctsTrxTypeSTDVO.LINE_NBR" 	   column="LINE_NBR"/>
+		<result property="ctsTrxTypeSTDVO.FIELD_NAME" 	   column="FIELD_NAME"/>
+		<result property="elementName" 	   				   column="ELEMENT_NAME"/>
+	</resultMap>
+
+	<select id="returnTrxFieldsNameLookup" parameterType="com.path.vo.core.trxfieldsname.TrxFieldsNameSC" resultMap="trxFieldsNameLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryTrxFieldsNameLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+
+	<select id="returnTrxFieldsNameLookupCount" parameterType="com.path.vo.core.trxfieldsname.TrxFieldsNameSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryTrxFieldsNameLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+	<sql id="queryTrxFieldsNameLkpSQL">
+	 SELECT S.LINE_NBR, S.FIELD_NAME, TD.ELEMENT_NAME
+	   FROM CTSTRXTYPE_STD S, FIELD_TECH_DETAILS TD
+	  WHERE S.ALLOW_MODIFY_IN_FOM_YN = '1'
+	    AND TD.PB_FIELD_NAME = S.FIELD_NAME_DB
+	    AND TD.ENTITY_TYPE = 'CTSTRS'
+	</sql>
+
+</mapper>

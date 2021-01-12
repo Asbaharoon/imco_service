@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_AUTO_REVAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_AUTO_REVALVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="SCH_HOUR" property="SCH_HOUR" />
+    <result column="SCH_MINUTE" property="SCH_MINUTE" />
+    <result column="APP_MODE" property="APP_MODE" />
+    <result column="FROM_BRANCH_CODE" property="FROM_BRANCH_CODE" />
+    <result column="TO_BRANCH_CODE" property="TO_BRANCH_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, SCH_HOUR, SCH_MINUTE, APP_MODE, FROM_BRANCH_CODE, TO_BRANCH_CODE
+  </sql>
+  <select id="selectTRS_AUTO_REVAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_AUTO_REVALVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_AUTO_REVAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTRS_AUTO_REVAL" parameterType="com.path.dbmaps.vo.TRS_AUTO_REVALVOKey" >
+    delete from TRS_AUTO_REVAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTRS_AUTO_REVAL" parameterType="com.path.dbmaps.vo.TRS_AUTO_REVALVO" >
+    insert into TRS_AUTO_REVAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SCH_HOUR != null and SCH_HOUR != emptyBigDecimalValue" >
+        SCH_HOUR,
+      </if>
+      <if test="SCH_MINUTE != null and SCH_MINUTE != emptyBigDecimalValue" >
+        SCH_MINUTE,
+      </if>
+      <if test="APP_MODE != null" >
+        APP_MODE,
+      </if>
+      <if test="FROM_BRANCH_CODE != null and FROM_BRANCH_CODE != emptyBigDecimalValue" >
+        FROM_BRANCH_CODE,
+      </if>
+      <if test="TO_BRANCH_CODE != null and TO_BRANCH_CODE != emptyBigDecimalValue" >
+        TO_BRANCH_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SCH_HOUR != null and SCH_HOUR != emptyBigDecimalValue" >
+        #{SCH_HOUR},
+      </if>
+      <if test="SCH_MINUTE != null and SCH_MINUTE != emptyBigDecimalValue" >
+        #{SCH_MINUTE},
+      </if>
+      <if test="APP_MODE != null" >
+        #{APP_MODE},
+      </if>
+      <if test="FROM_BRANCH_CODE != null and FROM_BRANCH_CODE != emptyBigDecimalValue" >
+        #{FROM_BRANCH_CODE},
+      </if>
+      <if test="TO_BRANCH_CODE != null and TO_BRANCH_CODE != emptyBigDecimalValue" >
+        #{TO_BRANCH_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_AUTO_REVAL" >
+    update TRS_AUTO_REVAL
+    <set >
+      <if test="SCH_HOUR != null" >
+        <choose >
+          <when test="SCH_HOUR == emptyBigDecimalValue" >
+            SCH_HOUR = NULL ,
+          </when>
+          <otherwise >
+            SCH_HOUR = #{SCH_HOUR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCH_MINUTE != null" >
+        <choose >
+          <when test="SCH_MINUTE == emptyBigDecimalValue" >
+            SCH_MINUTE = NULL ,
+          </when>
+          <otherwise >
+            SCH_MINUTE = #{SCH_MINUTE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APP_MODE != null" >
+        APP_MODE = #{APP_MODE},
+      </if>
+      <if test="FROM_BRANCH_CODE != null" >
+        <choose >
+          <when test="FROM_BRANCH_CODE == emptyBigDecimalValue" >
+            FROM_BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            FROM_BRANCH_CODE = #{FROM_BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BRANCH_CODE != null" >
+        <choose >
+          <when test="TO_BRANCH_CODE == emptyBigDecimalValue" >
+            TO_BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            TO_BRANCH_CODE = #{TO_BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTRS_AUTO_REVAL" parameterType="com.path.dbmaps.vo.TRS_AUTO_REVALVO" >
+    <include refid="sql_updateTRS_AUTO_REVAL" />
+  </update>
+</mapper>

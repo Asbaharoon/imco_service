@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_DWS_CF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_DWS_CFVO" >
+    <id column="ORDER_NO" property="ORDER_NO" />
+    <id column="REP_ID" property="REP_ID" />
+    <result column="CF_NAME" property="CF_NAME" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_DWS_CFVO" extends="BaseResultMap" >
+    <result column="CF_EXPRESSION" property="CF_EXPRESSION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ORDER_NO, REP_ID, CF_NAME
+  </sql>
+  <sql id="Blob_Column_List" >
+    CF_EXPRESSION
+  </sql>
+  <select id="selectSWIFT_DWS_CF" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_DWS_CFVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_DWS_CF
+    where ORDER_NO = #{ORDER_NO}
+      and REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteSWIFT_DWS_CF" parameterType="com.path.dbmaps.vo.SWIFT_DWS_CFVOKey" >
+    delete from SWIFT_DWS_CF
+    where ORDER_NO = #{ORDER_NO}
+      and REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertSWIFT_DWS_CF" parameterType="com.path.dbmaps.vo.SWIFT_DWS_CFVO" >
+    insert into SWIFT_DWS_CF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ORDER_NO != null and ORDER_NO != emptyBigDecimalValue" >
+        ORDER_NO,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="CF_NAME != null" >
+        CF_NAME,
+      </if>
+      <if test="CF_EXPRESSION != null" >
+        CF_EXPRESSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ORDER_NO != null and ORDER_NO != emptyBigDecimalValue" >
+        #{ORDER_NO},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="CF_NAME != null" >
+        #{CF_NAME},
+      </if>
+      <if test="CF_EXPRESSION != null" >
+        #{CF_EXPRESSION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_DWS_CF" >
+    update SWIFT_DWS_CF
+    <set >
+      <if test="CF_NAME != null" >
+        CF_NAME = #{CF_NAME},
+      </if>
+      <if test="CF_EXPRESSION != null" >
+        CF_EXPRESSION = #{CF_EXPRESSION},
+      </if>
+    </set>
+    where ORDER_NO = #{ORDER_NO}
+      and REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateSWIFT_DWS_CF" parameterType="com.path.dbmaps.vo.SWIFT_DWS_CFVO" >
+    <include refid="sql_updateSWIFT_DWS_CF" />
+  </update>
+</mapper>

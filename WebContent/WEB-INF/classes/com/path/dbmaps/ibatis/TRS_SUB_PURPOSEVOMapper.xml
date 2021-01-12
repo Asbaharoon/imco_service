@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_SUB_PURPOSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_SUB_PURPOSEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SUB_PURPOSE_CODE" property="SUB_PURPOSE_CODE" />
+    <result column="PURPOSE_CODE" property="PURPOSE_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, SUB_PURPOSE_CODE, PURPOSE_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG, BRIEF_DESC_ARAB, 
+    LONG_DESC_ARAB
+  </sql>
+  <select id="selectTRS_SUB_PURPOSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_SUB_PURPOSEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_SUB_PURPOSE
+    where COMP_CODE = #{COMP_CODE}
+      and SUB_PURPOSE_CODE = #{SUB_PURPOSE_CODE}
+  </select>
+  <delete id="deleteTRS_SUB_PURPOSE" parameterType="com.path.dbmaps.vo.TRS_SUB_PURPOSEVOKey" >
+    delete from TRS_SUB_PURPOSE
+    where COMP_CODE = #{COMP_CODE}
+      and SUB_PURPOSE_CODE = #{SUB_PURPOSE_CODE}
+  </delete>
+  <insert id="insertTRS_SUB_PURPOSE" parameterType="com.path.dbmaps.vo.TRS_SUB_PURPOSEVO" >
+    
+    insert into TRS_SUB_PURPOSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SUB_PURPOSE_CODE != null" >
+        SUB_PURPOSE_CODE,
+      </if>
+      <if test="PURPOSE_CODE != null" >
+        PURPOSE_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{COMP_CODE},
+      <if test="SUB_PURPOSE_CODE != null" >
+        #{SUB_PURPOSE_CODE},
+      </if>
+      <if test="PURPOSE_CODE != null" >
+        #{PURPOSE_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateTRS_SUB_PURPOSE" parameterType="com.path.dbmaps.vo.TRS_SUB_PURPOSEVO" >
+    update TRS_SUB_PURPOSE
+    <set >
+      <if test="PURPOSE_CODE != null" >
+        PURPOSE_CODE = #{PURPOSE_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and SUB_PURPOSE_CODE = #{SUB_PURPOSE_CODE}
+  </update>
+</mapper>

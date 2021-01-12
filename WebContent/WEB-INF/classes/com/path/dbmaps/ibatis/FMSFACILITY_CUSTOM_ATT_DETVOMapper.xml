@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSFACILITY_CUSTOM_ATT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSFACILITY_CUSTOM_ATT_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FACILITY_CUSTOM_CODE" property="FACILITY_CUSTOM_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="PROPERTY_VALUE_ENG" property="PROPERTY_VALUE_ENG" />
+    <result column="PROPERTY_VALUE_ARAB" property="PROPERTY_VALUE_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, FACILITY_CUSTOM_CODE, LINE_NO, PROPERTY_VALUE_ENG, PROPERTY_VALUE_ARAB
+  </sql>
+  <select id="selectFMSFACILITY_CUSTOM_ATT_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSFACILITY_CUSTOM_ATT_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSFACILITY_CUSTOM_ATT_DET
+    where COMP_CODE = #{COMP_CODE}
+      and FACILITY_CUSTOM_CODE = #{FACILITY_CUSTOM_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSFACILITY_CUSTOM_ATT_DET" parameterType="com.path.dbmaps.vo.FMSFACILITY_CUSTOM_ATT_DETVOKey" >
+    delete from FMSFACILITY_CUSTOM_ATT_DET
+    where COMP_CODE = #{COMP_CODE}
+      and FACILITY_CUSTOM_CODE = #{FACILITY_CUSTOM_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSFACILITY_CUSTOM_ATT_DET" parameterType="com.path.dbmaps.vo.FMSFACILITY_CUSTOM_ATT_DETVO" >
+    insert into FMSFACILITY_CUSTOM_ATT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FACILITY_CUSTOM_CODE != null and FACILITY_CUSTOM_CODE != emptyBigDecimalValue" >
+        FACILITY_CUSTOM_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PROPERTY_VALUE_ENG != null and !&quot;&quot;.equals(PROPERTY_VALUE_ENG)" >
+        PROPERTY_VALUE_ENG,
+      </if>
+      <if test="PROPERTY_VALUE_ARAB != null and !&quot;&quot;.equals(PROPERTY_VALUE_ARAB)" >
+        PROPERTY_VALUE_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FACILITY_CUSTOM_CODE != null and FACILITY_CUSTOM_CODE != emptyBigDecimalValue" >
+        #{FACILITY_CUSTOM_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PROPERTY_VALUE_ENG != null and !&quot;&quot;.equals(PROPERTY_VALUE_ENG)" >
+        #{PROPERTY_VALUE_ENG},
+      </if>
+      <if test="PROPERTY_VALUE_ARAB != null and !&quot;&quot;.equals(PROPERTY_VALUE_ARAB)" >
+        #{PROPERTY_VALUE_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSFACILITY_CUSTOM_ATT_DET" >
+    update FMSFACILITY_CUSTOM_ATT_DET
+    <set >
+      <if test="PROPERTY_VALUE_ENG != null" >
+        <choose >
+          <when test="PROPERTY_VALUE_ENG.equals(&quot;&quot;)" >
+            PROPERTY_VALUE_ENG = NULL ,
+          </when>
+          <otherwise >
+            PROPERTY_VALUE_ENG = #{PROPERTY_VALUE_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROPERTY_VALUE_ARAB != null" >
+        <choose >
+          <when test="PROPERTY_VALUE_ARAB.equals(&quot;&quot;)" >
+            PROPERTY_VALUE_ARAB = NULL ,
+          </when>
+          <otherwise >
+            PROPERTY_VALUE_ARAB = #{PROPERTY_VALUE_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and FACILITY_CUSTOM_CODE = #{FACILITY_CUSTOM_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSFACILITY_CUSTOM_ATT_DET" parameterType="com.path.dbmaps.vo.FMSFACILITY_CUSTOM_ATT_DETVO" >
+    <include refid="sql_updateFMSFACILITY_CUSTOM_ATT_DET" />
+  </update>
+</mapper>

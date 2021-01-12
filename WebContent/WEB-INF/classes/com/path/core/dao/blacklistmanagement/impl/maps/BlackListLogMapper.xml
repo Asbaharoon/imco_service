@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blackListLogMapper">
+	
+	
+	<resultMap id="loadBlackListLogGridMap" type="blackListLogCO">
+		<result property="ctsBlackListLogVO.COMP_CODE" column="COMP_CODE" />
+		<result property="ctsBlackListLogVO.BRANCH_CODE" column="BRANCH_CODE" />
+		<result property="ctsBlackListLogVO.LINE_NO" column="LINE_NO" />
+		<result property="ctsBlackListLogVO.ENTITY_TYPE" column="ENTITY_TYPE" />
+		<result property="ctsBlackListLogVO.ENTITY_NO" column="ENTITY_NO" />
+		<result property="entityTypeDesc" column="ENTITY_TYPE_DESC" />
+		<result property="ctsBlackListLogVO.CRITERIA_MATCH_PERCENT" column="CRITERIA_MATCH_PERCENT" />
+		<result property="ctsBlackListLogVO.ACTION_TYPE" column="ACTION_TYPE" />
+		<result property="ctsBlackListLogVO.REMARK_VALUE" column="REMARK_VALUE" />
+		<result property="ctsBlackListLogVO.DATE_UPDATED" column="DATE_UPDATED" />
+		<result property="ctsBlackListLogVO.SENT_BY_USER" column="SENT_BY_USER" />
+		<result property="ctsBlackListLogVO.RECEIVED_BRANCH" column="RECEIVED_BRANCH" />
+		<result property="blackListCode" column="blackListCode" />
+		<result property="blackListName" column="blackListName" />
+		<result property="blackListSourceCode" column="blackListSourceCode" />
+		<result property="blackListSourceName" column="blackListSourceName" />
+		<result property="cifNameArab" column="cifNameArab" />
+		<result property="documentNbr" column="documentNbr" />
+		<result property="dateTurnedBlackList" column="dateTurnedBlackList" />
+		<result property="nationality" column="nationality" />
+		<result property="passportNo" column="passportNo" />
+		<result property="dateOfBirth" column="dateOfBirth" />
+	</resultMap>
+	
+		<resultMap id="loadBlackListReasonGridMap" type="blackListReasonCO">
+		
+			<result property="ctsBlckListReasonLogVO.COMP_CODE" column="COMP_CODE" />
+			<result property="ctsBlckListReasonLogVO.BRANCH_CODE" column="BRANCH_CODE" />
+			<result property="ctsBlckListReasonLogVO.LINE_NO" column="LINE_NO" />
+			<result property="ctsBlckListReasonLogVO.BLCKLIST_LOG_LINE_NO" column="BLCKLIST_LOG_LINE_NO" />
+			<result property="ctsBlckListReasonLogVO.CRITERIA_VALUE" column="CRITERIA_VALUE" />
+
+	   </resultMap>
+	
+		<resultMap id="loadBlackListNameMatchGridMap" type="blackListNameMatchCO">
+			<result property="ctsBlckListNameMatchVO.COMP_CODE" column="COMP_CODE" />
+			<result property="ctsBlckListNameMatchVO.BRANCH_CODE" column="BRANCH_CODE" />
+			<result property="ctsBlckListNameMatchVO.LINE_NO" column="LINE_NO" />
+			<result property="ctsBlckListNameMatchVO.BLCKLIST_LOG_LINE_NO" column="BLCKLIST_LOG_LINE_NO" />
+			<result property="ctsBlckListNameMatchVO.CRITERIA_TYPE" column="CRITERIA_TYPE" />
+			<result property="ctsBlckListNameMatchVO.CRITERIA_VALUE" column="CRITERIA_VALUE" />
+			<result property="ctsBlckListNameMatchVO.PERCENTAGE_VALUE" column="PERCENTAGE_VALUE" />
+
+		</resultMap>
+	
+		<select id="loadBlackListLogGridCount" resultType="int" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_loadBlackListLogGrid" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+		<select id="loadBlackListLogGrid" resultMap="loadBlackListLogGridMap" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_loadBlackListLogGrid" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="loadBlackListReasonGridCount" resultType="int" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_loadBlackListReasonGrid" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+	<select id="loadBlackListReasonPageGrid" resultMap="loadBlackListReasonGridMap" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_loadBlackListReasonGrid" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	
+		<select id="loadBlackListNameMatchGridCount" resultType="int" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_loadBlackListNameMatchGrid" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+	<select id="loadBlackListNameMatchPageGrid" resultMap="loadBlackListNameMatchGridMap" parameterType="blackListLogSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_loadBlackListNameMatchGrid" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	
+	
+	<sql id="select_loadBlackListLogGrid">
+		SELECT  BLL.LINE_NO,
+                BLL.ENTITY_NO,
+		        BLL.CRITERIA_MATCH_PERCENT,
+		        BLL.ACTION_TYPE,
+		        BLL.REMARK_VALUE,
+		        BLL.DATE_UPDATED,
+		        BLL.SENT_BY_USER,
+		        BLL.RECEIVED_BRANCH,
+		        <!-- added by rany bitar tpid:514489-SBI170088 for tfa blacklist checking -->
+		        (SELECT VALUE_DESC 
+					FROM SYS_PARAM_LOV_TRANS 
+					WHERE LOV_TYPE_ID = 1679
+					AND LANG_CODE = #{preferredLanguage}
+					AND VALUE_CODE = BLL.ENTITY_TYPE) ENTITY_TYPE_DESC,
+				  BLL.ENTITY_TYPE,
+				   CASE WHEN BL.CODE IS NOT NULL THEN BL.CODE
+            		WHEN BL2.CODE IS NOT NULL THEN BL2.CODE
+            		WHEN BL3.CODE IS NOT NULL THEN BL3.CODE
+                	ELSE NULL
+	               END blackListCode,
+		          BL.LONG_NAME_ENG blackListName,
+		          BL.CODE_SOURCE blackListSourceCode,
+		          BLS.LONG_DESC_ENG blackListSourceName,
+		          CIF.LONG_NAME_ARAB cifNameArab,
+		          BL.OID_DOCUMENT_NBR documentNbr,
+		          BL.DATE_APPROVED dateTurnedBlackList,
+		          CIF.NATION_CODE,
+		          N.LONG_DESC_ENG nationality,
+		          CIF.PASSPORT_NO passportNo,
+		          CIF.BIRTH_DATE dateOfBirth
+		FROM    CTS_BLACKLIST_LOG BLL
+		
+		LEFT OUTER JOIN  CIF
+		ON
+		  BLL.COMP_CODE = CIF.COMP_CODE
+	     AND BLL.BRANCH_CODE = CIF.BRANCH_CODE
+	     AND BLL.ENTITY_NO = CIF.CIF_NO
+	     
+		LEFT OUTER JOIN  MOSBLACKLIST BL
+		ON
+		 BLL.COMP_CODE = BL.COMP_CODE
+	     AND BLL.ENTITY_NO = BL.CIF
+		LEFT OUTER JOIN MOSBLACKSOURCE BLS ON
+		BL.COMP_CODE = BLS.COMP_CODE
+	     AND BL.CODE_SOURCE = BLS.CODE
+	     LEFT OUTER JOIN 
+		 NATIONALITY N
+		 ON 
+		 CIF.COMP_CODE = N.COMP_CODE
+	     AND CIF.NATION_CODE = N.CODE
+	   WHERE    BLL.COMP_CODE  = #{compCode}
+		 AND    BLL.BRANCH_CODE  = #{branchCode}
+		 AND    BLL.ACTION_TYPE IS NULL
+		       LEFT OUTER JOIN CTSTRS TRS ON BLL.ENTITY_NO=TRS.TRS_NO
+                   AND UPPER(BLL.ENTITY_TYPE)='TRX'
+                    AND TRS.TRS_TYPE='R'
+                    AND TRS.CB_IND='C'
+                    AND TRS.BRANCH_CODE=BLL.BRANCH_CODE
+          LEFT OUTER JOIN   MOSBLACKLIST BL2 ON
+            TRS.TRS_AC_CIF  =BL2.CIF    
+            AND TRS.COMP_CODE  =BL2.COMP_CODE
+          LEFT OUTER JOIN   MOSBLACKLIST BL3 ON
+            TRS.TO_TRS_AC_CIF  =BL3.CIF    
+            AND TRS.COMP_CODE  =BL3.COMP_CODE  
+	   WHERE    BLL.COMP_CODE  = #{compCode}
+		 AND    BLL.BRANCH_CODE  = #{branchCode}
+		 AND    BLL.ACTION_TYPE IS NULL
+		 <if test="currAppName == 'AML'"> 
+		 AND 	BLL.ENTITY_TYPE = 'CIF'
+		 </if>
+		
+	</sql>
+	
+	
+	<sql id="select_loadBlackListReasonGrid">
+		SELECT  CRITERIA_VALUE
+		FROM    CTS_BLCKLIST_REASON_LOG        
+	   WHERE    COMP_CODE  = #{compCode}
+		 AND    BRANCH_CODE  = #{branchCode}
+		 AND    BLCKLIST_LOG_LINE_NO = #{blckListLogLineNo}
+
+	</sql>
+	
+		<sql id="select_loadBlackListNameMatchGrid">
+		SELECT  CRITERIA_TYPE,CRITERIA_VALUE,PERCENTAGE_VALUE
+		FROM    CTS_BLCKLIST_NAME_MATCH        
+	   WHERE    COMP_CODE  = #{compCode}
+		 AND    BRANCH_CODE  = #{branchCode}
+		 AND    BLCKLIST_LOG_LINE_NO = #{blckListLogLineNo}
+
+	</sql>
+	
+	  <update id="updateBlackListLog" parameterType="ctsBlackListLogVO">
+		UPDATE CTS_BLACKLIST_LOG
+		<set> ACTION_TYPE = #{ACTION_TYPE}, REMARK_VALUE = #{REMARK_VALUE}  </set>
+		WHERE CTS_BLACKLIST_LOG.COMP_CODE    = #{COMP_CODE}
+		AND	CTS_BLACKLIST_LOG.BRANCH_CODE  	= #{BRANCH_CODE}
+		AND	CTS_BLACKLIST_LOG.ENTITY_NO  	= #{ENTITY_NO}
+	  </update>
+	  
+	  
+	  <select id="returnSTODOVOData" resultType="sToDoDetVO" parameterType="blackListLogCO">
+	  
+	  <if test="isSybase != 1"> 
+		SELECT TBL.* FROM
+        (SELECT * FROM S_TODO_DET WHERE TODO_PROG_REF = 'BL001BLL' AND TODO_APPLICATION = 'RET'
+		AND TODO_ALERT = 'BLL' AND COMP_CODE = #{compCode}
+		AND BRANCH_CODE = #{branchCode}
+		AND USER_ID = #{userId}
+
+		<!-- added by rany bitar tpid:514489-SBI170088 blacklist checking -->
+		<choose>			
+			<when test='entityType=="ILC" or entityType=="ELC" or entityType=="LG" or entityType=="IBL" or entityType=="EBL" or entityType=="ADV" or entityType=="IAD" or entityType=="EAD"or entityType=="EBD"'>
+				AND TRX_NUMBER = #{trxNbr}
+			</when>
+			<otherwise>
+				AND TODO_PARAM = #{todoParam}
+			</otherwise>
+		</choose>		
+		ORDER BY TODO_CODE, TODO_LINE DESC) TBL
+        WHERE ROWNUM = 1
+        </if>
+        
+        <if test="isSybase == 1">
+        
+        SELECT TOP 1 S_TODO_DET.*
+        FROM S_TODO_DET
+ 	    WHERE TODO_PROG_REF = 'BL001BLL' AND TODO_APPLICATION = 'RET'
+		AND TODO_ALERT = 'BLL' AND COMP_CODE = #{compCode}
+   		AND BRANCH_CODE = #{branchCode}
+  		AND USER_ID = #{userId}
+  		<!-- added by rany bitar tpid:514489-SBI170088 blacklist checking -->
+		<choose>			
+			<when test='entityType=="ILC" or entityType=="ELC" or entityType=="LG" or entityType=="IBL" or entityType=="EBL" or entityType=="ADV" or entityType=="IAD" or entityType=="EAD"or entityType=="EBD"'>
+				AND TRX_NUMBER = CONVERT(VARCHAR,#{trxNbr})
+			</when>
+			<otherwise>
+				AND
+					CASE ISNUMERIC(TODO_PARAM) WHEN 1 THEN CONVERT(NUMERIC,TODO_PARAM)
+						 ELSE NULL		 
+					END = CONVERT(NUMERIC,#{todoParam})
+			</otherwise>
+		</choose>		
+  		
+   		ORDER BY TODO_CODE, TODO_LINE DESC
+        
+        </if> 
+      </select>
+      
+      
+      <update id="updateBlckListTrxStatus" parameterType="blackListLogCO">
+		UPDATE CTSTRS
+		<set> STATUS = 'J' </set>
+		WHERE CTSTRS.COMP_CODE    = #{compCode}
+		AND	CTSTRS.BRANCH_CODE  	= #{branchCode}
+		AND	CTSTRS.TRS_TYPE  	= #{trsType}
+		AND	CTSTRS.CB_IND  	= #{cbInd}
+		AND	CTSTRS.TRS_NO  	= #{entityNo}		
+	  </update>
+	  
+	  <update id="updateBlckListCIFStatus" parameterType="blackListLogCO">
+		UPDATE CIF
+		<set> STATUS = 'D'</set>
+		WHERE CIF.COMP_CODE    = #{compCode}
+		AND	CIF.BRANCH_CODE  	= #{entityNo}
+	  </update>
+	  
+	
+</mapper>

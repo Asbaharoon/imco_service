@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_LOV_TRANS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_LOV_TRANSVO" >
+    <id column="LANG_CODE" property="LANG_CODE" />
+    <id column="LOV_TYPE_ID" property="LOV_TYPE_ID" />
+    <id column="VALUE_CODE" property="VALUE_CODE" />
+    <result column="VALUE_DESC" property="VALUE_DESC" />
+    <result column="LOV_ORDER" property="LOV_ORDER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LANG_CODE, LOV_TYPE_ID, VALUE_CODE, VALUE_DESC, LOV_ORDER
+  </sql>
+  <select id="selectSYS_PARAM_LOV_TRANS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TRANSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_LOV_TRANS
+    where LANG_CODE = #{LANG_CODE}
+      and LOV_TYPE_ID = #{LOV_TYPE_ID}
+      and VALUE_CODE = #{VALUE_CODE}
+  </select>
+  <delete id="deleteSYS_PARAM_LOV_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TRANSVO" >
+    delete from SYS_PARAM_LOV_TRANS
+    where LANG_CODE = #{LANG_CODE}
+      and LOV_TYPE_ID = #{LOV_TYPE_ID}
+      and VALUE_CODE = #{VALUE_CODE}
+  </delete>
+  <insert id="insertSYS_PARAM_LOV_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TRANSVO" >
+    insert into SYS_PARAM_LOV_TRANS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LANG_CODE != null" >
+        LANG_CODE,
+      </if>
+      <if test="LOV_TYPE_ID != null and LOV_TYPE_ID != emptyBigDecimalValue" >
+        LOV_TYPE_ID,
+      </if>
+      <if test="VALUE_CODE != null" >
+        VALUE_CODE,
+      </if>
+      <if test="VALUE_DESC != null" >
+        VALUE_DESC,
+      </if>
+      <if test="LOV_ORDER != null and LOV_ORDER != emptyBigDecimalValue" >
+        LOV_ORDER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LANG_CODE != null" >
+        #{LANG_CODE},
+      </if>
+      <if test="LOV_TYPE_ID != null and LOV_TYPE_ID != emptyBigDecimalValue" >
+        #{LOV_TYPE_ID},
+      </if>
+      <if test="VALUE_CODE != null" >
+        #{VALUE_CODE},
+      </if>
+      <if test="VALUE_DESC != null" >
+        #{VALUE_DESC},
+      </if>
+      <if test="LOV_ORDER != null and LOV_ORDER != emptyBigDecimalValue" >
+        #{LOV_ORDER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_LOV_TRANS" >
+    update SYS_PARAM_LOV_TRANS
+    <set >
+      <if test="VALUE_DESC != null" >
+        VALUE_DESC = #{VALUE_DESC},
+      </if>
+      <if test="LOV_ORDER != null" >
+        <choose >
+          <when test="LOV_ORDER == emptyBigDecimalValue" >
+            LOV_ORDER = NULL ,
+          </when>
+          <otherwise >
+            LOV_ORDER = #{LOV_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where LANG_CODE = #{LANG_CODE}
+      and LOV_TYPE_ID = #{LOV_TYPE_ID}
+      and VALUE_CODE = #{VALUE_CODE}
+  </sql>
+  <update id="updateSYS_PARAM_LOV_TRANS" parameterType="com.path.dbmaps.vo.SYS_PARAM_LOV_TRANSVO" >
+    <include refid="sql_updateSYS_PARAM_LOV_TRANS" />
+  </update>
+</mapper>

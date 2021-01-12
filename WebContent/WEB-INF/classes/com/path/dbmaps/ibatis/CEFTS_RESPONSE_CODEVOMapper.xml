@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CEFTS_RESPONSE_CODE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CEFTS_RESPONSE_CODEVO" >
+    <id column="CODE" property="CODE" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, DESCRIPTION
+  </sql>
+  <select id="selectCEFTS_RESPONSE_CODE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CEFTS_RESPONSE_CODEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CEFTS_RESPONSE_CODE
+    where CODE = #{CODE}
+  </select>
+  <delete id="deleteCEFTS_RESPONSE_CODE" parameterType="com.path.dbmaps.vo.CEFTS_RESPONSE_CODEVOKey" >
+    delete from CEFTS_RESPONSE_CODE
+    where CODE = #{CODE}
+  </delete>
+  <insert id="insertCEFTS_RESPONSE_CODE" parameterType="com.path.dbmaps.vo.CEFTS_RESPONSE_CODEVO" >
+    insert into CEFTS_RESPONSE_CODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCEFTS_RESPONSE_CODE" >
+    update CEFTS_RESPONSE_CODE
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where CODE = #{CODE}
+  </sql>
+  <update id="updateCEFTS_RESPONSE_CODE" parameterType="com.path.dbmaps.vo.CEFTS_RESPONSE_CODEVO" >
+    <include refid="sql_updateCEFTS_RESPONSE_CODE" />
+  </update>
+</mapper>

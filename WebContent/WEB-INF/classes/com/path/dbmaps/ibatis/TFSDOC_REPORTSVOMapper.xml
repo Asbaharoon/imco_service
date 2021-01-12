@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSDOC_REPORTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSDOC_REPORTSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="REP_ID" property="REP_ID" />
+    <result column="NBR_COPIES" property="NBR_COPIES" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, PROG_REF, REP_ID, NBR_COPIES, DATE_UPDATED
+  </sql>
+  <select id="selectTFSDOC_REPORTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSDOC_REPORTS
+    where COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteTFSDOC_REPORTS" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTSVO" >
+    delete from TFSDOC_REPORTS
+    where COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertTFSDOC_REPORTS" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTSVO" >
+    insert into TFSDOC_REPORTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="NBR_COPIES != null and NBR_COPIES != emptyBigDecimalValue" >
+        NBR_COPIES,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="NBR_COPIES != null and NBR_COPIES != emptyBigDecimalValue" >
+        #{NBR_COPIES},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSDOC_REPORTS" >
+    update TFSDOC_REPORTS
+    <set >
+      <if test="NBR_COPIES != null" >
+        <choose >
+          <when test="NBR_COPIES == emptyBigDecimalValue" >
+            NBR_COPIES = NULL ,
+          </when>
+          <otherwise >
+            NBR_COPIES = #{NBR_COPIES},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and PROG_REF = #{PROG_REF}
+      and REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateTFSDOC_REPORTS" parameterType="com.path.dbmaps.vo.TFSDOC_REPORTSVO" >
+    <include refid="sql_updateTFSDOC_REPORTS" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

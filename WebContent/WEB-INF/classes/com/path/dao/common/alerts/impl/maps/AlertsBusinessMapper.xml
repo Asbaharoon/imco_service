@@ -1,0 +1,2393 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="alertsBusinessMapper">
+		
+
+
+<sql id="select_alertsList">	
+  <choose> 
+  	
+  	<!-- in case of login alert, the users that should appear in the send list need to have the current user as subordinate  -->
+  	<when test='todoAlert != null  and "@LM".equals(todoAlert)'>
+	  	SELECT 	
+	  		U.USER_ID USER_ID,
+			U.FIRST_NAME BRIEF_NAME_ENG,
+	       	U.LAST_NAME LONG_NAME_ENG,
+	        U.FIRST_NAME_ARABIC BRIEF_NAME_ARAB,
+	        U.LAST_NAME_ARABIC LONG_NAME_ARAB,
+	        #{branchCode} BRANCH_CODE,
+	        0 PRIVILEGE_LEVEL,
+	        U.USER_STS STATUS,
+	        '1' C_ORDER
+	    FROM USR_SUBORDINATES L , USR U 
+		WHERE
+			L.SUBORDINATE_USER_ID = #{userId} 
+			AND U.USER_ID = L.USER_ID
+			AND U.USER_ID <![CDATA[<>]]> #{userId}
+			AND EXISTS (SELECT 1
+			              FROM S_APPLOG
+			             WHERE S_APPLOG.USER_ID = L.USER_ID
+			               AND S_APPLOG.COMP_CODE = #{compCode}
+			               AND S_APPLOG.BRANCH_CODE = #{branchCode}
+			          <choose>
+			             <when test="isWebVers==2">
+			            	AND S_APPLOG.USER_STS_WEB = 'L'
+			             </when>
+			             <otherwise>
+			            	AND S_APPLOG.USER_STS = 'L' 
+						 </otherwise>
+					  </choose>
+					     AND S_APPLOG.APP_NAME = #{appName})
+	</when>
+  	
+  	<when test='appName != null and "RET".equals(appName)'>
+	   	<if test='"MEM".equals(todoAlert) or "LM".equals(todoAlert) or "CAA".equals(todoAlert) or "CAC".equals(todoAlert) or "Q".equals(todoAlert) or "B".equals(todoAlert) or "CD".equals(todoAlert) or "PA".equals(todoAlert) or "PBD".equals(todoAlert) or "RC".equals(todoAlert) or "S".equals(todoAlert) or "LF".equals(todoAlert) or "AO".equals(todoAlert) or "RM".equals(todoAlert) or "RMI".equals(todoAlert) or "PB".equals(todoAlert) or "PBI".equals(todoAlert) or "RR".equals(todoAlert)  or "MER".equals(todoAlert)  or "POS".equals(todoAlert)  or "CER".equals(todoAlert)  or "DEN".equals(todoAlert) or "BP".equals(todoAlert) or "TF".equals(todoAlert) or "BLA".equals(todoAlert) or "RB".equals(todoAlert) or "SPC".equals(todoAlert) or "DUE".equals(todoAlert) or "ACA".equals(todoAlert) or "ACP".equals(todoAlert) or "ACR".equals(todoAlert) or "SMS".equals(todoAlert) or "TA".equals(todoAlert) or "QG".equals(todoAlert) or "BFC".equals(todoAlert) or "BFA".equals(todoAlert) or "BFS".equals(todoAlert) or "CAA".equals(todoAlert) or "CAC".equals(todoAlert) or "BAT".equals(todoAlert) or "BRT".equals(todoAlert) or "BTT".equals(todoAlert) or "TRT".equals(todoAlert) or "BAS".equals(todoAlert) or "BRSC".equals(todoAlert) or "ALP".equals(todoAlert) or "RLP".equals(todoAlert) or "BCC".equals(todoAlert) or "BCR".equals(todoAlert) or "CONVA".equals(todoAlert) or "BAS".equals(todoAlert) or "BRSC".equals(todoAlert) or "ALP".equals(todoAlert) or "RLP".equals(todoAlert) or "BCC".equals(todoAlert) or "BCR".equals(todoAlert) or "CONVA".equals(todoAlert) or "QG".equals(todoAlert) or "FPT".equals(todoAlert) or "AST".equals(todoAlert) or "FRT".equals(todoAlert) or "FCT".equals(todoAlert) or "ALA".equals(todoAlert) or "APA".equals(todoAlert) or "PCA".equals(todoAlert) or "BAT".equals(todoAlert) or "BRT".equals(todoAlert) or "BTT".equals(todoAlert) or "TRT".equals(todoAlert)  or "TA".equals(todoAlert) or "IRA".equals(todoAlert) or "IRC".equals(todoAlert) or "IRR".equals(todoAlert) or "EOA".equals(todoAlert) or "EOC".equals(todoAlert) or "RM".equals(todoAlert) or "BQ".equals(todoAlert) or "TOA".equals(todoAlert)'>
+		<!-- dw_alert_opt_user -->	
+		SELECT CTSTELLER.USER_ID USER_ID,
+		       CTSTELLER.CODE,
+		       CTSTELLER.BRIEF_NAME_ENG,
+		       CTSTELLER.LONG_NAME_ENG,
+		       CTSTELLER.BRIEF_NAME_ARAB,
+		       CTSTELLER.LONG_NAME_ARAB,
+		       CTSTELLER.BRANCH_CODE,
+		       CTSTELLER.AUTH_OD_ACC,
+		       (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+		  FROM CTSTELLER, CTSTELLERDET
+		 WHERE (CTSTELLER.COMP_CODE = #{compCode})
+		   AND ((#{alertType} = 'X') Or
+		       (#{alertType} <![CDATA[ <> ]]> 'X' and CTSTELLER.BRANCH_CODE = #{branchCode}))
+		   AND (EXISTS (SELECT 1
+		                  FROM AXS
+		                 WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+		                   AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		                   AND AXS.USER_ID = CTSTELLER.USER_ID
+		                   AND AXS.APP_NAME = #{appName}
+		                   AND AXS.PROG_REF = #{progRef}
+		                   AND AXS.STATUS = 'P'
+		                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		                   ) Or EXISTS
+		        (SELECT 1
+		           FROM S_APPROLUSR, S_ROLE_DETAIL
+		          WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+		            AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		            AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+		            AND S_APPROLUSR.APP_NAME = #{appName}
+		            AND S_APPROLUSR.STATUS = 'P'
+		               
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P'
+		         
+		         ) Or EXISTS
+		        (SELECT 1
+		           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+		          WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+		                S_GROUP_USER.COMP_CODE = 0)
+		            AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+		                S_GROUP_USER.BRANCH_CODE = 0)
+		            AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+		            AND S_GROUP_USER.STATUS = 'P'
+		            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		               
+		            AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+		            AND S_GROUP_PROFILE.APP_NAME = #{appName}
+		            AND S_GROUP_PROFILE.STATUS = 'P'
+		               
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P'
+		            
+		            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+		            
+		         
+		         ))
+		      
+		   AND (CTSTELLERDET.COMP_CODE = CTSTELLER.COMP_CODE)
+		   AND (CTSTELLERDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE)
+		   AND (CTSTELLERDET.CODE = CTSTELLER.CODE)
+		   AND (CTSTELLERDET.SUB_TELLER_BRANCH = #{branchCode})
+		<choose>
+			<when test='"ATMTELER".equals(trxType)'>
+		          AND (CTSTELLERDET.USER_ID =(SELECT USER_ID FROM CTSTELLER WHERE COMP_CODE=#{compCode} AND BRANCH_CODE=#{branchCode}
+		                AND CODE=#{todoTellerId}))
+		    </when>
+		    <otherwise>
+		 		   AND (CTSTELLERDET.USER_ID = #{userId})
+		    </otherwise>
+		</choose>
+		   AND (CTSTELLER.STATUS = 'A')
+		   AND (CTSTELLER.USER_ID <![CDATA[ <> ]]> #{userId})
+		   AND (CTSTELLER.GLOBAL_LIMIT_CV >= #{amount})
+		      
+		   AND EXISTS (SELECT 1
+		          FROM S_APPLOG
+		         WHERE S_APPLOG.USER_ID = CTSTELLER.USER_ID
+		           AND S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+		           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		            <choose>
+					   <when test="isWebVers==2">
+					    AND S_APPLOG.USER_STS_WEB = 'L'
+					   </when>
+					   <otherwise>
+					    AND S_APPLOG.USER_STS = 'L' 
+					   </otherwise>
+					</choose>
+		           AND S_APPLOG.APP_NAME = 'RET')
+		   AND ((#{reasonCode} <![CDATA[ <> ]]> 'TT' AND #{reasonCode} <![CDATA[ <> ]]> 'EXC') OR
+		       (#{reasonCode} = 'TT' AND EXISTS
+		        (SELECT 1
+		            FROM CTSCONTROL
+		           WHERE COMP_CODE = #{compCode}
+		             AND BRANCH_CODE = #{branchCode}
+		             AND PT_ONLY_SEND_ALERT_TO_TELLER = '0')))
+		<!-- <include refid="userAccRestriction"/> -->
+		<if  test='"true".equals(authOdAcc)'> 
+		AND CTSTELLER.AUTH_OD_ACC='1'
+		</if>
+		 UNION
+		
+		SELECT CTSTELLER.USER_ID USER_ID,
+		       CTSTELLER.CODE,
+		       CTSTELLER.BRIEF_NAME_ENG,
+		       CTSTELLER.LONG_NAME_ENG,
+		       CTSTELLER.BRIEF_NAME_ARAB,
+		       CTSTELLER.LONG_NAME_ARAB,
+		       CTSTELLER.BRANCH_CODE,
+		       CTSTELLER.AUTH_OD_ACC,
+		       (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+		  FROM CTSTELLER
+		 WHERE #{reasonCode} = 'TT'
+		   AND CTSTELLER.COMP_CODE = #{compCode}
+		   <if test='todoTellerBranch != null'>
+		  	 AND CTSTELLER.BRANCH_CODE = #{todoTellerBranch,jdbcType=NUMERIC}
+		   </if>
+		   <if test='todoTellerId != null'>
+		     AND CTSTELLER.CODE = #{todoTellerId,jdbcType=NUMERIC}
+		   </if>
+		   AND CTSTELLER.STATUS = 'A'
+		   AND (EXISTS (SELECT 1
+		                  FROM AXS
+		                 WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+		                   AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		                   AND AXS.USER_ID = CTSTELLER.USER_ID
+		                   AND AXS.APP_NAME = #{appName}
+		                   AND AXS.PROG_REF = #{progRef}
+		                   AND AXS.STATUS = 'P'
+		                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		                   ) Or EXISTS
+		        (SELECT 1
+		           FROM S_APPROLUSR, S_ROLE_DETAIL
+		          WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+		            AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		            AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+		            AND S_APPROLUSR.APP_NAME = #{appName}
+		            AND S_APPROLUSR.STATUS = 'P'
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P') Or EXISTS
+		        (SELECT 1
+		           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+		          WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+		                S_GROUP_USER.COMP_CODE = 0)
+		            AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+		                S_GROUP_USER.BRANCH_CODE = 0)
+		            AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+		            AND S_GROUP_USER.STATUS = 'P'
+		            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		            AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+		            AND S_GROUP_PROFILE.APP_NAME = #{appName}
+		            AND S_GROUP_PROFILE.STATUS = 'P'
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P'
+		            
+		            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+		            
+		            ))
+		   AND EXISTS (SELECT 1
+		          FROM S_APPLOG
+		         WHERE S_APPLOG.USER_ID = CTSTELLER.USER_ID
+		           AND S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+		           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		           <choose>
+					   <when test="isWebVers==2">
+						AND S_APPLOG.USER_STS_WEB = 'L'
+					   </when>
+					   <otherwise>
+						AND S_APPLOG.USER_STS = 'L' 
+					   </otherwise>
+					</choose>
+		           AND S_APPLOG.APP_NAME = 'RET')
+		  	<if  test='"true".equals(authOdAcc)'> 
+		AND CTSTELLER.AUTH_OD_ACC='1'
+		</if>
+		<!-- <include refid="userAccRestriction"/> -->
+
+		UNION
+		
+		SELECT CTSTELLER.USER_ID USER_ID,
+		       CTSTELLER.CODE,
+		       CTSTELLER.BRIEF_NAME_ENG,
+		       CTSTELLER.LONG_NAME_ENG,
+		       CTSTELLER.BRIEF_NAME_ARAB,
+		       CTSTELLER.LONG_NAME_ARAB,
+		       CTSTELLER.BRANCH_CODE,
+		       CTSTELLER.AUTH_OD_ACC,
+		       (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+		  FROM CTSTELLER, CTSCONTROL
+		 WHERE #{reasonCode} IN ('RB', 'SB', 'RV', 'RM', 'PB')
+		   AND CTSTELLER.COMP_CODE = #{compCode}
+		   AND CTSTELLER.BRANCH_CODE = #{branchCode}
+		      
+		   AND (EXISTS (SELECT 1
+		                  FROM AXS
+		                 WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+		                   AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		                   AND AXS.USER_ID = CTSTELLER.USER_ID
+		                   AND AXS.APP_NAME = #{appName}
+		                   AND AXS.PROG_REF = #{progRef}
+		                   AND AXS.STATUS = 'P'
+		                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		                   ) Or EXISTS
+		        (SELECT 1
+		           FROM S_APPROLUSR, S_ROLE_DETAIL
+		          WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+		            AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		            AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+		            AND S_APPROLUSR.APP_NAME = #{appName}
+		            AND S_APPROLUSR.STATUS = 'P'
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P') Or EXISTS
+		        (SELECT 1
+		           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+		          WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+		                S_GROUP_USER.COMP_CODE = 0)
+		            AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+		                S_GROUP_USER.BRANCH_CODE = 0)
+		            AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+		            AND S_GROUP_USER.STATUS = 'P'
+		            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		            AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+		            AND S_GROUP_PROFILE.APP_NAME = #{appName}
+		            AND S_GROUP_PROFILE.STATUS = 'P'
+		            AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+		            AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+		            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+		            AND S_ROLE_DETAIL.STATUS = 'P'
+		            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+		            ))
+		      
+		   AND CTSTELLER.USER_ID <![CDATA[ <> ]]> #{userId}
+		   AND CTSTELLER.COMP_CODE = CTSCONTROL.COMP_CODE
+		   AND CTSTELLER.BRANCH_CODE = CTSCONTROL.BRANCH_CODE
+		   AND CTSTELLER.CODE = CTSCONTROL.HEAD_TELLER
+		   AND CTSTELLER.STATUS = 'A'
+		   AND EXISTS (SELECT 1
+		          FROM S_APPLOG
+		         WHERE S_APPLOG.USER_ID = CTSTELLER.USER_ID
+		           AND S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+		           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+					<choose>
+					   <when test="isWebVers==2">
+						AND S_APPLOG.USER_STS_WEB = 'L'
+					   </when>
+					   <otherwise>
+						AND S_APPLOG.USER_STS = 'L' 
+					   </otherwise>
+					</choose>
+		           AND S_APPLOG.APP_NAME = #{appName})
+			<if  test='"true".equals(authOdAcc)'> 
+			AND CTSTELLER.AUTH_OD_ACC='1'
+			</if>
+		<!-- <include refid="userAccRestriction"/> -->
+			
+		UNION
+		
+		SELECT CTSTELLER.USER_ID USER_ID,
+		       CTSTELLER.CODE,
+		       CTSTELLER.BRIEF_NAME_ENG,
+		       CTSTELLER.LONG_NAME_ENG,
+		       CTSTELLER.BRIEF_NAME_ARAB,
+		       CTSTELLER.LONG_NAME_ARAB,
+		       CTSTELLER.BRANCH_CODE,
+		       CTSTELLER.AUTH_OD_ACC,
+		        (SELECT SPLT.VALUE_DESC
+	            FROM SYS_PARAM_LOV_TRANS SPLT
+	           WHERE SPLT.LOV_TYPE_ID = 118
+	             AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+		  FROM CTSTELLER
+		 WHERE #{reasonCode} = 'EXC'
+		   AND CTSTELLER.COMP_CODE = #{compCode}
+		   AND CTSTELLER.BRANCH_CODE = #{branchCode}
+		   AND CTSTELLER.STATUS = 'A'
+		      
+		   AND (CTSTELLER.USER_IS_BRANCH_MANAGER = '1' OR EXISTS
+		        (SELECT 1
+		           FROM CTSTELLERDET
+		          WHERE CTSTELLERDET.COMP_CODE = CTSTELLER.COMP_CODE
+		            AND CTSTELLERDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+		            AND CTSTELLERDET.CODE = CTSTELLER.CODE
+		            AND CTSTELLERDET.SUB_TELLER_BRANCH = #{branchCode}
+		            AND CTSTELLERDET.USER_ID = #{userId}))
+		   AND CTSTELLER.USER_ID <![CDATA[ <> ]]> #{userId}
+		   AND EXISTS (SELECT 1
+		          FROM S_APPLOG
+		         WHERE S_APPLOG.USER_ID = CTSTELLER.USER_ID
+		           AND S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+		           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+					<choose>
+					   <when test="isWebVers==2">
+						AND S_APPLOG.USER_STS_WEB = 'L'
+					   </when>
+					   <otherwise>
+						AND S_APPLOG.USER_STS = 'L' 
+					   </otherwise>
+					</choose>
+		           AND S_APPLOG.APP_NAME = #{appName})
+		  	<if  test='"true".equals(authOdAcc)'> 
+			AND CTSTELLER.AUTH_OD_ACC='1'
+			</if>
+	  	</if>
+	  	<if test='"C".equals(todoAlert) or "F".equals(todoAlert)'>
+	  	<!-- dw_select_alert_cif_teller -->
+	SELECT '1' C_ORDER,
+	       CTSTELLER.CODE,
+	       CTSTELLER.BRANCH_CODE,
+	       CTSTELLER.BRIEF_NAME_ENG,
+	       CTSTELLER.LONG_NAME_ENG,
+	       CTSTELLER.BRIEF_NAME_ARAB,
+	       CTSTELLER.LONG_NAME_ARAB,
+	       (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS,
+	       CTSTELLER.USER_ID,
+	       CTSTELLER.PRIVILEGE_LEVEL
+	  FROM CTSTELLER, CIF, RIFCTT, USR
+	 WHERE CTSTELLER.COMP_CODE = abs(CIF.COMP_CODE)
+	   AND abs(CIF.COMP_CODE) = RIFCTT.COMP_CODE
+	   AND CIF.CIF_TYPE = RIFCTT.TYPE_CODE
+	   AND CIF.COMP_CODE = #{compCode}
+	     <choose>
+		   <when test="isSybase == 1" >
+		   	AND CIF.CIF_NO = CONVERT(NUMERIC,#{todoParam})
+		   </when>
+		   <otherwise>
+		  	 AND CIF.CIF_NO = #{todoParam}
+		   </otherwise>
+	   </choose>
+	   AND CTSTELLER.USER_ID = USR.USER_ID
+	   AND CTSTELLER.STATUS = 'A'
+	      
+	   AND EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERCIFTYPEDET
+	         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'C'
+	           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CIF.CIF_TYPE
+	           AND CTSTELLERCIFTYPEDET.CODE = CTSTELLER.CODE)
+	   AND EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERCIFTYPEDET
+	         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'E'
+	           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CIF.ECO_SECTOR
+	           AND CTSTELLERCIFTYPEDET.CODE = CTSTELLER.CODE)
+	   AND EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERCIFTYPEDET
+	         WHERE CTSTELLERCIFTYPEDET.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND CTSTELLERCIFTYPEDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLERCIFTYPEDET.LIMIT_TYPE = 'P'
+	           AND CTSTELLERCIFTYPEDET.CIF_TYPE = CIF.PRIORITY_CODE
+	           AND CTSTELLERCIFTYPEDET.CODE = CTSTELLER.CODE)
+	   AND EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERDET
+	         WHERE CTSTELLERDET.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND CTSTELLERDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLERDET.SUB_TELLER_CODE = #{subTellerCode}
+	           AND CTSTELLERDET.SUB_TELLER_BRANCH = #{branchCode}
+	           AND CTSTELLERDET.CODE = CTSTELLER.CODE)
+	      
+	   AND ((CTSTELLER.SHOW_CIF_BR = 'A') OR
+	       (CTSTELLER.SHOW_CIF_BR = 'L' AND
+	       CTSTELLER.BRANCH_CODE = CIF.BRANCH_CODE) OR
+	       (CTSTELLER.SHOW_CIF_BR = 'S' AND EXISTS
+	        (SELECT 1
+	            FROM LOC
+	           WHERE LOC.COMP_CODE = CTSTELLER.COMP_CODE
+	             AND LOC.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	             AND LOC.USER_ID = CTSTELLER.USER_ID)))
+	      
+	   AND (EXISTS (SELECT 1
+	                  FROM AXS
+	                 WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+	                   AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	                   AND AXS.USER_ID = CTSTELLER.USER_ID
+	                   AND AXS.APP_NAME IN ('RET', 'RADM')
+	                   AND ((#{todoAlert} = 'F' AND
+	                       AXS.PROG_REF IN ('F00BP', 'F00I1P', 'F00I2P')) Or
+	                       (#{todoAlert} <![CDATA[ <> ]]> 'F' AND
+	                       ((RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'V' AND
+	                       AXS.PROG_REF IN ('F00C1P', 'F00C3P')) OR
+	                       (RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'T' AND
+	                       AXS.PROG_REF IN ('F00C2P', 'F00C3P')) OR
+	                       (RIFCTT.BANK = 'Y' AND AXS.PROG_REF = 'F00BP'))))
+	                   AND AXS.STATUS = 'P'
+	                   AND AXS.BRANCH_CODE = #{branchCode}
+	                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                   ) Or EXISTS
+	        (SELECT 1
+	           FROM S_APPROLUSR, S_ROLE_DETAIL
+	          WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+	            AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	            AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+	            AND S_APPROLUSR.APP_NAME IN ('RET', 'RADM')
+	            AND S_APPROLUSR.STATUS = 'P'
+	               
+	            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	            AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+	            AND ((#{todoAlert} = 'F' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00BP', 'F00I1P', 'F00I2P')) Or
+	                (#{todoAlert} <![CDATA[ <> ]]> 'F' AND
+	                ((RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'V' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00C1P', 'F00C3P')) OR
+	                (RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'T' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00C2P', 'F00C3P')) OR
+	                (RIFCTT.BANK = 'Y' AND S_ROLE_DETAIL.PROG_REF = 'F00BP'))))
+	            AND S_ROLE_DETAIL.STATUS = 'P') Or EXISTS
+	        (SELECT 1
+	           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	          WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+	                S_GROUP_USER.COMP_CODE = 0)
+	            AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+	                S_GROUP_USER.BRANCH_CODE = 0)
+	            AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+	            AND S_GROUP_USER.STATUS = 'P'
+	            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	               
+	            AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+	            AND S_GROUP_PROFILE.APP_NAME IN ('RET', 'RADM')
+	            AND S_GROUP_PROFILE.STATUS = 'P'
+	               
+	            AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+	            AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+	            AND ((#{todoAlert} = 'F' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00BP', 'F00I1P', 'F00I2P')) Or
+	                (#{todoAlert} <![CDATA[ <> ]]> 'F' AND
+	                ((RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'V' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00C1P', 'F00C3P')) OR
+	                (RIFCTT.CLIENT = 'Y' AND RIFCTT.VT_IND = 'T' AND
+	                S_ROLE_DETAIL.PROG_REF IN ('F00C2P', 'F00C3P')) OR
+	                (RIFCTT.BANK = 'Y' AND S_ROLE_DETAIL.PROG_REF = 'F00BP'))))
+	            AND S_ROLE_DETAIL.STATUS = 'P'
+	            AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )
+	            ))
+	      
+	   AND ((CASE WHEN CTSTELLER.CHECK_ROLE IS NULL THEN '0' ELSE
+	        CTSTELLER.CHECK_ROLE END = '0') OR
+	       (CIF.CODE_ROLE = CTSTELLER.ROLE_CODE AND
+	       CIF.REL_OFF_ID = USR.EMPLOYEE_ID) OR
+	       (EXISTS (SELECT 1
+	                   FROM CIF_OFFICER
+	                  WHERE CIF_OFFICER.COMP_CODE = abs(CIF.COMP_CODE)
+	                    AND CIF_OFFICER.CIF_CODE = CIF.CIF_NO
+	                    AND CIF_OFFICER.REL_OFF_ID = USR.EMPLOYEE_ID
+	                    AND CIF_OFFICER.CODE_ROLE = CTSTELLER.ROLE_CODE)))
+	   AND EXISTS
+	 (SELECT 1
+	          FROM S_APPLOG
+	         WHERE S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND S_APPLOG.USER_ID = CTSTELLER.USER_ID
+				<choose>
+				   <when test="isWebVers==2">
+					AND S_APPLOG.USER_STS_WEB = 'L'
+				   </when>
+				   <otherwise>
+					AND S_APPLOG.USER_STS = 'L' 
+				   </otherwise>
+				</choose>
+	           AND S_APPLOG.APP_NAME = 'RET')
+	      
+	   AND ((#{reasonCode} <![CDATA[ <> ]]> 'SIGN') Or
+	       (#{reasonCode} = 'SIGN' AND
+	       (EXISTS (SELECT 1
+	                    FROM AXS
+	                   WHERE AXS.USER_ID = CTSTELLER.USER_ID
+	                     AND AXS.APP_NAME = 'RET'
+	                     AND AXS.PROG_REF = 'SIGN002P'
+	                     AND AXS.COMP_CODE = CTSTELLER.COMP_CODE
+	                     AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	                     AND AXS.STATUS = 'P'
+	                     AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                     ) Or EXISTS
+	        (SELECT 1
+	             FROM S_APPROLUSR, S_ROLE_DETAIL
+	            WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+	              AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	              AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+	              AND S_APPROLUSR.APP_NAME = 'RET'
+	              AND S_APPROLUSR.STATUS = 'P'
+	                 
+	              AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	              AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+	              AND S_ROLE_DETAIL.PROG_REF = 'SIGN002P'
+	              AND S_ROLE_DETAIL.STATUS = 'P') Or EXISTS
+	        (SELECT 1
+	             FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	            WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+	                  S_GROUP_USER.COMP_CODE = 0)
+	              AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+	                  S_GROUP_USER.BRANCH_CODE = 0)
+	              AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+	              AND S_GROUP_USER.STATUS = 'P'
+	              AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                 
+	              AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+	              AND S_GROUP_PROFILE.APP_NAME = 'RET'
+	              AND S_GROUP_PROFILE.STATUS = 'P'
+	                 
+	              AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+	              AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+	              AND S_ROLE_DETAIL.PROG_REF = 'SIGN002P'
+	              AND S_ROLE_DETAIL.STATUS = 'P'
+	           	  AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  	
+	           ))))
+   	        AND NOT EXISTS (SELECT 1 FROM CTS_RESTRCT_ALERT_USER_TMP REST
+                WHERE REST.COMP_CODE = CTSTELLER.COMP_CODE
+  				 AND REST.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+  				 AND REST.LOGGED_IN_USER_ID = #{userId}
+  				 AND REST.RESTRICTED_USER_ID = CTSTELLER.USER_ID)
+   
+	  	</if>
+	  	
+	  	<if test='"A".equals(todoAlert) '>
+	  	<!-- dw_select_alert_account_teller -->
+	SELECT '1' C_ORDER,
+	       CTSTELLER.CODE,
+	       CTSTELLER.BRANCH_CODE,
+	       CTSTELLER.BRIEF_NAME_ENG,
+	       CTSTELLER.LONG_NAME_ENG,
+	       CTSTELLER.BRIEF_NAME_ARAB,
+	       CTSTELLER.LONG_NAME_ARAB,
+	       (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS,
+	       CTSTELLER.USER_ID,
+	       CTSTELLER.PRIVILEGE_LEVEL
+	  FROM CTSTELLER, ACC_NV_CONTROL
+	 WHERE CTSTELLER.COMP_CODE = #{compCode}
+	   AND CTSTELLER.STATUS = 'A'
+	   AND CTSTELLER.COMP_CODE = ACC_NV_CONTROL.COMP_CODE
+	   AND CTSTELLER.BRANCH_CODE = ACC_NV_CONTROL.BRANCH_CODE
+	   AND (
+	   		 (CTSTELLER.GLOBAL_LIMIT_CV >= #{amount} AND ACC_NV_CONTROL.VLDTE_USR_ALRT_LIMIT_GFMA_YN = '1' AND CTSTELLER.PRIVILEGE_LEVEL >= #{tellerLevel,jdbcType=NUMERIC}) OR ACC_NV_CONTROL.VLDTE_USR_ALRT_LIMIT_GFMA_YN = '0' 
+	   	   )
+	   AND EXISTS
+	 (SELECT 1
+	          FROM CTSTELLERDET
+	         WHERE CTSTELLERDET.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND CTSTELLERDET.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLERDET.CODE = CTSTELLER.CODE
+	           AND CTSTELLERDET.SUB_TELLER_CODE = #{subTellerCode}
+	           AND CTSTELLERDET.SUB_TELLER_BRANCH = #{branchSubCode})
+	      
+	   AND (EXISTS (SELECT 1
+	                  FROM AXS
+	                 WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+	                   AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	                   AND AXS.USER_ID = CTSTELLER.USER_ID
+	                   AND AXS.APP_NAME = #{appName}
+	                   AND AXS.PROG_REF = #{progRef}
+	                   AND AXS.STATUS = 'P'
+	                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                   ) Or EXISTS
+	        (SELECT 1
+	           FROM S_APPROLUSR, S_ROLE_DETAIL
+	          WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+	            AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	            AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+	            AND S_APPROLUSR.APP_NAME = #{appName}
+	            AND S_APPROLUSR.STATUS = 'P'
+	               
+	            AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	            AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+	            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+	            AND S_ROLE_DETAIL.STATUS = 'P'
+	         
+	         ) Or EXISTS
+	        (SELECT 1
+	           FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	          WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+	                S_GROUP_USER.COMP_CODE = 0)
+	            AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+	                S_GROUP_USER.BRANCH_CODE = 0)
+	            AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+	            AND S_GROUP_USER.STATUS = 'P'
+	            AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	               
+	            AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+	            AND S_GROUP_PROFILE.APP_NAME = #{appName}
+	            AND S_GROUP_PROFILE.STATUS = 'P'
+	               
+	            AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+	            AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+	            AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+	            AND S_ROLE_DETAIL.STATUS = 'P'
+	         	AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+	         ))
+	      
+	   AND EXISTS
+	 (SELECT 1
+	          FROM S_APPLOG
+	         WHERE S_APPLOG.USER_ID = CTSTELLER.USER_ID
+	           AND S_APPLOG.COMP_CODE = CTSTELLER.COMP_CODE
+	           AND S_APPLOG.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	            <choose>
+				   <when test="isWebVers==2">
+					AND S_APPLOG.USER_STS_WEB = 'L'
+				   </when>
+				   <otherwise>
+					AND S_APPLOG.USER_STS = 'L' 
+				   </otherwise>
+				</choose>
+	           AND S_APPLOG.APP_NAME = #{appName})
+	   AND ((#{reasonCode} <![CDATA[ <> ]]> 'SIGN') Or
+	       (#{reasonCode} = 'SIGN' AND
+	       (EXISTS (SELECT 1
+	                    FROM AXS
+	                   WHERE AXS.COMP_CODE = CTSTELLER.COMP_CODE
+	                     AND AXS.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	                     AND AXS.APP_NAME = #{appName}
+	                     AND AXS.USER_ID = CTSTELLER.USER_ID
+	                     AND AXS.PROG_REF = 'SIGN002P'
+	                     AND AXS.STATUS = 'P'
+	                     AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                     ) Or EXISTS
+	        (SELECT 1
+	             FROM S_APPROLUSR, S_ROLE_DETAIL
+	            WHERE S_APPROLUSR.COMP_CODE = CTSTELLER.COMP_CODE
+	              AND S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	              AND S_APPROLUSR.APP_NAME = #{appName}
+	              AND S_APPROLUSR.USER_ID = CTSTELLER.USER_ID
+	              AND S_APPROLUSR.STATUS = 'P'
+	                 
+	              AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+	              AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+	              AND S_ROLE_DETAIL.PROG_REF = 'SIGN002P'
+	              AND S_ROLE_DETAIL.STATUS = 'P') Or EXISTS
+	        (SELECT 1
+	             FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	            WHERE (S_GROUP_USER.COMP_CODE = CTSTELLER.COMP_CODE OR
+	                  S_GROUP_USER.COMP_CODE = 0)
+	              AND (S_GROUP_USER.BRANCH_CODE = CTSTELLER.BRANCH_CODE OR
+	                  S_GROUP_USER.BRANCH_CODE = 0)
+	              AND S_GROUP_USER.USER_ID = CTSTELLER.USER_ID
+	              AND S_GROUP_USER.STATUS = 'P'
+	              AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                 
+	              AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+	              AND S_GROUP_PROFILE.APP_NAME = #{appName}
+	              AND S_GROUP_PROFILE.STATUS = 'P'
+	                 
+	              AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+	              AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+	              AND S_ROLE_DETAIL.PROG_REF = 'SIGN002P'
+	              AND S_ROLE_DETAIL.STATUS = 'P'
+	           	
+	           	  AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  	
+	           		
+	           ))))
+	  		  	AND NOT EXISTS (SELECT 1 FROM CTS_RESTRCT_ALERT_USER_TMP REST
+	                        WHERE REST.COMP_CODE = CTSTELLER.COMP_CODE
+	          				 AND REST.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	          				 AND REST.LOGGED_IN_USER_ID = #{userId}
+	          				 AND REST.RESTRICTED_USER_ID = CTSTELLER.USER_ID)
+	  	
+	  	</if>
+	  	
+	  	<if test='"EXC".equals(todoAlert) '>
+	  	<!-- dw_select_alert_teller_cif -->
+	SELECT  '1' C_ORDER            ,
+	        CTSTELLER.CODE          ,
+	        CTSTELLER.BRANCH_CODE    ,
+	        CTSTELLER.BRIEF_NAME_ENG  ,
+	        CTSTELLER.LONG_NAME_ENG    ,
+	        CTSTELLER.BRIEF_NAME_ARAB  ,
+	        CTSTELLER.LONG_NAME_ARAB  ,
+	        (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS,
+	        CTSTELLER.USER_ID        ,
+	        CTSTELLER.PRIVILEGE_LEVEL
+	  FROM  CTSTELLER, CTSTELLERDET,   (SELECT   MIN(STATUS_ORDER) STATUS_ORDER
+	                         FROM   CTSTRSSTATUS 
+	                         WHERE   COMP_CODE     = #{compCode} 
+	                         AND     BRANCH_CODE   = #{branchCode}
+	                         AND     TRS_TYPE     = 'X' 
+	                         AND     CB_IND       = 'C' 
+	                         AND    TRS_NO       = #{trsNo}
+	                         AND     ENTITY_TYPE   = #{entityType}
+	                         AND     PROCESSED     = 'N') T
+	  WHERE  #{andOr,jdbcType=VARCHAR}     = 'A' 
+	   AND  CTSTELLERDET.SUB_TELLER_CODE      = #{todoTellerId}
+	   AND  CTSTELLERDET.SUB_TELLER_BRANCH      = #{branchCode}
+	   AND  CTSTELLERDET.COMP_CODE          = #{compCode}
+	   AND  CTSTELLER.COMP_CODE            = CTSTELLERDET.COMP_CODE
+	   AND  CTSTELLER.BRANCH_CODE            = CTSTELLERDET.BRANCH_CODE
+	   AND  CTSTELLER.CODE                = CTSTELLERDET.CODE
+	   AND  (CTSTELLER.BRANCH_CODE          = CASE WHEN #{branchCode} = 0 THEN CTSTELLER.BRANCH_CODE ELSE #{branchCode} END )
+	   AND  (CTSTELLER.PRIVILEGE_LEVEL >= (  SELECT   USR_LVL
+	                            FROM     CTSTRSSTATUS 
+	                            WHERE   COMP_CODE     = #{compCode} 
+	                            AND     BRANCH_CODE   = #{branchCode}
+	                            AND     TRS_TYPE     = 'X' 
+	                            AND     CB_IND       = 'C' 
+	                            AND    TRS_NO       = #{trsNo}
+	                            AND     ENTITY_TYPE   = #{entityType}
+	                            AND     PROCESSED     = 'N'
+	                            AND    STATUS_ORDER  = T.STATUS_ORDER))
+	   AND  EXISTS ( SELECT 1 FROM S_APPLOG
+	            WHERE S_APPLOG.USER_ID       = CTSTELLER.USER_ID
+	            AND    S_APPLOG.COMP_CODE     = CTSTELLER.COMP_CODE
+	            AND    S_APPLOG.BRANCH_CODE    = CTSTELLER.BRANCH_CODE 
+	            <choose>
+				   <when test="isWebVers==2">
+					AND S_APPLOG.USER_STS_WEB = 'L'
+				   </when>
+				   <otherwise>
+					AND S_APPLOG.USER_STS = 'L' 
+				   </otherwise>
+				</choose>
+	            AND    S_APPLOG.APP_NAME       = 'RET'
+	           )
+	   AND  (CTSTELLER.STATUS  = (
+	                      CASE 
+	                        WHEN 'P' = 'R' THEN CTSTELLER.STATUS 
+	                        WHEN 'P' = 'P' THEN 'A' 
+	                        WHEN 'P' = 'S' THEN 'P' 
+	                        WHEN 'P' = 'A' THEN 'S' 
+	                        ELSE CTSTELLER.STATUS 
+	                      END)
+	      )  
+	
+	 AND    (  EXISTS   (  SELECT   1 
+	                  FROM    AXS
+	                  WHERE    AXS.COMP_CODE    = CTSTELLER.COMP_CODE     
+	                   AND    AXS.BRANCH_CODE    = CTSTELLER.BRANCH_CODE
+	                  AND    AXS.USER_ID      = CTSTELLER.USER_ID    
+	                  AND    AXS.APP_NAME      = #{appName}  
+	                  AND    AXS.PROG_REF      = #{progRef}            
+	                   AND    AXS.STATUS        = 'P'  
+	                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )              
+	                )
+	          Or
+	          EXISTS  (  SELECT   1
+	                  FROM    S_APPROLUSR, S_ROLE_DETAIL
+	                  WHERE   S_APPROLUSR.COMP_CODE      = CTSTELLER.COMP_CODE 
+	                  AND     S_APPROLUSR.BRANCH_CODE   = CTSTELLER.BRANCH_CODE
+	                  AND     S_APPROLUSR.USER_ID       = CTSTELLER.USER_ID  
+	                  AND     S_APPROLUSR.APP_NAME      = #{appName}
+	                  AND     S_APPROLUSR.STATUS        = 'P'
+	                  
+	                  AND     S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME
+	                  AND       S_ROLE_DETAIL.APP_NAME    = S_APPROLUSR.APP_NAME
+	                  AND    S_ROLE_DETAIL.PROG_REF    = #{progRef}
+	                  AND     S_ROLE_DETAIL.STATUS      = 'P'
+	                  
+	                )
+	          Or
+	          EXISTS  (  SELECT  1
+	                  FROM    S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	                  WHERE   (S_GROUP_USER.COMP_CODE     = CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+	                  AND     (S_GROUP_USER.BRANCH_CODE   = CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+	                  AND     S_GROUP_USER.USER_ID       = CTSTELLER.USER_ID
+	                  AND     S_GROUP_USER.STATUS        = 'P'
+	                  AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                  
+	                  AND     S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+	                  AND     S_GROUP_PROFILE.APP_NAME   = #{appName}
+	                  AND     S_GROUP_PROFILE.STATUS     = 'P'
+	                  
+	                  AND     S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+	                  AND     S_ROLE_DETAIL.APP_NAME    = S_GROUP_PROFILE.APP_NAME
+	                  AND    S_ROLE_DETAIL.PROG_REF    = #{progRef}
+	                  AND     S_ROLE_DETAIL.STATUS      = 'P'
+		
+					  AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+	                )
+	        )
+		<!-- <include refid="userAccRestriction"/> -->
+		
+	  UNION
+	
+	  SELECT  '2' C_ORDER            ,
+	        CTSTELLER.CODE          ,
+	        CTSTELLER.BRANCH_CODE    ,
+	        CTSTELLER.BRIEF_NAME_ENG  ,
+	        CTSTELLER.LONG_NAME_ENG    ,
+	        CTSTELLER.BRIEF_NAME_ARAB  ,
+	        CTSTELLER.LONG_NAME_ARAB  ,
+	        (SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS,
+	        CTSTELLER.USER_ID        ,
+	        CTSTELLER.PRIVILEGE_LEVEL
+	  FROM  CTSTELLER    ,
+	       CTSTELLERDET 
+	  WHERE  #{andOr,jdbcType=VARCHAR} <![CDATA[ <> ]]>  'A' 
+	   AND  CTSTELLERDET.SUB_TELLER_CODE      = #{todoTellerId}
+	   AND  CTSTELLERDET.SUB_TELLER_BRANCH      = #{branchCode}
+	   AND  CTSTELLERDET.COMP_CODE          = #{compCode}
+	   AND  CTSTELLER.COMP_CODE            = CTSTELLERDET.COMP_CODE
+	   AND  CTSTELLER.BRANCH_CODE            = CTSTELLERDET.BRANCH_CODE
+	   AND  CTSTELLER.CODE                = CTSTELLERDET.CODE
+	   AND  (CTSTELLER.BRANCH_CODE          = CASE WHEN #{branchCode} = 0 THEN CTSTELLER.BRANCH_CODE ELSE #{branchCode} END)
+	   AND  (CTSTELLER.PRIVILEGE_LEVEL  >=     #{tellerLevel,jdbcType=NUMERIC} )
+	   AND  (CTSTELLER.PRIVILEGE_LEVEL IN (  SELECT   USR_LVL 
+	                            FROM     CTSTRSSTATUS 
+	                            WHERE   COMP_CODE     = #{compCode} 
+	                            AND     BRANCH_CODE   = #{branchCode}
+	                            AND     TRS_TYPE     = 'X' 
+	                            AND     CB_IND       = 'C' 
+	                            AND    TRS_NO       = #{trsNo}
+	                            AND     ENTITY_TYPE   = #{entityType}
+	                            AND     PROCESSED     = 'N'))
+	   AND  EXISTS ( SELECT 1 FROM S_APPLOG
+	            WHERE S_APPLOG.USER_ID       = CTSTELLER.USER_ID
+	            AND    S_APPLOG.COMP_CODE     = CTSTELLER.COMP_CODE
+	            AND    S_APPLOG.BRANCH_CODE    = CTSTELLER.BRANCH_CODE 
+	            <choose>
+				   <when test="isWebVers==2">
+					AND S_APPLOG.USER_STS_WEB = 'L'
+				   </when>
+				   <otherwise>
+					AND S_APPLOG.USER_STS = 'L' 
+				   </otherwise>
+				</choose>
+	            AND    S_APPLOG.APP_NAME       = 'RET'
+	           )
+	   AND  (CTSTELLER.STATUS  = (
+	                      CASE 
+	                        WHEN 'P' = 'R' THEN CTSTELLER.STATUS 
+	                        WHEN 'P' = 'P' THEN 'A' 
+	                        WHEN 'P' = 'S' THEN 'P' 
+	                        WHEN 'P' = 'A' THEN 'S' 
+	                        ELSE CTSTELLER.STATUS 
+	                      END)
+	      )  
+	
+	 AND    (  EXISTS   (  SELECT   1 
+	                  FROM    AXS
+	                  WHERE    AXS.COMP_CODE    = CTSTELLER.COMP_CODE     
+	                   AND    AXS.BRANCH_CODE    = CTSTELLER.BRANCH_CODE
+	                  AND    AXS.USER_ID      = CTSTELLER.USER_ID    
+	                  AND    AXS.APP_NAME      = #{appName}  
+	                  AND    AXS.PROG_REF      = #{progRef}            
+	                   AND    AXS.STATUS        = 'P' 
+	                   AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )               
+	                )
+	          Or
+	          EXISTS  (  SELECT   1
+	                  FROM  S_APPROLUSR, S_ROLE_DETAIL
+	                  WHERE S_APPROLUSR.COMP_CODE      = CTSTELLER.COMP_CODE 
+	                  AND   S_APPROLUSR.BRANCH_CODE   = CTSTELLER.BRANCH_CODE
+	                  AND   S_APPROLUSR.USER_ID       = CTSTELLER.USER_ID  
+	                  AND   S_APPROLUSR.APP_NAME      = #{appName}
+	                  AND   S_APPROLUSR.STATUS        = 'P'
+	                  
+	                  AND   S_ROLE_DETAIL.ROLE_NAME   = S_APPROLUSR.ROLE_NAME
+	                  AND   S_ROLE_DETAIL.APP_NAME    = S_APPROLUSR.APP_NAME
+	                  AND  S_ROLE_DETAIL.PROG_REF    = #{progRef}
+	                  AND   S_ROLE_DETAIL.STATUS      = 'P'
+	                  
+	                )
+	          Or
+	          EXISTS  (  SELECT  1
+	                  FROM    S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+	                  WHERE   (S_GROUP_USER.COMP_CODE     = CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+	                  AND     (S_GROUP_USER.BRANCH_CODE   = CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+	                  AND     S_GROUP_USER.USER_ID       = CTSTELLER.USER_ID
+	                  AND     S_GROUP_USER.STATUS        = 'P'
+	                  AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	                  
+	                  AND     S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+	                  AND     S_GROUP_PROFILE.APP_NAME   = #{appName}
+	                  AND     S_GROUP_PROFILE.STATUS     = 'P'
+	                  
+	                  AND     S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+	                  AND     S_ROLE_DETAIL.APP_NAME    = S_GROUP_PROFILE.APP_NAME
+	                  AND    S_ROLE_DETAIL.PROG_REF    = #{progRef}
+	                  AND     S_ROLE_DETAIL.STATUS      = 'P'
+					  AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+	                )
+	        )
+		<!-- <include refid="userAccRestriction"/> -->
+	    <if  test=' additionalParamsMap != null and additionalParamsMap.APPLY_BLOTTER_USERS == "1" '>
+		AND EXISTS (SELECT 1 FROM CTS_ALERT_USER_TEMP REST
+                WHERE REST.COMP_CODE = CTSTELLER.COMP_CODE
+  				 AND REST.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+  				 AND REST.LOGGED_IN_USER_ID = #{userId}
+  				 AND REST.ALLOWED_USER_ID = CTSTELLER.USER_ID)
+  		</if>
+	  	</if>
+	 
+	<!-- NABIL FEGHALI - BISI120150 - ALERT OFFLINE -->
+	<!-- NABIL FEGHALI - #92506 - BISI120150 - Offline Alert - Batch Processing -->
+	<if test='"X".equals(todoAlert) or "DO".equals(todoAlert)'>
+	
+				SELECT (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{onlineStatusLovType}
+			                   AND SPLT.VALUE_CODE = <choose>
+													   <when test="isWebVers==2">
+															S_APPLOG.USER_STS_WEB
+													   </when>
+													   <otherwise>
+															S_APPLOG.USER_STS 
+													   </otherwise>
+													</choose>
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) USER_STATUS,
+						CTSTELLER.USER_ID USER_ID	,
+						CTSTELLER.BRANCH_CODE,
+					 	CTSTELLER.CODE					,
+					 	CTSTELLER.BRIEF_NAME_ENG	,
+					 	CTSTELLER.LONG_NAME_ENG		,
+					 	CTSTELLER.BRIEF_NAME_ARAB	,
+					 	CTSTELLER.LONG_NAME_ARAB, 
+						CTSTELLER.AUTH_OD_ACC,
+						(SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+			FROM  	CTSTELLER ,CTSTELLERDET , S_APPLOG
+			WHERE		(CTSTELLER.COMP_CODE			=	#{compSubCode}  	)
+		
+			 AND			( S_APPLOG.USER_ID   	= CTSTELLER.USER_ID )
+		     AND	  		( S_APPLOG.COMP_CODE 	= CTSTELLER.COMP_CODE )
+			AND	  		( S_APPLOG.BRANCH_CODE	= CTSTELLER.BRANCH_CODE )
+			AND	   		(   <choose>
+							   <when test="isWebVers==2">
+								S_APPLOG.USER_STS_WEB = 'L'
+							   </when>
+							   <otherwise>
+								S_APPLOG.USER_STS = 'L' 
+							   </otherwise>
+							</choose> OR #{allowOffline} = '1' )
+			AND	  		( S_APPLOG.APP_NAME	   = 'RET')
+		
+			 AND		(	(#{todoAlert} = 'X') Or
+							(#{todoAlert} <![CDATA[<>]]> 'X' and CTSTELLER.BRANCH_CODE	  	=  #{branchSubCode}	)
+						)
+			 AND		(	EXISTS 	(	SELECT 	1 
+											FROM		AXS
+											WHERE		AXS.COMP_CODE  		= CTSTELLER.COMP_CODE 		
+			 								AND		AXS.BRANCH_CODE  	= CTSTELLER.BRANCH_CODE
+											AND		AXS.USER_ID  		= CTSTELLER.USER_ID		
+											AND		AXS.APP_NAME  		= #{appName}	
+											AND		AXS.PROG_REF  		= #{progRef}						
+			 								AND		AXS.STATUS  			= 'P'	
+			 								AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )							
+										)
+							Or
+							EXISTS	(	SELECT 	1
+											FROM  S_APPROLUSR, S_ROLE_DETAIL
+											WHERE S_APPROLUSR.COMP_CODE   = CTSTELLER.COMP_CODE 
+											AND   S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+											AND   S_APPROLUSR.USER_ID     = CTSTELLER.USER_ID	
+											AND   S_APPROLUSR.APP_NAME    = #{appName}
+											AND   S_APPROLUSR.STATUS      = 'P'
+											
+											AND   S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+											AND   S_ROLE_DETAIL.APP_NAME  = S_APPROLUSR.APP_NAME
+											AND	S_ROLE_DETAIL.PROG_REF	= #{progRef}
+											AND   S_ROLE_DETAIL.STATUS    = 'P'
+											
+										)
+							Or
+							EXISTS	(	SELECT	1
+											FROM  	S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+											WHERE 	(S_GROUP_USER.COMP_CODE   	= CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+											AND   	(S_GROUP_USER.BRANCH_CODE 	= CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+											AND   	S_GROUP_USER.USER_ID     	= CTSTELLER.USER_ID
+											AND   	S_GROUP_USER.STATUS      	= 'P'
+											AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+											
+											AND   	S_GROUP_PROFILE.GROUP_ID 	= S_GROUP_USER.GROUP_ID
+											AND   	S_GROUP_PROFILE.APP_NAME 	= #{appName}
+											AND   	S_GROUP_PROFILE.STATUS   	= 'P'
+											
+											AND   	S_ROLE_DETAIL.ROLE_NAME 	= S_GROUP_PROFILE.ROLE_NAME
+											AND   	S_ROLE_DETAIL.APP_NAME  	= S_GROUP_PROFILE.APP_NAME
+											AND		S_ROLE_DETAIL.PROG_REF		= #{progRef}
+											AND   	S_ROLE_DETAIL.STATUS    	= 'P'
+											AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+										)
+						)
+		
+			 AND	(CTSTELLERDET.COMP_CODE				= 	CTSTELLER.COMP_CODE	)
+			 AND  (CTSTELLERDET.BRANCH_CODE			=  CTSTELLER.BRANCH_CODE)
+			 AND	(CTSTELLERDET.CODE					=  CTSTELLER.CODE			)
+			 AND	(CTSTELLERDET.SUB_TELLER_BRANCH	=  #{branchSubCode}				)
+			 <choose>
+				 <when test='initialUserId != null and !initialUserId.equals("")'>
+				 	AND	(CTSTELLERDET.USER_ID				=  #{initialUserId})
+				 </when>
+				 <otherwise>
+				 	AND	(CTSTELLERDET.USER_ID				=  #{userId})
+				 </otherwise>
+			 </choose>
+			 AND 	(CTSTELLER.STATUS						='A'							)
+			 AND  (CTSTELLER.USER_ID  					<![CDATA[<>]]> #{userId}				)
+			 AND	(CTSTELLER.GLOBAL_LIMIT_CV  >= #{amount})
+		
+		
+			 AND (
+		
+						 	(#{tellerLevel} = 0 and CTSTELLER.PRIVILEGE_LEVEL  IN (
+																			SELECT CTSTRXTYPE_STATUS.USER_LEVEL
+																			FROM  CTSTRXTYPE_STATUS 
+																			WHERE	 CTSTRXTYPE_STATUS.COMP_CODE  = CTSTELLER.COMP_CODE
+																			 AND	CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType}
+																													)
+							)
+						OR
+						
+							( #{tellerLevel} > 0 and CTSTELLER.PRIVILEGE_LEVEL = #{tellerLevel})
+						OR
+						
+							( #{tellerLevel} <![CDATA[<]]> 0)
+										
+					)
+		
+		
+		
+			AND (	
+					(	#{reasonCode} <![CDATA[<>]]> 'TT' AND #{reasonCode} <![CDATA[<>]]> 'EXC' 	) OR
+					(	#{reasonCode} = 'TT'  AND	EXISTS  ( 	SELECT 	1 
+																		FROM  	CTSCONTROL 
+																		WHERE 	COMP_CODE = #{compSubCode}
+																		AND		BRANCH_CODE = #{branchSubCode}
+																		AND  		PT_ONLY_SEND_ALERT_TO_TELLER = '0'
+																   ) 
+					) 
+				 )
+			<if  test='"true".equals(authOdAcc)'> 
+				AND CTSTELLER.AUTH_OD_ACC='1'
+			</if>
+			
+					<if  test=' additionalParamsMap != null and additionalParamsMap.INC_OVERDRW_ACC == "1" '> 	
+	    UNION
+	    
+	    	SELECT (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{onlineStatusLovType}
+			                   AND SPLT.VALUE_CODE = <choose>
+													   <when test="isWebVers==2">
+															S_APPLOG.USER_STS_WEB
+													   </when>
+													   <otherwise>
+															S_APPLOG.USER_STS 
+													   </otherwise>
+													</choose>
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) USER_STATUS,
+						CTSTELLER.USER_ID USER_ID	,
+						CTSTELLER.BRANCH_CODE,
+					 	CTSTELLER.CODE					,
+					 	CTSTELLER.BRIEF_NAME_ENG	,
+					 	CTSTELLER.LONG_NAME_ENG		,
+					 	CTSTELLER.BRIEF_NAME_ARAB	,
+					 	CTSTELLER.LONG_NAME_ARAB, 
+						CTSTELLER.AUTH_OD_ACC,
+						(SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS 
+			FROM  	CTSTELLER
+			 , S_APPLOG
+			WHERE		(CTSTELLER.COMP_CODE			=	#{compSubCode}  	)
+		
+			 AND			( S_APPLOG.USER_ID   	= CTSTELLER.USER_ID )
+		     AND	  		( S_APPLOG.COMP_CODE 	= CTSTELLER.COMP_CODE )
+			AND	  		( S_APPLOG.BRANCH_CODE	= CTSTELLER.BRANCH_CODE )
+			AND	   		(   <choose>
+							   <when test="isWebVers==2">
+								S_APPLOG.USER_STS_WEB = 'L'
+							   </when>
+							   <otherwise>
+								S_APPLOG.USER_STS = 'L' 
+							   </otherwise>
+							</choose> OR #{allowOffline} = '1' )
+			AND	  		( S_APPLOG.APP_NAME	   = 'RET')
+		
+			 AND		(	(#{todoAlert} = 'X') Or
+							(#{todoAlert} <![CDATA[<>]]> 'X' and CTSTELLER.BRANCH_CODE	  	=  #{branchSubCode}	)
+						)
+			 AND		(	EXISTS 	(	SELECT 	1 
+											FROM		AXS
+											WHERE		AXS.COMP_CODE  		= CTSTELLER.COMP_CODE 		
+			 								AND		AXS.BRANCH_CODE  	= CTSTELLER.BRANCH_CODE
+											AND		AXS.USER_ID  		= CTSTELLER.USER_ID		
+											AND		AXS.APP_NAME  		= #{appName}	
+											AND		AXS.PROG_REF  		= #{progRef}						
+			 								AND		AXS.STATUS  			= 'P'	
+			 								AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )							
+										)
+							Or
+							EXISTS	(	SELECT 	1
+											FROM  S_APPROLUSR, S_ROLE_DETAIL
+											WHERE S_APPROLUSR.COMP_CODE   = CTSTELLER.COMP_CODE 
+											AND   S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+											AND   S_APPROLUSR.USER_ID     = CTSTELLER.USER_ID	
+											AND   S_APPROLUSR.APP_NAME    = #{appName}
+											AND   S_APPROLUSR.STATUS      = 'P'
+											
+											AND   S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+											AND   S_ROLE_DETAIL.APP_NAME  = S_APPROLUSR.APP_NAME
+											AND	S_ROLE_DETAIL.PROG_REF	= #{progRef}
+											AND   S_ROLE_DETAIL.STATUS    = 'P'
+											
+										)
+							Or
+							EXISTS	(	SELECT	1
+											FROM  	S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+											WHERE 	(S_GROUP_USER.COMP_CODE   	= CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+											AND   	(S_GROUP_USER.BRANCH_CODE 	= CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+											AND   	S_GROUP_USER.USER_ID     	= CTSTELLER.USER_ID
+											AND   	S_GROUP_USER.STATUS      	= 'P'
+											AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+											
+											AND   	S_GROUP_PROFILE.GROUP_ID 	= S_GROUP_USER.GROUP_ID
+											AND   	S_GROUP_PROFILE.APP_NAME 	= #{appName}
+											AND   	S_GROUP_PROFILE.STATUS   	= 'P'
+											
+											AND   	S_ROLE_DETAIL.ROLE_NAME 	= S_GROUP_PROFILE.ROLE_NAME
+											AND   	S_ROLE_DETAIL.APP_NAME  	= S_GROUP_PROFILE.APP_NAME
+											AND		S_ROLE_DETAIL.PROG_REF		= #{progRef}
+											AND   	S_ROLE_DETAIL.STATUS    	= 'P'
+											AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+										)
+						)
+		
+			 <if test="additionalParamsMap != null and additionalParamsMap.ACC_BRS" >
+			 AND	(CTSTELLER.BRANCH_CODE	IN  (${additionalParamsMap.ACC_BRS})				)
+			 </if>
+			
+			 AND 	(CTSTELLER.STATUS						='A'							)
+			 AND  (CTSTELLER.USER_ID  					<![CDATA[<>]]> #{userId}				)
+			 AND	(CTSTELLER.GLOBAL_LIMIT_CV  >= #{amount})
+		
+		     AND CTSTELLER.PRIVILEGE_LEVEL >= #{additionalParamsMap.TELLER_LEVEL}
+			 
+		
+			AND (	
+					(	#{reasonCode} <![CDATA[<>]]> 'TT' AND #{reasonCode} <![CDATA[<>]]> 'EXC' 	) OR
+					(	#{reasonCode} = 'TT'  AND	EXISTS  ( 	SELECT 	1 
+																		FROM  	CTSCONTROL 
+																		WHERE 	COMP_CODE = #{compSubCode}
+																		AND		BRANCH_CODE = #{branchSubCode}
+																		AND  		PT_ONLY_SEND_ALERT_TO_TELLER = '0'
+																   ) 
+					) 
+				 )
+			<if  test='"true".equals(authOdAcc)'> 
+				AND CTSTELLER.AUTH_OD_ACC='1'
+			</if> 
+			</if> 
+		<!-- <include refid="userAccRestriction"/> -->
+		
+		
+		
+			
+		UNION 
+		
+		SELECT	(SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{onlineStatusLovType}
+			                   AND SPLT.VALUE_CODE = <choose>
+													   <when test="isWebVers==2">
+															S_APPLOG.USER_STS_WEB
+													   </when>
+													   <otherwise>
+															S_APPLOG.USER_STS 
+													   </otherwise>
+													</choose>
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) USER_STATUS,
+				CTSTELLER.USER_ID					USER_ID 	,
+				CTSTELLER.BRANCH_CODE,
+				CTSTELLER.CODE								,
+				CTSTELLER.BRIEF_NAME_ENG					,
+				CTSTELLER.LONG_NAME_ENG						,
+				CTSTELLER.BRIEF_NAME_ARAB					,
+				CTSTELLER.LONG_NAME_ARAB				,
+				CTSTELLER.AUTH_OD_ACC,
+				(SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS
+		FROM  	CTSTELLER , S_APPLOG
+		WHERE 	#{reasonCode} = 'TT'
+		AND		CTSTELLER.COMP_CODE		= #{compSubCode}	
+		AND		CTSTELLER.BRANCH_CODE	= #{todoTellerBranch}
+		AND		CTSTELLER.CODE				= #{todoTellerId}
+		AND 		CTSTELLER.STATUS			='A'
+		
+		 AND (
+		
+						 	(#{tellerLevel} = 0 and CTSTELLER.PRIVILEGE_LEVEL  IN (
+																			SELECT CTSTRXTYPE_STATUS.USER_LEVEL
+																			FROM  CTSTRXTYPE_STATUS 
+																			WHERE	 CTSTRXTYPE_STATUS.COMP_CODE  = CTSTELLER.COMP_CODE
+																			 AND	CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType}
+																													)
+							)
+						OR
+						
+							( #{tellerLevel} > 0 and CTSTELLER.PRIVILEGE_LEVEL = #{tellerLevel})
+		
+						OR				
+							( #{tellerLevel} <![CDATA[<]]> 0)
+					)
+		
+		
+		AND			( S_APPLOG.USER_ID   	= CTSTELLER.USER_ID )
+		AND	  		( S_APPLOG.COMP_CODE 	= CTSTELLER.COMP_CODE )
+		AND	  		( S_APPLOG.BRANCH_CODE	= CTSTELLER.BRANCH_CODE )
+		AND	   		(   <choose>
+						   <when test="isWebVers==2">
+							S_APPLOG.USER_STS_WEB = 'L'
+						   </when>
+						   <otherwise>
+							S_APPLOG.USER_STS = 'L' 
+						   </otherwise>
+						</choose> OR #{allowOffline} = '1' )
+		AND	  		( S_APPLOG.APP_NAME	   = 'RET')
+		
+		AND		(	EXISTS 		(	SELECT 	1 
+											FROM		AXS
+											WHERE		AXS.COMP_CODE  		= CTSTELLER.COMP_CODE 		
+			 								AND		AXS.BRANCH_CODE  	= CTSTELLER.BRANCH_CODE
+											AND		AXS.USER_ID  		= CTSTELLER.USER_ID		
+											AND		AXS.APP_NAME  		= #{appName}	
+											AND		AXS.PROG_REF  		= #{progRef}						
+			 								AND		AXS.STATUS  			= 'P'		
+			 								AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )						
+										)
+							Or
+							EXISTS	(	SELECT 	1
+											FROM  S_APPROLUSR, S_ROLE_DETAIL
+											WHERE S_APPROLUSR.COMP_CODE   = CTSTELLER.COMP_CODE 
+											AND   S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+											AND   S_APPROLUSR.USER_ID     = CTSTELLER.USER_ID	
+											AND   S_APPROLUSR.APP_NAME    = #{appName}
+											AND   S_APPROLUSR.STATUS      = 'P'
+											AND   S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+											AND   S_ROLE_DETAIL.APP_NAME  = S_APPROLUSR.APP_NAME
+											AND	S_ROLE_DETAIL.PROG_REF	= #{progRef}
+											AND   S_ROLE_DETAIL.STATUS    = 'P'
+										)
+							Or
+							EXISTS	(	SELECT	1
+											FROM  	S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+											WHERE 	(S_GROUP_USER.COMP_CODE   	= CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+											AND   	(S_GROUP_USER.BRANCH_CODE 	= CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+											AND   	S_GROUP_USER.USER_ID     	= CTSTELLER.USER_ID
+											AND   	S_GROUP_USER.STATUS      	= 'P'
+											AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+											
+											AND   	S_GROUP_PROFILE.GROUP_ID 	= S_GROUP_USER.GROUP_ID
+											AND   	S_GROUP_PROFILE.APP_NAME 	= #{appName}
+											AND   	S_GROUP_PROFILE.STATUS   	= 'P'
+											AND   	S_ROLE_DETAIL.ROLE_NAME 	= S_GROUP_PROFILE.ROLE_NAME
+											AND   	S_ROLE_DETAIL.APP_NAME  	= S_GROUP_PROFILE.APP_NAME
+											AND		S_ROLE_DETAIL.PROG_REF		= #{progRef}
+											AND   	S_ROLE_DETAIL.STATUS    	= 'P'
+											
+											AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+											
+										)
+					)
+			<if  test='"true".equals(authOdAcc)'> 
+				AND CTSTELLER.AUTH_OD_ACC='1'
+			</if> 
+		<!-- <include refid="userAccRestriction"/> -->
+			
+		UNION 
+		
+		SELECT	(SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{onlineStatusLovType}
+			                   AND SPLT.VALUE_CODE = <choose>
+													   <when test="isWebVers==2">
+															S_APPLOG.USER_STS_WEB
+													   </when>
+													   <otherwise>
+															S_APPLOG.USER_STS 
+													   </otherwise>
+													</choose>
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) USER_STATUS,
+					CTSTELLER.USER_ID					USER_ID 	,
+					CTSTELLER.BRANCH_CODE,
+					CTSTELLER.CODE								,
+					CTSTELLER.BRIEF_NAME_ENG					,
+					CTSTELLER.LONG_NAME_ENG						,
+					CTSTELLER.BRIEF_NAME_ARAB					,
+					CTSTELLER.LONG_NAME_ARAB					,
+					CTSTELLER.AUTH_OD_ACC,
+					(SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS
+		FROM  	CTSTELLER ,	CTSCONTROL , S_APPLOG
+		WHERE  	#{reasonCode} IN ('RB','SB','RV','RM', 'PB')
+		AND		CTSTELLER.COMP_CODE		= #{compSubCode}	
+		AND		CTSTELLER.BRANCH_CODE	= #{branchSubCode}
+		
+		
+			 AND (
+		
+						 	(#{tellerLevel} = 0 and CTSTELLER.PRIVILEGE_LEVEL  IN (
+																			SELECT CTSTRXTYPE_STATUS.USER_LEVEL
+																			FROM  CTSTRXTYPE_STATUS 
+																			WHERE	 CTSTRXTYPE_STATUS.COMP_CODE  = CTSTELLER.COMP_CODE
+																			 AND	CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType}
+																													)
+							)
+						OR
+						
+							( #{tellerLevel} > 0 and CTSTELLER.PRIVILEGE_LEVEL = #{tellerLevel})
+										
+						OR				
+							( #{tellerLevel} <![CDATA[<]]> 0)
+		
+					)
+		
+		
+		AND			( S_APPLOG.USER_ID   	= CTSTELLER.USER_ID )
+		AND	  		( S_APPLOG.COMP_CODE 	= CTSTELLER.COMP_CODE )
+		AND	  		( S_APPLOG.BRANCH_CODE	= CTSTELLER.BRANCH_CODE )
+		AND	   		(    <choose>
+						   <when test="isWebVers==2">
+							S_APPLOG.USER_STS_WEB = 'L'
+						   </when>
+						   <otherwise>
+							S_APPLOG.USER_STS = 'L' 
+						   </otherwise>
+						</choose> OR #{allowOffline} = '1' )
+		AND	  		( S_APPLOG.APP_NAME	   = 'RET')
+		
+		AND		(	EXISTS 		(	SELECT 	1 
+											FROM		AXS
+											WHERE		AXS.COMP_CODE  		= CTSTELLER.COMP_CODE 		
+			 								AND		AXS.BRANCH_CODE  	= CTSTELLER.BRANCH_CODE
+											AND		AXS.USER_ID  		= CTSTELLER.USER_ID		
+											AND		AXS.APP_NAME  		= #{appName}	
+											AND		AXS.PROG_REF  		= #{progRef}						
+			 								AND		AXS.STATUS  			= 'P'	
+			 								AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )							
+										)
+							Or
+							EXISTS	(	SELECT 	1
+											FROM  S_APPROLUSR, S_ROLE_DETAIL
+											WHERE S_APPROLUSR.COMP_CODE   = CTSTELLER.COMP_CODE 
+											AND   S_APPROLUSR.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+											AND   S_APPROLUSR.USER_ID     = CTSTELLER.USER_ID	
+											AND   S_APPROLUSR.APP_NAME    = #{appName}
+											AND   S_APPROLUSR.STATUS      = 'P'
+											AND   S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+											AND   S_ROLE_DETAIL.APP_NAME  = S_APPROLUSR.APP_NAME
+											AND	S_ROLE_DETAIL.PROG_REF	= #{progRef}
+											AND   S_ROLE_DETAIL.STATUS    = 'P'
+										)
+							Or
+							EXISTS	(	SELECT	1
+											FROM  	S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+											WHERE 	(S_GROUP_USER.COMP_CODE   	= CTSTELLER.COMP_CODE   OR S_GROUP_USER.COMP_CODE   = 0 )
+											AND   	(S_GROUP_USER.BRANCH_CODE 	= CTSTELLER.BRANCH_CODE OR S_GROUP_USER.BRANCH_CODE = 0 )
+											AND   	S_GROUP_USER.USER_ID     	= CTSTELLER.USER_ID
+											AND   	S_GROUP_USER.STATUS      	= 'P'
+											AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+											
+											AND   	S_GROUP_PROFILE.GROUP_ID 	= S_GROUP_USER.GROUP_ID
+											AND   	S_GROUP_PROFILE.APP_NAME 	= #{appName}
+											AND   	S_GROUP_PROFILE.STATUS   	= 'P'
+											AND   	S_ROLE_DETAIL.ROLE_NAME 	= S_GROUP_PROFILE.ROLE_NAME
+											AND   	S_ROLE_DETAIL.APP_NAME  	= S_GROUP_PROFILE.APP_NAME
+											AND		S_ROLE_DETAIL.PROG_REF		= #{progRef}
+											AND   	S_ROLE_DETAIL.STATUS    	= 'P'
+											
+											AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )  
+										)
+					)
+		
+		AND 	CTSTELLER.USER_ID  		<![CDATA[<>]]> #{userId}	
+		AND   CTSTELLER.COMP_CODE 		= CTSCONTROL.COMP_CODE
+		AND 	CTSTELLER.BRANCH_CODE 	= CTSCONTROL.BRANCH_CODE
+		AND 	CTSTELLER.CODE			 	= CTSCONTROL.HEAD_TELLER 
+		AND 	CTSTELLER.STATUS			='A'
+		<if  test='"true".equals(authOdAcc)'> 
+			AND CTSTELLER.AUTH_OD_ACC='1'
+		</if> 
+		<!-- <include refid="userAccRestriction"/> -->
+		UNION 
+		
+		SELECT	(SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{onlineStatusLovType}
+			                   AND SPLT.VALUE_CODE = <choose>
+													   <when test="isWebVers==2">
+															S_APPLOG.USER_STS_WEB
+													   </when>
+													   <otherwise>
+															S_APPLOG.USER_STS 
+													   </otherwise>
+													</choose>
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) USER_STATUS,
+					CTSTELLER.USER_ID				USER_ID ,
+					CTSTELLER.BRANCH_CODE,
+					CTSTELLER.CODE				,
+					CTSTELLER.BRIEF_NAME_ENG	,
+					CTSTELLER.LONG_NAME_ENG		,
+					CTSTELLER.BRIEF_NAME_ARAB	,
+					CTSTELLER.LONG_NAME_ARAB	,
+					CTSTELLER.AUTH_OD_ACC,
+					(SELECT SPLT.VALUE_DESC
+	            			FROM SYS_PARAM_LOV_TRANS SPLT
+	          				WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	             			AND SPLT.VALUE_CODE = CTSTELLER.STATUS
+	             			AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) STATUS
+		FROM  	CTSTELLER , S_APPLOG
+		WHERE 	#{reasonCode} = 'EXC'
+		AND		CTSTELLER.COMP_CODE		= 	#{compSubCode}	
+		AND		CTSTELLER.BRANCH_CODE	= 	#{branchSubCode}
+		AND 		CTSTELLER.STATUS			=	'A'
+		
+		AND			( S_APPLOG.USER_ID   	= CTSTELLER.USER_ID )
+		AND	  		( S_APPLOG.COMP_CODE 	= CTSTELLER.COMP_CODE )
+		AND	  		( S_APPLOG.BRANCH_CODE	= CTSTELLER.BRANCH_CODE )
+		AND	   		(   <choose>
+						   <when test="isWebVers==2">
+							S_APPLOG.USER_STS_WEB = 'L'
+						   </when>
+						   <otherwise>
+							S_APPLOG.USER_STS = 'L' 
+						   </otherwise>
+						</choose> OR #{allowOffline} = '1' )
+		AND	  		( S_APPLOG.APP_NAME	   = 'RET')
+		
+		AND	(	CTSTELLER.USER_IS_BRANCH_MANAGER	= '1'	OR
+					EXISTS	(	SELECT 1
+									FROM 	CTSTELLERDET 
+									WHERE	CTSTELLERDET.COMP_CODE				= 	CTSTELLER.COMP_CODE
+									AND  	CTSTELLERDET.BRANCH_CODE			=  CTSTELLER.BRANCH_CODE
+									AND	CTSTELLERDET.CODE						=  CTSTELLER.CODE
+									AND	CTSTELLERDET.SUB_TELLER_BRANCH	=  #{branchSubCode}
+									AND	CTSTELLERDET.USER_ID					=  #{userId}				
+								)
+				)
+		AND   CTSTELLER.USER_ID  		<![CDATA[<>]]> #{userId}		
+		
+			 AND (
+		
+						 	(#{tellerLevel} = 0 and CTSTELLER.PRIVILEGE_LEVEL  IN (
+																			SELECT CTSTRXTYPE_STATUS.USER_LEVEL
+																			FROM  CTSTRXTYPE_STATUS 
+																			WHERE	 CTSTRXTYPE_STATUS.COMP_CODE  = CTSTELLER.COMP_CODE
+																			 AND	CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType}
+																													)
+							)
+						OR
+						
+							( #{tellerLevel} > 0 and CTSTELLER.PRIVILEGE_LEVEL = #{tellerLevel})
+										
+						OR				
+							( #{tellerLevel} <![CDATA[<]]> 0)
+		
+					)
+	 	<if  test='"true".equals(authOdAcc)'> 
+			AND CTSTELLER.AUTH_OD_ACC='1'
+		</if> 					
+		<!-- <include refid="userAccRestriction"/> -->
+		<if  test=' additionalParamsMap != null and additionalParamsMap.APPLY_BLOTTER_USERS == "1" '>
+		AND EXISTS (SELECT 1 FROM CTS_ALERT_USER_TEMP REST
+                WHERE REST.COMP_CODE = CTSTELLER.COMP_CODE
+  				 AND REST.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+  				 AND REST.LOGGED_IN_USER_ID = #{userId}
+  				 AND REST.ALLOWED_USER_ID = CTSTELLER.USER_ID)
+		</if>
+	</if>
+	<!-- CDMI170093-Transfert de fond vers un utilisateur specifique-TP: #536820 -->
+	<if test='"TBT".equals(todoAlert)'>
+	SELECT A.USER_ID,
+               A.CODE,
+               A.BRIEF_NAME_ENG,
+               A.LONG_NAME_ENG,
+               A.BRIEF_NAME_ARAB,
+               A.LONG_NAME_ARAB,
+               A.BRANCH_CODE,
+               A.AUTH_OD_ACC,
+	       (SELECT SPLT.VALUE_DESC
+	          FROM SYS_PARAM_LOV_TRANS SPLT
+	         WHERE SPLT.LOV_TYPE_ID = #{statusLovType}
+	           AND SPLT.VALUE_CODE = A.STATUS
+	           AND SPLT.LANG_CODE = #{language, jdbcType = VARCHAR}) STATUS
+	  FROM CTSTELLER V, CTSTELLERDET, CTSTELLER A
+	 WHERE (CTSTELLERDET.CODE = V.CODE)
+           AND A.COMP_CODE = V.COMP_CODE
+           AND A.BRANCH_CODE = V.BRANCH_CODE
+           AND A.CODE = CTSTELLERDET.SUB_TELLER_CODE
+           AND (CTSTELLERDET.COMP_CODE = V.COMP_CODE)
+           AND (CTSTELLERDET.BRANCH_CODE = V.BRANCH_CODE)
+	   AND (V.COMP_CODE = #{compCode})
+	   AND (CTSTELLERDET.BRANCH_CODE = #{todoTellerBranch})
+	   AND (CTSTELLERDET.CODE = #{todoTellerId})
+	 
+	   <if test=' allowOffline == null or "".equals(allowOffline) or "0".equals(allowOffline) '>
+	   AND EXISTS (SELECT 1
+		          FROM S_APPLOG
+		         WHERE S_APPLOG.USER_ID = A.USER_ID
+		           AND S_APPLOG.COMP_CODE = A.COMP_CODE
+		           AND S_APPLOG.BRANCH_CODE = A.BRANCH_CODE
+		            <choose>
+					   <when test="isWebVers==2">
+					    AND S_APPLOG.USER_STS_WEB = 'L'
+					   </when>
+					   <otherwise>
+					    AND S_APPLOG.USER_STS = 'L' 
+					   </otherwise>
+					</choose>
+		           AND S_APPLOG.APP_NAME = 'RET')
+		</if>
+				 AND EXISTS
+				 (SELECT 1
+			          FROM CTSCONTROL
+			          WHERE COMP_CODE = #{compCode}
+			           AND BRANCH_CODE =  #{todoTellerBranch}
+			           AND ((ONLY_TRSFR_HT_VAULT = '1' and
+			               A.USER_IS_BRANCH_MANAGER = '1') or
+			               (coalesce(ONLY_TRSFR_HT_VAULT, '0') = '0')))	             
+	</if>
+  </when>
+  <when test='appName != null and ("IIS".equals(appName) 
+            					or "ITRS".equals(appName) 
+            					or "ICOR".equals(appName) 
+            					or "IRET".equals(appName)
+            					or "IMIG".equals(appName)
+            					or "IPRC".equals(appName)
+            					or "IRVL".equals(appName)
+            					or "LEND".equals(appName) 
+            					or "LCOR".equals(appName) 
+            					or "LRET".equals(appName)
+            					or "PROV".equals(appName)
+            					or "FMS".equals(appName)
+            					or "TFA".equals(appName))'>
+  	
+	SELECT USR.USER_ID USER_ID,
+		NULL CODE,
+		USR.FIRST_NAME BRIEF_NAME_ENG,
+       '' LONG_NAME_ENG,
+       '' BRIEF_NAME_ARAB,
+       '' LONG_NAME_ARAB,
+       
+       #{branchCode} BRANCH_CODE,
+       0 PRIVILEGE_LEVEL,
+       USR.USER_STS STATUS,
+       '1' C_ORDER
+      
+    FROM USR
+ 	WHERE USR.USER_ID <![CDATA[<>]]> #{userId}
+ 	<if test='todoCode != null and todoLine != null'> 
+        AND USR.USER_ID <![CDATA[<>]]> (SELECT RECEIVED_FROM FROM S_TODO_DET where TODO_CODE = #{todoCode} and TODO_LINE = #{todoLine} )
+    </if>
+   		AND (EXISTS
+        (SELECT *
+           FROM AXS
+          WHERE AXS.USER_ID = USR.USER_ID
+            AND AXS.COMP_CODE = #{compCode}
+            AND AXS.BRANCH_CODE = #{branchCode}
+            AND AXS.PROG_REF = #{progRef}
+            AND AXS.APP_NAME =  #{appName}
+            AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+            )
+       
+        OR
+       
+        ((EXISTS (SELECT *
+                    FROM S_APPROLUSR, S_ROLE_DETAIL
+                   WHERE S_APPROLUSR.COMP_CODE = #{compCode}
+                     AND S_APPROLUSR.BRANCH_CODE = #{branchCode}
+                     AND S_APPROLUSR.USER_ID = USR.USER_ID
+                     AND S_APPROLUSR.APP_NAME =  #{appName}
+                     AND S_APPROLUSR.STATUS = 'P'
+                     AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+                     AND S_ROLE_DETAIL.APP_NAME = S_APPROLUSR.APP_NAME
+                     AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+                     AND S_ROLE_DETAIL.STATUS = 'P')
+        
+         OR
+        
+         EXISTS (SELECT *
+                    FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+                   WHERE (S_GROUP_USER.COMP_CODE = #{compCode} OR
+                         S_GROUP_USER.COMP_CODE = 0)
+                     AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR
+                         S_GROUP_USER.BRANCH_CODE = 0)
+                     AND S_GROUP_USER.USER_ID = USR.USER_ID
+                     AND S_GROUP_USER.STATUS = 'P'
+                     AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+                        
+                     AND S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+                     AND S_GROUP_PROFILE.APP_NAME =  #{appName}
+                     AND S_GROUP_PROFILE.STATUS = 'P'
+                        
+                     AND S_ROLE_DETAIL.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                     AND S_ROLE_DETAIL.APP_NAME = S_GROUP_PROFILE.APP_NAME
+                     AND S_ROLE_DETAIL.PROG_REF = #{progRef}
+                     AND S_ROLE_DETAIL.STATUS = 'P'
+                     
+                     AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )
+                     ))
+        
+        AND EXISTS
+         (SELECT *
+            FROM PTH_CTRL
+           WHERE CASE WHEN POP_PROF_MOD_ACCESS IS NULL THEN '0' ELSE POP_PROF_MOD_ACCESS END = '1')))
+      
+   		AND EXISTS (SELECT *
+          FROM S_APPLOG
+         WHERE S_APPLOG.USER_ID = USR.USER_ID
+           AND S_APPLOG.COMP_CODE = #{compCode}
+            <choose>
+			   <when test="isWebVers==2">
+				AND S_APPLOG.USER_STS_WEB = 'L'
+			   </when>
+			   <otherwise>
+				AND S_APPLOG.USER_STS = 'L' 
+			   </otherwise>
+			</choose>
+           AND S_APPLOG.APP_NAME =  #{appName})
+  	</when>
+ </choose>  	
+</sql>
+	
+<sql id="select_alertsListForFinalSignOff">
+	SELECT U.USER_ID USER_ID,
+       U.FIRST_NAME BRIEF_NAME_ENG,
+       U.LAST_NAME LONG_NAME_ENG,
+       U.FIRST_NAME_ARABIC BRIEF_NAME_ARAB,
+       U.LAST_NAME_ARABIC LONG_NAME_ARAB,
+       #{branchCode,jdbcType=NUMERIC} BRANCH_CODE,
+       0 PRIVILEGE_LEVEL,
+       U.USER_STS STATUS,
+       '1' C_ORDER
+	FROM USR U, CTSTELLER C, S_APPLOG S
+	WHERE U.USER_ID = C.USER_ID
+	  AND U.USER_ID != #{userId,jdbcType=VARCHAR}
+	  AND C.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	  AND C.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+	  AND S.COMP_CODE = C.COMP_CODE
+	  AND S.BRANCH_CODE = C.BRANCH_CODE
+	  AND S.USER_ID = U.USER_ID
+	  AND S.APP_NAME = #{appName,jdbcType=VARCHAR}
+	  <choose>
+         <when test="isWebVers==2">
+        	AND S.USER_STS_WEB = 'L'
+         </when>
+         <otherwise>
+        	AND S.USER_STS = 'L' 
+		 </otherwise>
+	  </choose>
+	  AND ( EXISTS ( SELECT 1 
+	                 FROM AXS 
+	                 WHERE AXS.APP_NAME = #{appName,jdbcType=VARCHAR}
+	                 AND AXS.USER_ID = C.USER_ID
+	                 AND AXS.COMP_CODE = C.COMP_CODE
+	                 AND AXS.BRANCH_CODE = C.BRANCH_CODE
+	                 AND PROG_REF = 'ALRTBRMG'
+	                 AND STATUS = 'P'
+	                )
+	                 
+	        OR ( 	EXISTS (SELECT 1
+				            FROM PTH_CTRL
+				            WHERE CASE WHEN POP_PROF_MOD_ACCESS IS NULL THEN '0' ELSE POP_PROF_MOD_ACCESS END = '1')
+	        
+		        	AND EXISTS  ( SELECT 1
+					              FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL
+					              WHERE S_GROUP_USER.COMP_CODE = C.COMP_CODE
+					              AND   S_GROUP_USER.BRANCH_CODE = C.BRANCH_CODE
+					              AND   S_GROUP_USER.USER_ID = C.USER_ID
+					              AND   S_GROUP_USER.STATUS = 'P'
+					              AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+					                                
+					              AND   S_GROUP_PROFILE.GROUP_ID   = S_GROUP_USER.GROUP_ID
+					              AND   S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+					              AND   S_GROUP_PROFILE.APP_NAME   = #{appName}
+					              AND   S_GROUP_PROFILE.STATUS     = 'P'
+					                                
+					              AND S_ROLE_DETAIL.ROLE_NAME     = S_GROUP_PROFILE.ROLE_NAME
+					              AND S_ROLE_DETAIL.APP_NAME     = S_GROUP_PROFILE.APP_NAME
+					              AND S_ROLE_DETAIL.PROG_REF      = 'ALRTBRMG'
+					              AND S_ROLE_DETAIL.STATUS       = 'P'
+					                                
+					              AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+					                              WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+					                                    AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+					                                    AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+					                                    AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+					                                    AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+					                              )
+							         )
+			 )
+	   )
+</sql>
+
+<select id="alertsListForFinalSignOffCount" parameterType="ctsTellerSC" resultType="int">
+	<include refid="servicesCommon.commonGridWrpBefCnt" />
+	<include refid="select_alertsListForFinalSignOff" />
+	<include refid="servicesCommon.commonGridWrpAftCnt" />
+	<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+<select id="alertsListForFinalSignOff" parameterType="ctsTellerSC" resultMap="alertsListMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="select_alertsListForFinalSignOff" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+
+
+	<select id="getIsSubordinate" parameterType="ctsTellerSC" resultType="int">		
+		
+		SELECT 	COUNT(1)
+		FROM	 CTSTELLERDET
+		WHERE	COMP_CODE 	= #{compCode,jdbcType=NUMERIC}
+		AND		BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		AND		CODE			= #{subTellerCode,jdbcType=NUMERIC}
+		AND		USER_ID		= #{subTellerUserId,jdbcType=VARCHAR}
+	
+	</select>
+
+
+	<select id="getUserAccLimit" parameterType="ctsTellerSC" resultType="String">		
+	SELECT USER_ACC_LIMIT
+	  FROM CTSTRXTYPE
+	 WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC}
+	   AND CODE = #{trsType}
+	</select>
+
+	<sql id="commonCtsTrxTypeMinLineNo">
+		FROM CTSTRXTYPE_STATUS
+		 WHERE CTSTRXTYPE_STATUS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_STATUS.TRXTYPE_CODE = #{trsType,jdbcType=NUMERIC}
+		   <if  test=' "EXC".equals(todoAlert) '>
+		   AND CTSTRXTYPE_STATUS.ENTITY_TYPE = 'T'
+		   </if> 
+		   
+		   <choose >
+				<when test=" lineNo != null " >
+				   AND CTSTRXTYPE_STATUS.LINE_NO = #{lineNo,jdbcType=NUMERIC}
+		   		</when>
+		   		<otherwise>
+				   AND CTSTRXTYPE_STATUS.LINE_NO =
+				       (SELECT MIN(CTSTRXTYPE_STATUS.LINE_NO)
+				          FROM CTSTRXTYPE_STATUS
+				         WHERE CTSTRXTYPE_STATUS.COMP_CODE =  #{compCode,jdbcType=NUMERIC}
+				           AND CTSTRXTYPE_STATUS.TRXTYPE_CODE =  #{trsType,jdbcType=NUMERIC}
+				           <if  test=' "EXC".equals(todoAlert) '>
+				           AND CTSTRXTYPE_STATUS.ENTITY_TYPE = 'T'
+				           </if>
+				           )
+		  		</otherwise>
+		  </choose>   
+	</sql>
+	 
+	<select id="getifAndOrTrs" parameterType="alertsSC" resultType="String">		
+		SELECT CASE
+		         WHEN CTSTRXTYPE_STATUS.AND_OR IS NULL THEN
+		          'A'
+		         ELSE
+		          CTSTRXTYPE_STATUS.AND_OR
+		       END
+		<include refid="commonCtsTrxTypeMinLineNo"/>        
+	</select>
+	
+	<select id="returnOverDrawnForInsertStatus" parameterType="alertsSC" resultMap="returnOverDrawnForInsertStatusMap">		
+	SELECT CASE WHEN CTSTRXTYPE_STATUS.AND_OR IS NULL THEN  'A' ELSE CTSTRXTYPE_STATUS.AND_OR END AND_OR,
+		   APPL_OVERDRAW_ONLY,
+		  (
+	    		SELECT COUNT(1)
+				FROM  CTSTRXTYPE_STATUS
+				WHERE	(CTSTRXTYPE_STATUS.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+				AND	(CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType,jdbcType=NUMERIC})
+		  ) TOTAL_STATUS_COUNT,
+		  (
+     			SELECT COUNT(1)
+				FROM  CTSTRXTYPE_STATUS
+				WHERE	(CTSTRXTYPE_STATUS.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+				AND	(CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType,jdbcType=NUMERIC})
+          		AND (CTSTRXTYPE_STATUS.APPL_OVERDRAW_ONLY = '1')
+		  ) TOTAL_STATUS_OVD_COUNT
+  
+		<include refid="commonCtsTrxTypeMinLineNo"/>        
+	</select>
+	
+	<select id="returnTrxStatusDataForMinLine" parameterType="alertsSC" resultMap="alertsTrsLevelOverrMap">		
+		SELECT 	CASE WHEN CTSTRXTYPE_STATUS.ALLOW_OVERRIDE IS NULL THEN  '0' 
+				ELSE CTSTRXTYPE_STATUS.ALLOW_OVERRIDE END ALLOW_OVERRIDE,
+				CTSTRXTYPE_STATUS.BRIEF_NAME_ENG,	
+				CTSTRXTYPE_STATUS.BRIEF_NAME_ARAB, 
+				CTSTRXTYPE_STATUS.USER_LEVEL,
+				CTSTRXTYPE_STATUS.ALLOW_ALERTS_TO_OFFLINE_USERS, 
+				CTSTRXTYPE_STATUS.HIGHLIGHT_RED,
+				CTSTRXTYPE_STATUS.INCLUDE_USR_OVERDRAW_ACC_BR_YN
+		<include refid="commonCtsTrxTypeMinLineNo"/>        
+	</select>
+
+	<resultMap id="returnOverDrawnForInsertStatusMap" type="com.path.vo.core.trxmgnt.TrxMgntCO">
+		<result column="TOTAL_STATUS_COUNT" 		property="totalCount" />
+		<result column="TOTAL_STATUS_OVD_COUNT" 	property="count" />
+		<result column="APPL_OVERDRAW_ONLY" 		property="ctsTrxTypeStatusVO.APPL_OVERDRAW_ONLY" />
+		<result column="AND_OR" 					property="ctsTrxTypeStatusVO.AND_OR" />
+	</resultMap>
+
+	<resultMap id="alertsTrsMap" type="com.path.vo.core.trxmgnt.TrxMgntCO">
+		<result column="STATUS_CODE" 		property="ctstrsstatusVO.STATUS_CODE" />
+		<result column="BRIEF_NAME_ENG" 	property="ctsstatusVO.BRIEF_NAME_ENG" />
+		<result column="BRIEF_NAME_ARAB" 	property="ctsstatusVO.BRIEF_NAME_ARAB" />
+		<result column="STATUS_ORDER" 		property="ctstrsstatusVO.STATUS_ORDER" />
+	</resultMap>
+	
+	<select id="checkCtsTrsStatusForAlert" parameterType="alertsSC" resultMap="alertsTrsMap">		
+		
+		SELECT 	
+				C.STATUS_CODE,
+				T.BRIEF_NAME_ENG,
+				T.BRIEF_NAME_ARAB,
+				C.STATUS_ORDER
+		FROM CTSTRSSTATUS C, CTSSTATUS T
+		WHERE 
+				C.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				AND C.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+				AND C.TRS_NO = #{trsNo,jdbcType=NUMERIC}
+				AND C.TRS_TYPE = 'R'
+				AND C.CB_IND = 'C'
+				AND C.PROCESSED = 'N'
+				AND C.STATUS_CODE = T.CODE
+				AND CASE WHEN C.USERID IS NULL THEN '0' ELSE C.USERID END = '0'
+				<choose>
+	        		<when test='batchNo == null' >
+						<choose>
+			        		<when test='"EXC".equals(todoAlert)' >
+								AND C.ENTITY_TYPE = 'E'
+							</when>
+							<when test='"X".equals(todoAlert)' >
+								AND C.ENTITY_TYPE = 'T'
+							</when>	
+						</choose>	
+					</when>
+					<otherwise> <!-- NABIL FEGHALI - #92506 - BISI120150 - Offline Alert - Batch Processing -->
+						AND C.ENTITY_TYPE = 'P'
+					</otherwise>
+				</choose>						
+				AND C.STATUS_ORDER = (	SELECT MIN(B.STATUS_ORDER)
+										FROM CTSTRSSTATUS B
+										WHERE B.COMP_CODE = C.COMP_CODE
+											  AND B.BRANCH_CODE = C.BRANCH_CODE
+											  AND B.TRS_TYPE = C.TRS_TYPE
+											  AND B.CB_IND = C.CB_IND
+											  AND B.TRS_NO = C.TRS_NO
+											  <choose>
+	        									<when test='processed != null' >
+											  		AND B.PROCESSED = #{processed,jdbcType=VARCHAR}
+											  	</when>
+											  	<otherwise>
+											  		AND B.PROCESSED = C.PROCESSED 
+											  	</otherwise>
+											  </choose>
+											  
+											  <choose>
+	        									<when test='entityType != null' >
+											  		AND B.ENTITY_TYPE = #{entityType,jdbcType=VARCHAR}
+											  	</when>
+											  	<otherwise>
+											  		AND B.ENTITY_TYPE = C.ENTITY_TYPE
+											  	</otherwise>
+											  </choose>
+									   )
+	</select>
+
+	 <select id="getAccBalance" parameterType="accountSC" resultType="BigDecimal">		
+	  SELECT 
+	      CASE 
+	        WHEN #{CURRENCY_CODE,jdbcType=NUMERIC} = CURRENCY_CODE THEN CASE WHEN YTD_CV_BAL IS NULL THEN  0 ELSE YTD_CV_BAL END 
+	        ELSE CASE WHEN YTD_FC_BAL IS NULL THEN  0 ELSE YTD_FC_BAL END 
+	      END YTD_FC_BAL
+	  FROM  AMF
+	  WHERE   (COMP_CODE  	= #{compCode,jdbcType=NUMERIC})
+	   AND  (BRANCH_CODE  	= #{branchCode,jdbcType=NUMERIC})
+	   AND  (CURRENCY_CODE  = #{currencyCode,jdbcType=NUMERIC})
+	   AND  (GL_CODE  		= #{glCode,jdbcType=NUMERIC})
+	   AND  (CIF_SUB_NO  	= #{cifCode,jdbcType=NUMERIC})
+	   AND  (SL_NO  		= #{slNbr,jdbcType=NUMERIC})
+		
+	</select>
+	
+	<select id="getUsrLevelAllowOverride" parameterType="alertsSC" resultMap="alertsTrsLevelOverrMap">		
+		 
+		SELECT CTSTRXTYPE_STATUS.USER_LEVEL,
+		       CASE
+		         WHEN CTSTRXTYPE_STATUS.ALLOW_OVERRIDE IS NULL THEN
+		          '0'
+		         ELSE
+		          CTSTRXTYPE_STATUS.ALLOW_OVERRIDE
+		       END ALLOW_OVERRIDE,
+		       CASE
+		         WHEN #{preferredLanguage,jdbcType=VARCHAR} = 'L' THEN
+		          USR_LEVEL.DESC_ENG
+		         ELSE
+		          USR_LEVEL.DESC_ARAB
+		       END DESC_ENG,
+		       CTSTRXTYPE_STATUS.ALLOW_ALERTS_TO_OFFLINE_USERS, 
+		       CTSTRXTYPE_STATUS.HIGHLIGHT_RED,
+		       CTSTRXTYPE_STATUS.INCLUDE_USR_OVERDRAW_ACC_BR_YN
+		  FROM CTSTRXTYPE_STATUS, USR_LEVEL
+		 WHERE CTSTRXTYPE_STATUS.COMP_CODE 		= #{compCode,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_STATUS.TRXTYPE_CODE 	= #{trsType,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_STATUS.LINE_NO 		= #{statusOrder,jdbcType=NUMERIC}
+		   AND CTSTRXTYPE_STATUS.STATUS_CODE 	= #{statusCode,jdbcType=VARCHAR}
+		   AND USR_LEVEL.CODE = CTSTRXTYPE_STATUS.USER_LEVEL
+		   <if  test='"EXC".equals(todoAlert)'> 
+		   AND CTSTRXTYPE_STATUS.ENTITY_TYPE = 'T'
+		   </if>
+		   
+	</select>
+  
+  <select id="getUsrLevelAllowForOr" parameterType="alertsSC" resultMap="alertsTrsLevelMap">		
+		SELECT MIN (CASE WHEN CTSTRXTYPE_STATUS.ALLOW_OVERRIDE IS NULL THEN  '0' 
+              		ELSE CTSTRXTYPE_STATUS.ALLOW_OVERRIDE END) ALLOW_OVERRIDE,
+               MIN (BRIEF_NAME_ENG) BRIEF_NAME_ENG,
+               MIN (BRIEF_NAME_ARAB) BRIEF_NAME_ARAB,
+               MIN(CTSTRXTYPE_STATUS.USER_LEVEL) 
+      	FROM   CTSTRXTYPE_STATUS 
+      	WHERE  CTSTRXTYPE_STATUS.COMP_CODE       = #{compCode,jdbcType=NUMERIC}
+       	AND    CTSTRXTYPE_STATUS.TRXTYPE_CODE    = #{trsType,jdbcType=NUMERIC}
+       	AND    CTSTRXTYPE_STATUS.USER_LEVEL      = (
+       													SELECT MIN(CTSTRXTYPE_STATUS.USER_LEVEL) 
+														FROM  CTSTRXTYPE_STATUS 
+														WHERE CTSTRXTYPE_STATUS.COMP_CODE   = #{compCode,jdbcType=NUMERIC}
+														AND	CTSTRXTYPE_STATUS.TRXTYPE_CODE  = #{trsType,jdbcType=NUMERIC}
+														<if  test='"EXC".equals(todoAlert)'> 
+														AND	CTSTRXTYPE_STATUS.ENTITY_TYPE		= 'T'
+														</if>				
+       												)
+       	<if  test='"EXC".equals(todoAlert)'> 
+       	AND    CTSTRXTYPE_STATUS.ENTITY_TYPE = 'T'
+       	</if>
+	</select>
+	 
+	 <select id="countCtstrxTypeStatusByType" parameterType="alertsSC" resultType="java.math.BigDecimal">
+	 	SELECT 	COUNT(1)
+		FROM 	CTSTRXTYPE_STATUS
+		WHERE	CTSTRXTYPE_STATUS.COMP_CODE  	= #{compCode,jdbcType=NUMERIC}
+		AND		CTSTRXTYPE_STATUS.TRXTYPE_CODE 	= #{trsType,jdbcType=NUMERIC}
+		<if test="entityType != null ">
+			AND CTSTRXTYPE_STATUS.ENTITY_TYPE  	= #{entityType,jdbcType=NUMERIC}
+		</if>
+	 </select>
+	 
+	<resultMap id="alertsCifMap" type="com.path.dbmaps.vo.CIFVO">
+		<result column="ECO_SECTOR" property="ECO_SECTOR" />
+		<result column="CIF_TYPE" property="CIF_TYPE" />
+		<result column="PRIORITY_CODE" property="PRIORITY_CODE" />
+	</resultMap>
+ 
+	<resultMap id="alertsTrsLevelOverrMap" type="com.path.vo.core.trxmgnt.TrxMgntCO">
+		<result column="USER_LEVEL" 			property="ctsTrxTypeStatusVO.USER_LEVEL" />
+		<result column="ALLOW_OVERRIDE" 		property="ctsTrxTypeStatusVO.ALLOW_OVERRIDE" />
+		<result column="DESC_ENG" 				property="usrLevelVO.DESC_ENG" />
+		<result column="ALLOW_ALERTS_TO_OFFLINE_USERS" 	property="ctsTrxTypeStatusVO.ALLOW_ALERTS_TO_OFFLINE_USERS" />
+		<result column="HIGHLIGHT_RED" 					property="ctsTrxTypeStatusVO.HIGHLIGHT_RED" />
+		<result column="BRIEF_NAME_ENG" 				property="ctsTrxTypeStatusVO.BRIEF_NAME_ENG" />
+		<result column="BRIEF_NAME_ARAB" 				property="ctsTrxTypeStatusVO.BRIEF_NAME_ARAB" />
+		<result column="INCLUDE_USR_OVERDRAW_ACC_BR_YN" 	property="ctsTrxTypeStatusVO.INCLUDE_USR_OVERDRAW_ACC_BR_YN" />
+	</resultMap>
+	
+	<resultMap id="alertsTrsLevelMap" type="com.path.vo.core.trxmgnt.TrxMgntCO">
+		<result column="ALLOW_OVERRIDE" 		property="ctsTrxTypeStatusVO.ALLOW_OVERRIDE" />
+		<result column="BRIEF_NAME_ENG" 		property="ctsTrxTypeStatusVO.BRIEF_NAME_ENG" />
+		<result column="BRIEF_NAME_ARAB" 		property="ctsTrxTypeStatusVO.BRIEF_NAME_ARAB" />
+		<result column="USER_LEVEL" 		property="ctsTrxTypeStatusVO.USER_LEVEL" />
+		
+	</resultMap>
+	 
+	<resultMap id="alertsListMap" type="alertCO">
+		<result column="CODE" property="alertsParamCO.userCode" />
+		<result column="BRANCH_CODE" property="alertsParamCO.branchCode" />
+		<result column="COMP_CODE" property="alertsParamCO.compCode" />
+		<result column="BRIEF_NAME_ENG" property="alertsParamCO.briefNameEnglish" />
+		<result column="LONG_NAME_ENG" property="alertsParamCO.longNameEnglish" />
+		<result column="BRIEF_NAME_ARAB" property="alertsParamCO.briefNameArab" />
+		<result column="LONG_NAME_ARAB" property="alertsParamCO.longNameArab" />
+		<result column="USER_ID" property="alertsParamCO.userId" />
+		<result column="STATUS" property="alertsParamCO.status" />
+		<result column="USER_STATUS" property="alertsParamCO.userStatus" />
+	</resultMap>
+
+	<select id="alertsListCount" parameterType="ctsTellerSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_alertsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="alertsList" parameterType="ctsTellerSC" resultMap="alertsListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_alertsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnCtsControlAlert" parameterType="alertsSC" resultType="ctsControlAlertVO">
+		SELECT 	ALERT_CODE			,
+				ALERT_DESCRIPTION	,
+				ALERT_ADD_CODE		,
+				CASE WHEN ACTIVATE IS NULL THEN '1' ELSE ACTIVATE END  ACTIVATE
+		FROM	CTSCONTROL_ALERT  
+		WHERE	COMP_CODE 			= #{compCode,jdbcType=NUMERIC}
+		AND		BRANCH_CODE 		= #{branchCode,jdbcType=NUMERIC} 
+		AND		(ALERT_TYPE			= 'ALL' Or ALERT_TYPE = #{alertType,jdbcType=VARCHAR})	
+		<if test="alertAddCode != null">
+		   AND ( ALERT_ADD_CODE = #{alertAddCode,jdbcType=VARCHAR}  OR ALERT_TYPE	= 'ALL' )
+		</if>	
+		ORDER BY ALERT_CODE
+	</select>
+	
+	<resultMap id="ctsControlAlertEntityMap" type="alertCO">
+    	<result column="SUMACT" property="countActivate" />
+    	<result column="COMP_CODE" property="ctsControlAlertVO.COMP_CODE" />
+    	<result column="BRANCH_CODE" property="ctsControlAlertVO.BRANCH_CODE" />
+    	<result column="ALERT_CODE" property="ctsControlAlertVO.ALERT_CODE" />
+    	<result column="ALERT_TYPE" property="ctsControlAlertVO.ALERT_TYPE" />
+    	<result column="ALERT_DESCRIPTION" property="ctsControlAlertVO.ALERT_DESCRIPTION" />
+    	<result column="ALERT_ADD_CODE" property="ctsControlAlertVO.ALERT_ADD_CODE" />
+		<result column="CTRL_ACTIVATE" property="ctsControlAlertVO.ACTIVATE" />
+		<result column="ENTITY_TYPE" property="entityType" />
+		<result column="ENT_ACTIVATE" property="entityActivte" />
+    </resultMap>
+    
+	<select id="returnCtsControlAlertEntity" parameterType="alertsSC" resultMap="ctsControlAlertEntityMap">
+		SELECT 
+			<choose >
+	   			<when test="isSybase == 1" >
+	      			SUM(CONVERT(INTEGER, ISNULL(T.CTRL_ACTIVATE, '0'))) SUMACT,
+	   			</when>
+	   			<otherwise>
+	      			SUM(TO_NUMBER(NVL(T.CTRL_ACTIVATE,'0'))) SUMACT,
+	   			</otherwise>
+			</choose>
+		   T.COMP_CODE,
+	       T.BRANCH_CODE,
+	       T.ALERT_CODE,
+	       T.ALERT_TYPE,
+	       T.ALERT_DESCRIPTION,
+	       T.ALERT_ADD_CODE,
+	       T.CTRL_ACTIVATE,
+	       T.ENTITY_TYPE,
+	       
+	  	   <choose >
+	   			<when test="isSybase == 1" >
+	      			ISNULL(T.ENT_ACTIVATE, '0') ENT_ACTIVATE
+	      		</when>
+	   			<otherwise>
+	      			NVL(T.ENT_ACTIVATE,'0') ENT_ACTIVATE
+	   			</otherwise>
+		   </choose>
+	  	   
+	  	   FROM (SELECT CTRLA.COMP_CODE,
+	               CTRLA.BRANCH_CODE,
+	               CTRLA.ALERT_CODE,
+	               CTRLA.ALERT_TYPE,
+	               CTRLA.ALERT_DESCRIPTION,
+	               CTRLA.ALERT_ADD_CODE,
+	               CTRLA.ACTIVATE CTRL_ACTIVATE,
+	               ENTA.ENTITY_TYPE,
+	               ENTA.ACTIVATE ENT_ACTIVATE
+	          FROM CTSCONTROL_ALERT CTRLA 
+	          LEFT OUTER JOIN  CTS_ENTITY_ALERT ENTA ON ENTA.COMP_CODE 	= CTRLA.COMP_CODE
+	                                          	AND ENTA.ALERT_CODE 	= CTRLA.ALERT_CODE 
+	                                           	AND ENTA.ENTITY_TYPE 	= #{entityTypeCode,jdbcType=NUMERIC}       
+	         WHERE CTRLA.COMP_CODE 		= #{compCode,jdbcType=NUMERIC}
+	           	AND CTRLA.BRANCH_CODE 	= #{branchCode,jdbcType=NUMERIC} 
+	           	AND CTRLA.ALERT_TYPE 	= #{alertType,jdbcType=VARCHAR} ) T
+	           	GROUP BY 
+		           T.COMP_CODE,
+			       T.BRANCH_CODE,
+			       T.ALERT_CODE,
+			       T.ALERT_TYPE,
+			       T.ALERT_DESCRIPTION,
+			       T.ALERT_ADD_CODE,
+			       T.CTRL_ACTIVATE,
+			       T.ENTITY_TYPE,
+			       ENT_ACTIVATE
+	</select>
+
+	<select id="getAlertsNextProgrefByStatus" resultType="alertsSC" parameterType="alertsSC">
+	
+		SELECT SOPT.PROG_REF progRef,
+			   CTA.ACTIVATE activate
+		FROM  SYS_PARAM_LOV_LK_OPT SOPT, CTSCONTROL_ALERT CTA 
+		WHERE SOPT.VALUE_CODE 	= 	#{status,jdbcType=VARCHAR} 
+		AND SOPT.APP_NAME 		= 	#{appName,jdbcType=VARCHAR} 
+		AND CTA.COMP_CODE		= 	#{compCode,jdbcType=NUMERIC}
+		AND CTA.BRANCH_CODE 	= 	#{branchCode,jdbcType=NUMERIC}
+		AND CTA.ALERT_TYPE 		= 	#{alertType,jdbcType=VARCHAR}
+		AND SOPT.ALERT_ADD_CODE = CTA.ALERT_ADD_CODE
+		<if test=' noApprovalPrivilege != null and "1".equals(noApprovalPrivilege) '>
+		AND CTA.ACTIVATE = '0' 	
+		</if>
+		AND SOPT.PROG_REF IN
+		(
+			SELECT OPT1.PROG_REF 
+			FROM OPT OPT1 LEFT JOIN OPT OPT2
+						  ON  OPT2.PARENT_REF = OPT1.PARENT_REF
+			WHERE OPT2.PROG_REF = #{progRef,jdbcType=VARCHAR}
+			AND OPT2.APP_NAME   = #{appName,jdbcType=VARCHAR}
+		)
+		<if test=' noApprovalPrivilege != null and "1".equals(noApprovalPrivilege) '>
+			AND EXISTS 
+			(
+				SELECT 1 
+				FROM CTSCONTROL_ALERT CTAL 
+				WHERE CTAL.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+				AND CTAL.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+				AND UPPER(CTAL.ALERT_DESCRIPTION) LIKE UPPER('%NO APPROVAL PRIVILEGE%')
+				AND CTAL.ALERT_TYPE = #{alertType,jdbcType=VARCHAR}
+				AND CTAL.ACTIVATE = '1'
+			)
+			AND NOT EXISTS
+			(
+				<include refid="commonLibMapper.accessFromAXS"/>
+				AND AXS.PROG_REF = SOPT.PROG_REF
+			)   
+		</if>
+	</select>
+
+	<select id="returnAllTellersByLevel" parameterType="alertsSC" resultType="java.lang.String">
+		SELECT DISTINCT CTSTELLER.USER_ID  
+		FROM CTSTELLER  
+		WHERE CTSTELLER.COMP_CODE 	=  #{compCode,jdbcType=NUMERIC} 	   
+		AND	CTSTELLER.BRANCH_CODE 	=  CASE WHEN #{multiBranch,jdbcType=VARCHAR} = '0' THEN #{branchCode,jdbcType=NUMERIC} ELSE CTSTELLER.BRANCH_CODE END 
+		AND	CTSTELLER.PRIVILEGE_LEVEL = #{level,jdbcType=NUMERIC}		
+	</select>
+
+
+ 	<sql id="userAccRestriction">
+ 	AND NOT EXISTS (
+ 				SELECT 1
+ 		FROM SADS_RESTRICTION_USER U , SADS_RESTRICTION_BRANCHES B,
+ 			SADS_RESTRICTION_OPT O , SADS_RESTRICTION_DEFINITION D
+ 			WHERE   U.USER_ID 			= CTSTELLER.USER_ID
+ 			AND 	B.COMP_CODE 		= #{compCode}
+ 			AND 	B.BRANCH_CODE 		= #{branchCode}
+ 			AND 	O.APP_NAME 			= #{appName,jdbcType=VARCHAR}
+ 			AND 	O.PROG_REF 			= #{progRef}
+ 			AND 	D.STATUS 			= 'P'
+			AND 	D.RESTRICTION_CODE 	= U.RESTRICTION_CODE
+ 			AND 	D.RESTRICTION_CODE 	= B.RESTRICTION_CODE
+ 			AND 	D.RESTRICTION_CODE 	= O.RESTRICTION_CODE
+ 			)
+ 	</sql>
+
+	<!-- Hala Al Sheikh - AIBI180007 -->
+	<update id="commitTrans">
+		COMMIT
+	</update>
+	
+	<sql id="beginTans">
+		BEGIN TRANSACTION
+	</sql>
+	
+	<update id="dropTempTableForRetProc" >
+	    IF OBJECT_ID('#CTS_ALERT_USER_TEMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #CTS_ALERT_USER_TEMP
+		END
+	    IF OBJECT_ID('#CTS_RESTRCT_ALERT_USER_TMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #CTS_RESTRCT_ALERT_USER_TMP
+		END
+		IF OBJECT_ID('#CTS_RESTRICT_ACCCIF_TMP') IS NOT NULL
+		BEGIN
+			DROP TABLE #CTS_RESTRICT_ACCCIF_TMP
+		END
+	</update>
+	
+	<sql id="createRetProcTemp" >
+		CREATE TABLE #CTS_ALERT_USER_TEMP(
+			COMP_CODE   			NUMERIC(4) NOT NULL,
+			BRANCH_CODE   			NUMERIC(4) NOT NULL,
+			LOGGED_IN_USER_ID   	VARCHAR(8) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,  
+			ALLOWED_USER_ID 		VARCHAR(8) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+			)
+		CREATE TABLE #CTS_RESTRCT_ALERT_USER_TMP(
+			COMP_CODE   			NUMERIC(4) NOT NULL,
+			BRANCH_CODE   			NUMERIC(4) NOT NULL,
+			LOGGED_IN_USER_ID   	VARCHAR(8) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,  
+			RESTRICTED_USER_ID 		VARCHAR(8) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+			)
+			
+		CREATE TABLE #CTS_RESTRICT_ACCCIF_TMP(
+			COMP_CODE   			NUMERIC(4) NOT NULL,
+			BRANCH_CODE   			NUMERIC(4) NOT NULL,
+			LOGGED_IN_USER_ID   	VARCHAR(8) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,  
+			RESTRICTION_CODE 		NUMERIC(3) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL
+		)	
+	</sql>
+	
+	<update id ="createTempTableForRetProc" parameterType="com.path.vo.core.ctsteller.CTSTELLERSC">
+		<include refid="createRetProcTemp"/>	
+		<include refid="beginTans"/>		
+	</update>
+	
+	<select id="retProcedureCall" parameterType="com.path.vo.core.ctsteller.CTSTELLERSC" statementType="CALLABLE">
+	{ CALL P_RET_USERS_ALERT_CUST  
+	    	( 
+	    		   #{additionalParamsMap.retProcParamMap.AL_COMP_CODE,		mode=IN, 	jdbcType=NUMERIC},
+				   #{additionalParamsMap.retProcParamMap.AL_BRANCH_CODE, 	mode=IN,	jdbcType=NUMERIC},
+				   #{additionalParamsMap.retProcParamMap.ADT_SYSTEM_DATE, 	mode=IN,	jdbcType=TIMESTAMP},
+			       #{additionalParamsMap.retProcParamMap.AS_USER_ID,		mode=IN,	jdbcType=VARCHAR},
+			       #{additionalParamsMap.retProcParamMap.AS_ORIGIN,			mode=IN,	jdbcType=VARCHAR},
+			       #{additionalParamsMap.retProcParamMap.AL_ACC_BR,			mode=IN,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.AL_ACC_CY,			mode=IN,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.AL_ACC_GL,			mode=IN,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.AL_ACC_CIF,		mode=IN,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.AL_ACC_SL,			mode=IN,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.OS_ERROR_TYPE,		mode=OUT,	jdbcType=VARCHAR},
+			       #{additionalParamsMap.retProcParamMap.OL_ERROR_CODE,		mode=OUT,	jdbcType=NUMERIC},
+			       #{additionalParamsMap.retProcParamMap.OS_ERROR_DESC,		mode=OUT,	jdbcType=VARCHAR}
+			)
+	} 
+	</select>	
+	
+	<!-- Hala Al Sheikh - AIBI180007 --> 
+	
+</mapper>

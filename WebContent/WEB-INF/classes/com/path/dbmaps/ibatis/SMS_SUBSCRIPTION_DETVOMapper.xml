@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SMS_SUBSCRIPTION_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SMS_SUBSCRIPTION_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERVICE_CODE" property="SERVICE_CODE" />
+    <result column="SERVICE_TYPE" property="SERVICE_TYPE" />
+    <result column="JV_TYPE" property="JV_TYPE" />
+    <result column="MAYURITY_DAYS" property="MAYURITY_DAYS" />
+    <result column="DEP_OPERATOR" property="DEP_OPERATOR" />
+    <result column="DEPOSIT_AMOUNT" property="DEPOSIT_AMOUNT" />
+    <result column="WD_OPERATOR" property="WD_OPERATOR" />
+    <result column="WD_AMOUNT" property="WD_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NO, SERVICE_CODE, SERVICE_TYPE, JV_TYPE, MAYURITY_DAYS, 
+    DEP_OPERATOR, DEPOSIT_AMOUNT, WD_OPERATOR, WD_AMOUNT
+  </sql>
+  <select id="selectSMS_SUBSCRIPTION_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SMS_SUBSCRIPTION_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SMS_SUBSCRIPTION_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </select>
+  <delete id="deleteSMS_SUBSCRIPTION_DET" parameterType="com.path.dbmaps.vo.SMS_SUBSCRIPTION_DETVOKey" >
+    delete from SMS_SUBSCRIPTION_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </delete>
+  <insert id="insertSMS_SUBSCRIPTION_DET" parameterType="com.path.dbmaps.vo.SMS_SUBSCRIPTION_DETVO" >
+    insert into SMS_SUBSCRIPTION_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERVICE_CODE != null and SERVICE_CODE != emptyBigDecimalValue" >
+        SERVICE_CODE,
+      </if>
+      <if test="SERVICE_TYPE != null" >
+        SERVICE_TYPE,
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        JV_TYPE,
+      </if>
+      <if test="MAYURITY_DAYS != null and MAYURITY_DAYS != emptyBigDecimalValue" >
+        MAYURITY_DAYS,
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        DEP_OPERATOR,
+      </if>
+      <if test="DEPOSIT_AMOUNT != null and DEPOSIT_AMOUNT != emptyBigDecimalValue" >
+        DEPOSIT_AMOUNT,
+      </if>
+      <if test="WD_OPERATOR != null" >
+        WD_OPERATOR,
+      </if>
+      <if test="WD_AMOUNT != null and WD_AMOUNT != emptyBigDecimalValue" >
+        WD_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERVICE_CODE != null and SERVICE_CODE != emptyBigDecimalValue" >
+        #{SERVICE_CODE},
+      </if>
+      <if test="SERVICE_TYPE != null" >
+        #{SERVICE_TYPE},
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        #{JV_TYPE},
+      </if>
+      <if test="MAYURITY_DAYS != null and MAYURITY_DAYS != emptyBigDecimalValue" >
+        #{MAYURITY_DAYS},
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        #{DEP_OPERATOR},
+      </if>
+      <if test="DEPOSIT_AMOUNT != null and DEPOSIT_AMOUNT != emptyBigDecimalValue" >
+        #{DEPOSIT_AMOUNT},
+      </if>
+      <if test="WD_OPERATOR != null" >
+        #{WD_OPERATOR},
+      </if>
+      <if test="WD_AMOUNT != null and WD_AMOUNT != emptyBigDecimalValue" >
+        #{WD_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSMS_SUBSCRIPTION_DET" >
+    update SMS_SUBSCRIPTION_DET
+    <set >
+      <if test="SERVICE_TYPE != null" >
+        SERVICE_TYPE = #{SERVICE_TYPE},
+      </if>
+      <if test="JV_TYPE != null" >
+        <choose >
+          <when test="JV_TYPE == emptyBigDecimalValue" >
+            JV_TYPE = NULL ,
+          </when>
+          <otherwise >
+            JV_TYPE = #{JV_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAYURITY_DAYS != null" >
+        <choose >
+          <when test="MAYURITY_DAYS == emptyBigDecimalValue" >
+            MAYURITY_DAYS = NULL ,
+          </when>
+          <otherwise >
+            MAYURITY_DAYS = #{MAYURITY_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        DEP_OPERATOR = #{DEP_OPERATOR},
+      </if>
+      <if test="DEPOSIT_AMOUNT != null" >
+        <choose >
+          <when test="DEPOSIT_AMOUNT == emptyBigDecimalValue" >
+            DEPOSIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            DEPOSIT_AMOUNT = #{DEPOSIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WD_OPERATOR != null" >
+        WD_OPERATOR = #{WD_OPERATOR},
+      </if>
+      <if test="WD_AMOUNT != null" >
+        <choose >
+          <when test="WD_AMOUNT == emptyBigDecimalValue" >
+            WD_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            WD_AMOUNT = #{WD_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERVICE_CODE = #{SERVICE_CODE}
+  </sql>
+  <update id="updateSMS_SUBSCRIPTION_DET" parameterType="com.path.dbmaps.vo.SMS_SUBSCRIPTION_DETVO" >
+    <include refid="sql_updateSMS_SUBSCRIPTION_DET" />
+  </update>
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSEOSB_TENOR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSEOSB_TENORVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="EOSB_AMT_PERC_FROM" property="EOSB_AMT_PERC_FROM" />
+    <result column="EOSB_AMT_PERC_TO" property="EOSB_AMT_PERC_TO" />
+    <result column="CONSIDERED_TENOR_PERC" property="CONSIDERED_TENOR_PERC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NBR, EOSB_AMT_PERC_FROM, EOSB_AMT_PERC_TO, CONSIDERED_TENOR_PERC
+  </sql>
+  <select id="selectFMSEOSB_TENOR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSEOSB_TENORVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSEOSB_TENOR
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSEOSB_TENOR" parameterType="com.path.dbmaps.vo.FMSEOSB_TENORVOKey" >
+    delete from FMSEOSB_TENOR
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSEOSB_TENOR" parameterType="com.path.dbmaps.vo.FMSEOSB_TENORVO" >
+    insert into FMSEOSB_TENOR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="EOSB_AMT_PERC_FROM != null and EOSB_AMT_PERC_FROM != emptyBigDecimalValue" >
+        EOSB_AMT_PERC_FROM,
+      </if>
+      <if test="EOSB_AMT_PERC_TO != null and EOSB_AMT_PERC_TO != emptyBigDecimalValue" >
+        EOSB_AMT_PERC_TO,
+      </if>
+      <if test="CONSIDERED_TENOR_PERC != null and CONSIDERED_TENOR_PERC != emptyBigDecimalValue" >
+        CONSIDERED_TENOR_PERC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="EOSB_AMT_PERC_FROM != null and EOSB_AMT_PERC_FROM != emptyBigDecimalValue" >
+        #{EOSB_AMT_PERC_FROM},
+      </if>
+      <if test="EOSB_AMT_PERC_TO != null and EOSB_AMT_PERC_TO != emptyBigDecimalValue" >
+        #{EOSB_AMT_PERC_TO},
+      </if>
+      <if test="CONSIDERED_TENOR_PERC != null and CONSIDERED_TENOR_PERC != emptyBigDecimalValue" >
+        #{CONSIDERED_TENOR_PERC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSEOSB_TENOR" >
+    update FMSEOSB_TENOR
+    <set >
+      <if test="EOSB_AMT_PERC_FROM != null" >
+        <choose >
+          <when test="EOSB_AMT_PERC_FROM == emptyBigDecimalValue" >
+            EOSB_AMT_PERC_FROM = NULL ,
+          </when>
+          <otherwise >
+            EOSB_AMT_PERC_FROM = #{EOSB_AMT_PERC_FROM},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EOSB_AMT_PERC_TO != null" >
+        <choose >
+          <when test="EOSB_AMT_PERC_TO == emptyBigDecimalValue" >
+            EOSB_AMT_PERC_TO = NULL ,
+          </when>
+          <otherwise >
+            EOSB_AMT_PERC_TO = #{EOSB_AMT_PERC_TO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONSIDERED_TENOR_PERC != null" >
+        <choose >
+          <when test="CONSIDERED_TENOR_PERC == emptyBigDecimalValue" >
+            CONSIDERED_TENOR_PERC = NULL ,
+          </when>
+          <otherwise >
+            CONSIDERED_TENOR_PERC = #{CONSIDERED_TENOR_PERC},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSEOSB_TENOR" parameterType="com.path.dbmaps.vo.FMSEOSB_TENORVO" >
+    <include refid="sql_updateFMSEOSB_TENOR" />
+  </update>
+</mapper>

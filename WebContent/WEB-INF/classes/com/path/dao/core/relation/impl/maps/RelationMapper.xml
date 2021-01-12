@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="relationMapper">
+
+ <sql id="relationListCommon">
+	<![CDATA[
+	SELECT
+			 RELATION.RELATION_CODE,
+			 RELATION.BRIEF_DESC_ENG,
+			 RELATION.LONG_DESC_ENG,
+			 RELATION.BRIEF_DESC_ARAB,
+			 RELATION.LONG_DESC_ARAB,
+			 RELATION.ADDITIONAL_REFERENCE
+	FROM  RELATION 
+	WHERE	 RELATION.COMP_CODE  = #{compCode}
+	]]>	 
+	<if test="addReference != null">
+		AND UPPER(ADDITIONAL_REFERENCE)=#{addReference,jdbcType=VARCHAR}
+	</if>
+ </sql>
+ 
+ <resultMap id="relationList_ResMap" type="relationVO">
+	<id property="RELATION_CODE" column="RELATION_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="relationList" resultMap="relationList_ResMap" parameterType="relationSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="relationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="relationListCount" resultType="int" parameterType="relationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="relationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnRelationById" parameterType="relationSC" resultType="relationVO">
+		SELECT 
+			RELATION_CODE,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+			LONG_DESC_ENG
+		FROM  RELATION
+		WHERE RELATION.COMP_CODE      = #{compCode}
+		AND   RELATION.RELATION_CODE  = #{relationCode}
+		<if test="addReference != null">
+			AND UPPER(ADDITIONAL_REFERENCE)=#{addReference,jdbcType=VARCHAR}
+		</if>
+  </select>
+
+</mapper>

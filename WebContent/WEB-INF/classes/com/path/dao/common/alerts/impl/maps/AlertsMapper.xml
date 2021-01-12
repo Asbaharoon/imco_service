@@ -1,0 +1,1537 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="alertsMapper">
+		
+
+
+<sql id="select_trsAckTOutList">
+	<choose>
+		<!-- in case of login alert, only the received alert should be acknowledgment alerts Approval/Rejection  -->
+		<when test='enableLoginAlert != null and "true".equals(enableLoginAlert)'>
+			  SELECT 
+			   (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+			                   AND SPLT.VALUE_CODE = '2'
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+			  (SELECT SPLT.VALUE_DESC
+			            FROM SYS_PARAM_LOV_TRANS SPLT
+			           WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+			             AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+			             AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+			             S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+			                    'ACK' TODO_ALERT_TYPE,
+			                     S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+			       '6' ORDNUM,      
+			       S_TODO_DET.TODO_STATUS,
+			       S_TODO_DET.BRIEF_NAME_ENG,
+			       S_TODO_DET.LONG_NAME_ENG,
+			       S_TODO_DET.TODO_CODE, 
+			       S_TODO_DET.TODO_LINE,
+			       S_TODO_DET.COMP_CODE,
+			       S_TODO_DET.BRANCH_CODE,
+			       S_TODO_DET.DISTRIBUTION_TYPE,
+			       S_TODO_DET.DISTRIBUTION_TO,
+			       S_TODO_DET.BRIEF_NAME_ARAB,
+			       S_TODO_DET.LONG_NAME_ARAB,
+			       S_TODO_DET.TODO_TYPE,
+			       S_TODO_DET.TODO_APPLICATION,
+			       S_TODO_DET.TODO_PROG_REF,
+			       S_TODO_DET.TODO_PARAM,
+			       NULL USER_ID,
+			       S_TODO_DET.GROUP_ID,
+			       S_TODO_DET.TODO_PRIORITY,
+			       S_TODO_DET.TODO_TEMPLATE_CODE,
+			       S_TODO_DET.TODO_EXTERNAL,
+			       S_TODO_DET.NO_ACTION_APPLY,
+			       S_TODO_DET.NO_ACTION_TIME,
+			       S_TODO_DET.ALLOW_TO_SEND,
+			       S_TODO_DET.KEEP_HISTORY,
+			       S_TODO_DET.TRX_NUMBER,
+			       S_TODO_DET.DATE_RECEIVED,
+			       S_TODO_DET.DATE_PROCESSED,
+			       S_TODO_DET.TODO_REMARQS,
+			       S_TODO_DET.TODO_REPLY,
+			       S_TODO_DET.RECEIVED_FROM,
+			       S_TODO_DET.RECEIVED_CODE,
+			       S_TODO_DET.RECEIVED_LINE,
+			       S_TODO_DET.TODO_CHECKED,
+			       S_TODO_DET.JOB_ID,
+			       S_TODO_DET.PARENT_TASK,
+			       S_TODO_DET.TODO_TEMPLATE_LINE,
+			       S_TODO_DET.TODO_EXECUTION,
+			       S_TODO_DET.ALERT_DESC TRX_DESC,
+			       1 CP_BOLD,
+			       S_TODO_DET.ALERT_WAITING_TIME,
+			       S_TODO_DET.TODO_EXCEP_ENG,
+			       S_TODO_DET.TODO_EXCEP_ARABIC,
+			       S_TODO_DET.TODO_REASON   ,
+			       S_TODO_DET.TODO_TELLER_BR,
+			       S_TODO_DET.TODO_TELLER_ID,
+			       TODO_ALERT_OLD_STATUS,
+			       '' USER_NAME,
+			       S_TODO_DET.TODO_FR_BRANCH,
+			       S_TODO_DET.CIF_NO,
+			       S_TODO_DET.ALERT_DESC
+			  FROM  S_TODO_DET ,
+			        SYS_PARAM_TODO_ALERT_TYPE S1 
+			  WHERE   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR})
+			  AND S_TODO_DET.TODO_STATUS = 'A'
+			  AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+			  AND S1.APP_NAME=#{appName,jdbcType=VARCHAR} 
+			  AND S_TODO_DET.TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+			  AND S1.TODO_ALERT_TYPE in('A','R')
+			  AND S_TODO_DET.TODO_ALERT in('@LA','@LR','@LAS','@LRS')
+			  AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  
+		</when>
+		<when test='appName != null and "RET".equals(appName)'>
+			SELECT (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+			                   AND SPLT.VALUE_CODE = '0'
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR} ) TODO_ALERT,
+			                   (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+			                   AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR})TODO_ALERT_DESC,
+			                   S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+			                   'TRANS' TODO_ALERT_TYPE,
+			                  S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+				   '2' ORDNUM,
+			       S_TODO_DET.TODO_STATUS,  
+			       S_TODO_DET.BRIEF_NAME_ENG,
+			       S_TODO_DET.LONG_NAME_ENG,
+			       S_TODO_DET.TODO_CODE,
+			       S_TODO_DET.TODO_LINE,
+			       S_TODO_DET.COMP_CODE,
+			       S_TODO_DET.BRANCH_CODE,
+			       S_TODO_DET.DISTRIBUTION_TYPE,
+			       S_TODO_DET.DISTRIBUTION_TO,
+			       S_TODO_DET.BRIEF_NAME_ARAB,
+			       S_TODO_DET.LONG_NAME_ARAB,
+			       S_TODO_DET.TODO_TYPE,
+			       S_TODO_DET.TODO_APPLICATION,
+			       S_TODO_DET.TODO_PROG_REF,
+			       S_TODO_DET.TODO_PARAM,
+			       NULL USER_ID, 
+			       S_TODO_DET.GROUP_ID,
+			       S_TODO_DET.TODO_PRIORITY,
+			       S_TODO_DET.TODO_TEMPLATE_CODE,
+			       S_TODO_DET.TODO_EXTERNAL,
+			       S_TODO_DET.NO_ACTION_APPLY,
+			       S_TODO_DET.NO_ACTION_TIME,
+			       S_TODO_DET.ALLOW_TO_SEND,
+			       S_TODO_DET.KEEP_HISTORY,
+			       S_TODO_DET.TRX_NUMBER,
+			       S_TODO_DET.DATE_RECEIVED,
+			       S_TODO_DET.DATE_PROCESSED,
+			       S_TODO_DET.TODO_REMARQS,
+			       S_TODO_DET.TODO_REPLY,
+			       S_TODO_DET.RECEIVED_FROM,
+			       S_TODO_DET.RECEIVED_CODE,
+			       S_TODO_DET.RECEIVED_LINE,
+			       S_TODO_DET.TODO_CHECKED,
+			       S_TODO_DET.JOB_ID,
+			       S_TODO_DET.PARENT_TASK,
+			       S_TODO_DET.TODO_TEMPLATE_LINE,
+			       S_TODO_DET.TODO_EXECUTION,
+			       S_TODO_DET.ALERT_DESC TRX_DESC,
+			       1 CP_BOLD,
+			       S_TODO_DET.ALERT_WAITING_TIME,
+			       S_TODO_DET.TODO_EXCEP_ENG,
+			       S_TODO_DET.TODO_EXCEP_ARABIC,
+			       S_TODO_DET.TODO_REASON   ,
+			       S_TODO_DET.TODO_TELLER_BR,
+			       S_TODO_DET.TODO_TELLER_ID,
+			       TODO_ALERT_OLD_STATUS,
+			       '' USER_NAME,
+			       S_TODO_DET.TODO_FR_BRANCH, 
+			       S_TODO_DET.CIF_NO,
+			       S_TODO_DET.ALERT_DESC
+			       
+			  FROM  S_TODO_DET,
+			        SYS_PARAM_TODO_ALERT_TYPE S1 
+			  WHERE    (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR})
+			  AND S_TODO_DET.TODO_STATUS = 'A'
+			  AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+			  AND S1.APP_NAME=#{appName,jdbcType=VARCHAR} 
+			  AND S_TODO_DET.TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+			  AND S1.TODO_ALERT_TYPE='T'
+			        
+			  AND   (  
+			        (S_TODO_DET.NO_ACTION_TIME IS NULL) OR
+			        (S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]> #{runningDate,jdbcType=TIMESTAMP})
+			      )
+			  
+			  <if test='"true".equals(alertByCompBranch)'>
+			  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  </if>
+			  	
+			  UNION
+			  
+			  SELECT 
+			   (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+			                   AND SPLT.VALUE_CODE = '2'
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+			  (SELECT SPLT.VALUE_DESC
+			            FROM SYS_PARAM_LOV_TRANS SPLT
+			           WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+			             AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+			             AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+			             S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+			                    'ACK' TODO_ALERT_TYPE,
+			                     S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+			       '6' ORDNUM,      
+			       S_TODO_DET.TODO_STATUS,
+			       S_TODO_DET.BRIEF_NAME_ENG,
+			       S_TODO_DET.LONG_NAME_ENG,
+			       S_TODO_DET.TODO_CODE, 
+			       S_TODO_DET.TODO_LINE,
+			       S_TODO_DET.COMP_CODE,
+			       S_TODO_DET.BRANCH_CODE,
+			       S_TODO_DET.DISTRIBUTION_TYPE,
+			       S_TODO_DET.DISTRIBUTION_TO,
+			       S_TODO_DET.BRIEF_NAME_ARAB,
+			       S_TODO_DET.LONG_NAME_ARAB,
+			       S_TODO_DET.TODO_TYPE,
+			       S_TODO_DET.TODO_APPLICATION,
+			       S_TODO_DET.TODO_PROG_REF,
+			       S_TODO_DET.TODO_PARAM,
+			       NULL USER_ID,
+			       S_TODO_DET.GROUP_ID,
+			       S_TODO_DET.TODO_PRIORITY,
+			       S_TODO_DET.TODO_TEMPLATE_CODE,
+			       S_TODO_DET.TODO_EXTERNAL,
+			       S_TODO_DET.NO_ACTION_APPLY,
+			       S_TODO_DET.NO_ACTION_TIME,
+			       S_TODO_DET.ALLOW_TO_SEND,
+			       S_TODO_DET.KEEP_HISTORY,
+			       S_TODO_DET.TRX_NUMBER,
+			       S_TODO_DET.DATE_RECEIVED,
+			       S_TODO_DET.DATE_PROCESSED,
+			       S_TODO_DET.TODO_REMARQS,
+			       S_TODO_DET.TODO_REPLY,
+			       S_TODO_DET.RECEIVED_FROM,
+			       S_TODO_DET.RECEIVED_CODE,
+			       S_TODO_DET.RECEIVED_LINE,
+			       S_TODO_DET.TODO_CHECKED,
+			       S_TODO_DET.JOB_ID,
+			       S_TODO_DET.PARENT_TASK,
+			       S_TODO_DET.TODO_TEMPLATE_LINE,
+			       S_TODO_DET.TODO_EXECUTION,
+			       S_TODO_DET.ALERT_DESC TRX_DESC,
+			       1 CP_BOLD,
+			       S_TODO_DET.ALERT_WAITING_TIME,
+			       S_TODO_DET.TODO_EXCEP_ENG,
+			       S_TODO_DET.TODO_EXCEP_ARABIC,
+			       S_TODO_DET.TODO_REASON   ,
+			       S_TODO_DET.TODO_TELLER_BR,
+			       S_TODO_DET.TODO_TELLER_ID,
+			       TODO_ALERT_OLD_STATUS,
+			       '' USER_NAME,
+			       S_TODO_DET.TODO_FR_BRANCH,
+			       S_TODO_DET.CIF_NO,
+			       S_TODO_DET.ALERT_DESC
+			  FROM  S_TODO_DET ,
+			        SYS_PARAM_TODO_ALERT_TYPE S1 
+			  WHERE   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR})
+			  AND S_TODO_DET.TODO_STATUS = 'A'
+			  AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+			  AND S1.APP_NAME = S_TODO_DET.TODO_APPLICATION
+			  AND S_TODO_DET.TODO_APPLICATION IN (#{appName,jdbcType=VARCHAR}, 'IMEN')
+			  AND S1.TODO_ALERT_TYPE in('A','R')
+			      
+			  <if test='"true".equals(alertByCompBranch)'>
+			  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  </if>
+			  
+			
+			UNION
+			
+			SELECT (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+			                   AND SPLT.VALUE_CODE = '1'
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+			            (SELECT SPLT.VALUE_DESC
+			            FROM SYS_PARAM_LOV_TRANS SPLT
+			           WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+			             AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+			             AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+			             S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+			                    'TO' TODO_ALERT_TYPE,
+			                     S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+			       '4' ORDNUM,   
+			       S_TODO_DET.TODO_STATUS,
+			       S_TODO_DET.BRIEF_NAME_ENG,
+			       S_TODO_DET.LONG_NAME_ENG,
+			       S_TODO_DET.TODO_CODE,
+			       S_TODO_DET.TODO_LINE,  
+			       S_TODO_DET.COMP_CODE,
+			       S_TODO_DET.BRANCH_CODE,
+			       S_TODO_DET.DISTRIBUTION_TYPE,
+			       S_TODO_DET.DISTRIBUTION_TO,
+			       S_TODO_DET.BRIEF_NAME_ARAB,
+			       S_TODO_DET.LONG_NAME_ARAB,
+			       S_TODO_DET.TODO_TYPE,
+			       S_TODO_DET.TODO_APPLICATION,
+			       S_TODO_DET.TODO_PROG_REF,
+			       S_TODO_DET.TODO_PARAM,
+			       S_TODO_DET.USER_ID,
+			       S_TODO_DET.GROUP_ID,
+			       S_TODO_DET.TODO_PRIORITY,
+			       S_TODO_DET.TODO_TEMPLATE_CODE,
+			       S_TODO_DET.TODO_EXTERNAL,
+			       S_TODO_DET.NO_ACTION_APPLY,
+			       S_TODO_DET.NO_ACTION_TIME,
+			       S_TODO_DET.ALLOW_TO_SEND,
+			       S_TODO_DET.KEEP_HISTORY,
+			       S_TODO_DET.TRX_NUMBER,
+			       S_TODO_DET.DATE_RECEIVED,
+			       S_TODO_DET.DATE_PROCESSED,
+			       S_TODO_DET.TODO_REMARQS,
+			       S_TODO_DET.TODO_REPLY,
+			       NULL RECEIVED_FROM,
+			       S_TODO_DET.RECEIVED_CODE,
+			       S_TODO_DET.RECEIVED_LINE,
+			       S_TODO_DET.TODO_CHECKED,
+			       S_TODO_DET.JOB_ID,
+			       S_TODO_DET.PARENT_TASK,
+			       S_TODO_DET.TODO_TEMPLATE_LINE,
+			       S_TODO_DET.TODO_EXECUTION,  
+			       S_TODO_DET.ALERT_DESC TRX_DESC,
+			       1 CP_BOLD,
+			       S_TODO_DET.ALERT_WAITING_TIME,
+			       
+			       S_TODO_DET.TODO_EXCEP_ENG,
+			       S_TODO_DET.TODO_EXCEP_ARABIC ,
+			       S_TODO_DET.TODO_REASON,
+			       S_TODO_DET.TODO_TELLER_BR,
+			       S_TODO_DET.TODO_TELLER_ID,
+			       TODO_ALERT_OLD_STATUS,
+			       '' USER_NAME ,
+			       S_TODO_DET.TODO_FR_BRANCH,
+			       S_TODO_DET.CIF_NO,
+				   S_TODO_DET.ALERT_DESC	
+			  FROM  S_TODO_DET ,
+			        SYS_PARAM_TODO_ALERT_TYPE S1 
+			  WHERE  (S_TODO_DET.RECEIVED_FROM  = #{userId,jdbcType=VARCHAR})
+			  AND  (S_TODO_DET.ALERT_WAITING_TIME <![CDATA[ <= ]]>  #{runningDate,jdbcType=TIMESTAMP})
+			  AND S_TODO_DET.TODO_STATUS = 'A'
+			  AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+			  AND S1.APP_NAME=#{appName,jdbcType=VARCHAR} 
+			  AND S_TODO_DET.TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+			  AND S1.TODO_ALERT_TYPE='T'
+			  
+			  <if test='"true".equals(alertByCompBranch)'>
+			  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  </if>
+			 
+			UNION
+			  
+  		</when>
+  		<when test='appName != null and "FMS".equals(appName)'>
+              SELECT (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+           AND SPLT.VALUE_CODE = '0'
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+       (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+           AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+       S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+       'TRANS' TODO_ALERT_TYPE,
+       S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+       '2' ORDNUM,
+   
+   
+       S_TODO_DET.TODO_STATUS,
+                  S_TODO_DET.BRIEF_NAME_ENG,
+                  S_TODO_DET.LONG_NAME_ENG,
+                  
+                   S_TODO_DET.TODO_CODE,
+                  S_TODO_DET.TODO_LINE,  
+                   S_TODO_DET.COMP_CODE,
+                  S_TODO_DET.BRANCH_CODE,
+                  
+                   S_TODO_DET.DISTRIBUTION_TYPE,
+                  S_TODO_DET.DISTRIBUTION_TO,
+                  S_TODO_DET.BRIEF_NAME_ARAB,
+                  S_TODO_DET.LONG_NAME_ARAB,
+                  S_TODO_DET.TODO_TYPE,
+                  
+                   S_TODO_DET.TODO_APPLICATION,
+                  S_TODO_DET.TODO_PROG_REF,
+                  S_TODO_DET.TODO_PARAM,  
+                   S_TODO_DET.USER_ID,
+                  S_TODO_DET.GROUP_ID,
+                  
+                   S_TODO_DET.TODO_PRIORITY,
+                  S_TODO_DET.TODO_TEMPLATE_CODE,
+                  S_TODO_DET.TODO_EXTERNAL,
+                  S_TODO_DET.NO_ACTION_APPLY,
+                  S_TODO_DET.NO_ACTION_TIME,
+                  
+                   S_TODO_DET.ALLOW_TO_SEND,
+                  S_TODO_DET.KEEP_HISTORY,
+                  S_TODO_DET.TRX_NUMBER,
+                  S_TODO_DET.DATE_RECEIVED,
+                  S_TODO_DET.DATE_PROCESSED,
+                  
+                   S_TODO_DET.TODO_REMARQS,
+                  S_TODO_DET.TODO_REPLY,
+                  S_TODO_DET.RECEIVED_FROM,
+                  S_TODO_DET.RECEIVED_CODE,
+                  S_TODO_DET.RECEIVED_LINE,
+                  
+                   S_TODO_DET.TODO_CHECKED,
+                  S_TODO_DET.JOB_ID,
+                  S_TODO_DET.PARENT_TASK,
+                  S_TODO_DET.TODO_TEMPLATE_LINE,
+                  S_TODO_DET.TODO_EXECUTION,  
+                   
+                   S_TODO_DET.ALERT_DESC  TRX_DESC,               
+                   1 CP_BOLD,
+                  S_TODO_DET.ALERT_WAITING_TIME,
+                  S_TODO_DET.TODO_EXCEP_ENG,
+                  S_TODO_DET.TODO_EXCEP_ARABIC ,
+                  S_TODO_DET.TODO_REASON,
+                  S_TODO_DET.TODO_TELLER_BR,
+                  S_TODO_DET.TODO_TELLER_ID,
+                  TODO_ALERT_OLD_STATUS,
+                  
+                  '' USER_NAME,
+                  S_TODO_DET.TODO_FR_BRANCH,
+                  S_TODO_DET.CIF_NO ,
+                  S_TODO_DET.ALERT_DESC
+                        FROM  S_TODO_DET ,SYS_PARAM_TODO_ALERT_TYPE S1 
+                       WHERE  (S_TODO_DET.TODO_APPLICATION  =  #{appName,jdbcType=VARCHAR}) 
+                         <if test='"true".equals(alertByCompBranch)'>
+						  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+						  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+					 	 </if>
+			  
+                        AND   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR}) 
+                        AND   (S_TODO_DET.TODO_ALERT  IN ('AP','AC','AA','AI','AR','AF','AD','FC','FL','DV','DP','AG','DAV','CP','CV')) 
+                        AND   (     
+                                          (S_TODO_DET.NO_ACTION_TIME IS NULL) OR 
+                                          (S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]> #{runningDate,jdbcType=TIMESTAMP} ) 
+                                    ) 
+                        AND S_TODO_DET.TODO_STATUS = 'A' 
+                        AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+                        AND S1.APP_NAME=#{appName,jdbcType=VARCHAR}   
+                        
+                                                
+                        UNION
+                        
+                        
+                        SELECT (SELECT SPLT.VALUE_DESC
+                  FROM SYS_PARAM_LOV_TRANS SPLT
+                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+                   AND SPLT.VALUE_CODE = '0'
+                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+               (SELECT SPLT.VALUE_DESC
+                  FROM SYS_PARAM_LOV_TRANS SPLT
+                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+                   AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+               S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+               'ACK' TODO_ALERT_TYPE,
+               S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+               '2' ORDNUM,
+               S_TODO_DET.TODO_STATUS,
+               S_TODO_DET.BRIEF_NAME_ENG,
+               S_TODO_DET.LONG_NAME_ENG,
+               S_TODO_DET.TODO_CODE,
+               S_TODO_DET.TODO_LINE,
+               S_TODO_DET.COMP_CODE,
+               S_TODO_DET.BRANCH_CODE,
+               S_TODO_DET.DISTRIBUTION_TYPE,
+               S_TODO_DET.DISTRIBUTION_TO,
+               S_TODO_DET.BRIEF_NAME_ARAB,
+               S_TODO_DET.LONG_NAME_ARAB,
+               S_TODO_DET.TODO_TYPE,
+               S_TODO_DET.TODO_APPLICATION,
+               S_TODO_DET.TODO_PROG_REF,
+               S_TODO_DET.TODO_PARAM,
+               S_TODO_DET.USER_ID,
+               S_TODO_DET.GROUP_ID,
+               S_TODO_DET.TODO_PRIORITY,
+               S_TODO_DET.TODO_TEMPLATE_CODE,
+               S_TODO_DET.TODO_EXTERNAL,
+               S_TODO_DET.NO_ACTION_APPLY,
+               S_TODO_DET.NO_ACTION_TIME,
+               S_TODO_DET.ALLOW_TO_SEND,
+               S_TODO_DET.KEEP_HISTORY,
+               S_TODO_DET.TRX_NUMBER,
+               S_TODO_DET.DATE_RECEIVED,
+               S_TODO_DET.DATE_PROCESSED,
+               S_TODO_DET.TODO_REMARQS,
+               S_TODO_DET.TODO_REPLY,
+               S_TODO_DET.RECEIVED_FROM,
+               S_TODO_DET.RECEIVED_CODE,
+               S_TODO_DET.RECEIVED_LINE,
+               S_TODO_DET.TODO_CHECKED,
+               S_TODO_DET.JOB_ID,
+               S_TODO_DET.PARENT_TASK,
+               S_TODO_DET.TODO_TEMPLATE_LINE,
+               S_TODO_DET.TODO_EXECUTION,
+               S_TODO_DET.ALERT_DESC TRX_DESC,
+               1 CP_BOLD,
+               S_TODO_DET.ALERT_WAITING_TIME,
+               S_TODO_DET.TODO_EXCEP_ENG,
+               S_TODO_DET.TODO_EXCEP_ARABIC,
+               S_TODO_DET.TODO_REASON,
+               S_TODO_DET.TODO_TELLER_BR,
+               S_TODO_DET.TODO_TELLER_ID,
+               TODO_ALERT_OLD_STATUS,
+               '' USER_NAME,
+               S_TODO_DET.TODO_FR_BRANCH,
+               S_TODO_DET.CIF_NO,
+               S_TODO_DET.ALERT_DESC
+          FROM S_TODO_DET, SYS_PARAM_TODO_ALERT_TYPE S1
+         WHERE (S_TODO_DET.TODO_APPLICATION IN (#{appName,jdbcType=VARCHAR}, 'IMEN'))
+  			  <if test='"true".equals(alertByCompBranch)'>
+			  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  </if>
+			           
+           AND (S_TODO_DET.USER_ID = #{userId,jdbcType=VARCHAR})
+           AND ((S_TODO_DET.NO_ACTION_TIME IS NULL) OR
+               (S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND
+               S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]> #{runningDate,jdbcType=TIMESTAMP}))
+           AND S_TODO_DET.TODO_STATUS = 'A'
+           AND S_TODO_DET.TODO_ALERT = S1.TODO_ALERT
+           AND S1.TODO_ALERT_TYPE IN ('A','R')     
+           AND S1.APP_NAME = S_TODO_DET.TODO_APPLICATION
+           
+           UNION
+                
+            </when>
+            <when test='appName != null and ("IIS".equals(appName) 
+            							or "ITRS".equals(appName) 
+            							or "ICOR".equals(appName) 
+            							or "IRET".equals(appName)
+            							or "IMIG".equals(appName)
+            							or "IPRC".equals(appName)
+            							or "IRVL".equals(appName)
+            							or "LEND".equals(appName) 
+            							or "LCOR".equals(appName) 
+            							or "LRET".equals(appName)
+            							or "PROV".equals(appName))'>
+	            SELECT (SELECT SPLT.VALUE_DESC
+						FROM SYS_PARAM_LOV_TRANS SPLT
+						WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+						AND SPLT.VALUE_CODE = '0'
+						AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+					(SELECT SPLT.VALUE_DESC
+						FROM SYS_PARAM_LOV_TRANS SPLT
+						WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+						AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+						AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+					S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+					'TRANS' TODO_ALERT_TYPE,
+					S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+					'1' ORDNUM,
+					
+					S_TODO_DET.TODO_STATUS,
+					S_TODO_DET.BRIEF_NAME_ENG,
+					S_TODO_DET.LONG_NAME_ENG,
+					
+					S_TODO_DET.TODO_CODE,
+					S_TODO_DET.TODO_LINE,  
+					S_TODO_DET.COMP_CODE,
+					S_TODO_DET.BRANCH_CODE,
+					
+					S_TODO_DET.DISTRIBUTION_TYPE,
+					S_TODO_DET.DISTRIBUTION_TO,
+					S_TODO_DET.BRIEF_NAME_ARAB,
+					S_TODO_DET.LONG_NAME_ARAB,
+					S_TODO_DET.TODO_TYPE,
+					
+					S_TODO_DET.TODO_APPLICATION,
+					S_TODO_DET.TODO_PROG_REF,
+					S_TODO_DET.TODO_PARAM,  
+					S_TODO_DET.USER_ID,
+					S_TODO_DET.GROUP_ID,
+					
+					S_TODO_DET.TODO_PRIORITY,
+					S_TODO_DET.TODO_TEMPLATE_CODE,
+					S_TODO_DET.TODO_EXTERNAL,
+					S_TODO_DET.NO_ACTION_APPLY,
+					S_TODO_DET.NO_ACTION_TIME,
+					
+					S_TODO_DET.ALLOW_TO_SEND,
+					S_TODO_DET.KEEP_HISTORY,
+					S_TODO_DET.TRX_NUMBER,
+					S_TODO_DET.DATE_RECEIVED,
+					S_TODO_DET.DATE_PROCESSED,
+					
+					S_TODO_DET.TODO_REMARQS,
+					S_TODO_DET.TODO_REPLY,
+					S_TODO_DET.RECEIVED_FROM,
+					S_TODO_DET.RECEIVED_CODE,
+					S_TODO_DET.RECEIVED_LINE,
+					
+					S_TODO_DET.TODO_CHECKED,
+					S_TODO_DET.JOB_ID,
+					S_TODO_DET.PARENT_TASK,
+					S_TODO_DET.TODO_TEMPLATE_LINE,
+					S_TODO_DET.TODO_EXECUTION,  
+					
+					S_TODO_DET.ALERT_DESC  TRX_DESC,               
+					1 CP_BOLD,
+					S_TODO_DET.ALERT_WAITING_TIME,
+					S_TODO_DET.TODO_EXCEP_ENG,
+					S_TODO_DET.TODO_EXCEP_ARABIC ,
+					S_TODO_DET.TODO_REASON,
+					S_TODO_DET.TODO_TELLER_BR,
+					S_TODO_DET.TODO_TELLER_ID,
+					TODO_ALERT_OLD_STATUS,
+					
+					'' USER_NAME,
+					S_TODO_DET.TODO_FR_BRANCH,
+					S_TODO_DET.CIF_NO,
+					S_TODO_DET.ALERT_DESC 
+				FROM  S_TODO_DET ,SYS_PARAM_TODO_ALERT_TYPE S1 
+				WHERE  (S_TODO_DET.TODO_APPLICATION  =  #{appName,jdbcType=VARCHAR}) 
+				AND   (S_TODO_DET.COMP_CODE  =#{compCode,jdbcType=NUMERIC}) 
+				AND   (S_TODO_DET.BRANCH_CODE  =  #{branchCode,jdbcType=NUMERIC}) 
+				AND   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR}) 
+				AND   (     
+						  (S_TODO_DET.NO_ACTION_TIME IS NULL) OR 
+						  (S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]> #{runningDate,jdbcType=TIMESTAMP} ) 
+					) 
+				AND S_TODO_DET.TODO_STATUS = 'A'
+				AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+				AND S1.TODO_ALERT_TYPE='T'
+				AND S1.APP_NAME=#{appName,jdbcType=VARCHAR} 
+				
+				UNION
+				
+				SELECT (SELECT SPLT.VALUE_DESC
+						FROM SYS_PARAM_LOV_TRANS SPLT
+						WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+						AND SPLT.VALUE_CODE = '0'
+						AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+					(SELECT SPLT.VALUE_DESC
+						FROM SYS_PARAM_LOV_TRANS SPLT
+						WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+						AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+						AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+					S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+					'ACK' TODO_ALERT_TYPE,
+					S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+					'2' ORDNUM,
+					
+					S_TODO_DET.TODO_STATUS,
+					S_TODO_DET.BRIEF_NAME_ENG,
+					S_TODO_DET.LONG_NAME_ENG,
+					
+					S_TODO_DET.TODO_CODE,
+					S_TODO_DET.TODO_LINE,  
+					S_TODO_DET.COMP_CODE,
+					S_TODO_DET.BRANCH_CODE,
+					
+					S_TODO_DET.DISTRIBUTION_TYPE,
+					S_TODO_DET.DISTRIBUTION_TO,
+					S_TODO_DET.BRIEF_NAME_ARAB,
+					S_TODO_DET.LONG_NAME_ARAB,
+					S_TODO_DET.TODO_TYPE,
+					
+					S_TODO_DET.TODO_APPLICATION,
+					S_TODO_DET.TODO_PROG_REF,
+					S_TODO_DET.TODO_PARAM,  
+					S_TODO_DET.USER_ID,
+					S_TODO_DET.GROUP_ID,
+					
+					S_TODO_DET.TODO_PRIORITY,
+					S_TODO_DET.TODO_TEMPLATE_CODE,
+					S_TODO_DET.TODO_EXTERNAL,
+					S_TODO_DET.NO_ACTION_APPLY,
+					S_TODO_DET.NO_ACTION_TIME,
+					
+					S_TODO_DET.ALLOW_TO_SEND,
+					S_TODO_DET.KEEP_HISTORY,
+					S_TODO_DET.TRX_NUMBER,
+					S_TODO_DET.DATE_RECEIVED,
+					S_TODO_DET.DATE_PROCESSED,
+					
+					S_TODO_DET.TODO_REMARQS,
+					S_TODO_DET.TODO_REPLY,
+					S_TODO_DET.RECEIVED_FROM,
+					S_TODO_DET.RECEIVED_CODE,
+					S_TODO_DET.RECEIVED_LINE,
+					
+					S_TODO_DET.TODO_CHECKED,
+					S_TODO_DET.JOB_ID,
+					S_TODO_DET.PARENT_TASK,
+					S_TODO_DET.TODO_TEMPLATE_LINE,
+					S_TODO_DET.TODO_EXECUTION,  
+					
+					S_TODO_DET.ALERT_DESC  TRX_DESC,               
+					1 CP_BOLD,
+					S_TODO_DET.ALERT_WAITING_TIME,
+					S_TODO_DET.TODO_EXCEP_ENG,
+					S_TODO_DET.TODO_EXCEP_ARABIC ,
+					S_TODO_DET.TODO_REASON,
+					S_TODO_DET.TODO_TELLER_BR,
+					S_TODO_DET.TODO_TELLER_ID,
+					TODO_ALERT_OLD_STATUS,
+					
+					'' USER_NAME,
+					S_TODO_DET.TODO_FR_BRANCH,
+					S_TODO_DET.CIF_NO,
+					S_TODO_DET.ALERT_DESC
+				FROM  S_TODO_DET ,SYS_PARAM_TODO_ALERT_TYPE S1 
+				WHERE  (S_TODO_DET.TODO_APPLICATION IN (#{appName,jdbcType=VARCHAR}, 'IMEN')) 
+				AND   (S_TODO_DET.COMP_CODE  =#{compCode,jdbcType=NUMERIC}) 
+				AND   (S_TODO_DET.BRANCH_CODE  =  #{branchCode,jdbcType=NUMERIC}) 
+				AND   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR}) 
+				AND   (     
+						  (S_TODO_DET.NO_ACTION_TIME IS NULL) OR 
+						  (S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]> #{runningDate,jdbcType=TIMESTAMP} ) 
+					) 
+				AND S_TODO_DET.TODO_STATUS = 'A'
+				AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+				AND S1.TODO_ALERT_TYPE IN ('A','R')
+				AND S1.APP_NAME = S_TODO_DET.TODO_APPLICATION
+				
+				UNION
+								
+            </when>
+            
+			<when test='appName != null and "TFA".equals(appName)'>
+		SELECT (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+           AND SPLT.VALUE_CODE = '2'
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+       (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+           AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+       S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+       'ACK' TODO_ALERT_TYPE,
+       S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+       
+       S_TODO_DET.TODO_STATUS,
+       S_TODO_DET.BRIEF_NAME_ENG,
+       S_TODO_DET.LONG_NAME_ENG,
+       
+       S_TODO_DET.TODO_CODE,
+       S_TODO_DET.TODO_LINE,
+       S_TODO_DET.COMP_CODE,
+       S_TODO_DET.BRANCH_CODE,
+       
+       S_TODO_DET.DISTRIBUTION_TYPE,
+       S_TODO_DET.DISTRIBUTION_TO,
+       S_TODO_DET.BRIEF_NAME_ARAB,
+       S_TODO_DET.LONG_NAME_ARAB,
+       S_TODO_DET.TODO_TYPE,
+       
+       S_TODO_DET.TODO_APPLICATION,
+       S_TODO_DET.TODO_PROG_REF,
+       S_TODO_DET.TODO_PARAM,
+       S_TODO_DET.USER_ID,
+       S_TODO_DET.GROUP_ID,
+       
+       S_TODO_DET.TODO_PRIORITY,
+       S_TODO_DET.TODO_TEMPLATE_CODE,
+       S_TODO_DET.TODO_EXTERNAL,
+       S_TODO_DET.NO_ACTION_APPLY,
+       S_TODO_DET.NO_ACTION_TIME,
+       
+       S_TODO_DET.ALLOW_TO_SEND,
+       S_TODO_DET.KEEP_HISTORY,
+       S_TODO_DET.TRX_NUMBER,
+       S_TODO_DET.DATE_RECEIVED,
+       S_TODO_DET.DATE_PROCESSED,
+       
+       S_TODO_DET.TODO_REMARQS,
+       S_TODO_DET.TODO_REPLY,
+       S_TODO_DET.RECEIVED_FROM,
+       S_TODO_DET.RECEIVED_CODE,
+       S_TODO_DET.RECEIVED_LINE,
+       
+       S_TODO_DET.TODO_CHECKED,
+       S_TODO_DET.JOB_ID,
+       S_TODO_DET.PARENT_TASK,
+       S_TODO_DET.TODO_TEMPLATE_LINE,
+       S_TODO_DET.TODO_EXECUTION,
+       
+       '' TRX_DESC,
+       1 CP_BOLD,
+       S_TODO_DET.ALERT_WAITING_TIME,
+       S_TODO_DET.TODO_EXCEP_ENG,
+       S_TODO_DET.TODO_EXCEP_ARABIC,
+       S_TODO_DET.TODO_REASON,
+       S_TODO_DET.TODO_TELLER_BR,
+       S_TODO_DET.TODO_TELLER_ID,
+       TODO_ALERT_OLD_STATUS,
+       '2' ORDNUM
+	   
+	   FROM S_TODO_DET, SYS_PARAM_TODO_ALERT_TYPE S1
+       WHERE (S_TODO_DET.TODO_APPLICATION IN (#{appName,jdbcType=VARCHAR}, 'IMEN'))
+<!--           AND (S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC})-->
+<!--           AND (S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC})-->
+           AND (S_TODO_DET.USER_ID = #{userId,jdbcType=VARCHAR})
+           AND S_TODO_DET.TODO_STATUS = 'A'
+           
+			AND S_TODO_DET.TODO_ALERT = S1.TODO_ALERT
+			<!-- AND S1.TODO_ALERT_TYPE <![CDATA[ <> ]]> 'T'-->
+			AND S1.TODO_ALERT_TYPE in('A','R')
+			AND S1.APP_NAME = S_TODO_DET.TODO_APPLICATION
+			
+			<if test='"true".equals(alertByCompBranch)'>
+  				AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+  				AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+  			</if>
+		
+     UNION
+			
+      SELECT (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+           AND SPLT.VALUE_CODE = '0'
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+       (SELECT SPLT.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS SPLT
+         WHERE SPLT.LOV_TYPE_ID = #{todoAlertDescLovType}
+           AND SPLT.VALUE_CODE = S_TODO_DET.TODO_ALERT
+           AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT_DESC,
+       S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+       'TRANS' TODO_ALERT_TYPE,
+       S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+       S_TODO_DET.TODO_STATUS,
+       S_TODO_DET.BRIEF_NAME_ENG,
+       S_TODO_DET.LONG_NAME_ENG,
+       
+       S_TODO_DET.TODO_CODE,
+       S_TODO_DET.TODO_LINE,
+       S_TODO_DET.COMP_CODE,
+       S_TODO_DET.BRANCH_CODE,
+       
+       S_TODO_DET.DISTRIBUTION_TYPE,
+       S_TODO_DET.DISTRIBUTION_TO,
+       S_TODO_DET.BRIEF_NAME_ARAB,
+       S_TODO_DET.LONG_NAME_ARAB,
+       S_TODO_DET.TODO_TYPE,
+       
+       S_TODO_DET.TODO_APPLICATION,
+       S_TODO_DET.TODO_PROG_REF,
+       S_TODO_DET.TODO_PARAM,
+       S_TODO_DET.USER_ID,
+       S_TODO_DET.GROUP_ID,
+       
+       S_TODO_DET.TODO_PRIORITY,
+       S_TODO_DET.TODO_TEMPLATE_CODE,
+       S_TODO_DET.TODO_EXTERNAL,
+       S_TODO_DET.NO_ACTION_APPLY,
+       S_TODO_DET.NO_ACTION_TIME,
+       
+       S_TODO_DET.ALLOW_TO_SEND,
+       S_TODO_DET.KEEP_HISTORY,
+       S_TODO_DET.TRX_NUMBER,
+       S_TODO_DET.DATE_RECEIVED,
+       S_TODO_DET.DATE_PROCESSED,
+       
+       S_TODO_DET.TODO_REMARQS,
+       S_TODO_DET.TODO_REPLY,
+       S_TODO_DET.RECEIVED_FROM,
+       S_TODO_DET.RECEIVED_CODE,
+       S_TODO_DET.RECEIVED_LINE,
+       
+       S_TODO_DET.TODO_CHECKED,
+       S_TODO_DET.JOB_ID,
+       S_TODO_DET.PARENT_TASK,
+       S_TODO_DET.TODO_TEMPLATE_LINE,
+       S_TODO_DET.TODO_EXECUTION,
+       
+       '' TRX_DESC,
+       1 CP_BOLD,
+       S_TODO_DET.ALERT_WAITING_TIME,
+       S_TODO_DET.TODO_EXCEP_ENG,
+       S_TODO_DET.TODO_EXCEP_ARABIC,
+       S_TODO_DET.TODO_REASON,
+       S_TODO_DET.TODO_TELLER_BR,
+       S_TODO_DET.TODO_TELLER_ID,
+       TODO_ALERT_OLD_STATUS,
+       '1' ORDNUM
+			
+                
+    FROM S_TODO_DET, SYS_PARAM_TODO_ALERT_TYPE S1
+    WHERE S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR} 
+    AND   S_TODO_DET.TODO_APPLICATION  = #{appName,jdbcType=VARCHAR} 
+<!--	AND 	(	-->
+<!--				(S_TODO_DET.NO_ACTION_TIME IS NULL) OR-->
+<!--				(S_TODO_DET.NO_ACTION_TIME IS NOT NULL AND S_TODO_DET.NO_ACTION_TIME <![CDATA[ <= ]]>  #{runningDate,jdbcType=TIMESTAMP} )-->
+<!--			)-->
+	AND S_TODO_DET.TODO_STATUS = 'A'
+				AND ( S_TODO_DET.TODO_ALERT IN ('@LM','@LA','@LR') OR ( S_TODO_DET.TODO_ALERT NOT IN ('@LM','@LA','@LR')
+				<choose >
+				       		<when test="isSybase == 1" >
+				          			 						AND	S_TODO_DET.TODO_PARAM  IN
+															(
+																	SELECT   SUBSTRING(CONVERT(VARCHAR, 10000 + TFSTRX.COMP_CODE)			, 2, 4) + 
+																			SUBSTRING(CONVERT(VARCHAR, 10000 + TFSTRX.BRANCH)				, 2, 4) + 
+																			SUBSTRING(CONVERT(VARCHAR, 10000 + TFSTRX.TRX_TYPE)			, 2, 4) + 
+																			LC_TYPE + 
+																			SUBSTRING(CONVERT(VARCHAR, 1000000000000 + TFSTRX.TRX_NBR)	, 2, 12) 
+															 
+																  
+																FROM    TFSTRX
+																WHERE  TFSTRX.COMP_CODE = CONVERT(NUMERIC, SUBSTRING(S_TODO_DET.TODO_PARAM, 1, 4))
+																AND  TFSTRX.BRANCH =  CONVERT(NUMERIC, SUBSTRING(S_TODO_DET.TODO_PARAM, 5, 4))
+																AND  TFSTRX.TRX_TYPE = CONVERT(NUMERIC, SUBSTRING(S_TODO_DET.TODO_PARAM, 9, 4))
+								                                AND  TFSTRX.LC_TYPE = SUBSTRING(S_TODO_DET.TODO_PARAM, 13, 1)
+								                                AND  TFSTRX.TRX_NBR = CONVERT(NUMERIC, SUBSTRING(S_TODO_DET.TODO_PARAM, 14, 12))
+																  
+																)	
+				       		</when>
+				       		<otherwise>
+				          				 				 AND	S_TODO_DET.TODO_PARAM  IN
+															( 
+															  SELECT SUBSTR(TO_CHAR(TFSTRX.COMP_CODE, '0000')      , 2, 4) ||
+																		SUBSTR(TO_CHAR(TFSTRX.BRANCH, '0000')        , 2, 4) ||
+																		SUBSTR(TO_CHAR(TFSTRX.TRX_TYPE, '0000')			, 2, 4) || 
+																		LC_TYPE ||
+																		SUBSTR(TO_CHAR(TFSTRX.TRX_NBR, '000000000000')	, 2, 12) 
+																 FROM    TFSTRX
+															 															
+                                								WHERE  TFSTRX.COMP_CODE =  SUBSTR(S_TODO_DET.TODO_PARAM, 1, 4)
+																AND  TFSTRX.BRANCH =   SUBSTR(S_TODO_DET.TODO_PARAM, 5, 4)
+																AND  TFSTRX.TRX_TYPE =  SUBSTR(S_TODO_DET.TODO_PARAM, 9, 4)
+												                AND  TFSTRX.LC_TYPE = SUBSTR(S_TODO_DET.TODO_PARAM, 13, 1)
+												                AND  TFSTRX.TRX_NBR =  SUBSTR(S_TODO_DET.TODO_PARAM, 14, 12)
+																)	
+				       		</otherwise>
+				    	</choose>
+				    	))   
+				    	AND S_TODO_DET.TODO_ALERT = S1.TODO_ALERT
+				    	AND S1.TODO_ALERT_TYPE =  'T'   
+				    	AND S1.APP_NAME=#{appName,jdbcType=VARCHAR}
+				
+						<if test='"true".equals(alertByCompBranch)'>
+			  				AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			  				AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+			  			</if>
+			  			
+				UNION    	
+				    	 
+            </when>
+
+  	</choose>
+  	
+  	<if test='!"true".equals(enableLoginAlert)'>
+  	
+  		 SELECT 
+			  (SELECT SPLT.VALUE_DESC
+			                  FROM SYS_PARAM_LOV_TRANS SPLT
+			                 WHERE SPLT.LOV_TYPE_ID = #{todoAlertLovType}
+			                   AND SPLT.VALUE_CODE = '3'
+			                   AND SPLT.LANG_CODE = #{language,jdbcType=VARCHAR}) TODO_ALERT,
+			   S_TODO_DET.ALERT_DESC TODO_ALERT_DESC,
+			   S_TODO_DET.TODO_ALERT TODO_ALERT_CODE,
+			   'NOT' TODO_ALERT_TYPE,
+			   S1.TODO_ALERT_TYPE ALERT_SUB_TYPE,
+			   <if test='appName != null and !"TFA".equals(appName)'>
+		       		'6' ORDNUM,
+		       </if>      
+		       S_TODO_DET.TODO_STATUS,
+		       S_TODO_DET.BRIEF_NAME_ENG,
+		       S_TODO_DET.LONG_NAME_ENG,
+		       S_TODO_DET.TODO_CODE, 
+		       S_TODO_DET.TODO_LINE,
+		       S_TODO_DET.COMP_CODE,
+		       S_TODO_DET.BRANCH_CODE,
+		       S_TODO_DET.DISTRIBUTION_TYPE,
+		       S_TODO_DET.DISTRIBUTION_TO,
+		       S_TODO_DET.BRIEF_NAME_ARAB,
+		       S_TODO_DET.LONG_NAME_ARAB,
+		       S_TODO_DET.TODO_TYPE,
+		       S_TODO_DET.TODO_APPLICATION,
+		       S_TODO_DET.TODO_PROG_REF,
+		       S_TODO_DET.TODO_PARAM,
+		       S_TODO_DET.USER_ID,
+		       S_TODO_DET.GROUP_ID,
+		       S_TODO_DET.TODO_PRIORITY,
+		       S_TODO_DET.TODO_TEMPLATE_CODE,
+		       S_TODO_DET.TODO_EXTERNAL,
+		       S_TODO_DET.NO_ACTION_APPLY,
+		       S_TODO_DET.NO_ACTION_TIME,
+		       S_TODO_DET.ALLOW_TO_SEND,
+		       S_TODO_DET.KEEP_HISTORY,
+		       S_TODO_DET.TRX_NUMBER,
+		       S_TODO_DET.DATE_RECEIVED,
+		       S_TODO_DET.DATE_PROCESSED,
+		       S_TODO_DET.TODO_REMARQS,
+		       S_TODO_DET.TODO_REPLY,
+		       S_TODO_DET.RECEIVED_FROM,
+		       S_TODO_DET.RECEIVED_CODE,
+		       S_TODO_DET.RECEIVED_LINE,
+		       S_TODO_DET.TODO_CHECKED,
+		       S_TODO_DET.JOB_ID,
+		       S_TODO_DET.PARENT_TASK,
+		       S_TODO_DET.TODO_TEMPLATE_LINE,
+		       S_TODO_DET.TODO_EXECUTION,
+		       S_TODO_DET.ALERT_DESC TRX_DESC,
+		       1 CP_BOLD,
+		       S_TODO_DET.ALERT_WAITING_TIME,
+		       S_TODO_DET.TODO_EXCEP_ENG,
+		       S_TODO_DET.TODO_EXCEP_ARABIC,
+		       S_TODO_DET.TODO_REASON   ,
+		       S_TODO_DET.TODO_TELLER_BR,
+		       S_TODO_DET.TODO_TELLER_ID,
+		       TODO_ALERT_OLD_STATUS,
+		       <choose>
+			       <when test='appName != null and !"TFA".equals(appName)'>
+					       '' USER_NAME,
+					       S_TODO_DET.TODO_FR_BRANCH,
+					       S_TODO_DET.CIF_NO,
+					       S_TODO_DET.ALERT_DESC
+			       </when>
+			       <otherwise>
+			       		  '6' ORDNUM
+			       </otherwise>
+		       </choose>
+		  FROM  S_TODO_DET ,
+		        SYS_PARAM_TODO_ALERT_TYPE S1 
+		  WHERE   (S_TODO_DET.USER_ID  = #{userId,jdbcType=VARCHAR})
+		  AND S_TODO_DET.TODO_STATUS = 'A'	  
+		  AND S_TODO_DET.TODO_ALERT=S1.TODO_ALERT
+		  AND S1.APP_NAME=#{appName,jdbcType=VARCHAR} 
+		  AND S_TODO_DET.TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+		  AND S1.TODO_ALERT_TYPE = 'N'
+		      
+		  <if test='"true".equals(alertByCompBranch)'>
+		  	AND S_TODO_DET.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		  	AND S_TODO_DET.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		  </if>
+		  
+  	</if>
+  	
+  </sql>
+  
+
+	<select id="checkIfSameStatus" parameterType="alertsSC" resultType="int">		
+		
+  SELECT (CASE
+           WHEN TODO_STATUS =#{status,jdbcType=VARCHAR}  THEN
+            1
+           ELSE
+            0
+         END) TODO_STATUS
+    FROM S_TODO_DET
+   WHERE TODO_CODE = #{todoCode,jdbcType=NUMERIC}
+     AND TODO_LINE = #{todoLine,jdbcType=NUMERIC}
+
+	</select>
+	<select id="getDefaultRefreshTime" parameterType="alertsSC" resultType="String">		
+    SELECT A.DEFAULT_REFRESH_TME 
+      FROM USR_PUSH_ALERT A 
+    WHERE A.USER_ID=#{userId,jdbcType=VARCHAR}
+	</select>
+
+    <select id="getAccessPrivileges" resultType="int" parameterType="alertsSC">
+		SELECT COUNT(1) FROM 
+	      (
+			<include refid="commonLibMapper.select_Common_Priveleges" />
+		  )TBL
+	      <choose>
+	       		<when test='accessRightsOptList != null and accessRightsOptList.size() > 0'>
+	       		 	WHERE TBL.PROG_REF IN
+	         		<foreach item="item" index="index" open="(" close=")" separator="," collection="accessRightsOptList" > 
+	         		#{item} 
+	         		</foreach>
+	       		</when>
+	       		<otherwise>
+	       			WHERE TBL.PROG_REF=#{progRef,jdbcType=VARCHAR}
+	       		</otherwise>
+	    </choose>
+	 </select>
+	 
+	 <update id="updateAllLoginApprovalRequestsToDeleted" parameterType="alertsSC">
+		UPDATE S_TODO_DET 
+		SET TODO_STATUS = 'D'
+		WHERE RECEIVED_FROM = #{userId,jdbcType=VARCHAR}
+		  AND TODO_APPLICATION = #{appName,jdbcType=VARCHAR} 
+		  AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	      AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+	      AND TODO_ALERT IN ('@LM','@LMS')
+	      AND TODO_STATUS = 'A'
+	 </update>
+	 
+	 <update id="updateOldSendAckAlertsToDeleted" parameterType="alertsSC">
+	  	UPDATE S_TODO_DET
+	  	 SET TODO_STATUS = 'D'
+		WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+		      AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		      AND TODO_APPLICATION = #{appName,jdbcType=VARCHAR}
+		      AND TODO_PARAM = #{todoParam,jdbcType=VARCHAR}
+		      AND RECEIVED_FROM = #{userId,jdbcType=VARCHAR}
+		      AND TODO_ALERT = #{todoAlert,jdbcType=VARCHAR}
+		      AND TODO_STATUS = 'A'
+		      AND TODO_LINE <![CDATA[<>]]> ( SELECT MAX(TODO_LINE)
+		                         FROM S_TODO_DET
+		                         WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+		                         AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		                         AND TODO_APPLICATION = #{appName,jdbcType=VARCHAR}
+		                         AND TODO_PARAM = #{todoParam,jdbcType=VARCHAR}
+		                         AND RECEIVED_FROM = #{userId,jdbcType=VARCHAR}
+		                         AND TODO_ALERT = #{todoAlert,jdbcType=VARCHAR}
+		                         AND TODO_STATUS = 'A'
+		                        )
+	 </update>
+	 
+	 <update id="updateUsrPushAlert" parameterType="alertsSC">
+		UPDATE USR_PUSH_ALERT 
+		  <choose >
+	       		<when test='"FROM_USR_LOGIN".equals(userAction) or "FROM_USR_SNOOZE".equals(userAction) ' >
+	       			  SET DEFAULT_REFRESH_TME = #{todoRefreshTime,jdbcType=VARCHAR}
+					  <if  test='"FROM_USR_LOGIN".equals(userAction)'>
+					  	, NEXT_PUSH_DATE = 
+					  	<choose >
+				       		<when test="isSybase == 1" >
+				          			GETDATE()
+				       		</when>
+				       		<otherwise>
+				          			SYSDATE
+				       		</otherwise>
+				    	</choose>
+					  </if>
+					  <if  test='"FROM_USR_SNOOZE".equals(userAction)'>
+					  	, NEXT_PUSH_DATE = 
+						<choose >
+				       		<when test="isSybase == 1" >
+			          			DATEADD(SS, CONVERT(INTEGER,ISNULL (#{todoRefreshTime,jdbcType=VARCHAR},'0')) , GETDATE())
+			       			</when>
+			       			<otherwise>
+			          			SYSDATE + NVL(#{todoRefreshTime,jdbcType=VARCHAR},0)/(24*60*60)
+			       			</otherwise>
+				    	</choose>	
+					  </if>
+		 		</when>
+		 		<when test='"FROM_ALERT_ENGINE".equals(userAction)' >
+		 			 SET NEXT_PUSH_DATE = 
+					 <choose >
+			       		<when test="isSybase == 1" >
+			          		DATEADD(SS, CONVERT(INTEGER,ISNULL (DEFAULT_REFRESH_TME,'0')) , ISNULL (NEXT_PUSH_DATE,GETDATE()))
+			       		</when>
+			       		<otherwise>
+			          		NVL(NEXT_PUSH_DATE,SYSDATE) + NVL(DEFAULT_REFRESH_TME,0)/(24*60*60)
+			       		</otherwise>
+				     </choose>
+		 		</when>
+		</choose>
+		<choose>
+	       		<when test='"FROM_ALERT_ENGINE".equals(userAction) and usersList != null and usersList.size() > 0'>
+	       		 	WHERE USER_ID IN
+	         		<foreach item="item" index="index" open="(" close=")" separator="," collection="usersList" > 
+	         		#{item} 
+	         		</foreach>
+	       		</when>
+	       		<otherwise>
+	       			WHERE USER_ID =#{userId,jdbcType=VARCHAR}
+	       		</otherwise>
+	    </choose> 		
+	 </update>
+	 
+	 <update id="updateUsrSnoozeAlert" parameterType="alertsSC">
+		UPDATE USR_SNOOZE_ALERT 
+		  <choose >
+	       		<when test='"FROM_USR_SNOOZE".equals(userAction) ' >
+	       			SET SNOOZE_REFRESH_TIME = #{todoRefreshTime,jdbcType=VARCHAR}
+				  	, NEXT_ALERT_DATE = 
+					<choose >
+			       		<when test="isSybase == 1" >
+		          			DATEADD(SS, CONVERT(INTEGER,ISNULL (#{todoRefreshTime,jdbcType=VARCHAR},'0')) , GETDATE())
+		       			</when>
+		       			<otherwise>
+		          			SYSDATE + NVL(#{todoRefreshTime,jdbcType=VARCHAR},0)/(24*60*60)
+		       			</otherwise>
+			    	</choose>
+			    	,MODIFIED_BY = #{userId,jdbcType=VARCHAR}	
+		 		</when>
+		 		<when test='"FROM_ALERT_ENGINE".equals(userAction)' >
+		 			 SET NEXT_ALERT_DATE = 
+					 <choose >
+			       		<when test="isSybase == 1" >
+			          		DATEADD(SS, CONVERT(INTEGER,ISNULL (SNOOZE_REFRESH_TIME,'0')) , ISNULL (NEXT_ALERT_DATE,GETDATE()))
+			       		</when>
+			       		<otherwise>
+			          		NVL(NEXT_ALERT_DATE,SYSDATE) + NVL(SNOOZE_REFRESH_TIME,0)/(24*60*60)
+			       		</otherwise>
+				     </choose>
+				     ,MODIFIED_BY = 'ENGINE'
+		 		</when>
+		</choose>
+		,MODIFIED_DATE = 
+		<choose >
+	       		<when test="isSybase == 1" >
+	          			GETDATE() 
+	       		</when>
+	       		<otherwise>
+	          			SYSDATE 
+	       		</otherwise>
+	    	</choose>
+		<choose>
+	       		<when test='"FROM_ALERT_ENGINE".equals(userAction) and usersList != null and usersList.size() > 0'>
+	       		 	WHERE APP_NAME = #{appName,jdbcType=VARCHAR} 
+	       		 	AND 
+	       		 	USER_ID IN
+	         		<foreach item="item" index="index" open="(" close=")" separator="," collection="usersList" > 
+	         		#{item}
+	         		</foreach>
+	       		</when>
+	       		<otherwise>
+	       			WHERE USER_ID =#{userId,jdbcType=VARCHAR} AND APP_NAME = #{appName,jdbcType=VARCHAR}
+	       		</otherwise>
+	    </choose> 		
+	 </update>
+	 
+	 <insert id="insertUsrPushAlert" parameterType="alertsSC">
+		INSERT INTO USR_PUSH_ALERT (USER_ID,DEFAULT_REFRESH_TME,NEXT_PUSH_DATE)
+		VALUES (#{userId,jdbcType=VARCHAR},#{todoRefreshTime,jdbcType=VARCHAR},
+			<choose >
+	       		<when test="isSybase == 1" >
+	          			GETDATE()
+	       		</when>
+	       		<otherwise>
+	          			SYSDATE
+	       		</otherwise>
+	    	</choose>
+		)  
+	 </insert>
+	 
+	 <delete id="deleteAllSnooze" parameterType="alertsSC">
+		delete from USR_SNOOZE_ALERT WHERE USER_ID = #{userId,jdbcType=VARCHAR}
+		AND APP_NAME = #{appName,jdbcType=VARCHAR}
+	 </delete>
+	 
+	 <insert id="insertUsrSnoozeAlert" parameterType="alertsSC">
+		INSERT INTO USR_SNOOZE_ALERT (CREATED_BY,APP_NAME,SNOOZE_REFRESH_TIME,USER_ID,NEXT_ALERT_DATE,CREATED_DATE)
+		VALUES (#{userId,jdbcType=VARCHAR},#{appName,jdbcType=VARCHAR},#{todoRefreshTime,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},
+			<choose >
+	       		<when test="isSybase == 1" >
+          			DATEADD(SS, CONVERT(INTEGER,ISNULL (#{todoRefreshTime,jdbcType=VARCHAR},'0')) , GETDATE()) , GETDATE()
+       			</when>
+       			<otherwise>
+          			SYSDATE + NVL(#{todoRefreshTime,jdbcType=VARCHAR},0)/(24*60*60) , SYSDATE
+       			</otherwise>
+	    	</choose>
+		)  
+	 </insert>
+	
+	
+	<resultMap id="trsAckTOutListMap" type="alertCO">
+    <result column="TODO_CODE" property="sTodoDet.TODO_CODE" />
+    <result column="TODO_ALERT_DESC" property="alertDescription" />
+    <result column="TODO_ALERT_CODE" property="alertCode" />
+    <result column="TODO_ALERT_TYPE" property="alertType" />
+    <result column="ALERT_SUB_TYPE" property="ALERT_SUB_TYPE" />
+    <result column="TODO_LINE" property="sTodoDet.TODO_LINE" />
+    <result column="COMP_CODE" property="sTodoDet.COMP_CODE" />
+    <result column="BRANCH_CODE" property="sTodoDet.BRANCH_CODE" />
+    <result column="DISTRIBUTION_TYPE" property="sTodoDet.DISTRIBUTION_TYPE" />
+    <result column="DISTRIBUTION_TO" property="sTodoDet.DISTRIBUTION_TO" />
+    <result column="BRIEF_NAME_ENG" property="sTodoDet.BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="sTodoDet.LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="sTodoDet.BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="sTodoDet.LONG_NAME_ARAB" />
+    <result column="TODO_TYPE" property="sTodoDet.TODO_TYPE" />
+    <result column="TODO_APPLICATION" property="sTodoDet.TODO_APPLICATION" />
+    <result column="TODO_PROG_REF" property="sTodoDet.TODO_PROG_REF" />
+    <result column="USER_ID" property="sTodoDet.USER_ID" />
+    <result column="GROUP_ID" property="sTodoDet.GROUP_ID" />
+    <result column="TODO_PRIORITY" property="sTodoDet.TODO_PRIORITY" />
+    <result column="TODO_TEMPLATE_CODE" property="sTodoDet.TODO_TEMPLATE_CODE" />
+    <result column="TODO_EXTERNAL" property="sTodoDet.TODO_EXTERNAL" />
+    <result column="TODO_STATUS" property="sTodoDet.TODO_STATUS" />
+    <result column="NO_ACTION_APPLY" property="sTodoDet.NO_ACTION_APPLY" />
+    <result column="NO_ACTION_TIME" property="sTodoDet.NO_ACTION_TIME" />
+    <result column="ALLOW_TO_SEND" property="sTodoDet.ALLOW_TO_SEND" />
+    <result column="KEEP_HISTORY" property="sTodoDet.KEEP_HISTORY" />
+    <result column="TRX_NUMBER" property="sTodoDet.TRX_NUMBER" />
+    <result column="DATE_RECEIVED" property="sTodoDet.DATE_RECEIVED" />
+    <result column="DATE_PROCESSED" property="sTodoDet.DATE_PROCESSED" />
+    <result column="TODO_REMARQS" property="sTodoDet.TODO_REMARQS" />
+    <result column="TODO_REPLY" property="sTodoDet.TODO_REPLY" />
+    <result column="RECEIVED_FROM" property="sTodoDet.RECEIVED_FROM" />
+    <result column="RECEIVED_CODE" property="sTodoDet.RECEIVED_CODE" />
+    <result column="RECEIVED_LINE" property="sTodoDet.RECEIVED_LINE" />
+    <result column="TODO_CHECKED" property="sTodoDet.TODO_CHECKED" />
+    <result column="TODO_PARAM" property="sTodoDet.TODO_PARAM" />
+    <result column="JOB_ID" property="sTodoDet.JOB_ID" />
+    <result column="PARENT_TASK" property="sTodoDet.PARENT_TASK" />
+    <result column="TODO_TEMPLATE_LINE" property="sTodoDet.TODO_TEMPLATE_LINE" />
+    <result column="TODO_EXECUTION" property="sTodoDet.TODO_EXECUTION" />
+    <result column="TODO_ALERT" property="sTodoDet.TODO_ALERT" />
+    <result column="ALERT_WAITING_TIME" property="sTodoDet.ALERT_WAITING_TIME" />
+    <result column="TODO_EXCEP_ENG" property="sTodoDet.TODO_EXCEP_ENG" />
+    <result column="TODO_EXCEP_ARABIC" property="sTodoDet.TODO_EXCEP_ARABIC" />
+    <result column="TODO_REASON" property="sTodoDet.TODO_REASON" />
+    <result column="TODO_TELLER_BR" property="sTodoDet.TODO_TELLER_BR" />
+    <result column="TODO_TELLER_ID" property="sTodoDet.TODO_TELLER_ID" />
+    <result column="TODO_ALERT_OLD_STATUS" property="sTodoDet.TODO_ALERT_OLD_STATUS" />
+    <result column="TODO_FR_BRANCH" property="sTodoDet.TODO_FR_BRANCH" />
+    <result column="ALERT_DESC" property="sTodoDet.ALERT_DESC" />
+	</resultMap>
+
+	<select id="getTrsAckTOutAlertsListCount" parameterType="alertsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_trsAckTOutList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+		
+	</select>
+
+	<select id="getTrsAckTOutAlertsList" parameterType="alertsSC" resultMap="trsAckTOutListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_trsAckTOutList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<resultMap id="alertsEngineListenerMap" type="com.path.vo.common.AlertsParamCO">
+    	<result column="USER_ID" property="userId" />
+    	<result column="TODO_APPLICATION" property="appName" />
+    	<result column="TODO_ALERT" property="todoAlert" />
+	</resultMap>
+	
+	<select id="alertsEngineListenerQuery" parameterType="alertsSC" resultMap="alertsEngineListenerMap">
+	SELECT B.USER_ID, B.TODO_APPLICATION <if test=' enableLoginAlert != null and "1".equals(enableLoginAlert) '>, TODO_ALERT</if>
+	FROM
+	( 
+		SELECT DISTINCT U.USER_ID, S.TODO_APPLICATION
+			<if test=' enableLoginAlert != null and "1".equals(enableLoginAlert) '>
+				, ( CASE WHEN ( S.TODO_ALERT = '@LA' OR S.TODO_ALERT = '@LR' ) THEN S.TODO_ALERT
+                 	   ELSE ''
+                  END ) TODO_ALERT
+			</if>
+		FROM USR_PUSH_ALERT U, S_TODO_DET S
+ 		WHERE ((U.NEXT_PUSH_DATE IS NULL) OR
+       			(U.NEXT_PUSH_DATE IS NOT NULL 
+       			 AND U.NEXT_PUSH_DATE <![CDATA[ <= ]]> 
+	       			 <choose >
+		        		<when test="isSybase == 1" >
+		           			GETDATE()
+		        		</when>
+		        		<otherwise >
+		           			SYSDATE
+		        		</otherwise>
+	      			 </choose>
+       			 ))
+  		  AND ( 
+          			S.USER_ID = U.USER_ID OR ( S.RECEIVED_FROM = U.USER_ID 
+          								   AND ( S.ALERT_WAITING_TIME IS NOT NULL AND S.ALERT_WAITING_TIME <![CDATA[ <= ]]> 
+          								   		<choose >
+									        		<when test="isSybase == 1" >
+									           			GETDATE()
+									        		</when>
+									        		<otherwise >
+									           			SYSDATE
+									        		</otherwise>
+								      			 </choose>
+          								   		)
+          								   <if test=' enableLoginAlert != null and "1".equals(enableLoginAlert) '>
+												AND ( S. TODO_ALERT <![CDATA[  <> ]]> '@LM' )
+										   </if>		 
+          								 )
+          		)						 
+           AND S.TODO_ALERT IS NOT NULL
+           AND S.TODO_STATUS = 'A'
+           <if test="appNameList != null and appNameList.size() > 0"> 
+	 			 AND ( S.TODO_APPLICATION IN 
+	 			 <foreach item="item" index="index" open="(" close=")" separator="," collection="appNameList" > 
+	         		#{item} 
+	         	 </foreach>
+	         	 
+	         	 <if test=' enableLoginAlert != null and "1".equals(enableLoginAlert) '>
+					OR ( S.TODO_ALERT IN ('@LM', '@LA', '@LR') )
+			     </if>
+	         	 )		
+		   </if>
+		    
+        
+        AND  EXISTS 
+        ( 
+        	SELECT 1 FROM USR WHERE USR.USER_ID = U.USER_ID AND USR.USER_STS = 'L' 
+       	) 
+       ) B LEFT JOIN USR_SNOOZE_ALERT N 
+        ON N.USER_ID = B.USER_ID and N.APP_NAME = B.TODO_APPLICATION
+     
+        WHERE (N.NEXT_ALERT_DATE IS NULL OR N.NEXT_ALERT_DATE <![CDATA[ <= ]]> 
+       			 <choose >
+	        		<when test="isSybase == 1" >
+	           			GETDATE()
+	        		</when>
+	        		<otherwise >
+	           			SYSDATE
+	        		</otherwise>
+      			 </choose>
+	      	 )
+      </select>
+	
+	<select id="returnSTodoDetByCodeAndLine" parameterType="sToDoDetVO" resultType="sToDoDetVO">		
+	  SELECT S_TODO_DET.*
+	    FROM S_TODO_DET
+	   WHERE TODO_CODE = #{TODO_CODE,jdbcType=NUMERIC}
+	     AND TODO_LINE = #{TODO_LINE,jdbcType=NUMERIC}
+	</select>
+
+   
+
+	<update id="fUpdateTodo" parameterType="alertsSC">
+		UPDATE 	S_TODO_DET  
+		SET 	TODO_STATUS = 'D'
+		<choose>
+		       <when test='updateAllTrx != null and "NO".equals(updateAllTrx)'>
+					WHERE TODO_CODE 	= #{todoCode,jdbcType=NUMERIC}		AND
+						  TODO_LINE 	= #{todoLine,jdbcType=NUMERIC}		AND
+						  TODO_STATUS = 'A' 								AND
+					<choose>
+					       <when test='reasonCode != null and "SIGN".equals(reasonCode)'>
+						      	TODO_REASON = 'SIGN'	    	
+					       </when>
+					       <otherwise>
+					      		( CASE WHEN TODO_REASON IS NULL THEN ' ' ELSE TODO_REASON END ) <![CDATA[<>]]> 'SIGN'	
+					       </otherwise>
+				    </choose>
+				</when>
+				<when test='updateAllTrx != null and "ALL".equals(updateAllTrx)'>
+					WHERE	TODO_ALERT 			=  #{todoAlert,jdbcType=VARCHAR}		AND
+							TODO_PARAM			=  #{todoParam,jdbcType=VARCHAR}		AND
+							TODO_PROG_REF		=  #{progRef,jdbcType=VARCHAR}			AND
+							TODO_APPLICATION	=  #{appName,jdbcType=VARCHAR}			AND
+							COMP_CODE			=  #{compCode,jdbcType=NUMERIC}			AND
+							BRANCH_CODE			=  #{branchCode,jdbcType=NUMERIC}		AND
+							TODO_STATUS			=	'A'				AND
+							TODO_ALERT 			IS NOT NULL			AND
+					<choose>
+					       <when test='reasonCode != null and "SIGN".equals(reasonCode)'>
+						   		TODO_REASON 	= 	'SIGN' 
+					       </when>
+					       <otherwise>
+					        	( CASE WHEN TODO_REASON IS NULL THEN ' ' ELSE TODO_REASON END ) <![CDATA[<>]]> 'SIGN' 
+					       </otherwise>
+				    </choose>
+				</when>
+		</choose>
+	</update>
+	
+	<select id="returnAllTellersByGroup" parameterType="alertsSC" resultType="java.lang.String">
+		SELECT DISTINCT  S_GROUP_USER.USER_ID  
+		FROM S_GROUP_USER  
+		WHERE S_GROUP_USER.COMP_CODE = #{compCode,jdbcType=NUMERIC} 
+		AND	S_GROUP_USER.BRANCH_CODE = CASE WHEN #{multiBranch,jdbcType=VARCHAR} = '0' THEN #{branchCode,jdbcType=NUMERIC} ELSE S_GROUP_USER.BRANCH_CODE END 
+		AND	S_GROUP_USER.GROUP_ID = #{group,jdbcType=VARCHAR}
+		AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                          WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                AND S_GROUP_USER_EXCLUSION.ROLE_NAME IN 
+                                (
+                                    SELECT S_GROUP_PROFILE.ROLE_NAME FROM S_GROUP_PROFILE
+                                    WHERE  S_GROUP_PROFILE.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                    AND S_GROUP_PROFILE.APP_NAME = #{appName,jdbcType=VARCHAR}  
+                                    AND S_GROUP_PROFILE.STATUS = 'P'
+                                )
+                          )	
+	</select>
+
+	<resultMap type="hashmap" id="alertsParamResultMap">
+ 		<result column="OPEN_ITEM_BUILD_PARAM_FUNC" 		property="OPEN_ITEM_BUILD_PARAM_FUNC" 			javaType="string" />
+ 		<result column="OPEN_ITEM_ADD_BUTTON_FUNC" 			property="OPEN_ITEM_ADD_BUTTON_FUNC" 			javaType="string" />
+ 		<result column="OPEN_ITEM_IV_CRUD" 					property="OPEN_ITEM_IV_CRUD" 					javaType="string" />
+ 		<result column="PRINT_FUNC" 						property="PRINT_FUNC" 							javaType="string" />
+ 		<result column="REQUIRE_JS_FILE" 					property="REQUIRE_JS_FILE" 						javaType="string" />
+ 		<result column="REQUIRE_JS_PATH" 					property="REQUIRE_JS_PATH" 						javaType="string" />
+ 		<result column="OPEN_ITEM_CALLBACK_FUNC" 			property="OPEN_ITEM_CALLBACK_FUNC" 				javaType="string" />
+ 		<result column="TRX_DETAILS_FUNC" 					property="TRX_DETAILS_FUNC" 					javaType="string" />
+	</resultMap>
+		
+	<select id="returnAlertsParamMap"  resultMap="alertsParamResultMap" parameterType="commonLibSC">
+		SELECT OPEN_ITEM_BUILD_PARAM_FUNC,
+		       OPEN_ITEM_ADD_BUTTON_FUNC,
+		       OPEN_ITEM_IV_CRUD,
+		       PRINT_FUNC,
+		       REQUIRE_JS_FILE,
+		       REQUIRE_JS_PATH,
+		       OPEN_ITEM_CALLBACK_FUNC,
+		       TRX_DETAILS_FUNC
+		  FROM SYS_PARAM_OPT_TECH_DETAILS_M
+		 WHERE APP_NAME = #{appName}
+		   AND PROG_REF = #{progRef}
+	</select>
+
+	<resultMap type="hashmap" id="alertsParamDetResultMap">
+		<result property="ITEM_PARAM"        	column="ITEM_PARAM"   javaType="string"/>
+   		<result property="ALERT_PARAM"         	column="ALERT_PARAM"  javaType="string"/>
+ 	</resultMap>
+
+	<select id="returnAlertsParamDetMap"  resultMap="alertsParamDetResultMap" parameterType="commonLibSC">
+		SELECT ITEM_PARAM, ALERT_PARAM
+		  FROM SYS_PARAM_OPT_TECH_DETAILS_D
+		 WHERE APP_NAME = #{appName}
+		   AND PROG_REF = #{progRef}
+	</select>
+	
+		
+	<resultMap id="returnPthCtrlResultMap" type="com.path.dbmaps.vo.PTH_CTRLVO" >
+    	<result column="ENABLE_ALRT_ON_USER_LOGIN_YN" property="ENABLE_ALRT_ON_USER_LOGIN_YN" />
+    	<result column="TODO_REFRESH_TIME" property="TODO_REFRESH_TIME" />
+    </resultMap>
+    
+	<select id="returnPthCtrl" parameterType="com.path.dbmaps.vo.PTH_CTRLVO" resultMap="returnPthCtrlResultMap">		
+	  SELECT ENABLE_ALRT_ON_USER_LOGIN_YN,
+	  		 TODO_REFRESH_TIME
+	  FROM PTH_CTRL
+	</select>
+	
+	<resultMap id="returnS_APPLOGResultMap" type="com.path.dbmaps.vo.S_APPLOGVO" >
+    	<result column="USER_ID" property="USER_ID" />
+    	<result column="MACHINE_ID" property="MACHINE_ID" />
+    	<result column="WEB_HTTP_SESSION_ID" property="WEB_HTTP_SESSION_ID" />
+    </resultMap>
+	
+	<select id="returnS_APPLOG" parameterType="alertsSC" resultMap="returnS_APPLOGResultMap">
+		SELECT USER_ID, WEB_HTTP_SESSION_ID
+		<choose>
+           <when test="isWebVers==2">
+       	     , MACHINE_ID_WEB AS MACHINE_ID
+           </when>
+           <otherwise>
+       	     , MACHINE_ID
+	       </otherwise>
+	    </choose>	
+		FROM S_APPLOG
+		WHERE USER_ID = #{userId,jdbcType=VARCHAR}
+		 AND APP_NAME = #{appName,jdbcType=VARCHAR}
+		 AND COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		 AND BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+	     <choose>
+           <when test="isWebVers==2">
+       	     AND USER_STS_WEB = 'L'
+           </when>
+           <otherwise>
+       	     AND USER_STS = 'L' 
+	       </otherwise>
+	     </choose>
+	</select>
+
+</mapper>

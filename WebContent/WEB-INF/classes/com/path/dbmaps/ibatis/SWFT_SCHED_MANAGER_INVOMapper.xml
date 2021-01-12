@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWFT_SCHED_MANAGER_IN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWFT_SCHED_MANAGER_INVO" >
+    <id column="THREAD_ID" property="THREAD_ID" />
+    <result column="THREAD_STATUS" property="THREAD_STATUS" />
+    <result column="THREAD_DATE" property="THREAD_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    THREAD_ID, THREAD_STATUS, THREAD_DATE
+  </sql>
+  <select id="selectSWFT_SCHED_MANAGER_IN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGER_INVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWFT_SCHED_MANAGER_IN
+    where THREAD_ID = #{THREAD_ID}
+  </select>
+  <delete id="deleteSWFT_SCHED_MANAGER_IN" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGER_INVO" >
+    delete from SWFT_SCHED_MANAGER_IN
+    where THREAD_ID = #{THREAD_ID} OR #{THREAD_ID} = 0
+  </delete>
+  <insert id="insertSWFT_SCHED_MANAGER_IN" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGER_INVO" >
+    insert into SWFT_SCHED_MANAGER_IN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null" >
+        THREAD_ID,
+      </if>
+      <if test="THREAD_STATUS != null" >
+        THREAD_STATUS,
+      </if>
+      <if test="THREAD_DATE != null" >
+        THREAD_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null" >
+        #{THREAD_ID},
+      </if>
+      <if test="THREAD_STATUS != null" >
+        #{THREAD_STATUS},
+      </if>
+      <if test="THREAD_DATE != null" >
+        #{THREAD_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWFT_SCHED_MANAGER_IN" >
+    update SWFT_SCHED_MANAGER_IN
+    <set >
+      <if test="THREAD_STATUS != null" >
+        THREAD_STATUS = #{THREAD_STATUS},
+      </if>
+      <if test="THREAD_DATE != null" >
+        THREAD_DATE = #{THREAD_DATE},
+      </if>
+    </set>
+    where THREAD_ID = #{THREAD_ID}
+  </sql>
+  <update id="updateSWFT_SCHED_MANAGER_IN" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGER_INVO" >
+    <include refid="sql_updateSWFT_SCHED_MANAGER_IN" />
+  </update>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="citiesMapper">
+
+ <sql id="citiesListCommon" >
+	<![CDATA[
+		SELECT
+			 CITIES.REGION_CODE,	
+			 CITIES.COUNTRY_CODE,	
+			 CITIES.BRIEF_DESC_ENG,	
+			 CITIES.LONG_DESC_ENG,	
+			 CITIES.BRIEF_DESC_ARAB,	
+			 CITIES.LONG_DESC_ARAB,	
+			 CITIES.ADDITIONAL_REFERENCE,	
+			 CITIES.CITY_CODE
+		FROM  CITIES
+		WHERE CITIES.COMP_CODE         = #{compCode}
+		
+	]]>	 
+	  <if test="country_code != null" >
+     		AND     CITIES.COUNTRY_CODE    = (CASE WHEN #{country_code} = -1 THEN CITIES.COUNTRY_CODE ELSE #{country_code} END) 	
+      </if>
+      <if test="region_code != null" >
+       		AND     CITIES.REGION_CODE     = (CASE WHEN #{region_code}	= -1 THEN CITIES.REGION_CODE  ELSE #{region_code} END)
+      </if>
+     <if test="city_code != null" >
+       		AND     CITIES.CITY_CODE     = (CASE WHEN #{city_code}	= -1 THEN CITIES.CITY_CODE  ELSE #{city_code} END)
+      </if>
+	
+ </sql>
+ 
+
+ <resultMap id="citiesListMap" type="citiesVO">
+	<id property="CITY_CODE" column="CITY_CODE" />
+	<result property="COUNTRY_CODE" column="COUNTRY_CODE" />
+	<result property="REGION_CODE" column="REGION_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="FETCH_KEY" column="FETCH_KEY" />
+ </resultMap>
+ 
+ <select id="citiesList" resultMap="citiesListMap" parameterType="citiesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="citiesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="citiesListCount" resultType="int" parameterType="citiesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="citiesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnCitiesById" parameterType="citiesSC" resultType="citiesVO">
+  		SELECT
+			  CITY_CODE,
+			  CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG			  
+		FROM  CITIES
+		WHERE CITIES.COMP_CODE       = #{compCode}
+		AND   CITIES.COUNTRY_CODE    = #{country_code}
+		AND   CITIES.REGION_CODE     = #{region_code}
+		AND   CITIES.CITY_CODE       = #{city_code}
+  </select>
+ 
+</mapper>

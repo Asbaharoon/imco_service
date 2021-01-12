@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BCOM_DYN_ENTITY_APP_LIST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.BCOM_DYN_ENTITY_APP_LISTVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, LONG_DESC_ENG
+  </sql>
+  <select id="selectBCOM_DYN_ENTITY_APP_LIST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.BCOM_DYN_ENTITY_APP_LISTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from BCOM_DYN_ENTITY_APP_LIST
+    where APP_NAME = #{APP_NAME}
+  </select>
+  <delete id="deleteBCOM_DYN_ENTITY_APP_LIST" parameterType="com.path.dbmaps.vo.BCOM_DYN_ENTITY_APP_LISTVOKey" >
+    delete from BCOM_DYN_ENTITY_APP_LIST
+    where APP_NAME = #{APP_NAME}
+  </delete>
+  <insert id="insertBCOM_DYN_ENTITY_APP_LIST" parameterType="com.path.dbmaps.vo.BCOM_DYN_ENTITY_APP_LISTVO" >
+    insert into BCOM_DYN_ENTITY_APP_LIST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        LONG_DESC_ENG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        #{LONG_DESC_ENG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateBCOM_DYN_ENTITY_APP_LIST" >
+    update BCOM_DYN_ENTITY_APP_LIST
+    <set >
+      <if test="LONG_DESC_ENG != null" >
+        <choose >
+          <when test="LONG_DESC_ENG.equals(&quot;&quot;)" >
+            LONG_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_DESC_ENG = #{LONG_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+  </sql>
+  <update id="updateBCOM_DYN_ENTITY_APP_LIST" parameterType="com.path.dbmaps.vo.BCOM_DYN_ENTITY_APP_LISTVO" >
+    <include refid="sql_updateBCOM_DYN_ENTITY_APP_LIST" />
+  </update>
+</mapper>

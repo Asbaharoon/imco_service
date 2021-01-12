@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_RESTRUCTURE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_RESTRUCTUREVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="RESTRUCTURE_NO" property="RESTRUCTURE_NO" />
+    <result column="DEAL_NO" property="DEAL_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="RESTRUCTURE_DATE" property="RESTRUCTURE_DATE" />
+    <result column="SETTLED_PRINCIPAL_AMT" property="SETTLED_PRINCIPAL_AMT" />
+    <result column="UNSETTLED_PRINCIPAL_AMT" property="UNSETTLED_PRINCIPAL_AMT" />
+    <result column="UNSETTLED_ACCRUED_PROFIT_AMT" property="UNSETTLED_ACCRUED_PROFIT_AMT" />
+    <result column="UNSETTLED_CHARGES_AMT" property="UNSETTLED_CHARGES_AMT" />
+    <result column="UNSETTLED_CHARGES_TYPE" property="UNSETTLED_CHARGES_TYPE" />
+    <result column="RESTRUCTURING_PRINCIPAL_AMT" property="RESTRUCTURING_PRINCIPAL_AMT" />
+    <result column="PROVISION_AMT" property="PROVISION_AMT" />
+    <result column="PROVISION_TYPE" property="PROVISION_TYPE" />
+    <result column="TRANSFER_PROVISION_PERC" property="TRANSFER_PROVISION_PERC" />
+    <result column="TRANSFER_PROVISION_AMT" property="TRANSFER_PROVISION_AMT" />
+    <result column="UNSETTLED_INCIDENT_CHARGE_AMT" property="UNSETTLED_INCIDENT_CHARGE_AMT" />
+    <result column="UNSETTLED_PENALTY_AMT" property="UNSETTLED_PENALTY_AMT" />
+    <result column="UNSETTLED_PENALTY_TYPE" property="UNSETTLED_PENALTY_TYPE" />
+    <result column="PENALTY_TEMPLATE_CODE" property="PENALTY_TEMPLATE_CODE" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="DATE_REVERSED" property="DATE_REVERSED" />
+    <result column="SERVER_CREATED_DATE" property="SERVER_CREATED_DATE" />
+    <result column="SERVER_MODIFIED_DATE" property="SERVER_MODIFIED_DATE" />
+    <result column="SERVER_DELETED_DATE" property="SERVER_DELETED_DATE" />
+    <result column="SERVER_APPROVED_DATE" property="SERVER_APPROVED_DATE" />
+    <result column="SERVER_REVERSED_DATE" property="SERVER_REVERSED_DATE" />
+    <result column="SETTLEMENT_PAID_AMOUNT" property="SETTLEMENT_PAID_AMOUNT" />
+    <result column="RESTRUCTURE_DEAL_NO" property="RESTRUCTURE_DEAL_NO" />
+    <result column="UNSETTLED_ACCRUED_PROFIT_TYPE" property="UNSETTLED_ACCRUED_PROFIT_TYPE" />
+    <result column="UNSETTLED_INCIDENT_CHARGE_TYPE" property="UNSETTLED_INCIDENT_CHARGE_TYPE" />
+    <result column="UNDISBURSED_AMT" property="UNDISBURSED_AMT" />
+    <result column="REVERSAL_STATUS" property="REVERSAL_STATUS" />
+    <result column="REVERSAL_CREATED_BY" property="REVERSAL_CREATED_BY" />
+    <result column="REVERSAL_CREATED_DATE" property="REVERSAL_CREATED_DATE" />
+    <result column="SERVER_REVERSAL_CREATED_DATE" property="SERVER_REVERSAL_CREATED_DATE" />
+    <result column="REVERSAL_DELETED_BY" property="REVERSAL_DELETED_BY" />
+    <result column="REVERSAL_DELETED_DATE" property="REVERSAL_DELETED_DATE" />
+    <result column="SERVER_REVERSAL_DELETED_DATE" property="SERVER_REVERSAL_DELETED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, RESTRUCTURE_NO, DEAL_NO, CIF_NO, RESTRUCTURE_DATE, SETTLED_PRINCIPAL_AMT, 
+    UNSETTLED_PRINCIPAL_AMT, UNSETTLED_ACCRUED_PROFIT_AMT, UNSETTLED_CHARGES_AMT, UNSETTLED_CHARGES_TYPE, 
+    RESTRUCTURING_PRINCIPAL_AMT, PROVISION_AMT, PROVISION_TYPE, TRANSFER_PROVISION_PERC, 
+    TRANSFER_PROVISION_AMT, UNSETTLED_INCIDENT_CHARGE_AMT, UNSETTLED_PENALTY_AMT, UNSETTLED_PENALTY_TYPE, 
+    PENALTY_TEMPLATE_CODE, STATUS, CREATED_BY, DATE_CREATED, MODIFIED_BY, DATE_MODIFIED, 
+    DELETED_BY, DATE_DELETED, APPROVED_BY, DATE_APPROVED, REVERSED_BY, DATE_REVERSED, 
+    SERVER_CREATED_DATE, SERVER_MODIFIED_DATE, SERVER_DELETED_DATE, SERVER_APPROVED_DATE, 
+    SERVER_REVERSED_DATE, SETTLEMENT_PAID_AMOUNT, RESTRUCTURE_DEAL_NO, UNSETTLED_ACCRUED_PROFIT_TYPE, 
+    UNSETTLED_INCIDENT_CHARGE_TYPE, UNDISBURSED_AMT, REVERSAL_STATUS, REVERSAL_CREATED_BY, 
+    REVERSAL_CREATED_DATE, SERVER_REVERSAL_CREATED_DATE, REVERSAL_DELETED_BY, REVERSAL_DELETED_DATE, 
+    SERVER_REVERSAL_DELETED_DATE
+  </sql>
+  <select id="selectTRSDEAL_RESTRUCTURE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_RESTRUCTUREVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_RESTRUCTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_NO = #{RESTRUCTURE_NO}
+  </select>
+  <delete id="deleteTRSDEAL_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEAL_RESTRUCTUREVOKey" >
+    delete from TRSDEAL_RESTRUCTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_NO = #{RESTRUCTURE_NO}
+  </delete>
+  <insert id="insertTRSDEAL_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEAL_RESTRUCTUREVO" >
+    insert into TRSDEAL_RESTRUCTURE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="RESTRUCTURE_NO != null and RESTRUCTURE_NO != emptyBigDecimalValue" >
+        RESTRUCTURE_NO,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="RESTRUCTURE_DATE != null" >
+        RESTRUCTURE_DATE,
+      </if>
+      <if test="SETTLED_PRINCIPAL_AMT != null and SETTLED_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        SETTLED_PRINCIPAL_AMT,
+      </if>
+      <if test="UNSETTLED_PRINCIPAL_AMT != null and UNSETTLED_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        UNSETTLED_PRINCIPAL_AMT,
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_AMT != null and UNSETTLED_ACCRUED_PROFIT_AMT != emptyBigDecimalValue" >
+        UNSETTLED_ACCRUED_PROFIT_AMT,
+      </if>
+      <if test="UNSETTLED_CHARGES_AMT != null and UNSETTLED_CHARGES_AMT != emptyBigDecimalValue" >
+        UNSETTLED_CHARGES_AMT,
+      </if>
+      <if test="UNSETTLED_CHARGES_TYPE != null" >
+        UNSETTLED_CHARGES_TYPE,
+      </if>
+      <if test="RESTRUCTURING_PRINCIPAL_AMT != null and RESTRUCTURING_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        RESTRUCTURING_PRINCIPAL_AMT,
+      </if>
+      <if test="PROVISION_AMT != null and PROVISION_AMT != emptyBigDecimalValue" >
+        PROVISION_AMT,
+      </if>
+      <if test="PROVISION_TYPE != null" >
+        PROVISION_TYPE,
+      </if>
+      <if test="TRANSFER_PROVISION_PERC != null and TRANSFER_PROVISION_PERC != emptyBigDecimalValue" >
+        TRANSFER_PROVISION_PERC,
+      </if>
+      <if test="TRANSFER_PROVISION_AMT != null and TRANSFER_PROVISION_AMT != emptyBigDecimalValue" >
+        TRANSFER_PROVISION_AMT,
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_AMT != null and UNSETTLED_INCIDENT_CHARGE_AMT != emptyBigDecimalValue" >
+        UNSETTLED_INCIDENT_CHARGE_AMT,
+      </if>
+      <if test="UNSETTLED_PENALTY_AMT != null and UNSETTLED_PENALTY_AMT != emptyBigDecimalValue" >
+        UNSETTLED_PENALTY_AMT,
+      </if>
+      <if test="UNSETTLED_PENALTY_TYPE != null" >
+        UNSETTLED_PENALTY_TYPE,
+      </if>
+      <if test="PENALTY_TEMPLATE_CODE != null and PENALTY_TEMPLATE_CODE != emptyBigDecimalValue" >
+        PENALTY_TEMPLATE_CODE,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY,
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED,
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE,
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE,
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        SERVER_DELETED_DATE,
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE,
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        SERVER_REVERSED_DATE,
+      </if>
+      <if test="SETTLEMENT_PAID_AMOUNT != null and SETTLEMENT_PAID_AMOUNT != emptyBigDecimalValue" >
+        SETTLEMENT_PAID_AMOUNT,
+      </if>
+      <if test="RESTRUCTURE_DEAL_NO != null and RESTRUCTURE_DEAL_NO != emptyBigDecimalValue" >
+        RESTRUCTURE_DEAL_NO,
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_TYPE != null" >
+        UNSETTLED_ACCRUED_PROFIT_TYPE,
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_TYPE != null" >
+        UNSETTLED_INCIDENT_CHARGE_TYPE,
+      </if>
+      <if test="UNDISBURSED_AMT != null and UNDISBURSED_AMT != emptyBigDecimalValue" >
+        UNDISBURSED_AMT,
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        REVERSAL_STATUS,
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        REVERSAL_CREATED_BY,
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        REVERSAL_CREATED_DATE,
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        SERVER_REVERSAL_CREATED_DATE,
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        REVERSAL_DELETED_BY,
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        REVERSAL_DELETED_DATE,
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        SERVER_REVERSAL_DELETED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="RESTRUCTURE_NO != null and RESTRUCTURE_NO != emptyBigDecimalValue" >
+        #{RESTRUCTURE_NO},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="RESTRUCTURE_DATE != null" >
+        #{RESTRUCTURE_DATE},
+      </if>
+      <if test="SETTLED_PRINCIPAL_AMT != null and SETTLED_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        #{SETTLED_PRINCIPAL_AMT},
+      </if>
+      <if test="UNSETTLED_PRINCIPAL_AMT != null and UNSETTLED_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        #{UNSETTLED_PRINCIPAL_AMT},
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_AMT != null and UNSETTLED_ACCRUED_PROFIT_AMT != emptyBigDecimalValue" >
+        #{UNSETTLED_ACCRUED_PROFIT_AMT},
+      </if>
+      <if test="UNSETTLED_CHARGES_AMT != null and UNSETTLED_CHARGES_AMT != emptyBigDecimalValue" >
+        #{UNSETTLED_CHARGES_AMT},
+      </if>
+      <if test="UNSETTLED_CHARGES_TYPE != null" >
+        #{UNSETTLED_CHARGES_TYPE},
+      </if>
+      <if test="RESTRUCTURING_PRINCIPAL_AMT != null and RESTRUCTURING_PRINCIPAL_AMT != emptyBigDecimalValue" >
+        #{RESTRUCTURING_PRINCIPAL_AMT},
+      </if>
+      <if test="PROVISION_AMT != null and PROVISION_AMT != emptyBigDecimalValue" >
+        #{PROVISION_AMT},
+      </if>
+      <if test="PROVISION_TYPE != null" >
+        #{PROVISION_TYPE},
+      </if>
+      <if test="TRANSFER_PROVISION_PERC != null and TRANSFER_PROVISION_PERC != emptyBigDecimalValue" >
+        #{TRANSFER_PROVISION_PERC},
+      </if>
+      <if test="TRANSFER_PROVISION_AMT != null and TRANSFER_PROVISION_AMT != emptyBigDecimalValue" >
+        #{TRANSFER_PROVISION_AMT},
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_AMT != null and UNSETTLED_INCIDENT_CHARGE_AMT != emptyBigDecimalValue" >
+        #{UNSETTLED_INCIDENT_CHARGE_AMT},
+      </if>
+      <if test="UNSETTLED_PENALTY_AMT != null and UNSETTLED_PENALTY_AMT != emptyBigDecimalValue" >
+        #{UNSETTLED_PENALTY_AMT},
+      </if>
+      <if test="UNSETTLED_PENALTY_TYPE != null" >
+        #{UNSETTLED_PENALTY_TYPE},
+      </if>
+      <if test="PENALTY_TEMPLATE_CODE != null and PENALTY_TEMPLATE_CODE != emptyBigDecimalValue" >
+        #{PENALTY_TEMPLATE_CODE},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        #{REVERSED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        #{DATE_REVERSED},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        #{SERVER_CREATED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        #{SERVER_MODIFIED_DATE},
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        #{SERVER_DELETED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        #{SERVER_REVERSED_DATE},
+      </if>
+      <if test="SETTLEMENT_PAID_AMOUNT != null and SETTLEMENT_PAID_AMOUNT != emptyBigDecimalValue" >
+        #{SETTLEMENT_PAID_AMOUNT},
+      </if>
+      <if test="RESTRUCTURE_DEAL_NO != null and RESTRUCTURE_DEAL_NO != emptyBigDecimalValue" >
+        #{RESTRUCTURE_DEAL_NO},
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_TYPE != null" >
+        #{UNSETTLED_ACCRUED_PROFIT_TYPE},
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_TYPE != null" >
+        #{UNSETTLED_INCIDENT_CHARGE_TYPE},
+      </if>
+      <if test="UNDISBURSED_AMT != null and UNDISBURSED_AMT != emptyBigDecimalValue" >
+        #{UNDISBURSED_AMT},
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        #{REVERSAL_STATUS},
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        #{REVERSAL_CREATED_BY},
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        #{REVERSAL_CREATED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        #{SERVER_REVERSAL_CREATED_DATE},
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        #{REVERSAL_DELETED_BY},
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        #{REVERSAL_DELETED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        #{SERVER_REVERSAL_DELETED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_RESTRUCTURE" >
+    update TRSDEAL_RESTRUCTURE
+    <set >
+      <if test="DEAL_NO != null" >
+        <choose >
+          <when test="DEAL_NO == emptyBigDecimalValue" >
+            DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NO = #{DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESTRUCTURE_DATE != null" >
+        RESTRUCTURE_DATE = #{RESTRUCTURE_DATE},
+      </if>
+      <if test="SETTLED_PRINCIPAL_AMT != null" >
+        <choose >
+          <when test="SETTLED_PRINCIPAL_AMT == emptyBigDecimalValue" >
+            SETTLED_PRINCIPAL_AMT = NULL ,
+          </when>
+          <otherwise >
+            SETTLED_PRINCIPAL_AMT = #{SETTLED_PRINCIPAL_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_PRINCIPAL_AMT != null" >
+        <choose >
+          <when test="UNSETTLED_PRINCIPAL_AMT == emptyBigDecimalValue" >
+            UNSETTLED_PRINCIPAL_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNSETTLED_PRINCIPAL_AMT = #{UNSETTLED_PRINCIPAL_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_AMT != null" >
+        <choose >
+          <when test="UNSETTLED_ACCRUED_PROFIT_AMT == emptyBigDecimalValue" >
+            UNSETTLED_ACCRUED_PROFIT_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNSETTLED_ACCRUED_PROFIT_AMT = #{UNSETTLED_ACCRUED_PROFIT_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_CHARGES_AMT != null" >
+        <choose >
+          <when test="UNSETTLED_CHARGES_AMT == emptyBigDecimalValue" >
+            UNSETTLED_CHARGES_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNSETTLED_CHARGES_AMT = #{UNSETTLED_CHARGES_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_CHARGES_TYPE != null" >
+        UNSETTLED_CHARGES_TYPE = #{UNSETTLED_CHARGES_TYPE},
+      </if>
+      <if test="RESTRUCTURING_PRINCIPAL_AMT != null" >
+        <choose >
+          <when test="RESTRUCTURING_PRINCIPAL_AMT == emptyBigDecimalValue" >
+            RESTRUCTURING_PRINCIPAL_AMT = NULL ,
+          </when>
+          <otherwise >
+            RESTRUCTURING_PRINCIPAL_AMT = #{RESTRUCTURING_PRINCIPAL_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROVISION_AMT != null" >
+        <choose >
+          <when test="PROVISION_AMT == emptyBigDecimalValue" >
+            PROVISION_AMT = NULL ,
+          </when>
+          <otherwise >
+            PROVISION_AMT = #{PROVISION_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROVISION_TYPE != null" >
+        PROVISION_TYPE = #{PROVISION_TYPE},
+      </if>
+      <if test="TRANSFER_PROVISION_PERC != null" >
+        <choose >
+          <when test="TRANSFER_PROVISION_PERC == emptyBigDecimalValue" >
+            TRANSFER_PROVISION_PERC = NULL ,
+          </when>
+          <otherwise >
+            TRANSFER_PROVISION_PERC = #{TRANSFER_PROVISION_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRANSFER_PROVISION_AMT != null" >
+        <choose >
+          <when test="TRANSFER_PROVISION_AMT == emptyBigDecimalValue" >
+            TRANSFER_PROVISION_AMT = NULL ,
+          </when>
+          <otherwise >
+            TRANSFER_PROVISION_AMT = #{TRANSFER_PROVISION_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_AMT != null" >
+        <choose >
+          <when test="UNSETTLED_INCIDENT_CHARGE_AMT == emptyBigDecimalValue" >
+            UNSETTLED_INCIDENT_CHARGE_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNSETTLED_INCIDENT_CHARGE_AMT = #{UNSETTLED_INCIDENT_CHARGE_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_PENALTY_AMT != null" >
+        <choose >
+          <when test="UNSETTLED_PENALTY_AMT == emptyBigDecimalValue" >
+            UNSETTLED_PENALTY_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNSETTLED_PENALTY_AMT = #{UNSETTLED_PENALTY_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_PENALTY_TYPE != null" >
+        UNSETTLED_PENALTY_TYPE = #{UNSETTLED_PENALTY_TYPE},
+      </if>
+      <if test="PENALTY_TEMPLATE_CODE != null" >
+        <choose >
+          <when test="PENALTY_TEMPLATE_CODE == emptyBigDecimalValue" >
+            PENALTY_TEMPLATE_CODE = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_TEMPLATE_CODE = #{PENALTY_TEMPLATE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY = #{REVERSED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED = #{DATE_REVERSED},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE = #{SERVER_CREATED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE = #{SERVER_MODIFIED_DATE},
+      </if>
+      <if test="SERVER_DELETED_DATE != null" >
+        SERVER_DELETED_DATE = #{SERVER_DELETED_DATE},
+      </if>
+      <if test="SERVER_APPROVED_DATE != null" >
+        SERVER_APPROVED_DATE = #{SERVER_APPROVED_DATE},
+      </if>
+      <if test="SERVER_REVERSED_DATE != null" >
+        SERVER_REVERSED_DATE = #{SERVER_REVERSED_DATE},
+      </if>
+      <if test="SETTLEMENT_PAID_AMOUNT != null" >
+        <choose >
+          <when test="SETTLEMENT_PAID_AMOUNT == emptyBigDecimalValue" >
+            SETTLEMENT_PAID_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            SETTLEMENT_PAID_AMOUNT = #{SETTLEMENT_PAID_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RESTRUCTURE_DEAL_NO != null" >
+        <choose >
+          <when test="RESTRUCTURE_DEAL_NO == emptyBigDecimalValue" >
+            RESTRUCTURE_DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            RESTRUCTURE_DEAL_NO = #{RESTRUCTURE_DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNSETTLED_ACCRUED_PROFIT_TYPE != null" >
+        UNSETTLED_ACCRUED_PROFIT_TYPE = #{UNSETTLED_ACCRUED_PROFIT_TYPE},
+      </if>
+      <if test="UNSETTLED_INCIDENT_CHARGE_TYPE != null" >
+        UNSETTLED_INCIDENT_CHARGE_TYPE = #{UNSETTLED_INCIDENT_CHARGE_TYPE},
+      </if>
+      <if test="UNDISBURSED_AMT != null" >
+        <choose >
+          <when test="UNDISBURSED_AMT == emptyBigDecimalValue" >
+            UNDISBURSED_AMT = NULL ,
+          </when>
+          <otherwise >
+            UNDISBURSED_AMT = #{UNDISBURSED_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REVERSAL_STATUS != null" >
+        REVERSAL_STATUS = #{REVERSAL_STATUS},
+      </if>
+      <if test="REVERSAL_CREATED_BY != null" >
+        REVERSAL_CREATED_BY = #{REVERSAL_CREATED_BY},
+      </if>
+      <if test="REVERSAL_CREATED_DATE != null" >
+        REVERSAL_CREATED_DATE = #{REVERSAL_CREATED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_CREATED_DATE != null" >
+        SERVER_REVERSAL_CREATED_DATE = #{SERVER_REVERSAL_CREATED_DATE},
+      </if>
+      <if test="REVERSAL_DELETED_BY != null" >
+        REVERSAL_DELETED_BY = #{REVERSAL_DELETED_BY},
+      </if>
+      <if test="REVERSAL_DELETED_DATE != null" >
+        REVERSAL_DELETED_DATE = #{REVERSAL_DELETED_DATE},
+      </if>
+      <if test="SERVER_REVERSAL_DELETED_DATE != null" >
+        SERVER_REVERSAL_DELETED_DATE = #{SERVER_REVERSAL_DELETED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and RESTRUCTURE_NO = #{RESTRUCTURE_NO}
+  </sql>
+  <update id="updateTRSDEAL_RESTRUCTURE" parameterType="com.path.dbmaps.vo.TRSDEAL_RESTRUCTUREVO" >
+    <include refid="sql_updateTRSDEAL_RESTRUCTURE" />
+  </update>
+</mapper>

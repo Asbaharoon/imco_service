@@ -1,0 +1,878 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CURRENCIES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CURRENCIESVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="DECIMAL_POINTS" property="DECIMAL_POINTS" />
+    <result column="UNIT" property="UNIT" />
+    <result column="PT_METHOD" property="PT_METHOD" />
+    <result column="LIMIT" property="LIMIT" />
+    <result column="FX_CY" property="FX_CY" />
+    <result column="FX_GL" property="FX_GL" />
+    <result column="FX_CIF" property="FX_CIF" />
+    <result column="FX_SL" property="FX_SL" />
+    <result column="CONTRA_CY" property="CONTRA_CY" />
+    <result column="CONTRA_GL" property="CONTRA_GL" />
+    <result column="CONTRA_CIF" property="CONTRA_CIF" />
+    <result column="CONTRA_SL" property="CONTRA_SL" />
+    <result column="MULT_DIV_IND" property="MULT_DIV_IND" />
+    <result column="FID_FX_CY" property="FID_FX_CY" />
+    <result column="FID_FX_GL" property="FID_FX_GL" />
+    <result column="FID_FX_CIF" property="FID_FX_CIF" />
+    <result column="FID_FX_SL" property="FID_FX_SL" />
+    <result column="HOL2" property="HOL2" />
+    <result column="HOL3" property="HOL3" />
+    <result column="HOL4" property="HOL4" />
+    <result column="HOL1" property="HOL1" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="TRADE_ON_HOL" property="TRADE_ON_HOL" />
+    <result column="TRADE_LIMIT_ON_HOL" property="TRADE_LIMIT_ON_HOL" />
+    <result column="USR_LEVEL" property="USR_LEVEL" />
+    <result column="VDATE_DAYS" property="VDATE_DAYS" />
+    <result column="FX_CY_2" property="FX_CY_2" />
+    <result column="FX_GL_2" property="FX_GL_2" />
+    <result column="FX_CIF_2" property="FX_CIF_2" />
+    <result column="FX_SL_2" property="FX_SL_2" />
+    <result column="CONTRA_CY_2" property="CONTRA_CY_2" />
+    <result column="CONTRA_GL_2" property="CONTRA_GL_2" />
+    <result column="CONTRA_CIF_2" property="CONTRA_CIF_2" />
+    <result column="CONTRA_SL_2" property="CONTRA_SL_2" />
+    <result column="FID_FX_CY_2" property="FID_FX_CY_2" />
+    <result column="FID_FX_GL_2" property="FID_FX_GL_2" />
+    <result column="FID_FX_CIF_2" property="FID_FX_CIF_2" />
+    <result column="FID_FX_SL_2" property="FID_FX_SL_2" />
+    <result column="ISO_CODE" property="ISO_CODE" />
+    <result column="CY_FORMAT" property="CY_FORMAT" />
+    <result column="ORIGIN" property="ORIGIN" />
+    <result column="RATE_PERC" property="RATE_PERC" />
+    <result column="APPLY_ROUNDING" property="APPLY_ROUNDING" />
+    <result column="ROUND_GL" property="ROUND_GL" />
+    <result column="ROUND_CIF" property="ROUND_CIF" />
+    <result column="ROUND_SL" property="ROUND_SL" />
+    <result column="JV_TYPE" property="JV_TYPE" />
+    <result column="FLAG_CTR" property="FLAG_CTR" />
+    <result column="FC_CODE_MULT_DIV" property="FC_CODE_MULT_DIV" />
+    <result column="FC_MULT_DIV_IND" property="FC_MULT_DIV_IND" />
+    <result column="CURRENCY_EXCH_GAIN_PERC" property="CURRENCY_EXCH_GAIN_PERC" />
+    <result column="CY_ISO_CODE" property="CY_ISO_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CURRENCY_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    DECIMAL_POINTS, UNIT, PT_METHOD, LIMIT, FX_CY, FX_GL, FX_CIF, FX_SL, CONTRA_CY, CONTRA_GL, 
+    CONTRA_CIF, CONTRA_SL, MULT_DIV_IND, FID_FX_CY, FID_FX_GL, FID_FX_CIF, FID_FX_SL, 
+    HOL2, HOL3, HOL4, HOL1, ADDITIONAL_REFERENCE, TRADE_ON_HOL, TRADE_LIMIT_ON_HOL, USR_LEVEL, 
+    VDATE_DAYS, FX_CY_2, FX_GL_2, FX_CIF_2, FX_SL_2, CONTRA_CY_2, CONTRA_GL_2, CONTRA_CIF_2, 
+    CONTRA_SL_2, FID_FX_CY_2, FID_FX_GL_2, FID_FX_CIF_2, FID_FX_SL_2, ISO_CODE, CY_FORMAT, 
+    ORIGIN, RATE_PERC, APPLY_ROUNDING, ROUND_GL, ROUND_CIF, ROUND_SL, JV_TYPE, FLAG_CTR, 
+    FC_CODE_MULT_DIV, FC_MULT_DIV_IND, CURRENCY_EXCH_GAIN_PERC, CY_ISO_CODE
+  </sql>
+  <select id="selectCURRENCIES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CURRENCIESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CURRENCIES
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </select>
+  <delete id="deleteCURRENCIES" parameterType="com.path.dbmaps.vo.CURRENCIESVOKey" >
+    delete from CURRENCIES
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </delete>
+  <insert id="insertCURRENCIES" parameterType="com.path.dbmaps.vo.CURRENCIESVO" >
+    insert into CURRENCIES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="DECIMAL_POINTS != null and DECIMAL_POINTS != emptyBigDecimalValue" >
+        DECIMAL_POINTS,
+      </if>
+      <if test="UNIT != null and UNIT != emptyBigDecimalValue" >
+        UNIT,
+      </if>
+      <if test="PT_METHOD != null" >
+        PT_METHOD,
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        LIMIT,
+      </if>
+      <if test="FX_CY != null and FX_CY != emptyBigDecimalValue" >
+        FX_CY,
+      </if>
+      <if test="FX_GL != null and FX_GL != emptyBigDecimalValue" >
+        FX_GL,
+      </if>
+      <if test="FX_CIF != null and FX_CIF != emptyBigDecimalValue" >
+        FX_CIF,
+      </if>
+      <if test="FX_SL != null and FX_SL != emptyBigDecimalValue" >
+        FX_SL,
+      </if>
+      <if test="CONTRA_CY != null and CONTRA_CY != emptyBigDecimalValue" >
+        CONTRA_CY,
+      </if>
+      <if test="CONTRA_GL != null and CONTRA_GL != emptyBigDecimalValue" >
+        CONTRA_GL,
+      </if>
+      <if test="CONTRA_CIF != null and CONTRA_CIF != emptyBigDecimalValue" >
+        CONTRA_CIF,
+      </if>
+      <if test="CONTRA_SL != null and CONTRA_SL != emptyBigDecimalValue" >
+        CONTRA_SL,
+      </if>
+      <if test="MULT_DIV_IND != null" >
+        MULT_DIV_IND,
+      </if>
+      <if test="FID_FX_CY != null and FID_FX_CY != emptyBigDecimalValue" >
+        FID_FX_CY,
+      </if>
+      <if test="FID_FX_GL != null and FID_FX_GL != emptyBigDecimalValue" >
+        FID_FX_GL,
+      </if>
+      <if test="FID_FX_CIF != null and FID_FX_CIF != emptyBigDecimalValue" >
+        FID_FX_CIF,
+      </if>
+      <if test="FID_FX_SL != null and FID_FX_SL != emptyBigDecimalValue" >
+        FID_FX_SL,
+      </if>
+      <if test="HOL2 != null" >
+        HOL2,
+      </if>
+      <if test="HOL3 != null" >
+        HOL3,
+      </if>
+      <if test="HOL4 != null" >
+        HOL4,
+      </if>
+      <if test="HOL1 != null" >
+        HOL1,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="TRADE_ON_HOL != null" >
+        TRADE_ON_HOL,
+      </if>
+      <if test="TRADE_LIMIT_ON_HOL != null and TRADE_LIMIT_ON_HOL != emptyBigDecimalValue" >
+        TRADE_LIMIT_ON_HOL,
+      </if>
+      <if test="USR_LEVEL != null and USR_LEVEL != emptyBigDecimalValue" >
+        USR_LEVEL,
+      </if>
+      <if test="VDATE_DAYS != null and VDATE_DAYS != emptyBigDecimalValue" >
+        VDATE_DAYS,
+      </if>
+      <if test="FX_CY_2 != null and FX_CY_2 != emptyBigDecimalValue" >
+        FX_CY_2,
+      </if>
+      <if test="FX_GL_2 != null and FX_GL_2 != emptyBigDecimalValue" >
+        FX_GL_2,
+      </if>
+      <if test="FX_CIF_2 != null and FX_CIF_2 != emptyBigDecimalValue" >
+        FX_CIF_2,
+      </if>
+      <if test="FX_SL_2 != null and FX_SL_2 != emptyBigDecimalValue" >
+        FX_SL_2,
+      </if>
+      <if test="CONTRA_CY_2 != null and CONTRA_CY_2 != emptyBigDecimalValue" >
+        CONTRA_CY_2,
+      </if>
+      <if test="CONTRA_GL_2 != null and CONTRA_GL_2 != emptyBigDecimalValue" >
+        CONTRA_GL_2,
+      </if>
+      <if test="CONTRA_CIF_2 != null and CONTRA_CIF_2 != emptyBigDecimalValue" >
+        CONTRA_CIF_2,
+      </if>
+      <if test="CONTRA_SL_2 != null and CONTRA_SL_2 != emptyBigDecimalValue" >
+        CONTRA_SL_2,
+      </if>
+      <if test="FID_FX_CY_2 != null and FID_FX_CY_2 != emptyBigDecimalValue" >
+        FID_FX_CY_2,
+      </if>
+      <if test="FID_FX_GL_2 != null and FID_FX_GL_2 != emptyBigDecimalValue" >
+        FID_FX_GL_2,
+      </if>
+      <if test="FID_FX_CIF_2 != null and FID_FX_CIF_2 != emptyBigDecimalValue" >
+        FID_FX_CIF_2,
+      </if>
+      <if test="FID_FX_SL_2 != null and FID_FX_SL_2 != emptyBigDecimalValue" >
+        FID_FX_SL_2,
+      </if>
+      <if test="ISO_CODE != null" >
+        ISO_CODE,
+      </if>
+      <if test="CY_FORMAT != null" >
+        CY_FORMAT,
+      </if>
+      <if test="ORIGIN != null" >
+        ORIGIN,
+      </if>
+      <if test="RATE_PERC != null and RATE_PERC != emptyBigDecimalValue" >
+        RATE_PERC,
+      </if>
+      <if test="APPLY_ROUNDING != null" >
+        APPLY_ROUNDING,
+      </if>
+      <if test="ROUND_GL != null and ROUND_GL != emptyBigDecimalValue" >
+        ROUND_GL,
+      </if>
+      <if test="ROUND_CIF != null and ROUND_CIF != emptyBigDecimalValue" >
+        ROUND_CIF,
+      </if>
+      <if test="ROUND_SL != null and ROUND_SL != emptyBigDecimalValue" >
+        ROUND_SL,
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        JV_TYPE,
+      </if>
+      <if test="FLAG_CTR != null" >
+        FLAG_CTR,
+      </if>
+      <if test="FC_CODE_MULT_DIV != null and FC_CODE_MULT_DIV != emptyBigDecimalValue" >
+        FC_CODE_MULT_DIV,
+      </if>
+      <if test="FC_MULT_DIV_IND != null" >
+        FC_MULT_DIV_IND,
+      </if>
+      <if test="CURRENCY_EXCH_GAIN_PERC != null and CURRENCY_EXCH_GAIN_PERC != emptyBigDecimalValue" >
+        CURRENCY_EXCH_GAIN_PERC,
+      </if>
+      <if test="CY_ISO_CODE != null" >
+        CY_ISO_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="DECIMAL_POINTS != null and DECIMAL_POINTS != emptyBigDecimalValue" >
+        #{DECIMAL_POINTS},
+      </if>
+      <if test="UNIT != null and UNIT != emptyBigDecimalValue" >
+        #{UNIT},
+      </if>
+      <if test="PT_METHOD != null" >
+        #{PT_METHOD},
+      </if>
+      <if test="LIMIT != null and LIMIT != emptyBigDecimalValue" >
+        #{LIMIT},
+      </if>
+      <if test="FX_CY != null and FX_CY != emptyBigDecimalValue" >
+        #{FX_CY},
+      </if>
+      <if test="FX_GL != null and FX_GL != emptyBigDecimalValue" >
+        #{FX_GL},
+      </if>
+      <if test="FX_CIF != null and FX_CIF != emptyBigDecimalValue" >
+        #{FX_CIF},
+      </if>
+      <if test="FX_SL != null and FX_SL != emptyBigDecimalValue" >
+        #{FX_SL},
+      </if>
+      <if test="CONTRA_CY != null and CONTRA_CY != emptyBigDecimalValue" >
+        #{CONTRA_CY},
+      </if>
+      <if test="CONTRA_GL != null and CONTRA_GL != emptyBigDecimalValue" >
+        #{CONTRA_GL},
+      </if>
+      <if test="CONTRA_CIF != null and CONTRA_CIF != emptyBigDecimalValue" >
+        #{CONTRA_CIF},
+      </if>
+      <if test="CONTRA_SL != null and CONTRA_SL != emptyBigDecimalValue" >
+        #{CONTRA_SL},
+      </if>
+      <if test="MULT_DIV_IND != null" >
+        #{MULT_DIV_IND},
+      </if>
+      <if test="FID_FX_CY != null and FID_FX_CY != emptyBigDecimalValue" >
+        #{FID_FX_CY},
+      </if>
+      <if test="FID_FX_GL != null and FID_FX_GL != emptyBigDecimalValue" >
+        #{FID_FX_GL},
+      </if>
+      <if test="FID_FX_CIF != null and FID_FX_CIF != emptyBigDecimalValue" >
+        #{FID_FX_CIF},
+      </if>
+      <if test="FID_FX_SL != null and FID_FX_SL != emptyBigDecimalValue" >
+        #{FID_FX_SL},
+      </if>
+      <if test="HOL2 != null" >
+        #{HOL2},
+      </if>
+      <if test="HOL3 != null" >
+        #{HOL3},
+      </if>
+      <if test="HOL4 != null" >
+        #{HOL4},
+      </if>
+      <if test="HOL1 != null" >
+        #{HOL1},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TRADE_ON_HOL != null" >
+        #{TRADE_ON_HOL},
+      </if>
+      <if test="TRADE_LIMIT_ON_HOL != null and TRADE_LIMIT_ON_HOL != emptyBigDecimalValue" >
+        #{TRADE_LIMIT_ON_HOL},
+      </if>
+      <if test="USR_LEVEL != null and USR_LEVEL != emptyBigDecimalValue" >
+        #{USR_LEVEL},
+      </if>
+      <if test="VDATE_DAYS != null and VDATE_DAYS != emptyBigDecimalValue" >
+        #{VDATE_DAYS},
+      </if>
+      <if test="FX_CY_2 != null and FX_CY_2 != emptyBigDecimalValue" >
+        #{FX_CY_2},
+      </if>
+      <if test="FX_GL_2 != null and FX_GL_2 != emptyBigDecimalValue" >
+        #{FX_GL_2},
+      </if>
+      <if test="FX_CIF_2 != null and FX_CIF_2 != emptyBigDecimalValue" >
+        #{FX_CIF_2},
+      </if>
+      <if test="FX_SL_2 != null and FX_SL_2 != emptyBigDecimalValue" >
+        #{FX_SL_2},
+      </if>
+      <if test="CONTRA_CY_2 != null and CONTRA_CY_2 != emptyBigDecimalValue" >
+        #{CONTRA_CY_2},
+      </if>
+      <if test="CONTRA_GL_2 != null and CONTRA_GL_2 != emptyBigDecimalValue" >
+        #{CONTRA_GL_2},
+      </if>
+      <if test="CONTRA_CIF_2 != null and CONTRA_CIF_2 != emptyBigDecimalValue" >
+        #{CONTRA_CIF_2},
+      </if>
+      <if test="CONTRA_SL_2 != null and CONTRA_SL_2 != emptyBigDecimalValue" >
+        #{CONTRA_SL_2},
+      </if>
+      <if test="FID_FX_CY_2 != null and FID_FX_CY_2 != emptyBigDecimalValue" >
+        #{FID_FX_CY_2},
+      </if>
+      <if test="FID_FX_GL_2 != null and FID_FX_GL_2 != emptyBigDecimalValue" >
+        #{FID_FX_GL_2},
+      </if>
+      <if test="FID_FX_CIF_2 != null and FID_FX_CIF_2 != emptyBigDecimalValue" >
+        #{FID_FX_CIF_2},
+      </if>
+      <if test="FID_FX_SL_2 != null and FID_FX_SL_2 != emptyBigDecimalValue" >
+        #{FID_FX_SL_2},
+      </if>
+      <if test="ISO_CODE != null" >
+        #{ISO_CODE},
+      </if>
+      <if test="CY_FORMAT != null" >
+        #{CY_FORMAT},
+      </if>
+      <if test="ORIGIN != null" >
+        #{ORIGIN},
+      </if>
+      <if test="RATE_PERC != null and RATE_PERC != emptyBigDecimalValue" >
+        #{RATE_PERC},
+      </if>
+      <if test="APPLY_ROUNDING != null" >
+        #{APPLY_ROUNDING},
+      </if>
+      <if test="ROUND_GL != null and ROUND_GL != emptyBigDecimalValue" >
+        #{ROUND_GL},
+      </if>
+      <if test="ROUND_CIF != null and ROUND_CIF != emptyBigDecimalValue" >
+        #{ROUND_CIF},
+      </if>
+      <if test="ROUND_SL != null and ROUND_SL != emptyBigDecimalValue" >
+        #{ROUND_SL},
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        #{JV_TYPE},
+      </if>
+      <if test="FLAG_CTR != null" >
+        #{FLAG_CTR},
+      </if>
+      <if test="FC_CODE_MULT_DIV != null and FC_CODE_MULT_DIV != emptyBigDecimalValue" >
+        #{FC_CODE_MULT_DIV},
+      </if>
+      <if test="FC_MULT_DIV_IND != null" >
+        #{FC_MULT_DIV_IND},
+      </if>
+      <if test="CURRENCY_EXCH_GAIN_PERC != null and CURRENCY_EXCH_GAIN_PERC != emptyBigDecimalValue" >
+        #{CURRENCY_EXCH_GAIN_PERC},
+      </if>
+      <if test="CY_ISO_CODE != null" >
+        #{CY_ISO_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCURRENCIES" >
+    update CURRENCIES
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="DECIMAL_POINTS != null" >
+        <choose >
+          <when test="DECIMAL_POINTS == emptyBigDecimalValue" >
+            DECIMAL_POINTS = NULL ,
+          </when>
+          <otherwise >
+            DECIMAL_POINTS = #{DECIMAL_POINTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNIT != null" >
+        <choose >
+          <when test="UNIT == emptyBigDecimalValue" >
+            UNIT = NULL ,
+          </when>
+          <otherwise >
+            UNIT = #{UNIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PT_METHOD != null" >
+        PT_METHOD = #{PT_METHOD},
+      </if>
+      <if test="LIMIT != null" >
+        <choose >
+          <when test="LIMIT == emptyBigDecimalValue" >
+            LIMIT = NULL ,
+          </when>
+          <otherwise >
+            LIMIT = #{LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_CY != null" >
+        <choose >
+          <when test="FX_CY == emptyBigDecimalValue" >
+            FX_CY = NULL ,
+          </when>
+          <otherwise >
+            FX_CY = #{FX_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_GL != null" >
+        <choose >
+          <when test="FX_GL == emptyBigDecimalValue" >
+            FX_GL = NULL ,
+          </when>
+          <otherwise >
+            FX_GL = #{FX_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_CIF != null" >
+        <choose >
+          <when test="FX_CIF == emptyBigDecimalValue" >
+            FX_CIF = NULL ,
+          </when>
+          <otherwise >
+            FX_CIF = #{FX_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_SL != null" >
+        <choose >
+          <when test="FX_SL == emptyBigDecimalValue" >
+            FX_SL = NULL ,
+          </when>
+          <otherwise >
+            FX_SL = #{FX_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_CY != null" >
+        <choose >
+          <when test="CONTRA_CY == emptyBigDecimalValue" >
+            CONTRA_CY = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_CY = #{CONTRA_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_GL != null" >
+        <choose >
+          <when test="CONTRA_GL == emptyBigDecimalValue" >
+            CONTRA_GL = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_GL = #{CONTRA_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_CIF != null" >
+        <choose >
+          <when test="CONTRA_CIF == emptyBigDecimalValue" >
+            CONTRA_CIF = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_CIF = #{CONTRA_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_SL != null" >
+        <choose >
+          <when test="CONTRA_SL == emptyBigDecimalValue" >
+            CONTRA_SL = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_SL = #{CONTRA_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MULT_DIV_IND != null" >
+        MULT_DIV_IND = #{MULT_DIV_IND},
+      </if>
+      <if test="FID_FX_CY != null" >
+        <choose >
+          <when test="FID_FX_CY == emptyBigDecimalValue" >
+            FID_FX_CY = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_CY = #{FID_FX_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_GL != null" >
+        <choose >
+          <when test="FID_FX_GL == emptyBigDecimalValue" >
+            FID_FX_GL = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_GL = #{FID_FX_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_CIF != null" >
+        <choose >
+          <when test="FID_FX_CIF == emptyBigDecimalValue" >
+            FID_FX_CIF = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_CIF = #{FID_FX_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_SL != null" >
+        <choose >
+          <when test="FID_FX_SL == emptyBigDecimalValue" >
+            FID_FX_SL = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_SL = #{FID_FX_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HOL2 != null" >
+        HOL2 = #{HOL2},
+      </if>
+      <if test="HOL3 != null" >
+        HOL3 = #{HOL3},
+      </if>
+      <if test="HOL4 != null" >
+        HOL4 = #{HOL4},
+      </if>
+      <if test="HOL1 != null" >
+        HOL1 = #{HOL1},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TRADE_ON_HOL != null" >
+        TRADE_ON_HOL = #{TRADE_ON_HOL},
+      </if>
+      <if test="TRADE_LIMIT_ON_HOL != null" >
+        <choose >
+          <when test="TRADE_LIMIT_ON_HOL == emptyBigDecimalValue" >
+            TRADE_LIMIT_ON_HOL = NULL ,
+          </when>
+          <otherwise >
+            TRADE_LIMIT_ON_HOL = #{TRADE_LIMIT_ON_HOL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USR_LEVEL != null" >
+        <choose >
+          <when test="USR_LEVEL == emptyBigDecimalValue" >
+            USR_LEVEL = NULL ,
+          </when>
+          <otherwise >
+            USR_LEVEL = #{USR_LEVEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VDATE_DAYS != null" >
+        <choose >
+          <when test="VDATE_DAYS == emptyBigDecimalValue" >
+            VDATE_DAYS = NULL ,
+          </when>
+          <otherwise >
+            VDATE_DAYS = #{VDATE_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_CY_2 != null" >
+        <choose >
+          <when test="FX_CY_2 == emptyBigDecimalValue" >
+            FX_CY_2 = NULL ,
+          </when>
+          <otherwise >
+            FX_CY_2 = #{FX_CY_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_GL_2 != null" >
+        <choose >
+          <when test="FX_GL_2 == emptyBigDecimalValue" >
+            FX_GL_2 = NULL ,
+          </when>
+          <otherwise >
+            FX_GL_2 = #{FX_GL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_CIF_2 != null" >
+        <choose >
+          <when test="FX_CIF_2 == emptyBigDecimalValue" >
+            FX_CIF_2 = NULL ,
+          </when>
+          <otherwise >
+            FX_CIF_2 = #{FX_CIF_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FX_SL_2 != null" >
+        <choose >
+          <when test="FX_SL_2 == emptyBigDecimalValue" >
+            FX_SL_2 = NULL ,
+          </when>
+          <otherwise >
+            FX_SL_2 = #{FX_SL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_CY_2 != null" >
+        <choose >
+          <when test="CONTRA_CY_2 == emptyBigDecimalValue" >
+            CONTRA_CY_2 = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_CY_2 = #{CONTRA_CY_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_GL_2 != null" >
+        <choose >
+          <when test="CONTRA_GL_2 == emptyBigDecimalValue" >
+            CONTRA_GL_2 = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_GL_2 = #{CONTRA_GL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_CIF_2 != null" >
+        <choose >
+          <when test="CONTRA_CIF_2 == emptyBigDecimalValue" >
+            CONTRA_CIF_2 = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_CIF_2 = #{CONTRA_CIF_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_SL_2 != null" >
+        <choose >
+          <when test="CONTRA_SL_2 == emptyBigDecimalValue" >
+            CONTRA_SL_2 = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_SL_2 = #{CONTRA_SL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_CY_2 != null" >
+        <choose >
+          <when test="FID_FX_CY_2 == emptyBigDecimalValue" >
+            FID_FX_CY_2 = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_CY_2 = #{FID_FX_CY_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_GL_2 != null" >
+        <choose >
+          <when test="FID_FX_GL_2 == emptyBigDecimalValue" >
+            FID_FX_GL_2 = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_GL_2 = #{FID_FX_GL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_CIF_2 != null" >
+        <choose >
+          <when test="FID_FX_CIF_2 == emptyBigDecimalValue" >
+            FID_FX_CIF_2 = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_CIF_2 = #{FID_FX_CIF_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FID_FX_SL_2 != null" >
+        <choose >
+          <when test="FID_FX_SL_2 == emptyBigDecimalValue" >
+            FID_FX_SL_2 = NULL ,
+          </when>
+          <otherwise >
+            FID_FX_SL_2 = #{FID_FX_SL_2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISO_CODE != null" >
+        ISO_CODE = #{ISO_CODE},
+      </if>
+      <if test="CY_FORMAT != null" >
+        CY_FORMAT = #{CY_FORMAT},
+      </if>
+      <if test="ORIGIN != null" >
+        ORIGIN = #{ORIGIN},
+      </if>
+      <if test="RATE_PERC != null" >
+        <choose >
+          <when test="RATE_PERC == emptyBigDecimalValue" >
+            RATE_PERC = NULL ,
+          </when>
+          <otherwise >
+            RATE_PERC = #{RATE_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLY_ROUNDING != null" >
+        APPLY_ROUNDING = #{APPLY_ROUNDING},
+      </if>
+      <if test="ROUND_GL != null" >
+        <choose >
+          <when test="ROUND_GL == emptyBigDecimalValue" >
+            ROUND_GL = NULL ,
+          </when>
+          <otherwise >
+            ROUND_GL = #{ROUND_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ROUND_CIF != null" >
+        <choose >
+          <when test="ROUND_CIF == emptyBigDecimalValue" >
+            ROUND_CIF = NULL ,
+          </when>
+          <otherwise >
+            ROUND_CIF = #{ROUND_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ROUND_SL != null" >
+        <choose >
+          <when test="ROUND_SL == emptyBigDecimalValue" >
+            ROUND_SL = NULL ,
+          </when>
+          <otherwise >
+            ROUND_SL = #{ROUND_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="JV_TYPE != null" >
+        <choose >
+          <when test="JV_TYPE == emptyBigDecimalValue" >
+            JV_TYPE = NULL ,
+          </when>
+          <otherwise >
+            JV_TYPE = #{JV_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLAG_CTR != null" >
+        FLAG_CTR = #{FLAG_CTR},
+      </if>
+      <if test="FC_CODE_MULT_DIV != null" >
+        <choose >
+          <when test="FC_CODE_MULT_DIV == emptyBigDecimalValue" >
+            FC_CODE_MULT_DIV = NULL ,
+          </when>
+          <otherwise >
+            FC_CODE_MULT_DIV = #{FC_CODE_MULT_DIV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FC_MULT_DIV_IND != null" >
+        FC_MULT_DIV_IND = #{FC_MULT_DIV_IND},
+      </if>
+      <if test="CURRENCY_EXCH_GAIN_PERC != null" >
+        <choose >
+          <when test="CURRENCY_EXCH_GAIN_PERC == emptyBigDecimalValue" >
+            CURRENCY_EXCH_GAIN_PERC = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_EXCH_GAIN_PERC = #{CURRENCY_EXCH_GAIN_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CY_ISO_CODE != null" >
+        CY_ISO_CODE = #{CY_ISO_CODE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+  </sql>
+  <update id="updateCURRENCIES" parameterType="com.path.dbmaps.vo.CURRENCIESVO" >
+    <include refid="sql_updateCURRENCIES" />
+  </update>
+</mapper>

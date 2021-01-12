@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="fmsLimitsCommonMapper">
+	<select id="utilizeFMSLimit" parameterType="fmsLimitsInputCO" statementType="CALLABLE">
+	 { CALL P_FMS_NON_GEN_LMT_UTILIZATION
+	   	(#{companyCode,			mode=IN, jdbcType=NUMERIC},
+		 #{branchCode,	 		mode=IN, jdbcType=NUMERIC},
+		 #{userId,	 			mode=IN, jdbcType=VARCHAR},
+		 #{cifCode,	 			mode=IN, jdbcType=NUMERIC},
+		 #{dealCode,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealAmount,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealAmountOld,		mode=IN, jdbcType=NUMERIC},
+		 #{dealYield,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealCy,	 			mode=IN, jdbcType=NUMERIC},
+		 #{dealRate,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealUnit,	 		mode=IN, jdbcType=NUMERIC},
+		 #{multiDiv,	 		mode=IN, jdbcType=VARCHAR},
+		 #{generalType,	 		mode=IN, jdbcType=VARCHAR},
+		 #{productClass,	 	mode=IN, jdbcType=NUMERIC},
+		 #{classType,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealType,	 		mode=IN, jdbcType=VARCHAR},
+		 #{autoDrwdwn,	 		mode=IN, jdbcType=VARCHAR},
+		 #{cashFinance,	 		mode=IN, jdbcType=VARCHAR},
+		 #{valueDate,	 		mode=IN, jdbcType=DATE},
+		 #{maturityDate,	 	mode=IN, jdbcType=DATE},
+		 #{sysDate,	 			mode=IN, jdbcType=DATE},
+		 #{facilityBranch,	 	mode=IN, jdbcType=NUMERIC},			 
+		 #{facilityCode,	 	mode=IN, jdbcType=NUMERIC},	
+		 #{sublimitNumber,	 	mode=IN, jdbcType=NUMERIC},			 	  
+		 #{drawDowncode,	 	mode=IN, jdbcType=NUMERIC},
+		 #{drawdownBranch,	 	mode=IN, jdbcType=NUMERIC},
+		 #{paidAmount,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealFlag,	 		mode=IN, jdbcType=VARCHAR},
+		 #{drawdownFlag,	 	mode=IN, jdbcType=VARCHAR},
+		 #{companyAmount,	 	mode=IN, jdbcType=NUMERIC},
+		 #{clientAmount,	 	mode=IN, jdbcType=NUMERIC},
+		 #{payplanNumber,	 	mode=IN, jdbcType=NUMERIC},
+		 #{payplanSequence,	 	mode=IN, jdbcType=NUMERIC},
+		 #{ddDescEng,	 		mode=IN, jdbcType=VARCHAR},
+		 #{ddDescArab,	 		mode=IN, jdbcType=VARCHAR},
+		 #{unutilizedAmount,	mode=OUT, jdbcType=NUMERIC},
+		 #{trsNumber,	 		mode=OUT, jdbcType=NUMERIC},
+		 #{tfaDdOrDdPrinted,	mode=INOUT, jdbcType=VARCHAR},
+		 #{errCode,	 			mode=OUT, jdbcType=NUMERIC},
+		 #{errMsg,	 			mode=OUT, jdbcType=VARCHAR}
+		 )
+		 
+		 }
+    </select>
+    
+    
+    
+    <select id="utilizeGeneralFMSLimit" parameterType="fmsLimitsInputCO" statementType="CALLABLE">
+	 { CALL P_FMS_LIMIT_UTILIZATION
+	   	(#{companyCode,			mode=IN, jdbcType=NUMERIC},
+		 #{branchCode,	 		mode=IN, jdbcType=NUMERIC},
+		 #{userId,	 			mode=IN, jdbcType=VARCHAR},
+		 #{cifCode,	 			mode=IN, jdbcType=NUMERIC},
+		 #{dealCode,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealAmount,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealYield,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealCy,	 			mode=IN, jdbcType=NUMERIC},
+		 #{dealRate,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealUnit,	 		mode=IN, jdbcType=NUMERIC},
+		 #{multiDiv,	 		mode=IN, jdbcType=VARCHAR},
+		 #{generalType,	 		mode=IN, jdbcType=VARCHAR},
+		 #{productClass,	 	mode=IN, jdbcType=NUMERIC},
+		 #{classType,	 		mode=IN, jdbcType=NUMERIC},
+		 #{valueDate,	 		mode=IN, jdbcType=DATE},
+		 #{maturityDate,	 	mode=IN, jdbcType=DATE},
+		 #{sysDate,	 			mode=IN, jdbcType=DATE},
+		 #{facilityBranch,	 	mode=IN, jdbcType=NUMERIC},			 
+		 #{facilityCode,	 	mode=IN, jdbcType=NUMERIC},	
+		 #{sublimitNumber,	 	mode=IN, jdbcType=NUMERIC},			 	  
+		 #{drawDowncode,	 	mode=IN, jdbcType=NUMERIC},
+		 #{drawdownBranch,	 	mode=IN, jdbcType=NUMERIC},
+		 #{paidAmount,	 		mode=IN, jdbcType=NUMERIC},
+		 #{dealFlag,	 		mode=IN, jdbcType=VARCHAR},
+		 #{drawdownFlag,	 	mode=IN, jdbcType=VARCHAR},
+		 #{dealType		,	 	mode=IN, jdbcType=VARCHAR},
+		 #{companyAmount,	 	mode=IN, jdbcType=NUMERIC},
+		 #{clientAmount,	 	mode=IN, jdbcType=NUMERIC},
+		 #{skipValidationYN,	mode=IN, jdbcType=VARCHAR},		 
+		 #{payplanNumber,	 	mode=IN, jdbcType=NUMERIC},
+		 #{payplanSequence,	 	mode=IN, jdbcType=NUMERIC},
+		 #{unutilizedAmount,	mode=OUT, jdbcType=NUMERIC},
+		 #{trsNumber,	 		mode=OUT, jdbcType=NUMERIC},
+		 #{errCode,	 			mode=OUT, jdbcType=NUMERIC},
+		 #{errMsg,	 			mode=OUT, jdbcType=VARCHAR}
+		 )
+	  }
+    </select>
+	
+	<select id="executeProcValidateOneObligor" parameterType="fmsOneObligorDetCO" statementType="CALLABLE">
+	{CALL P_FMS_VALIDATE_ONE_OBLIGOR
+		    (#{compCode, 			mode=IN,jdbcType=NUMERIC},
+			#{branchCode, 			mode=IN,jdbcType=NUMERIC},
+			#{userId, 				mode=IN,jdbcType=VARCHAR},
+			#{counterParty, 		mode=IN,jdbcType=NUMERIC},
+			#{trxType, 				mode=IN,jdbcType=VARCHAR},
+			#{facilityType, 		mode=IN,jdbcType=VARCHAR},
+			#{amountCV, 			mode=IN,jdbcType=NUMERIC},
+			#{currency, 			mode=IN,jdbcType=NUMERIC},
+			#{dealRate, 			mode=IN,jdbcType=NUMERIC},
+			#{currencyUnit, 		mode=IN,jdbcType=NUMERIC},
+			#{multiDiv, 			mode=IN,jdbcType=VARCHAR},
+			#{generalType, 			mode=IN,jdbcType=VARCHAR},
+			#{productClass, 		mode=IN,jdbcType=NUMERIC},
+			#{productClassType, 	mode=IN,jdbcType=NUMERIC},
+			#{valueDate,			mode=IN,jdbcType=DATE},
+			#{effectiveFromDate,	mode=IN,jdbcType=DATE},
+			#{effectiveToDate,		mode=IN,jdbcType=DATE},
+			#{unutilizeExpiryDate,	mode=IN,jdbcType=DATE},
+			#{runningDate,			mode=IN,jdbcType=DATE},
+			#{branchCode, 			mode=IN,jdbcType=NUMERIC},
+			#{code, 				mode=IN,jdbcType=NUMERIC},
+			#{drawdownNo, 			mode=IN,jdbcType=NUMERIC},
+			#{errorNo, 				mode=OUT,jdbcType=NUMERIC},
+			#{errorDesc, 			mode=OUT,jdbcType=VARCHAR})}
+	</select>
+
+	<select id="executeProcValidateOneObligorGlobalLimit" parameterType="fmsOneObligorDetCO" statementType="CALLABLE">
+		{ CALL P_FMS_OBLIGOR_GLOBAL_LIMIT
+			(
+			  #{compCode, 			mode=IN,jdbcType=NUMERIC},
+			  #{branchCode, 		mode=IN,jdbcType=NUMERIC},
+			  #{userId, 			mode=IN,jdbcType=VARCHAR},
+			  #{counterParty, 		mode=IN,jdbcType=NUMERIC},
+			  #{dealNo, 			mode=IN,jdbcType=NUMERIC},
+			  #{dealAmount, 		mode=IN,jdbcType=NUMERIC},
+			  #{dealYeild, 			mode=IN,jdbcType=NUMERIC},
+			  #{currency, 			mode=IN,jdbcType=NUMERIC},
+			  #{dealRate, 			mode=IN,jdbcType=NUMERIC},
+			  #{currencyUnit, 		mode=IN,jdbcType=NUMERIC},
+			  #{multiDiv, 			mode=IN,jdbcType=VARCHAR},
+			  #{generalType, 		mode=IN,jdbcType=VARCHAR},
+			  #{productClass, 		mode=IN,jdbcType=NUMERIC},
+			  #{productClassType, 	mode=IN,jdbcType=NUMERIC},
+			  #{dealType, 			mode=IN,jdbcType=VARCHAR},
+			  #{cashFinanceFlag, 	mode=IN,jdbcType=VARCHAR},
+			  #{valueDate,			mode=IN,jdbcType=DATE},
+			  #{maturityDate,		mode=IN,jdbcType=DATE},
+			  #{runningDate,		mode=IN,jdbcType=DATE},
+			  #{facilityBranch, 	mode=IN,jdbcType=NUMERIC},
+			  #{fromFacility, 		mode=IN,jdbcType=NUMERIC},
+			  #{subLimitNo, 		mode=IN,jdbcType=NUMERIC},
+			  #{drawdownNo, 		mode=IN,jdbcType=NUMERIC},
+			  #{drawDownBranch, 	mode=IN,jdbcType=NUMERIC},
+			  #{amount, 			mode=IN,jdbcType=NUMERIC},
+			  #{limitFlag, 			mode=IN,jdbcType=VARCHAR},
+			  #{drawDownStatus, 	mode=IN,jdbcType=VARCHAR},
+			  #{amountWithCompany, 	mode=IN,jdbcType=NUMERIC},
+			  #{amountWithClient, 	mode=IN,jdbcType=NUMERIC},
+			  #{unUtilzed, 			mode=OUT,jdbcType=NUMERIC},
+			  #{trsNo, 				mode=OUT,jdbcType=NUMERIC},
+			  #{tfaDrawDown, 		mode=OUT,jdbcType=VARCHAR},
+			  #{errorNo, 			mode=OUT,jdbcType=NUMERIC},
+			  #{errorDesc, 			mode=OUT,jdbcType=VARCHAR})}
+	</select>
+	
+	<select id="execProc_P_FMS_AMF_OVERDRAFT" parameterType="fmsLimitsInputCO" statementType="CALLABLE">
+	 { CALL P_FMS_AMF_OVERDRAFT
+	   	(#{loginCompCode,				mode=IN, jdbcType=NUMERIC},
+		 #{loginBranchCode,	 			mode=IN, jdbcType=NUMERIC},
+		 #{currencyCode,	 	        mode=IN, jdbcType=NUMERIC},
+		 #{glCode,	 					mode=IN, jdbcType=NUMERIC},
+		 #{cifCode,   					mode=IN, jdbcType=NUMERIC},
+		 #{slNbr,   					mode=IN, jdbcType=NUMERIC},
+		 #{facilityCode,   				mode=IN, jdbcType=NUMERIC},
+		 #{drawDowncode,   				mode=IN, jdbcType=NUMERIC},
+		 #{facilityBranch,   			mode=IN, jdbcType=NUMERIC},
+		 #{overDraftLimit,   			mode=IN, jdbcType=NUMERIC},
+		 #{facilitySubLimitNbr,   		mode=IN, jdbcType=NUMERIC},
+		 #{ytdFCBal,   					mode=IN, jdbcType=NUMERIC},
+		 #{ytdCVBal,   					mode=IN, jdbcType=NUMERIC},
+		 #{flag,   						mode=IN, jdbcType=VARCHAR},
+		 #{errCode,   					mode=OUT, jdbcType=NUMERIC},
+		 #{errMsg,	 					mode=OUT, jdbcType=VARCHAR})}
+		 
+    </select>
+ <!-- // TP#1002268 - DBU191081;Azhar; 15/06/2020 [Start] -->
+    <select id="getCountSubcidariesCif" resultType="int" parameterType="fmsLimitsInputCO">
+		SELECT COUNT(1)    FROM
+    (
+	    SELECT SUBSIDIARIES_CIF   AS SUBSIDIARIES_CIF
+	    FROM   FMSCOUNTERPARTYLIMIT
+	    WHERE  COMP_CODE           =  #{companyCode}
+	    AND    PARENT_CIF          =   #{cifCode}
+	    
+	    UNION 
+	    
+	    SELECT SUBSIDIARIES_CIF  AS SUBSIDIARIES_CIF
+	    FROM   FMSCOUNTERPARTYLIMIT
+	    WHERE  COMP_CODE           = #{companyCode}
+	    AND    ONE_OBLIGOR_CIF     =  #{cifCode}
+	    
+	    UNION
+	    
+	    SELECT BRANCH_CIF AS SUBSIDIARIES_CIF
+	    FROM   FMSPARTYBRANCHES
+	    WHERE  COMP_CODE           =   #{companyCode}
+	    AND    CIF                 =    #{cifCode}
+	    )TMP_SUBSIDIARY_TABLE
+
+		
+	</select>
+	
+	<select id="execProc_P_FMS_INSERT_SUBSIDIARY_CIFS" parameterType="fmsLimitsInputCO" statementType="CALLABLE">
+	 { CALL P_FMS_INSERT_SUBSIDIARY_CIFS
+	   	(#{companyCode,				mode=IN, jdbcType=NUMERIC},
+		 #{branchCode,	 			mode=IN, jdbcType=NUMERIC},
+		 #{appName,   				mode=IN, jdbcType=VARCHAR},
+		 #{userId,	 	       		mode=IN, jdbcType=VARCHAR},
+		 #{cifCode,   				mode=IN, jdbcType=NUMERIC},
+		 #{sysDate,	 				mode=IN, jdbcType=DATE})}
+		 
+    </select>
+	<!-- // TP#1002268 - DBU191081;Azhar; 15/06/2020 [End] -->	
+</mapper>

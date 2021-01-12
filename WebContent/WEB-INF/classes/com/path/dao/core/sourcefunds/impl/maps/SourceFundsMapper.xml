@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="sourceFundsMapper">
+
+	<sql id="sourceFundsListCommon">
+
+	SELECT
+			CTS_SOURCE_FUNDS.SOURCE_FUNDS_CODE SOURCE_FUNDS_CODE,
+			CTS_SOURCE_FUNDS.BRIEF_DESC_ENG BRIEF_DESC_ENG,
+			CTS_SOURCE_FUNDS.LONG_DESC_ENG LONG_DESC_ENG
+			FROM CTS_SOURCE_FUNDS
+			WHERE CTS_SOURCE_FUNDS.COMP_CODE = #{compCode}
+	UNION
+	SELECT 0 SOURCE_FUNDS_CODE,
+	    	'Other' BRIEF_DESC_ENG,
+	   	    'Other' LONG_DESC_ENG
+			FROM DUAL
+
+	</sql>
+
+	<resultMap id="sourceFundsListMap" type="com.path.vo.core.sourcefunds.SourceFundsSC">
+		<id property="SOURCE_FUNDS_CODE" column="SOURCE_FUNDS_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	</resultMap>
+
+	<select id="sourceFundsList" resultMap="sourceFundsListMap"
+		parameterType="com.path.vo.core.sourcefunds.SourceFundsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="sourceFundsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="sourceFundsListCount" resultType="int"
+		parameterType="com.path.vo.core.sourcefunds.SourceFundsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="sourceFundsListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnSourceFundsCodeById" parameterType="com.path.vo.core.sourcefunds.SourceFundsSC"
+		resultType="com.path.dbmaps.vo.CTS_SOURCE_FUNDSVO">
+		SELECT
+		CTS_SOURCE_FUNDS.SOURCE_FUNDS_CODE,
+		CTS_SOURCE_FUNDS.BRIEF_DESC_ENG,
+		CTS_SOURCE_FUNDS.LONG_DESC_ENG
+		FROM CTS_SOURCE_FUNDS
+		WHERE
+		CTS_SOURCE_FUNDS.COMP_CODE = #{compCode}
+		AND CTS_SOURCE_FUNDS.SOURCE_FUNDS_CODE = #{code}
+	</select>
+</mapper>

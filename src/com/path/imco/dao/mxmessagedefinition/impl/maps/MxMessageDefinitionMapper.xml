@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="mxMessageDefinitionMapper">
+
+	<resultMap id="mxMessageDefinitionListMap" type="mxMessageDefinitionCO">
+		<id 	column="DGTL_MSG_DEF_ID" 			property="dgtl_MSG_DEFVO.DGTL_MSG_DEF_ID" />
+    	<result column="BRIEF_NAME" 						property="dgtl_MSG_DEFVO.BRIEF_NAME" />
+    	<result column="LONG_NAME" 				property="dgtl_MSG_DEFVO.LONG_NAME" />
+    	<result column="MSG_TYPE" 					property="dgtl_MSG_DEFVO.MSG_TYPE" />
+    	<result column="STATUS" 					property="dgtl_MSG_DEFVO.STATUS" />
+    	<result column="MSG_SCHEMA" 				property="dgtl_MSG_DEFVO.MSG_SCHEMA" />
+    	<result column="DATE_UPDATED" 				property="dgtl_MSG_DEFVO.DATE_UPDATED" />
+    	<result column="STATUS_DESC"   				property="statusDesc" />
+    	<result column="CREATED_BY" 				property="dgtl_MSG_DEFVO.CREATED_BY" />
+    	<result column="CREATED_DATE" 			    property="dgtl_MSG_DEFVO.CREATED_DATE" />
+    	<result column="CREATED_BY" 				property="dgtl_MSG_DEFVO.CREATED_BY" />
+    	<result column="CREATED_DATE" 				property="dgtl_MSG_DEFVO.CREATED_DATE" />
+    	<result column="MODIFIED_BY" 				property="dgtl_MSG_DEFVO.MODIFIED_BY" />
+    	<result column="MODIFIED_DATE" 				property="dgtl_MSG_DEFVO.MODIFIED_DATE" />
+    	<result column="APPROVED_BY" 				property="dgtl_MSG_DEFVO.APPROVED_BY" />
+    	<result column="APPROVED_DATE" 				property="dgtl_MSG_DEFVO.APPROVED_DATE" />
+	</resultMap>
+	
+	
+	<select id="returnMxMessageDefinitionList" parameterType="mxMessageDefinitionSC" resultMap="mxMessageDefinitionListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryMxMessageDefinitionListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnMxMessageDefinitionListCount" parameterType="mxMessageDefinitionSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryMxMessageDefinitionListSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="returnMxMessageDefinitionDetails" parameterType="mxMessageDefinitionSC" resultMap="mxMessageDefinitionListMap">
+		<include refid="queryMxMessageDefinitionListSQL"/>
+		<include refid="queryMxMessageDefinitionIdSQL"/>
+	</select>
+	
+	<sql id="queryMxMessageDefinitionListSQL">
+	
+		SELECT 
+				DGTL_MSG_DEF_ID, 
+				BRIEF_NAME, 
+				LONG_NAME, 
+				MSG_TYPE,
+				MSG_SCHEMA,
+				STATUS,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+	         		FROM SYS_PARAM_LOV_TRANS
+	         		WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   = DGTL_MSG_DEF.STATUS 
+	         		AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+	         		AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{preferredLanguage,jdbcType=VARCHAR} 
+	    		) STATUS_DESC,
+				DATE_UPDATED,
+				CREATED_BY, 
+				CREATED_DATE, 
+				MODIFIED_BY, 
+    			MODIFIED_DATE, 
+    			APPROVED_BY, 
+    			APPROVED_DATE
+			  from DGTL_MSG_DEF 
+			  
+			  <if test='crudMode != null and crudMode!="R" '>
+				, SYS_PARAM_LOV_LK_OPT lovOpt
+			</if>
+			
+				WHERE 1 = 1
+		
+			<if test='status != null and status == "P" '>
+				AND DGTL_MSG_DEF.STATUS = #{status}
+			</if>
+		
+			<if test='crudMode != null and crudMode!="R" '>
+				AND DGTL_MSG_DEF.STATUS = lovOpt.VALUE_CODE
+	            AND lovOpt.LOV_TYPE_ID  = #{lovTypeId,jdbcType=NUMERIC}
+	            AND lovOpt.PROG_REF     = #{pageRef,jdbcType=VARCHAR}
+	            AND lovOpt.APP_NAME     = #{currAppName,jdbcType=VARCHAR}
+			</if>
+		
+	</sql>
+	
+	<sql id="queryMxMessageDefinitionIdSQL">
+		 and DGTL_MSG_DEF.DGTL_MSG_DEF_ID = #{mxMsgDefinitionId}
+	</sql>
+	
+	<resultMap id="mxMessageDefTagsListMap" type="mxMessagetagsCO" >
+	    <id column="DGTL_XML_MSG_TAGS_ID" property="tagId" />
+	    <result column="DGTL_MSG_DEF_ID" property="dgtlMsgDefId" />
+	    <result column="PARENT_TAG_NAME" property="parentTagName" />
+	    <result column="COMPLEX_TYPE" property="complexTypeName" />
+	    <result column="TAG_NAME" property="tagName" />
+	    <result column="TAG_TYPE" property="type" />
+	    <result column="IS_MANDATORY_YN" property="isMandatoryYN" />
+	    <result column="HIERARCHY" property="tagHierarchy" />
+	    <result column="DESCRIPTION" property="description" />
+   </resultMap>
+  
+   <select id="returnMxMessageDefinitionTagsList" parameterType="mxMessageDefinitionSC" resultMap="mxMessageDefTagsListMap">
+		<include refid="mxMessageDefinitionTagsListSQL"/>
+	</select>
+	
+   <sql id="mxMessageDefinitionTagsListSQL">
+	
+		SELECT 
+			DGTL_XML_MSG_TAGS_ID, 
+			DGTL_MSG_DEF_ID, 
+			PARENT_TAG_NAME, 
+			COMPLEX_TYPE, 
+			TAG_NAME, 
+			TAG_TYPE,
+			HIERARCHY,
+			IS_MANDATORY_YN,
+			DESCRIPTION
+    		     from 
+    		DGTL_XML_MSG_TAGS
+    			where DGTL_MSG_DEF_ID  = #{mxMsgDefinitionId}
+<!--     			AND 
+                (
+                (IS_MANDATORY_YN = 'N' OR IS_MANDATORY_YN IS NULL)
+          		  OR 
+          		(IS_MANDATORY_YN = 'Y' AND DESCRIPTION IS NOT NULL)
+          		) -->
+    		<if test="tagHierarchy != null and !&quot;&quot;.equals(tagHierarchy)" >
+    			AND HIERARCHY = #{tagHierarchy}
+    		</if>
+	</sql>
+	
+	<delete id="deleteMxMessageDefinitionTagsSQL" parameterType="java.math.BigDecimal" >
+		 delete from DGTL_XML_MSG_TAGS where DGTL_MSG_DEF_ID  = #{mxMessageDefId}
+  	</delete>
+  	
+  	<insert id="insertDGTL_XML_MSG_TAGS1" parameterType="mxMessagetagsCO" >
+   
+   	<selectKey resultType="java.math.BigDecimal" keyProperty="tagId" order="BEFORE">
+		<if test="isOracle == 1">
+			SELECT DGTL_XML_MSG_TAGS_SEQ.NEXTVAL FROM dual
+		</if>
+		<if test="isSybase == 1 and isSQLServer != 1 ">
+			SELECT next_identity('DGTL_XML_MSG_TAGS')
+		</if>
+		<if test="isSQLServer == 1 ">
+			SELECT IDENT_CURRENT ('DGTL_XML_MSG_TAGS') + 1
+		</if>
+	</selectKey>
+
+    insert into DGTL_XML_MSG_TAGS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isOracle == 1">
+      	DGTL_XML_MSG_TAGS_ID,
+      </if>	
+      <if test="dgtlMsgDefId != null and dgtlMsgDefId != emptyBigDecimalValue" >
+        DGTL_MSG_DEF_ID,
+      </if>
+      <if test="parentTagName != null and !&quot;&quot;.equals(parentTagName)" >
+        PARENT_TAG_NAME,
+      </if>
+      <if test="complexTypeName != null and !&quot;&quot;.equals(complexTypeName)" >
+        COMPLEX_TYPE,
+      </if>
+      <if test="tagName != null and !&quot;&quot;.equals(tagName)" >
+        TAG_NAME,
+      </if>
+      <if test="type != null and !&quot;&quot;.equals(type)" >
+        TAG_TYPE,
+      </if>
+      <if test="isLeafYN != null and !&quot;&quot;.equals(isLeafYN)" >
+        IS_LEAF_YN,
+      </if>
+      <if test="isMandatoryYN != null and !&quot;&quot;.equals(isMandatoryYN)" >
+        IS_MANDATORY_YN,
+      </if>
+      <if test="tagHierarchy != null and !&quot;&quot;.equals(tagHierarchy)" >
+        HIERARCHY,
+      </if>
+      <if test="description != null and !&quot;&quot;.equals(description)" >
+        DESCRIPTION,
+      </if>
+    </trim>
+   SELECT
+      <if test="isOracle == 1">
+      	#{tagId},
+      </if>
+      <if test="dgtlMsgDefId != null and dgtlMsgDefId != emptyBigDecimalValue" >
+        #{dgtlMsgDefId}
+      </if>
+	 <if test="parentTagName != null and !&quot;&quot;.equals(parentTagName)">
+		,#{parentTagName}
+	</if>
+	<if test="complexTypeName != null and !&quot;&quot;.equals(complexTypeName)">
+		,#{complexTypeName}
+	</if>
+	<if test="tagName != null and !&quot;&quot;.equals(tagName)">
+		,#{tagName}
+	</if>
+	<if test="type != null and !&quot;&quot;.equals(type)">
+		,#{type}
+	</if>
+	<if test="isLeafYN != null and !&quot;&quot;.equals(isLeafYN)">
+		,#{isLeafYN}
+	</if>
+	<if test="isMandatoryYN != null and !&quot;&quot;.equals(isMandatoryYN)">
+		,#{isMandatoryYN}
+	</if>
+	<if test="tagHierarchy != null and !&quot;&quot;.equals(tagHierarchy)">
+		,#{tagHierarchy}
+	</if>
+	<if test="description != null and !&quot;&quot;.equals(description)">
+		,#{description}
+	</if>
+ 	from DUAL
+  </insert>
+		
+ <insert id="insertDGTL_XML_MSG_TAGS" parameterType="mxMessageDefinitionCO" >
+    insert into DGTL_XML_MSG_TAGS
+     (   
+       
+        DGTL_MSG_DEF_ID,
+        PARENT_TAG_NAME,
+        COMPLEX_TYPE,
+        TAG_NAME,
+        TAG_TYPE,
+        IS_LEAF_YN,
+        IS_MANDATORY_YN,
+        HIERARCHY,
+        DESCRIPTION)
+
+        <foreach collection= "allTagsCos" item= "t" index= "Index" open= "(" close= ")" separator= "union All" >
+        	<if test="t != null">
+        		SELECT
+       	   <if test="dgtlMsgDefId != null and dgtlMsgDefId != emptyBigDecimalValue" >
+	        #{dgtlMsgDefId} AS MSG_DEF_ID,
+	      </if>
+		  <choose>
+	          <when test="t.parentTagName == null or t.parentTagName.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.parentTagName},
+	          </otherwise>
+          </choose>
+		  <choose>
+	          <when test="t.complexTypeName == null or t.complexTypeName.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.complexTypeName},
+	          </otherwise>
+          </choose>
+		  <choose>
+	          <when test="t.tagName == null or t.tagName.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.tagName},
+	          </otherwise>
+          </choose>
+		  <choose>
+	          <when test="t.type == null or t.type.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise>
+	           #{t.type},
+	          </otherwise>
+          </choose>
+	      <choose>
+	          <when test="t.isLeafYN == null or t.isLeafYN.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.isLeafYN},
+	          </otherwise>
+          </choose>
+		  <choose>
+	          <when test="t.isMandatoryYN == null or t.isMandatoryYN.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.isMandatoryYN},
+	          </otherwise>
+        	</choose>
+	      <choose>
+	          <when test="t.tagHierarchy == null or t.tagHierarchy.equals(&quot;&quot;)" >
+	            null,
+	          </when>
+	          <otherwise >
+	           #{t.tagHierarchy},
+	          </otherwise>
+        	</choose>
+        
+	      <choose>
+	          <when test="t.description == null or t.description.equals(&quot;&quot;)" >
+	            null
+	          </when>
+	          <otherwise >
+	           #{t.description}
+	          </otherwise>
+        </choose>
+     from DUAL
+        	</if>
+      </foreach>
+  </insert>
+  	
+  <update id="updateDGTL_XML_MSG_TAGS" parameterType="dgtl_MSG_DEFTagsVO">
+  		UPDATE 
+  			DGTL_XML_MSG_TAGS
+  			
+  			set DESCRIPTION = #{DESCRIPTION}
+  			
+  			where DGTL_MSG_DEF_ID = #{DGTL_MSG_DEF_ID}
+  			AND HIERARCHY = #{HIERARCHY}
+  </update>
+  	
+  	
+</mapper>

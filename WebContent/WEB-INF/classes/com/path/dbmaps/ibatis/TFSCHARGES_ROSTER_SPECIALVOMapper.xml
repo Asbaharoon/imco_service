@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSCHARGES_ROSTER_SPECIAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSCHARGES_ROSTER_SPECIALVO" >
+    <id column="CHARGE_CODE" property="CHARGE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_NBR" property="DOC_NBR" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SPECIAL_CODE" property="SPECIAL_CODE" />
+    <id column="SPECIAL_IND" property="SPECIAL_IND" />
+    <result column="FROM_AMOUNT" property="FROM_AMOUNT" />
+    <result column="TO_AMOUNT" property="TO_AMOUNT" />
+    <result column="MIN_AMOUNT" property="MIN_AMOUNT" />
+    <result column="FLAT_AMOUNT" property="FLAT_AMOUNT" />
+    <result column="MAX_AMOUNT" property="MAX_AMOUNT" />
+    <result column="PERCENTAGE" property="PERCENTAGE" />
+    <result column="NON_PROV_AMT_CHARGE" 	property="NON_PROV_AMT_CHARGE" />
+    <result column="PROV_AMT_CHARGE" 	property="PROV_AMT_CHARGE" />
+    <result column="CURRENCY_CODE" property="CURRENCY_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CHARGE_CODE, COMP_CODE, DOC_NBR, DOC_TYPE, LINE_NO, SPECIAL_CODE, SPECIAL_IND, FROM_AMOUNT, 
+    TO_AMOUNT, MIN_AMOUNT, FLAT_AMOUNT, MAX_AMOUNT, PERCENTAGE, NON_PROV_AMT_CHARGE, PROV_AMT_CHARGE, CURRENCY_CODE
+  </sql>
+  <select id="selectTFSCHARGES_ROSTER_SPECIAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSCHARGES_ROSTER_SPECIALVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSCHARGES_ROSTER_SPECIAL
+    where CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+      and SPECIAL_IND = #{SPECIAL_IND}
+  </select>
+  <delete id="deleteTFSCHARGES_ROSTER_SPECIAL" parameterType="com.path.dbmaps.vo.TFSCHARGES_ROSTER_SPECIALVO" >
+    delete from TFSCHARGES_ROSTER_SPECIAL
+    where CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+      and SPECIAL_IND = #{SPECIAL_IND}
+  </delete>
+  <insert id="insertTFSCHARGES_ROSTER_SPECIAL" parameterType="com.path.dbmaps.vo.TFSCHARGES_ROSTER_SPECIALVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="LINE_NO" order="BEFORE" >
+      SELECT 
+      <choose>
+		<when test="isSybase == 1" >
+      		ISNULL(MAX(LINE_NO),0)+1
+      	</when>
+      	<otherwise>
+      		NVL(MAX(LINE_NO),0)+1
+      	</otherwise>
+      </choose>
+      FROM TFSCHARGES_ROSTER_SPECIAL 
+      where COMP_CODE 	= #{COMP_CODE}
+      AND 	DOC_TYPE 	= #{DOC_TYPE}
+      AND	DOC_NBR		= #{DOC_NBR}
+      AND   CHARGE_CODE = #{CHARGE_CODE}
+      AND   SPECIAL_IND = #{SPECIAL_IND,jdbcType=VARCHAR}
+      AND   SPECIAL_CODE = #{SPECIAL_CODE}
+    </selectKey>
+    insert into TFSCHARGES_ROSTER_SPECIAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      COMP_CODE,
+      <if test="DOC_NBR != null and DOC_NBR != emptyBigDecimalValue" >
+        DOC_NBR,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SPECIAL_CODE != null and SPECIAL_CODE != emptyBigDecimalValue" >
+        SPECIAL_CODE,
+      </if>
+      <if test="SPECIAL_IND != null" >
+        SPECIAL_IND,
+      </if>
+      <if test="FROM_AMOUNT != null and FROM_AMOUNT != emptyBigDecimalValue" >
+        FROM_AMOUNT,
+      </if>
+      <if test="TO_AMOUNT != null and TO_AMOUNT != emptyBigDecimalValue" >
+        TO_AMOUNT,
+      </if>
+      <if test="MIN_AMOUNT != null and MIN_AMOUNT != emptyBigDecimalValue" >
+        MIN_AMOUNT,
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        FLAT_AMOUNT,
+      </if>
+      <if test="MAX_AMOUNT != null and MAX_AMOUNT != emptyBigDecimalValue" >
+        MAX_AMOUNT,
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        PERCENTAGE,
+      </if>
+      <if test="NON_PROV_AMT_CHARGE != null and NON_PROV_AMT_CHARGE != emptyBigDecimalValue" >
+        NON_PROV_AMT_CHARGE,
+      </if>
+      <if test="PROV_AMT_CHARGE != null and PROV_AMT_CHARGE != emptyBigDecimalValue" >
+        PROV_AMT_CHARGE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      #{COMP_CODE},
+      <if test="DOC_NBR != null and DOC_NBR != emptyBigDecimalValue" >
+        #{DOC_NBR},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SPECIAL_CODE != null and SPECIAL_CODE != emptyBigDecimalValue" >
+        #{SPECIAL_CODE},
+      </if>
+      <if test="SPECIAL_IND != null" >
+        #{SPECIAL_IND},
+      </if>
+      <if test="FROM_AMOUNT != null and FROM_AMOUNT != emptyBigDecimalValue" >
+        #{FROM_AMOUNT},
+      </if>
+      <if test="TO_AMOUNT != null and TO_AMOUNT != emptyBigDecimalValue" >
+        #{TO_AMOUNT},
+      </if>
+      <if test="MIN_AMOUNT != null and MIN_AMOUNT != emptyBigDecimalValue" >
+        #{MIN_AMOUNT},
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        #{FLAT_AMOUNT},
+      </if>
+      <if test="MAX_AMOUNT != null and MAX_AMOUNT != emptyBigDecimalValue" >
+        #{MAX_AMOUNT},
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        #{PERCENTAGE},
+      </if>
+      <if test="NON_PROV_AMT_CHARGE != null and NON_PROV_AMT_CHARGE != emptyBigDecimalValue" >
+        #{NON_PROV_AMT_CHARGE},
+      </if>
+      <if test="PROV_AMT_CHARGE != null and PROV_AMT_CHARGE != emptyBigDecimalValue" >
+        #{PROV_AMT_CHARGE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSCHARGES_ROSTER_SPECIAL" >
+    update TFSCHARGES_ROSTER_SPECIAL
+    <set >
+      <if test="FROM_AMOUNT != null" >
+        <choose >
+          <when test="FROM_AMOUNT == emptyBigDecimalValue" >
+            FROM_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            FROM_AMOUNT = #{FROM_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_AMOUNT != null" >
+        <choose >
+          <when test="TO_AMOUNT == emptyBigDecimalValue" >
+            TO_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            TO_AMOUNT = #{TO_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_AMOUNT != null" >
+        <choose >
+          <when test="MIN_AMOUNT == emptyBigDecimalValue" >
+            MIN_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            MIN_AMOUNT = #{MIN_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLAT_AMOUNT != null" >
+        <choose >
+          <when test="FLAT_AMOUNT == emptyBigDecimalValue" >
+            FLAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            FLAT_AMOUNT = #{FLAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAX_AMOUNT != null" >
+        <choose >
+          <when test="MAX_AMOUNT == emptyBigDecimalValue" >
+            MAX_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            MAX_AMOUNT = #{MAX_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERCENTAGE != null" >
+        <choose >
+          <when test="PERCENTAGE == emptyBigDecimalValue" >
+            PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE = #{PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NON_PROV_AMT_CHARGE != null" >
+        <choose >
+          <when test="NON_PROV_AMT_CHARGE == emptyBigDecimalValue" >
+            NON_PROV_AMT_CHARGE = NULL ,
+          </when>
+          <otherwise >
+            NON_PROV_AMT_CHARGE = #{NON_PROV_AMT_CHARGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROV_AMT_CHARGE != null" >
+        <choose >
+          <when test="PROV_AMT_CHARGE == emptyBigDecimalValue" >
+            PROV_AMT_CHARGE = NULL ,
+          </when>
+          <otherwise >
+            PROV_AMT_CHARGE = #{PROV_AMT_CHARGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CURRENCY_CODE != null" >
+        <choose >
+          <when test="CURRENCY_CODE == emptyBigDecimalValue" >
+            CURRENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_CODE = #{CURRENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_NBR = #{DOC_NBR}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+      and SPECIAL_IND = #{SPECIAL_IND}
+  </sql>
+  <update id="updateTFSCHARGES_ROSTER_SPECIAL" parameterType="com.path.dbmaps.vo.TFSCHARGES_ROSTER_SPECIALVO" >
+    <include refid="sql_updateTFSCHARGES_ROSTER_SPECIAL" />
+  </update>
+</mapper>

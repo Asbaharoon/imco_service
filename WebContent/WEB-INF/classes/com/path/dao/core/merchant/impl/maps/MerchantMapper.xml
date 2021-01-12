@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="merchantMapper">
+
+<resultMap id="merchantCodeMap" type="com.path.dbmaps.vo.CTS_MERCHANTVO">
+	<result property="CODE"		    column="CODE"/>
+	<result property="BRANCH_CODE"  column="BRANCH_CODE"/>
+	<result property="CIF_NO"       column="CIF_NO"/>
+	<result property="CONTRACT_NUM" column="CONTRACT_NUM"/>
+</resultMap>
+
+<select id="returnMerchantCodeList" parameterType="com.path.vo.core.merchant.MerchantSC" resultMap="merchantCodeMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="queryMerchantCodeSQL"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+</select>
+
+<select id="returnMerchantCodeListCount" resultType="int" parameterType="com.path.vo.core.merchant.MerchantSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryMerchantCodeSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+
+<sql id ="queryMerchantCodeSQL">
+	SELECT CTS_MERCHANT.CODE,
+		   CTS_MERCHANT.BRANCH_CODE,
+		   CTS_MERCHANT.CIF_NO,
+		   CTS_MERCHANT.CONTRACT_NUM
+	  FROM CTS_MERCHANT  
+	 WHERE CTS_MERCHANT.COMP_CODE  = #{compCode, jdbcType=NUMERIC}
+	   AND  CTS_MERCHANT.BRANCH_CODE  = #{branchCode, jdbcType=NUMERIC}
+	   AND CTS_MERCHANT.STATUS  = (CASE 
+								WHEN #{crudMode, jdbcType=NUMERIC} = 'R'  THEN CTS_MERCHANT.STATUS 													
+								WHEN #{crudMode, jdbcType=NUMERIC} = 'P'  THEN 'A' 
+								WHEN #{crudMode, jdbcType=NUMERIC} = 'UP'  THEN 'P'
+								WHEN #{crudMode, jdbcType=NUMERIC} = 'K' THEN 'P'
+								WHEN #{crudMode, jdbcType=NUMERIC} = 'N'  THEN 'K' END)
+
+</sql>
+
+</mapper>

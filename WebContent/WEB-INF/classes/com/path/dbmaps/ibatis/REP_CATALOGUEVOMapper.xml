@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="REP_CATALOGUE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.REP_CATALOGUEVO" >
+    <id column="REP_ID" property="REP_ID" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.REP_CATALOGUEVO" extends="BaseResultMap" >
+    <result column="REP_OBJECT" property="REP_OBJECT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REP_ID, COMP_CODE
+  </sql>
+  <sql id="Blob_Column_List" >
+    REP_OBJECT
+  </sql>
+  <select id="selectREP_CATALOGUE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.REP_CATALOGUEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from REP_CATALOGUE
+    where REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteREP_CATALOGUE" parameterType="com.path.dbmaps.vo.REP_CATALOGUEVO" >
+    delete from REP_CATALOGUE
+    where REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertREP_CATALOGUE" parameterType="com.path.dbmaps.vo.REP_CATALOGUEVO" >
+    insert into REP_CATALOGUE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REP_OBJECT != null" >
+        REP_OBJECT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REP_OBJECT != null" >
+        #{REP_OBJECT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateREP_CATALOGUE" >
+    update REP_CATALOGUE
+    <set >
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REP_OBJECT != null" >
+        REP_OBJECT = #{REP_OBJECT},
+      </if>
+    </set>
+    where REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateREP_CATALOGUE" parameterType="com.path.dbmaps.vo.REP_CATALOGUEVO" >
+    <include refid="sql_updateREP_CATALOGUE" />
+  </update>
+</mapper>

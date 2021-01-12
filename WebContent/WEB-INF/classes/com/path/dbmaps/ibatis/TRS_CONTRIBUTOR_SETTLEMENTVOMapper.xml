@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_CONTRIBUTOR_SETTLEMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_CONTRIBUTOR_SETTLEMENTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRANSACTION_NO" property="TRANSACTION_NO" />
+    <result column="TRANSACTION_DATE" property="TRANSACTION_DATE" />
+    <result column="CONTRIBUTOR_CIF" property="CONTRIBUTOR_CIF" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETED_DATE" property="DELETED_DATE" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="REVERSED_DATE" property="REVERSED_DATE" />
+    <result column="VERIFIED_BY" property="VERIFIED_BY" />
+    <result column="VERIFIED_DATE" property="VERIFIED_DATE" />
+    <result column="REVERSE_STATUS" property="REVERSE_STATUS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRANSACTION_NO, TRANSACTION_DATE, CONTRIBUTOR_CIF, STATUS, 
+    DATE_UPDATED, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, APPROVED_BY, 
+    APPROVED_DATE, DELETED_BY, DELETED_DATE, REVERSED_BY, REVERSED_DATE, VERIFIED_BY, 
+    VERIFIED_DATE, REVERSE_STATUS
+  </sql>
+  <select id="selectTRS_CONTRIBUTOR_SETTLEMENT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_CONTRIBUTOR_SETTLEMENTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_CONTRIBUTOR_SETTLEMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </select>
+  <delete id="deleteTRS_CONTRIBUTOR_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRS_CONTRIBUTOR_SETTLEMENTVOKey" >
+    delete from TRS_CONTRIBUTOR_SETTLEMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </delete>
+  <insert id="insertTRS_CONTRIBUTOR_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRS_CONTRIBUTOR_SETTLEMENTVO" >
+    insert into TRS_CONTRIBUTOR_SETTLEMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        TRANSACTION_NO,
+      </if>
+      <if test="TRANSACTION_DATE != null" >
+        TRANSACTION_DATE,
+      </if>
+      <if test="CONTRIBUTOR_CIF != null and CONTRIBUTOR_CIF != emptyBigDecimalValue" >
+        CONTRIBUTOR_CIF,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      DATE_UPDATED,
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE,
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY,
+      </if>
+      <if test="REVERSED_DATE != null" >
+        REVERSED_DATE,
+      </if>
+      <if test="VERIFIED_BY != null" >
+        VERIFIED_BY,
+      </if>
+      <if test="VERIFIED_DATE != null" >
+        VERIFIED_DATE,
+      </if>
+      <if test="REVERSE_STATUS != null" >
+        REVERSE_STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        #{TRANSACTION_NO},
+      </if>
+      <if test="TRANSACTION_DATE != null" >
+        #{TRANSACTION_DATE},
+      </if>
+      <if test="CONTRIBUTOR_CIF != null and CONTRIBUTOR_CIF != emptyBigDecimalValue" >
+        #{CONTRIBUTOR_CIF},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        #{DELETED_DATE},
+      </if>
+      <if test="REVERSED_BY != null" >
+        #{REVERSED_BY},
+      </if>
+      <if test="REVERSED_DATE != null" >
+        #{REVERSED_DATE},
+      </if>
+      <if test="VERIFIED_BY != null" >
+        #{VERIFIED_BY},
+      </if>
+      <if test="VERIFIED_DATE != null" >
+        #{VERIFIED_DATE},
+      </if>
+      <if test="REVERSE_STATUS != null" >
+        #{REVERSE_STATUS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_CONTRIBUTOR_SETTLEMENT" >
+    update TRS_CONTRIBUTOR_SETTLEMENT
+    <set >
+      <if test="TRANSACTION_DATE != null" >
+        TRANSACTION_DATE = #{TRANSACTION_DATE},
+      </if>
+      <if test="CONTRIBUTOR_CIF != null" >
+        <choose >
+          <when test="CONTRIBUTOR_CIF == emptyBigDecimalValue" >
+            CONTRIBUTOR_CIF = NULL ,
+          </when>
+          <otherwise >
+            CONTRIBUTOR_CIF = #{CONTRIBUTOR_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DELETED_DATE != null" >
+        DELETED_DATE = #{DELETED_DATE},
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY = #{REVERSED_BY},
+      </if>
+      <if test="REVERSED_DATE != null" >
+        REVERSED_DATE = #{REVERSED_DATE},
+      </if>
+      <if test="VERIFIED_BY != null" >
+        VERIFIED_BY = #{VERIFIED_BY},
+      </if>
+      <if test="VERIFIED_DATE != null" >
+        VERIFIED_DATE = #{VERIFIED_DATE},
+      </if>
+      <if test="REVERSE_STATUS != null" >
+        REVERSE_STATUS = #{REVERSE_STATUS},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </sql>
+  <update id="updateTRS_CONTRIBUTOR_SETTLEMENT" parameterType="com.path.dbmaps.vo.TRS_CONTRIBUTOR_SETTLEMENTVO" >
+    <include refid="sql_updateTRS_CONTRIBUTOR_SETTLEMENT" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

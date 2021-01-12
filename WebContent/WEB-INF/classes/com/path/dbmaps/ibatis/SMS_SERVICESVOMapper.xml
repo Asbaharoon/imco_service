@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SMS_SERVICES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SMS_SERVICESVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SERVICE_TYPE" property="SERVICE_TYPE" />
+    <result column="JV_TYPE" property="JV_TYPE" />
+    <result column="MATURITY_DAYS" property="MATURITY_DAYS" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="DEP_OPERATOR" property="DEP_OPERATOR" />
+    <result column="DEPOSIT_AMOUNT" property="DEPOSIT_AMOUNT" />
+    <result column="WD_OPERATOR" property="WD_OPERATOR" />
+    <result column="WD_AMOUNT" property="WD_AMOUNT" />
+    <result column="INCLUDE_REVERSAL" property="INCLUDE_REVERSAL" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SMS_SERVICESVOWithBLOBs" extends="BaseResultMap" >
+    <result column="MSG_STRUCT" property="MSG_STRUCT" />
+    <result column="MSG_STRUCT_ARAB" property="MSG_STRUCT_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, SERVICE_TYPE, JV_TYPE, MATURITY_DAYS, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, 
+    DEP_OPERATOR, DEPOSIT_AMOUNT, WD_OPERATOR, WD_AMOUNT, INCLUDE_REVERSAL
+  </sql>
+  <sql id="Blob_Column_List" >
+    MSG_STRUCT, MSG_STRUCT_ARAB
+  </sql>
+  <select id="selectSMS_SERVICES" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SMS_SERVICESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SMS_SERVICES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteSMS_SERVICES" parameterType="com.path.dbmaps.vo.SMS_SERVICESVOKey" >
+    delete from SMS_SERVICES
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertSMS_SERVICES" parameterType="com.path.dbmaps.vo.SMS_SERVICESVOWithBLOBs" >
+    insert into SMS_SERVICES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERVICE_TYPE != null" >
+        SERVICE_TYPE,
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        JV_TYPE,
+      </if>
+      <if test="MATURITY_DAYS != null and MATURITY_DAYS != emptyBigDecimalValue" >
+        MATURITY_DAYS,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        DEP_OPERATOR,
+      </if>
+      <if test="DEPOSIT_AMOUNT != null and DEPOSIT_AMOUNT != emptyBigDecimalValue" >
+        DEPOSIT_AMOUNT,
+      </if>
+      <if test="WD_OPERATOR != null" >
+        WD_OPERATOR,
+      </if>
+      <if test="WD_AMOUNT != null and WD_AMOUNT != emptyBigDecimalValue" >
+        WD_AMOUNT,
+      </if>
+      <if test="INCLUDE_REVERSAL != null" >
+        INCLUDE_REVERSAL,
+      </if>
+      <if test="MSG_STRUCT != null" >
+        MSG_STRUCT,
+      </if>
+      <if test="MSG_STRUCT_ARAB != null" >
+        MSG_STRUCT_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERVICE_TYPE != null" >
+        #{SERVICE_TYPE},
+      </if>
+      <if test="JV_TYPE != null and JV_TYPE != emptyBigDecimalValue" >
+        #{JV_TYPE},
+      </if>
+      <if test="MATURITY_DAYS != null and MATURITY_DAYS != emptyBigDecimalValue" >
+        #{MATURITY_DAYS},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        #{DEP_OPERATOR},
+      </if>
+      <if test="DEPOSIT_AMOUNT != null and DEPOSIT_AMOUNT != emptyBigDecimalValue" >
+        #{DEPOSIT_AMOUNT},
+      </if>
+      <if test="WD_OPERATOR != null" >
+        #{WD_OPERATOR},
+      </if>
+      <if test="WD_AMOUNT != null and WD_AMOUNT != emptyBigDecimalValue" >
+        #{WD_AMOUNT},
+      </if>
+      <if test="INCLUDE_REVERSAL != null" >
+        #{INCLUDE_REVERSAL},
+      </if>
+      <if test="MSG_STRUCT != null" >
+        #{MSG_STRUCT},
+      </if>
+      <if test="MSG_STRUCT_ARAB != null" >
+        #{MSG_STRUCT_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSMS_SERVICES" >
+    update SMS_SERVICES
+    <set >
+      <if test="SERVICE_TYPE != null" >
+        SERVICE_TYPE = #{SERVICE_TYPE},
+      </if>
+      <if test="JV_TYPE != null" >
+        <choose >
+          <when test="JV_TYPE == emptyBigDecimalValue" >
+            JV_TYPE = NULL ,
+          </when>
+          <otherwise >
+            JV_TYPE = #{JV_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MATURITY_DAYS != null" >
+        <choose >
+          <when test="MATURITY_DAYS == emptyBigDecimalValue" >
+            MATURITY_DAYS = NULL ,
+          </when>
+          <otherwise >
+            MATURITY_DAYS = #{MATURITY_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="DEP_OPERATOR != null" >
+        DEP_OPERATOR = #{DEP_OPERATOR},
+      </if>
+      <if test="DEPOSIT_AMOUNT != null" >
+        <choose >
+          <when test="DEPOSIT_AMOUNT == emptyBigDecimalValue" >
+            DEPOSIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            DEPOSIT_AMOUNT = #{DEPOSIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WD_OPERATOR != null" >
+        WD_OPERATOR = #{WD_OPERATOR},
+      </if>
+      <if test="WD_AMOUNT != null" >
+        <choose >
+          <when test="WD_AMOUNT == emptyBigDecimalValue" >
+            WD_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            WD_AMOUNT = #{WD_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INCLUDE_REVERSAL != null" >
+        INCLUDE_REVERSAL = #{INCLUDE_REVERSAL},
+      </if>
+      <if test="MSG_STRUCT != null" >
+        MSG_STRUCT = #{MSG_STRUCT},
+      </if>
+      <if test="MSG_STRUCT_ARAB != null" >
+        MSG_STRUCT_ARAB = #{MSG_STRUCT_ARAB},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateSMS_SERVICES" parameterType="com.path.dbmaps.vo.SMS_SERVICESVOWithBLOBs" >
+    <include refid="sql_updateSMS_SERVICES" />
+  </update>
+</mapper>

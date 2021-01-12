@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTELLERCARDLIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTELLERCARDLIMITVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CARD_TYPE" property="CARD_TYPE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="WD_LIMIT_AMOUNT" property="WD_LIMIT_AMOUNT" />
+    <result column="POS_LIMIT_AMOUNT" property="POS_LIMIT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CARD_TYPE, CODE, COMP_CODE, WD_LIMIT_AMOUNT, POS_LIMIT_AMOUNT
+  </sql>
+  <select id="selectCTSTELLERCARDLIMIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTELLERCARDLIMITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTELLERCARDLIMIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_TYPE = #{CARD_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSTELLERCARDLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERCARDLIMITVOKey" >
+    delete from CTSTELLERCARDLIMIT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_TYPE = #{CARD_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSTELLERCARDLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERCARDLIMITVO" >
+    insert into CTSTELLERCARDLIMIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CARD_TYPE != null and CARD_TYPE != emptyBigDecimalValue" >
+        CARD_TYPE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="WD_LIMIT_AMOUNT != null and WD_LIMIT_AMOUNT != emptyBigDecimalValue" >
+        WD_LIMIT_AMOUNT,
+      </if>
+      <if test="POS_LIMIT_AMOUNT != null and POS_LIMIT_AMOUNT != emptyBigDecimalValue" >
+        POS_LIMIT_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CARD_TYPE != null and CARD_TYPE != emptyBigDecimalValue" >
+        #{CARD_TYPE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="WD_LIMIT_AMOUNT != null and WD_LIMIT_AMOUNT != emptyBigDecimalValue" >
+        #{WD_LIMIT_AMOUNT},
+      </if>
+      <if test="POS_LIMIT_AMOUNT != null and POS_LIMIT_AMOUNT != emptyBigDecimalValue" >
+        #{POS_LIMIT_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTELLERCARDLIMIT" >
+    update CTSTELLERCARDLIMIT
+    <set >
+      <if test="WD_LIMIT_AMOUNT != null" >
+        <choose >
+          <when test="WD_LIMIT_AMOUNT == emptyBigDecimalValue" >
+            WD_LIMIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            WD_LIMIT_AMOUNT = #{WD_LIMIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POS_LIMIT_AMOUNT != null" >
+        <choose >
+          <when test="POS_LIMIT_AMOUNT == emptyBigDecimalValue" >
+            POS_LIMIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            POS_LIMIT_AMOUNT = #{POS_LIMIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_TYPE = #{CARD_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSTELLERCARDLIMIT" parameterType="com.path.dbmaps.vo.CTSTELLERCARDLIMITVO" >
+    <include refid="sql_updateCTSTELLERCARDLIMIT" />
+  </update>
+</mapper>

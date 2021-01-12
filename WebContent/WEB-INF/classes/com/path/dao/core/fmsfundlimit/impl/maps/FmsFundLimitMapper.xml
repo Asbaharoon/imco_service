@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="fmsFundLimitMapper">
+
+ <sql id="fmsFundLimitListCommon">
+	
+	SELECT
+			 FMSFUNDLIMIT.FUND_CODE,
+			 CIF.SHORT_NAME_ENG,
+			 CIF.LONG_NAME_ENG,
+			  FMSFUNDLIMIT.STATUS
+	FROM  FMSFUNDLIMIT, CIF 
+ 	WHERE FMSFUNDLIMIT.COMP_CODE = CIF.COMP_CODE
+  		AND FMSFUNDLIMIT.FUND_CODE = CIF.CIF_NO
+		AND FMSFUNDLIMIT.COMP_CODE  = #{compCode}
+		AND FMSFUNDLIMIT.STATUS = 'P'
+		ORDER BY FMSFUNDLIMIT.FUND_CODE ASC
+	
+ </sql>
+
+ <resultMap id="fmsFundLimitListMap" type="com.path.vo.core.fmsfundlimit.FmsFundLimitCO">
+	<result column="FUND_CODE" property="fmsFundLimitVO.FUND_CODE" />
+	<result column="SHORT_NAME_ENG" property="cifVO.SHORT_NAME_ENG" />	
+	<result column="LONG_NAME_ENG" property="cifVO.LONG_NAME_ENG" />
+	<result column="STATUS" property="fmsFundLimitVO.STATUS" />	
+ </resultMap>
+ 
+ <select id="fmsFundLimitList" resultMap="fmsFundLimitListMap" parameterType="com.path.vo.core.fmsfundlimit.FmsFundLimitSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="fmsFundLimitListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="fmsFundLimitListCount" resultType="int" parameterType="com.path.vo.core.fmsfundlimit.FmsFundLimitSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="fmsFundLimitListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+</mapper>

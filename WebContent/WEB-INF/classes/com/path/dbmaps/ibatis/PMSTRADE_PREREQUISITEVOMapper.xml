@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSTRADE_PREREQUISITE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSTRADE_PREREQUISITEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COND_LINE_NBR" property="COND_LINE_NBR" />
+    <id column="TRADE_NO" property="TRADE_NO" />
+    <result column="WINDOW_REFERENCE" property="WINDOW_REFERENCE" />
+    <result column="TRADING_FLAG" property="TRADING_FLAG" />
+    <result column="ALLOW_PROCEED" property="ALLOW_PROCEED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, COND_LINE_NBR, TRADE_NO, WINDOW_REFERENCE, TRADING_FLAG, 
+    ALLOW_PROCEED
+  </sql>
+  <select id="selectPMSTRADE_PREREQUISITE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSTRADE_PREREQUISITEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSTRADE_PREREQUISITE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COND_LINE_NBR = #{COND_LINE_NBR}
+      and TRADE_NO = #{TRADE_NO}
+  </select>
+  <delete id="deletePMSTRADE_PREREQUISITE" parameterType="com.path.dbmaps.vo.PMSTRADE_PREREQUISITEVOKey" >
+    delete from PMSTRADE_PREREQUISITE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COND_LINE_NBR = #{COND_LINE_NBR}
+      and TRADE_NO = #{TRADE_NO}
+  </delete>
+  <insert id="insertPMSTRADE_PREREQUISITE" parameterType="com.path.dbmaps.vo.PMSTRADE_PREREQUISITEVO" >
+    insert into PMSTRADE_PREREQUISITE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COND_LINE_NBR != null and COND_LINE_NBR != emptyBigDecimalValue" >
+        COND_LINE_NBR,
+      </if>
+      <if test="TRADE_NO != null and TRADE_NO != emptyBigDecimalValue" >
+        TRADE_NO,
+      </if>
+      <if test="WINDOW_REFERENCE != null" >
+        WINDOW_REFERENCE,
+      </if>
+      <if test="TRADING_FLAG != null and TRADING_FLAG != emptyBigDecimalValue" >
+        TRADING_FLAG,
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        ALLOW_PROCEED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COND_LINE_NBR != null and COND_LINE_NBR != emptyBigDecimalValue" >
+        #{COND_LINE_NBR},
+      </if>
+      <if test="TRADE_NO != null and TRADE_NO != emptyBigDecimalValue" >
+        #{TRADE_NO},
+      </if>
+      <if test="WINDOW_REFERENCE != null" >
+        #{WINDOW_REFERENCE},
+      </if>
+      <if test="TRADING_FLAG != null and TRADING_FLAG != emptyBigDecimalValue" >
+        #{TRADING_FLAG},
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        #{ALLOW_PROCEED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSTRADE_PREREQUISITE" >
+    update PMSTRADE_PREREQUISITE
+    <set >
+      <if test="WINDOW_REFERENCE != null" >
+        WINDOW_REFERENCE = #{WINDOW_REFERENCE},
+      </if>
+      <if test="TRADING_FLAG != null" >
+        <choose >
+          <when test="TRADING_FLAG == emptyBigDecimalValue" >
+            TRADING_FLAG = NULL ,
+          </when>
+          <otherwise >
+            TRADING_FLAG = #{TRADING_FLAG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        ALLOW_PROCEED = #{ALLOW_PROCEED},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and COND_LINE_NBR = #{COND_LINE_NBR}
+      and TRADE_NO = #{TRADE_NO}
+  </sql>
+  <update id="updatePMSTRADE_PREREQUISITE" parameterType="com.path.dbmaps.vo.PMSTRADE_PREREQUISITEVO" >
+    <include refid="sql_updatePMSTRADE_PREREQUISITE" />
+  </update>
+</mapper>

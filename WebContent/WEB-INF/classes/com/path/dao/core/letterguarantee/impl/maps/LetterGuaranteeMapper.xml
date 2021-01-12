@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="letterGuaranteeMapper">
+
+<sql id="select_LetterGuarantee">
+ 
+   SELECT TFSLG.LG_NBR,
+         TFSLG.REQUISITION_NBR,
+         TFSLG.LG_STATUS,
+         (SELECT VALUE_DESC 
+             FROM SYS_PARAM_LOV_TRANS 
+              WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+              AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+              AND VALUE_CODE = TFSLG.LG_STATUS) lgStatusDesc,
+         TFSLG.CIF,
+          TFSLG.DOC_DATE ,
+          TFSLG.VALIDITY_FROM,
+          TFSLG.VALIDITY_TO,
+         TFSLG.CURRENCY,
+         TFSLG.AMOUNT,
+         TFSLG.DOC_NUMBER,
+         TFSLG.DOC_YEAR,
+         CURRENCIES.BRIEF_DESC_ENG  cyBriefDesc,
+         CURRENCIES.DECIMAL_POINTS cyDecimalPt,
+         
+         (SELECT CIF.SHORT_NAME_ENG
+            FROM CIF
+           WHERE TFSLG.COMP_CODE = CIF.COMP_CODE
+             and TFSLG.CIF = CIF.CIF_NO) cifDesc,
+         
+         (SELECT TFSDOCTYPE.BRIEF_NAME_ENG
+            FROM TFSDOCTYPE
+           WHERE TFSLG.COMP_CODE = TFSDOCTYPE.COMP_CODE
+             AND TFSLG.DOC_TYPE = TFSDOCTYPE.CODE
+             AND TFSDOCTYPE.DOC_TYPE = 'G') tfsDocTypeDesc,
+         TFSLG.DOC_TYPE
+  
+    FROM TFSLG, CURRENCIES
+   WHERE TFSLG.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+     AND TFSLG.BRANCH =  #{branchCode,jdbcType=NUMERIC}
+     AND TFSLG.COMP_CODE = CURRENCIES.COMP_CODE
+     AND TFSLG.CURRENCY = CURRENCIES.CURRENCY_CODE
+     
+     <if test='redemp!=null and !"0".equals(redemp)'>
+   	   AND TFSLG.SHIPPING_GUARANTEE = #{redemp,jdbcType=VARCHAR}
+     </if>
+     
+     AND  TFSLG.LG_NBR > 0
+     
+     <if test="status!=null">
+  		AND TFSLG.LG_STATUS = #{status,jdbcType=VARCHAR}
+  	 </if>
+     
+     <if test="statusInclude!=null">
+  		AND TFSLG.LG_STATUS in (${statusInclude})
+  	 </if>
+  	 
+     /*AND
+         ((:RA_CRUD = 'LA' AND TFSLG.LG_STATUS IN ('A', 'L')) OR
+         (:RA_CRUD = 'QA' AND TFSLG.LG_STATUS IN ('P', 'Q')) OR
+         (:RA_CRUD NOT IN ('LA', 'QA', 'NQ') AND
+         (TFSLG.LG_STATUS =
+         (CASE WHEN :ra_crud = 'NM' THEN '' WHEN :ra_crud = 'R' THEN
+          TFSLG.LG_STATUS WHEN :RA_CRUD = 'H' THEN 'G' WHEN
+          :RA_CRUD = 'V' THEN 'G' WHEN :RA_CRUD = 'G' THEN 'P' WHEN
+          :ra_crud = 'Z' THEN 'P' WHEN :ra_crud = 'N' THEN 'P' WHEN
+          :ra_crud = 'W' THEN 'Z' WHEN :ra_crud = 'TT' THEN 'P' WHEN
+          :RA_CRUD = 'AL' THEN 'L' WHEN :RA_CRUD = 'Q' THEN 'Q' ELSE 'A' END)))) 
+ 
+*/
+   
+	</sql>
+	
+	<select id="selectLetterGuaranteeLookupList"
+	        resultMap="resultLetterGuaranteeLookupMap" 
+	        parameterType="tfsLgSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="letterGuaranteeMapper.select_LetterGuarantee"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="selectLetterGuaranteeLookupCount"  resultType="int" parameterType="tfsLgSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="letterGuaranteeMapper.select_LetterGuarantee"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<resultMap id="resultLetterGuaranteeLookupMap" type="tfsLgCO">
+		<result property="tfsLgVO.COMP_CODE" 		 	column="COMP_CODE" />
+		<result property="tfsLgVO.BRANCH" 		 		column="BRANCH" />
+		<result property="tfsLgVO.LG_NBR" 				column="LG_NBR" />
+		<result property="tfsLgVO.REQUISITION_NBR" 		column="REQUISITION_NBR" />
+		<result property="tfsLgVO.LG_STATUS" 			column="LG_STATUS" />
+		<result property="tfsLgVO.CIF" 					column="CIF" />
+		<result property="tfsLgVO.DOC_DATE" 			column="DOC_DATE" />
+		<result property="tfsLgVO.VALIDITY_FROM" 		column="VALIDITY_FROM" />
+		<result property="tfsLgVO.VALIDITY_TO" 			column="VALIDITY_TO" />
+		<result property="tfsLgVO.CURRENCY" 		 	column="CURRENCY" />
+		<result property="tfsLgVO.AMOUNT" 				column="AMOUNT" />
+		<result property="tfsLgVO.DOC_NUMBER" 			column="DOC_NUMBER" />
+		<result property="tfsLgVO.DOC_YEAR" 			column="DOC_YEAR" />
+		<result property="cyBriefDesc" 					column="cyBriefDesc" />
+		<result property="cyDecimalPt"    				column="cyDecimalPt" />
+		<result property="cifDesc" 						column="cifDesc" />
+     	<result property="tfsDocTypeDesc" 				column="tfsDocTypeDesc" />
+		<result property="tfsLgVO.DOC_TYPE" 			column="DOC_TYPE" />
+		<result property="lgStatusDesc" 				column="lgStatusDesc" />
+		
+	</resultMap>
+ 
+ 
+  <select id="checkLetterGuaranteeValidation" parameterType="tfsLgSC" resultType="tfsLgVO">
+ 	SELECT TFSLG.LG_NBR,
+         TFSLG.REQUISITION_NBR,
+         TFSLG.CHARGES_BORNE_BY,
+         FUNDING_ACC_BR,
+		FUNDING_ACC_CY,
+		FUNDING_ACC_GL,
+		FUNDING_ACC_CIF,
+		FUNDING_ACC_SL,
+		BENEFICIARY_BR,
+		BENEFICIARY_CY,
+		BENEFICIARY_GL,
+		BENEFICIARY_CIF,
+		BENEFICIARY_SL,
+		CURRENCY,
+		AMOUNT,
+		CV_AMOUNT,
+		VALIDITY_FROM,
+		VALIDITY_TO,
+		
+		-- kaldanaf - ABAR130110 - obtaining the needed amounts for provision, non-provision modification
+     	(CASE WHEN TOTAL_MARGIN_AMOUNT IS NULL THEN 0 ELSE TOTAL_MARGIN_AMOUNT END) - 
+     	(CASE WHEN CLOSED_AUTO_MARGIN IS NULL THEN 0 ELSE CLOSED_AUTO_MARGIN END) - 
+     	(CASE WHEN CLOSED_MARGIN_BS IS NULL THEN 0 ELSE CLOSED_MARGIN_BS END) MARGIN_AMT_CY2, /** kaldanaf - saving the outstanding margin amount in MARGIN_AMT_CY2 in order not to restructure the query and the used map **/
+		MARGIN_AMOUNT,
+		CROSS_RATE,
+	    CROSS_MULT_DIV,
+	    NOSTRO_MARGIN_CY,
+	    AUTO_MARGIN_ACC_CY,
+	    AMOUNT - (CASE WHEN SETTLED_AMOUNT IS NULL THEN 0 ELSE SETTLED_AMOUNT END) SETTLED_AMOUNT /** kaldanaf - saving the outstanding amount in SETTLED_AMOUNT in order not to restructure the query and the used map **/
+		
+    FROM TFSLG 
+   WHERE TFSLG.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+     AND TFSLG.BRANCH =  #{branchCode,jdbcType=NUMERIC}
+     AND TFSLG.LG_NBR  = #{reqNbr,jdbcType=NUMERIC}
+      <if test="status!=null">
+			AND TFSLG.LG_STATUS = #{status,jdbcType=VARCHAR}
+  	 </if>
+  </select>  
+  
+  
+  <!-- BoushraFahs Begin Lookup for LG Issuance -->
+	<select id="returnLgIssueLkpList" resultMap="resultLgIssueLkpMap"
+		parameterType="tfsLgSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="letterGuaranteeMapper.select_LgIssue" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnLgIssueLkpCount" resultType="int"
+		parameterType="tfsLgSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="letterGuaranteeMapper.select_LgIssue" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<resultMap id="resultLgIssueLkpMap" type="tfsLgCO">
+		 <result property="tfsLgVO.COMP_CODE"   		column="COMP_CODE"/>
+		 <result property="tfsLgVO.BRANCH"       		column="BRANCH"/>
+		 <result property="lgStatusDesc"       			column="lgStatusDesc"/>
+		 <result property="tfsLgVO.LG_NBR"     			column="LG_NBR"/>
+		 <result property="tfsLgVO.CIF"     			column="CIF"/>
+		 <result property="tfsLgVO.REQUISITION_NBR"     column="REQUISITION_NBR"/>
+		 <result property="tfsLgVO.DOC_NUMBER"          column="DOC_NUMBER"/>
+		 <result property="tfsLgVO.DOC_YEAR"           	column="DOC_YEAR"/>
+		 <result property="tfsLgVO.DOC_DATE"           	column="DOC_DATE"/>
+		 <result property="tfsLgVO.VALIDITY_FROM"      	column="VALIDITY_FROM"/>
+		 <result property="tfsLgVO.VALIDITY_TO"      	column="VALIDITY_TO"/>
+		 <result property="tfsLgVO.CURRENCY"      		column="CURRENCY"/>
+		 <result property="tfsLgVO.AMOUNT"      		column="AMOUNT"/>
+		 <result property="tfsLgVO.DOC_TYPE"      		column="DOC_TYPE"/>
+		 <result property="cyBriefDesc"    				column="cyBriefDesc"/>
+		 <result property="cyDecimalPt"    				column="cyDecimalPt"/>
+		 <result property="cifDesc"      				column="cifDesc"/>
+		 <result property="tfsDocTypeDesc"      		column="tfsDocTypeDesc"/>
+	</resultMap>
+	<sql id="select_LgIssue" >
+		SELECT TFSLG.REQUISITION_NBR,
+		       ( SELECT VALUE_DESC 
+	              FROM SYS_PARAM_LOV_TRANS 
+	              WHERE LOV_TYPE_ID = #{statusLovType,jdbcType=NUMERIC}
+		              AND LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}
+		              AND VALUE_CODE = TFSLG.STATUS 
+	            ) lgStatusDesc, 
+		       TFSLG.CIF,
+		       TFSLG.DOC_DATE,
+		       TFSLG.VALIDITY_FROM,
+		       TFSLG.VALIDITY_TO,
+		       TFSLG.CURRENCY,
+		       TFSLG.AMOUNT,
+		       ( SELECT <choose>  
+				  			<when test="isRTLDir==1">CURRENCIES.BRIEF_DESC_ARAB</when>
+				  			<otherwise>CURRENCIES.BRIEF_DESC_ENG</otherwise>
+				  		</choose>
+		          FROM CURRENCIES
+		          WHERE TFSLG.COMP_CODE 	= CURRENCIES.COMP_CODE
+		          	AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		          	AND TFSLG.CURRENCY 		= CURRENCIES.CURRENCY_CODE
+		        ) cyBriefDesc,
+		        ( SELECT CURRENCIES.DECIMAL_POINTS
+		          FROM CURRENCIES
+		          WHERE TFSLG.COMP_CODE 	= CURRENCIES.COMP_CODE
+		          	AND CURRENCIES.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		          	AND TFSLG.CURRENCY 		= CURRENCIES.CURRENCY_CODE
+		        ) cyDecimalPt,
+		       ( SELECT <choose>  
+				  			<when test="isRTLDir==1">CIF.SHORT_NAME_ARAB</when>
+				  			<otherwise>CIF.SHORT_NAME_ENG</otherwise>
+				  		</choose>
+		          FROM CIF
+		          WHERE TFSLG.COMP_CODE = CIF.COMP_CODE
+		          	AND CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		          	AND TFSLG.CIF = CIF.CIF_NO
+		        ) cifDesc,
+			   ( SELECT <choose>  
+				  			<when test="isRTLDir==1">TFSDOCTYPE.BRIEF_NAME_ARAB</when>
+				  			<otherwise>TFSDOCTYPE.BRIEF_NAME_ENG</otherwise>
+				  		</choose>
+            	  FROM TFSDOCTYPE
+           		  WHERE TFSLG.COMP_CODE = TFSDOCTYPE.COMP_CODE
+            			AND TFSLG.DOC_TYPE = TFSDOCTYPE.CODE
+             			AND TFSDOCTYPE.DOC_TYPE = 'G') tfsDocTypeDesc
+		FROM TFSLG
+		WHERE TFSLG.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		   	AND TFSLG.BRANCH 	= #{branchCode,jdbcType=NUMERIC} 
+		   	AND TFSLG.STATUS = #{status,jdbcType=VARCHAR}		   
+		   	AND COALESCE(TFSLG.LG_NBR,0) =0
+	</sql>
+	
+	<select id="checkLgIssueValidation" parameterType="tfsLgSC"
+		resultType="tfsLgVO">
+		SELECT STATUS, 
+			LG_STATUS,
+			(CASE WHEN SETTLED_AMOUNT IS NULL THEN 0 ELSE SETTLED_AMOUNT END) SETTLED_AMOUNT
+		FROM TFSLG
+		WHERE TFSLG.COMP_CODE 	= #{compCode,jdbcType=NUMERIC}
+			AND TFSLG.BRANCH 	= #{branchCode,jdbcType=NUMERIC}
+			AND REQUISITION_NBR = #{reqNbr,jdbcType=NUMERIC}
+	</select>  
+	
+	<!-- BoushraFahs End Lookup for LG Issuance -->
+	
+</mapper>

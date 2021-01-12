@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSDOCDETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSDOCDETAILSVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COLUMN_GROUP" property="COLUMN_GROUP" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LC_NBR" property="LC_NBR" />
+    <id column="LC_TYPE" property="LC_TYPE" />
+    <id column="LC_YEAR" property="LC_YEAR" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.TFSDOCDETAILSVO" extends="BaseResultMap" >
+    <result column="DOCUMENTS_DESC" property="DOCUMENTS_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COLUMN_GROUP, COMP_CODE, LC_NBR, LC_TYPE, LC_YEAR, TRX_TYPE, DATE_UPDATED
+  </sql>
+  <sql id="Blob_Column_List" >
+    DOCUMENTS_DESC
+  </sql>
+  <select id="selectTFSDOCDETAILS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.TFSDOCDETAILSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from TFSDOCDETAILS
+    where BRANCH = #{BRANCH}
+      and COLUMN_GROUP = #{COLUMN_GROUP}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteTFSDOCDETAILS" parameterType="com.path.dbmaps.vo.TFSDOCDETAILSVO" >
+    delete from TFSDOCDETAILS
+    where BRANCH = #{BRANCH}
+      and COLUMN_GROUP = #{COLUMN_GROUP}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertTFSDOCDETAILS" parameterType="com.path.dbmaps.vo.TFSDOCDETAILSVO" >
+    insert into TFSDOCDETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COLUMN_GROUP != null and COLUMN_GROUP != emptyBigDecimalValue" >
+        COLUMN_GROUP,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        LC_NBR,
+      </if>
+      <if test="LC_TYPE != null" >
+        LC_TYPE,
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        LC_YEAR,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      DATE_UPDATED,
+      <if test="DOCUMENTS_DESC != null" >
+        DOCUMENTS_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COLUMN_GROUP != null and COLUMN_GROUP != emptyBigDecimalValue" >
+        #{COLUMN_GROUP},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        #{LC_NBR},
+      </if>
+      <if test="LC_TYPE != null" >
+        #{LC_TYPE},
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        #{LC_YEAR},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="DOCUMENTS_DESC != null" >
+        #{DOCUMENTS_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSDOCDETAILS" >
+    update TFSDOCDETAILS
+    <set >
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="DOCUMENTS_DESC != null" >
+        DOCUMENTS_DESC = #{DOCUMENTS_DESC},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COLUMN_GROUP = #{COLUMN_GROUP}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NBR = #{LC_NBR}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateTFSDOCDETAILS" parameterType="com.path.dbmaps.vo.TFSDOCDETAILSVO" >
+    <include refid="sql_updateTFSDOCDETAILS" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

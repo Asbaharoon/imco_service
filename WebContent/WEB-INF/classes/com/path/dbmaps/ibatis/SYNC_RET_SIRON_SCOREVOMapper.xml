@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_RET_SIRON_SCORE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_RET_SIRON_SCOREVO" >  
+    <id column="ID" property="ID" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SCORE" property="SCORE" />
+    <result column="SCORE_SPECIFIED_YN" property="SCORE_SPECIFIED_YN" />
+    <result column="LONG_DESC" property="LONG_DESC" />
+    <result column="SHORT_DESC" property="SHORT_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, LINE_NO, SCORE, SCORE_SPECIFIED_YN, LONG_DESC, SHORT_DESC
+  </sql>
+  <select id="selectSYNC_RET_SIRON_SCORE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_SCOREVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_RET_SIRON_SCORE
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteSYNC_RET_SIRON_SCORE" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_SCOREVO" >
+    delete from SYNC_RET_SIRON_SCORE
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertSYNC_RET_SIRON_SCORE" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_SCOREVO" >
+    insert into SYNC_RET_SIRON_SCORE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        SCORE,
+      </if>
+      <if test="SCORE_SPECIFIED_YN != null" >
+        SCORE_SPECIFIED_YN,
+      </if>
+      <if test="LONG_DESC != null" >
+        LONG_DESC,
+      </if>
+      <if test="SHORT_DESC != null" >
+        SHORT_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        #{SCORE},
+      </if>
+      <if test="SCORE_SPECIFIED_YN != null" >
+        #{SCORE_SPECIFIED_YN},
+      </if>
+      <if test="LONG_DESC != null" >
+        #{LONG_DESC},
+      </if>
+      <if test="SHORT_DESC != null" >
+        #{SHORT_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_RET_SIRON_SCORE" >
+    update SYNC_RET_SIRON_SCORE
+    <set >
+      <if test="SCORE != null" >
+        <choose >
+          <when test="SCORE == emptyBigDecimalValue" >
+            SCORE = NULL ,
+          </when>
+          <otherwise >
+            SCORE = #{SCORE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCORE_SPECIFIED_YN != null" >
+        SCORE_SPECIFIED_YN = #{SCORE_SPECIFIED_YN},
+      </if>
+      <if test="LONG_DESC != null" >
+        LONG_DESC = #{LONG_DESC},
+      </if>
+      <if test="SHORT_DESC != null" >
+        SHORT_DESC = #{SHORT_DESC},
+      </if>
+    </set>
+    where ID = #{ID}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateSYNC_RET_SIRON_SCORE" parameterType="com.path.dbmaps.vo.SYNC_RET_SIRON_SCOREVO" >
+    <include refid="sql_updateSYNC_RET_SIRON_SCORE" />
+  </update>
+</mapper>

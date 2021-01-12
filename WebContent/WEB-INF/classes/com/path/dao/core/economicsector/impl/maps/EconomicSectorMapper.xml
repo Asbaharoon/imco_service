@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="economicSectorListMapper">
+
+ <sql id="economicSectorListCommon">
+			SELECT
+			 ECO_SECTORS.SECTOR_CODE,
+			 ECO_SECTORS.BRIEF_DESC_ENG,
+			 ECO_SECTORS.BRIEF_DESC_ARAB,
+			 ECO_SECTORS.LONG_DESC_ENG,
+			 ECO_SECTORS.LONG_DESC_ARAB,
+			 ECO_SECTORS.LIMIT
+	FROM  ECO_SECTORS  
+WHERE
+		ECO_SECTORS.COMP_CODE  = #{compCode}
+  AND ((exists (select 1 from RIFCTT_ECO_SECTOR
+  where RIFCTT_ECO_SECTOR.COMP_CODE=ECO_SECTORS.COMP_CODE
+  and RIFCTT_ECO_SECTOR.SECTOR_CODE=ECO_SECTORS.SECTOR_CODE 
+  AND RIFCTT_ECO_SECTOR.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC}  AND  RIFCTT_ECO_SECTOR.SUB_SECTOR_CODE=0)
+  or  not exists (select 1 from RIFCTT_ECO_SECTOR
+  where RIFCTT_ECO_SECTOR.COMP_CODE=ECO_SECTORS.COMP_CODE
+    AND RIFCTT_ECO_SECTOR.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC}  )
+  )
+  <if test='useCifMatrix != null and "1".equals(useCifMatrix)'>
+  and ( exists (select 1 from RIFCTT_CIF_MATRIX
+    where RIFCTT_CIF_MATRIX.COMP_CODE = ECO_SECTORS.COMP_CODE
+    and RIFCTT_CIF_MATRIX.ECO_SECTOR_CODE =ECO_SECTORS.SECTOR_CODE 
+    and RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC}
+    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC}  )
+  or  not exists (select 1 from RIFCTT_CIF_MATRIX
+  where RIFCTT_CIF_MATRIX.COMP_CODE=ECO_SECTORS.COMP_CODE
+  and RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC}
+    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC}  ) )
+    </if>
+    )
+	 <if test="showInPos != null ">
+ 	       AND   ECO_SECTORS.SHOW_IN_POS = #{showInPos, jdbcType=VARCHAR} 
+      </if>
+      <!--   TP#621590 ;13-Feb-2018;d.james-->
+	<if test='"true".equals(allTypesFlag)'> 
+		<include refid="economicSectorAllTypeSQL"/>
+	</if>
+ </sql>
+  <sql id="economicSectorAllTypeSQL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'',NULL FROM DUAL 
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'',NULL 
+	        </when>
+        </choose>
+ </sql>
+ <sql id="economicSectorListCommonUnique"> 
+ AND	ECO_SECTORS.SECTOR_CODE  = #{sectorCode, jdbcType=NUMERIC}
+ </sql>
+ 
+ 
+  <select id="returnDependencyBySectorCodeforFOM" parameterType="com.path.vo.core.economicsector.EconomicSectorSC" resultType="com.path.dbmaps.vo.ECO_SECTORSVO">
+ 	<include refid="economicSectorListCommon"/>
+	<include refid="economicSectorListCommonUnique"/> 
+  </select>
+
+ <resultMap id="economicSectorList_ResMap" type="economicSectorVO">
+	<id property="SECTOR_CODE" column="SECTOR_CODE"/>
+	<result property="SECTOR_CODE" column="SECTOR_CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="LIMIT" column="LIMIT" />
+ </resultMap>
+ 
+ <select id="economicSectorList" resultMap="economicSectorList_ResMap" parameterType="economicSectorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="economicSectorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="economicSectorListCount" resultType="int" parameterType="economicSectorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="economicSectorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnDependencyBySectorCode" parameterType="com.path.vo.core.economicsector.EconomicSectorSC" resultType="com.path.dbmaps.vo.ECO_SECTORSVO">
+		SELECT
+			 	SECTOR_CODE,
+			 	CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+			 	LIMIT
+		FROM  	ECO_SECTORS  
+		WHERE	ECO_SECTORS.COMP_CODE    = #{compCode}
+		 AND	ECO_SECTORS.SECTOR_CODE  = #{sectorCode}
+	  <if test="showInPos != null ">
+ 	       AND   ECO_SECTORS.SHOW_IN_POS = #{showInPos, jdbcType=VARCHAR} 
+      </if>
+</select>
+
+<select id="economicSectorAddRefList" resultMap="economicSectorList_ResMap" parameterType="economicSectorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="economicSectorAddRefListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="economicSectorAddRefListCount" resultType="int" parameterType="economicSectorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="economicSectorAddRefListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <sql id="economicSectorAddRefListCommon">
+	
+		SELECT
+			 ECO_SECTORS.SECTOR_CODE,
+			 ECO_SECTORS.BRIEF_DESC_ENG,
+			 ECO_SECTORS.LONG_DESC_ENG,
+			 ECO_SECTORS.BRIEF_DESC_ARAB,
+			 ECO_SECTORS.LONG_DESC_ARAB,
+			 ECO_SECTORS.ADDITIONAL_REFERENCE,
+			 ECO_SECTORS.LIMIT
+		FROM  ECO_SECTORS 
+		WHERE ECO_SECTORS.COMP_CODE  = #{compCode}
+		 <if test="showInPos != null ">
+ 	       AND   ECO_SECTORS.SHOW_IN_POS = #{showInPos, jdbcType=VARCHAR} 
+         </if>
+         <!-- added by bahaa for tp 642900-->
+         <if test='"true".equals(allTypesFlag)'> 
+			<include refid="economicSectorAllTypeSQLL"/>
+		</if>
+		
+ </sql>
+ <!-- added by bahaa for tp 642900 -->
+  <sql id="economicSectorAllTypeSQLL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'','',NULL FROM DUAL 
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT 0, #{allTypes},'',#{allTypes},'','',NULL 
+	        </when>
+        </choose>
+ </sql>
+ <!-- end bahaa -->
+ 
+  <select id="checkIfSubEcoSectorMandatoryInAdmin" resultType="string" parameterType="economicSectorSC">
+ 	SELECT SUB_ECO_SEC_MANDATORY_YN FROM ECO_SECTORS WHERE SECTOR_CODE = #{sectorCode}
+ 	AND COMP_CODE =  #{compCode}
+  </select>
+
+</mapper>

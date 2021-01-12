@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="avaPaymentLkpMapper">
+	<resultMap id="resAvaPaymentLookupMap" type="com.path.vo.core.avapayment.AvaPaymentCO">
+		<result property="avaFileVO.CIF_NO" column="CIF_NO"/>
+		<result property="cifDesc" column="SHORT_NAME_ENG"/>		
+		<result property="avaPaymentVO.PAYMENT_CODE" column="PAYMENT_CODE"/>
+		<result property="avaPaymentVO.FILE_CODE" column="FILE_CODE"/>	
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.CIF_NO" column="BENEF_CIF_NO"/>	
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.LONG_NAME" column="LONG_NAME"/>
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.SHORT_NAME" column="SHORT_NAME"/>
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.ID_TYPE" column="ID_TYPE"/>
+		<result property="avaBeneficiariesDefCO.idTypeDesc" column="idTypeDesc"/>
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.ID_NO" column="ID_NO"/>	
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.STATUS" column="STATUS"/>		
+		<result property="avaBeneficiariesDefCO.statusDesc" column="statusDesc"/>			
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.OCCUP_POSITION" column="OCCUP_POSITION"/>
+		<result property="avaBeneficiariesDefCO.occupPositionDesc" column="occupPositionDesc"/>
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.OCCUPATION" column="OCCUPATION"/>
+		<result property="avaBeneficiariesDefCO.occupationDesc" column="occupationDesc"/>		
+	</resultMap>
+	<select id="returnAvaPaymentLookup" parameterType="com.path.vo.core.avapayment.AvaPaymentLkpSC" resultMap="resAvaPaymentLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryAvaPaymentLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnAvaPaymentLookupCount" parameterType="com.path.vo.core.avapayment.AvaPaymentLkpSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryAvaPaymentLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryAvaPaymentLkpSQL">
+	  SELECT CTS_AVA_FILE.CIF_NO,
+         CTS_AVA_PAYMENT.PAYMENT_METHOD,
+         CTS_AVA_PAYMENT.PAYMENT_CODE,
+         CTS_AVA_PAYMENT.FILE_CODE,
+         CTS_AVA_BENEFICIARIES.CIF_NO as BENEF_CIF_NO,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.SHORT_NAME_ENG
+           ELSE
+            CTS_AVA_BENEFICIARIES.SHORT_NAME
+         END) SHORT_NAME,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.LONG_NAME_ENG
+           ELSE
+            CTS_AVA_BENEFICIARIES.LONG_NAME
+         END) LONG_NAME,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.ID_TYPE
+           ELSE
+            CTS_AVA_BENEFICIARIES.ID_TYPE
+         END) ID_TYPE,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.ID_NO
+           ELSE
+            CTS_AVA_BENEFICIARIES.ID_NO
+         END) ID_NO
+         
+  		
+    FROM CTS_AVA_PAYMENT, CTS_AVA_FILE, CTS_AVA_BENEFICIARIES
+    LEFT OUTER JOIN CIF ON CIF.COMP_CODE = CTS_AVA_BENEFICIARIES.COMP_CODE
+                       AND CIF.CIF_NO = CTS_AVA_BENEFICIARIES.CIF_NO
+   WHERE CTS_AVA_PAYMENT.COMP_CODE = CTS_AVA_FILE.COMP_CODE
+     AND CTS_AVA_PAYMENT.FILE_CODE = CTS_AVA_FILE.CODE
+     AND CTS_AVA_BENEFICIARIES.COMP_CODE = CTS_AVA_PAYMENT.COMP_CODE
+     AND CTS_AVA_BENEFICIARIES.FILE_CODE = CTS_AVA_PAYMENT.FILE_CODE
+     AND CTS_AVA_BENEFICIARIES.LINE_NO = CTS_AVA_PAYMENT.BENEF_LINE_NO
+	 AND CTS_AVA_PAYMENT.COMP_CODE = #{compCode}
+	 AND CTS_AVA_PAYMENT.STATUS = 'P'
+	 AND CTS_AVA_PAYMENT.PAYMENT_METHOD = 'V'
+	</sql>
+	
+	<resultMap id="resAvaPaymentTrxLookupMap" type="com.path.vo.core.avapayment.AvaPaymentCO">
+		<result property="avaPaymentVO.PAYMENT_CODE" column="PAYMENT_CODE"/>
+		<result property="avaPaymentVO.FILE_CODE" column="FILE_CODE"/>
+		<result property="avaFileVO.CIF_NO" column="CIF_NO" />
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.SHORT_NAME" column="SHORT_NAME"/>
+		<result property="avaBeneficiariesDefCO.idTypeDesc" column="idTypeDesc"/>
+		<result property="avaBeneficiariesDefCO.avaBeneficiariesVO.ID_NO" column="ID_NO"/>
+		<result property="avaPaymentVO.PAYMENT_DATE" column="PAYMENT_DATE"/>
+		<result property="paymentMethod" column="PAYMENT_METHOD"/>
+		<result property="avaPaymentVO.AMOUNT_PAID" column="AMOUNT_PAID"/>
+		<result property="destinationCountry" column="DESTINATION_COUNTRY"/>
+		<result property="avaPaymentVO.LINKED_PAYMENT_CODE" column="LINKED_PAYMENT_CODE"/>
+		<result property="returnType" column="returnType"/>
+		<result property="avaPaymentVO.RETURN_AMOUNT_FC" column="RETURN_AMOUNT_FC"/>
+		<result property="avaPaymentVO.RETURN_AMOUNT_CV" column="RETURN_AMOUNT_CV"/>
+	</resultMap>
+	<select id="returnAvaPaymentTrxLookup" parameterType="com.path.vo.core.avapayment.AvaPaymentLkpSC" resultMap="resAvaPaymentTrxLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryAvaPaymentTrxLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnAvaPaymentTrxLookupCount" parameterType="com.path.vo.core.avapayment.AvaPaymentLkpSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryAvaPaymentTrxLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryAvaPaymentTrxLkpSQL">
+		select 
+           P.PAYMENT_CODE,
+           P.FILE_CODE,
+           P.PAYMENT_DATE,
+           F.CIF_NO,
+				(SELECT (CASE WHEN #{language} = 'A' THEN ID_TYPES.DESC_ARAB ELSE ID_TYPES.DESC_ENG END)
+				  FROM ID_TYPES
+				 WHERE ID_TYPES.COMP_CODE = B.COMP_CODE
+				   AND ID_TYPES.CODE = (CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END)) idTypeDesc,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_NO ELSE B.ID_NO END) ID_NO,
+				(CASE WHEN B.CIF_NO IS NOT NULL THEN C.SHORT_NAME_ENG ELSE B.SHORT_NAME END) SHORT_NAME,
+           (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC     
+                FROM SYS_PARAM_LOV_TRANS
+       	  			WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovPayMethod}
+         				AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}
+         				    AND VALUE_CODE = P.PAYMENT_METHOD )PAYMENT_METHOD,
+           P.AMOUNT_PAID,
+            (SELECT COUNTRIES.LONG_DESC_ENG
+                 FROM COUNTRIES
+                   WHERE COUNTRIES.COMP_CODE = P.COMP_CODE
+                   AND COUNTRIES.COUNTRY_CODE = P.DESTINATION_COUNTRY) DESTINATION_COUNTRY,
+                          (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC     
+         			 FROM SYS_PARAM_LOV_TRANS
+       	  			WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovReturnType}
+         				AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}
+         				AND VALUE_CODE = P.RETURN_TYPE )returnType,
+       
+           P.RETURN_AMOUNT_FC,
+           P.RETURN_AMOUNT_CV,
+           P.DATE_CREATED,
+           P.CREATED_BY,
+           P.DATE_MODIFIED,
+           P.MODIFIED_BY,
+           P.DATE_DELETED,
+           P.DELETED_BY,
+           P.DATE_REJECTED,
+           P.REJECTED_BY,
+           P.DATE_UPDATED,
+           P.LINKED_PAYMENT_CODE
+           
+      FROM CTS_AVA_FILE F,CTS_AVA_CATEG CAT , CTS_AVA_PAYMENT P LEFT OUTER JOIN CTS_AVA_BENEFICIARIES B
+	                   ON ( P.COMP_CODE = B.COMP_CODE
+										 AND P.FILE_CODE = B.FILE_CODE
+										 AND P.BENEF_LINE_NO = B.LINE_NO
+										 AND B.STATUS = 'A'	)
+        LEFT OUTER JOIN CIF C ON (C.COMP_CODE = B.COMP_CODE
+		                                 AND C.CIF_NO = B.CIF_NO)
+		 WHERE P.COMP_CODE = #{compCode}     
+      AND P.COMP_CODE = F.COMP_CODE 
+       AND CAT.COMP_CODE = F.COMP_CODE
+           AND CAT.CODE = F.CATEGORY   
+      AND F.CODE      = P.FILE_CODE
+       AND P.STATUS = 'P'
+       AND F.STATUS = 'A'
+       
+       <choose>
+		   	<when test=' "CYEXCH".equals(screenRef)'>
+			   	<if test="cifNo != null and cifNo != emptyBigDecimalValue">
+			   		AND ((P.CIF_NO = #{cifNo} AND CAT.ADD_GROUP IN ('TOU','OTH')) 
+						OR (F.CIF_NO = #{cifNo} AND CAT.ADD_GROUP IN ('AVA','INV','MED','EDU','PTR')))
+			   	</if>
+			   	AND P.PAYMENT_METHOD = 'C'
+		   	</when>
+		   	<otherwise>
+	       	     <choose>
+					   	<when test='trxMethod.equals("C")'>
+						   	AND CAT.ADD_GROUP='TOU'
+						   	AND P.CIF_NO  IS NULL	  
+					   	</when>
+					   	<otherwise>
+					       AND ((CAT.ADD_GROUP IN ('AVA','EDU','PTR','MED','INV') AND F.CIF_NO = #{cifNo}) OR (CAT.ADD_GROUP IN ('TOU','OTH') AND P.CIF_NO = #{cifNo})
+					     <!-- OR (CAT.ADD_GROUP='TOU') --> )
+					    </otherwise>
+			   	</choose>
+			   	 AND NOT EXISTS (
+                   SELECT 1 FROM CTSTRS_EXTENDED,CTSTRS
+                   WHERE CTSTRS_EXTENDED.COMP_CODE=CTSTRS.COMP_CODE
+                   AND CTSTRS_EXTENDED.TRS_NO = CTSTRS.TRS_NO
+                   AND CTSTRS.STATUS IN ('A','P') 
+                   AND CTSTRS_EXTENDED.PAYMENT_CODE=P.PAYMENT_CODE 
+                   ) 
+		    </otherwise>
+	   </choose>
+     
+     AND ((#{avaPaymentCode} = 'R' AND P.RETURN_TYPE IN ('R','M')) OR (#{avaPaymentCode} = 'P' AND P.RETURN_TYPE IS NULL))
+  
+	</sql>
+
+
+	<select id="dependencyForAvaPayment" parameterType="com.path.vo.core.avapayment.AvaPaymentLkpSC" resultMap="resAvaPaymentLookupMap">
+		  SELECT CTS_AVA_FILE.CIF_NO,
+         CTS_AVA_PAYMENT.PAYMENT_METHOD,
+         CTS_AVA_PAYMENT.PAYMENT_CODE,
+         CTS_AVA_PAYMENT.FILE_CODE,
+         CTS_AVA_BENEFICIARIES.COMP_CODE,
+         CTS_AVA_BENEFICIARIES.STATUS,
+         (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC     
+              FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{benefStatusLov}
+         			AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language, jdbcType=VARCHAR}
+         			 AND VALUE_CODE = CTS_AVA_BENEFICIARIES.STATUS ) statusDesc,
+         CTS_AVA_BENEFICIARIES.CIF_NO as BENEF_CIF_NO,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.SHORT_NAME_ENG
+           ELSE
+            CTS_AVA_BENEFICIARIES.SHORT_NAME
+         END) SHORT_NAME,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.LONG_NAME_ENG
+           ELSE
+            CTS_AVA_BENEFICIARIES.LONG_NAME
+         END) LONG_NAME,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.ID_TYPE
+           ELSE
+            CTS_AVA_BENEFICIARIES.ID_TYPE
+         END) ID_TYPE,
+         (SELECT (CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN ID_TYPES.DESC_ARAB ELSE ID_TYPES.DESC_ENG END)
+				  FROM ID_TYPES
+				 WHERE ID_TYPES.COMP_CODE = CTS_AVA_BENEFICIARIES.COMP_CODE
+				   AND ID_TYPES.CODE = (CASE WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN CIF.ID_TYPE ELSE CTS_AVA_BENEFICIARIES.ID_TYPE END)) idTypeDesc,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.ID_NO
+           ELSE
+            CTS_AVA_BENEFICIARIES.ID_NO
+         END) ID_NO,
+         (SELECT SHORT_NAME_ENG
+		       FROM CIF WHERE CIF.COMP_CODE = CTS_AVA_FILE.COMP_CODE
+		       AND CIF.CIF_NO = CTS_AVA_FILE.CIF_NO) SHORT_NAME_ENG,
+		 (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.OCCUPATION
+           ELSE
+            CTS_AVA_BENEFICIARIES.OCCUPATION
+         END) OCCUPATION,
+         (SELECT OCCUPATIONS.BRIEF_DESC_ENG 
+         FROM OCCUPATIONS 
+         WHERE OCCUPATIONS.COMP_CODE  = CTS_AVA_BENEFICIARIES.COMP_CODE 
+		 AND OCCUPATIONS.OCCUPATION_CODE = (CASE WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN CIF.OCCUPATION ELSE CTS_AVA_BENEFICIARIES.OCCUPATION END)) occupationDesc,
+         (CASE
+           WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN
+            CIF.OCCUP_POSITION
+           ELSE
+            CTS_AVA_BENEFICIARIES.OCCUP_POSITION
+         END) OCCUP_POSITION,
+         (SELECT POSITIONS.BRIEF_DESC_ENG 
+         FROM  POSITIONS 
+         WHERE POSITIONS.COMP_CODE  = CTS_AVA_BENEFICIARIES.COMP_CODE
+         AND POSITIONS.POSITION_CODE = (CASE WHEN CTS_AVA_BENEFICIARIES.CIF_NO IS NOT NULL THEN CIF.OCCUP_POSITION ELSE CTS_AVA_BENEFICIARIES.OCCUP_POSITION END))occupPositionDesc
+        
+         
+    FROM CTS_AVA_PAYMENT, CTS_AVA_FILE, CTS_AVA_BENEFICIARIES
+    LEFT OUTER JOIN CIF ON CIF.COMP_CODE = CTS_AVA_BENEFICIARIES.COMP_CODE
+                       AND CIF.CIF_NO = CTS_AVA_BENEFICIARIES.CIF_NO
+   WHERE CTS_AVA_PAYMENT.COMP_CODE = CTS_AVA_FILE.COMP_CODE
+     AND CTS_AVA_PAYMENT.FILE_CODE = CTS_AVA_FILE.CODE
+     AND CTS_AVA_BENEFICIARIES.COMP_CODE = CTS_AVA_PAYMENT.COMP_CODE
+     AND CTS_AVA_BENEFICIARIES.FILE_CODE = CTS_AVA_PAYMENT.FILE_CODE
+     AND CTS_AVA_BENEFICIARIES.LINE_NO = CTS_AVA_PAYMENT.BENEF_LINE_NO
+	 AND CTS_AVA_BENEFICIARIES.COMP_CODE = #{compCode}
+ 	 AND CTS_AVA_PAYMENT.PAYMENT_CODE 	= #{paymentCode}
+  	 AND CTS_AVA_PAYMENT.STATUS = 'P'
+	 AND CTS_AVA_PAYMENT.PAYMENT_METHOD = 'V'
+	</select>
+</mapper>

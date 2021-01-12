@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_EOL_HISTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_EOL_HISTORYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="SUB_LINE_NBR" property="SUB_LINE_NBR" />
+    <result column="DD_NO" property="DD_NO" />
+    <result column="DEAL_NO" property="DEAL_NO" />
+    <result column="UTLIZED_AMOUNT" property="UTLIZED_AMOUNT" />
+    <result column="SETTLED_AMOUNT" property="SETTLED_AMOUNT" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, LINE_NBR, SUB_LINE_NBR, DD_NO, DEAL_NO, UTLIZED_AMOUNT, 
+    SETTLED_AMOUNT, CREATED_BY, CREATED_DATE
+  </sql>
+  <select id="selectFMS_EOL_HISTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMS_EOL_HISTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMS_EOL_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </select>
+  <delete id="deleteFMS_EOL_HISTORY" parameterType="com.path.dbmaps.vo.FMS_EOL_HISTORYVOKey" >
+    delete from FMS_EOL_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </delete>
+  <insert id="insertFMS_EOL_HISTORY" parameterType="com.path.dbmaps.vo.FMS_EOL_HISTORYVO" >
+    insert into FMS_EOL_HISTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="SUB_LINE_NBR != null and SUB_LINE_NBR != emptyBigDecimalValue" >
+        SUB_LINE_NBR,
+      </if>
+      <if test="DD_NO != null and DD_NO != emptyBigDecimalValue" >
+        DD_NO,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="UTLIZED_AMOUNT != null and UTLIZED_AMOUNT != emptyBigDecimalValue" >
+        UTLIZED_AMOUNT,
+      </if>
+      <if test="SETTLED_AMOUNT != null and SETTLED_AMOUNT != emptyBigDecimalValue" >
+        SETTLED_AMOUNT,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="SUB_LINE_NBR != null and SUB_LINE_NBR != emptyBigDecimalValue" >
+        #{SUB_LINE_NBR},
+      </if>
+      <if test="DD_NO != null and DD_NO != emptyBigDecimalValue" >
+        #{DD_NO},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="UTLIZED_AMOUNT != null and UTLIZED_AMOUNT != emptyBigDecimalValue" >
+        #{UTLIZED_AMOUNT},
+      </if>
+      <if test="SETTLED_AMOUNT != null and SETTLED_AMOUNT != emptyBigDecimalValue" >
+        #{SETTLED_AMOUNT},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_EOL_HISTORY" >
+    update FMS_EOL_HISTORY
+    <set >
+      <if test="DD_NO != null" >
+        <choose >
+          <when test="DD_NO == emptyBigDecimalValue" >
+            DD_NO = NULL ,
+          </when>
+          <otherwise >
+            DD_NO = #{DD_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_NO != null" >
+        <choose >
+          <when test="DEAL_NO == emptyBigDecimalValue" >
+            DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NO = #{DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTLIZED_AMOUNT != null" >
+        <choose >
+          <when test="UTLIZED_AMOUNT == emptyBigDecimalValue" >
+            UTLIZED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            UTLIZED_AMOUNT = #{UTLIZED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTLED_AMOUNT != null" >
+        <choose >
+          <when test="SETTLED_AMOUNT == emptyBigDecimalValue" >
+            SETTLED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            SETTLED_AMOUNT = #{SETTLED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SUB_LINE_NBR = #{SUB_LINE_NBR}
+  </sql>
+  <update id="updateFMS_EOL_HISTORY" parameterType="com.path.dbmaps.vo.FMS_EOL_HISTORYVO" >
+    <include refid="sql_updateFMS_EOL_HISTORY" />
+  </update>
+</mapper>

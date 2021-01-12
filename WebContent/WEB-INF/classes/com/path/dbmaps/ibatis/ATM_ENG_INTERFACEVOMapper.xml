@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ATM_ENG_INTERFACE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" >
+    <id column="ATM_ENG_INTERFACE_ID" property="ATM_ENG_INTERFACE_ID" />
+    <result column="INTERFACE_ID" property="INTERFACE_ID" />
+    <result column="START_TIME" property="START_TIME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="MESSAGE" property="MESSAGE" />
+    <result column="MACHINE_NAME_IP" property="MACHINE_NAME_IP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" extends="BaseResultMap" >
+    <result column="ISO_FIELDS_CONFIG" property="ISO_FIELDS_CONFIG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATM_ENG_INTERFACE_ID, INTERFACE_ID, START_TIME, STATUS, MESSAGE, MACHINE_NAME_IP
+  </sql>
+  <sql id="Blob_Column_List" >
+    ISO_FIELDS_CONFIG
+  </sql>
+  <select id="selectATM_ENG_INTERFACE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ATM_ENG_INTERFACE
+    where ATM_ENG_INTERFACE_ID = #{ATM_ENG_INTERFACE_ID}
+  </select>
+  <delete id="deleteATM_ENG_INTERFACE" parameterType="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" >
+    delete from ATM_ENG_INTERFACE
+    where ATM_ENG_INTERFACE_ID = #{ATM_ENG_INTERFACE_ID}
+  </delete>
+  <insert id="insertATM_ENG_INTERFACE" parameterType="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="ATM_ENG_INTERFACE_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(ATM_ENG_INTERFACE_ID),0)+1</when><otherwise>NVL(MAX(ATM_ENG_INTERFACE_ID),0)+1</otherwise></choose> FROM ATM_ENG_INTERFACE
+    </selectKey>
+    insert into ATM_ENG_INTERFACE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      ATM_ENG_INTERFACE_ID,
+      <if test="INTERFACE_ID != null and INTERFACE_ID != emptyBigDecimalValue" >
+        INTERFACE_ID,
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="MESSAGE != null and !&quot;&quot;.equals(MESSAGE)" >
+        MESSAGE,
+      </if>
+      <if test="MACHINE_NAME_IP != null and !&quot;&quot;.equals(MACHINE_NAME_IP)" >
+        MACHINE_NAME_IP,
+      </if>
+      <if test="ISO_FIELDS_CONFIG != null" >
+        ISO_FIELDS_CONFIG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{ATM_ENG_INTERFACE_ID},
+      <if test="INTERFACE_ID != null and INTERFACE_ID != emptyBigDecimalValue" >
+        #{INTERFACE_ID},
+      </if>
+      <if test="START_TIME != null" >
+        #{START_TIME},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="MESSAGE != null and !&quot;&quot;.equals(MESSAGE)" >
+        #{MESSAGE},
+      </if>
+      <if test="MACHINE_NAME_IP != null and !&quot;&quot;.equals(MACHINE_NAME_IP)" >
+        #{MACHINE_NAME_IP},
+      </if>
+      <if test="ISO_FIELDS_CONFIG != null" >
+        #{ISO_FIELDS_CONFIG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateATM_ENG_INTERFACE" >
+    update ATM_ENG_INTERFACE
+    <set >
+      <if test="INTERFACE_ID != null" >
+        <choose >
+          <when test="INTERFACE_ID == emptyBigDecimalValue" >
+            INTERFACE_ID = NULL ,
+          </when>
+          <otherwise >
+            INTERFACE_ID = #{INTERFACE_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="START_TIME != null" >
+        START_TIME = #{START_TIME},
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MESSAGE != null" >
+        <choose >
+          <when test="MESSAGE.equals(&quot;&quot;)" >
+            MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            MESSAGE = #{MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MACHINE_NAME_IP != null" >
+        <choose >
+          <when test="MACHINE_NAME_IP.equals(&quot;&quot;)" >
+            MACHINE_NAME_IP = NULL ,
+          </when>
+          <otherwise >
+            MACHINE_NAME_IP = #{MACHINE_NAME_IP},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISO_FIELDS_CONFIG != null" >
+        ISO_FIELDS_CONFIG = #{ISO_FIELDS_CONFIG},
+      </if>
+    </set>
+    where ATM_ENG_INTERFACE_ID = #{ATM_ENG_INTERFACE_ID}
+  </sql>
+  <update id="updateATM_ENG_INTERFACE" parameterType="com.path.dbmaps.vo.ATM_ENG_INTERFACEVO" >
+    <include refid="sql_updateATM_ENG_INTERFACE" />
+  </update>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_PRC_INP_PARM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_PRC_INP_PARMVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="INP_PARM_NO" property="INP_PARM_NO" />
+    <id column="PRC_NO" property="PRC_NO" />
+    <result column="INP_PARM_NAME" property="INP_PARM_NAME" />
+    <result column="INP_PARM_DSC" property="INP_PARM_DSC" />
+    <result column="INP_PARM_VALUE" property="INP_PARM_VALUE" />
+    <result column="INP_PARM_TYPE" property="INP_PARM_TYPE" />
+    <result column="FILE_PARM_NO" property="FILE_PARM_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, INP_PARM_NO, PRC_NO, INP_PARM_NAME, INP_PARM_DSC, INP_PARM_VALUE, INP_PARM_TYPE, 
+    FILE_PARM_NO
+  </sql>
+  <select id="selectDF_FILE_PRC_INP_PARM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_PRC_INP_PARMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_PRC_INP_PARM
+    where FILE_CODE = #{FILE_CODE}
+      and INP_PARM_NO = #{INP_PARM_NO}
+      and PRC_NO = #{PRC_NO}
+  </select>
+  <delete id="deleteDF_FILE_PRC_INP_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PRC_INP_PARMVOKey" >
+    delete from DF_FILE_PRC_INP_PARM
+    where FILE_CODE = #{FILE_CODE}
+      and INP_PARM_NO = #{INP_PARM_NO}
+      and PRC_NO = #{PRC_NO}
+  </delete>
+  <insert id="insertDF_FILE_PRC_INP_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PRC_INP_PARMVO" >
+    insert into DF_FILE_PRC_INP_PARM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="INP_PARM_NO != null and INP_PARM_NO != emptyBigDecimalValue" >
+        INP_PARM_NO,
+      </if>
+      <if test="PRC_NO != null and PRC_NO != emptyBigDecimalValue" >
+        PRC_NO,
+      </if>
+      <if test="INP_PARM_NAME != null" >
+        INP_PARM_NAME,
+      </if>
+      <if test="INP_PARM_DSC != null" >
+        INP_PARM_DSC,
+      </if>
+      <if test="INP_PARM_VALUE != null" >
+        INP_PARM_VALUE,
+      </if>
+      <if test="INP_PARM_TYPE != null" >
+        INP_PARM_TYPE,
+      </if>
+      <if test="FILE_PARM_NO != null and FILE_PARM_NO != emptyBigDecimalValue" >
+        FILE_PARM_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="INP_PARM_NO != null and INP_PARM_NO != emptyBigDecimalValue" >
+        #{INP_PARM_NO},
+      </if>
+      <if test="PRC_NO != null and PRC_NO != emptyBigDecimalValue" >
+        #{PRC_NO},
+      </if>
+      <if test="INP_PARM_NAME != null" >
+        #{INP_PARM_NAME},
+      </if>
+      <if test="INP_PARM_DSC != null" >
+        #{INP_PARM_DSC},
+      </if>
+      <if test="INP_PARM_VALUE != null" >
+        #{INP_PARM_VALUE},
+      </if>
+      <if test="INP_PARM_TYPE != null" >
+        #{INP_PARM_TYPE},
+      </if>
+      <if test="FILE_PARM_NO != null and FILE_PARM_NO != emptyBigDecimalValue" >
+        #{FILE_PARM_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_PRC_INP_PARM" >
+    update DF_FILE_PRC_INP_PARM
+    <set >
+      <if test="INP_PARM_NAME != null" >
+        INP_PARM_NAME = #{INP_PARM_NAME},
+      </if>
+      <if test="INP_PARM_DSC != null" >
+        INP_PARM_DSC = #{INP_PARM_DSC},
+      </if>
+      <if test="INP_PARM_VALUE != null" >
+        INP_PARM_VALUE = #{INP_PARM_VALUE},
+      </if>
+      <if test="INP_PARM_TYPE != null" >
+        INP_PARM_TYPE = #{INP_PARM_TYPE},
+      </if>
+      <if test="FILE_PARM_NO != null" >
+        <choose >
+          <when test="FILE_PARM_NO == emptyBigDecimalValue" >
+            FILE_PARM_NO = NULL ,
+          </when>
+          <otherwise >
+            FILE_PARM_NO = #{FILE_PARM_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and INP_PARM_NO = #{INP_PARM_NO}
+      and PRC_NO = #{PRC_NO}
+  </sql>
+  <update id="updateDF_FILE_PRC_INP_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PRC_INP_PARMVO" >
+    <include refid="sql_updateDF_FILE_PRC_INP_PARM" />
+  </update>
+</mapper>

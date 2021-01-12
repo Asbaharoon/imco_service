@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="visitReasonMapper">
+		 <select id="visitReasonListCount" resultType="int" parameterType="com.path.vo.core.visitreason.VisitReasonSC" > 
+			<include refid="servicesCommon.commonGridWrpBefCnt"/>
+			<include refid="visitReasonCommon"/>
+			<include refid="servicesCommon.commonGridWrpAftCnt"/>
+			<include refid="servicesCommon.commonGridCountWrpClose"/>	
+		 </select>
+		 
+		 <select id="visitReasonList" resultMap="visitReasonList_ResMap" parameterType="com.path.vo.core.visitreason.VisitReasonSC" >
+			<include refid="servicesCommon.commonGridWrpBefFlip"/>
+			<include refid="visitReasonCommon"/>
+			<include refid="servicesCommon.commonGridWrpAftFlip"/>
+			<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+		 </select>
+
+		 <sql id="visitReasonCommon">
+			SELECT 	 CODE, 
+					 BRIEF_NAME_ENG, 
+					 LONG_NAME_ENG,			 
+					 BRIEF_NAME_ARAB,
+					 LONG_NAME_ARAB
+			FROM  CRM_PARAM 
+			WHERE CRM_PARAM.COMP_CODE  = #{compCode}
+			<if test='!"0".equals(paramType)'>
+				AND PARAM_TYPE = #{paramType}
+			</if>
+			
+		 </sql>
+		 
+		 <resultMap id="visitReasonList_ResMap" type="com.path.dbmaps.vo.CRM_PARAMVO">
+			<result property="CODE" column="CODE"/>
+			<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+			<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+			<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+			<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+		 </resultMap>
+		 
+		 	<select id="returnVisitReasonDesc"  parameterType="com.path.vo.core.visitreason.VisitReasonSC" resultMap="visitReasonList_ResMap">
+			    SELECT 
+			         CODE, 
+					 CASE WHEN #{preferredLanguage,jdbcType=VARCHAR} = 'A' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+					 LONG_NAME_ENG,			 
+					 BRIEF_NAME_ARAB,
+					 LONG_NAME_ARAB
+			      FROM CRM_PARAM 
+			     WHERE CRM_PARAM.CODE = #{reasonCode,jdbcType=NUMERIC}
+			       AND CRM_PARAM.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			       AND CRM_PARAM.PARAM_TYPE = #{paramType,jdbcType=VARCHAR}
+			</select>
+		 
+		 		 <select id="returnVisitReasonById" parameterType="com.path.vo.core.visitreason.VisitReasonSC" resultType="com.path.dbmaps.vo.CRM_PARAMVO">
+		  		SELECT
+					 CODE,
+					 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+				FROM  CRM_PARAM 
+				WHERE  CRM_PARAM.COMP_CODE  = #{compCode}
+				<if test='!"0".equals(paramType)'>
+				AND PARAM_TYPE = #{paramType}
+			</if>
+					
+		 </select>
+		 
+</mapper>

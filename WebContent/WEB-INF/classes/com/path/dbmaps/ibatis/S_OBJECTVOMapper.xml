@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_OBJECT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_OBJECTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.S_OBJECTVO" extends="BaseResultMap" >
+    <result column="OLE_OBJECT" property="OLE_OBJECT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE
+  </sql>
+  <sql id="Blob_Column_List" >
+    OLE_OBJECT
+  </sql>
+  <select id="selectS_OBJECT" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.S_OBJECTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from S_OBJECT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteS_OBJECT" parameterType="com.path.dbmaps.vo.S_OBJECTVOKey" >
+    delete from S_OBJECT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertS_OBJECT" parameterType="com.path.dbmaps.vo.S_OBJECTVO" >
+    insert into S_OBJECT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="OLE_OBJECT != null" >
+        OLE_OBJECT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="OLE_OBJECT != null" >
+        #{OLE_OBJECT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_OBJECT" >
+    update S_OBJECT
+    <set >
+      <if test="OLE_OBJECT != null" >
+        OLE_OBJECT = #{OLE_OBJECT},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateS_OBJECT" parameterType="com.path.dbmaps.vo.S_OBJECTVO" >
+    <include refid="sql_updateS_OBJECT" />
+  </update>
+</mapper>

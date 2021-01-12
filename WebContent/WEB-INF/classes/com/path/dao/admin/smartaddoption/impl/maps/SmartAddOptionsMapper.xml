@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="smartAddOptionMapper">
+
+ <sql id="smartAddOptionListCommon" >
+	<![CDATA[
+	
+			
+		SELECT
+			S_ADDITIONS_OPTIONS.OPTION_SERIAL,
+			 S_ADDITIONS_OPTIONS.BRIEF_NAME_ENG,
+			 S_ADDITIONS_OPTIONS.LONG_NAME_ENG,
+			 S_ADDITIONS_OPTIONS.BRIEF_NAME_ARAB,
+			 S_ADDITIONS_OPTIONS.LONG_NAME_ARAB, 
+			 S_ADDITIONS_OPTIONS.OPTION_CODE
+			 
+		FROM  S_ADDITIONS_OPTIONS 
+		WHERE	 (S_ADDITIONS_OPTIONS.OPTION_SERIAL  <> 0)
+		 AND	(S_ADDITIONS_OPTIONS.OPTION_CODE  = #{optionCode})
+
+	]]>	 
+ </sql>
+ 
+  <sql id="smartAddOptionListCommonOrder" >
+	<![CDATA[
+     ORDER BY S_ADDITIONS_OPTIONS.OPTION_SERIAL
+	]]>	 
+ </sql>
+ 
+ <resultMap id="smartAddOptionMap" type="com.path.dbmaps.vo.S_ADDITIONS_OPTIONSVO">
+	<id property="OPTION_CODE" column="OPTION_CODE" />
+	<result property="OPTION_CODE" column="OPTION_CODE" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="OPTION_SERIAL" column="OPTION_SERIAL" />
+ </resultMap>
+ 
+ <select id="smartAddOptionList" resultMap="smartAddOptionMap" parameterType="com.path.vo.admin.smartaddoption.SmartAddOptionsSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="smartAddOptionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="smartAddOptionListCount" resultType="int" parameterType="com.path.vo.admin.smartaddoption.SmartAddOptionsSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="smartAddOptionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnDependencyByOptionCode" parameterType="com.path.vo.admin.smartaddoption.SmartAddOptionsSC" resultType="com.path.dbmaps.vo.S_ADDITIONS_OPTIONSVO">
+ 	<![CDATA[
+	SELECT
+			 S_ADDITIONS_OPTIONS.BRIEF_NAME_ENG,
+			 S_ADDITIONS_OPTIONS.BRIEF_NAME_ARAB,
+			 S_ADDITIONS_OPTIONS.OPTION_SERIAL
+		FROM  S_ADDITIONS_OPTIONS 
+		WHERE	 (S_ADDITIONS_OPTIONS.OPTION_SERIAL = #{optionSerial} AND S_ADDITIONS_OPTIONS.OPTION_SERIAL <> 0)
+		 AND	(S_ADDITIONS_OPTIONS.OPTION_CODE  = #{optionCode})
+	]]>	 
+</select>
+
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSTRADE_CONTROL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSTRADE_CONTROLVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="SECURITY_TYPE" property="SECURITY_TYPE" />
+    <id column="WINDOW_REFERENCE" property="WINDOW_REFERENCE" />
+    <result column="TRADING_CONTROL" property="TRADING_CONTROL" />
+    <result column="ALLOW_PROCEED" property="ALLOW_PROCEED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LINE_NBR, SECURITY_TYPE, WINDOW_REFERENCE, TRADING_CONTROL, ALLOW_PROCEED
+  </sql>
+  <select id="selectPMSTRADE_CONTROL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSTRADE_CONTROLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSTRADE_CONTROL
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SECURITY_TYPE = #{SECURITY_TYPE}
+      and WINDOW_REFERENCE = #{WINDOW_REFERENCE}
+  </select>
+  <delete id="deletePMSTRADE_CONTROL" parameterType="com.path.dbmaps.vo.PMSTRADE_CONTROLVOKey" >
+    delete from PMSTRADE_CONTROL
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SECURITY_TYPE = #{SECURITY_TYPE}
+      and WINDOW_REFERENCE = #{WINDOW_REFERENCE}
+  </delete>
+  <insert id="insertPMSTRADE_CONTROL" parameterType="com.path.dbmaps.vo.PMSTRADE_CONTROLVO" >
+    insert into PMSTRADE_CONTROL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="SECURITY_TYPE != null and SECURITY_TYPE != emptyBigDecimalValue" >
+        SECURITY_TYPE,
+      </if>
+      <if test="WINDOW_REFERENCE != null" >
+        WINDOW_REFERENCE,
+      </if>
+      <if test="TRADING_CONTROL != null" >
+        TRADING_CONTROL,
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        ALLOW_PROCEED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="SECURITY_TYPE != null and SECURITY_TYPE != emptyBigDecimalValue" >
+        #{SECURITY_TYPE},
+      </if>
+      <if test="WINDOW_REFERENCE != null" >
+        #{WINDOW_REFERENCE},
+      </if>
+      <if test="TRADING_CONTROL != null" >
+        #{TRADING_CONTROL},
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        #{ALLOW_PROCEED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSTRADE_CONTROL" >
+    update PMSTRADE_CONTROL
+    <set >
+      <if test="TRADING_CONTROL != null" >
+        TRADING_CONTROL = #{TRADING_CONTROL},
+      </if>
+      <if test="ALLOW_PROCEED != null" >
+        ALLOW_PROCEED = #{ALLOW_PROCEED},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SECURITY_TYPE = #{SECURITY_TYPE}
+      and WINDOW_REFERENCE = #{WINDOW_REFERENCE}
+  </sql>
+  <update id="updatePMSTRADE_CONTROL" parameterType="com.path.dbmaps.vo.PMSTRADE_CONTROLVO" >
+    <include refid="sql_updatePMSTRADE_CONTROL" />
+  </update>
+</mapper>

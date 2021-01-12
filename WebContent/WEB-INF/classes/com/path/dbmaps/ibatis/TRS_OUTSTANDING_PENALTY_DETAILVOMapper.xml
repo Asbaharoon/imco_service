@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_OUTSTANDING_PENALTY_DETAIL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_OUTSTANDING_PENALTY_DETAILVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRS_NBR" property="TRS_NBR" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DEAL_NBR" property="DEAL_NBR" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="SETTLEMENT_NBR" property="SETTLEMENT_NBR" />
+    <result column="PENALTY_AMOUNT" property="PENALTY_AMOUNT" />
+    <result column="SETTLED_AMOUNT" property="SETTLED_AMOUNT" />
+    <result column="WAIVED_AMOUNT" property="WAIVED_AMOUNT" />
+    <result column="BLOCKED_AMOUNT" property="BLOCKED_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRS_NBR, STATUS, DEAL_NBR, CIF_NO, SETTLEMENT_NBR, PENALTY_AMOUNT, 
+    SETTLED_AMOUNT, WAIVED_AMOUNT, BLOCKED_AMOUNT
+  </sql>
+  <select id="selectTRS_OUTSTANDING_PENALTY_DETAIL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_OUTSTANDING_PENALTY_DETAILVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_OUTSTANDING_PENALTY_DETAIL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NBR = #{TRS_NBR}
+  </select>
+  <delete id="deleteTRS_OUTSTANDING_PENALTY_DETAIL" parameterType="com.path.dbmaps.vo.TRS_OUTSTANDING_PENALTY_DETAILVOKey" >
+    delete from TRS_OUTSTANDING_PENALTY_DETAIL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NBR = #{TRS_NBR}
+  </delete>
+  <insert id="insertTRS_OUTSTANDING_PENALTY_DETAIL" parameterType="com.path.dbmaps.vo.TRS_OUTSTANDING_PENALTY_DETAILVO" >
+    insert into TRS_OUTSTANDING_PENALTY_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRS_NBR != null and TRS_NBR != emptyBigDecimalValue" >
+        TRS_NBR,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="DEAL_NBR != null and DEAL_NBR != emptyBigDecimalValue" >
+        DEAL_NBR,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        SETTLEMENT_NBR,
+      </if>
+      <if test="PENALTY_AMOUNT != null and PENALTY_AMOUNT != emptyBigDecimalValue" >
+        PENALTY_AMOUNT,
+      </if>
+      <if test="SETTLED_AMOUNT != null and SETTLED_AMOUNT != emptyBigDecimalValue" >
+        SETTLED_AMOUNT,
+      </if>
+      <if test="WAIVED_AMOUNT != null and WAIVED_AMOUNT != emptyBigDecimalValue" >
+        WAIVED_AMOUNT,
+      </if>
+      <if test="BLOCKED_AMOUNT != null and BLOCKED_AMOUNT != emptyBigDecimalValue" >
+        BLOCKED_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRS_NBR != null and TRS_NBR != emptyBigDecimalValue" >
+        #{TRS_NBR},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="DEAL_NBR != null and DEAL_NBR != emptyBigDecimalValue" >
+        #{DEAL_NBR},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        #{SETTLEMENT_NBR},
+      </if>
+      <if test="PENALTY_AMOUNT != null and PENALTY_AMOUNT != emptyBigDecimalValue" >
+        #{PENALTY_AMOUNT},
+      </if>
+      <if test="SETTLED_AMOUNT != null and SETTLED_AMOUNT != emptyBigDecimalValue" >
+        #{SETTLED_AMOUNT},
+      </if>
+      <if test="WAIVED_AMOUNT != null and WAIVED_AMOUNT != emptyBigDecimalValue" >
+        #{WAIVED_AMOUNT},
+      </if>
+      <if test="BLOCKED_AMOUNT != null and BLOCKED_AMOUNT != emptyBigDecimalValue" >
+        #{BLOCKED_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_OUTSTANDING_PENALTY_DETAIL" >
+    update TRS_OUTSTANDING_PENALTY_DETAIL
+    <set >
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="DEAL_NBR != null" >
+        <choose >
+          <when test="DEAL_NBR == emptyBigDecimalValue" >
+            DEAL_NBR = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NBR = #{DEAL_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTLEMENT_NBR != null" >
+        <choose >
+          <when test="SETTLEMENT_NBR == emptyBigDecimalValue" >
+            SETTLEMENT_NBR = NULL ,
+          </when>
+          <otherwise >
+            SETTLEMENT_NBR = #{SETTLEMENT_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PENALTY_AMOUNT != null" >
+        <choose >
+          <when test="PENALTY_AMOUNT == emptyBigDecimalValue" >
+            PENALTY_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_AMOUNT = #{PENALTY_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTLED_AMOUNT != null" >
+        <choose >
+          <when test="SETTLED_AMOUNT == emptyBigDecimalValue" >
+            SETTLED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            SETTLED_AMOUNT = #{SETTLED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WAIVED_AMOUNT != null" >
+        <choose >
+          <when test="WAIVED_AMOUNT == emptyBigDecimalValue" >
+            WAIVED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            WAIVED_AMOUNT = #{WAIVED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BLOCKED_AMOUNT != null" >
+        <choose >
+          <when test="BLOCKED_AMOUNT == emptyBigDecimalValue" >
+            BLOCKED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            BLOCKED_AMOUNT = #{BLOCKED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NBR = #{TRS_NBR}
+  </sql>
+  <update id="updateTRS_OUTSTANDING_PENALTY_DETAIL" parameterType="com.path.dbmaps.vo.TRS_OUTSTANDING_PENALTY_DETAILVO" >
+    <include refid="sql_updateTRS_OUTSTANDING_PENALTY_DETAIL" />
+  </update>
+</mapper>

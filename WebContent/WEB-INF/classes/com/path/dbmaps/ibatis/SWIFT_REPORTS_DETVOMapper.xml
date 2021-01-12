@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_REPORTS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" >
+    <id column="COL_NAME" property="COL_NAME" />
+    <id column="REP_ID" property="REP_ID" />
+    <result column="LINE_NO" property="LINE_NO" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" extends="BaseResultMap" >
+    <result column="COL_EXP" property="COL_EXP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COL_NAME, REP_ID, LINE_NO
+  </sql>
+  <sql id="Blob_Column_List" >
+    COL_EXP
+  </sql>
+  <select id="selectSWIFT_REPORTS_DET" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_REPORTS_DET
+    where COL_NAME = #{COL_NAME}
+      and REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteSWIFT_REPORTS_DET" parameterType="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" >
+    delete from SWIFT_REPORTS_DET
+    where COL_NAME = #{COL_NAME}
+      and REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertSWIFT_REPORTS_DET" parameterType="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" >
+    insert into SWIFT_REPORTS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COL_NAME != null" >
+        COL_NAME,
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="COL_EXP != null" >
+        COL_EXP,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COL_NAME != null" >
+        #{COL_NAME},
+      </if>
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="COL_EXP != null" >
+        #{COL_EXP},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_REPORTS_DET" >
+    update SWIFT_REPORTS_DET
+    <set >
+      <if test="LINE_NO != null" >
+        <choose >
+          <when test="LINE_NO == emptyBigDecimalValue" >
+            LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            LINE_NO = #{LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COL_EXP != null" >
+        COL_EXP = #{COL_EXP},
+      </if>
+    </set>
+    where COL_NAME = #{COL_NAME}
+      and REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateSWIFT_REPORTS_DET" parameterType="com.path.dbmaps.vo.SWIFT_REPORTS_DETVO" >
+    <include refid="sql_updateSWIFT_REPORTS_DET" />
+  </update>
+</mapper>

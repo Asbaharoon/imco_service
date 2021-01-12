@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COUNTRIES_LIMIT_CIF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.COUNTRIES_LIMIT_CIFVO" >
+    <id column="CIF" property="CIF" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <result column="LIMIT_CURRENCY" property="LIMIT_CURRENCY" />
+    <result column="LIMIT_AMOUNT_FC" property="LIMIT_AMOUNT_FC" />
+    <result column="CHK_ENABLED" property="CHK_ENABLED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF, COMP_CODE, COUNTRY_CODE, LIMIT_CURRENCY, LIMIT_AMOUNT_FC, CHK_ENABLED, STATUS, 
+    DATE_CREATED, CREATED_BY, DATE_MODIFIED, MODIFIED_BY, DATE_APPROVED, APPROVED_BY
+  </sql>
+  <select id="selectCOUNTRIES_LIMIT_CIF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.COUNTRIES_LIMIT_CIFVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from COUNTRIES_LIMIT_CIF
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </select>
+  <delete id="deleteCOUNTRIES_LIMIT_CIF" parameterType="com.path.dbmaps.vo.COUNTRIES_LIMIT_CIFVO" >
+    delete from COUNTRIES_LIMIT_CIF
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </delete>
+  <insert id="insertCOUNTRIES_LIMIT_CIF" parameterType="com.path.dbmaps.vo.COUNTRIES_LIMIT_CIFVO" >
+    insert into COUNTRIES_LIMIT_CIF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="LIMIT_CURRENCY != null and LIMIT_CURRENCY != emptyBigDecimalValue" >
+        LIMIT_CURRENCY,
+      </if>
+      <if test="LIMIT_AMOUNT_FC != null and LIMIT_AMOUNT_FC != emptyBigDecimalValue" >
+        LIMIT_AMOUNT_FC,
+      </if>
+      <if test="CHK_ENABLED != null" >
+        CHK_ENABLED,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="LIMIT_CURRENCY != null and LIMIT_CURRENCY != emptyBigDecimalValue" >
+        #{LIMIT_CURRENCY},
+      </if>
+      <if test="LIMIT_AMOUNT_FC != null and LIMIT_AMOUNT_FC != emptyBigDecimalValue" >
+        #{LIMIT_AMOUNT_FC},
+      </if>
+      <if test="CHK_ENABLED != null" >
+        #{CHK_ENABLED},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCOUNTRIES_LIMIT_CIF" >
+    update COUNTRIES_LIMIT_CIF
+    <set >
+      <if test="LIMIT_CURRENCY != null" >
+        <choose >
+          <when test="LIMIT_CURRENCY == emptyBigDecimalValue" >
+            LIMIT_CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            LIMIT_CURRENCY = #{LIMIT_CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LIMIT_AMOUNT_FC != null" >
+        <choose >
+          <when test="LIMIT_AMOUNT_FC == emptyBigDecimalValue" >
+            LIMIT_AMOUNT_FC = NULL ,
+          </when>
+          <otherwise >
+            LIMIT_AMOUNT_FC = #{LIMIT_AMOUNT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHK_ENABLED != null" >
+        CHK_ENABLED = #{CHK_ENABLED},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+    </set>
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </sql>
+  <update id="updateCOUNTRIES_LIMIT_CIF" parameterType="com.path.dbmaps.vo.COUNTRIES_LIMIT_CIFVO" >
+    <include refid="sql_updateCOUNTRIES_LIMIT_CIF" />
+  </update>
+</mapper>

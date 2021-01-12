@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COUNTRY_HOLIDAY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.COUNTRY_HOLIDAYVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <id column="DD_HOL" property="DD_HOL" />
+    <id column="MM_HOL" property="MM_HOL" />
+    <id column="YYYY_HOL" property="YYYY_HOL" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, COUNTRY_CODE, DD_HOL, MM_HOL, YYYY_HOL, DESCRIPTION
+  </sql>
+  <select id="selectCOUNTRY_HOLIDAY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from COUNTRY_HOLIDAY
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and YYYY_HOL = #{YYYY_HOL}
+  </select>
+  <delete id="deleteCOUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVOKey" >
+    delete from COUNTRY_HOLIDAY
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and YYYY_HOL = #{YYYY_HOL}
+  </delete>
+  <insert id="insertCOUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVO" >
+    insert into COUNTRY_HOLIDAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="DD_HOL != null and DD_HOL != emptyBigDecimalValue" >
+        DD_HOL,
+      </if>
+      <if test="MM_HOL != null and MM_HOL != emptyBigDecimalValue" >
+        MM_HOL,
+      </if>
+      <if test="YYYY_HOL != null and YYYY_HOL != emptyBigDecimalValue" >
+        YYYY_HOL,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="DD_HOL != null and DD_HOL != emptyBigDecimalValue" >
+        #{DD_HOL},
+      </if>
+      <if test="MM_HOL != null and MM_HOL != emptyBigDecimalValue" >
+        #{MM_HOL},
+      </if>
+      <if test="YYYY_HOL != null and YYYY_HOL != emptyBigDecimalValue" >
+        #{YYYY_HOL},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCOUNTRY_HOLIDAY" >
+    update COUNTRY_HOLIDAY
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+      and DD_HOL = #{DD_HOL}
+      and MM_HOL = #{MM_HOL}
+      and YYYY_HOL = #{YYYY_HOL}
+  </sql>
+  <update id="updateCOUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.COUNTRY_HOLIDAYVO" >
+    <include refid="sql_updateCOUNTRY_HOLIDAY" />
+  </update>
+</mapper>

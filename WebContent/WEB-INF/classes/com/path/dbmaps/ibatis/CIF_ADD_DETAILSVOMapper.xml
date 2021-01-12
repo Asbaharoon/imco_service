@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_ADD_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" extends="BaseResultMap" >
+    <result column="BUYERS_LIST" property="BUYERS_LIST" />
+    <result column="SELLERS_LIST" property="SELLERS_LIST" />
+    <result column="MEMOS_LIST" property="MEMOS_LIST" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE
+  </sql>
+  <sql id="Blob_Column_List" >
+    BUYERS_LIST, SELLERS_LIST, MEMOS_LIST
+  </sql>
+  <select id="selectCIF_ADD_DETAILS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CIF_ADD_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIF_ADD_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" >
+    delete from CIF_ADD_DETAILS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIF_ADD_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" >
+    insert into CIF_ADD_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BUYERS_LIST != null" >
+        BUYERS_LIST,
+      </if>
+      <if test="SELLERS_LIST != null" >
+        SELLERS_LIST,
+      </if>
+      <if test="MEMOS_LIST != null" >
+        MEMOS_LIST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BUYERS_LIST != null" >
+        #{BUYERS_LIST},
+      </if>
+      <if test="SELLERS_LIST != null" >
+        #{SELLERS_LIST},
+      </if>
+      <if test="MEMOS_LIST != null" >
+        #{MEMOS_LIST},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_ADD_DETAILS" >
+    update CIF_ADD_DETAILS
+    <set >
+      <if test="BUYERS_LIST != null" >
+        BUYERS_LIST = #{BUYERS_LIST},
+      </if>
+      <if test="SELLERS_LIST != null" >
+        SELLERS_LIST = #{SELLERS_LIST},
+      </if>
+      <if test="MEMOS_LIST != null" >
+        MEMOS_LIST = #{MEMOS_LIST},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_ADD_DETAILS" parameterType="com.path.dbmaps.vo.CIF_ADD_DETAILSVO" >
+    <include refid="sql_updateCIF_ADD_DETAILS" />
+  </update>
+</mapper>

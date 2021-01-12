@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_THEME" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_THEMEVO" >
+    <id column="THEME_ID" property="THEME_ID" />
+    <result column="THEME_NAME" property="THEME_NAME" />
+    <result column="IS_ACTIVE_YN" property="IS_ACTIVE_YN" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="UPDATED_DATE" property="UPDATED_DATE" />
+    <result column="IS_UPDATED_YN" property="IS_UPDATED_YN" />
+    <result column="APP_NAME" property="APP_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    THEME_ID, THEME_NAME, IS_ACTIVE_YN, CREATED_BY, UPDATED_BY, CREATED_DATE, UPDATED_DATE, 
+    IS_UPDATED_YN, APP_NAME
+  </sql>
+  <select id="selectSYS_THEME" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_THEMEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_THEME
+    where THEME_ID = #{THEME_ID}
+  </select>
+  <delete id="deleteSYS_THEME" parameterType="com.path.dbmaps.vo.SYS_THEMEVOKey" >
+    delete from SYS_THEME
+    where THEME_ID = #{THEME_ID}
+  </delete>
+  <insert id="insertSYS_THEME" parameterType="com.path.dbmaps.vo.SYS_THEMEVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="THEME_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(THEME_ID),0)+1</when><otherwise>NVL(MAX(THEME_ID),0)+1</otherwise></choose> FROM SYS_THEME
+    </selectKey>
+    insert into SYS_THEME
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      THEME_ID,
+      <if test="THEME_NAME != null" >
+        THEME_NAME,
+      </if>
+      <if test="IS_ACTIVE_YN != null and IS_ACTIVE_YN != emptyBigDecimalValue" >
+        IS_ACTIVE_YN,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="UPDATED_BY != null" >
+        UPDATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="UPDATED_DATE != null" >
+        UPDATED_DATE,
+      </if>
+      <if test="IS_UPDATED_YN != null and IS_UPDATED_YN != emptyBigDecimalValue" >
+        IS_UPDATED_YN,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{THEME_ID},
+      <if test="THEME_NAME != null" >
+        #{THEME_NAME},
+      </if>
+      <if test="IS_ACTIVE_YN != null and IS_ACTIVE_YN != emptyBigDecimalValue" >
+        #{IS_ACTIVE_YN},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="UPDATED_BY != null" >
+        #{UPDATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="UPDATED_DATE != null" >
+        #{UPDATED_DATE},
+      </if>
+      <if test="IS_UPDATED_YN != null and IS_UPDATED_YN != emptyBigDecimalValue" >
+        #{IS_UPDATED_YN},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_THEME" >
+    update SYS_THEME
+    <set >
+      <if test="THEME_NAME != null" >
+        THEME_NAME = #{THEME_NAME},
+      </if>
+      <if test="IS_ACTIVE_YN != null" >
+        <choose >
+          <when test="IS_ACTIVE_YN == emptyBigDecimalValue" >
+            IS_ACTIVE_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_ACTIVE_YN = #{IS_ACTIVE_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="UPDATED_BY != null" >
+        UPDATED_BY = #{UPDATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="UPDATED_DATE != null" >
+        UPDATED_DATE = #{UPDATED_DATE},
+      </if>
+      <if test="IS_UPDATED_YN != null" >
+        <choose >
+          <when test="IS_UPDATED_YN == emptyBigDecimalValue" >
+            IS_UPDATED_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_UPDATED_YN = #{IS_UPDATED_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+    </set>
+    where THEME_ID = #{THEME_ID}
+  </sql>
+  <update id="updateSYS_THEME" parameterType="com.path.dbmaps.vo.SYS_THEMEVO" >
+    <include refid="sql_updateSYS_THEME" />
+  </update>
+</mapper>

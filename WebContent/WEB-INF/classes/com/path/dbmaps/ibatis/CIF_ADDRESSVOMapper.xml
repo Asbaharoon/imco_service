@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_ADDRESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_ADDRESSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="ADDRESS_DESC" property="ADDRESS_DESC" />
+    <result column="ADDRESS1_ENG" property="ADDRESS1_ENG" />
+    <result column="ADDRESS2_ENG" property="ADDRESS2_ENG" />
+    <result column="ADDRESS3_ENG" property="ADDRESS3_ENG" />
+    <result column="ADDRESS4_ENG" property="ADDRESS4_ENG" />
+    <result column="ADDRESS1_ARAB" property="ADDRESS1_ARAB" />
+    <result column="ADDRESS2_ARAB" property="ADDRESS2_ARAB" />
+    <result column="ADDRESS3_ARAB" property="ADDRESS3_ARAB" />
+    <result column="ADDRESS4_ARAB" property="ADDRESS4_ARAB" />
+    <result column="PRINT_STAT" property="PRINT_STAT" />
+    <result column="CONTACT_NAME" property="CONTACT_NAME" />
+    <result column="CONTACT_NAME_ARAB" property="CONTACT_NAME_ARAB" />
+    <result column="STREET_DETAILS_ENG" property="STREET_DETAILS_ENG" />
+    <result column="CITY_ENG" property="CITY_ENG" />
+    <result column="GOVERNERATE_ENG" property="GOVERNERATE_ENG" />
+    <result column="STREET_DETAILS_ARAB" property="STREET_DETAILS_ARAB" />
+    <result column="CITY_ARAB" property="CITY_ARAB" />
+    <result column="GOVERNERATE_ARAB" property="GOVERNERATE_ARAB" />
+    <result column="SALUTATION_ENG" property="SALUTATION_ENG" />
+    <result column="SALUTATION_ARAB" property="SALUTATION_ARAB" />
+    <result column="FAX" property="FAX" />
+    <result column="TEL" property="TEL" />
+    <result column="DEFAULT_ADD" property="DEFAULT_ADD" />
+    <result column="PO_BOX" property="PO_BOX" />
+    <result column="COUNTRY" property="COUNTRY" />
+    <result column="REGION" property="REGION" />
+    <result column="MOBILE" property="MOBILE" />
+    <result column="HOME_TEL" property="HOME_TEL" />
+    <result column="WORK_TEL" property="WORK_TEL" />
+    <result column="EMAIL" property="EMAIL" />
+    <result column="OTHER_TEL" property="OTHER_TEL" />
+    <result column="POSTAL_CODE" property="POSTAL_CODE" />
+    <result column="POBOX_AREA" property="POBOX_AREA" />
+    <result column="POSTAL_CODE1" property="POSTAL_CODE1" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="SECTOR_CODE" property="SECTOR_CODE" />
+    <result column="CITY_CODE" property="CITY_CODE" />
+    <result column="EXPIRY_DATE" property="EXPIRY_DATE" />
+    <result column="ADDRESS_DESCRIPTION" property="ADDRESS_DESCRIPTION" />
+    <result column="PERM_ADDRESS" property="PERM_ADDRESS" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="IS_KYC_YN" property="IS_KYC_YN" />
+    <result column="SHORT_NAME_AR" property="SHORT_NAME_AR" />
+    <result column="STATE_ARAB" property="STATE_ARAB" />
+    <result column="STATE_ENG" property="STATE_ENG" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="E_WALLET_YN" property="E_WALLET_YN" />
+	<result column="OLD_MOBILE" property="OLD_MOBILE" />
+	<result column="OLD_EMAIL" property="OLD_EMAIL" />
+	<result column="LAST_CHANGE_MOBILE_EMAIL" property="LAST_CHANGE_MOBILE_EMAIL" />
+	<result column="LAST_DATE_MOBILE_EMAIL" property="LAST_DATE_MOBILE_EMAIL" />
+	<result column="TELEX" property="TELEX" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, BRANCH_CODE, ADDRESS_DESC, ADDRESS1_ENG, ADDRESS2_ENG, 
+    ADDRESS3_ENG, ADDRESS4_ENG, ADDRESS1_ARAB, ADDRESS2_ARAB, ADDRESS3_ARAB, ADDRESS4_ARAB, 
+    PRINT_STAT, CONTACT_NAME, CONTACT_NAME_ARAB, STREET_DETAILS_ENG, CITY_ENG, GOVERNERATE_ENG, 
+    STREET_DETAILS_ARAB, CITY_ARAB, GOVERNERATE_ARAB, SALUTATION_ENG, SALUTATION_ARAB, 
+    FAX, TEL, DEFAULT_ADD, PO_BOX, COUNTRY, REGION, MOBILE, HOME_TEL, WORK_TEL, EMAIL, 
+    OTHER_TEL, POSTAL_CODE, POBOX_AREA, POSTAL_CODE1, ADDITIONAL_REFERENCE, SECTOR_CODE, 
+    CITY_CODE, EXPIRY_DATE, ADDRESS_DESCRIPTION, PERM_ADDRESS, FROM_DATE, TO_DATE, IS_KYC_YN, 
+    SHORT_NAME_AR, STATE_ARAB, STATE_ENG, DATE_UPDATED, OLD_MOBILE,OLD_EMAIL,LAST_CHANGE_MOBILE_EMAIL,
+    LAST_DATE_MOBILE_EMAIL, TELEX
+  </sql>
+  <select id="selectCIF_ADDRESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_ADDRESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_ADDRESS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_ADDRESS" parameterType="com.path.dbmaps.vo.CIF_ADDRESSVOKey" >
+    delete from CIF_ADDRESS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_ADDRESS" parameterType="com.path.dbmaps.vo.CIF_ADDRESSVO" >
+    insert into CIF_ADDRESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="ADDRESS_DESC != null and !&quot;&quot;.equals(ADDRESS_DESC)" >
+        ADDRESS_DESC,
+      </if>
+      <if test="ADDRESS1_ENG != null and !&quot;&quot;.equals(ADDRESS1_ENG)" >
+        ADDRESS1_ENG,
+      </if>
+      <if test="ADDRESS2_ENG != null and !&quot;&quot;.equals(ADDRESS2_ENG)" >
+        ADDRESS2_ENG,
+      </if>
+      <if test="ADDRESS3_ENG != null and !&quot;&quot;.equals(ADDRESS3_ENG)" >
+        ADDRESS3_ENG,
+      </if>
+      <if test="ADDRESS4_ENG != null and !&quot;&quot;.equals(ADDRESS4_ENG)" >
+        ADDRESS4_ENG,
+      </if>
+      <if test="ADDRESS1_ARAB != null and !&quot;&quot;.equals(ADDRESS1_ARAB)" >
+        ADDRESS1_ARAB,
+      </if>
+      <if test="ADDRESS2_ARAB != null and !&quot;&quot;.equals(ADDRESS2_ARAB)" >
+        ADDRESS2_ARAB,
+      </if>
+      <if test="ADDRESS3_ARAB != null and !&quot;&quot;.equals(ADDRESS3_ARAB)" >
+        ADDRESS3_ARAB,
+      </if>
+      <if test="ADDRESS4_ARAB != null and !&quot;&quot;.equals(ADDRESS4_ARAB)" >
+        ADDRESS4_ARAB,
+      </if>
+      <if test="PRINT_STAT != null and PRINT_STAT != emptyBigDecimalValue" >
+        PRINT_STAT,
+      </if>
+      <if test="CONTACT_NAME != null and !&quot;&quot;.equals(CONTACT_NAME)" >
+        CONTACT_NAME,
+      </if>
+      <if test="CONTACT_NAME_ARAB != null and !&quot;&quot;.equals(CONTACT_NAME_ARAB)" >
+        CONTACT_NAME_ARAB,
+      </if>
+      <if test="STREET_DETAILS_ENG != null and !&quot;&quot;.equals(STREET_DETAILS_ENG)" >
+        STREET_DETAILS_ENG,
+      </if>
+      <if test="CITY_ENG != null and !&quot;&quot;.equals(CITY_ENG)" >
+        CITY_ENG,
+      </if>
+      <if test="GOVERNERATE_ENG != null and !&quot;&quot;.equals(GOVERNERATE_ENG)" >
+        GOVERNERATE_ENG,
+      </if>
+      <if test="STREET_DETAILS_ARAB != null and !&quot;&quot;.equals(STREET_DETAILS_ARAB)" >
+        STREET_DETAILS_ARAB,
+      </if>
+      <if test="CITY_ARAB != null and !&quot;&quot;.equals(CITY_ARAB)" >
+        CITY_ARAB,
+      </if>
+      <if test="GOVERNERATE_ARAB != null and !&quot;&quot;.equals(GOVERNERATE_ARAB)" >
+        GOVERNERATE_ARAB,
+      </if>
+      <if test="SALUTATION_ENG != null and !&quot;&quot;.equals(SALUTATION_ENG)" >
+        SALUTATION_ENG,
+      </if>
+      <if test="SALUTATION_ARAB != null and !&quot;&quot;.equals(SALUTATION_ARAB)" >
+        SALUTATION_ARAB,
+      </if>
+      <if test="FAX != null and !&quot;&quot;.equals(FAX)" >
+        FAX,
+      </if>
+      <if test="TEL != null and !&quot;&quot;.equals(TEL)" >
+        TEL,
+      </if>
+      <if test="DEFAULT_ADD != null and !&quot;&quot;.equals(DEFAULT_ADD)" >
+        DEFAULT_ADD,
+      </if>
+      <if test="PO_BOX != null and !&quot;&quot;.equals(PO_BOX)" >
+        PO_BOX,
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        COUNTRY,
+      </if>
+      <if test="REGION != null and REGION != emptyBigDecimalValue" >
+        REGION,
+      </if>
+      <if test="MOBILE != null and !&quot;&quot;.equals(MOBILE)" >
+        MOBILE,
+      </if>
+      <if test="HOME_TEL != null and !&quot;&quot;.equals(HOME_TEL)" >
+        HOME_TEL,
+      </if>
+      <if test="WORK_TEL != null and !&quot;&quot;.equals(WORK_TEL)" >
+        WORK_TEL,
+      </if>
+      <if test="EMAIL != null and !&quot;&quot;.equals(EMAIL)" >
+        EMAIL,
+      </if>
+      <if test="OTHER_TEL != null and !&quot;&quot;.equals(OTHER_TEL)" >
+        OTHER_TEL,
+      </if>
+      <if test="POSTAL_CODE != null and POSTAL_CODE != emptyBigDecimalValue" >
+        POSTAL_CODE,
+      </if>
+      <if test="POBOX_AREA != null and POBOX_AREA != emptyBigDecimalValue" >
+        POBOX_AREA,
+      </if>
+      <if test="POSTAL_CODE1 != null and !&quot;&quot;.equals(POSTAL_CODE1)" >
+        POSTAL_CODE1,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null and !&quot;&quot;.equals(ADDITIONAL_REFERENCE)" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        SECTOR_CODE,
+      </if>
+      <if test="CITY_CODE != null and CITY_CODE != emptyBigDecimalValue" >
+        CITY_CODE,
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE,
+      </if>
+      <if test="ADDRESS_DESCRIPTION != null and ADDRESS_DESCRIPTION != emptyBigDecimalValue" >
+        ADDRESS_DESCRIPTION,
+      </if>
+      <if test="PERM_ADDRESS != null and !&quot;&quot;.equals(PERM_ADDRESS)" >
+        PERM_ADDRESS,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="IS_KYC_YN != null and !&quot;&quot;.equals(IS_KYC_YN)" >
+        IS_KYC_YN,
+      </if>
+      <if test="SHORT_NAME_AR != null and !&quot;&quot;.equals(SHORT_NAME_AR)" >
+        SHORT_NAME_AR,
+      </if>
+      <if test="STATE_ARAB != null and !&quot;&quot;.equals(STATE_ARAB)" >
+        STATE_ARAB,
+      </if>
+      <if test="STATE_ENG != null and !&quot;&quot;.equals(STATE_ENG)" >
+        STATE_ENG,
+      </if>
+      <if test="DATE_UPDATED != null" >
+        DATE_UPDATED,
+      </if>
+      <if test="E_WALLET_YN != null and !&quot;&quot;.equals(E_WALLET_YN)" >
+        E_WALLET_YN,
+      </if>            
+	  <if test="OLD_MOBILE != null and !&quot;&quot;.equals(OLD_MOBILE)">
+			OLD_MOBILE,
+	  </if>
+	  <if test="OLD_EMAIL != null and !&quot;&quot;.equals(OLD_EMAIL)">
+			OLD_EMAIL,
+	  </if>
+	  <if test="LAST_CHANGE_MOBILE_EMAIL != null and !&quot;&quot;.equals(LAST_CHANGE_MOBILE_EMAIL)">
+			LAST_CHANGE_MOBILE_EMAIL,
+	  </if>
+	  <if test="LAST_DATE_MOBILE_EMAIL != null and !&quot;&quot;.equals(LAST_DATE_MOBILE_EMAIL)">
+			LAST_DATE_MOBILE_EMAIL,
+	  </if>
+	  <if test="TELEX != null" >
+        TELEX,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="ADDRESS_DESC != null and !&quot;&quot;.equals(ADDRESS_DESC)" >
+        #{ADDRESS_DESC},
+      </if>
+      <if test="ADDRESS1_ENG != null and !&quot;&quot;.equals(ADDRESS1_ENG)" >
+        #{ADDRESS1_ENG},
+      </if>
+      <if test="ADDRESS2_ENG != null and !&quot;&quot;.equals(ADDRESS2_ENG)" >
+        #{ADDRESS2_ENG},
+      </if>
+      <if test="ADDRESS3_ENG != null and !&quot;&quot;.equals(ADDRESS3_ENG)" >
+        #{ADDRESS3_ENG},
+      </if>
+      <if test="ADDRESS4_ENG != null and !&quot;&quot;.equals(ADDRESS4_ENG)" >
+        #{ADDRESS4_ENG},
+      </if>
+      <if test="ADDRESS1_ARAB != null and !&quot;&quot;.equals(ADDRESS1_ARAB)" >
+        #{ADDRESS1_ARAB},
+      </if>
+      <if test="ADDRESS2_ARAB != null and !&quot;&quot;.equals(ADDRESS2_ARAB)" >
+        #{ADDRESS2_ARAB},
+      </if>
+      <if test="ADDRESS3_ARAB != null and !&quot;&quot;.equals(ADDRESS3_ARAB)" >
+        #{ADDRESS3_ARAB},
+      </if>
+      <if test="ADDRESS4_ARAB != null and !&quot;&quot;.equals(ADDRESS4_ARAB)" >
+        #{ADDRESS4_ARAB},
+      </if>
+      <if test="PRINT_STAT != null and PRINT_STAT != emptyBigDecimalValue" >
+        #{PRINT_STAT},
+      </if>
+      <if test="CONTACT_NAME != null and !&quot;&quot;.equals(CONTACT_NAME)" >
+        #{CONTACT_NAME},
+      </if>
+      <if test="CONTACT_NAME_ARAB != null and !&quot;&quot;.equals(CONTACT_NAME_ARAB)" >
+        #{CONTACT_NAME_ARAB},
+      </if>
+      <if test="STREET_DETAILS_ENG != null and !&quot;&quot;.equals(STREET_DETAILS_ENG)" >
+        #{STREET_DETAILS_ENG},
+      </if>
+      <if test="CITY_ENG != null and !&quot;&quot;.equals(CITY_ENG)" >
+        #{CITY_ENG},
+      </if>
+      <if test="GOVERNERATE_ENG != null and !&quot;&quot;.equals(GOVERNERATE_ENG)" >
+        #{GOVERNERATE_ENG},
+      </if>
+      <if test="STREET_DETAILS_ARAB != null and !&quot;&quot;.equals(STREET_DETAILS_ARAB)" >
+        #{STREET_DETAILS_ARAB},
+      </if>
+      <if test="CITY_ARAB != null and !&quot;&quot;.equals(CITY_ARAB)" >
+        #{CITY_ARAB},
+      </if>
+      <if test="GOVERNERATE_ARAB != null and !&quot;&quot;.equals(GOVERNERATE_ARAB)" >
+        #{GOVERNERATE_ARAB},
+      </if>
+      <if test="SALUTATION_ENG != null and !&quot;&quot;.equals(SALUTATION_ENG)" >
+        #{SALUTATION_ENG},
+      </if>
+      <if test="SALUTATION_ARAB != null and !&quot;&quot;.equals(SALUTATION_ARAB)" >
+        #{SALUTATION_ARAB},
+      </if>
+      <if test="FAX != null and !&quot;&quot;.equals(FAX)" >
+        #{FAX},
+      </if>
+      <if test="TEL != null and !&quot;&quot;.equals(TEL)" >
+        #{TEL},
+      </if>
+      <if test="DEFAULT_ADD != null and !&quot;&quot;.equals(DEFAULT_ADD)" >
+        #{DEFAULT_ADD},
+      </if>
+      <if test="PO_BOX != null and !&quot;&quot;.equals(PO_BOX)" >
+        #{PO_BOX},
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        #{COUNTRY},
+      </if>
+      <if test="REGION != null and REGION != emptyBigDecimalValue" >
+        #{REGION},
+      </if>
+      <if test="MOBILE != null and !&quot;&quot;.equals(MOBILE)" >
+        #{MOBILE},
+      </if>
+      <if test="HOME_TEL != null and !&quot;&quot;.equals(HOME_TEL)" >
+        #{HOME_TEL},
+      </if>
+      <if test="WORK_TEL != null and !&quot;&quot;.equals(WORK_TEL)" >
+        #{WORK_TEL},
+      </if>
+      <if test="EMAIL != null and !&quot;&quot;.equals(EMAIL)" >
+        #{EMAIL},
+      </if>
+      <if test="OTHER_TEL != null and !&quot;&quot;.equals(OTHER_TEL)" >
+        #{OTHER_TEL},
+      </if>
+      <if test="POSTAL_CODE != null and POSTAL_CODE != emptyBigDecimalValue" >
+        #{POSTAL_CODE},
+      </if>
+      <if test="POBOX_AREA != null and POBOX_AREA != emptyBigDecimalValue" >
+        #{POBOX_AREA},
+      </if>
+      <if test="POSTAL_CODE1 != null and !&quot;&quot;.equals(POSTAL_CODE1)" >
+        #{POSTAL_CODE1},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null and !&quot;&quot;.equals(ADDITIONAL_REFERENCE)" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="SECTOR_CODE != null and SECTOR_CODE != emptyBigDecimalValue" >
+        #{SECTOR_CODE},
+      </if>
+      <if test="CITY_CODE != null and CITY_CODE != emptyBigDecimalValue" >
+        #{CITY_CODE},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        #{EXPIRY_DATE},
+      </if>
+      <if test="ADDRESS_DESCRIPTION != null and ADDRESS_DESCRIPTION != emptyBigDecimalValue" >
+        #{ADDRESS_DESCRIPTION},
+      </if>
+      <if test="PERM_ADDRESS != null and !&quot;&quot;.equals(PERM_ADDRESS)" >
+        #{PERM_ADDRESS},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="IS_KYC_YN != null and !&quot;&quot;.equals(IS_KYC_YN)" >
+        #{IS_KYC_YN},
+      </if>
+      <if test="SHORT_NAME_AR != null and !&quot;&quot;.equals(SHORT_NAME_AR)" >
+        #{SHORT_NAME_AR},
+      </if>
+      <if test="STATE_ARAB != null and !&quot;&quot;.equals(STATE_ARAB)" >
+        #{STATE_ARAB},
+      </if>
+      <if test="STATE_ENG != null and !&quot;&quot;.equals(STATE_ENG)" >
+        #{STATE_ENG},
+      </if>
+      <if test="DATE_UPDATED != null" >
+        #{DATE_UPDATED},
+      </if>
+      <if test="E_WALLET_YN != null and !&quot;&quot;.equals(E_WALLET_YN)">
+        #{E_WALLET_YN},
+      </if>
+	  <if test="OLD_MOBILE != null and !&quot;&quot;.equals(OLD_MOBILE)">
+			#{OLD_MOBILE},
+	  </if>
+	  <if test="OLD_EMAIL != null and !&quot;&quot;.equals(OLD_EMAIL)">
+			#{OLD_EMAIL},
+	  </if>
+	  <if test="LAST_CHANGE_MOBILE_EMAIL != null and !&quot;&quot;.equals(LAST_CHANGE_MOBILE_EMAIL)">
+			#{LAST_CHANGE_MOBILE_EMAIL},
+	  </if>
+	  <if test="LAST_DATE_MOBILE_EMAIL != null and !&quot;&quot;.equals(LAST_DATE_MOBILE_EMAIL)">
+			#{LAST_DATE_MOBILE_EMAIL},
+	  </if>
+	  <if test="TELEX != null" >
+        #{TELEX},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_ADDRESS" >
+    update CIF_ADDRESS
+    <set >
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS_DESC != null" >
+        <choose >
+          <when test="ADDRESS_DESC.equals(&quot;&quot;)" >
+            ADDRESS_DESC = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS_DESC = #{ADDRESS_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS1_ENG != null" >
+        <choose >
+          <when test="ADDRESS1_ENG.equals(&quot;&quot;)" >
+            ADDRESS1_ENG = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS1_ENG = #{ADDRESS1_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS2_ENG != null" >
+        <choose >
+          <when test="ADDRESS2_ENG.equals(&quot;&quot;)" >
+            ADDRESS2_ENG = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS2_ENG = #{ADDRESS2_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS3_ENG != null" >
+        <choose >
+          <when test="ADDRESS3_ENG.equals(&quot;&quot;)" >
+            ADDRESS3_ENG = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS3_ENG = #{ADDRESS3_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS4_ENG != null" >
+        <choose >
+          <when test="ADDRESS4_ENG.equals(&quot;&quot;)" >
+            ADDRESS4_ENG = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS4_ENG = #{ADDRESS4_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS1_ARAB != null" >
+        <choose >
+          <when test="ADDRESS1_ARAB.equals(&quot;&quot;)" >
+            ADDRESS1_ARAB = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS1_ARAB = #{ADDRESS1_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS2_ARAB != null" >
+        <choose >
+          <when test="ADDRESS2_ARAB.equals(&quot;&quot;)" >
+            ADDRESS2_ARAB = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS2_ARAB = #{ADDRESS2_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS3_ARAB != null" >
+        <choose >
+          <when test="ADDRESS3_ARAB.equals(&quot;&quot;)" >
+            ADDRESS3_ARAB = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS3_ARAB = #{ADDRESS3_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDRESS4_ARAB != null" >
+        <choose >
+          <when test="ADDRESS4_ARAB.equals(&quot;&quot;)" >
+            ADDRESS4_ARAB = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS4_ARAB = #{ADDRESS4_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRINT_STAT != null" >
+        <choose >
+          <when test="PRINT_STAT == emptyBigDecimalValue" >
+            PRINT_STAT = NULL ,
+          </when>
+          <otherwise >
+            PRINT_STAT = #{PRINT_STAT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTACT_NAME != null" >
+        <choose >
+          <when test="CONTACT_NAME.equals(&quot;&quot;)" >
+            CONTACT_NAME = NULL ,
+          </when>
+          <otherwise >
+            CONTACT_NAME = #{CONTACT_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTACT_NAME_ARAB != null" >
+        <choose >
+          <when test="CONTACT_NAME_ARAB.equals(&quot;&quot;)" >
+            CONTACT_NAME_ARAB = NULL ,
+          </when>
+          <otherwise >
+            CONTACT_NAME_ARAB = #{CONTACT_NAME_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STREET_DETAILS_ENG != null" >
+        <choose >
+          <when test="STREET_DETAILS_ENG.equals(&quot;&quot;)" >
+            STREET_DETAILS_ENG = NULL ,
+          </when>
+          <otherwise >
+            STREET_DETAILS_ENG = #{STREET_DETAILS_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CITY_ENG != null" >
+        <choose >
+          <when test="CITY_ENG.equals(&quot;&quot;)" >
+            CITY_ENG = NULL ,
+          </when>
+          <otherwise >
+            CITY_ENG = #{CITY_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GOVERNERATE_ENG != null" >
+        <choose >
+          <when test="GOVERNERATE_ENG.equals(&quot;&quot;)" >
+            GOVERNERATE_ENG = NULL ,
+          </when>
+          <otherwise >
+            GOVERNERATE_ENG = #{GOVERNERATE_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STREET_DETAILS_ARAB != null" >
+        <choose >
+          <when test="STREET_DETAILS_ARAB.equals(&quot;&quot;)" >
+            STREET_DETAILS_ARAB = NULL ,
+          </when>
+          <otherwise >
+            STREET_DETAILS_ARAB = #{STREET_DETAILS_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CITY_ARAB != null" >
+        <choose >
+          <when test="CITY_ARAB.equals(&quot;&quot;)" >
+            CITY_ARAB = NULL ,
+          </when>
+          <otherwise >
+            CITY_ARAB = #{CITY_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GOVERNERATE_ARAB != null" >
+        <choose >
+          <when test="GOVERNERATE_ARAB.equals(&quot;&quot;)" >
+            GOVERNERATE_ARAB = NULL ,
+          </when>
+          <otherwise >
+            GOVERNERATE_ARAB = #{GOVERNERATE_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SALUTATION_ENG != null" >
+        <choose >
+          <when test="SALUTATION_ENG.equals(&quot;&quot;)" >
+            SALUTATION_ENG = NULL ,
+          </when>
+          <otherwise >
+            SALUTATION_ENG = #{SALUTATION_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SALUTATION_ARAB != null" >
+        <choose >
+          <when test="SALUTATION_ARAB.equals(&quot;&quot;)" >
+            SALUTATION_ARAB = NULL ,
+          </when>
+          <otherwise >
+            SALUTATION_ARAB = #{SALUTATION_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FAX != null" >
+        <choose >
+          <when test="FAX.equals(&quot;&quot;)" >
+            FAX = NULL ,
+          </when>
+          <otherwise >
+            FAX = #{FAX},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TEL != null" >
+        <choose >
+          <when test="TEL.equals(&quot;&quot;)" >
+            TEL = NULL ,
+          </when>
+          <otherwise >
+            TEL = #{TEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEFAULT_ADD != null" >
+        <choose >
+          <when test="DEFAULT_ADD.equals(&quot;&quot;)" >
+            DEFAULT_ADD = NULL ,
+          </when>
+          <otherwise >
+            DEFAULT_ADD = #{DEFAULT_ADD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PO_BOX != null" >
+        <choose >
+          <when test="PO_BOX.equals(&quot;&quot;)" >
+            PO_BOX = NULL ,
+          </when>
+          <otherwise >
+            PO_BOX = #{PO_BOX},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COUNTRY != null" >
+        <choose >
+          <when test="COUNTRY == emptyBigDecimalValue" >
+            COUNTRY = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY = #{COUNTRY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REGION != null" >
+        <choose >
+          <when test="REGION == emptyBigDecimalValue" >
+            REGION = NULL ,
+          </when>
+          <otherwise >
+            REGION = #{REGION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MOBILE != null" >
+        <choose >
+          <when test="MOBILE.equals(&quot;&quot;)" >
+            MOBILE = NULL ,
+          </when>
+          <otherwise >
+            MOBILE = #{MOBILE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="HOME_TEL != null" >
+        <choose >
+          <when test="HOME_TEL.equals(&quot;&quot;)" >
+            HOME_TEL = NULL ,
+          </when>
+          <otherwise >
+            HOME_TEL = #{HOME_TEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WORK_TEL != null" >
+        <choose >
+          <when test="WORK_TEL.equals(&quot;&quot;)" >
+            WORK_TEL = NULL ,
+          </when>
+          <otherwise >
+            WORK_TEL = #{WORK_TEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EMAIL != null" >
+        <choose >
+          <when test="EMAIL.equals(&quot;&quot;)" >
+            EMAIL = NULL ,
+          </when>
+          <otherwise >
+            EMAIL = #{EMAIL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OTHER_TEL != null" >
+        <choose >
+          <when test="OTHER_TEL.equals(&quot;&quot;)" >
+            OTHER_TEL = NULL ,
+          </when>
+          <otherwise >
+            OTHER_TEL = #{OTHER_TEL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSTAL_CODE != null" >
+        <choose >
+          <when test="POSTAL_CODE == emptyBigDecimalValue" >
+            POSTAL_CODE = NULL ,
+          </when>
+          <otherwise >
+            POSTAL_CODE = #{POSTAL_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POBOX_AREA != null" >
+        <choose >
+          <when test="POBOX_AREA == emptyBigDecimalValue" >
+            POBOX_AREA = NULL ,
+          </when>
+          <otherwise >
+            POBOX_AREA = #{POBOX_AREA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="POSTAL_CODE1 != null" >
+        <choose >
+          <when test="POSTAL_CODE1.equals(&quot;&quot;)" >
+            POSTAL_CODE1 = NULL ,
+          </when>
+          <otherwise >
+            POSTAL_CODE1 = #{POSTAL_CODE1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        <choose >
+          <when test="ADDITIONAL_REFERENCE.equals(&quot;&quot;)" >
+            ADDITIONAL_REFERENCE = NULL ,
+          </when>
+          <otherwise >
+            ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SECTOR_CODE != null" >
+        <choose >
+          <when test="SECTOR_CODE == emptyBigDecimalValue" >
+            SECTOR_CODE = NULL ,
+          </when>
+          <otherwise >
+            SECTOR_CODE = #{SECTOR_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CITY_CODE != null" >
+        <choose >
+          <when test="CITY_CODE == emptyBigDecimalValue" >
+            CITY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CITY_CODE = #{CITY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE = #{EXPIRY_DATE},
+      </if>
+      <if test="ADDRESS_DESCRIPTION != null" >
+        <choose >
+          <when test="ADDRESS_DESCRIPTION == emptyBigDecimalValue" >
+            ADDRESS_DESCRIPTION = NULL ,
+          </when>
+          <otherwise >
+            ADDRESS_DESCRIPTION = #{ADDRESS_DESCRIPTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERM_ADDRESS != null" >
+        <choose >
+          <when test="PERM_ADDRESS.equals(&quot;&quot;)" >
+            PERM_ADDRESS = NULL ,
+          </when>
+          <otherwise >
+            PERM_ADDRESS = #{PERM_ADDRESS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="IS_KYC_YN != null" >
+        <choose >
+          <when test="IS_KYC_YN.equals(&quot;&quot;)" >
+            IS_KYC_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_KYC_YN = #{IS_KYC_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHORT_NAME_AR != null" >
+        <choose >
+          <when test="SHORT_NAME_AR.equals(&quot;&quot;)" >
+            SHORT_NAME_AR = NULL ,
+          </when>
+          <otherwise >
+            SHORT_NAME_AR = #{SHORT_NAME_AR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATE_ARAB != null" >
+        <choose >
+          <when test="STATE_ARAB.equals(&quot;&quot;)" >
+            STATE_ARAB = NULL ,
+          </when>
+          <otherwise >
+            STATE_ARAB = #{STATE_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATE_ENG != null" >
+        <choose >
+          <when test="STATE_ENG.equals(&quot;&quot;)" >
+            STATE_ENG = NULL ,
+          </when>
+          <otherwise >
+            STATE_ENG = #{STATE_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_UPDATED != null" >
+        DATE_UPDATED = #{DATE_UPDATED},
+      </if>
+      <if test="E_WALLET_YN != null" >
+        <choose >
+          <when test="E_WALLET_YN.equals(&quot;&quot;)">
+            E_WALLET_YN = NULL ,
+          </when>
+          <otherwise >
+            E_WALLET_YN = #{E_WALLET_YN},
+          </otherwise>
+        </choose>
+      </if>
+		<if test="OLD_MOBILE != null">
+			<choose>
+				<when test="OLD_MOBILE.equals(&quot;&quot;)">
+					OLD_MOBILE = NULL ,
+				</when>
+				<otherwise>
+					OLD_MOBILE = #{OLD_MOBILE},
+				</otherwise>
+			</choose>
+		</if>
+		<if test="OLD_EMAIL != null">
+			<choose>
+				<when test="OLD_EMAIL.equals(&quot;&quot;)">
+					OLD_EMAIL = NULL ,
+				</when>
+				<otherwise>
+					OLD_EMAIL = #{OLD_EMAIL},
+				</otherwise>
+			</choose>
+		</if>
+		<if test="LAST_CHANGE_MOBILE_EMAIL != null">
+			<choose>
+				<when test="LAST_CHANGE_MOBILE_EMAIL.equals(&quot;&quot;)">
+					LAST_CHANGE_MOBILE_EMAIL = NULL ,
+				</when>
+				<otherwise>
+					LAST_CHANGE_MOBILE_EMAIL = #{LAST_CHANGE_MOBILE_EMAIL},
+				</otherwise>
+			</choose>
+		</if>
+		<if test="LAST_DATE_MOBILE_EMAIL != null">
+			<choose>
+				<when test="LAST_DATE_MOBILE_EMAIL.equals(&quot;&quot;)">
+					LAST_DATE_MOBILE_EMAIL = NULL ,
+				</when>
+				<otherwise>
+					LAST_DATE_MOBILE_EMAIL = #{LAST_DATE_MOBILE_EMAIL},
+				</otherwise>
+			</choose>
+		</if>
+	    <if test="TELEX != null" >
+        	TELEX = #{TELEX},
+        </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_ADDRESS" parameterType="com.path.dbmaps.vo.CIF_ADDRESSVO" >
+    <include refid="sql_updateCIF_ADDRESS" />
+  </update>
+</mapper>

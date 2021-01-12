@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="rankingMapper">
+
+ <sql id="rankingListCommon">
+	<![CDATA[
+	SELECT
+			 RIFPCT.PRIORITY_CODE,
+			 RIFPCT.BRIEF_DESC_ENG,
+			 RIFPCT.BRIEF_DESC_ARAB,
+			 RIFPCT.LONG_DESC_ENG,
+			 RIFPCT.LONG_DESC_ARAB
+	FROM  RIFPCT 
+	WHERE	 RIFPCT.COMP_CODE  = #{compCode}
+	]]>	
+		
+	<if test='cifType != null and cifType != emptyBigDecimalValue'>
+	   AND (exists
+	        (select 1
+	           from RIFCTT_RANKING
+	          where RIFCTT_RANKING.COMP_CODE = RIFPCT.COMP_CODE
+	            and RIFCTT_RANKING.PRIORITY_CODE = RIFPCT.PRIORITY_CODE
+	            AND RIFCTT_RANKING.CIF_TYPE_CODE = #{cifType}) or not exists
+	        (select 1
+	           from RIFCTT_RANKING
+	          where RIFCTT_RANKING.COMP_CODE = RIFPCT.COMP_CODE
+	            AND RIFCTT_RANKING.CIF_TYPE_CODE = #{cifType}))
+	</if> 
+ </sql>
+ 
+ <resultMap id="rankingList_ResMap" type="rankingVO">
+	<id property="PRIORITY_CODE" column="PRIORITY_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="rankingList" resultMap="rankingList_ResMap" parameterType="rankingSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="rankingListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="rankingListCount" resultType="int" parameterType="rankingSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="rankingListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+	 <select id="returnRankingById" parameterType="rankingSC" resultType="rankingVO">
+		SELECT 
+			PRIORITY_CODE,
+			CIF_RESERVED_NO,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  RIFPCT
+		WHERE RIFPCT.COMP_CODE  	= #{compCode}
+		AND   RIFPCT.PRIORITY_CODE  = #{priorityCode}
+		
+		<if test='cifType != null and cifType != emptyBigDecimalValue'>
+	   AND (exists
+	        (select 1
+	           from RIFCTT_RANKING
+	          where RIFCTT_RANKING.COMP_CODE = RIFPCT.COMP_CODE
+	            and RIFCTT_RANKING.PRIORITY_CODE = RIFPCT.PRIORITY_CODE
+	            AND RIFCTT_RANKING.CIF_TYPE_CODE = #{cifType}) or not exists
+	        (select 1
+	           from RIFCTT_RANKING
+	          where RIFCTT_RANKING.COMP_CODE = RIFPCT.COMP_CODE
+	            AND RIFCTT_RANKING.CIF_TYPE_CODE = #{cifType}))
+	</if>
+	
+  </select>
+</mapper>

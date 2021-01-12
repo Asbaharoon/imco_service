@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="treasuryMapper"> 
+  	
+	 <resultMap id="treasuryDerivativesCOMap" type="treasuryDerivativesCO">
+	   <result property="dealCY"      	column="DEAL_CY"/>
+	   <result property="currencyDesc"        column="BRIEF_DESC_ENG"/>
+	   <result property="promissoryFX"    column="PROMISSORY_FX"/>
+	   <result property="profitRateSwap"      column="PROFIT_RATE_SWAP"/>
+	   <result property="crossCYSwap"        column="CROSS_CY_SWAP"/>
+	   <result property="currDecimalPoints"        column="DECIMAL_POINTS"/>	   	       
+	</resultMap>    
+	
+	<select id="selectTreasuryDerivates" parameterType="treasurySC" resultMap="treasuryDerivativesCOMap">
+		SELECT DEAL_CY, CURRENCIES. BRIEF_DESC_ENG ,CURRENCIES.DECIMAL_POINTS,
+	SUM(CASE WHEN PROMISSORY_FX IS NULL THEN 0 ELSE PROMISSORY_FX END ) PROMISSORY_FX,
+	SUM(CASE WHEN PROFIT_RATE_SWAP IS NULL THEN 0 ELSE PROFIT_RATE_SWAP END ) PROFIT_RATE_SWAP,
+	SUM(CASE WHEN CROSS_CY_SWAP IS NULL THEN 0 ELSE CROSS_CY_SWAP END ) CROSS_CY_SWAP
+FROM(	
+
+
+SELECT  DEAL_CY, DEAL_AMOUNT PROMISSORY_FX,0 PROFIT_RATE_SWAP, 0 CROSS_CY_SWAP
+	FROM TRSDEAL_PROMISSORY_FX,TRSCLASS
+	WHERE TRSDEAL_PROMISSORY_FX.COMP_CODE = #{compCode}
+		AND    ((	#{branchFilter} = 'A' AND TRSDEAL_PROMISSORY_FX.BRANCH_CODE = TRSDEAL_PROMISSORY_FX.BRANCH_CODE)       
+				OR    (	#{branchFilter} = 'S' AND TRSDEAL_PROMISSORY_FX.BRANCH_CODE = #{branchCode}))  
+		 <![CDATA[ 
+		AND (TRSDEAL_PROMISSORY_FX.DEAL_DATE <= #{runningDate} )
+		]]>	
+		AND TRSDEAL_PROMISSORY_FX.CIF_NO =#{cifNo}
+		AND TRSDEAL_PROMISSORY_FX.STATUS = 'P'
+		AND TRSDEAL_PROMISSORY_FX.COMP_CODE = TRSCLASS.COMP_CODE 
+		AND TRSDEAL_PROMISSORY_FX.CLASS	  = TRSCLASS.CODE 
+		AND CASE WHEN TRSDEAL_PROMISSORY_FX. REMAINING_PFX_AMOUNT  IS NULL THEN 0 ELSE TRSDEAL_PROMISSORY_FX. REMAINING_PFX_AMOUNT  END > 0
+		
+UNION ALL		
+															
+SELECT  DEAL_CY, 0,0,DEAL_AMOUNT 
+	FROM TRSDEAL,TRSCLASS
+	WHERE TRSDEAL.COMP_CODE = #{compCode}
+		AND    ((	#{branchFilter} = 'A' AND TRSDEAL.BRANCH_CODE = TRSDEAL.BRANCH_CODE)       
+				OR    (	#{branchFilter} = 'S' AND TRSDEAL.BRANCH_CODE = #{branchCode}))  
+		 <![CDATA[ 
+		AND (TRSDEAL.DEAL_DATE <= #{runningDate} )
+			]]>	
+		AND TRSDEAL.CIF_NO =#{cifNo}
+		AND TRSDEAL.STATUS = 'P'
+		AND TRSDEAL.COMP_CODE = TRSCLASS.COMP_CODE 
+		AND TRSDEAL.CLASS	  = TRSCLASS.CODE 
+		AND TRSDEAL.DEAL_TYPE = 17
+		AND CASE WHEN TRSDEAL.PROMISSORY_FX_NO IS NULL THEN 0 ELSE TRSDEAL.PROMISSORY_FX_NO END = 0
+		AND CASE WHEN TRSDEAL.SWAP_DEAL_YN IS NULL THEN 'N' ELSE TRSDEAL.SWAP_DEAL_YN END = 'Y'
+		AND (SELECT COUNT(1) FROM CTSTRS 
+								WHERE CTSTRS.COMP_CODE 		= TRSDEAL.COMP_CODE
+								AND CTSTRS.BRANCH_CODE		= TRSDEAL.BRANCH_CODE
+								AND CTSTRS.TRADE_TRX_NO		= TRSDEAL.SERIAL_NO
+								AND CTSTRS.TRS_TYPE			= 'I'
+								AND CTSTRS.INSTRUCTION_TYPE = 1
+								AND CTSTRS.STATUS = 'P'
+								 <![CDATA[ 
+								AND CTSTRS.VALUE_DATE <= #{runningDate} ) < 2
+									]]>			
+
+
+
+
+	) DER	,CURRENCIES
+WHERE CURRENCIES.COMP_CODE = #{compCode}
+AND DER.DEAL_CY = CURRENCIES.CURRENCY_CODE
+GROUP BY DEAL_CY,CURRENCIES. BRIEF_DESC_ENG,CURRENCIES.DECIMAL_POINTS
+		
+	
+	</select>
+	
+</mapper>

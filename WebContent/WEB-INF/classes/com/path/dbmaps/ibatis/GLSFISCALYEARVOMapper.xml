@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GLSFISCALYEAR" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.GLSFISCALYEARVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FISCAL_YEAR" property="FISCAL_YEAR" />
+    <result column="FROM_MONTH" property="FROM_MONTH" />
+    <result column="FROM_YEAR" property="FROM_YEAR" />
+    <result column="TO_MONTH" property="TO_MONTH" />
+    <result column="TO_YEAR" property="TO_YEAR" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="FINAL_CLOSURE" property="FINAL_CLOSURE" />
+    <result column="CLOSING_FLAG" property="CLOSING_FLAG" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, FISCAL_YEAR, FROM_MONTH, FROM_YEAR, TO_MONTH, TO_YEAR, STATUS, 
+    DESCRIPTION, FINAL_CLOSURE, CLOSING_FLAG, MODIFIED_BY
+  </sql>
+  <select id="selectGLSFISCALYEAR" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.GLSFISCALYEARVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from GLSFISCALYEAR
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+  </select>
+  <delete id="deleteGLSFISCALYEAR" parameterType="com.path.dbmaps.vo.GLSFISCALYEARVOKey" >
+    delete from GLSFISCALYEAR
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+  </delete>
+  <insert id="insertGLSFISCALYEAR" parameterType="com.path.dbmaps.vo.GLSFISCALYEARVO" >
+    insert into GLSFISCALYEAR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FISCAL_YEAR != null and FISCAL_YEAR != emptyBigDecimalValue" >
+        FISCAL_YEAR,
+      </if>
+      <if test="FROM_MONTH != null and FROM_MONTH != emptyBigDecimalValue" >
+        FROM_MONTH,
+      </if>
+      <if test="FROM_YEAR != null and FROM_YEAR != emptyBigDecimalValue" >
+        FROM_YEAR,
+      </if>
+      <if test="TO_MONTH != null and TO_MONTH != emptyBigDecimalValue" >
+        TO_MONTH,
+      </if>
+      <if test="TO_YEAR != null and TO_YEAR != emptyBigDecimalValue" >
+        TO_YEAR,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="FINAL_CLOSURE != null" >
+        FINAL_CLOSURE,
+      </if>
+      <if test="CLOSING_FLAG != null and CLOSING_FLAG != emptyBigDecimalValue" >
+        CLOSING_FLAG,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FISCAL_YEAR != null and FISCAL_YEAR != emptyBigDecimalValue" >
+        #{FISCAL_YEAR},
+      </if>
+      <if test="FROM_MONTH != null and FROM_MONTH != emptyBigDecimalValue" >
+        #{FROM_MONTH},
+      </if>
+      <if test="FROM_YEAR != null and FROM_YEAR != emptyBigDecimalValue" >
+        #{FROM_YEAR},
+      </if>
+      <if test="TO_MONTH != null and TO_MONTH != emptyBigDecimalValue" >
+        #{TO_MONTH},
+      </if>
+      <if test="TO_YEAR != null and TO_YEAR != emptyBigDecimalValue" >
+        #{TO_YEAR},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="FINAL_CLOSURE != null" >
+        #{FINAL_CLOSURE},
+      </if>
+      <if test="CLOSING_FLAG != null and CLOSING_FLAG != emptyBigDecimalValue" >
+        #{CLOSING_FLAG},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateGLSFISCALYEAR" >
+    update GLSFISCALYEAR
+    <set >
+      <if test="FROM_MONTH != null" >
+        <choose >
+          <when test="FROM_MONTH == emptyBigDecimalValue" >
+            FROM_MONTH = NULL ,
+          </when>
+          <otherwise >
+            FROM_MONTH = #{FROM_MONTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FROM_YEAR != null" >
+        <choose >
+          <when test="FROM_YEAR == emptyBigDecimalValue" >
+            FROM_YEAR = NULL ,
+          </when>
+          <otherwise >
+            FROM_YEAR = #{FROM_YEAR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_MONTH != null" >
+        <choose >
+          <when test="TO_MONTH == emptyBigDecimalValue" >
+            TO_MONTH = NULL ,
+          </when>
+          <otherwise >
+            TO_MONTH = #{TO_MONTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_YEAR != null" >
+        <choose >
+          <when test="TO_YEAR == emptyBigDecimalValue" >
+            TO_YEAR = NULL ,
+          </when>
+          <otherwise >
+            TO_YEAR = #{TO_YEAR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="FINAL_CLOSURE != null" >
+        FINAL_CLOSURE = #{FINAL_CLOSURE},
+      </if>
+      <if test="CLOSING_FLAG != null" >
+        <choose >
+          <when test="CLOSING_FLAG == emptyBigDecimalValue" >
+            CLOSING_FLAG = NULL ,
+          </when>
+          <otherwise >
+            CLOSING_FLAG = #{CLOSING_FLAG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+  </sql>
+  <update id="updateGLSFISCALYEAR" parameterType="com.path.dbmaps.vo.GLSFISCALYEARVO" >
+    <include refid="sql_updateGLSFISCALYEAR" />
+  </update>
+</mapper>

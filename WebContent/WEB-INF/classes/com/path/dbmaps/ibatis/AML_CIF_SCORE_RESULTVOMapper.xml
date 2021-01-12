@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AML_CIF_SCORE_RESULT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.AML_CIF_SCORE_RESULTVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SEGMENT_CODE" property="SEGMENT_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="SCORE_VALUE" property="SCORE_VALUE" />
+    <result column="RUN_TYPE" property="RUN_TYPE" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, SEGMENT_CODE, BRANCH_CODE, CIF_NO, SCORE_VALUE, RUN_TYPE, CREATED_DATE, 
+    CREATED_BY
+  </sql>
+  <select id="selectAML_CIF_SCORE_RESULT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.AML_CIF_SCORE_RESULTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from AML_CIF_SCORE_RESULT
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+  </select>
+  <delete id="deleteAML_CIF_SCORE_RESULT" parameterType="com.path.dbmaps.vo.AML_CIF_SCORE_RESULTVO" >
+    delete from AML_CIF_SCORE_RESULT
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+  </delete>
+  <insert id="insertAML_CIF_SCORE_RESULT" parameterType="com.path.dbmaps.vo.AML_CIF_SCORE_RESULTVO" >
+    insert into AML_CIF_SCORE_RESULT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null" >
+        LINE_NO,
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        SEGMENT_CODE,
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_NO != null" >
+        CIF_NO,
+      </if>
+      <if test="SCORE_VALUE != null" >
+        SCORE_VALUE,
+      </if>
+      <if test="RUN_TYPE != null and !&quot;&quot;.equals(RUN_TYPE)" >
+        RUN_TYPE,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null" >
+        #{LINE_NO},
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        #{SEGMENT_CODE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_NO != null" >
+        #{CIF_NO},
+      </if>
+      <if test="SCORE_VALUE != null" >
+        #{SCORE_VALUE},
+      </if>
+      <if test="RUN_TYPE != null and !&quot;&quot;.equals(RUN_TYPE)" >
+        #{RUN_TYPE},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateAML_CIF_SCORE_RESULT" >
+    update AML_CIF_SCORE_RESULT
+    <set >
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE = #{BRANCH_CODE},
+      </if>
+      <if test="CIF_NO != null" >
+        CIF_NO = #{CIF_NO},
+      </if>
+      <if test="SCORE_VALUE != null" >
+        SCORE_VALUE = #{SCORE_VALUE},
+      </if>
+      <if test="RUN_TYPE != null" >
+        <choose >
+          <when test="RUN_TYPE.equals(&quot;&quot;)" >
+            RUN_TYPE = NULL ,
+          </when>
+          <otherwise >
+            RUN_TYPE = #{RUN_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+  </sql>
+  <update id="updateAML_CIF_SCORE_RESULT" parameterType="com.path.dbmaps.vo.AML_CIF_SCORE_RESULTVO" >
+    <include refid="sql_updateAML_CIF_SCORE_RESULT" />
+  </update>
+</mapper>

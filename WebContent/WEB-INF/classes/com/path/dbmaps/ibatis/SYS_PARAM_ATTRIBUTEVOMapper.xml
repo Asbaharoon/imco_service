@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_ATTRIBUTE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTEVO" >
+    <id column="ATTRIBUTE_CODE" property="ATTRIBUTE_CODE" />
+    <result column="ATTRIBUTE_TECH_NAME" property="ATTRIBUTE_TECH_NAME" />
+    <result column="ATTRIBUTE_TOOL_ID" property="ATTRIBUTE_TOOL_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATTRIBUTE_CODE, ATTRIBUTE_TECH_NAME, ATTRIBUTE_TOOL_ID
+  </sql>
+  <select id="selectSYS_PARAM_ATTRIBUTE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_ATTRIBUTE
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+  </select>
+  <delete id="deleteSYS_PARAM_ATTRIBUTE" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTEVOKey" >
+    delete from SYS_PARAM_ATTRIBUTE
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+  </delete>
+  <insert id="insertSYS_PARAM_ATTRIBUTE" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTEVO" >
+    insert into SYS_PARAM_ATTRIBUTE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_CODE != null" >
+        ATTRIBUTE_CODE,
+      </if>
+      <if test="ATTRIBUTE_TECH_NAME != null" >
+        ATTRIBUTE_TECH_NAME,
+      </if>
+      <if test="ATTRIBUTE_TOOL_ID != null and ATTRIBUTE_TOOL_ID != emptyBigDecimalValue" >
+        ATTRIBUTE_TOOL_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_CODE != null" >
+        #{ATTRIBUTE_CODE},
+      </if>
+      <if test="ATTRIBUTE_TECH_NAME != null" >
+        #{ATTRIBUTE_TECH_NAME},
+      </if>
+      <if test="ATTRIBUTE_TOOL_ID != null and ATTRIBUTE_TOOL_ID != emptyBigDecimalValue" >
+        #{ATTRIBUTE_TOOL_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_ATTRIBUTE" >
+    update SYS_PARAM_ATTRIBUTE
+    <set >
+      <if test="ATTRIBUTE_TECH_NAME != null" >
+        ATTRIBUTE_TECH_NAME = #{ATTRIBUTE_TECH_NAME},
+      </if>
+      <if test="ATTRIBUTE_TOOL_ID != null" >
+        <choose >
+          <when test="ATTRIBUTE_TOOL_ID == emptyBigDecimalValue" >
+            ATTRIBUTE_TOOL_ID = NULL ,
+          </when>
+          <otherwise >
+            ATTRIBUTE_TOOL_ID = #{ATTRIBUTE_TOOL_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+  </sql>
+  <update id="updateSYS_PARAM_ATTRIBUTE" parameterType="com.path.dbmaps.vo.SYS_PARAM_ATTRIBUTEVO" >
+    <include refid="sql_updateSYS_PARAM_ATTRIBUTE" />
+  </update>
+</mapper>

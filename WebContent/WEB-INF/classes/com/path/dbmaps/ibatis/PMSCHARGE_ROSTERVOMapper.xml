@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSCHARGE_ROSTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSCHARGE_ROSTERVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SEQ" property="SEQ" />
+    <result column="FROM_AMT" property="FROM_AMT" />
+    <result column="TO_AMT" property="TO_AMT" />
+    <result column="PERCENTAGE" property="PERCENTAGE" />
+    <result column="MIN_AMT" property="MIN_AMT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, SEQ, FROM_AMT, TO_AMT, PERCENTAGE, MIN_AMT
+  </sql>
+  <select id="selectPMSCHARGE_ROSTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSCHARGE_ROSTERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSCHARGE_ROSTER
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ = #{SEQ}
+  </select>
+  <delete id="deletePMSCHARGE_ROSTER" parameterType="com.path.dbmaps.vo.PMSCHARGE_ROSTERVOKey" >
+    delete from PMSCHARGE_ROSTER
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ = #{SEQ}
+  </delete>
+  <insert id="insertPMSCHARGE_ROSTER" parameterType="com.path.dbmaps.vo.PMSCHARGE_ROSTERVO" >
+    insert into PMSCHARGE_ROSTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        SEQ,
+      </if>
+      <if test="FROM_AMT != null and FROM_AMT != emptyBigDecimalValue" >
+        FROM_AMT,
+      </if>
+      <if test="TO_AMT != null and TO_AMT != emptyBigDecimalValue" >
+        TO_AMT,
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        PERCENTAGE,
+      </if>
+      <if test="MIN_AMT != null and MIN_AMT != emptyBigDecimalValue" >
+        MIN_AMT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        #{SEQ},
+      </if>
+      <if test="FROM_AMT != null and FROM_AMT != emptyBigDecimalValue" >
+        #{FROM_AMT},
+      </if>
+      <if test="TO_AMT != null and TO_AMT != emptyBigDecimalValue" >
+        #{TO_AMT},
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        #{PERCENTAGE},
+      </if>
+      <if test="MIN_AMT != null and MIN_AMT != emptyBigDecimalValue" >
+        #{MIN_AMT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSCHARGE_ROSTER" >
+    update PMSCHARGE_ROSTER
+    <set >
+      <if test="FROM_AMT != null" >
+        <choose >
+          <when test="FROM_AMT == emptyBigDecimalValue" >
+            FROM_AMT = NULL ,
+          </when>
+          <otherwise >
+            FROM_AMT = #{FROM_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_AMT != null" >
+        <choose >
+          <when test="TO_AMT == emptyBigDecimalValue" >
+            TO_AMT = NULL ,
+          </when>
+          <otherwise >
+            TO_AMT = #{TO_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERCENTAGE != null" >
+        <choose >
+          <when test="PERCENTAGE == emptyBigDecimalValue" >
+            PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE = #{PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_AMT != null" >
+        <choose >
+          <when test="MIN_AMT == emptyBigDecimalValue" >
+            MIN_AMT = NULL ,
+          </when>
+          <otherwise >
+            MIN_AMT = #{MIN_AMT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ = #{SEQ}
+  </sql>
+  <update id="updatePMSCHARGE_ROSTER" parameterType="com.path.dbmaps.vo.PMSCHARGE_ROSTERVO" >
+    <include refid="sql_updatePMSCHARGE_ROSTER" />
+  </update>
+</mapper>

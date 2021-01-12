@@ -1,0 +1,1232 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="trxTypeMapper">
+ <sql id="trxTypeListCommon" >
+	SELECT CTSTRXTYPE.COMP_CODE
+         ,CTSTRXTYPE.CODE				
+         ,CTSTRXTYPE.SHORT_DESC_ENG	
+         ,CTSTRXTYPE.LONG_DESC_ENG	
+         ,CTSTRXTYPE.SHORT_DESC_ARAB	
+         ,CTSTRXTYPE.LONG_DESC_ARAB	
+         ,CTSTRXTYPE.STATUS			
+         ,CTSTRXTYPE.TYPE             
+         ,CTSTRXTYPE.REFERENCE		
+         ,CTSTRXTYPE.STANDING_ORDER
+         ,CTSTRXTYPE.MULTI_TRX
+         ,CTSTRXTYPE.UTILITY_PAYMENT
+         ,CASE WHEN NOSTRO_MVT IS NULL THEN '0' ELSE NOSTRO_MVT END NOSTRO_MVT
+         ,CTSTRXTYPE.CR_DR_FOREX
+         ,CTSTRXTYPE.CHQ_RELATED
+     FROM CTSTRXTYPE
+ </sql>
+ 
+ <sql id="trxTypeListCommonParams">
+ 	WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+       	 <if test="outstandingProfit!=null and outstandingProfit.equals('true')">
+		   AND CTSTRXTYPE.OUTSTANDING_PROFIT  =  '1' 
+		</if>	
+      	 <if test="status!=null">
+		   AND CTSTRXTYPE.STATUS  =  #{status} 
+		</if>
+		<if test='iv_crud!=null and iv_crud.equals("R") and fromTrxTypeDep!="true"'>
+		   AND CTSTRXTYPE.HIDE_IN_TRS = '0' 
+		</if>
+		<if test="isDyOpt != null and isDyOpt.equals('true') and reference!='BP001' ">
+		   AND EXISTS (SELECT 1 
+                         FROM CTSTRXTYPE_GRP P1 
+	                    WHERE P1.COMP_CODE = #{compCode}
+	                      AND P1.LINE_NO >= 1
+	                      AND P1.REFERENCE_NO = #{reference} 
+	                      AND P1.TRX_TYPE = CTSTRXTYPE.CODE)
+		</if>
+		
+				<if test="isDyOpt != null and isDyOpt.equals('true') and reference=='BP001' ">
+		   AND EXISTS (SELECT 1 
+                         FROM CTSTRXTYPE_GRP P1 
+	                    WHERE P1.COMP_CODE = #{compCode}
+	                      AND P1.LINE_NO >= 1
+	                      
+	                      AND P1.TRX_TYPE = CTSTRXTYPE.CODE)
+		</if>
+		
+		<if test="multiTrx != null and !('').equals(multiTrx) " >
+			AND CTSTRXTYPE.MULTI_TRX = #{multiTrx} 		
+		</if>
+		<if test="chqRelated != null and !('').equals(chqRelated) " >
+			AND CTSTRXTYPE.CHQ_RELATED IN (${chqRelated}) 
+		</if>
+ </sql>
+ 
+ <sql id="trxTypeListMCEParams"><![CDATA[
+ 	LEFT OUTER JOIN CTSTRXTYPE_EXTENDED ON CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+										AND CTSTRXTYPE.CODE = CTSTRXTYPE_EXTENDED.CODE
+ 	WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+ 	  AND CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+ 	  AND CTSTRXTYPE.CODE = CTSTRXTYPE_EXTENDED.CODE
+	  AND CTSTRXTYPE.STATUS = #{status}
+	  AND CTSTRXTYPE.CHQ_RELATED IN (${chqRelated}) 
+	  AND CTSTRXTYPE.REMITT_TYPE IS NULL
+	  AND CTSTRXTYPE.SETTL_OVER_CNTER <> '1' 
+	  AND CTSTRXTYPE.STANDING_ORDER <> '1' 
+	  AND CTSTRXTYPE.MULTI_TRX <> '1'
+	  AND CTSTRXTYPE.TYPE <> 'T' 
+   	  AND (CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END) NOT IN (6, 7)	]]>
+   	  AND CTSTRXTYPE_EXTENDED.UPDATE_CHEQUE_DATE = '0'
+ </sql>
+ 
+ <sql id="trxTypeBulkRemitListSQL">
+	<include refid="trxTypeListCommon"/>
+	<![CDATA[
+	, REMITTANCE
+	 WHERE CTSTRXTYPE.COMP_CODE = REMITTANCE.COMP_CODE
+ 	   AND CTSTRXTYPE.REMITT_TYPE = REMITTANCE.CODE
+ 	   AND CTSTRXTYPE.COMP_CODE = #{compCode}
+	   AND CTSTRXTYPE.STATUS 	= #{status}
+	   AND CTSTRXTYPE.TYPE 		= #{trsType}
+	   AND CTSTRXTYPE.REMITT_TYPE IS NOT NULL 
+	   AND CTSTRXTYPE.CR_DR_FOREX = #{crDrForex} 
+	   AND CTSTRXTYPE.MULTI_TRX   = #{multiTrx} 
+	   AND (CASE WHEN CTSTRXTYPE.LINKTOOTHER_TRX IS NULL THEN '0' ELSE CTSTRXTYPE.LINKTOOTHER_TRX END = #{linkToOtherTrx}
+	   		OR CASE WHEN REMITTANCE.REMITTANCE_TYPE = 'PB' THEN '0' ELSE '1' END = '0'
+	   		)
+	   AND CTSTRXTYPE.SETTL_OVER_CNTER <> '1'
+	   AND   ((CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END = ' '  ]]>
+	   <choose>
+	   	<when test='"A".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (1, 8, 2, 4, 6, 0)</when>
+	   	<when test='"C".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (1, 8, 3, 4, 7, 0)</when>
+	   	<when test='"Q".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (8, 2, 3, 5, 0)</when>
+	   </choose>
+		) OR ((CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END) <![CDATA[<>]]> ' ' 
+	   <choose>
+	   	<when test='"A".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (1, 8, 2, 4, 6, 0)</when>
+	   	<when test='"C".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (1, 8, 3, 4, 7, 0)</when>
+	   	<when test='"Q".equals(trsfrMethod)'>AND CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END IN (1, 2, 3, 5, 0)</when>
+	   </choose>)
+		)
+		AND UPDATE_CHEQUE_DATE = '0'
+</sql>
+  
+ <sql id="returnTrxType">
+		 AND CTSTRXTYPE.CODE = #{code,jdbcType=NUMERIC}
+ </sql>
+ 
+
+ <sql id="trxTypeLookupCommonParams">
+ 		WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+		AND		(	(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = 'Z') 
+		            OR
+					(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = CTSTRXTYPE.TYPE	) 
+					OR
+					(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = 'WT' AND	
+							(	(CTSTRXTYPE.TYPE  = 'W' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'				) OR
+								(CTSTRXTYPE.TYPE  = 'T' AND	CTSTRXTYPE.TRSFR_TYPE  	= 1 AND	CTSTRXTYPE.STANDING_ORDER  = '0'	)
+							)																								
+					)
+					OR
+					(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = 'WC'	AND
+							(	CTSTRXTYPE.TYPE  = 'T'  AND	CTSTRXTYPE.STANDING_ORDER  = '0')
+					) 
+					OR
+					(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = 'OC'	AND
+							( CTSTRXTYPE.TYPE  = 'D' AND	CTSTRXTYPE.CHQ_RELATED  = 'C')
+					) 
+					OR
+					(CASE WHEN #{type} IS NULL THEN  'Z' ELSE #{type} END   = 'IC'	AND
+							( CTSTRXTYPE.TYPE  = 'W' AND	CTSTRXTYPE.CHQ_RELATED  = 'C')
+					)
+
+					<if test='"AP".equals(sectionKey)'>
+						OR ( coalesce(#{type},'Z') = 'UDC' 
+							AND (CTSTRXTYPE.TYPE = 'D' AND
+						        (CTSTRXTYPE.CHQ_RELATED = 'C' OR CTSTRXTYPE.CHQ_RELATED = 'H') AND
+						        CTSTRXTYPE_EXTENDED.UPDATE_CHEQUE_DATE = '1')) 
+						 OR (coalesce(#{type},'Z') = 'T1' AND
+						        (CTSTRXTYPE.TYPE = 'T' AND CTSTRXTYPE.CHQ_RELATED = 'N' AND
+						        CTSTRXTYPE.TRSFR_TYPE = 1 AND CTSTRXTYPE.STANDING_ORDER = '0' AND CASE WHEN
+						         CTSTRXTYPE.MULTI_TRX IS NULL THEN '0' ELSE CTSTRXTYPE.MULTI_TRX
+						         END <![CDATA[<>]]> '1') AND NOT EXISTS
+						        (SELECT 1
+						            FROM CTSTRXTYPE_CHARGES
+						           WHERE CTSTRXTYPE_CHARGES.COMP_CODE = CTSTRXTYPE.COMP_CODE
+						             AND CTSTRXTYPE_CHARGES.TRXTYPE_CODE = CTSTRXTYPE.CODE)) 
+						 OR (coalesce(#{type},'Z') = 'T2' AND CTSTRXTYPE.TYPE = 'T' AND
+						        CTSTRXTYPE.CHQ_RELATED = 'N')
+					</if>
+				)
+	 	AND	CTSTRXTYPE.STATUS  = (
+			CASE
+				WHEN #{status} = 'R' THEN CTSTRXTYPE.STATUS
+				WHEN #{status} = 'P' THEN 'A'
+				WHEN #{status} = 'S' THEN 'P'
+				WHEN #{status} = 'A' THEN 'S'
+				WHEN #{status} = 'E' THEN 'P'
+				ELSE CTSTRXTYPE.STATUS
+			END
+			)
+ </sql>
+  
+ <resultMap id="trxTypeListMap" type="trxTypeVO">
+ 	<id     property="COMP_CODE"       		column="COMP_CODE" />
+	<id     property="CODE"            		column="CODE" />
+	<result property="SHORT_DESC_ENG"  		column="SHORT_DESC_ENG" />
+	<result property="LONG_DESC_ENG"   		column="LONG_DESC_ENG" />
+	<result property="SHORT_DESC_ARAB" 		column="SHORT_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB"  		column="LONG_DESC_ARAB" />
+	<result property="STATUS"          		column="STATUS" />
+	<result property="TYPE"            		column="TYPE" />
+	<result property="REFERENCE"       		column="REFERENCE" />
+	<result property="REMITT_TYPE"     		column="REMITT_TYPE" />
+	<result property="SO_PERIODICITY"  		column="SO_PERIODICITY" />
+	<result property="MULTI_TRX" 	   		column="MULTI_TRX"/>
+	<result property="CC_MAINTAIN_BATCH" 	column="CC_MAINTAIN_BATCH"/>
+	<result property="PROCESS_WINDOW" 		column="PROCESS_WINDOW"/>
+	<result property="CR_DR_FOREX" 			column="CR_DR_FOREX"/>
+	<result property="CHQ_RELATED" 			column="CHQ_RELATED"/>
+ </resultMap>
+ 
+ <select id="trxTypeList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeListCommonParams"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="trxTypeListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeListCommonParams"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="trxTypeMCEList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeListMCEParams"/>
+	   AND CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END = ' ' 
+	UNION
+	<include refid="trxTypeListCommon"/>
+  		LEFT OUTER JOIN AXS ON 	CTSTRXTYPE.REFERENCE = AXS.PROG_REF
+                     		AND CTSTRXTYPE.COMP_CODE = AXS.COMP_CODE
+                     		AND #{userId} = AXS.USER_ID
+                     		AND AXS.STATUS = 'P'
+                     		AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	<include refid="trxTypeListMCEParams"/>
+   	  AND (CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END) <![CDATA[<>]]> ' '
+	UNION
+	<include refid="trxTypeListCommon"/>
+		LEFT OUTER JOIN CTSTRXTYPE_EXTENDED ON 	
+               		CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+               		AND CTSTRXTYPE.CODE 	 = CTSTRXTYPE_EXTENDED.CODE
+		WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+		  AND CTSTRXTYPE.STATUS = #{status}
+		  AND CTSTRXTYPE.CHQ_RELATED IN (${chqRelated}) 
+		  AND CTSTRXTYPE.REMITT_TYPE IS NULL
+		  AND CTSTRXTYPE.SETTL_OVER_CNTER <![CDATA[<>]]> '1' 
+		  AND CTSTRXTYPE.STANDING_ORDER <![CDATA[<>]]> '1' 
+		  AND CTSTRXTYPE.MULTI_TRX <![CDATA[<>]]> '1'
+		  AND (CTSTRXTYPE.TYPE <![CDATA[<>]]> 'T' OR (CTSTRXTYPE.TYPE = 'T' AND CTSTRXTYPE_EXTENDED.DOCUMENT_TYPE = 'B')) 
+	   	  AND (CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END) NOT IN (6, 7)
+	   	  AND CTSTRXTYPE_EXTENDED.UPDATE_CHEQUE_DATE = '0'
+	<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+	<include refid="cstrxtypeRestriction"/> 
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="trxTypeMCEListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeListMCEParams"/>
+	 <!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+	  <include refid="cstrxtypeRestriction"/> 
+	   AND CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END = ' ' 
+	UNION
+	<include refid="trxTypeListCommon"/>
+  		LEFT OUTER JOIN AXS ON 	CTSTRXTYPE.REFERENCE = AXS.PROG_REF
+                     		AND CTSTRXTYPE.COMP_CODE = AXS.COMP_CODE
+                     		AND #{userId} = AXS.USER_ID
+                     		AND AXS.STATUS = 'P'
+                     		AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	<include refid="trxTypeListMCEParams"/>
+	 <!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+	<include refid="cstrxtypeRestriction"/> 
+   	  AND (CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END) <![CDATA[<>]]> ' '
+		UNION
+	<include refid="trxTypeListCommon"/>
+		LEFT OUTER JOIN CTSTRXTYPE_EXTENDED ON 	
+               		CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+               		AND CTSTRXTYPE.CODE 	 = CTSTRXTYPE_EXTENDED.CODE
+		WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+		  AND CTSTRXTYPE.STATUS = #{status}
+		  AND CTSTRXTYPE.CHQ_RELATED IN (${chqRelated}) 
+		  AND CTSTRXTYPE.REMITT_TYPE IS NULL
+		  AND CTSTRXTYPE.SETTL_OVER_CNTER <![CDATA[<>]]> '1' 
+		  AND CTSTRXTYPE.STANDING_ORDER <![CDATA[<>]]> '1' 
+		  AND CTSTRXTYPE.MULTI_TRX <![CDATA[<>]]> '1'
+		  AND (CTSTRXTYPE.TYPE <![CDATA[<>]]> 'T' OR (CTSTRXTYPE.TYPE = 'T' AND CTSTRXTYPE_EXTENDED.DOCUMENT_TYPE = 'B')) 
+	   	  AND (CASE WHEN CTSTRXTYPE.TRSFR_METHOD IS NULL THEN 0 ELSE CTSTRXTYPE.TRSFR_METHOD END) NOT IN (6, 7)
+	   	  AND UPDATE_CHEQUE_DATE = '0'
+	<!-- 	 Habib Baalbaki accocunt restriction 372747 -->
+	<include refid="cstrxtypeRestriction"/> 
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ <sql id="cstrxtypeRestriction">
+ 	 AND ( NOT EXISTS (
+			   SELECT 1 FROM 
+			   <choose>
+			   		<when test="isSybase != 1">  ACC_RESTRICTION_TEMP tmpTbl   </when>
+			   		<otherwise> #ACC_RESTRICTION_TEMP tmpTbl</otherwise>
+			   </choose>
+			   WHERE tmpTbl.COMP_CODE  		= CTSTRXTYPE.COMP_CODE  
+				AND tmpTbl.BRANCH_CODE  	= CTSTRXTYPE.OFF_DB_ACC_BR 
+				AND tmpTbl.CURRENCY_CODE  	= CTSTRXTYPE.OFF_DB_ACC_CY  
+				AND tmpTbl.GL_CODE 			= CTSTRXTYPE.OFF_DB_ACC_GL     
+				AND tmpTbl.CIF_SUB_NO 		= CTSTRXTYPE.OFF_DB_ACC_CIF   
+				AND tmpTbl.SL_NO  			= CTSTRXTYPE.OFF_DB_ACC_SL          
+				AND tmpTbl.USER_ID 			= #{userId}
+				AND tmpTbl.PROG_REF 		= #{pageRef,jdbcType=VARCHAR}
+				AND tmpTbl.APP_NAME 		= #{currAppName,jdbcType=VARCHAR}
+				)
+			<!--  	UNION 	-->
+			OR NOT EXISTS(
+				
+				 SELECT 1 FROM 
+			   <choose>
+			   		<when test="isSybase != 1">  ACC_RESTRICTION_TEMP tmpTbl   </when>
+			   		<otherwise> #ACC_RESTRICTION_TEMP tmpTbl</otherwise>
+			   </choose>
+			   WHERE tmpTbl.COMP_CODE  		= CTSTRXTYPE.COMP_CODE  
+				AND tmpTbl.BRANCH_CODE  	= CTSTRXTYPE.OFF_CR_ACC_BR 
+				AND tmpTbl.CURRENCY_CODE  	= CTSTRXTYPE.OFF_CR_ACC_CY  
+				AND tmpTbl.GL_CODE 			= CTSTRXTYPE.OFF_CR_ACC_GL     
+				AND tmpTbl.CIF_SUB_NO 		= CTSTRXTYPE.OFF_CR_ACC_CIF   
+				AND tmpTbl.SL_NO  			= CTSTRXTYPE.OFF_CR_ACC_SL          
+				AND tmpTbl.USER_ID 			= #{userId}
+				AND tmpTbl.PROG_REF 		= #{pageRef,jdbcType=VARCHAR}
+				AND tmpTbl.APP_NAME 		= #{currAppName,jdbcType=VARCHAR}
+				
+				)
+				)
+				
+ </sql>
+ 
+ 
+ <select id="trxTypeBulkRemitList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="trxTypeBulkRemitListSQL"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="trxTypeBulkRemitListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxTypeBulkRemitListSQL"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+  <select id="trxTypeLookupForTrxTypeLimitChargesList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeLookupCommonParams"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="trxTypeLookupForTrxTypeLimitChargesListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeLookupCommonParams"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <resultMap id="trxTypeByIdMap" type="trxTypeVO">
+ 	<id     property="COMP_CODE"       column="COMP_CODE" />
+	<id     property="CODE"            column="CODE" />
+	<result property="SHORT_DESC_ENG"  column="SHORT_DESC_ENG" />
+	<result property="LONG_DESC_ENG"   column="LONG_DESC_ENG" />
+	<result property="SHORT_DESC_ARAB" column="SHORT_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB"  column="LONG_DESC_ARAB" />
+	<result property="STATUS"          column="STATUS" />
+	<result property="TYPE"            column="TYPE" />
+	<result property="REFERENCE"       column="REFERENCE" />
+	<result property="REMITT_TYPE"     column="REMITT_TYPE" />
+	<result property="SO_PERIODICITY"  column="SO_PERIODICITY" />
+	<result property="MULTI_TRX" 	   column="MULTI_TRX"/>
+	<result property="MULTI_TRX" 	   column="MULTI_TRX"/>
+	<result property="NOSTRO_MVT" 	   column="NOSTRO_MVT"/>
+	<result property="UTILITY_PAYMENT" column="UTILITY_PAYMENT"/>
+	<result property="CR_DR_FOREX" 			column="CR_DR_FOREX"/>
+	<result property="CHQ_RELATED" 			column="CHQ_RELATED"/>
+ </resultMap>
+ <select id="returnTrxTypeById" resultMap="trxTypeByIdMap" parameterType="trxTypeSC" >
+	<include refid="trxTypeListCommon"/>
+	<include refid="trxTypeListCommonParams"/>
+	<include refid="returnTrxType"/>
+ </select>
+ 
+ 
+ <resultMap id="cardsTrxTypeListMap" type="trxTypeVO">
+	<id property="CODE" column="CODE" />
+	<result property="SHORT_DESC_ENG" column="SHORT_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="SHORT_DESC_ARAB" column="SHORT_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <sql id="cardsTrxTypeCommon">
+ 	SELECT
+		CTSTRXTYPE.CODE   		 ,        
+		CTSTRXTYPE.SHORT_DESC_ENG,
+		CTSTRXTYPE.SHORT_DESC_ARAB,
+		CTSTRXTYPE.LONG_DESC_ENG ,
+		CTSTRXTYPE.LONG_DESC_ARAB
+	FROM  CTSTRXTYPE 
+	WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+    AND    SHOW_CARD_NO = '1'
+	AND    STATUS = 'P'
+ </sql>
+ <sql id="cardsTrxTypeDependency">
+ AND CTSTRXTYPE.CODE = #{code}
+ </sql>
+ 
+ <select id="cardsTrxTypeList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cardsTrxTypeCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="cardsTrxTypeListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cardsTrxTypeCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="cardsTrxTypeDependency" resultMap="trxTypeListMap" parameterType="trxTypeSC">
+ 	<include refid="cardsTrxTypeCommon"/>
+ 	<include refid="cardsTrxTypeDependency"/>
+ </select>
+ 
+ 
+ <!-- Trxtype for transaction trends -->
+ 
+  <sql id="trxTypeForTransactionTrendsCommon">
+ 	SELECT
+			 CTSTRXTYPE.CODE,
+			 CTSTRXTYPE.SHORT_DESC_ENG,
+			 CTSTRXTYPE.LONG_DESC_ENG,
+			 CTSTRXTYPE.SHORT_DESC_ARAB,
+			 CTSTRXTYPE.LONG_DESC_ARAB
+	FROM  CTSTRXTYPE 
+	WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+	 AND	CTSTRXTYPE.STATUS  = 'P'
+	 AND  CTSTRXTYPE.HIDE_IN_TRS = '0'
+ </sql>
+
+ <select id="trxTypeForTransactionTrendsList" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="trxTypeForTransactionTrendsCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="trxTypeForTransactionTrendsCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxTypeForTransactionTrendsCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="trxTypeForTransactionTrendsDependency" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC">
+ 	SELECT	CODE,
+ 			CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END SHORT_DESC_ENG
+	FROM    CTSTRXTYPE 
+	WHERE	COMP_CODE  	= #{compCode}
+ 	AND 	CODE 		= #{code}
+ </select>
+ 
+  <!-- HoldTrxType Lookup -->
+ 
+  <sql id="holdTrxTypeListCommon">
+ 	SELECT	CTSTRXTYPE.CODE					,
+			CTSTRXTYPE.SHORT_DESC_ENG		,
+			CTSTRXTYPE.LONG_DESC_ENG		,
+			CTSTRXTYPE.SHORT_DESC_ARAB		,
+			CTSTRXTYPE.LONG_DESC_ARAB
+	FROM   CTSTRXTYPE 
+	WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+    AND  CTSTRXTYPE.STATUS = 'P'
+	 AND	CTSTRXTYPE.TYPE  = 'H'
+ </sql>
+ 
+ <sql id="holdTrxTypeDependencyQuery">
+ 	SELECT	CTSTRXTYPE.CODE	,
+			CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END SHORT_DESC_ENG
+	FROM   CTSTRXTYPE 
+	WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+    AND  CTSTRXTYPE.STATUS = 'P'
+	 AND	CTSTRXTYPE.TYPE  = 'H'
+	 AND CTSTRXTYPE.CODE = #{code}
+ </sql>
+ 
+ 
+  <sql id="ctsTrxTypeDependency">
+  	SELECT	CTSTRXTYPE.CODE					,
+			CTSTRXTYPE.SHORT_DESC_ENG		,
+			CTSTRXTYPE.LONG_DESC_ENG		,
+			CTSTRXTYPE.SHORT_DESC_ARAB		,
+			CTSTRXTYPE.LONG_DESC_ARAB
+	FROM   CTSTRXTYPE 
+	WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+ 	AND CTSTRXTYPE.CODE = #{code}
+ </sql>
+ 
+ <select id="holdTrxTypeList" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="holdTrxTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="holdTrxTypeListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="holdTrxTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="holdTrxTypeDependency" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC">
+ 	<include refid="holdTrxTypeDependencyQuery"/>
+ </select>
+ 
+ <select id="ctsTrxTypeByDependency" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC">
+ 	<include refid="closeTrsfrTrxTypeDependencyCheck"/>
+ </select>
+ 
+ <!-- closeTrsfrTrxType Lookup -->
+ 
+  <sql id="closeTrsfrTrxTypeListCommon">
+  <![CDATA[
+ 	SELECT		CTSTRXTYPE.CODE					,
+				CTSTRXTYPE.SHORT_DESC_ENG		,
+				CTSTRXTYPE.LONG_DESC_ENG		,
+				CTSTRXTYPE.SHORT_DESC_ARAB		,
+				CTSTRXTYPE.LONG_DESC_ARAB
+	FROM			CTSTRXTYPE 
+	WHERE	 		CTSTRXTYPE.COMP_CODE		= #{compCode}
+		AND			CTSTRXTYPE.STATUS			= 'P'
+		AND         CTSTRXTYPE.CLOSING_TRSFR = '1' 
+		AND			CTSTRXTYPE.TYPE  			= 
+													CASE 
+														WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+														ELSE #{type}
+													END
+--AND			CTSTRXTYPE.MULTI_TRX		= '0'
+		AND			(		
+								(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND	CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+						)
+		AND			( 
+						(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  															)
+					Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	) 
+						
+				) 	
+		AND			CASE WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = '0'
+		AND			CASE WHEN CTSTRXTYPE.REFERENCE 		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE			END   = ' '
+		AND			CASE WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+																CASE
+																	WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+																	ELSE #{nostro}
+																END
+		UNION 
+		
+		SELECT		CTSTRXTYPE.CODE				,
+						CTSTRXTYPE.SHORT_DESC_ENG	,
+						CTSTRXTYPE.LONG_DESC_ENG	,
+						CTSTRXTYPE.SHORT_DESC_ARAB	,
+						CTSTRXTYPE.LONG_DESC_ARAB
+		FROM			CTSTRXTYPE  LEFT OUTER JOIN  AXS		ON		CTSTRXTYPE.REFERENCE  = AXS.PROG_REF
+																		AND	CTSTRXTYPE.COMP_CODE  = AXS.COMP_CODE
+																		AND	AXS.USER_ID  			= #{userId}
+																		AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE >= <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+<![CDATA[
+		WHERE			CTSTRXTYPE.COMP_CODE  = #{compCode}
+		AND			CTSTRXTYPE.STATUS  = 'P'
+		AND         CTSTRXTYPE.CLOSING_TRSFR = '1' 
+		AND			CTSTRXTYPE.TYPE  =
+										CASE
+											WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+											ELSE #{type}
+										END
+--AND			CTSTRXTYPE.MULTI_TRX  = '0'
+		AND			(
+								(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+							OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+						)
+		AND			( 
+								(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  													)
+							Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	) 
+								
+						)	
+		AND			CASE 	WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = 	'0'
+		AND			CASE 	WHEN CTSTRXTYPE.REFERENCE		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE 			END   <> ' '
+		AND			CASE 	WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+						CASE
+							WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+							ELSE #{nostro}
+						END
+	]]>
+ </sql>
+ <select id="closeTrsfrTrxTypeList" resultMap="cardsTrxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="closeTrsfrTrxTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="closeTrsfrTrxTypeListCount" resultType="int" parameterType="trxTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="closeTrsfrTrxTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ <!--Get the CTS TRXTYPE list from  CTSTRXTYPE table the columns and where clauses are differ from the above query dddw_import_trxtype-->
+ 
+ 	<select id="selectTrxTypeListForFma" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="getTrxTypeListForFma"/>
+      <include refid="getWhereClauseOfTrxTypeListForFma"/>
+      <if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	  </if>
+	  
+	  AND CTSTRXTYPE.BREAK_FMA = '0'
+	  
+      <include refid="getWhereClauseOfTrxTypeListForFma1"/>
+      <if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	  </if>
+	  
+	  AND CTSTRXTYPE.BREAK_FMA = '0'
+	  
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ 	</select>
+ 
+ 	<select id="selectTrxTypeListCountForFma" resultType="int" parameterType="trxTypeSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="getTrxTypeListForFma"/>
+      <include refid="getWhereClauseOfTrxTypeListForFma"/>
+      <if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	  </if>
+	  
+	  AND CTSTRXTYPE.BREAK_FMA = '0'
+	  
+      <include refid="getWhereClauseOfTrxTypeListForFma1"/>
+      <if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	  </if>
+	  
+	  AND CTSTRXTYPE.BREAK_FMA = '0'
+	  
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ 	</select>
+	
+	<sql id="getTrxTypeListForFma">
+      <![CDATA[
+			SELECT		
+			CTSTRXTYPE.CODE,
+			CTSTRXTYPE.SHORT_DESC_ENG,
+			CTSTRXTYPE.LONG_DESC_ENG,
+			CTSTRXTYPE.SHORT_DESC_ARAB,
+			CTSTRXTYPE.LONG_DESC_ARAB,
+			CTSTRXTYPE.REMITT_TYPE
+			FROM CTSTRXTYPE		
+       ]]>   
+ 	</sql>
+	
+
+	<select id="selectTrxTypeForFma" resultMap="trxTypeListMap" parameterType="trxTypeSC">
+		<include refid="getTrxTypeListForFma" />
+		<include refid="getWhereClauseOfTrxTypeListForFma"/>
+		<if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	    </if>
+		<include refid="validateWhereClauseTrxTypeForFma"/>
+		
+		AND CTSTRXTYPE.BREAK_FMA = '0'
+		
+		<include refid="getWhereClauseOfTrxTypeListForFma1"/>
+		<if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+	  </if>
+	  <include refid="validateWhereClauseTrxTypeForFma"/>
+	  
+	  AND CTSTRXTYPE.BREAK_FMA = '0'
+	  
+	</select>
+	
+	<sql id = "validateWhereClauseTrxTypeForFma">
+	 	 <![CDATA[
+	 	 	AND CTSTRXTYPE.CODE = #{code}
+		  ]]> 
+	 </sql>
+	
+	 <sql id = "validateTrxTypeForFma">
+	 	 <![CDATA[
+	 	 	SELECT		
+			CTSTRXTYPE.CODE,
+			CTSTRXTYPE.SHORT_DESC_ARAB,
+			CTSTRXTYPE.SHORT_DESC_ENG 
+			FROM CTSTRXTYPE	
+		  ]]> 
+	 </sql>
+	
+ 	 <sql id="getWhereClauseOfTrxTypeListForFma">
+ 	 	<![CDATA[
+			WHERE	 		CTSTRXTYPE.COMP_CODE		= #{compCode}
+			AND			CTSTRXTYPE.STATUS			= 'P'
+			AND			CTSTRXTYPE.TYPE  			=
+			CASE
+				WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+			ELSE #{type}
+			END
+			AND	CTSTRXTYPE.MULTI_TRX  = CASE WHEN #{multiTrx} = '1' THEN '1' WHEN #{multiTrx} = '0' THEN '0' ELSE CTSTRXTYPE.MULTI_TRX END
+			AND	(		
+				(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND	CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+				)
+			AND	(
+				(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  															)
+					Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	)
+
+				) 	
+			AND	CASE WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = '0'
+			AND	CASE WHEN CTSTRXTYPE.REFERENCE 		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE			END   = ' '
+			AND	CASE WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+			CASE
+				WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+			ELSE #{nostro}
+			END
+			AND	CTSTRXTYPE.HIDE_IN_TRS = '0'
+			AND	CTSTRXTYPE.CY_EXCH 	  = '0'
+			
+			 	 		
+	 	 		
+		 ]]> 	
+ 	 </sql>
+ 	 
+ 	 <sql id="getWhereClauseOfTrxTypeListForFma1">
+ 	 	<![CDATA[
+ 	 	UNION
+				SELECT		CTSTRXTYPE.CODE				,
+				CTSTRXTYPE.SHORT_DESC_ENG	,
+				CTSTRXTYPE.LONG_DESC_ENG	,
+				CTSTRXTYPE.SHORT_DESC_ARAB	,
+				CTSTRXTYPE.LONG_DESC_ARAB,
+				CTSTRXTYPE.REMITT_TYPE
+				FROM			CTSTRXTYPE  LEFT OUTER JOIN  AXS		ON		CTSTRXTYPE.REFERENCE  = AXS.PROG_REF
+				AND	CTSTRXTYPE.COMP_CODE  = AXS.COMP_CODE
+				AND	AXS.USER_ID  			= #{userId}
+				AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE >= <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		<![CDATA[
+				WHERE			CTSTRXTYPE.COMP_CODE  = #{compCode}
+				AND			CTSTRXTYPE.STATUS  = 'P'
+				AND			CTSTRXTYPE.TYPE  =
+				CASE
+					WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+				ELSE #{type}
+				END
+				AND	CTSTRXTYPE.MULTI_TRX  = CASE WHEN #{multiTrx} = '1' THEN '1' WHEN #{multiTrx} = '0' THEN '0' ELSE CTSTRXTYPE.MULTI_TRX END
+				AND	(
+					(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+					OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+					)
+					AND			(
+					(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  													)
+					Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	)
+					)	
+					AND			CASE 	WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = 	'0'
+					AND			CASE 	WHEN CTSTRXTYPE.REFERENCE		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE 			END   <> ' '
+					AND			CASE 	WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+					CASE
+						WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+					ELSE #{nostro}
+					END
+					AND	CTSTRXTYPE.HIDE_IN_TRS = '0'	
+					AND	CTSTRXTYPE.CY_EXCH 	  = '0'		
+ 	 	]]> 
+ 	 </sql>
+ 	 
+ 	<select id="trxTypeListByGrpForFMAList" resultMap="trxTypeListForTransferCashMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeListByGrpSQL"/>
+		<if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+		</if>
+		<if test='reference != null and reference.equals("fromOpenDepTrxType")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) <![CDATA[ <= ]]> 0
+		</if>
+		
+		AND CTSTRXTYPE.BREAK_FMA = '0'
+		
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="trxTypeListByGrpForFMACount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeListByGrpSQL"/>
+		<if test='reference != null and reference.equals("fromTrxTypeCOD")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) > 0
+           AND CTSTRXTYPE.TRX_PURPOSE = 'I'
+           AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) IN 
+               (SELECT REMITTANCE.CODE
+				  FROM REMITTANCE
+				 WHERE REMITTANCE.COMP_CODE = #{compCode}
+				   AND REMITTANCE.REMITTANCE_TYPE = 'CD')
+		</if>
+		<if test='reference != null and reference.equals("fromOpenDepTrxType")' >
+		   AND COALESCE(CTSTRXTYPE.REMITT_TYPE,0) <![CDATA[ <= ]]> 0
+		</if>
+		
+		AND CTSTRXTYPE.BREAK_FMA = '0'
+		
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 
+	 
+ 	 
+ 	 
+ 	<select id="returnCodeForTrxTypeList" resultType="int" parameterType="trxTypeSC">
+		SELECT CTSTRXTYPE_GRP.CODE
+		  FROM   CTSTRXTYPE_GRP
+		 WHERE  CTSTRXTYPE_GRP.COMP_CODE = #{compCode}
+		   AND    CTSTRXTYPE_GRP.FOLDER_TYPE = #{folderType}
+		   AND CTSTRXTYPE_GRP.LINE_NO = 0
+	</select>
+	
+	
+	<resultMap id="trxTypeListForTransferCashMap" type="trxTypeVO">
+		<result property="CODE" column="TRX_TYPE_CODE" />
+		<result property="SHORT_DESC_ENG" column="SHORT_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+		<result property="SHORT_DESC_ARAB" column="SHORT_DESC_ARAB" />
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+		<result property="NOSTRO_MVT" column="NOSTRO_MVT" />
+	 </resultMap>
+	 
+	<sql id="trxTypeLookupForTransferCash">
+		<![CDATA[  
+	     SELECT CTSTRXTYPE.CODE TRX_TYPE_CODE,
+				CTSTRXTYPE.SHORT_DESC_ENG,	
+         		CTSTRXTYPE.LONG_DESC_ENG,	
+         		CTSTRXTYPE.SHORT_DESC_ARAB,	
+         		CTSTRXTYPE.LONG_DESC_ARAB	
+		  FROM CTSTRXTYPE
+		 WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+		   AND CTSTRXTYPE.STATUS = 'P'
+			AND CTSTRXTYPE.TYPE = CASE WHEN CASE WHEN #{type} IS NULL THEN 'X' ELSE #{type} END = 'X' THEN CTSTRXTYPE.TYPE ELSE #{type} END 
+			AND CTSTRXTYPE.MULTI_TRX = CASE WHEN #{multiTrx} = '1' THEN '1' WHEN #{multiTrx} = '0' THEN '0' ELSE CTSTRXTYPE.MULTI_TRX END 
+			AND ((CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'B' AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')) 
+			OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'C' AND CTSTRXTYPE.CHQ_RELATED = 'C') 
+			OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'H' AND CTSTRXTYPE.CHQ_RELATED = 'H') 
+			OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'N' AND CTSTRXTYPE.CHQ_RELATED = 'N') 
+			OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'X')) AND ((#{trsfr} + 0 IS NULL OR #{trsfr} + 0 = 0) 
+			Or (#{trsfr} + 0 IS NOT NULL AND #{trsfr} + 0 <> 0 And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0)
+		
+			) AND CASE WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN '0' ELSE CTSTRXTYPE.STANDING_ORDER END = '0' 
+			AND CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END = ' ' 
+			AND CASE WHEN CTSTRXTYPE.NOSTRO_MVT IS NULL THEN '2' ELSE CTSTRXTYPE.NOSTRO_MVT END = 
+			CASE WHEN CASE WHEN #{nostro} IS NULL THEN '2' ELSE #{nostro} END = '2' THEN CTSTRXTYPE.NOSTRO_MVT ELSE #{nostro} END 
+			AND CTSTRXTYPE.HIDE_IN_TRS = '0' AND CTSTRXTYPE.CY_EXCH = '0'
+	
+	UNION
+	
+	 SELECT CTSTRXTYPE.CODE TRX_TYPE_CODE,
+	    	CTSTRXTYPE.SHORT_DESC_ENG,	
+	       	CTSTRXTYPE.LONG_DESC_ENG,	
+	       	CTSTRXTYPE.SHORT_DESC_ARAB,	
+	       	CTSTRXTYPE.LONG_DESC_ARAB	
+	  FROM CTSTRXTYPE
+			LEFT OUTER JOIN AXS ON CTSTRXTYPE.REFERENCE = AXS.PROG_REF
+			AND CTSTRXTYPE.COMP_CODE = AXS.COMP_CODE
+			AND AXS.USER_ID = #{userId}
+			AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE >= <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+	<![CDATA[  
+	 WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+	   AND CTSTRXTYPE.STATUS = 'P'
+	   AND CTSTRXTYPE.TYPE = CASE WHEN CASE WHEN #{type} IS NULL THEN 'X' ELSE #{type} END = 'X' THEN CTSTRXTYPE.TYPE ELSE #{type} END 
+	   AND CTSTRXTYPE.MULTI_TRX = CASE WHEN #{multiTrx} = '1' THEN '1' WHEN #{multiTrx} = '0' THEN '0' ELSE CTSTRXTYPE.MULTI_TRX END 
+	   AND ((CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'B' AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')) 
+	   OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'C' AND CTSTRXTYPE.CHQ_RELATED = 'C') 
+	   OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'H' AND CTSTRXTYPE.CHQ_RELATED = 'H') 
+	   OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'N' AND CTSTRXTYPE.CHQ_RELATED = 'N') 
+	   OR (CASE WHEN #{chequeFlag} IS NULL THEN 'X' ELSE #{chequeFlag} END = 'X')) AND ((#{trsfr} + 0 IS NULL 
+	   OR #{trsfr} + 0 = 0) Or (#{trsfr} + 0 IS NOT NULL AND #{trsfr} + 0 <> 0 And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0)
+		
+	   ) AND CASE WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN '0' ELSE CTSTRXTYPE.STANDING_ORDER END = '0' 
+	   AND CASE WHEN CTSTRXTYPE.REFERENCE IS NULL THEN ' ' ELSE CTSTRXTYPE.REFERENCE END <> ' ' 
+	   AND CASE WHEN CTSTRXTYPE.NOSTRO_MVT IS NULL THEN '2' ELSE CTSTRXTYPE.NOSTRO_MVT END = 
+	   CASE WHEN CASE WHEN #{nostro} IS NULL THEN '2' ELSE #{nostro} END = '2' THEN CTSTRXTYPE.NOSTRO_MVT ELSE #{nostro} END 
+	   AND CTSTRXTYPE.HIDE_IN_TRS = '0' AND CTSTRXTYPE.CY_EXCH = '0'
+ 		]]>
+    </sql>
+	
+	<sql id="trxTypeListByGrpSQL">
+		SELECT CTSTRXTYPE_GRP.TRX_TYPE TRX_TYPE_CODE,
+			   CTSTRXTYPE.SHORT_DESC_ENG,	
+         	   CTSTRXTYPE.LONG_DESC_ENG,	
+         	   CTSTRXTYPE.SHORT_DESC_ARAB,	
+         	   CTSTRXTYPE.LONG_DESC_ARAB,	
+	    	   CASE WHEN CTSTRXTYPE.REMITT_TYPE IS NULL THEN 0 ELSE CTSTRXTYPE.REMITT_TYPE END REMITT_TYPE,
+	    	   CTSTRXTYPE.NOSTRO_MVT
+	    FROM CTSTRXTYPE_GRP,CTSTRXTYPE  
+	   	WHERE  ( CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_GRP.COMP_CODE ) 
+	     AND ( CTSTRXTYPE.COMP_CODE = #{compCode} )
+	     AND ( CTSTRXTYPE_GRP.LINE_NO <![CDATA[ <> 0 ]]> ) 
+	     AND ( CTSTRXTYPE_GRP.CODE = #{trxTypeGrpCode} )
+	     AND ( CTSTRXTYPE_GRP.TRX_TYPE = CTSTRXTYPE.CODE )
+	     <if test="code != null and code != emptyBigDecimalValue" >
+	       AND CTSTRXTYPE_GRP.TRX_TYPE = #{code}
+	     </if>
+	</sql>
+	
+	 <select id="trxTypeListByGrpForTransferCashList" resultMap="trxTypeListForTransferCashMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeListByGrpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="trxTypeListByGrpForTransferCashCount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeListByGrpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 
+	 <select id="trxTypeLookupForTransferCashList" resultMap="trxTypeListForTransferCashMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeLookupForTransferCash"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="trxTypeLookupForTransferCashCount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeLookupForTransferCash"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+
+
+<select id="returnTrxUtilityPayment" resultType="int" parameterType="trxTypeSC">
+			SELECT  CTSTRXTYPE.UTILITY_PAYMENT
+			FROM  CTSTRXTYPE 
+			WHERE	 CTSTRXTYPE.COMP_CODE  = #{compCode}
+			AND	CTSTRXTYPE.CODE  = #{code}
+			AND	CTSTRXTYPE.STATUS  = 'P'
+</select>
+	
+	
+	<resultMap id="trxTypeLinkMap" type="ctstrxtypeLinkVO">
+	   <result column="LINE_NBR"   property="LINE_NBR"/>
+	   <result column="LINKED_TRX" property="LINKED_TRX"/>
+	</resultMap>
+	<sql id="trxTypeLinkListQuery">
+		SELECT CTSTRXTYPE_LINK.LINE_NBR
+		      ,CTSTRXTYPE_LINK.LINKED_TRX
+		FROM CTSTRXTYPE_LINK 
+		WHERE COMP_CODE   =#{compCode}
+		AND TRX_TYPE_CODE =#{trxType}
+		<if test="linkToTrxTypeCode != null and linkToTrxTypeCode != emptyBigDecimalValue">
+		   AND CTSTRXTYPE_LINK.LINKED_TRX != #{linkToTrxTypeCode}
+		</if>
+	</sql>
+	<select id="trxTypeLinkList" resultMap="trxTypeLinkMap" parameterType="trxMgntSC">
+		<include refid="trxTypeLinkListQuery"/>
+	</select>
+ <select id="returnTrxTypeDependencyById" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+	<include refid="trxTypeListCommonById"/>
+	<include refid="trxTypeListCommonParams"/>
+	<include refid="returnTrxType"/>
+ </select>
+	 <sql id="trxTypeListCommonById" >
+	SELECT CTSTRXTYPE.COMP_CODE
+         ,CTSTRXTYPE.CODE		
+         ,CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END SHORT_DESC_ENG	
+         ,CTSTRXTYPE.STATUS			
+         ,CTSTRXTYPE.TYPE             
+         ,CTSTRXTYPE.REFERENCE		
+         ,CTSTRXTYPE.STANDING_ORDER
+         ,CTSTRXTYPE.SO_PERIODICITY
+         ,CTSTRXTYPE.HIDE_IN_TRS
+         ,CTSTRXTYPE.PROCESS_WINDOW
+         ,CC_MAINTAIN_BATCH
+     FROM CTSTRXTYPE
+      </sql>
+     
+     <sql id="trxTypeForCurrencyExchange">
+     	  SELECT CTSTRXTYPE.COMP_CODE
+         		,CTSTRXTYPE.CODE		
+         	    ,(CASE WHEN #{preferredLanguage} = 'A' THEN SHORT_DESC_ARAB ELSE SHORT_DESC_ENG END) SHORT_DESC_ENG	
+         	    ,(CASE WHEN #{preferredLanguage} = 'A' THEN LONG_DESC_ARAB ELSE LONG_DESC_ENG END) LONG_DESC_ENG	
+         		,CTSTRXTYPE.STATUS			
+         		,CTSTRXTYPE.TYPE             
+         		,CTSTRXTYPE.REFERENCE		
+         		,CTSTRXTYPE.STANDING_ORDER
+     	    FROM CTSTRXTYPE
+     	   WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+		     AND CTSTRXTYPE.TYPE = #{type}
+			 AND CTSTRXTYPE.TRSFR_TYPE = #{trsfr}
+			 AND CTSTRXTYPE.NOSTRO_MVT = #{nostro}
+			 AND CTSTRXTYPE.MULTI_TRX = #{multiTrx}
+	         AND CTSTRXTYPE.STANDING_ORDER = #{standingOrder}
+	         AND CTSTRXTYPE.CHQ_RELATED = #{chqRelated}
+	         AND CTSTRXTYPE.STATUS = #{status}
+	         AND CTSTRXTYPE.CR_DR_FOREX = #{crDrForex,jdbcType=VARCHAR}
+			 AND CTSTRXTYPE.CY_EXCH = #{cyExch}
+			<if test="code != null and code != emptyBigDecimalValue" >
+			 	AND CTSTRXTYPE.CODE = #{code}
+		    </if>
+     </sql>
+
+     <resultMap id="trxTypeForCurrencyExchangeMap" type="trxTypeVO" >
+		<result property="CODE" column="CODE" />
+		<result property="SHORT_DESC_ENG" column="SHORT_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	 </resultMap>
+      
+     <select id="trxTypeForCurrencyExchangeList" resultMap="trxTypeForCurrencyExchangeMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeForCurrencyExchange"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	 <select id="trxTypeForCurrencyExchangeListCount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeForCurrencyExchange"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+
+ 	<sql id="closeTrsfrTrxTypeDependencyCheck">
+		<![CDATA[
+			SELECT		CTSTRXTYPE.CODE			,
+				CTSTRXTYPE.SHORT_DESC_ENG		,
+				CTSTRXTYPE.LONG_DESC_ENG		,
+				CTSTRXTYPE.SHORT_DESC_ARAB		,
+				CTSTRXTYPE.LONG_DESC_ARAB
+				FROM			CTSTRXTYPE
+				WHERE	 		CTSTRXTYPE.COMP_CODE		= #{compCode}
+				AND			CTSTRXTYPE.STATUS			= 'P'
+				AND         CTSTRXTYPE.CLOSING_TRSFR = '1'
+				AND			CTSTRXTYPE.TYPE  			=
+				CASE
+				WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+			ELSE #{type}
+			END
+			--AND			CTSTRXTYPE.MULTI_TRX		= '0'
+			AND			(		
+			(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND	CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+			)
+			AND			(
+			(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  															)
+			Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	)
+			
+			) 	
+			AND			CASE WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = '0'
+			AND			CASE WHEN CTSTRXTYPE.REFERENCE 		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE			END   = ' '
+			AND			CASE WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+			CASE
+			WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+			ELSE #{nostro}
+			END
+			AND CTSTRXTYPE.CODE =  #{code}
+			UNION
+			
+			SELECT		CTSTRXTYPE.CODE				,
+			CTSTRXTYPE.SHORT_DESC_ENG	,
+			CTSTRXTYPE.LONG_DESC_ENG	,
+			CTSTRXTYPE.SHORT_DESC_ARAB	,
+			CTSTRXTYPE.LONG_DESC_ARAB
+			FROM			CTSTRXTYPE  LEFT OUTER JOIN  AXS		ON		CTSTRXTYPE.REFERENCE  = AXS.PROG_REF
+			AND	CTSTRXTYPE.COMP_CODE  = AXS.COMP_CODE
+			AND	AXS.USER_ID  			= #{userId}
+			WHERE			CTSTRXTYPE.COMP_CODE  = #{compCode}
+			AND			CTSTRXTYPE.STATUS  = 'P'
+			AND         CTSTRXTYPE.CLOSING_TRSFR = '1'
+			AND			CTSTRXTYPE.TYPE  =
+			CASE
+			WHEN CASE WHEN #{type} IS NULL THEN  'X' ELSE #{type} END  = 'X' THEN CTSTRXTYPE.TYPE
+			ELSE #{type}
+			END
+			--AND			CTSTRXTYPE.MULTI_TRX  = '0'
+			AND			(
+			(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'B' AND CTSTRXTYPE.CHQ_RELATED  IN ( 'C'  , 'H'  ))
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'C' AND	CTSTRXTYPE.CHQ_RELATED  = 'C'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'H' AND	CTSTRXTYPE.CHQ_RELATED  = 'H'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'N' AND	CTSTRXTYPE.CHQ_RELATED  = 'N'					)
+			OR	(	CASE WHEN #{chequeFlag} IS NULL THEN  'X' ELSE #{chequeFlag} END   = 'X'																)
+			)
+			AND			(
+			(	#{trsfr} + 0 IS 		NULL OR	#{trsfr} + 0 = 0  													)
+			Or	(	#{trsfr} + 0 IS NOT	NULL AND	#{trsfr} + 0 <> 0	And CTSTRXTYPE.TRSFR_TYPE = #{trsfr} + 0	)
+			
+			)	
+			AND			CASE 	WHEN CTSTRXTYPE.STANDING_ORDER IS NULL THEN  '0' ELSE CTSTRXTYPE.STANDING_ORDER 	END   = 	'0'
+			AND			CASE 	WHEN CTSTRXTYPE.REFERENCE		IS NULL THEN  ' ' ELSE CTSTRXTYPE.REFERENCE 			END   <> ' '
+			AND			CASE 	WHEN CTSTRXTYPE.NOSTRO_MVT 		IS NULL THEN  '2' ELSE CTSTRXTYPE.NOSTRO_MVT 		END   =
+			CASE
+			WHEN CASE WHEN #{nostro} IS NULL THEN  '2' ELSE #{nostro} END  = '2' THEN CTSTRXTYPE.NOSTRO_MVT
+			ELSE #{nostro}
+			END
+			AND CTSTRXTYPE.CODE =  #{code}
+		]]>
+	</sql>
+	
+	
+	<sql id="trxTypeCertificateListParams"><![CDATA[
+	 	LEFT OUTER JOIN CTSTRXTYPE_EXTENDED ON CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+											AND CTSTRXTYPE.CODE = CTSTRXTYPE_EXTENDED.CODE
+	 	WHERE CTSTRXTYPE.COMP_CODE = #{compCode}
+         AND CTSTRXTYPE.STATUS = 'P'
+         AND CTSTRXTYPE.TYPE = 'T'
+         AND CTSTRXTYPE_EXTENDED.DOCUMENT_TYPE = 'B'
+         AND CTSTRXTYPE.CR_DR_FOREX = 'C'
+         AND CTSTRXTYPE.COMP_CODE = CTSTRXTYPE_EXTENDED.COMP_CODE
+         AND CTSTRXTYPE.CODE = CTSTRXTYPE_EXTENDED.CODE]]>	
+	 </sql>
+	
+	<select id="trxTypeCertificateList" resultMap="trxTypeListMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeListCommon"/>
+		<include refid="trxTypeCertificateListParams"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	 <select id="trxTypeListCertificateCount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeListCommon"/>
+		<include refid="trxTypeCertificateListParams"/>
+		<if test="code != null and code != 0 " >
+			AND CTSTRXTYPE.CODE = #{code} 		
+		</if>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	 <select id="returnTrxTypeExtendedById" resultType="trxTypeExtendedVO" parameterType="trxTypeSC">
+	 	SELECT	COMP_CODE,
+	 			CODE,
+	 			DOCUMENT_TYPE
+		FROM    CTSTRXTYPE_EXTENDED 
+		WHERE	COMP_CODE  	= #{compCode}
+	 	AND 	CODE 		= #{code}
+	</select>
+	
+	<sql id='trxTypeAccChargesConditions'>
+		 WHERE COMP_CODE = #{compCode}
+		AND STATUS = #{status}
+		<if test="type != null and type == 'SO'" >
+		 	AND STANDING_ORDER = '1'  
+		 	AND CTSTRXTYPE.TYPE = 'T'
+	    </if>	
+	    <if test="type != null and type == 'TD'" >
+		 	AND TYPE = 'T' 
+		 	AND CTSTRXTYPE.CR_DR_FOREX = 'D' 
+		 	AND CTSTRXTYPE.CHQ_RELATED = 'N'
+	    </if>
+	 </sql>
+	 
+	 <sql id="trxTypeAccChargesDependency">
+		 AND CTSTRXTYPE.CODE = #{code}
+	 </sql>
+	
+	<select id="trxTypeLookupForAccChargesList" resultMap="trxTypeForCurrencyExchangeMap" parameterType="trxTypeSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="trxTypeListCommon"/>
+		<include refid="trxTypeAccChargesConditions"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 
+	 <select id="trxTypeLookupForAccChargesListCount" resultType="int" parameterType="trxTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="trxTypeListCommon"/>
+		<include refid="trxTypeAccChargesConditions"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 
+	 <select id="trxTypeLookupForAccChargesDependency" resultMap="trxTypeForCurrencyExchangeMap" parameterType="trxTypeSC" >
+		<include refid="trxTypeListCommon"/>
+		<include refid="trxTypeAccChargesConditions"/>
+		<include refid="trxTypeAccChargesDependency"/>
+	 </select>
+
+</mapper>

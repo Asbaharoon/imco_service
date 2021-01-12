@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EXCH_RAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EXCH_RATVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="DATE_RATE" property="DATE_RATE" />
+    <id column="TIME" property="TIME" />
+    <result column="B_RATE" property="b_RATE" />
+    <result column="S_RATE" property="s_RATE" />
+    <result column="M_RATE" property="m_RATE" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="TRSF_SELL" property="TRSF_SELL" />
+    <result column="TRSF_BUY" property="TRSF_BUY" />
+    <result column="TRSF_STAFF" property="TRSF_STAFF" />
+    <result column="LC_MURABAHA" property="LC_MURABAHA" />
+    <result column="STAFF_TRSF_SELL" property="STAFF_TRSF_SELL" />
+    <result column="STAFF_CASH_BUY" property="STAFF_CASH_BUY" />
+    <result column="STAFF_CASH_SELL" property="STAFF_CASH_SELL" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="APPROVED_DATE" property="APPROVED_DATE" />
+    <result column="FDD_BUY" property="FDD_BUY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="ROW_MODIFIED_YN" property="ROW_MODIFIED_YN" />
+    <result column="CB_CASH_BUY_RATE" property="CB_CASH_BUY_RATE" />
+    <result column="CB_CASH_SELL_RATE" property="CB_CASH_SELL_RATE" />
+    <result column="SUB_DELEGATE_CASH_BUY_RATE" property="SUB_DELEGATE_CASH_BUY_RATE" />
+  </resultMap>
+  <resultMap id="ResultMap" type="com.path.dbmaps.vo.EXCH_RATVO" extends="BaseResultMap" >
+    <result column="REJECTION_REASON" property="REJECTION_REASON" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CURRENCY_CODE, DATE_RATE, TIME, B_RATE, S_RATE, M_RATE, ADDITIONAL_REFERENCE, 
+    TRSF_SELL, TRSF_BUY, TRSF_STAFF, LC_MURABAHA, STAFF_TRSF_SELL, STAFF_CASH_BUY, STAFF_CASH_SELL, 
+    STATUS, CREATED_BY, CREATED_DATE, APPROVED_BY, APPROVED_DATE, FDD_BUY, DATE_MODIFIED, 
+    MODIFIED_BY, ROW_MODIFIED_YN, CB_CASH_BUY_RATE, CB_CASH_SELL_RATE, SUB_DELEGATE_CASH_BUY_RATE
+  </sql>
+  <sql id="Blob_Column_List" >
+    REJECTION_REASON
+  </sql>
+  <select id="selectEXCH_RAT" resultMap="ResultMap" parameterType="com.path.dbmaps.vo.EXCH_RATVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from EXCH_RAT
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DATE_RATE = #{DATE_RATE}
+      and TIME = #{TIME}
+  </select>
+  <delete id="deleteEXCH_RAT" parameterType="com.path.dbmaps.vo.EXCH_RATVOKey" >
+    delete from EXCH_RAT
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DATE_RATE = #{DATE_RATE}
+      and TIME = #{TIME}
+  </delete>
+  <insert id="insertEXCH_RAT" parameterType="com.path.dbmaps.vo.EXCH_RATVO" >
+    insert into EXCH_RAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null" >
+        CURRENCY_CODE,
+      </if>
+      <if test="DATE_RATE != null" >
+        DATE_RATE,
+      </if>
+      <if test="TIME != null" >
+        TIME,
+      </if>
+      <if test="b_RATE != null" >
+        B_RATE,
+      </if>
+      <if test="s_RATE != null" >
+        S_RATE,
+      </if>
+      <if test="m_RATE != null" >
+        M_RATE,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      <if test="TRSF_SELL != null" >
+        TRSF_SELL,
+      </if>
+      <if test="TRSF_BUY != null" >
+        TRSF_BUY,
+      </if>
+      <if test="TRSF_STAFF != null" >
+        TRSF_STAFF,
+      </if>
+      <if test="LC_MURABAHA != null" >
+        LC_MURABAHA,
+      </if>
+      <if test="STAFF_TRSF_SELL != null" >
+        STAFF_TRSF_SELL,
+      </if>
+      <if test="STAFF_CASH_BUY != null" >
+        STAFF_CASH_BUY,
+      </if>
+      <if test="STAFF_CASH_SELL != null" >
+        STAFF_CASH_SELL,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE,
+      </if>
+      <if test="FDD_BUY != null" >
+        FDD_BUY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="ROW_MODIFIED_YN != null" >
+        ROW_MODIFIED_YN,
+      </if>
+      <if test="CB_CASH_BUY_RATE != null" >
+        CB_CASH_BUY_RATE,
+      </if>
+      <if test="CB_CASH_SELL_RATE != null" >
+        CB_CASH_SELL_RATE,
+      </if>
+      <if test="SUB_DELEGATE_CASH_BUY_RATE != null" >
+        SUB_DELEGATE_CASH_BUY_RATE,
+      </if>
+      <if test="REJECTION_REASON != null" >
+        REJECTION_REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="DATE_RATE != null" >
+        #{DATE_RATE},
+      </if>
+      <if test="TIME != null" >
+        #{TIME},
+      </if>
+      <if test="b_RATE != null" >
+        #{b_RATE},
+      </if>
+      <if test="s_RATE != null" >
+        #{s_RATE},
+      </if>
+      <if test="m_RATE != null" >
+        #{m_RATE},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TRSF_SELL != null" >
+        #{TRSF_SELL},
+      </if>
+      <if test="TRSF_BUY != null" >
+        #{TRSF_BUY},
+      </if>
+      <if test="TRSF_STAFF != null" >
+        #{TRSF_STAFF},
+      </if>
+      <if test="LC_MURABAHA != null" >
+        #{LC_MURABAHA},
+      </if>
+      <if test="STAFF_TRSF_SELL != null" >
+        #{STAFF_TRSF_SELL},
+      </if>
+      <if test="STAFF_CASH_BUY != null" >
+        #{STAFF_CASH_BUY},
+      </if>
+      <if test="STAFF_CASH_SELL != null" >
+        #{STAFF_CASH_SELL},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        #{APPROVED_DATE},
+      </if>
+      <if test="FDD_BUY != null" >
+        #{FDD_BUY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="ROW_MODIFIED_YN != null" >
+        #{ROW_MODIFIED_YN},
+      </if>
+      <if test="CB_CASH_BUY_RATE != null" >
+        #{CB_CASH_BUY_RATE},
+      </if>
+      <if test="CB_CASH_SELL_RATE != null" >
+        #{CB_CASH_SELL_RATE},
+      </if>
+      <if test="SUB_DELEGATE_CASH_BUY_RATE != null" >
+        #{SUB_DELEGATE_CASH_BUY_RATE},
+      </if>
+      <if test="REJECTION_REASON != null" >
+        #{REJECTION_REASON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateEXCH_RAT" >
+    update EXCH_RAT
+    <set >
+      <if test="b_RATE != null" >
+        B_RATE = #{b_RATE},
+      </if>
+      <if test="s_RATE != null" >
+        S_RATE = #{s_RATE},
+      </if>
+      <if test="m_RATE != null" >
+        M_RATE = #{m_RATE},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+      <if test="TRSF_SELL != null" >
+        TRSF_SELL = #{TRSF_SELL},
+      </if>
+      <if test="TRSF_BUY != null" >
+        TRSF_BUY = #{TRSF_BUY},
+      </if>
+      <if test="TRSF_STAFF != null" >
+        TRSF_STAFF = #{TRSF_STAFF},
+      </if>
+      <if test="LC_MURABAHA != null" >
+        LC_MURABAHA = #{LC_MURABAHA},
+      </if>
+      <if test="STAFF_TRSF_SELL != null" >
+        STAFF_TRSF_SELL = #{STAFF_TRSF_SELL},
+      </if>
+      <if test="STAFF_CASH_BUY != null" >
+        STAFF_CASH_BUY = #{STAFF_CASH_BUY},
+      </if>
+      <if test="STAFF_CASH_SELL != null" >
+        STAFF_CASH_SELL = #{STAFF_CASH_SELL},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="APPROVED_DATE != null" >
+        APPROVED_DATE = #{APPROVED_DATE},
+      </if>
+      <if test="FDD_BUY != null" >
+        FDD_BUY = #{FDD_BUY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="ROW_MODIFIED_YN != null" >
+        ROW_MODIFIED_YN = #{ROW_MODIFIED_YN},
+      </if>
+      <if test="CB_CASH_BUY_RATE != null" >
+        CB_CASH_BUY_RATE = #{CB_CASH_BUY_RATE},
+      </if>
+      <if test="CB_CASH_SELL_RATE != null" >
+        CB_CASH_SELL_RATE = #{CB_CASH_SELL_RATE},
+      </if>
+      <if test="SUB_DELEGATE_CASH_BUY_RATE != null" >
+        SUB_DELEGATE_CASH_BUY_RATE = #{SUB_DELEGATE_CASH_BUY_RATE},
+      </if>
+      <if test="REJECTION_REASON != null" >
+        REJECTION_REASON = #{REJECTION_REASON},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DATE_RATE = #{DATE_RATE}
+      and TIME = #{TIME}
+  </sql>
+  <update id="updateEXCH_RAT" parameterType="com.path.dbmaps.vo.EXCH_RATVO" >
+    <include refid="sql_updateEXCH_RAT" />
+  </update>
+</mapper>

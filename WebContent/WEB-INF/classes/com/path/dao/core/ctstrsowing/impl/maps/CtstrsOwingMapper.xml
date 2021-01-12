@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="ctstrsOwingMapper">
+<sql id="owingQuery">
+	SELECT 	COMP_CODE			
+	       ,BRANCH_CODE			
+	       ,TRS_NO					
+	       ,CB_IND					
+	       ,TRS_TYPE				
+	       ,LINE_NO					
+	       ,DD_BR					
+	       ,DD_NO					
+	       ,LINK_TO_TRS_BR		
+	       ,LINK_TO_TRS_NO		
+	       ,OWING_AMOUNT
+	  FROM  CTSTRS_OWING
+	 WHERE  COMP_CODE 	= #{compCode}
+	   AND	BRANCH_CODE	= #{branchCode}
+	   AND	TRS_NO		= #{trsNo}
+	   AND	CB_IND		= 'C'
+	   AND	TRS_TYPE	= 'R'
+</sql>
+<resultMap type="ctstrsOwingVO" id="ctstrsOwingListMap">
+  <result property="COMP_CODE"      column="COMP_CODE"/>
+  <result property="BRANCH_CODE"    column="BRANCH_CODE"/>
+  <result property="TRS_NO"         column="TRS_NO"/>
+  <result property="CB_IND"         column="CB_IND"/>
+  <result property="TRS_TYPE"       column="TRS_TYPE"/>
+  <result property="LINE_NO"        column="LINE_NO"/>
+  <result property="DD_BR"          column="DD_BR"/>
+  <result property="DD_NO"          column="DD_NO"/>
+  <result property="LINK_TO_TRS_BR" column="LINK_TO_TRS_BR"/>
+  <result property="LINK_TO_TRS_NO" column="LINK_TO_TRS_NO"/>
+  <result property="OWING_AMOUNT"   column="OWING_AMOUNT"/>
+</resultMap>
+<select id="ctstrsOwingList"
+        resultMap="ctstrsOwingListMap" 
+        parameterType="ctstrsOwingSC">
+    <include refid="servicesCommon.commonGridWrpBefFlip"/>
+    <include refid="ctstrsOwingMapper.owingQuery"/>
+    <include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+<select id="ctstrsOwingListCount"  resultType="int" parameterType="ctstrsOwingSC">
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="ctstrsOwingMapper.owingQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+</mapper>

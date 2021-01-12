@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="fmsIndicatorMapper">
+
+ <sql id="fmsIndicatorListCommon">
+	<![CDATA[
+		SELECT
+			FMSINDICATOR.CODE,
+			FMSINDICATOR.BRIEF_NAME_ENG,
+			FMSINDICATOR.LONG_NAME_ENG,
+			FMSINDICATOR.CIF_TYPE,
+			FMSINDICATOR.INDICATOR_TYPE,
+			FMSINDICATOR.BRIEF_NAME_ARAB,
+			FMSINDICATOR.LONG_NAME_ARAB,
+			(CASE 
+			WHEN FMSINDICATOR.CIF_TYPE = 0 THEN 'ALL TYPES' 
+			ELSE RIFCTT.BRIEF_DESC_ENG 
+			END) CIF_TYPE_NAME
+			FROM  FMSINDICATOR  LEFT OUTER JOIN  RIFCTT  ON  FMSINDICATOR.COMP_CODE  = RIFCTT.COMP_CODE
+																		AND	FMSINDICATOR.CIF_TYPE  = RIFCTT.TYPE_CODE  
+			WHERE	 (FMSINDICATOR.COMP_CODE  = #{compCode}) AND
+			(( CIF_TYPE =  #{cif_type}) OR (CIF_TYPE = CASE WHEN #{cif_type} = 0 THEN CIF_TYPE ELSE 0 END))   
+	]]>	 
+ </sql>
+
+ <resultMap id="fmsIndicatorListMap" type="fmsIndicatorCO">
+	<result column="CODE" property="fmsIndicatorVO.CODE" />
+	<result column="BRIEF_NAME_ENG" property="fmsIndicatorVO.BRIEF_NAME_ENG" />	
+	<result column="LONG_NAME_ENG" property="fmsIndicatorVO.LONG_NAME_ENG" />
+	<result column="BRIEF_NAME_ARAB" property="fmsIndicatorVO.BRIEF_NAME_ARAB" />	
+	<result column="LONG_NAME_ARAB" property="fmsIndicatorVO.LONG_NAME_ARAB" />
+	<result column="CIF_TYPE" property="fmsIndicatorVO.CIF_TYPE" />
+	<result column="INDICATOR_TYPE" property="fmsIndicatorVO.INDICATOR_TYPE" />
+	<result column="CIF_TYPE_NAME" property="CIF_TYPE_NAME" />
+ </resultMap>
+ 
+ <select id="fmsIndicatorList" resultMap="fmsIndicatorListMap" parameterType="fmsIndicatorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="fmsIndicatorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="fmsIndicatorListCount" resultType="int" parameterType="fmsIndicatorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="fmsIndicatorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnFmsIndicatorNameById" resultType="fmsIndicatorVO" parameterType="fmsIndicatorSC" >
+		SELECT
+				FMSINDICATOR.CODE,
+				FMSINDICATOR.BRIEF_NAME_ENG,
+				FMSINDICATOR.MULTIPLIER
+		FROM  	FMSINDICATOR
+		WHERE 	FMSINDICATOR.COMP_CODE  = #{compCode}
+		AND   	FMSINDICATOR.CODE    	= #{indicatorCode}
+ </select>
+ 
+ <select id="fmsCustomerIndicatorList" resultMap="fmsIndicatorListMap" parameterType="fmsIndicatorSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="fmsCustomerIndicatorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="fmsCustomerIndicatorListCount" resultType="int" parameterType="fmsIndicatorSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="fmsCustomerIndicatorListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+  <sql id="fmsCustomerIndicatorListCommon">
+	<![CDATA[
+	SELECT FMSINDICATOR.CODE,
+         FMSINDICATOR.BRIEF_NAME_ENG,
+         FMSINDICATOR.LONG_NAME_ENG,
+         FMSINDICATOR.CIF_TYPE,
+         FMSINDICATOR.INDICATOR_TYPE,
+         FMSINDICATOR.BRIEF_NAME_ARAB,
+         FMSINDICATOR.LONG_NAME_ARAB,
+         (CASE 
+		     	WHEN FMSINDICATOR.CIF_TYPE = 0 THEN 'ALL TYPES' 
+			    ELSE RIFCTT.BRIEF_DESC_ENG 
+		      END) CIF_TYPE_NAME
+    FROM FMSINDICATOR LEFT OUTER JOIN  RIFCTT  ON  FMSINDICATOR.COMP_CODE  = RIFCTT.COMP_CODE
+																		AND	FMSINDICATOR.CIF_TYPE  = RIFCTT.TYPE_CODE  
+   WHERE (FMSINDICATOR.COMP_CODE = #{compCode})
+     AND (((#{cifNo} = 0) OR
+         (CIF_TYPE = (select CIF_TYPE
+                          from CIF
+                         where COMP_CODE = #{compCode}
+                           and CIF_NO = #{cifNo}))) OR (CIF_TYPE = 0))
+	]]>	 
+ </sql>
+ 
+ <select id="returnFmsCustomerIndicatorNameById" resultType="fmsIndicatorVO" parameterType="fmsIndicatorSC" >
+		SELECT
+				FMSINDICATOR.CODE,
+				FMSINDICATOR.BRIEF_NAME_ENG
+		FROM FMSINDICATOR LEFT OUTER JOIN  RIFCTT  ON  FMSINDICATOR.COMP_CODE  = RIFCTT.COMP_CODE
+																		AND	FMSINDICATOR.CIF_TYPE  = RIFCTT.TYPE_CODE  
+		 WHERE (FMSINDICATOR.COMP_CODE = #{compCode})
+		 AND   	FMSINDICATOR.CODE    	= #{indicatorCode}
+     AND (((#{cifNo} = 0) OR
+         (CIF_TYPE = (select CIF_TYPE
+                          from CIF
+                         where COMP_CODE = #{compCode}
+                           and CIF_NO = #{cifNo}))) OR (CIF_TYPE = 0))
+ </select>
+
+</mapper>

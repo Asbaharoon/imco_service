@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLDOCUMENTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLDOCUMENTSVO" >
+    <id column="APP_REF" property="APP_REF" />
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <result column="LINE_NBR" property="LINE_NBR" />
+    <result column="EST_DATE_SENT" property="EST_DATE_SENT" />
+    <result column="EST_DATE_REC" property="EST_DATE_REC" />
+    <result column="SOL_DATE_SENT" property="SOL_DATE_SENT" />
+    <result column="SOL_DATE_REC" property="SOL_DATE_REC" />
+    <result column="CUSTODIAN_SENT" property="CUSTODIAN_SENT" />
+    <result column="MANDATORY" property="MANDATORY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_REF, BRANCH, COMP_CODE, DOC_CODE, LINE_NBR, EST_DATE_SENT, EST_DATE_REC, SOL_DATE_SENT, 
+    SOL_DATE_REC, CUSTODIAN_SENT, MANDATORY
+  </sql>
+  <select id="selectFMSAPPLDOCUMENTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLDOCUMENTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLDOCUMENTS
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+  </select>
+  <delete id="deleteFMSAPPLDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSAPPLDOCUMENTSVOKey" >
+    delete from FMSAPPLDOCUMENTS
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+  </delete>
+  <insert id="insertFMSAPPLDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSAPPLDOCUMENTSVO" >
+    insert into FMSAPPLDOCUMENTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        APP_REF,
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        DOC_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        EST_DATE_SENT,
+      </if>
+      <if test="EST_DATE_REC != null" >
+        EST_DATE_REC,
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        SOL_DATE_SENT,
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        SOL_DATE_REC,
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        CUSTODIAN_SENT,
+      </if>
+      <if test="MANDATORY != null and !&quot;&quot;.equals(MANDATORY)" >
+        MANDATORY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_REF != null and APP_REF != emptyBigDecimalValue" >
+        #{APP_REF},
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        #{DOC_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        #{EST_DATE_SENT},
+      </if>
+      <if test="EST_DATE_REC != null" >
+        #{EST_DATE_REC},
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        #{SOL_DATE_SENT},
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        #{SOL_DATE_REC},
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        #{CUSTODIAN_SENT},
+      </if>
+      <if test="MANDATORY != null and !&quot;&quot;.equals(MANDATORY)" >
+        #{MANDATORY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLDOCUMENTS" >
+    update FMSAPPLDOCUMENTS
+    <set >
+      <if test="LINE_NBR != null" >
+        <choose >
+          <when test="LINE_NBR == emptyBigDecimalValue" >
+            LINE_NBR = NULL ,
+          </when>
+          <otherwise >
+            LINE_NBR = #{LINE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        EST_DATE_SENT = #{EST_DATE_SENT},
+      </if>
+      <if test="EST_DATE_REC != null" >
+        EST_DATE_REC = #{EST_DATE_REC},
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        SOL_DATE_SENT = #{SOL_DATE_SENT},
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        SOL_DATE_REC = #{SOL_DATE_REC},
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        CUSTODIAN_SENT = #{CUSTODIAN_SENT},
+      </if>
+      <if test="MANDATORY != null" >
+        <choose >
+          <when test="MANDATORY.equals(&quot;&quot;)" >
+            MANDATORY = NULL ,
+          </when>
+          <otherwise >
+            MANDATORY = #{MANDATORY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_REF = #{APP_REF}
+      and BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+  </sql>
+  <update id="updateFMSAPPLDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSAPPLDOCUMENTSVO" >
+    <include refid="sql_updateFMSAPPLDOCUMENTS" />
+  </update>
+</mapper>

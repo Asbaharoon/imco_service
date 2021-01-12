@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSSETLMTDET_DISBURSE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSSETLMTDET_DISBURSEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DISBURSE_PLAN_LINE_NBR" property="DISBURSE_PLAN_LINE_NBR" />
+    <id column="DISBURSE_PLAN_NBR" property="DISBURSE_PLAN_NBR" />
+    <id column="DISBURSE_PLAN_SEQ" property="DISBURSE_PLAN_SEQ" />
+    <id column="SETTLEMENT_NBR" property="SETTLEMENT_NBR" />
+    <result column="SETTLEMENT_AMOUNT" property="SETTLEMENT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DISBURSE_PLAN_LINE_NBR, DISBURSE_PLAN_NBR, DISBURSE_PLAN_SEQ, 
+    SETTLEMENT_NBR, SETTLEMENT_AMOUNT
+  </sql>
+  <select id="selectTRSSETLMTDET_DISBURSE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSSETLMTDET_DISBURSEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSSETLMTDET_DISBURSE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DISBURSE_PLAN_LINE_NBR = #{DISBURSE_PLAN_LINE_NBR}
+      and DISBURSE_PLAN_NBR = #{DISBURSE_PLAN_NBR}
+      and DISBURSE_PLAN_SEQ = #{DISBURSE_PLAN_SEQ}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+  </select>
+  <delete id="deleteTRSSETLMTDET_DISBURSE" parameterType="com.path.dbmaps.vo.TRSSETLMTDET_DISBURSEVOKey" >
+    delete from TRSSETLMTDET_DISBURSE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DISBURSE_PLAN_LINE_NBR = #{DISBURSE_PLAN_LINE_NBR}
+      and DISBURSE_PLAN_NBR = #{DISBURSE_PLAN_NBR}
+      and DISBURSE_PLAN_SEQ = #{DISBURSE_PLAN_SEQ}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+  </delete>
+  <insert id="insertTRSSETLMTDET_DISBURSE" parameterType="com.path.dbmaps.vo.TRSSETLMTDET_DISBURSEVO" >
+    insert into TRSSETLMTDET_DISBURSE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DISBURSE_PLAN_LINE_NBR != null and DISBURSE_PLAN_LINE_NBR != emptyBigDecimalValue" >
+        DISBURSE_PLAN_LINE_NBR,
+      </if>
+      <if test="DISBURSE_PLAN_NBR != null and DISBURSE_PLAN_NBR != emptyBigDecimalValue" >
+        DISBURSE_PLAN_NBR,
+      </if>
+      <if test="DISBURSE_PLAN_SEQ != null and DISBURSE_PLAN_SEQ != emptyBigDecimalValue" >
+        DISBURSE_PLAN_SEQ,
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        SETTLEMENT_NBR,
+      </if>
+      <if test="SETTLEMENT_AMOUNT != null and SETTLEMENT_AMOUNT != emptyBigDecimalValue" >
+        SETTLEMENT_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DISBURSE_PLAN_LINE_NBR != null and DISBURSE_PLAN_LINE_NBR != emptyBigDecimalValue" >
+        #{DISBURSE_PLAN_LINE_NBR},
+      </if>
+      <if test="DISBURSE_PLAN_NBR != null and DISBURSE_PLAN_NBR != emptyBigDecimalValue" >
+        #{DISBURSE_PLAN_NBR},
+      </if>
+      <if test="DISBURSE_PLAN_SEQ != null and DISBURSE_PLAN_SEQ != emptyBigDecimalValue" >
+        #{DISBURSE_PLAN_SEQ},
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        #{SETTLEMENT_NBR},
+      </if>
+      <if test="SETTLEMENT_AMOUNT != null and SETTLEMENT_AMOUNT != emptyBigDecimalValue" >
+        #{SETTLEMENT_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSSETLMTDET_DISBURSE" >
+    update TRSSETLMTDET_DISBURSE
+    <set >
+      <if test="SETTLEMENT_AMOUNT != null" >
+        <choose >
+          <when test="SETTLEMENT_AMOUNT == emptyBigDecimalValue" >
+            SETTLEMENT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            SETTLEMENT_AMOUNT = #{SETTLEMENT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DISBURSE_PLAN_LINE_NBR = #{DISBURSE_PLAN_LINE_NBR}
+      and DISBURSE_PLAN_NBR = #{DISBURSE_PLAN_NBR}
+      and DISBURSE_PLAN_SEQ = #{DISBURSE_PLAN_SEQ}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+  </sql>
+  <update id="updateTRSSETLMTDET_DISBURSE" parameterType="com.path.dbmaps.vo.TRSSETLMTDET_DISBURSEVO" >
+    <include refid="sql_updateTRSSETLMTDET_DISBURSE" />
+  </update>
+</mapper>

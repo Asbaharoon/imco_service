@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSTYPE_TEMPLATE_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSTYPE_TEMPLATE_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF" property="CIF" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SEC_TYPE" property="SEC_TYPE" />
+    <id column="SEQ" property="SEQ" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="TRX_TEMPLATE" property="TRX_TEMPLATE" />
+    <result column="TRX_TEMPLATE_PROC" property="TRX_TEMPLATE_PROC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF, COMP_CODE, SEC_TYPE, SEQ, TRX_TYPE, TRX_TEMPLATE, TRX_TEMPLATE_PROC
+  </sql>
+  <select id="selectPMSTYPE_TEMPLATE_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSTYPE_TEMPLATE_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSTYPE_TEMPLATE_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and SEC_TYPE = #{SEC_TYPE}
+      and SEQ = #{SEQ}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deletePMSTYPE_TEMPLATE_DET" parameterType="com.path.dbmaps.vo.PMSTYPE_TEMPLATE_DETVOKey" >
+    delete from PMSTYPE_TEMPLATE_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and SEC_TYPE = #{SEC_TYPE}
+      and SEQ = #{SEQ}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertPMSTYPE_TEMPLATE_DET" parameterType="com.path.dbmaps.vo.PMSTYPE_TEMPLATE_DETVO" >
+    insert into PMSTYPE_TEMPLATE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SEC_TYPE != null and SEC_TYPE != emptyBigDecimalValue" >
+        SEC_TYPE,
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        SEQ,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="TRX_TEMPLATE != null and TRX_TEMPLATE != emptyBigDecimalValue" >
+        TRX_TEMPLATE,
+      </if>
+      <if test="TRX_TEMPLATE_PROC != null and TRX_TEMPLATE_PROC != emptyBigDecimalValue" >
+        TRX_TEMPLATE_PROC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SEC_TYPE != null and SEC_TYPE != emptyBigDecimalValue" >
+        #{SEC_TYPE},
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        #{SEQ},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="TRX_TEMPLATE != null and TRX_TEMPLATE != emptyBigDecimalValue" >
+        #{TRX_TEMPLATE},
+      </if>
+      <if test="TRX_TEMPLATE_PROC != null and TRX_TEMPLATE_PROC != emptyBigDecimalValue" >
+        #{TRX_TEMPLATE_PROC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSTYPE_TEMPLATE_DET" >
+    update PMSTYPE_TEMPLATE_DET
+    <set >
+      <if test="TRX_TEMPLATE != null" >
+        <choose >
+          <when test="TRX_TEMPLATE == emptyBigDecimalValue" >
+            TRX_TEMPLATE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TEMPLATE = #{TRX_TEMPLATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_TEMPLATE_PROC != null" >
+        <choose >
+          <when test="TRX_TEMPLATE_PROC == emptyBigDecimalValue" >
+            TRX_TEMPLATE_PROC = NULL ,
+          </when>
+          <otherwise >
+            TRX_TEMPLATE_PROC = #{TRX_TEMPLATE_PROC},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and SEC_TYPE = #{SEC_TYPE}
+      and SEQ = #{SEQ}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updatePMSTYPE_TEMPLATE_DET" parameterType="com.path.dbmaps.vo.PMSTYPE_TEMPLATE_DETVO" >
+    <include refid="sql_updatePMSTYPE_TEMPLATE_DET" />
+  </update>
+</mapper>

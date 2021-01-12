@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_UPLOAD_FILE_TYPE_VAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_UPLOAD_FILE_TYPE_VALVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FILE_TYPE" property="FILE_TYPE" />
+    <id column="VALIDATION_CODE" property="VALIDATION_CODE" />
+    <result column="INCLUDE_VAL" property="INCLUDE_VAL" />
+    <result column="VAL_ORDER" property="VAL_ORDER" />
+    <result column="DATA_RETRIEVE" property="DATA_RETRIEVE" />
+    <result column="DATA_SAVING" property="DATA_SAVING" />
+    <result column="CHQ_IMG_MAND" property="CHQ_IMG_MAND" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, FILE_TYPE, VALIDATION_CODE, INCLUDE_VAL, VAL_ORDER, DATA_RETRIEVE, DATA_SAVING, 
+    CHQ_IMG_MAND
+  </sql>
+  <select id="selectCTS_UPLOAD_FILE_TYPE_VAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_UPLOAD_FILE_TYPE_VALVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_UPLOAD_FILE_TYPE_VAL
+    where COMP_CODE = #{COMP_CODE}
+      and FILE_TYPE = #{FILE_TYPE}
+      and VALIDATION_CODE = #{VALIDATION_CODE}
+  </select>
+  <delete id="deleteCTS_UPLOAD_FILE_TYPE_VAL" parameterType="com.path.dbmaps.vo.CTS_UPLOAD_FILE_TYPE_VALVOKey" >
+    delete from CTS_UPLOAD_FILE_TYPE_VAL
+    where COMP_CODE = #{COMP_CODE}
+      and FILE_TYPE = #{FILE_TYPE}
+      and VALIDATION_CODE = #{VALIDATION_CODE}
+  </delete>
+  <insert id="insertCTS_UPLOAD_FILE_TYPE_VAL" parameterType="com.path.dbmaps.vo.CTS_UPLOAD_FILE_TYPE_VALVO" >
+    insert into CTS_UPLOAD_FILE_TYPE_VAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FILE_TYPE != null and FILE_TYPE != emptyBigDecimalValue" >
+        FILE_TYPE,
+      </if>
+      <if test="VALIDATION_CODE != null and VALIDATION_CODE != emptyBigDecimalValue" >
+        VALIDATION_CODE,
+      </if>
+      <if test="INCLUDE_VAL != null" >
+        INCLUDE_VAL,
+      </if>
+      <if test="VAL_ORDER != null and VAL_ORDER != emptyBigDecimalValue" >
+        VAL_ORDER,
+      </if>
+      <if test="DATA_RETRIEVE != null" >
+        DATA_RETRIEVE,
+      </if>
+      <if test="DATA_SAVING != null" >
+        DATA_SAVING,
+      </if>
+      <if test="CHQ_IMG_MAND != null" >
+        CHQ_IMG_MAND,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FILE_TYPE != null and FILE_TYPE != emptyBigDecimalValue" >
+        #{FILE_TYPE},
+      </if>
+      <if test="VALIDATION_CODE != null and VALIDATION_CODE != emptyBigDecimalValue" >
+        #{VALIDATION_CODE},
+      </if>
+      <if test="INCLUDE_VAL != null" >
+        #{INCLUDE_VAL},
+      </if>
+      <if test="VAL_ORDER != null and VAL_ORDER != emptyBigDecimalValue" >
+        #{VAL_ORDER},
+      </if>
+      <if test="DATA_RETRIEVE != null" >
+        #{DATA_RETRIEVE},
+      </if>
+      <if test="DATA_SAVING != null" >
+        #{DATA_SAVING},
+      </if>
+      <if test="CHQ_IMG_MAND != null" >
+        #{CHQ_IMG_MAND},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_UPLOAD_FILE_TYPE_VAL" >
+    update CTS_UPLOAD_FILE_TYPE_VAL
+    <set >
+      <if test="INCLUDE_VAL != null" >
+        INCLUDE_VAL = #{INCLUDE_VAL},
+      </if>
+      <if test="VAL_ORDER != null" >
+        <choose >
+          <when test="VAL_ORDER == emptyBigDecimalValue" >
+            VAL_ORDER = NULL ,
+          </when>
+          <otherwise >
+            VAL_ORDER = #{VAL_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATA_RETRIEVE != null" >
+        DATA_RETRIEVE = #{DATA_RETRIEVE},
+      </if>
+      <if test="DATA_SAVING != null" >
+        DATA_SAVING = #{DATA_SAVING},
+      </if>
+      <if test="CHQ_IMG_MAND != null" >
+        CHQ_IMG_MAND = #{CHQ_IMG_MAND},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and FILE_TYPE = #{FILE_TYPE}
+      and VALIDATION_CODE = #{VALIDATION_CODE}
+  </sql>
+  <update id="updateCTS_UPLOAD_FILE_TYPE_VAL" parameterType="com.path.dbmaps.vo.CTS_UPLOAD_FILE_TYPE_VALVO" >
+    <include refid="sql_updateCTS_UPLOAD_FILE_TYPE_VAL" />
+  </update>
+</mapper>

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="blacklistTypeMapper">
+
+	<sql id="blacklistTypeListCommon">
+	<![CDATA[
+		SELECT	
+				MOSBLACKLIST_TYPE.CODE,
+			 	MOSBLACKLIST_TYPE.BRIEF_NAME_ENG,
+			 	MOSBLACKLIST_TYPE.LONG_NAME_ENG,
+			 	MOSBLACKLIST_TYPE.BRIEF_NAME_ARAB,
+			 	MOSBLACKLIST_TYPE.LONG_NAME_ARAB
+		FROM  	MOSBLACKLIST_TYPE 
+		WHERE	MOSBLACKLIST_TYPE.COMP_CODE  = #{compCode}
+	]]>
+	</sql>
+
+	<select id="blacklistTypeList"
+		resultMap="MOSBLACKLIST_TYPE.BaseResultMap"
+		parameterType="blackListTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="blacklistTypeListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="blacklistTypeListCount" resultType="int"
+		parameterType="blackListTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="blacklistTypeListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnBlackLstTypeById"
+		parameterType="blackListTypeSC" resultType="blackListTypeVO">
+		SELECT
+		MOSBLACKLIST_TYPE.CODE,
+		CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN
+		BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG
+		FROM MOSBLACKLIST_TYPE
+		WHERE MOSBLACKLIST_TYPE.COMP_CODE = #{compCode}
+		AND MOSBLACKLIST_TYPE.CODE =
+		#{code}
+	</select>
+
+	<select id="returnBlackLstTypeforBlackListScreenValidation"
+		parameterType="blackListTypeSC" resultType="blackListTypeVO">
+		SELECT
+		MOSBLACKLIST_TYPE.CODE,
+		CASE WHEN #{preferredLanguage, jdbcType=VARCHAR} = 'A' THEN
+		BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+		CASE WHEN REVISION_PERIOD IS NULL THEN 0 ELSE REVISION_PERIOD END
+		REVISION_PERIOD,
+		CASE WHEN REVISION_BASIS IS NULL THEN 'N' ELSE REVISION_BASIS END
+		REVISION_BASIS
+		FROM MOSBLACKLIST_TYPE
+		WHERE MOSBLACKLIST_TYPE.COMP_CODE = #{compCode}
+		AND MOSBLACKLIST_TYPE.CODE =
+		#{code}
+	</select>
+	<!-- added by nour for 885556 -->
+	<resultMap
+		type="com.path.vo.core.blacklisttype.BlackListTypeCO"
+		id="resBlackListTypeListMap">
+		<result column="CODE" property="mosBlackListTypeVO.CODE" />
+		<result column="BRIEF_NAME_ENG"
+			property="mosBlackListTypeVO.BRIEF_NAME_ENG" />
+		<result column="LONG_NAME_ENG"
+			property="mosBlackListTypeVO.LONG_NAME_ENG" />
+		<result column="BRIEF_NAME_ARAB"
+			property="mosBlackListTypeVO.BRIEF_NAME_ARAB" />
+		<result column="LONG_NAME_ARAB"
+			property="mosBlackListTypeVO.LONG_NAME_ARAB" />
+		<result column="ENTITY_STATUS"
+			property="mosBlackListTypeVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+
+	<resultMap
+		type="com.path.vo.core.blacklisttype.BlackListTypeCO"
+		id="returnBlackListTypeDataMap">
+		<result column="CODE" property="mosBlackListTypeVO.CODE" />
+		<result column="COMP_CODE"
+			property="mosBlackListTypeVO.COMP_CODE" />
+		<result column="BRIEF_NAME_ENG"
+			property="mosBlackListTypeVO.BRIEF_NAME_ENG" />
+		<result column="LONG_NAME_ENG"
+			property="mosBlackListTypeVO.LONG_NAME_ENG" />
+		<result column="BRIEF_NAME_ARAB"
+			property="mosBlackListTypeVO.BRIEF_NAME_ARAB" />
+		<result column="LONG_NAME_ARAB"
+			property="mosBlackListTypeVO.LONG_NAME_ARAB" />
+		<result column="REVISION_BASIS"
+			property="mosBlackListTypeVO.REVISION_BASIS" />
+		<result column="REVISION_PERIOD"
+			property="mosBlackListTypeVO.REVISION_PERIOD" />
+		<result column="ENTITY_STATUS"
+			property="mosBlackListTypeVO.ENTITY_STATUS" />
+		<result column="STATUS_DESC" property="statusDesc" />
+		<result column="CREATED_BY"
+			property="mosBlackListTypeVO.CREATED_BY" />
+			<result column="MODIFIED_BY"
+			property="mosBlackListTypeVO.MODIFIED_BY" />
+
+
+	</resultMap>
+
+	<sql id="queryBlackListTypeSQL">
+		SELECT MOSBLACKLIST_TYPE.ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE = #{language}
+		AND
+		VALUE_CODE = MOSBLACKLIST_TYPE.ENTITY_STATUS) STATUS_DESC,
+		MOSBLACKLIST_TYPE.CODE,
+		MOSBLACKLIST_TYPE.BRIEF_NAME_ENG,
+		MOSBLACKLIST_TYPE.LONG_NAME_ENG,
+		MOSBLACKLIST_TYPE.BRIEF_NAME_ARAB,
+		MOSBLACKLIST_TYPE.LONG_NAME_ARAB
+		FROM MOSBLACKLIST_TYPE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					((MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+					OR
+					(MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKLIST_TYPE B
+					WHERE B.COMP_CODE = -#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKLIST_TYPE.CODE)))
+				</if>
+				<if test='ivCrud == "U"'>
+					((MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC})AND
+					NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKLIST_TYPE B
+					WHERE B.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKLIST_TYPE.CODE))
+				</if>
+				<if test='ivCrud == "P"'>
+					(MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					(MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+					AND EXISTS(SELECT 1
+					FROM MOSBLACKLIST_TYPE B
+					WHERE B.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKLIST_TYPE.CODE))
+				</if>
+			</when>
+			<otherwise>
+				(MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+			</otherwise>
+		</choose>
+
+		<if test='ivCrud == "U"'>
+			AND (MOSBLACKLIST_TYPE.ENTITY_STATUS='P')
+		</if>
+		<if test='ivCrud == "P"'>
+			AND (MOSBLACKLIST_TYPE.ENTITY_STATUS='A')
+		</if>
+
+
+
+	</sql>
+
+	<select id="returnBlackListTypeList"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeSC"
+		resultMap="resBlackListTypeListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryBlackListTypeSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnBlackListTypeListCount"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryBlackListTypeSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+
+	<select id="blackListData"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeSC"
+		resultMap="returnBlackListTypeDataMap">
+
+
+
+		SELECT
+		MOSBLACKLIST_TYPE.ENTITY_STATUS,
+		(SELECT VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE LOV_TYPE_ID = #{lovTypeId}
+		AND LANG_CODE = #{language}
+		AND
+		VALUE_CODE = MOSBLACKLIST_TYPE.ENTITY_STATUS) STATUS_DESC,
+		MOSBLACKLIST_TYPE.COMP_CODE,
+		MOSBLACKLIST_TYPE.CODE,
+		MOSBLACKLIST_TYPE.BRIEF_NAME_ENG,
+		MOSBLACKLIST_TYPE.LONG_NAME_ENG,
+		MOSBLACKLIST_TYPE.BRIEF_NAME_ARAB,
+		MOSBLACKLIST_TYPE.REVISION_BASIS,
+		MOSBLACKLIST_TYPE.LONG_NAME_ARAB,
+		MOSBLACKLIST_TYPE.REVISION_PERIOD,
+		MOSBLACKLIST_TYPE.CREATED_BY,
+		MOSBLACKLIST_TYPE.MODIFIED_BY
+		FROM MOSBLACKLIST_TYPE
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				<if test='ivCrud == "R"'>
+					((MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+					OR
+					(MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC}
+					AND NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKLIST_TYPE B
+					WHERE B.COMP_CODE = -#{compCode,jdbcType=NUMERIC}
+					AND B.CODE=MOSBLACKLIST_TYPE.CODE)))
+				</if>
+				<if test='ivCrud == "U"'>
+					((MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC})AND
+					NOT
+					EXISTS
+					(SELECT 1
+					FROM MOSBLACKLIST_TYPE B
+					WHERE B.COMP_CODE = -#{compCode,jdbcType=NUMERIC}
+
+					AND B.CODE=MOSBLACKLIST_TYPE.CODE))
+
+				</if>
+				<if test='ivCrud == "P"'>
+					(MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC})
+				</if>
+				<if test='ivCrud == "N"'>
+					<if test="cancelFlag==null">
+						(MOSBLACKLIST_TYPE.COMP_CODE=-#{compCode,jdbcType=NUMERIC}
+						AND EXISTS (SELECT 1
+						FROM MOSBLACKLIST_TYPE B
+						WHERE B.COMP_CODE =-#{compCode,jdbcType=NUMERIC}
+						AND B.CODE=MOSBLACKLIST_TYPE.CODE))
+						</if>
+						<if test="cancelFlag!=null">
+							<if test="cancelFlag==1">
+							(MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+								
+							</if>
+					
+						</if>
+				</if>
+			</when>
+			<otherwise>
+				(MOSBLACKLIST_TYPE.COMP_CODE=#{compCode,jdbcType=NUMERIC})
+
+			</otherwise>
+		</choose>
+		AND (MOSBLACKLIST_TYPE.CODE =#{code,jdbcType=NUMERIC})
+
+	</select>
+
+	<delete id="deleteBlackListType"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeCO">
+		DELETE FROM MOSBLACKLIST_TYPE
+		WHERE COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+		AND CODE=#{mosBlackListTypeVO.CODE,jdbcType=NUMERIC}
+
+	</delete>
+	<select id="returnCountByCode" resultType="Integer"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeCO">
+		select count(1) from MOSBLACKLIST_TYPE
+		where (COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}  or COMP_CODE = -#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC} )
+		AND CODE = #{mosBlackListTypeVO.CODE,jdbcType=NUMERIC}
+	</select>
+
+
+	<delete id="deleteBlckListType"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeCO">
+		DELETE FROM MOSBLACKLIST_TYPE
+		WHERE
+		<if test="dualParam!=1">
+			COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+		</if>
+		<if test="dualParam==1">
+			<if test="method==1">
+				COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND
+				EXISTS (SELECT 1
+				FROM MOSBLACKLIST_TYPE B
+				WHERE B.COMP_CODE =-#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.CODE =MOSBLACKLIST_TYPE.CODE
+				)
+			</if>
+			<if test="method==2">
+				COMP_CODE = -#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</if>
+			<if test="method==3">
+				COMP_CODE IN
+				(-#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC},#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC})
+				AND EXISTS (SELECT 1
+				FROM MOSBLACKLIST_TYPE B
+				WHERE B.COMP_CODE =-#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.CODE =MOSBLACKLIST_TYPE.CODE
+				)
+			</if>
+		</if>
+		AND CODE=#{mosBlackListTypeVO.CODE,jdbcType=NUMERIC}
+
+	</delete>
+
+	<sql id="sql_approve">
+		UPDATE MOSBLACKLIST_TYPE
+		<set>
+			COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC},
+			ENTITY_STATUS = 'P',
+			MOSBLACKLIST_TYPE.APPROVED_BY=#{mosBlackListTypeVO.APPROVED_BY,jdbcType=VARCHAR},
+			MOSBLACKLIST_TYPE.APPROVED_DATE=#{mosBlackListTypeVO.APPROVED_DATE,jdbcType=TIMESTAMP}
+		</set>
+		WHERE
+		<choose>
+			<when test="dualParam==1">
+				COMP_CODE =
+				-#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND NOT
+				EXISTS
+				(SELECT 1
+				FROM MOSBLACKLIST_TYPE B
+				WHERE B.COMP_CODE
+				=#{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+				AND B.CODE=MOSBLACKLIST_TYPE.CODE
+				)
+
+			</when>
+			<otherwise>
+				COMP_CODE = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+
+			</otherwise>
+		</choose>
+		AND CODE=#{mosBlackListTypeVO.CODE,jdbcType=NUMERIC}
+	</sql>
+
+	<update id="approveBlackListType"
+		parameterType="com.path.vo.core.blacklisttype.BlackListTypeCO">
+		<include refid="blacklistTypeMapper.sql_approve" />
+	</update>
+
+<update id="updateBlackListTypeHeader" parameterType="com.path.vo.core.blacklisttype.BlackListTypeCO"  >
+		UPDATE MOSBLACKLIST_TYPE
+		<set>
+		<if test="method ==1">
+		    COMP_CODE     = #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC},
+			MODIFIED_BY   = #{mosBlackListTypeVO.MODIFIED_BY,jdbcType=VARCHAR},
+			MODIFIED_DATE = #{mosBlackListTypeVO.MODIFIED_DATE,jdbcType=NUMERIC},
+		</if>
+		ENTITY_STATUS = #{mosBlackListTypeVO.ENTITY_STATUS,jdbcType=VARCHAR},
+		DATE_UPDATED = 
+		<choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+        </choose>
+		</set>
+		WHERE  COMP_CODE      =  #{mosBlackListTypeVO.COMP_CODE,jdbcType=NUMERIC}
+		AND CODE			  =#{mosBlackListTypeVO.CODE,jdbcType=NUMERIC}
+		
+	   
+	</update>
+	
+</mapper>

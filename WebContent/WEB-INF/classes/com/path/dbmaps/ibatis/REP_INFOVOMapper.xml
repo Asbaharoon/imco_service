@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="REP_INFO" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.REP_INFOVO" >
+    <id column="REP_ID" property="REP_ID" />
+    <result column="USERID" property="USERID" />
+    <result column="TITLE" property="TITLE" />
+    <result column="REP_REFERENCE" property="REP_REFERENCE" />
+    <result column="REP_DATE" property="REP_DATE" />
+    <result column="REP_TYPE" property="REP_TYPE" />
+    <result column="FILE_SIZE" property="FILE_SIZE" />
+    <result column="APPLICATION" property="APPLICATION" />
+    <result column="PRE_SP" property="PRE_SP" />
+    <result column="POST_SP" property="POST_SP" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="DW_OBJECT" property="DW_OBJECT" />
+    <result column="DW_OBJECT_PATH" property="DW_OBJECT_PATH" />
+    <result column="REP_OWNER" property="REP_OWNER" />
+    <result column="CON_ID" property="CON_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REP_ID, USERID, TITLE, REP_REFERENCE, REP_DATE, REP_TYPE, FILE_SIZE, APPLICATION, 
+    PRE_SP, POST_SP, COMP_CODE, BRANCH_CODE, DW_OBJECT, DW_OBJECT_PATH, REP_OWNER, CON_ID
+  </sql>
+  <select id="selectREP_INFO" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.REP_INFOVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from REP_INFO
+    where REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteREP_INFO" parameterType="com.path.dbmaps.vo.REP_INFOVO" >
+    delete from REP_INFO
+    where REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertREP_INFO" parameterType="com.path.dbmaps.vo.REP_INFOVO" >
+    insert into REP_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="USERID != null" >
+        USERID,
+      </if>
+      <if test="TITLE != null" >
+        TITLE,
+      </if>
+      <if test="REP_REFERENCE != null" >
+        REP_REFERENCE,
+      </if>
+      <if test="REP_DATE != null" >
+        REP_DATE,
+      </if>
+      <if test="REP_TYPE != null" >
+        REP_TYPE,
+      </if>
+      <if test="FILE_SIZE != null and FILE_SIZE != emptyBigDecimalValue" >
+        FILE_SIZE,
+      </if>
+      <if test="APPLICATION != null" >
+        APPLICATION,
+      </if>
+      <if test="PRE_SP != null" >
+        PRE_SP,
+      </if>
+      <if test="POST_SP != null" >
+        POST_SP,
+      </if>
+      COMP_CODE,
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="DW_OBJECT != null" >
+        DW_OBJECT,
+      </if>
+      <if test="DW_OBJECT_PATH != null" >
+        DW_OBJECT_PATH,
+      </if>
+      <if test="REP_OWNER != null" >
+        REP_OWNER,
+      </if>
+      <if test="CON_ID != null and CON_ID != emptyBigDecimalValue" >
+        CON_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="USERID != null" >
+        #{USERID},
+      </if>
+      <if test="TITLE != null" >
+        #{TITLE},
+      </if>
+      <if test="REP_REFERENCE != null" >
+        #{REP_REFERENCE},
+      </if>
+      <if test="REP_DATE != null" >
+        #{REP_DATE},
+      </if>
+      <if test="REP_TYPE != null" >
+        #{REP_TYPE},
+      </if>
+      <if test="FILE_SIZE != null and FILE_SIZE != emptyBigDecimalValue" >
+        #{FILE_SIZE},
+      </if>
+      <if test="APPLICATION != null" >
+        #{APPLICATION},
+      </if>
+      <if test="PRE_SP != null" >
+        #{PRE_SP},
+      </if>
+      <if test="POST_SP != null" >
+        #{POST_SP},
+      </if>
+      #{COMP_CODE},
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="DW_OBJECT != null" >
+        #{DW_OBJECT},
+      </if>
+      <if test="DW_OBJECT_PATH != null" >
+        #{DW_OBJECT_PATH},
+      </if>
+      <if test="REP_OWNER != null" >
+        #{REP_OWNER},
+      </if>
+      <if test="CON_ID != null and CON_ID != emptyBigDecimalValue" >
+        #{CON_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateREP_INFO" >
+    update REP_INFO
+    <set >
+      <if test="USERID != null" >
+        USERID = #{USERID},
+      </if>
+      <if test="TITLE != null" >
+        TITLE = #{TITLE},
+      </if>
+      <if test="REP_REFERENCE != null" >
+        REP_REFERENCE = #{REP_REFERENCE},
+      </if>
+      <if test="REP_DATE != null" >
+        REP_DATE = #{REP_DATE},
+      </if>
+      <if test="REP_TYPE != null" >
+        REP_TYPE = #{REP_TYPE},
+      </if>
+      <if test="FILE_SIZE != null" >
+        <choose >
+          <when test="FILE_SIZE == emptyBigDecimalValue" >
+            FILE_SIZE = NULL ,
+          </when>
+          <otherwise >
+            FILE_SIZE = #{FILE_SIZE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLICATION != null" >
+        APPLICATION = #{APPLICATION},
+      </if>
+      <if test="PRE_SP != null" >
+        PRE_SP = #{PRE_SP},
+      </if>
+      <if test="POST_SP != null" >
+        POST_SP = #{POST_SP},
+      </if>
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DW_OBJECT != null" >
+        DW_OBJECT = #{DW_OBJECT},
+      </if>
+      <if test="DW_OBJECT_PATH != null" >
+        DW_OBJECT_PATH = #{DW_OBJECT_PATH},
+      </if>
+      <if test="REP_OWNER != null" >
+        REP_OWNER = #{REP_OWNER},
+      </if>
+      <if test="CON_ID != null" >
+        <choose >
+          <when test="CON_ID == emptyBigDecimalValue" >
+            CON_ID = NULL ,
+          </when>
+          <otherwise >
+            CON_ID = #{CON_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateREP_INFO" parameterType="com.path.dbmaps.vo.REP_INFOVO" >
+    <include refid="sql_updateREP_INFO" />
+  </update>
+</mapper>

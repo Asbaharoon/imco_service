@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="servicesCommon">
+
+  
+<sql id="commonsearch">
+	<if test='whereQuery != null and whereQuery != ""'>
+		WHERE ${whereQuery}
+	</if>
+
+</sql>
+
+
+<sql id="commonGridWrpBefCnt">
+	SELECT COUNT(1) FROM (
+	SELECT * FROM (
+</sql>
+
+<sql id="commonGridWrpBefFlip">
+	SELECT * FROM (
+</sql>
+
+<sql id="commonGridWrpAftCnt">
+	) TBL
+	<include refid="servicesCommon.commonsearch"/>
+</sql>
+<sql id="commonGridCountWrpClose">
+	) OUT_TABLE
+</sql>
+
+<sql id="commonGridWrpAftFlip">
+	) TBL
+	<include refid="servicesCommon.commonsearch"/> 
+ </sql>
+ 
+ <sql id="commmonGridWrpFlipClose">
+ <if test='sortOrder != null  and sortOrder != "" ' >
+		${sortOrder}
+	</if>
+ </sql>
+ 
+ 
+ 
+<select id="applyDbVersion"  resultType="long">
+  SELECT PTH_CTRL.DB_VERSION FROM PTH_CTRL
+</select>
+
+<select id="returnSamePatternQuery" parameterType="commonLibSC" resultType="sysParamScreenDisplayVO">
+    SELECT APP_NAME, PROG_REF, IS_MANDATORY, IS_VISIBLE, IS_READONLY, ZERO_NOT_ALLOWED, LABEL_KEY, 
+    VISIBILITY_EXPR, READONLY_EXPR, MANDATORY_EXPR, ZERO_NOT_ALLOWED_EXPR, LABEL_KEY_EXPR,BACKGROUND_COLOR_EXPR
+    FROM SYS_PARAM_SCREEN_DISPLAY 
+    WHERE PROG_REF = #{progRef}
+    AND APP_NAME = #{appName}
+    AND 
+    (
+    	(VISIBILITY_EXPR LIKE '%' || #{expressionCode} || '%'   AND IS_VISIBLE IN (2,3))
+        OR (READONLY_EXPR LIKE '%' || #{expressionCode} || '%' AND IS_READONLY IN (2,3))
+        OR (MANDATORY_EXPR LIKE '%' || #{expressionCode} || '%' AND IS_MANDATORY IN (2,3))
+        OR (LABEL_KEY_EXPR LIKE '%' || #{expressionCode} || '%')
+        OR (BACKGROUND_COLOR_EXPR LIKE '%' || #{expressionCode} || '%')
+        OR (ZERO_NOT_ALLOWED_EXPR LIKE '%' || #{expressionCode} || '%' AND ZERO_NOT_ALLOWED IN (2,3))
+    )
+    
+</select>
+
+
+	<select id="returnTopNCifTypes" parameterType="commonLibSC"	resultType="BigDecimal">
+	<choose>
+		<when test="isOracle == 1">
+			SELECT TBL.CIF_TYPE FROM
+			(SELECT CIF_TYPE, COUNT(CIF_TYPE)CC FROM CIF
+			GROUP BY CIF_TYPE
+			ORDER BY CC DESC)TBL
+			WHERE ROWNUM <![CDATA[ < ]]>= #{topN}
+		</when>
+		<otherwise>
+			SELECT TOP ${topN} * FROM (SELECT CIF_TYPE, COUNT(CIF_TYPE)CC FROM CIF
+			GROUP BY CIF_TYPE)T
+			ORDER BY T.CC DESC
+		</otherwise>
+	</choose>
+</select>
+
+<delete id="clearClusterControl">
+DELETE FROM SYS_CLUSTER_OPERATION_CTRL WHERE OPERATION_TYPE = 'L'
+</delete>
+</mapper>

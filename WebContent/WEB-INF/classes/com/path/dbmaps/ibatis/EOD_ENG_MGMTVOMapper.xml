@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_ENG_MGMT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_ENG_MGMTVO" >
+    <id column="THREAD_ID" property="THREAD_ID" />
+    <result column="BATCH_CODE" property="BATCH_CODE" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="PROCESS_CODE" property="PROCESS_CODE" />
+    <result column="EOD_ENG_MGMT_PARENT_ID" property="EOD_ENG_MGMT_PARENT_ID" />
+    <result column="STATUS" property="STATUS" />
+    <result column="STARTING_TIME" property="STARTING_TIME" />
+    <result column="ENDING_TIME" property="ENDING_TIME" />
+    <result column="DB_SESSION_ID" property="DB_SESSION_ID" />
+    <result column="DB_INST_ID" property="DB_INST_ID" />
+    <result column="RUNNING_DATE" property="RUNNING_DATE" />
+    <result column="CREATION_DATE" property="CREATION_DATE" />
+    <result column="CREATION_BY" property="CREATION_BY" />
+    <result column="EOD_ENG_MGMT_BATCH_ID" property="EOD_ENG_MGMT_BATCH_ID" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.EOD_ENG_MGMTVOWithBLOBs" extends="BaseResultMap" >
+    <result column="STATEMENT" property="STATEMENT" />
+    <result column="ERROR_MESSAGE" property="ERROR_MESSAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    THREAD_ID, BATCH_CODE, COMP_CODE, BRANCH_CODE, PROCESS_CODE, EOD_ENG_MGMT_PARENT_ID, 
+    STATUS, STARTING_TIME, ENDING_TIME, DB_SESSION_ID, DB_INST_ID, RUNNING_DATE, CREATION_DATE, 
+    CREATION_BY, EOD_ENG_MGMT_BATCH_ID
+  </sql>
+  <sql id="Blob_Column_List" >
+    STATEMENT, ERROR_MESSAGE
+  </sql>
+  <select id="selectEOD_ENG_MGMT" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.EOD_ENG_MGMTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from EOD_ENG_MGMT
+    where THREAD_ID = #{THREAD_ID}
+  </select>
+  <delete id="deleteEOD_ENG_MGMT" parameterType="com.path.dbmaps.vo.EOD_ENG_MGMTVOKey" >
+    delete from EOD_ENG_MGMT
+    where THREAD_ID = #{THREAD_ID}
+  </delete>
+  <insert id="insertEOD_ENG_MGMT" parameterType="com.path.dbmaps.vo.EOD_ENG_MGMTVOWithBLOBs" >
+    insert into EOD_ENG_MGMT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null and THREAD_ID != emptyBigDecimalValue" >
+        THREAD_ID,
+      </if>
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        BATCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        PROCESS_CODE,
+      </if>
+      <if test="EOD_ENG_MGMT_PARENT_ID != null and EOD_ENG_MGMT_PARENT_ID != emptyBigDecimalValue" >
+        EOD_ENG_MGMT_PARENT_ID,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="STARTING_TIME != null" >
+        STARTING_TIME,
+      </if>
+      <if test="ENDING_TIME != null" >
+        ENDING_TIME,
+      </if>
+      <if test="DB_SESSION_ID != null and DB_SESSION_ID != emptyBigDecimalValue" >
+        DB_SESSION_ID,
+      </if>
+      <if test="DB_INST_ID != null and DB_INST_ID != emptyBigDecimalValue" >
+        DB_INST_ID,
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE,
+      </if>
+      <if test="CREATION_DATE != null" >
+        CREATION_DATE,
+      </if>
+      <if test="CREATION_BY != null" >
+        CREATION_BY,
+      </if>
+      <if test="STATEMENT != null" >
+        STATEMENT,
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        ERROR_MESSAGE,
+      </if>
+      <if test="EOD_ENG_MGMT_BATCH_ID != null" >
+        EOD_ENG_MGMT_BATCH_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null and THREAD_ID != emptyBigDecimalValue" >
+        #{THREAD_ID},
+      </if>
+      <if test="BATCH_CODE != null and BATCH_CODE != emptyBigDecimalValue" >
+        #{BATCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="EOD_ENG_MGMT_PARENT_ID != null and EOD_ENG_MGMT_PARENT_ID != emptyBigDecimalValue" >
+        #{EOD_ENG_MGMT_PARENT_ID},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="STARTING_TIME != null" >
+        #{STARTING_TIME},
+      </if>
+      <if test="ENDING_TIME != null" >
+        #{ENDING_TIME},
+      </if>
+      <if test="DB_SESSION_ID != null and DB_SESSION_ID != emptyBigDecimalValue" >
+        #{DB_SESSION_ID},
+      </if>
+      <if test="DB_INST_ID != null and DB_INST_ID != emptyBigDecimalValue" >
+        #{DB_INST_ID},
+      </if>
+      <if test="RUNNING_DATE != null" >
+        #{RUNNING_DATE},
+      </if>
+      <if test="CREATION_DATE != null" >
+        #{CREATION_DATE},
+      </if>
+      <if test="CREATION_BY != null" >
+        #{CREATION_BY},
+      </if>
+      <if test="STATEMENT != null" >
+        #{STATEMENT},
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        #{ERROR_MESSAGE},
+      </if>
+      <if test="EOD_ENG_MGMT_BATCH_ID != null" >
+        #{EOD_ENG_MGMT_BATCH_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateEOD_ENG_MGMT" >
+    update EOD_ENG_MGMT
+    <set >
+      <if test="BATCH_CODE != null" >
+        <choose >
+          <when test="BATCH_CODE == emptyBigDecimalValue" >
+            BATCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BATCH_CODE = #{BATCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROCESS_CODE != null" >
+        <choose >
+          <when test="PROCESS_CODE == emptyBigDecimalValue" >
+            PROCESS_CODE = NULL ,
+          </when>
+          <otherwise >
+            PROCESS_CODE = #{PROCESS_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EOD_ENG_MGMT_PARENT_ID != null" >
+        <choose >
+          <when test="EOD_ENG_MGMT_PARENT_ID == emptyBigDecimalValue" >
+            EOD_ENG_MGMT_PARENT_ID = NULL ,
+          </when>
+          <otherwise >
+            EOD_ENG_MGMT_PARENT_ID = #{EOD_ENG_MGMT_PARENT_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="STARTING_TIME != null" >
+        STARTING_TIME = #{STARTING_TIME},
+      </if>
+      <if test="ENDING_TIME != null" >
+        ENDING_TIME = #{ENDING_TIME},
+      </if>
+      <if test="DB_SESSION_ID != null" >
+        <choose >
+          <when test="DB_SESSION_ID == emptyBigDecimalValue" >
+            DB_SESSION_ID = NULL ,
+          </when>
+          <otherwise >
+            DB_SESSION_ID = #{DB_SESSION_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DB_INST_ID != null" >
+        <choose >
+          <when test="DB_INST_ID == emptyBigDecimalValue" >
+            DB_INST_ID = NULL ,
+          </when>
+          <otherwise >
+            DB_INST_ID = #{DB_INST_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RUNNING_DATE != null" >
+        RUNNING_DATE = #{RUNNING_DATE},
+      </if>
+      <if test="CREATION_DATE != null" >
+        CREATION_DATE = #{CREATION_DATE},
+      </if>
+      <if test="CREATION_BY != null" >
+        CREATION_BY = #{CREATION_BY},
+      </if>
+      <if test="STATEMENT != null" >
+        STATEMENT = #{STATEMENT},
+      </if>
+      <if test="ERROR_MESSAGE != null" >
+        ERROR_MESSAGE = #{ERROR_MESSAGE},
+      </if>
+      <if test="EOD_ENG_MGMT_BATCH_ID != null" >
+        EOD_ENG_MGMT_BATCH_ID = #{EOD_ENG_MGMT_BATCH_ID},
+      </if>
+    </set>
+    where THREAD_ID = #{THREAD_ID}
+  </sql>
+  <update id="updateEOD_ENG_MGMT" parameterType="com.path.dbmaps.vo.EOD_ENG_MGMTVOWithBLOBs" >
+    <include refid="sql_updateEOD_ENG_MGMT" />
+  </update>
+</mapper>

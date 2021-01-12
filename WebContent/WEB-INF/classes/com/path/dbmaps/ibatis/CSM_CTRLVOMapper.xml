@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CSM_CTRL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CSM_CTRLVO" >
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SHOW_RDS_REPORT" property="SHOW_RDS_REPORT" />
+    <result column="BENEF_NAME_LEN" property="BENEF_NAME_LEN" />
+    <result column="MAN_SERV_CARD_TYPE" property="MAN_SERV_CARD_TYPE" />
+    <result column="OFFLINE_REVERSAL" property="OFFLINE_REVERSAL" />
+    <result column="DEFAULT_REFERSAL_FLAG" property="DEFAULT_REFERSAL_FLAG" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINE_NO, SHOW_RDS_REPORT, BENEF_NAME_LEN, MAN_SERV_CARD_TYPE, OFFLINE_REVERSAL, DEFAULT_REFERSAL_FLAG
+  </sql>
+  <select id="selectCSM_CTRL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CSM_CTRLVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CSM_CTRL
+    where LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCSM_CTRL" parameterType="com.path.dbmaps.vo.CSM_CTRLVO" >
+    delete from CSM_CTRL
+    where LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCSM_CTRL" parameterType="com.path.dbmaps.vo.CSM_CTRLVO" >
+    insert into CSM_CTRL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SHOW_RDS_REPORT != null" >
+        SHOW_RDS_REPORT,
+      </if>
+      <if test="BENEF_NAME_LEN != null and BENEF_NAME_LEN != emptyBigDecimalValue" >
+        BENEF_NAME_LEN,
+      </if>
+      <if test="MAN_SERV_CARD_TYPE != null" >
+        MAN_SERV_CARD_TYPE,
+      </if>
+      <if test="OFFLINE_REVERSAL != null" >
+        OFFLINE_REVERSAL,
+      </if>
+      <if test="DEFAULT_REFERSAL_FLAG != null" >
+        DEFAULT_REFERSAL_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SHOW_RDS_REPORT != null" >
+        #{SHOW_RDS_REPORT},
+      </if>
+      <if test="BENEF_NAME_LEN != null and BENEF_NAME_LEN != emptyBigDecimalValue" >
+        #{BENEF_NAME_LEN},
+      </if>
+      <if test="MAN_SERV_CARD_TYPE != null" >
+        #{MAN_SERV_CARD_TYPE},
+      </if>
+      <if test="OFFLINE_REVERSAL != null" >
+        #{OFFLINE_REVERSAL},
+      </if>
+      <if test="DEFAULT_REFERSAL_FLAG != null" >
+        #{DEFAULT_REFERSAL_FLAG},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCSM_CTRL" >
+    update CSM_CTRL
+    <set >
+      <if test="SHOW_RDS_REPORT != null" >
+        SHOW_RDS_REPORT = #{SHOW_RDS_REPORT},
+      </if>
+      <if test="BENEF_NAME_LEN != null" >
+        <choose >
+          <when test="BENEF_NAME_LEN == emptyBigDecimalValue" >
+            BENEF_NAME_LEN = NULL ,
+          </when>
+          <otherwise >
+            BENEF_NAME_LEN = #{BENEF_NAME_LEN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAN_SERV_CARD_TYPE != null" >
+        MAN_SERV_CARD_TYPE = #{MAN_SERV_CARD_TYPE},
+      </if>
+      <if test="OFFLINE_REVERSAL != null" >
+        OFFLINE_REVERSAL = #{OFFLINE_REVERSAL},
+      </if>
+      <if test="DEFAULT_REFERSAL_FLAG != null" >
+        DEFAULT_REFERSAL_FLAG = #{DEFAULT_REFERSAL_FLAG},
+      </if>
+    </set>
+    where LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCSM_CTRL" parameterType="com.path.dbmaps.vo.CSM_CTRLVO" >
+    <include refid="sql_updateCSM_CTRL" />
+  </update>
+</mapper>

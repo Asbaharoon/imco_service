@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="avaCategoryMapper">
+	<resultMap id="resAvaCategoryLookupMap" type="com.path.vo.core.avacategory.AvaCategoryCO">
+		<result property="avaCategVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="avaCategVO.CODE" column="CODE"/>
+		<result property="avaCategVO.AVA_TYPE" column="AVA_TYPE"/>
+		<result property="avaTypeDesc" column="avaTypeDesc"/>
+		<result property="avaCategVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG"/>
+		<result property="avaCategVO.LONG_DESC_ENG" column="LONG_DESC_ENG"/>
+		<result property="avaCategVO.BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB"/>
+		<result property="avaCategVO.LONG_DESC_ARAB" column="LONG_DESC_ARAB"/>
+	</resultMap>
+	<select id="returnAvaCategoryLookup" parameterType="com.path.vo.core.avacategory.AvaCategorySC" resultMap="resAvaCategoryLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryAvaCategoryLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnAvaCategoryLookupCount" parameterType="com.path.vo.core.avacategory.AvaCategorySC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryAvaCategoryLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryAvaCategoryLkpSQL">
+		SELECT COMP_CODE,
+		       CODE,
+		       AVA_TYPE,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                  FROM SYS_PARAM_LOV_TRANS
+                 WHERE SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+                   AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language} 
+                   AND SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_AVA_CATEG.AVA_TYPE) avaTypeDesc,
+		       BRIEF_DESC_ENG,
+		       LONG_DESC_ENG,
+		       BRIEF_DESC_ARAB,
+		       LONG_DESC_ARAB
+		  FROM CTS_AVA_CATEG
+		  WHERE COMP_CODE = #{compCode}
+	</sql>
+
+
+	<select id="dependencyForAvaCategory" parameterType="com.path.vo.core.avacategory.AvaCategorySC" resultType="com.path.dbmaps.vo.CTS_AVA_CATEGVO">
+		 SELECT COMP_CODE, 
+				CODE, 
+				AVA_TYPE, 
+				BRIEF_DESC_ENG, 
+				LONG_DESC_ENG, 
+				BRIEF_DESC_ARAB, 
+				LONG_DESC_ARAB, 
+				RATE_DEDUCTED_FROM, 
+				RATE_TYPE, 
+				RATE_AMOUNT, 
+				RATE_PERCENTAGE, 
+				ALLOCATED_AMOUNT_CEILING, 
+				MIN_SALES_TURNOVER, 
+				MIN_CAPITAL, 
+				CAPITAL_MANDATORY_YN, 
+				FILE_EXPIRY_DATE, 
+				BAL_RESET_ON_EXPIRY_YN, 
+				ALLOW_FILE_REACTIVATION_YN, 
+				AUTO_REACTIVATION_YN, 
+				AUTO_ALLOCATION_YN, 
+				AUTO_SUSPEND_EMPTY_RET_DT_YN, 
+				AUTO_SUSPEND_EMPTY_SALES_YN,
+				ADD_GROUP
+		   FROM CTS_AVA_CATEG
+		  WHERE COMP_CODE = #{compCode}
+		    AND CODE = #{avaCategCode}
+	</select>
+	
+	
+	<resultMap id="avaCategPaylimitResultMap" type="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    <result column="CATEG_CODE" property="CATEG_CODE" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="LINE_NO" property="LINE_NO" />
+    <result column="PAYMENT_TYPE" property="PAYMENT_TYPE" />
+    <result column="RATE_TYPE" property="RATE_TYPE" />
+    <result column="AMOUNT_CV" property="AMOUNT_CV" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="PERIODICITY_NUM" property="PERIODICITY_NUM" />
+    <result column="PERIODICITY_UNIT" property="PERIODICITY_UNIT" />
+    <result column="BALANCE_RESET_YN" property="BALANCE_RESET_YN" />
+  </resultMap>
+  
+  <select id="returnAvaCategoryPayLimit" parameterType="com.path.vo.core.avacategory.AvaCategorySC" resultMap="avaCategPaylimitResultMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryAvaCategoryPayLimitSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<sql id="queryAvaCategoryPayLimitSQL">
+		select 
+			CATEG_CODE,
+			COMP_CODE,
+			LINE_NO, 
+			PAYMENT_TYPE, 
+			RATE_TYPE, 
+			AMOUNT_CV, 
+			PERIODICITY_TYPE, 
+			PERIODICITY_NUM, 
+			PERIODICITY_UNIT, 
+			BALANCE_RESET_YN
+	    from CTS_AVA_CATEG_PAY_LIMIT
+	    where  COMP_CODE = #{compCode}
+	      and  CATEG_CODE = #{avaCategCode}
+	      and PAYMENT_TYPE = #{paymentType}
+   </sql>
+</mapper>

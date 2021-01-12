@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="countriesRegionMapper">
+
+	<sql id="regionListCommon">
+	<![CDATA[
+		SELECT
+			 COUNTRIES_REGION.REGION_CODE,
+			 COUNTRIES_REGION.BRIEF_DESC_ENG,
+			 COUNTRIES_REGION.BRIEF_DESC_ARAB,
+			 COUNTRIES_REGION.LONG_DESC_ENG,
+			 COUNTRIES_REGION.LONG_DESC_ARAB
+		FROM COUNTRIES_REGION 
+		WHERE (COUNTRIES_REGION.COMP_CODE  = #{compCode}) ]]>
+		<if test="country_code != null and country_code != emptyBigDecimalValue" >
+	 		AND	(COUNTRIES_REGION.COUNTRY_CODE  = #{country_code})
+	 	</if>
+	 	<if test='issuePlace !=null'>
+	 	   AND COUNTRIES_REGION.ISSUE_PLACE = #{issuePlace}
+	 	</if>
+	</sql>
+
+	<sql id="regionListCommonOrder">
+	<![CDATA[
+     ORDER BY COUNTRIES_REGION.BRIEF_DESC_ENG, COUNTRIES_REGION.BRIEF_DESC_ARAB
+	]]>
+	</sql>
+
+	<resultMap id="regionListMap" type="countriesRegionVO">
+		<id property="REGION_CODE" column="REGION_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	</resultMap>
+
+	<select id="regionList" resultMap="regionListMap" parameterType="countriesRegionSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="regionListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="regionListCount" resultType="int" parameterType="countriesRegionSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="regionListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnRegionById" parameterType="countriesRegionSC"
+		resultType="countriesRegionVO">
+		SELECT TELEPHONE_CODE,
+			REGION_CODE,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM COUNTRIES_REGION
+		WHERE (COUNTRIES_REGION.COUNTRY_CODE = #{countryCode})
+		AND   (COUNTRIES_REGION.REGION_CODE = #{regionCode})
+		AND   (COUNTRIES_REGION.COMP_CODE = #{compCode})
+		<if test = 'issuePlace != null'>
+		 AND COUNTRIES_REGION.ISSUE_PLACE = #{issuePlace}
+		</if>
+ </select>
+ 
+	 <select id="getMobileFormat" parameterType="countriesSC" resultType="string">
+			SELECT TELEPHONE_FORMAT FROM COUNTRIES
+			WHERE COMP_CODE= #{compCode}
+			AND COUNTRY_CODE=#{countryCode}
+	</select>
+
+	
+	<select id="returnAllowedMobileCodesList" resultMap="CTS_COUNTRY_ALLOW_MOBILE_CODE.BaseResultMap" parameterType="countriesSC">
+		SELECT * FROM 
+		CTS_COUNTRY_ALLOW_MOBILE_CODE
+		WHERE COMPANY_CODE= #{compCode}
+		AND COUNTRY_CODE=#{countryCode}
+ 	</select>
+</mapper>

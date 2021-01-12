@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="accountTypeMapper">
+	
+   <sql id="accTypeListQuery">
+		<![CDATA[ 	
+			SELECT	 
+					 RIFATT.TYPE_CODE,
+					 RIFATT.BRIEF_DESC_ENG,
+					 RIFATT.BRIEF_DESC_ARAB,
+					 RIFATT.LONG_DESC_ENG,
+					 RIFATT.LONG_DESC_ARAB,
+					 RIFATT.CATEGORY,
+					 RIFATT.TERM_IND,
+					 RIFATT.TERM_DAYS,
+					 RIFATT.CLASS_CODE,
+					 RIFATT.DORMANT_DAYS,
+					 RIFATT.BC_IND,
+					 RIFATT.NM_PAY_GL,
+					 RIFATT.NM_PAY_CIF,
+					 RIFATT.NM_PAY_SL,
+					 RIFATT.PAY_GL,
+					 RIFATT.PAY_CIF,
+					 RIFATT.PAY_SL,
+					 RIFATT.ADDITIONAL_REFERENCE
+			FROM  	 RIFATT 
+			
+		]]>
+	</sql>
+	<sql id="accTypeListWhereQuery">
+		<![CDATA[ 	
+		
+			WHERE	 RIFATT.COMP_CODE  = #{compCode}	
+	 		AND		 RIFATT.BS_CONTRA  = 
+							CASE 
+								WHEN CASE WHEN #{bs_contra} IS NULL THEN  ' ' ELSE #{bs_contra} END  = ' ' THEN RIFATT.BS_CONTRA
+								ELSE #{bs_contra}
+							END
+		]]>
+	</sql>
+	
+	<sql id="clubbedAccountChecking">
+		<if test="clubCode != null and clubCode != emptyBigDecimalValue" >
+		AND EXISTS (SELECT 1 FROM ACC_CLUBBING_TYPES A
+		           WHERE A.COMP_CODE = #{compCode}
+		            AND A.CLUBBING_CODE = #{clubCode}
+		            AND A.TYPE_CODE = RIFATT.TYPE_CODE
+		            AND A.TYPE_INDICATOR = 'A')
+		</if>            
+	</sql>
+	
+	<select id="selectAccountTypeList" resultMap="RIFATT.BaseResultMap" parameterType="accountTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="accTypeListQuery" />
+		<include refid="accTypeListWhereQuery"/>
+		<include refid="clubbedAccountChecking"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="selectAccountTypeListCount" resultType="int" parameterType="accountTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="accTypeListQuery" />
+		<include refid="accTypeListWhereQuery"/>
+		<include refid="clubbedAccountChecking"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	  <select id="returnAccountTypeById" parameterType="accountTypeSC" resultType="accountTypeVO">
+  		SELECT
+			  RIFATT.TYPE_CODE,
+			  RIFATT.BRIEF_DESC_ENG,
+			  RIFATT.BRIEF_DESC_ARAB
+		FROM  RIFATT
+		WHERE RIFATT.COMP_CODE    = #{compCode}
+		AND   RIFATT.TYPE_CODE    = #{typeCode}
+		
+  </select>
+     	
+</mapper>

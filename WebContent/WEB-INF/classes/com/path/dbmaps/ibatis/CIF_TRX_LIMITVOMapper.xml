@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_TRX_LIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_TRX_LIMITVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CY_CODE" property="CY_CODE" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, CY_CODE, AMOUNT, ACTION_TYPE
+  </sql>
+  <select id="selectCIF_TRX_LIMIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_TRX_LIMITVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_TRX_LIMIT
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_TRX_LIMIT" parameterType="com.path.dbmaps.vo.CIF_TRX_LIMITVOKey" >
+    delete from CIF_TRX_LIMIT
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_TRX_LIMIT" parameterType="com.path.dbmaps.vo.CIF_TRX_LIMITVO" >
+    insert into CIF_TRX_LIMIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="ACTION_TYPE != null" > 
+        ACTION_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="ACTION_TYPE != null" >
+     	 #{ACTION_TYPE},  
+      </if>
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_TRX_LIMIT" >
+    update CIF_TRX_LIMIT
+    <set >
+      <if test="CY_CODE != null" >
+        <choose >
+          <when test="CY_CODE == emptyBigDecimalValue" >
+            CY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CY_CODE = #{CY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="ACTION_TYPE != null" >
+        	ACTION_TYPE =  #{ACTION_TYPE}, 
+       </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_TRX_LIMIT" parameterType="com.path.dbmaps.vo.CIF_TRX_LIMITVO" >
+    <include refid="sql_updateCIF_TRX_LIMIT" />
+  </update>
+</mapper>

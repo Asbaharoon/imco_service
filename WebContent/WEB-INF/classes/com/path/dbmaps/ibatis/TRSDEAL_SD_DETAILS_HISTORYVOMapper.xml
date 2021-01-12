@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_SD_DETAILS_HISTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_SD_DETAILS_HISTORYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SEQ_NO" property="SEQ_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="AMENDED_AMOUNT" property="AMENDED_AMOUNT" />
+    <result column="AMENDMENT_REASON" property="AMENDMENT_REASON" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="SERVER_CREATED_DATE" property="SERVER_CREATED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, SEQ_NO, SERIAL_NO, AMOUNT, AMENDED_AMOUNT, AMENDMENT_REASON, 
+    CREATED_BY, SERVER_CREATED_DATE
+  </sql>
+  <select id="selectTRSDEAL_SD_DETAILS_HISTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_SD_DETAILS_HISTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_SD_DETAILS_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ_NO = #{SEQ_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_SD_DETAILS_HISTORY" parameterType="com.path.dbmaps.vo.TRSDEAL_SD_DETAILS_HISTORYVOKey" >
+    delete from TRSDEAL_SD_DETAILS_HISTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ_NO = #{SEQ_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_SD_DETAILS_HISTORY" parameterType="com.path.dbmaps.vo.TRSDEAL_SD_DETAILS_HISTORYVO" >
+    insert into TRSDEAL_SD_DETAILS_HISTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SEQ_NO != null and SEQ_NO != emptyBigDecimalValue" >
+        SEQ_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="AMENDED_AMOUNT != null and AMENDED_AMOUNT != emptyBigDecimalValue" >
+        AMENDED_AMOUNT,
+      </if>
+      <if test="AMENDMENT_REASON != null" >
+        AMENDMENT_REASON,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SEQ_NO != null and SEQ_NO != emptyBigDecimalValue" >
+        #{SEQ_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="AMENDED_AMOUNT != null and AMENDED_AMOUNT != emptyBigDecimalValue" >
+        #{AMENDED_AMOUNT},
+      </if>
+      <if test="AMENDMENT_REASON != null" >
+        #{AMENDMENT_REASON},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        #{SERVER_CREATED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_SD_DETAILS_HISTORY" >
+    update TRSDEAL_SD_DETAILS_HISTORY
+    <set >
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMENDED_AMOUNT != null" >
+        <choose >
+          <when test="AMENDED_AMOUNT == emptyBigDecimalValue" >
+            AMENDED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMENDED_AMOUNT = #{AMENDED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMENDMENT_REASON != null" >
+        AMENDMENT_REASON = #{AMENDMENT_REASON},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE = #{SERVER_CREATED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SEQ_NO = #{SEQ_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_SD_DETAILS_HISTORY" parameterType="com.path.dbmaps.vo.TRSDEAL_SD_DETAILS_HISTORYVO" >
+    <include refid="sql_updateTRSDEAL_SD_DETAILS_HISTORY" />
+  </update>
+</mapper>

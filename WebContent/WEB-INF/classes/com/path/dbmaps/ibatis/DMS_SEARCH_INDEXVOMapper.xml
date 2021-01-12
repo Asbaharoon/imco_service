@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DMS_SEARCH_INDEX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DMS_SEARCH_INDEXVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="COLUMN_NAME" property="COLUMN_NAME" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <result column="ELEMENT_TYPE" property="ELEMENT_TYPE" />
+    <result column="DMS_INDEX_NAME" property="DMS_INDEX_NAME" />
+    <result column="EXPRESSION_COLUMNS" property="EXPRESSION_COLUMNS" />
+    <result column="SCREEN_ID" property="SCREEN_ID" />
+    <result column="ORDER_VALUE" property="ORDER_VALUE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, COLUMN_NAME, PROG_REF, ELEMENT_TYPE, DMS_INDEX_NAME, EXPRESSION_COLUMNS ,ORDER_VALUE,SCREEN_ID, DATE_UPDATED
+  </sql>
+  <select id="selectDMS_SEARCH_INDEX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DMS_SEARCH_INDEX
+    where APP_NAME = #{APP_NAME}
+      and COLUMN_NAME = #{COLUMN_NAME}
+      and PROG_REF = #{PROG_REF}
+  </select>
+  <delete id="deleteDMS_SEARCH_INDEX" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEXVOKey" >
+    delete from DMS_SEARCH_INDEX
+    where APP_NAME = #{APP_NAME}
+      and COLUMN_NAME = #{COLUMN_NAME}
+      and PROG_REF = #{PROG_REF}
+  </delete>
+  <insert id="insertDMS_SEARCH_INDEX" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEXVO" >
+    insert into DMS_SEARCH_INDEX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME,
+      </if>
+      <if test="PROG_REF != null" >
+        PROG_REF,
+      </if>
+      <if test="ELEMENT_TYPE != null and ELEMENT_TYPE != emptyBigDecimalValue" >
+        ELEMENT_TYPE,
+      </if>
+      <if test="DMS_INDEX_NAME != null" >
+        DMS_INDEX_NAME,
+      </if>
+      <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        SCREEN_ID,
+      </if>
+      <if test="ORDER_VALUE != null and ORDER_VALUE != emptyBigDecimalValue" >
+        ORDER_VALUE,
+      </if>
+      <if test="EXPRESSION_COLUMNS != null and !&quot;&quot;.equals(EXPRESSION_COLUMNS)" >
+        EXPRESSION_COLUMNS,
+      </if>
+      
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="COLUMN_NAME != null" >
+        #{COLUMN_NAME},
+      </if>
+      <if test="PROG_REF != null" >
+        #{PROG_REF},
+      </if>
+      <if test="ELEMENT_TYPE != null and ELEMENT_TYPE != emptyBigDecimalValue" >
+        #{ELEMENT_TYPE},
+      </if>
+      <if test="DMS_INDEX_NAME != null" >
+        #{DMS_INDEX_NAME},
+      </if>
+       <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        #{SCREEN_ID},
+      </if>
+      <if test="ORDER_VALUE != null and ORDER_VALUE != emptyBigDecimalValue" >
+        #{ORDER_VALUE},
+      </if>
+      <if test="EXPRESSION_COLUMNS != null and !&quot;&quot;.equals(EXPRESSION_COLUMNS)" >
+        #{EXPRESSION_COLUMNS},
+      </if>
+      <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateDMS_SEARCH_INDEX" >
+    update DMS_SEARCH_INDEX
+    <set >
+      <if test="ELEMENT_TYPE != null" >
+        <choose >
+          <when test="ELEMENT_TYPE == emptyBigDecimalValue" >
+            ELEMENT_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ELEMENT_TYPE = #{ELEMENT_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DMS_INDEX_NAME != null" >
+        DMS_INDEX_NAME = #{DMS_INDEX_NAME},
+      </if>
+      <if test="EXPRESSION_COLUMNS != null" >
+        <choose >
+          <when test="EXPRESSION_COLUMNS.equals(&quot;&quot;)" >
+            EXPRESSION_COLUMNS = NULL ,
+          </when>
+          <otherwise >
+            EXPRESSION_COLUMNS = #{EXPRESSION_COLUMNS},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="SCREEN_ID != null" >
+        <choose >
+          <when test="SCREEN_ID == emptyBigDecimalValue" >
+            SCREEN_ID = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_ID = #{SCREEN_ID},
+          </otherwise>
+        </choose>
+      </if>
+       <if test="ORDER_VALUE != null" >
+        <choose >
+          <when test="ORDER_VALUE == emptyBigDecimalValue" >
+            ORDER_VALUE = NULL ,
+          </when>
+          <otherwise >
+            ORDER_VALUE = #{ORDER_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and COLUMN_NAME = #{COLUMN_NAME}
+      and PROG_REF = #{PROG_REF}
+  </sql>
+  <update id="updateDMS_SEARCH_INDEX" parameterType="com.path.dbmaps.vo.DMS_SEARCH_INDEXVO" >
+    <include refid="sql_updateDMS_SEARCH_INDEX" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>	
+  </update>
+</mapper>

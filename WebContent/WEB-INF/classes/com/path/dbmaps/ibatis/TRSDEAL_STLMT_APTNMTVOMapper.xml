@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_STLMT_APTNMT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="APPORTIONMENT_IND" property="APPORTIONMENT_IND" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CHARGE_CODE" property="CHARGE_CODE" />
+    <result column="DUE_TYPE_ORDER" property="DUE_TYPE_ORDER" />
+    <result column="PROVISION_TYPE_IND" property="PROVISION_TYPE_IND" />
+    <result column="SETTLEMENT_MANDATORY_YN" property="SETTLEMENT_MANDATORY_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NBR, SERIAL_NO, APPORTIONMENT_IND, STATUS, CHARGE_CODE, 
+    DUE_TYPE_ORDER, PROVISION_TYPE_IND, SETTLEMENT_MANDATORY_YN
+  </sql>
+  <select id="selectTRSDEAL_STLMT_APTNMT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_STLMT_APTNMT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_STLMT_APTNMT" parameterType="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVOKey" >
+    delete from TRSDEAL_STLMT_APTNMT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_STLMT_APTNMT" parameterType="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVO" >
+    insert into TRSDEAL_STLMT_APTNMT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="APPORTIONMENT_IND != null and APPORTIONMENT_IND != emptyBigDecimalValue" >
+        APPORTIONMENT_IND,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      <if test="DUE_TYPE_ORDER != null and DUE_TYPE_ORDER != emptyBigDecimalValue" >
+        DUE_TYPE_ORDER,
+      </if>
+      <if test="PROVISION_TYPE_IND != null and !&quot;&quot;.equals(PROVISION_TYPE_IND)" >
+        PROVISION_TYPE_IND,
+      </if>
+      <if test="SETTLEMENT_MANDATORY_YN != null and !&quot;&quot;.equals(SETTLEMENT_MANDATORY_YN)" >
+        SETTLEMENT_MANDATORY_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="APPORTIONMENT_IND != null and APPORTIONMENT_IND != emptyBigDecimalValue" >
+        #{APPORTIONMENT_IND},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      <if test="DUE_TYPE_ORDER != null and DUE_TYPE_ORDER != emptyBigDecimalValue" >
+        #{DUE_TYPE_ORDER},
+      </if>
+      <if test="PROVISION_TYPE_IND != null and !&quot;&quot;.equals(PROVISION_TYPE_IND)" >
+        #{PROVISION_TYPE_IND},
+      </if>
+      <if test="SETTLEMENT_MANDATORY_YN != null and !&quot;&quot;.equals(SETTLEMENT_MANDATORY_YN)" >
+        #{SETTLEMENT_MANDATORY_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_STLMT_APTNMT" >
+    update TRSDEAL_STLMT_APTNMT
+    <set >
+      <if test="APPORTIONMENT_IND != null" >
+        <choose >
+          <when test="APPORTIONMENT_IND == emptyBigDecimalValue" >
+            APPORTIONMENT_IND = NULL ,
+          </when>
+          <otherwise >
+            APPORTIONMENT_IND = #{APPORTIONMENT_IND},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_CODE != null" >
+        <choose >
+          <when test="CHARGE_CODE == emptyBigDecimalValue" >
+            CHARGE_CODE = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_CODE = #{CHARGE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DUE_TYPE_ORDER != null" >
+        <choose >
+          <when test="DUE_TYPE_ORDER == emptyBigDecimalValue" >
+            DUE_TYPE_ORDER = NULL ,
+          </when>
+          <otherwise >
+            DUE_TYPE_ORDER = #{DUE_TYPE_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROVISION_TYPE_IND != null" >
+        <choose >
+          <when test="PROVISION_TYPE_IND.equals(&quot;&quot;)" >
+            PROVISION_TYPE_IND = NULL ,
+          </when>
+          <otherwise >
+            PROVISION_TYPE_IND = #{PROVISION_TYPE_IND},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SETTLEMENT_MANDATORY_YN != null" >
+        <choose >
+          <when test="SETTLEMENT_MANDATORY_YN.equals(&quot;&quot;)" >
+            SETTLEMENT_MANDATORY_YN = NULL ,
+          </when>
+          <otherwise >
+            SETTLEMENT_MANDATORY_YN = #{SETTLEMENT_MANDATORY_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_STLMT_APTNMT" parameterType="com.path.dbmaps.vo.TRSDEAL_STLMT_APTNMTVO" >
+    <include refid="sql_updateTRSDEAL_STLMT_APTNMT" />
+  </update>
+</mapper>

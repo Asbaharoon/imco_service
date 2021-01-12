@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_TRXTYPE_ALLOWED_CY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_TRXTYPE_ALLOWED_CYVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_TYPE_CODE" property="TRX_TYPE_CODE" />
+    <result column="CY_CODE" property="CY_CODE" />
+    <result column="DEFAULT_INTRS" property="DEFAULT_INTRS" />
+    <result column="CY_FIELD" property="CY_FIELD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, TRX_TYPE_CODE, CY_CODE, DEFAULT_INTRS, CY_FIELD
+  </sql>
+  <select id="selectCTS_TRXTYPE_ALLOWED_CY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_TRXTYPE_ALLOWED_CYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_TRXTYPE_ALLOWED_CY
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </select>
+  <delete id="deleteCTS_TRXTYPE_ALLOWED_CY" parameterType="com.path.dbmaps.vo.CTS_TRXTYPE_ALLOWED_CYVOKey" >
+    delete from CTS_TRXTYPE_ALLOWED_CY
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </delete>
+  <insert id="insertCTS_TRXTYPE_ALLOWED_CY" parameterType="com.path.dbmaps.vo.CTS_TRXTYPE_ALLOWED_CYVO" >
+    insert into CTS_TRXTYPE_ALLOWED_CY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        TRX_TYPE_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="DEFAULT_INTRS != null" >
+        DEFAULT_INTRS,
+      </if>
+      <if test="CY_FIELD != null" >
+        CY_FIELD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRX_TYPE_CODE != null and TRX_TYPE_CODE != emptyBigDecimalValue" >
+        #{TRX_TYPE_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="DEFAULT_INTRS != null" >
+        #{DEFAULT_INTRS},
+      </if>
+      <if test="CY_FIELD != null" >
+        #{CY_FIELD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_TRXTYPE_ALLOWED_CY" >
+    update CTS_TRXTYPE_ALLOWED_CY
+    <set >
+      <if test="CY_CODE != null" >
+        <choose >
+          <when test="CY_CODE == emptyBigDecimalValue" >
+            CY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CY_CODE = #{CY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEFAULT_INTRS != null" >
+        DEFAULT_INTRS = #{DEFAULT_INTRS},
+      </if>
+      <if test="CY_FIELD != null" >
+        CY_FIELD = #{CY_FIELD},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_TYPE_CODE = #{TRX_TYPE_CODE}
+  </sql>
+  <update id="updateCTS_TRXTYPE_ALLOWED_CY" parameterType="com.path.dbmaps.vo.CTS_TRXTYPE_ALLOWED_CYVO" >
+    <include refid="sql_updateCTS_TRXTYPE_ALLOWED_CY" />
+  </update>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_MSGHDR_IN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" >
+    <id column="ACK" property="ACK" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <id column="SEQ" property="SEQ" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="PROC_NAME" property="PROC_NAME" />
+    <result column="LAU_SIGN_YN" property="LAU_SIGN_YN" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" extends="BaseResultMap" >
+    <result column="REPTAG_COND" property="REPTAG_COND" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACK, MSG_CODE, SEQ, BRIEF_DESC_ENG, LONG_DESC_ENG, PROC_NAME,GENERATE_ACH_YN,LAU_SIGN_YN
+  </sql>
+  <sql id="Blob_Column_List" >
+    REPTAG_COND
+  </sql>
+  <select id="selectSWIFT_MSGHDR_IN" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SWIFT_MSGHDR_IN
+    where ACK = #{ACK}
+      and MSG_CODE = #{MSG_CODE}
+      and SEQ = #{SEQ}
+  </select>
+  <delete id="deleteSWIFT_MSGHDR_IN" parameterType="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" >
+    delete from SWIFT_MSGHDR_IN
+    where ACK = #{ACK}
+      and MSG_CODE = #{MSG_CODE}
+      and SEQ = #{SEQ}
+  </delete>
+  <insert id="insertSWIFT_MSGHDR_IN" parameterType="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" >
+    insert into SWIFT_MSGHDR_IN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACK != null and ACK != emptyBigDecimalValue" >
+        ACK,
+      </if>
+      <if test="MSG_CODE != null and !&quot;&quot;.equals(MSG_CODE)" >
+        MSG_CODE,
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        SEQ,
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="PROC_NAME != null and !&quot;&quot;.equals(PROC_NAME)" >
+        PROC_NAME,
+      </if>
+      <if test="REPTAG_COND != null" >
+        REPTAG_COND,
+      </if>
+      <if test="GENERATE_ACH_YN != null and GENERATE_ACH_YN != emptyBigDecimalValue" >
+        GENERATE_ACH_YN,
+      </if>
+      <if test="LAU_SIGN_YN != null and LAU_SIGN_YN != emptyBigDecimalValue" >
+        LAU_SIGN_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACK != null and ACK != emptyBigDecimalValue" >
+        #{ACK},
+      </if>
+      <if test="MSG_CODE != null and !&quot;&quot;.equals(MSG_CODE)" >
+        #{MSG_CODE},
+      </if>
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        #{SEQ},
+      </if>
+      <if test="BRIEF_DESC_ENG != null and !&quot;&quot;.equals(BRIEF_DESC_ENG)" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null and !&quot;&quot;.equals(LONG_DESC_ENG)" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="PROC_NAME != null and !&quot;&quot;.equals(PROC_NAME)" >
+        #{PROC_NAME},
+      </if>
+      <if test="REPTAG_COND != null" >
+        #{REPTAG_COND},
+      </if>
+       <if test="GENERATE_ACH_YN != null and GENERATE_ACH_YN != emptyBigDecimalValue" >
+        #{GENERATE_ACH_YN},
+      </if>
+      <if test="LAU_SIGN_YN != null and LAU_SIGN_YN != emptyBigDecimalValue" >
+        #{LAU_SIGN_YN},
+      </if>
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_MSGHDR_IN" >
+    update SWIFT_MSGHDR_IN
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        <choose >
+          <when test="BRIEF_DESC_ENG.equals(&quot;&quot;)" >
+            BRIEF_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        <choose >
+          <when test="LONG_DESC_ENG.equals(&quot;&quot;)" >
+            LONG_DESC_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_DESC_ENG = #{LONG_DESC_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROC_NAME != null" >
+        <choose >
+          <when test="PROC_NAME.equals(&quot;&quot;)" >
+            PROC_NAME = NULL ,
+          </when>
+          <otherwise >
+            PROC_NAME = #{PROC_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REPTAG_COND != null" >
+        REPTAG_COND = #{REPTAG_COND},
+      </if>
+       <if test="GENERATE_ACH_YN != null" >
+        GENERATE_ACH_YN = #{GENERATE_ACH_YN},
+      </if>
+      <if test="LAU_SIGN_YN != null" >
+       LAU_SIGN_YN = #{LAU_SIGN_YN},
+      </if>
+    </set>
+    where ACK = #{ACK}
+      and MSG_CODE = #{MSG_CODE}
+      and SEQ = #{SEQ}
+  </sql>
+  <update id="updateSWIFT_MSGHDR_IN" parameterType="com.path.dbmaps.vo.SWIFT_MSGHDR_INVO" >
+    <include refid="sql_updateSWIFT_MSGHDR_IN" />
+  </update>
+</mapper>

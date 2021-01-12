@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IMCO_PWS_TEST_MASTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVO" >
+    <id column="CONFIG_ID" property="CONFIG_ID" />
+    <result column="CONFIG_NAME" property="CONFIG_NAME" />
+    <result column="APPLICATION_NAME" property="APPLICATION_NAME" />
+    <result column="OPERATION_NAME" property="OPERATION_NAME" />
+    <result column="ENDPOINT_NAME" property="ENDPOINT_NAME" />
+    <result column="MAPPING_ID" property="MAPPING_ID" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVOWithBLOBs" extends="BaseResultMap" >
+    <result column="CONFIG_REQUEST" property="CONFIG_REQUEST" />
+    <result column="CONFIG_RESPONSE" property="CONFIG_RESPONSE" />
+    <result column="JSON_REQUEST" property="JSON_REQUEST" />
+    <result column="JSON_FILTERED_REQUEST" property="JSON_FILTERED_REQUEST" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONFIG_ID, CONFIG_NAME, APPLICATION_NAME, OPERATION_NAME, ENDPOINT_NAME, MAPPING_ID
+  </sql>
+  <sql id="Blob_Column_List" >
+    CONFIG_REQUEST, CONFIG_RESPONSE, JSON_REQUEST, JSON_FILTERED_REQUEST
+  </sql>
+  <select id="selectIMCO_PWS_TEST_MASTER" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from IMCO_PWS_TEST_MASTER
+    where CONFIG_ID = #{CONFIG_ID}
+  </select>
+  <delete id="deleteIMCO_PWS_TEST_MASTER" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVOKey" >
+    delete from IMCO_PWS_TEST_MASTER
+    where CONFIG_ID = #{CONFIG_ID}
+  </delete>
+  <insert id="insertIMCO_PWS_TEST_MASTER" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVOWithBLOBs" >
+    insert into IMCO_PWS_TEST_MASTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null" >
+        CONFIG_ID,
+      </if>
+      <if test="CONFIG_NAME != null and !&quot;&quot;.equals(CONFIG_NAME)" >
+        CONFIG_NAME,
+      </if>
+      <if test="APPLICATION_NAME != null and !&quot;&quot;.equals(APPLICATION_NAME)" >
+        APPLICATION_NAME,
+      </if>
+      <if test="OPERATION_NAME != null and !&quot;&quot;.equals(OPERATION_NAME)" >
+        OPERATION_NAME,
+      </if>
+      <if test="ENDPOINT_NAME != null and !&quot;&quot;.equals(ENDPOINT_NAME)" >
+        ENDPOINT_NAME,
+      </if>
+      <if test="MAPPING_ID != null" >
+        MAPPING_ID,
+      </if>
+      <if test="CONFIG_REQUEST != null" >
+        CONFIG_REQUEST,
+      </if>
+      <if test="CONFIG_RESPONSE != null" >
+        CONFIG_RESPONSE,
+      </if>
+      <if test="JSON_REQUEST != null" >
+        JSON_REQUEST,
+      </if>
+      <if test="JSON_FILTERED_REQUEST != null" >
+        JSON_FILTERED_REQUEST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null" >
+        #{CONFIG_ID},
+      </if>
+      <if test="CONFIG_NAME != null and !&quot;&quot;.equals(CONFIG_NAME)" >
+        #{CONFIG_NAME},
+      </if>
+      <if test="APPLICATION_NAME != null and !&quot;&quot;.equals(APPLICATION_NAME)" >
+        #{APPLICATION_NAME},
+      </if>
+      <if test="OPERATION_NAME != null and !&quot;&quot;.equals(OPERATION_NAME)" >
+        #{OPERATION_NAME},
+      </if>
+      <if test="ENDPOINT_NAME != null and !&quot;&quot;.equals(ENDPOINT_NAME)" >
+        #{ENDPOINT_NAME},
+      </if>
+      <if test="MAPPING_ID != null" >
+        #{MAPPING_ID},
+      </if>
+      <if test="CONFIG_REQUEST != null" >
+        #{CONFIG_REQUEST},
+      </if>
+      <if test="CONFIG_RESPONSE != null" >
+        #{CONFIG_RESPONSE},
+      </if>
+      <if test="JSON_REQUEST != null" >
+        #{JSON_REQUEST},
+      </if>
+      <if test="JSON_FILTERED_REQUEST != null" >
+        #{JSON_FILTERED_REQUEST},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIMCO_PWS_TEST_MASTER" >
+    update IMCO_PWS_TEST_MASTER
+    <set >
+      <if test="CONFIG_NAME != null" >
+        <choose >
+          <when test="CONFIG_NAME.equals(&quot;&quot;)" >
+            CONFIG_NAME = NULL ,
+          </when>
+          <otherwise >
+            CONFIG_NAME = #{CONFIG_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLICATION_NAME != null" >
+        <choose >
+          <when test="APPLICATION_NAME.equals(&quot;&quot;)" >
+            APPLICATION_NAME = NULL ,
+          </when>
+          <otherwise >
+            APPLICATION_NAME = #{APPLICATION_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OPERATION_NAME != null" >
+        <choose >
+          <when test="OPERATION_NAME.equals(&quot;&quot;)" >
+            OPERATION_NAME = NULL ,
+          </when>
+          <otherwise >
+            OPERATION_NAME = #{OPERATION_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ENDPOINT_NAME != null" >
+        <choose >
+          <when test="ENDPOINT_NAME.equals(&quot;&quot;)" >
+            ENDPOINT_NAME = NULL ,
+          </when>
+          <otherwise >
+            ENDPOINT_NAME = #{ENDPOINT_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAPPING_ID != null" >
+        MAPPING_ID = #{MAPPING_ID},
+      </if>
+      <if test="CONFIG_REQUEST != null" >
+        CONFIG_REQUEST = #{CONFIG_REQUEST},
+      </if>
+      <if test="CONFIG_RESPONSE != null" >
+        CONFIG_RESPONSE = #{CONFIG_RESPONSE},
+      </if>
+      <if test="JSON_REQUEST != null" >
+        JSON_REQUEST = #{JSON_REQUEST},
+      </if>
+      <if test="JSON_FILTERED_REQUEST != null" >
+        JSON_FILTERED_REQUEST = #{JSON_FILTERED_REQUEST},
+      </if>
+    </set>
+    where CONFIG_ID = #{CONFIG_ID}
+  </sql>
+  <update id="updateIMCO_PWS_TEST_MASTER" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_MASTERVOWithBLOBs" >
+    <include refid="sql_updateIMCO_PWS_TEST_MASTER" />
+  </update>
+</mapper>

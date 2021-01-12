@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTELLER_ALLOWED_USERS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTELLER_ALLOWED_USERSVOKey" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINK_TYPE" property="LINK_TYPE" />
+    <id column="TELLER_CODE" property="TELLER_CODE" />
+    <id column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <delete id="deleteCTSTELLER_ALLOWED_USERS" parameterType="com.path.dbmaps.vo.CTSTELLER_ALLOWED_USERSVOKey" >
+    delete from CTSTELLER_ALLOWED_USERS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINK_TYPE = #{LINK_TYPE}
+      and TELLER_CODE = #{TELLER_CODE}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertCTSTELLER_ALLOWED_USERS" parameterType="com.path.dbmaps.vo.CTSTELLER_ALLOWED_USERSVOKey" >
+    insert into CTSTELLER_ALLOWED_USERS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINK_TYPE != null" >
+        LINK_TYPE,
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        TELLER_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINK_TYPE != null" >
+        #{LINK_TYPE},
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        #{TELLER_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="channelMapper">
+	<resultMap id="resChannelListMap" type="com.path.imco.vo.channel.ChannelCO">
+		<result property="imApiChannelsVO.CHANNEL_ID" column="CHANNEL_ID" />
+		<result property="imApiChannelsVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="imApiChannelsVO.COMMUNICATION_PROTOCOL" column="COMMUNICATION_PROTOCOL" />
+		<result property="imApiChannelsVO.SERVER_TYPE" column="SERVER_TYPE" />
+		<result property="imApiChannelsVO.ACTIVE_QUEUE_YN" column="ACTIVE_QUEUE_YN" />
+		<result property="imApiChannelsVO.HTTP_USER" column="HTTP_USER" />
+		<result property="imApiChannelsVO.HTTP_PASSWORD" column="HTTP_PASSWORD" />
+		<result property="imApiChannelsVO.IP_ADDRESS" column="IP_ADDRESS" />
+		<result property="imApiChannelsVO.PORT" column="PORT" />
+		<result property="imApiChannelsVO.INTERFACE_CODE" column="INTERFACE_CODE" />
+		<result property="imApiChannelsVO.PARALLELISM_CONTROL" column="PARALLELISM_CONTROL" />
+		<result property="imApiChannelsVO.TEMPLATE_ID" column="TEMPLATE_ID" />
+		<result property="imApiChannelsVO.SOCKET_RESTART_INTERVAL" column="SOCKET_RESTART_INTERVAL" />
+		<result property="imApiChannelsVO.HTTP_REQUEST_TIME_OUT" column="HTTP_REQUEST_TIME_OUT" />
+		
+		<result property="imApiChannelsVO.USER_ID" column="USER_ID" />
+		<result column="STATUS" property="imApiChannelsVO.STATUS" />
+		<result column="DATE_UPDATED" property="imApiChannelsVO.DATE_UPDATED" />
+		<result column="STATUS_DESC" property="statusDesc" />
+	</resultMap>
+	
+	<resultMap id="resMachineIdListMap" type="com.path.imco.vo.channel.ChannelCO">
+		<result property="imApiChannelsDetVO.HOST_NAME" column="HOST_NAME" />
+		<result property="imApiChannelsDetVO.HASH_KEY" column="HASH_KEY" />
+	</resultMap>
+	
+	<resultMap id="loadAssignedTemplateIdMap" type="com.path.dbmaps.vo.GTW_PWS_TMPLT_USRVO">
+		<result property="TEMPLATE_ID" column="TEMPLATE_ID" />
+	</resultMap>
+	
+	<resultMap id="resTempIdLkupMap" type="com.path.dbmaps.vo.GTW_PWS_TMPLT_MASTERVO">
+		<result column="TEMPLATE_ID" property="TEMPLATE_ID" />
+		<result column="TEMPLATE_DESC" property="TEMPLATE_DESC" />
+	</resultMap>
+	
+	<select id="returnChannelList" parameterType="com.path.imco.vo.channel.ChannelSC"
+		resultMap="resChannelListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryChannelSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnChannelListCount" parameterType="com.path.imco.vo.channel.ChannelSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryChannelSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnMachineIdList" parameterType="com.path.imco.vo.channel.ChannelSC"
+		resultMap="resMachineIdListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="queryMachineIdSQL" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnMachineIdListCount" parameterType="com.path.imco.vo.channel.ChannelSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryMachineIdSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnMaxChannel" parameterType="com.path.imco.vo.channel.ChannelSC"
+		resultType="BigDecimal">
+		<!-- SELECT MAX(EBILL.BILL_NO ) + 1 FROM EBILL -->
+		<!-- WHERE EBILL.COMP_CODE = #{compCode} -->
+		<!-- AND EBILL.BRANCH_CODE = #{branchCode} -->
+	</select>
+
+	<select id="returnChannelDetails" resultMap="resChannelListMap" parameterType="com.path.imco.vo.channel.ChannelSC">
+		<include refid="queryChannelSQL" />
+		AND B.CHANNEL_ID = #{ChannelId}
+	</select>
+
+	<resultMap id="channelDetails_ResMap" type="com.path.imco.vo.channel.ChannelCO">
+		<result property="imApiChannelsVO.CHANNEL_ID" column="CHANNEL_ID" />
+		<result property="imApiChannelsVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="imApiChannelsVO.USER_ID" column="USER_ID" />
+	</resultMap>
+	
+	<select id="deleteChannelDetails" resultMap="channelDetails_ResMap"
+		parameterType="com.path.imco.vo.channel.ChannelSC">
+		DELETE  <!-- EBILL.CONSUMER_NO, EBILL.CONUSER_NAME_BRIEF, EBILL.BILL_AMOUNT, 
+			EBILL.CONUSER_NAME_FULL -->
+		GTW_CHANNEL.CHANNEL_ID AND GTW_CHANNEL.DESCRIPTION
+		FROM GTW_CHANNEL
+		WHERE GTW_CHANNEL.CHANNEL_ID = #{ChannelId}
+	</select>
+	
+	<select id="returnHashKey" resultType="String" parameterType="com.path.imco.vo.channel.ChannelSC">
+		select B.HASH_KEY
+		from GTW_CHANNEL A,
+		     GTW_CHANNEL_DET B
+		WHERE A.CHANNEL_ID = B.CHANNEL_ID 
+		AND   A.CHANNEL_ID = #{ChannelId}
+		AND UPPER(A.USER_ID) = UPPER(#{channelUserId})
+		AND UPPER(B.HOST_NAME) = UPPER(#{channelHostName})
+		AND A.STATUS = 'P'
+	</select>
+	
+	<select id="loadAssignedTemplateIdListGrid" resultMap="loadAssignedTemplateIdMap" parameterType="com.path.imco.vo.channel.ChannelSC">
+		SELECT TEMPLATE_ID 
+		FROM GTW_PWS_TMPLT_USR
+		WHERE CHANNEL_ID = #{ChannelId}
+	</select>
+
+	<select id="returnTempIdListCount" resultType="int"	parameterType="com.path.imco.vo.channel.ChannelSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="retTempIdListSql" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnTempIdList" resultMap="resTempIdLkupMap" parameterType="com.path.imco.vo.channel.ChannelSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="retTempIdListSql" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<delete id="deleteAllMachineId" parameterType="com.path.imco.vo.channel.ChannelCO">
+		DELETE FROM GTW_CHANNEL_DET
+		WHERE CHANNEL_ID = #{imApiChannelsVO.CHANNEL_ID}
+	</delete>
+	
+	<delete id="deleteAllTemplateId" parameterType="com.path.imco.vo.channel.ChannelCO">
+		DELETE FROM GTW_PWS_TMPLT_USR
+		WHERE CHANNEL_ID = #{imApiChannelsVO.CHANNEL_ID}
+	</delete>
+
+	<sql id="queryChannelSQL">
+		SELECT B.CHANNEL_ID,
+		B.DESCRIPTION,
+		B.COMMUNICATION_PROTOCOL,
+		B.SERVER_TYPE,
+		B.ACTIVE_QUEUE_YN,
+		B.HTTP_USER,
+		B.HTTP_PASSWORD,
+		B.IP_ADDRESS,
+		B.PORT,
+		B.INTERFACE_CODE,
+		B.PARALLELISM_CONTROL,
+		B.TEMPLATE_ID,
+		B.SOCKET_RESTART_INTERVAL,
+		B.HTTP_REQUEST_TIME_OUT,
+		B.USER_ID,
+		B.STATUS,
+		B.DATE_UPDATED,
+		(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		FROM SYS_PARAM_LOV_TRANS
+		WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = B.STATUS
+		AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId,jdbcType=NUMERIC}
+		AND	SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage,jdbcType=VARCHAR}) STATUS_DESC
+		FROM GTW_CHANNEL B
+		<if test='crudMode!="R"'>
+			, SYS_PARAM_LOV_LK_OPT lovOpt
+		</if>
+		where 1 = 1 
+		<if test='crudMode!="R"'>
+			AND B.STATUS = lovOpt.VALUE_CODE
+			AND lovOpt.LOV_TYPE_ID = #{lovTypeLkOpt,jdbcType=NUMERIC}
+			AND lovOpt.PROG_REF = #{menuRef,jdbcType=VARCHAR}
+			AND lovOpt.APP_NAME = #{currAppName,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="queryMachineIdSQL">
+		SELECT GTW_CHANNEL_DET.HOST_NAME,GTW_CHANNEL_DET.HASH_KEY
+		FROM GTW_CHANNEL_DET
+		WHERE GTW_CHANNEL_DET.CHANNEL_ID = #{ChannelId}
+	</sql>
+	
+	<sql id="retTempIdListSql">
+		SELECT T.TEMPLATE_ID AS TEMPLATE_ID,
+		T.TEMPLATE_DESC AS TEMPLATE_DESC
+		FROM GTW_PWS_TMPLT_MASTER T
+	</sql>
+	
+	<select id="validateUserId" parameterType="com.path.imco.vo.channel.ChannelSC" resultType="int">
+		SELECT COUNT(1) FROM GTW_CHANNEL
+		WHERE UPPER(USER_ID) = UPPER(#{channelUserId})	
+		AND STATUS ='P'
+	</select>
+	
+	
+	<select id="getLatestDisplayOrder" resultType="java.math.BigDecimal"
+			parameterType="OPTVO">
+			SELECT MAX(DISP_ORDER)
+			FROM OPT 
+			WHERE PARENT_REF =#{PARENT_REF}
+			AND APP_NAME = #{APP_NAME}
+	 </select>
+	 
+</mapper>

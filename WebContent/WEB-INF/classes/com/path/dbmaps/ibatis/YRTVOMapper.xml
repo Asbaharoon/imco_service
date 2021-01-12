@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="YRT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.YRTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FISCAL_YEAR" property="FISCAL_YEAR" />
+    <id column="MONTH" property="MONTH" />
+    <result column="YEAR" property="YEAR" />
+    <result column="STATUS" property="STATUS" />
+    <result column="TRP_PRO_ALLOC" property="TRP_PRO_ALLOC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, FISCAL_YEAR, MONTH, YEAR, STATUS, TRP_PRO_ALLOC
+  </sql>
+  <select id="selectYRT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.YRTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from YRT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+      and MONTH = #{MONTH}
+  </select>
+  <delete id="deleteYRT" parameterType="com.path.dbmaps.vo.YRTVOKey" >
+    delete from YRT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+      and MONTH = #{MONTH}
+  </delete>
+  <insert id="insertYRT" parameterType="com.path.dbmaps.vo.YRTVO" >
+    insert into YRT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FISCAL_YEAR != null and FISCAL_YEAR != emptyBigDecimalValue" >
+        FISCAL_YEAR,
+      </if>
+      <if test="MONTH != null and MONTH != emptyBigDecimalValue" >
+        MONTH,
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        YEAR,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TRP_PRO_ALLOC != null" >
+        TRP_PRO_ALLOC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FISCAL_YEAR != null and FISCAL_YEAR != emptyBigDecimalValue" >
+        #{FISCAL_YEAR},
+      </if>
+      <if test="MONTH != null and MONTH != emptyBigDecimalValue" >
+        #{MONTH},
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        #{YEAR},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TRP_PRO_ALLOC != null" >
+        #{TRP_PRO_ALLOC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateYRT" >
+    update YRT
+    <set >
+      <if test="YEAR != null" >
+        <choose >
+          <when test="YEAR == emptyBigDecimalValue" >
+            YEAR = NULL ,
+          </when>
+          <otherwise >
+            YEAR = #{YEAR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="TRP_PRO_ALLOC != null" >
+        TRP_PRO_ALLOC = #{TRP_PRO_ALLOC},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and FISCAL_YEAR = #{FISCAL_YEAR}
+      and MONTH = #{MONTH}
+  </sql>
+  <update id="updateYRT" parameterType="com.path.dbmaps.vo.YRTVO" >
+    <include refid="sql_updateYRT" />
+  </update>
+</mapper>

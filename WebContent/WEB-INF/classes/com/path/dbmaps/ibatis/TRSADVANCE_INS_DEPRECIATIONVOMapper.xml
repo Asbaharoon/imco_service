@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSADVANCE_INS_DEPRECIATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSADVANCE_INS_DEPRECIATIONVO" >
+    <id column="ADVANCE_INSURANCE_SERIAL_NO" property="ADVANCE_INSURANCE_SERIAL_NO" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="DEPRECIATION_YEAR" property="DEPRECIATION_YEAR" />
+    <result column="DEPRECIATION_RATE" property="DEPRECIATION_RATE" />
+    <result column="INS_END_DATE" property="INS_END_DATE" />
+    <result column="INS_START_DATE" property="INS_START_DATE" />
+    <result column="TRACKER_AMOUNT" property="TRACKER_AMOUNT" />
+    <result column="INSURANCE_COMP_CODE" property="INSURANCE_COMP_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ADVANCE_INSURANCE_SERIAL_NO, BRANCH_CODE, COMP_CODE, LINE_NBR, DEPRECIATION_YEAR, 
+    DEPRECIATION_RATE, INS_END_DATE, INS_START_DATE, TRACKER_AMOUNT, INSURANCE_COMP_CODE
+  </sql>
+  <select id="selectTRSADVANCE_INS_DEPRECIATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSADVANCE_INS_DEPRECIATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSADVANCE_INS_DEPRECIATION
+    where ADVANCE_INSURANCE_SERIAL_NO = #{ADVANCE_INSURANCE_SERIAL_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteTRSADVANCE_INS_DEPRECIATION" parameterType="com.path.dbmaps.vo.TRSADVANCE_INS_DEPRECIATIONVOKey" >
+    delete from TRSADVANCE_INS_DEPRECIATION
+    where ADVANCE_INSURANCE_SERIAL_NO = #{ADVANCE_INSURANCE_SERIAL_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertTRSADVANCE_INS_DEPRECIATION" parameterType="com.path.dbmaps.vo.TRSADVANCE_INS_DEPRECIATIONVO" >
+    insert into TRSADVANCE_INS_DEPRECIATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ADVANCE_INSURANCE_SERIAL_NO != null and ADVANCE_INSURANCE_SERIAL_NO != emptyBigDecimalValue" >
+        ADVANCE_INSURANCE_SERIAL_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="DEPRECIATION_YEAR != null and DEPRECIATION_YEAR != emptyBigDecimalValue" >
+        DEPRECIATION_YEAR,
+      </if>
+      <if test="DEPRECIATION_RATE != null and DEPRECIATION_RATE != emptyBigDecimalValue" >
+        DEPRECIATION_RATE,
+      </if>
+      <if test="INS_END_DATE != null" >
+        INS_END_DATE,
+      </if>
+      <if test="INS_START_DATE != null" >
+        INS_START_DATE,
+      </if>
+      <if test="TRACKER_AMOUNT != null and TRACKER_AMOUNT != emptyBigDecimalValue" >
+        TRACKER_AMOUNT,
+      </if>
+      <if test="INSURANCE_COMP_CODE != null and INSURANCE_COMP_CODE != emptyBigDecimalValue" >
+        INSURANCE_COMP_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ADVANCE_INSURANCE_SERIAL_NO != null and ADVANCE_INSURANCE_SERIAL_NO != emptyBigDecimalValue" >
+        #{ADVANCE_INSURANCE_SERIAL_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="DEPRECIATION_YEAR != null and DEPRECIATION_YEAR != emptyBigDecimalValue" >
+        #{DEPRECIATION_YEAR},
+      </if>
+      <if test="DEPRECIATION_RATE != null and DEPRECIATION_RATE != emptyBigDecimalValue" >
+        #{DEPRECIATION_RATE},
+      </if>
+      <if test="INS_END_DATE != null" >
+        #{INS_END_DATE},
+      </if>
+      <if test="INS_START_DATE != null" >
+        #{INS_START_DATE},
+      </if>
+      <if test="TRACKER_AMOUNT != null and TRACKER_AMOUNT != emptyBigDecimalValue" >
+        #{TRACKER_AMOUNT},
+      </if>
+      <if test="INSURANCE_COMP_CODE != null and INSURANCE_COMP_CODE != emptyBigDecimalValue" >
+        #{INSURANCE_COMP_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSADVANCE_INS_DEPRECIATION" >
+    update TRSADVANCE_INS_DEPRECIATION
+    <set >
+      <if test="DEPRECIATION_YEAR != null" >
+        <choose >
+          <when test="DEPRECIATION_YEAR == emptyBigDecimalValue" >
+            DEPRECIATION_YEAR = NULL ,
+          </when>
+          <otherwise >
+            DEPRECIATION_YEAR = #{DEPRECIATION_YEAR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEPRECIATION_RATE != null" >
+        <choose >
+          <when test="DEPRECIATION_RATE == emptyBigDecimalValue" >
+            DEPRECIATION_RATE = NULL ,
+          </when>
+          <otherwise >
+            DEPRECIATION_RATE = #{DEPRECIATION_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INS_END_DATE != null" >
+        INS_END_DATE = #{INS_END_DATE},
+      </if>
+      <if test="INS_START_DATE != null" >
+        INS_START_DATE = #{INS_START_DATE},
+      </if>
+      <if test="TRACKER_AMOUNT != null" >
+        <choose >
+          <when test="TRACKER_AMOUNT == emptyBigDecimalValue" >
+            TRACKER_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            TRACKER_AMOUNT = #{TRACKER_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INSURANCE_COMP_CODE != null" >
+        <choose >
+          <when test="INSURANCE_COMP_CODE == emptyBigDecimalValue" >
+            INSURANCE_COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            INSURANCE_COMP_CODE = #{INSURANCE_COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ADVANCE_INSURANCE_SERIAL_NO = #{ADVANCE_INSURANCE_SERIAL_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateTRSADVANCE_INS_DEPRECIATION" parameterType="com.path.dbmaps.vo.TRSADVANCE_INS_DEPRECIATIONVO" >
+    <include refid="sql_updateTRSADVANCE_INS_DEPRECIATION" />
+  </update>
+</mapper>

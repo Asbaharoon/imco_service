@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_BALLOON_CALC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_BALLOON_CALCVO" >
+    <id column="BALLOON_NO" property="BALLOON_NO" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="REF_NBR" property="REF_NBR" />
+    <result column="PAYMENT_DATE" property="PAYMENT_DATE" />
+    <result column="BALLOON_AMOUNT" property="BALLOON_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BALLOON_NO, BRANCH_CODE, COMP_CODE, REF_NBR, PAYMENT_DATE, BALLOON_AMOUNT
+  </sql>
+  <select id="selectTRSDEAL_BALLOON_CALC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_BALLOON_CALCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_BALLOON_CALC
+    where BALLOON_NO = #{BALLOON_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NBR = #{REF_NBR}
+  </select>
+  <delete id="deleteTRSDEAL_BALLOON_CALC" parameterType="com.path.dbmaps.vo.TRSDEAL_BALLOON_CALCVOKey" >
+    delete from TRSDEAL_BALLOON_CALC
+    where BALLOON_NO = #{BALLOON_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NBR = #{REF_NBR}
+  </delete>
+  <insert id="insertTRSDEAL_BALLOON_CALC" parameterType="com.path.dbmaps.vo.TRSDEAL_BALLOON_CALCVO" >
+    insert into TRSDEAL_BALLOON_CALC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BALLOON_NO != null and BALLOON_NO != emptyBigDecimalValue" >
+        BALLOON_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REF_NBR != null and REF_NBR != emptyBigDecimalValue" >
+        REF_NBR,
+      </if>
+      <if test="PAYMENT_DATE != null" >
+        PAYMENT_DATE,
+      </if>
+      <if test="BALLOON_AMOUNT != null and BALLOON_AMOUNT != emptyBigDecimalValue" >
+        BALLOON_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BALLOON_NO != null and BALLOON_NO != emptyBigDecimalValue" >
+        #{BALLOON_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REF_NBR != null and REF_NBR != emptyBigDecimalValue" >
+        #{REF_NBR},
+      </if>
+      <if test="PAYMENT_DATE != null" >
+        #{PAYMENT_DATE},
+      </if>
+      <if test="BALLOON_AMOUNT != null and BALLOON_AMOUNT != emptyBigDecimalValue" >
+        #{BALLOON_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_BALLOON_CALC" >
+    update TRSDEAL_BALLOON_CALC
+    <set >
+      <if test="PAYMENT_DATE != null" >
+        PAYMENT_DATE = #{PAYMENT_DATE},
+      </if>
+      <if test="BALLOON_AMOUNT != null" >
+        <choose >
+          <when test="BALLOON_AMOUNT == emptyBigDecimalValue" >
+            BALLOON_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            BALLOON_AMOUNT = #{BALLOON_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BALLOON_NO = #{BALLOON_NO}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REF_NBR = #{REF_NBR}
+  </sql>
+  <update id="updateTRSDEAL_BALLOON_CALC" parameterType="com.path.dbmaps.vo.TRSDEAL_BALLOON_CALCVO" >
+    <include refid="sql_updateTRSDEAL_BALLOON_CALC" />
+  </update>
+</mapper>

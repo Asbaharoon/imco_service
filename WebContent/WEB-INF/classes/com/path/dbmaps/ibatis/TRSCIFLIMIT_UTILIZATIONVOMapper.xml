@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCIFLIMIT_UTILIZATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCIFLIMIT_UTILIZATIONVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="TRX_DATE" property="TRX_DATE" />
+    <result column="LIMIT_CY" property="LIMIT_CY" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="TRANS_REF_NO" property="TRANS_REF_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRX_NO, CIF_NO, TRX_DATE, LIMIT_CY, STATUS, CREATED_BY, DATE_CREATED, 
+    MODIFIED_BY, DATE_MODIFIED, APPROVED_BY, DATE_APPROVED, TRANS_REF_NO
+  </sql>
+  <select id="selectTRSCIFLIMIT_UTILIZATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_UTILIZATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCIFLIMIT_UTILIZATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteTRSCIFLIMIT_UTILIZATION" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_UTILIZATIONVOKey" >
+    delete from TRSCIFLIMIT_UTILIZATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertTRSCIFLIMIT_UTILIZATION" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_UTILIZATIONVO" >
+    insert into TRSCIFLIMIT_UTILIZATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE,
+      </if>
+      <if test="LIMIT_CY != null and LIMIT_CY != emptyBigDecimalValue" >
+        LIMIT_CY,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="TRANS_REF_NO != null" >
+        TRANS_REF_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="TRX_DATE != null" >
+        #{TRX_DATE},
+      </if>
+      <if test="LIMIT_CY != null and LIMIT_CY != emptyBigDecimalValue" >
+        #{LIMIT_CY},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="TRANS_REF_NO != null" >
+        #{TRANS_REF_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCIFLIMIT_UTILIZATION" >
+    update TRSCIFLIMIT_UTILIZATION
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_DATE != null" >
+        TRX_DATE = #{TRX_DATE},
+      </if>
+      <if test="LIMIT_CY != null" >
+        <choose >
+          <when test="LIMIT_CY == emptyBigDecimalValue" >
+            LIMIT_CY = NULL ,
+          </when>
+          <otherwise >
+            LIMIT_CY = #{LIMIT_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        MODIFIED_BY = #{MODIFIED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="TRANS_REF_NO != null" >
+        TRANS_REF_NO = #{TRANS_REF_NO},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateTRSCIFLIMIT_UTILIZATION" parameterType="com.path.dbmaps.vo.TRSCIFLIMIT_UTILIZATIONVO" >
+    <include refid="sql_updateTRSCIFLIMIT_UTILIZATION" />
+  </update>
+</mapper>

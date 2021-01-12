@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="REGIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.REGIONSVO" >
+    <id column="REGION_CODE" property="REGION_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="BRIEF_DESC_AR" property="BRIEF_DESC_AR" />
+    <result column="LONG_DESC_AR" property="LONG_DESC_AR" />
+    <result column="TIME_ZONE" property="TIME_ZONE" />
+    <result column="ADDITIONAL_REF" property="ADDITIONAL_REF" />
+    <result column="HOL1" property="HOL1" />
+    <result column="HOL2" property="HOL2" />
+    <result column="HOL3" property="HOL3" />
+    <result column="HOL4" property="HOL4" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REGION_CODE, BRIEF_DESC_ENG, LONG_DESC_ENG, BRIEF_DESC_AR, LONG_DESC_AR, TIME_ZONE, 
+    ADDITIONAL_REF, HOL1, HOL2, HOL3, HOL4,DATE_UPDATED
+  </sql>
+  <select id="selectREGIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.REGIONSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from REGIONS
+    where REGION_CODE = #{REGION_CODE}
+  </select>
+  <delete id="deleteREGIONS" parameterType="com.path.dbmaps.vo.REGIONSVOKey" >
+    delete from REGIONS
+    where REGION_CODE = #{REGION_CODE}
+  </delete>
+  <insert id="insertREGIONS" parameterType="com.path.dbmaps.vo.REGIONSVO" >
+    insert into REGIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        REGION_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_AR != null" >
+        BRIEF_DESC_AR,
+      </if>
+      <if test="LONG_DESC_AR != null" >
+        LONG_DESC_AR,
+      </if>
+      <if test="TIME_ZONE != null and TIME_ZONE != emptyBigDecimalValue" >
+        TIME_ZONE,
+      </if>
+      <if test="ADDITIONAL_REF != null" >
+        ADDITIONAL_REF,
+      </if>
+      <if test="HOL1 != null" >
+        HOL1,
+      </if>
+      <if test="HOL2 != null" >
+        HOL2,
+      </if>
+      <if test="HOL3 != null" >
+        HOL3,
+      </if>
+      <if test="HOL4 != null" >
+        HOL4,
+      </if>
+      DATE_UPDATED
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REGION_CODE != null and REGION_CODE != emptyBigDecimalValue" >
+        #{REGION_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_AR != null" >
+        #{BRIEF_DESC_AR},
+      </if>
+      <if test="LONG_DESC_AR != null" >
+        #{LONG_DESC_AR},
+      </if>
+      <if test="TIME_ZONE != null and TIME_ZONE != emptyBigDecimalValue" >
+        #{TIME_ZONE},
+      </if>
+      <if test="ADDITIONAL_REF != null" >
+        #{ADDITIONAL_REF},
+      </if>
+      <if test="HOL1 != null" >
+        #{HOL1},
+      </if>
+      <if test="HOL2 != null" >
+        #{HOL2},
+      </if>
+      <if test="HOL3 != null" >
+        #{HOL3},
+      </if>
+      <if test="HOL4 != null" >
+        #{HOL4},
+      </if>
+     	<choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateREGIONS" >
+    update REGIONS
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_AR != null" >
+        BRIEF_DESC_AR = #{BRIEF_DESC_AR},
+      </if>
+      <if test="LONG_DESC_AR != null" >
+        LONG_DESC_AR = #{LONG_DESC_AR},
+      </if>
+      <if test="TIME_ZONE != null" >
+        <choose >
+          <when test="TIME_ZONE == emptyBigDecimalValue" >
+            TIME_ZONE = NULL ,
+          </when>
+          <otherwise >
+            TIME_ZONE = #{TIME_ZONE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDITIONAL_REF != null" >
+        ADDITIONAL_REF = #{ADDITIONAL_REF},
+      </if>
+      <if test="HOL1 != null" >
+        HOL1 = #{HOL1},
+      </if>
+      <if test="HOL2 != null" >
+        HOL2 = #{HOL2},
+      </if>
+      <if test="HOL3 != null" >
+        HOL3 = #{HOL3},
+      </if>
+      <if test="HOL4 != null" >
+        HOL4 = #{HOL4},
+      </if>
+      DATE_UPDATED =   <choose > <when test="isOracle == 1" >	SYSDATE,</when>	<otherwise >	GETDATE(),	</otherwise> </choose>
+    </set>
+    where REGION_CODE = #{REGION_CODE}
+  </sql>
+  <update id="updateREGIONS" parameterType="com.path.dbmaps.vo.REGIONSVO" >
+    <include refid="sql_updateREGIONS" />
+    <if test="DATE_UPDATED != null" >
+			AND DATE_UPDATED = #{DATE_UPDATED}
+		</if>	
+  </update>
+</mapper>

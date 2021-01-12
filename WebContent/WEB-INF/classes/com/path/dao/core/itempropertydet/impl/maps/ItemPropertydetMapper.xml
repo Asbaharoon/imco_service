@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="itemPropertydetMapper">
+
+	<!-- Item Property Details - Result Map -->
+	<resultMap id="itemPropertydetListMap" type="com.path.dbmaps.vo.TRS_ITEM_PROPERTYDETVO">
+	 	<id     property="COMP_CODE"       		column="COMP_CODE" />
+	 	<id     property="LINE_NO"            	column="LINE_NO" />
+	 	<id     property="PROPERTY_CODE"     	column="PROPERTY_CODE" />
+		<result property="PROPERTY_VALUE"		column="PROPERTY_VALUE" />
+		<result property="PROPERTY_VALUE_A"   	column="PROPERTY_VALUE_A" />
+	</resultMap>
+	
+	<!-- Item Property Details Search Lookup -->
+	<sql id="itemPropertydetListCommon" >
+		SELECT COMP_CODE, 
+			PROPERTY_CODE,
+			LINE_NO, 
+			PROPERTY_VALUE, 
+			PROPERTY_VALUE_A 
+		FROM TRS_ITEM_PROPERTYDET 
+			WHERE COMP_CODE		= #{compCode} 
+			AND PROPERTY_CODE	= #{propertyCode}
+	</sql>
+ 	
+	<select id="itemPropertydetList" resultMap="itemPropertydetListMap" parameterType="itemPropertydetSC" >
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="itemPropertydetListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="itemPropertydetListCount" resultType="int" parameterType="itemPropertydetSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="itemPropertydetListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<!-- Item Property Details Dependency -->
+	<select id="returnItemPropertydetByCode" 
+	        parameterType="itemPropertydetSC"
+	        resultMap="itemPropertydetListMap">
+		SELECT COMP_CODE, 
+			PROPERTY_CODE,
+			LINE_NO, 
+			PROPERTY_VALUE, 
+			PROPERTY_VALUE_A 
+		FROM TRS_ITEM_PROPERTYDET 
+			WHERE COMP_CODE		= #{compCode} 
+			AND PROPERTY_CODE	= #{propertyCode}
+			AND LINE_NO			= #{lineNo}
+	</select>
+</mapper>

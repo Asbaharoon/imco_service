@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COUNTRIES_TEL_FORMAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVO" >
+    <id column="FORMAT_VALUE" property="FORMAT_VALUE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="TEL_CODE_LEN" property="TEL_CODE_LEN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FORMAT_VALUE, LINE_NO, TEL_CODE_LEN
+  </sql>
+  <select id="selectCOUNTRIES_TEL_FORMAT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from COUNTRIES_TEL_FORMAT
+    where FORMAT_VALUE = #{FORMAT_VALUE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCOUNTRIES_TEL_FORMAT" parameterType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVOKey" >
+    delete from COUNTRIES_TEL_FORMAT
+    where FORMAT_VALUE = #{FORMAT_VALUE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCOUNTRIES_TEL_FORMAT" parameterType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVO" >
+    insert into COUNTRIES_TEL_FORMAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FORMAT_VALUE != null" >
+        FORMAT_VALUE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TEL_CODE_LEN != null and TEL_CODE_LEN != emptyBigDecimalValue" >
+        TEL_CODE_LEN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FORMAT_VALUE != null" >
+        #{FORMAT_VALUE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TEL_CODE_LEN != null and TEL_CODE_LEN != emptyBigDecimalValue" >
+        #{TEL_CODE_LEN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCOUNTRIES_TEL_FORMAT" >
+    update COUNTRIES_TEL_FORMAT
+    <set >
+      <if test="TEL_CODE_LEN != null" >
+        <choose >
+          <when test="TEL_CODE_LEN == emptyBigDecimalValue" >
+            TEL_CODE_LEN = NULL ,
+          </when>
+          <otherwise >
+            TEL_CODE_LEN = #{TEL_CODE_LEN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where FORMAT_VALUE = #{FORMAT_VALUE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCOUNTRIES_TEL_FORMAT" parameterType="com.path.dbmaps.vo.COUNTRIES_TEL_FORMATVO" >
+    <include refid="sql_updateCOUNTRIES_TEL_FORMAT" />
+  </update>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_COUNTRY_HOLIDAY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="COUNTRY_CODE" property="COUNTRY_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, SERIAL_NO, COUNTRY_CODE
+  </sql>
+  <select id="selectTRSDEAL_COUNTRY_HOLIDAY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_COUNTRY_HOLIDAY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_COUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVOKey" >
+    delete from TRSDEAL_COUNTRY_HOLIDAY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_COUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVO" >
+    insert into TRSDEAL_COUNTRY_HOLIDAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_COUNTRY_HOLIDAY" >
+    update TRSDEAL_COUNTRY_HOLIDAY
+    <set >
+      <if test="COUNTRY_CODE != null" >
+        <choose >
+          <when test="COUNTRY_CODE == emptyBigDecimalValue" >
+            COUNTRY_CODE = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY_CODE = #{COUNTRY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_COUNTRY_HOLIDAY" parameterType="com.path.dbmaps.vo.TRSDEAL_COUNTRY_HOLIDAYVO" >
+    <include refid="sql_updateTRSDEAL_COUNTRY_HOLIDAY" />
+  </update>
+</mapper>

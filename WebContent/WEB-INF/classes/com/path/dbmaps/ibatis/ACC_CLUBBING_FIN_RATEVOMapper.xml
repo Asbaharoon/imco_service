@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ACC_CLUBBING_FIN_RATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ACC_CLUBBING_FIN_RATEVO" >
+    <id column="CLUBBING_CODE" property="CLUBBING_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="FR_GRP_DEPOSIT_BAL" property="FR_GRP_DEPOSIT_BAL" />
+    <result column="TO_GRP_DEPOSIT_BAL" property="TO_GRP_DEPOSIT_BAL" />
+    <result column="MARGIN_RATE" property="MARGIN_RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CLUBBING_CODE, COMP_CODE, LINE_NO, BRANCH_CODE, FR_GRP_DEPOSIT_BAL, TO_GRP_DEPOSIT_BAL, 
+    MARGIN_RATE
+  </sql>
+  <select id="selectACC_CLUBBING_FIN_RATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ACC_CLUBBING_FIN_RATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACC_CLUBBING_FIN_RATE
+    where CLUBBING_CODE = #{CLUBBING_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteACC_CLUBBING_FIN_RATE" parameterType="com.path.dbmaps.vo.ACC_CLUBBING_FIN_RATEVOKey" >
+    delete from ACC_CLUBBING_FIN_RATE
+    where CLUBBING_CODE = #{CLUBBING_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertACC_CLUBBING_FIN_RATE" parameterType="com.path.dbmaps.vo.ACC_CLUBBING_FIN_RATEVO" >
+    insert into ACC_CLUBBING_FIN_RATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CLUBBING_CODE != null and CLUBBING_CODE != emptyBigDecimalValue" >
+        CLUBBING_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="FR_GRP_DEPOSIT_BAL != null and FR_GRP_DEPOSIT_BAL != emptyBigDecimalValue" >
+        FR_GRP_DEPOSIT_BAL,
+      </if>
+      <if test="TO_GRP_DEPOSIT_BAL != null and TO_GRP_DEPOSIT_BAL != emptyBigDecimalValue" >
+        TO_GRP_DEPOSIT_BAL,
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        MARGIN_RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CLUBBING_CODE != null and CLUBBING_CODE != emptyBigDecimalValue" >
+        #{CLUBBING_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="FR_GRP_DEPOSIT_BAL != null and FR_GRP_DEPOSIT_BAL != emptyBigDecimalValue" >
+        #{FR_GRP_DEPOSIT_BAL},
+      </if>
+      <if test="TO_GRP_DEPOSIT_BAL != null and TO_GRP_DEPOSIT_BAL != emptyBigDecimalValue" >
+        #{TO_GRP_DEPOSIT_BAL},
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        #{MARGIN_RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateACC_CLUBBING_FIN_RATE" >
+    update ACC_CLUBBING_FIN_RATE
+    <set >
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FR_GRP_DEPOSIT_BAL != null" >
+        <choose >
+          <when test="FR_GRP_DEPOSIT_BAL == emptyBigDecimalValue" >
+            FR_GRP_DEPOSIT_BAL = NULL ,
+          </when>
+          <otherwise >
+            FR_GRP_DEPOSIT_BAL = #{FR_GRP_DEPOSIT_BAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_GRP_DEPOSIT_BAL != null" >
+        <choose >
+          <when test="TO_GRP_DEPOSIT_BAL == emptyBigDecimalValue" >
+            TO_GRP_DEPOSIT_BAL = NULL ,
+          </when>
+          <otherwise >
+            TO_GRP_DEPOSIT_BAL = #{TO_GRP_DEPOSIT_BAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MARGIN_RATE != null" >
+        <choose >
+          <when test="MARGIN_RATE == emptyBigDecimalValue" >
+            MARGIN_RATE = NULL ,
+          </when>
+          <otherwise >
+            MARGIN_RATE = #{MARGIN_RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CLUBBING_CODE = #{CLUBBING_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateACC_CLUBBING_FIN_RATE" parameterType="com.path.dbmaps.vo.ACC_CLUBBING_FIN_RATEVO" >
+    <include refid="sql_updateACC_CLUBBING_FIN_RATE" />
+  </update>
+</mapper>

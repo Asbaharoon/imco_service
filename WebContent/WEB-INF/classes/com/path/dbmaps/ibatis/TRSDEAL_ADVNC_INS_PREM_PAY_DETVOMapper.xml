@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_ADVNC_INS_PREM_PAY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_ADVNC_INS_PREM_PAY_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="RENEWED_YN" property="RENEWED_YN" />
+    <result column="RENEWAL_DATE" property="RENEWAL_DATE" />
+    <result column="PREMIUM_PERCENTAGE" property="PREMIUM_PERCENTAGE" />
+    <result column="PREMIUM_AMOUNT" property="PREMIUM_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, SERIAL_NO, RENEWED_YN, RENEWAL_DATE, PREMIUM_PERCENTAGE, 
+    PREMIUM_AMOUNT
+  </sql>
+  <select id="selectTRSDEAL_ADVNC_INS_PREM_PAY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_ADVNC_INS_PREM_PAY_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_ADVNC_INS_PREM_PAY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_ADVNC_INS_PREM_PAY_DET" parameterType="com.path.dbmaps.vo.TRSDEAL_ADVNC_INS_PREM_PAY_DETVOKey" >
+    delete from TRSDEAL_ADVNC_INS_PREM_PAY_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_ADVNC_INS_PREM_PAY_DET" parameterType="com.path.dbmaps.vo.TRSDEAL_ADVNC_INS_PREM_PAY_DETVO" >
+    insert into TRSDEAL_ADVNC_INS_PREM_PAY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="RENEWED_YN != null and !&quot;&quot;.equals(RENEWED_YN)" >
+        RENEWED_YN,
+      </if>
+      <if test="RENEWAL_DATE != null" >
+        RENEWAL_DATE,
+      </if>
+      <if test="PREMIUM_PERCENTAGE != null and PREMIUM_PERCENTAGE != emptyBigDecimalValue" >
+        PREMIUM_PERCENTAGE,
+      </if>
+      <if test="PREMIUM_AMOUNT != null and PREMIUM_AMOUNT != emptyBigDecimalValue" >
+        PREMIUM_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="RENEWED_YN != null" >
+        #{RENEWED_YN},
+      </if>
+      <if test="RENEWAL_DATE != null" >
+        #{RENEWAL_DATE},
+      </if>
+      <if test="PREMIUM_PERCENTAGE != null and PREMIUM_PERCENTAGE != emptyBigDecimalValue" >
+        #{PREMIUM_PERCENTAGE},
+      </if>
+      <if test="PREMIUM_AMOUNT != null and PREMIUM_AMOUNT != emptyBigDecimalValue" >
+        #{PREMIUM_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_ADVNC_INS_PREM_PAY_DET" >
+    update TRSDEAL_ADVNC_INS_PREM_PAY_DET
+    <set >
+      <if test="RENEWED_YN != null" >
+            RENEWED_YN = #{RENEWED_YN},
+      </if>
+      <if test="RENEWAL_DATE != null" >
+        RENEWAL_DATE = #{RENEWAL_DATE},
+      </if>
+      <if test="PREMIUM_PERCENTAGE != null" >
+        <choose >
+          <when test="PREMIUM_PERCENTAGE == emptyBigDecimalValue" >
+            PREMIUM_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PREMIUM_PERCENTAGE = #{PREMIUM_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PREMIUM_AMOUNT != null" >
+        <choose >
+          <when test="PREMIUM_AMOUNT == emptyBigDecimalValue" >
+            PREMIUM_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            PREMIUM_AMOUNT = #{PREMIUM_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_ADVNC_INS_PREM_PAY_DET" parameterType="com.path.dbmaps.vo.TRSDEAL_ADVNC_INS_PREM_PAY_DETVO" >
+    <include refid="sql_updateTRSDEAL_ADVNC_INS_PREM_PAY_DET" />
+  </update>
+</mapper>

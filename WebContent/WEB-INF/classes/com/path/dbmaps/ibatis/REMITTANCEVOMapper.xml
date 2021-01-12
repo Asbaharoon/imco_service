@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="REMITTANCE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.REMITTANCEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="REMITTANCE_TYPE" property="REMITTANCE_TYPE" />
+    <result column="STOCK_GL" property="STOCK_GL" />
+    <result column="STOCK_CIF" property="STOCK_CIF" />
+    <result column="STOCK_SL" property="STOCK_SL" />
+    <result column="CONTRA_GL" property="CONTRA_GL" />
+    <result column="CONTRA_CIF" property="CONTRA_CIF" />
+    <result column="CONTRA_SL" property="CONTRA_SL" />
+    <result column="BY_COMP_OR_BRANCH" property="BY_COMP_OR_BRANCH" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="DEDUCT_STAMP_DUTY" property="DEDUCT_STAMP_DUTY" />
+    <result column="PAYABLE_CIF" property="PAYABLE_CIF" />
+    <result column="PAYABLE_GL" property="PAYABLE_GL" />
+    <result column="PAYABLE_SL" property="PAYABLE_SL" />
+    <result column="PREPAID_CIF" property="PREPAID_CIF" />
+    <result column="PREPAID_GL" property="PREPAID_GL" />
+    <result column="PREPAID_SL" property="PREPAID_SL" />
+    <result column="PREDEFINED_VALUE" property="PREDEFINED_VALUE" />
+    <result column="DENOMINATION" property="DENOMINATION" />
+    <result column="PRIZE_BOND_TYPE_LIST" property="PRIZE_BOND_TYPE_LIST" />
+    <result column="SHUT_PERIOD_VAL" property="SHUT_PERIOD_VAL" />
+    <result column="SHUT_PERIOD_TYPE_LIST" property="SHUT_PERIOD_TYPE_LIST" />
+    <result column="DRAW_DATE" property="DRAW_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ARAB, 
+    REMITTANCE_TYPE, STOCK_GL, STOCK_CIF, STOCK_SL, CONTRA_GL, CONTRA_CIF, CONTRA_SL, 
+    BY_COMP_OR_BRANCH, AMOUNT, DEDUCT_STAMP_DUTY, PAYABLE_CIF, PAYABLE_GL, PAYABLE_SL, 
+    PREPAID_CIF, PREPAID_GL, PREPAID_SL, PREDEFINED_VALUE, DENOMINATION, PRIZE_BOND_TYPE_LIST, 
+    SHUT_PERIOD_VAL, SHUT_PERIOD_TYPE_LIST, DRAW_DATE
+  </sql>
+  <select id="selectREMITTANCE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.REMITTANCEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from REMITTANCE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteREMITTANCE" parameterType="com.path.dbmaps.vo.REMITTANCEVOKey" >
+    delete from REMITTANCE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertREMITTANCE" parameterType="com.path.dbmaps.vo.REMITTANCEVO" >
+    insert into REMITTANCE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="REMITTANCE_TYPE != null" >
+        REMITTANCE_TYPE,
+      </if>
+      <if test="STOCK_GL != null and STOCK_GL != emptyBigDecimalValue" >
+        STOCK_GL,
+      </if>
+      <if test="STOCK_CIF != null and STOCK_CIF != emptyBigDecimalValue" >
+        STOCK_CIF,
+      </if>
+      <if test="STOCK_SL != null and STOCK_SL != emptyBigDecimalValue" >
+        STOCK_SL,
+      </if>
+      <if test="CONTRA_GL != null and CONTRA_GL != emptyBigDecimalValue" >
+        CONTRA_GL,
+      </if>
+      <if test="CONTRA_CIF != null and CONTRA_CIF != emptyBigDecimalValue" >
+        CONTRA_CIF,
+      </if>
+      <if test="CONTRA_SL != null and CONTRA_SL != emptyBigDecimalValue" >
+        CONTRA_SL,
+      </if>
+      <if test="BY_COMP_OR_BRANCH != null" >
+        BY_COMP_OR_BRANCH,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="DEDUCT_STAMP_DUTY != null" >
+        DEDUCT_STAMP_DUTY,
+      </if>
+      <if test="PAYABLE_CIF != null and PAYABLE_CIF != emptyBigDecimalValue" >
+        PAYABLE_CIF,
+      </if>
+      <if test="PAYABLE_GL != null and PAYABLE_GL != emptyBigDecimalValue" >
+        PAYABLE_GL,
+      </if>
+      <if test="PAYABLE_SL != null and PAYABLE_SL != emptyBigDecimalValue" >
+        PAYABLE_SL,
+      </if>
+      <if test="PREPAID_CIF != null and PREPAID_CIF != emptyBigDecimalValue" >
+        PREPAID_CIF,
+      </if>
+      <if test="PREPAID_GL != null and PREPAID_GL != emptyBigDecimalValue" >
+        PREPAID_GL,
+      </if>
+      <if test="PREPAID_SL != null and PREPAID_SL != emptyBigDecimalValue" >
+        PREPAID_SL,
+      </if>
+      <if test="PREDEFINED_VALUE != null" >
+        PREDEFINED_VALUE,
+      </if>
+      <if test="DENOMINATION != null and DENOMINATION != emptyBigDecimalValue" >
+        DENOMINATION,
+      </if>
+      <if test="PRIZE_BOND_TYPE_LIST != null and !&quot;&quot;.equals(PRIZE_BOND_TYPE_LIST)" >
+        PRIZE_BOND_TYPE_LIST,
+      </if>
+      <if test="SHUT_PERIOD_VAL != null and SHUT_PERIOD_VAL != emptyBigDecimalValue" >
+        SHUT_PERIOD_VAL,
+      </if>
+      <if test="SHUT_PERIOD_TYPE_LIST != null and !&quot;&quot;.equals(SHUT_PERIOD_TYPE_LIST)" >
+        SHUT_PERIOD_TYPE_LIST,
+      </if>
+      <if test="DRAW_DATE != null" >
+        DRAW_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="REMITTANCE_TYPE != null" >
+        #{REMITTANCE_TYPE},
+      </if>
+      <if test="STOCK_GL != null and STOCK_GL != emptyBigDecimalValue" >
+        #{STOCK_GL},
+      </if>
+      <if test="STOCK_CIF != null and STOCK_CIF != emptyBigDecimalValue" >
+        #{STOCK_CIF},
+      </if>
+      <if test="STOCK_SL != null and STOCK_SL != emptyBigDecimalValue" >
+        #{STOCK_SL},
+      </if>
+      <if test="CONTRA_GL != null and CONTRA_GL != emptyBigDecimalValue" >
+        #{CONTRA_GL},
+      </if>
+      <if test="CONTRA_CIF != null and CONTRA_CIF != emptyBigDecimalValue" >
+        #{CONTRA_CIF},
+      </if>
+      <if test="CONTRA_SL != null and CONTRA_SL != emptyBigDecimalValue" >
+        #{CONTRA_SL},
+      </if>
+      <if test="BY_COMP_OR_BRANCH != null" >
+        #{BY_COMP_OR_BRANCH},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="DEDUCT_STAMP_DUTY != null" >
+        #{DEDUCT_STAMP_DUTY},
+      </if>
+      <if test="PAYABLE_CIF != null and PAYABLE_CIF != emptyBigDecimalValue" >
+        #{PAYABLE_CIF},
+      </if>
+      <if test="PAYABLE_GL != null and PAYABLE_GL != emptyBigDecimalValue" >
+        #{PAYABLE_GL},
+      </if>
+      <if test="PAYABLE_SL != null and PAYABLE_SL != emptyBigDecimalValue" >
+        #{PAYABLE_SL},
+      </if>
+      <if test="PREPAID_CIF != null and PREPAID_CIF != emptyBigDecimalValue" >
+        #{PREPAID_CIF},
+      </if>
+      <if test="PREPAID_GL != null and PREPAID_GL != emptyBigDecimalValue" >
+        #{PREPAID_GL},
+      </if>
+      <if test="PREPAID_SL != null and PREPAID_SL != emptyBigDecimalValue" >
+        #{PREPAID_SL},
+      </if>
+      <if test="PREDEFINED_VALUE != null" >
+        #{PREDEFINED_VALUE},
+      </if>
+      <if test="DENOMINATION != null and DENOMINATION != emptyBigDecimalValue" >
+        #{DENOMINATION},
+      </if>
+      <if test="PRIZE_BOND_TYPE_LIST != null and !&quot;&quot;.equals(PRIZE_BOND_TYPE_LIST)" >
+        #{PRIZE_BOND_TYPE_LIST},
+      </if>
+      <if test="SHUT_PERIOD_VAL != null and SHUT_PERIOD_VAL != emptyBigDecimalValue" >
+        #{SHUT_PERIOD_VAL},
+      </if>
+      <if test="SHUT_PERIOD_TYPE_LIST != null and !&quot;&quot;.equals(SHUT_PERIOD_TYPE_LIST)" >
+        #{SHUT_PERIOD_TYPE_LIST},
+      </if>
+      <if test="DRAW_DATE != null" >
+        #{DRAW_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateREMITTANCE" >
+    update REMITTANCE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="REMITTANCE_TYPE != null" >
+        REMITTANCE_TYPE = #{REMITTANCE_TYPE},
+      </if>
+      <if test="STOCK_GL != null" >
+        <choose >
+          <when test="STOCK_GL == emptyBigDecimalValue" >
+            STOCK_GL = NULL ,
+          </when>
+          <otherwise >
+            STOCK_GL = #{STOCK_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STOCK_CIF != null" >
+        <choose >
+          <when test="STOCK_CIF == emptyBigDecimalValue" >
+            STOCK_CIF = NULL ,
+          </when>
+          <otherwise >
+            STOCK_CIF = #{STOCK_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STOCK_SL != null" >
+        <choose >
+          <when test="STOCK_SL == emptyBigDecimalValue" >
+            STOCK_SL = NULL ,
+          </when>
+          <otherwise >
+            STOCK_SL = #{STOCK_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_GL != null" >
+        <choose >
+          <when test="CONTRA_GL == emptyBigDecimalValue" >
+            CONTRA_GL = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_GL = #{CONTRA_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_CIF != null" >
+        <choose >
+          <when test="CONTRA_CIF == emptyBigDecimalValue" >
+            CONTRA_CIF = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_CIF = #{CONTRA_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CONTRA_SL != null" >
+        <choose >
+          <when test="CONTRA_SL == emptyBigDecimalValue" >
+            CONTRA_SL = NULL ,
+          </when>
+          <otherwise >
+            CONTRA_SL = #{CONTRA_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BY_COMP_OR_BRANCH != null" >
+        BY_COMP_OR_BRANCH = #{BY_COMP_OR_BRANCH},
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEDUCT_STAMP_DUTY != null" >
+        DEDUCT_STAMP_DUTY = #{DEDUCT_STAMP_DUTY},
+      </if>
+      <if test="PAYABLE_CIF != null" >
+        <choose >
+          <when test="PAYABLE_CIF == emptyBigDecimalValue" >
+            PAYABLE_CIF = NULL ,
+          </when>
+          <otherwise >
+            PAYABLE_CIF = #{PAYABLE_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYABLE_GL != null" >
+        <choose >
+          <when test="PAYABLE_GL == emptyBigDecimalValue" >
+            PAYABLE_GL = NULL ,
+          </when>
+          <otherwise >
+            PAYABLE_GL = #{PAYABLE_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYABLE_SL != null" >
+        <choose >
+          <when test="PAYABLE_SL == emptyBigDecimalValue" >
+            PAYABLE_SL = NULL ,
+          </when>
+          <otherwise >
+            PAYABLE_SL = #{PAYABLE_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PREPAID_CIF != null" >
+        <choose >
+          <when test="PREPAID_CIF == emptyBigDecimalValue" >
+            PREPAID_CIF = NULL ,
+          </when>
+          <otherwise >
+            PREPAID_CIF = #{PREPAID_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PREPAID_GL != null" >
+        <choose >
+          <when test="PREPAID_GL == emptyBigDecimalValue" >
+            PREPAID_GL = NULL ,
+          </when>
+          <otherwise >
+            PREPAID_GL = #{PREPAID_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PREPAID_SL != null" >
+        <choose >
+          <when test="PREPAID_SL == emptyBigDecimalValue" >
+            PREPAID_SL = NULL ,
+          </when>
+          <otherwise >
+            PREPAID_SL = #{PREPAID_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PREDEFINED_VALUE != null" >
+        PREDEFINED_VALUE = #{PREDEFINED_VALUE},
+      </if>
+      <if test="DENOMINATION != null" >
+        <choose >
+          <when test="DENOMINATION == emptyBigDecimalValue" >
+            DENOMINATION = NULL ,
+          </when>
+          <otherwise >
+            DENOMINATION = #{DENOMINATION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRIZE_BOND_TYPE_LIST != null" >
+        <choose >
+          <when test="PRIZE_BOND_TYPE_LIST.equals(&quot;&quot;)" >
+            PRIZE_BOND_TYPE_LIST = NULL ,
+          </when>
+          <otherwise >
+            PRIZE_BOND_TYPE_LIST = #{PRIZE_BOND_TYPE_LIST},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHUT_PERIOD_VAL != null" >
+        <choose >
+          <when test="SHUT_PERIOD_VAL == emptyBigDecimalValue" >
+            SHUT_PERIOD_VAL = NULL ,
+          </when>
+          <otherwise >
+            SHUT_PERIOD_VAL = #{SHUT_PERIOD_VAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHUT_PERIOD_TYPE_LIST != null" >
+        <choose >
+          <when test="SHUT_PERIOD_TYPE_LIST.equals(&quot;&quot;)" >
+            SHUT_PERIOD_TYPE_LIST = NULL ,
+          </when>
+          <otherwise >
+            SHUT_PERIOD_TYPE_LIST = #{SHUT_PERIOD_TYPE_LIST},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DRAW_DATE != null" >
+        DRAW_DATE = #{DRAW_DATE},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateREMITTANCE" parameterType="com.path.dbmaps.vo.REMITTANCEVO" >
+    <include refid="sql_updateREMITTANCE" />
+  </update>
+</mapper>

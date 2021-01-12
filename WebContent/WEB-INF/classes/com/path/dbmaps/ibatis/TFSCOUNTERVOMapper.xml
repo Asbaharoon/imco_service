@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSCOUNTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSCOUNTERVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <id column="YEAR" property="YEAR" />
+    <result column="LAST_NUMBER" property="LAST_NUMBER" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, DOC_TYPE, TRX_TYPE, YEAR, LAST_NUMBER, DATE_UPDATED
+  </sql>
+  <select id="selectTFSCOUNTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSCOUNTERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+      and YEAR = #{YEAR}
+  </select>
+  <delete id="deleteTFSCOUNTER" parameterType="com.path.dbmaps.vo.TFSCOUNTERVO" >
+    delete from TFSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+      and YEAR = #{YEAR}
+  </delete>
+  <insert id="insertTFSCOUNTER" parameterType="com.path.dbmaps.vo.TFSCOUNTERVO" >
+    insert into TFSCOUNTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        YEAR,
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        LAST_NUMBER,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="YEAR != null and YEAR != emptyBigDecimalValue" >
+        #{YEAR},
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        #{LAST_NUMBER},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSCOUNTER" >
+    update TFSCOUNTER
+    <set >
+      <if test="LAST_NUMBER != null" >
+        <choose >
+          <when test="LAST_NUMBER == emptyBigDecimalValue" >
+            LAST_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LAST_NUMBER = #{LAST_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and TRX_TYPE = #{TRX_TYPE}
+      and YEAR = #{YEAR}
+  </sql>
+  <update id="updateTFSCOUNTER" parameterType="com.path.dbmaps.vo.TFSCOUNTERVO" >
+    <include refid="sql_updateTFSCOUNTER" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

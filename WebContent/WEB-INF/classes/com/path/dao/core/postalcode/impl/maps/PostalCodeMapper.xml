@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="postalCodeMapper">
+
+ <sql id="postalCodeListCommon" >
+		SELECT POSTAL_CODE.COMP_CODE,   
+	         POSTAL_CODE.FETCH_KEY,   
+	         POSTAL_CODE.REGION_CODE,   
+	         POSTAL_CODE.POST_CODE,   
+	         POSTAL_CODE.BRIEF_NAME_ENG,   
+	         POSTAL_CODE.LONG_NAME_ENG,   
+	         POSTAL_CODE.BRIEF_NAME_ARAB,   
+	         POSTAL_CODE.LONG_NAME_ARAB,   
+	         POSTAL_CODE.ADDITIONAL_REFERENCE,   
+	         POSTAL_CODE.COUNTRY_CODE  
+	    FROM POSTAL_CODE  
+	    WHERE (COMP_CODE   = #{compCode})
+	    <if test='"true".equals(filterByRegion) and region_code != null'>
+	    AND (REGION_CODE   = #{region_code})
+	    </if>
+	    <if test='country_code != null'>
+	    AND (COUNTRY_CODE  = #{country_code})
+	    </if>
+	 
+ </sql>
+ 
+  <sql id="postalCodeListCommonOrder" >
+	<![CDATA[
+     ORDER BY POSTAL_CODE.POST_CODE ASC 
+	]]>	 
+ </sql>
+ 
+ <resultMap id="postalCodeListMap" type="postalCodeVO">
+	<id property="POST_CODE" column="POST_CODE" />
+	<id property="REGION_CODE" column="REGION_CODE" />
+	<id property="COMP_CODE" column="COMP_CODE" />
+	<id property="COUNTRY_CODE" column="COUNTRY_CODE" />
+	<result property="FETCH_KEY" column="FETCH_KEY" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="postalCodeList" resultMap="postalCodeListMap" parameterType="postalCodeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="postalCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="postalCodeListCount" resultType="int" parameterType="postalCodeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="postalCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnPostalCodeById" parameterType="postalCodeSC" resultType="postalCodeVO">
+  		SELECT
+  		<if test="isSybase == 1">top 1 </if>
+			  POST_CODE,
+			  CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG
+		FROM  POSTAL_CODE
+		WHERE POSTAL_CODE.COMP_CODE       = #{compCode}
+		<if test='country_code != null'>
+		AND   POSTAL_CODE.COUNTRY_CODE    = #{country_code}
+		</if>
+		<if test='region_code != null'>
+		AND   POSTAL_CODE.REGION_CODE     = #{region_code}
+		</if>
+		AND   POSTAL_CODE.POST_CODE       = #{postal_code, jdbcType=VARCHAR}
+		<if test="isOracle == 1">AND  rownum = 1</if>
+  </select>
+
+</mapper>

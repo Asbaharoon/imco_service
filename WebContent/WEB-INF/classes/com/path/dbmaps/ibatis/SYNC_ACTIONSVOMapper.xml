@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_ACTIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_ACTIONSVO" >
+    <id column="ACTION" property="ACTION" />
+    <id column="BR_CODE" property="BR_CODE" />
+    <id column="PROCESS" property="PROCESS" />
+    <result column="TERMINAL" property="TERMINAL" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="SYNC_ID" property="SYNC_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACTION, BR_CODE, PROCESS, TERMINAL, USER_ID, SYNC_ID
+  </sql>
+  <select id="selectSYNC_ACTIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_ACTIONSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_ACTIONS
+    where ACTION = #{ACTION}
+      and BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </select>
+  <delete id="deleteSYNC_ACTIONS" parameterType="com.path.dbmaps.vo.SYNC_ACTIONSVOKey" >
+    delete from SYNC_ACTIONS
+    where ACTION = #{ACTION}
+      and BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </delete>
+  <insert id="insertSYNC_ACTIONS" parameterType="com.path.dbmaps.vo.SYNC_ACTIONSVO" >
+    insert into SYNC_ACTIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACTION != null" >
+        ACTION,
+      </if>
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        BR_CODE,
+      </if>
+      <if test="PROCESS != null" >
+        PROCESS,
+      </if>
+      <if test="TERMINAL != null" >
+        TERMINAL,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="SYNC_ID != null and SYNC_ID != emptyBigDecimalValue" >
+        SYNC_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACTION != null" >
+        #{ACTION},
+      </if>
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        #{BR_CODE},
+      </if>
+      <if test="PROCESS != null" >
+        #{PROCESS},
+      </if>
+      <if test="TERMINAL != null" >
+        #{TERMINAL},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="SYNC_ID != null and SYNC_ID != emptyBigDecimalValue" >
+        #{SYNC_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_ACTIONS" >
+    update SYNC_ACTIONS
+    <set >
+      <if test="TERMINAL != null" >
+        TERMINAL = #{TERMINAL},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="SYNC_ID != null" >
+        <choose >
+          <when test="SYNC_ID == emptyBigDecimalValue" >
+            SYNC_ID = NULL ,
+          </when>
+          <otherwise >
+            SYNC_ID = #{SYNC_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ACTION = #{ACTION}
+      and BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </sql>
+  <update id="updateSYNC_ACTIONS" parameterType="com.path.dbmaps.vo.SYNC_ACTIONSVO" >
+    <include refid="sql_updateSYNC_ACTIONS" />
+  </update>
+</mapper>

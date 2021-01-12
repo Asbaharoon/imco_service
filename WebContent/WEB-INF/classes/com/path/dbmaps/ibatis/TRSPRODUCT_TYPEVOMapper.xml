@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPRODUCT_TYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPRODUCT_TYPEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="LIMIT_FACTOR" property="LIMIT_FACTOR" />
+    <result column="FUNDED_DEAL" property="FUNDED_DEAL" />
+    <result column="LINK_TRADE_DEAL" property="LINK_TRADE_DEAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, TYPE_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    LIMIT_FACTOR, FUNDED_DEAL, LINK_TRADE_DEAL
+  </sql>
+  <select id="selectTRSPRODUCT_TYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPRODUCT_TYPEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPRODUCT_TYPE
+    where COMP_CODE = #{COMP_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </select>
+  <delete id="deleteTRSPRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TRSPRODUCT_TYPEVOKey" >
+    delete from TRSPRODUCT_TYPE
+    where COMP_CODE = #{COMP_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </delete>
+  <insert id="insertTRSPRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TRSPRODUCT_TYPEVO" >
+    insert into TRSPRODUCT_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="LIMIT_FACTOR != null and LIMIT_FACTOR != emptyBigDecimalValue" >
+        LIMIT_FACTOR,
+      </if>
+      <if test="FUNDED_DEAL != null" >
+        FUNDED_DEAL,
+      </if>
+      <if test="LINK_TRADE_DEAL != null and LINK_TRADE_DEAL != emptyBigDecimalValue" >
+        LINK_TRADE_DEAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="LIMIT_FACTOR != null and LIMIT_FACTOR != emptyBigDecimalValue" >
+        #{LIMIT_FACTOR},
+      </if>
+      <if test="FUNDED_DEAL != null" >
+        #{FUNDED_DEAL},
+      </if>
+      <if test="LINK_TRADE_DEAL != null and LINK_TRADE_DEAL != emptyBigDecimalValue" >
+        #{LINK_TRADE_DEAL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPRODUCT_TYPE" >
+    update TRSPRODUCT_TYPE
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="LIMIT_FACTOR != null" >
+        <choose >
+          <when test="LIMIT_FACTOR == emptyBigDecimalValue" >
+            LIMIT_FACTOR = NULL ,
+          </when>
+          <otherwise >
+            LIMIT_FACTOR = #{LIMIT_FACTOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUNDED_DEAL != null" >
+        FUNDED_DEAL = #{FUNDED_DEAL},
+      </if>
+      <if test="LINK_TRADE_DEAL != null" >
+        <choose >
+          <when test="LINK_TRADE_DEAL == emptyBigDecimalValue" >
+            LINK_TRADE_DEAL = NULL ,
+          </when>
+          <otherwise >
+            LINK_TRADE_DEAL = #{LINK_TRADE_DEAL},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and TYPE_CODE = #{TYPE_CODE}
+  </sql>
+  <update id="updateTRSPRODUCT_TYPE" parameterType="com.path.dbmaps.vo.TRSPRODUCT_TYPEVO" >
+    <include refid="sql_updateTRSPRODUCT_TYPE" />
+  </update>
+</mapper>

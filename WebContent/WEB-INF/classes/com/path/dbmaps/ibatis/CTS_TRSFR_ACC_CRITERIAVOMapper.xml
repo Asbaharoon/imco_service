@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_TRSFR_ACC_CRITERIA" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_TRSFR_ACC_CRITERIAVO" >
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CRITERIA_LINE_NO" property="CRITERIA_LINE_NO" />
+    <result column="EXCEPTION_FACTOR" property="EXCEPTION_FACTOR" />
+    <result column="CRITERIA_VALUE" property="CRITERIA_VALUE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_NO, COMP_CODE, CRITERIA_LINE_NO, EXCEPTION_FACTOR, CRITERIA_VALUE, DATE_UPDATED
+  </sql>
+  <select id="selectCTS_TRSFR_ACC_CRITERIA" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_CRITERIAVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_TRSFR_ACC_CRITERIA
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CRITERIA_LINE_NO = #{CRITERIA_LINE_NO}
+  </select>
+  <delete id="deleteCTS_TRSFR_ACC_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_CRITERIAVOKey" >
+    delete from CTS_TRSFR_ACC_CRITERIA
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CRITERIA_LINE_NO = #{CRITERIA_LINE_NO}
+  </delete>
+  <insert id="insertCTS_TRSFR_ACC_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_CRITERIAVO" >
+    insert into CTS_TRSFR_ACC_CRITERIA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CRITERIA_LINE_NO != null and CRITERIA_LINE_NO != emptyBigDecimalValue" >
+        CRITERIA_LINE_NO,
+      </if>
+      <if test="EXCEPTION_FACTOR != null" >
+        EXCEPTION_FACTOR,
+      </if>
+      <if test="CRITERIA_VALUE != null" >
+        CRITERIA_VALUE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CRITERIA_LINE_NO != null and CRITERIA_LINE_NO != emptyBigDecimalValue" >
+        #{CRITERIA_LINE_NO},
+      </if>
+      <if test="EXCEPTION_FACTOR != null" >
+        #{EXCEPTION_FACTOR},
+      </if>
+      <if test="CRITERIA_VALUE != null " >
+        #{CRITERIA_VALUE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_TRSFR_ACC_CRITERIA" >
+    update CTS_TRSFR_ACC_CRITERIA
+    <set >
+      <if test="EXCEPTION_FACTOR != null" >
+        EXCEPTION_FACTOR = #{EXCEPTION_FACTOR},
+      </if>
+      <if test="CRITERIA_VALUE != null" >
+            CRITERIA_VALUE = #{CRITERIA_VALUE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CRITERIA_LINE_NO = #{CRITERIA_LINE_NO}
+  </sql>
+  <update id="updateCTS_TRSFR_ACC_CRITERIA" parameterType="com.path.dbmaps.vo.CTS_TRSFR_ACC_CRITERIAVO" >
+    <include refid="sql_updateCTS_TRSFR_ACC_CRITERIA" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

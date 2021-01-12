@@ -1,0 +1,1318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<!DOCTYPE
+ mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+	>
+<mapper namespace="financingDealsMapper">
+	<resultMap id="financingDealStatusCriteriaCOMap" type="financingDealStatusCriteriaCO">
+		<result property="maturityDate" column="MATURITY_DATE"/>
+		<result property="dealType" column="DEAL_TYPE"/>
+		<result property="status" column="STATUS"/>
+		<result property="matRecInsNbr" column="MAT_REC_INS_NBR"/>
+		<result property="matPaymentInsNbr" column="MAT_PAYMENT_INS_NBR"/>
+		<result property="activeSettlementCount" column="ACTIVE_SETTLEMENT_COUNT"/>
+		<result property="apprSettlmentAmt" column="APPROVED_SETTLMENT_AMOUNT"/>
+		<result property="overdueAmt" column="OVERDUE_AMOUNT"/>
+		<result property="settledAmtBeforeSwitching" column="SETTLED_AMT_BEFORE_SWITCHING"/>
+		<result property="reimbursedProfit" column="REIMBURSED_PROFIT"/>
+		<result property="totalAmt" column="TOTAL_AMT"/>
+		<result property="totalAmtPaid" column="TOTAL_AMT_PAID"/>
+	</resultMap>
+	<resultMap id="financingDealsCollateralCOMap" type="financingDealsCollateralCO">
+		<result property="trsCollateralDetVO.COLLATERAL_BRANCH" column="COLLATERAL_BRANCH"/>
+		<result property="trsCollateralDetVO.COLLATERAL_NO" column="COLLATERAL_NO"/>
+		<result property="fmsCollateralVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+		<result property="fmsCollateralVO.CURRENCY" column="CURRENCY"/>
+		<result property="fmsCollateralVO.TYPE" column="TYPE"/>
+		<result property="fmsCollateralVO.APPL_REF" column="APPL_REF"/>
+		<result property="fmsCollateralVO.FACILITY_COVERAGE" column="FACILITY_COVERAGE"/>
+		<result property="fmsCollateralVO.LEVERAGE_RATIO" column="LEVERAGE_RATIO"/>
+		<result property="fmsCollateralVO.APPROVED_COVERAGE" column="APPROVED_COVERAGE"/>
+		<result property="fmsCollateralVO.ACCEPT_VALUE" column="ACCEPT_VALUE"/>
+		<result property="fmsCollateralVO.MARKET_VALUE" column="MARKET_VALUE"/>
+		<result property="fmsCollateralVO.ACTUAL_ALLOCATED" column="ACTUAL_ALLOCATED"/>
+		<result property="trsCollateralDetVO.DEAL_ALLOCATED" column="DEAL_ALLOCATED"/>
+		<result property="collateralType" column="ASSET_TYPE"/>
+		<result property="currDecimalPoints" column="DECIMAL_POINTS"/>
+	</resultMap>
+	<resultMap id="financingDealsGuarantorCOMap" type="financingDealsGuarantorCO">
+		<result property="trsDealGuarantorVO.SERIAL_NO" column="SERIAL_NO"/>
+		<result property="trsDealGuarantorVO.ORDER_NUMBER" column="ORDER_NUMBER"/>
+		<result property="trsDealGuarantorVO.ACC_BRANCH" column="ACC_BRANCH"/>
+		<result property="trsDealGuarantorVO.ACC_CURRENCY" column="ACC_CURRENCY"/>
+		<result property="trsDealGuarantorVO.ACC_CIF_NO" column="ACC_CIF_NO"/>
+		<result property="trsDealGuarantorVO.ACC_GL_CODE" column="ACC_GL_CODE"/>
+		<result property="trsDealGuarantorVO.ACC_SL_NO" column="ACC_SL_NO"/>
+		<result property="trsDealGuarantorVO.GUARANTOR_CIF" column="GUARANTOR_CIF"/>
+		<result property="guarantorName" column="GUARANTOR_NAME"/>
+		<result property="trsDealGuarantorVO.AMOUNT_WITH_COMPANY" column="AMOUNT_WITH_COMPANY"/>
+		<result property="trsDealGuarantorVO.GUARANTOR_AMOUNT" column="GUARANTOR_AMOUNT"/>
+		<result property="trsDealGuarantorVO.AMOUNT_WITH_CLIENT" column="AMOUNT_WITH_CLIENT"/>
+		<result property="currDecimalPoints" column="DEC_POINTS"/>
+		<result property="accName" column="ACCOUNT_DESC"/>
+	</resultMap>
+	<resultMap id="productClassCOMap" type="productClassDealsCO">
+		<result property="trsClassVO.CODE" column="CODE"/>
+		<result property="trsClassVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+		<result property="trsClassVO.LONG_NAME_ENG" column="LONG_NAME_ENG"/>
+		<result property="trsClassVO.BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB"/>
+		<result property="trsClassVO.LONG_NAME_ARAB" column="LONG_NAME_ARAB"/>
+		<result property="amount" column="AMOUNT"/>
+		<result property="decimalPoints" column="DECIMAL_POINTS"/>
+	</resultMap>
+	<resultMap id="financingDealsRepaymentPlanCOMap" type="financingDealRepaymentPlanCO">
+		<result property="trsPayPlanVO.PLAN_NBR" column="PLAN_NBR"/>
+		<result property="trsPayPlanVO.PLAN_SEQ" column="PLAN_SEQ"/>
+		<result property="trsPayPlanVO.TRX_TYPE" column="TRX_TYPE"/>
+		<result property="trsPayPlanVO.TRX_NBR" column="TRX_NBR"/>
+		<result property="trsPayPlanVO.TOTAL_AMT" column="TOTAL_AMT"/>
+		<result property="trsPayPlanVO.TOTAL_AMT_PAID" column="TOTAL_AMT_PAID"/>
+		<result property="trsPayPlanVO.CURRENCY" column="CURRENCY"/>
+		<result property="trsPayPlanVO.NO_OF_PAYMENTS" column="NO_OF_PAYMENTS"/>
+		<result property="trsPayPlanVO.AMT_PER_PAYMENT" column="AMT_PER_PAYMENT"/>
+		<result property="currBriefDescEng" column="BRIEF_DESC_ENG"/>
+		<result property="currDecimalPoints" column="DECIMAL_POINTS"/>
+		<result property="activeSettlementAmt" column="ACTIVE_SETTL_AMT"/>
+		<result property="cifName" column="cifName"/>
+	</resultMap>
+	<resultMap id="financingDealsRepaymentPlanDtlsCOMap" type="financingDealRepaymentPlanCO">
+		<result property="trsPayPlanDetVO.LINE_NBR" column="LINE_NBR"/>
+		<result property="trsPayPlanDetVO.VALUE_DATE" column="VALUE_DATE"/>
+		<result property="paymentType" column="PAYMENT_TYPE"/>
+		<result property="amount" column="AMOUNT"/>
+		<result property="trsPayPlanDetVO.CAPITAL_AMT_BEFORE_XIRR" column="CAPITAL_AMT_BEFORE_XIRR"/>
+		<result property="trsPayPlanDetVO.CAPITAL_AMT" column="CAPITAL_AMT"/>
+		<result property="trsPayPlanDetVO.PROFIT_AMT_BEFORE_XIRR" column="PROFIT_AMT_BEFORE_XIRR"/>
+		<result property="profitAmt" column="PROFIT_AMT"/>
+		<result property="trsPayPlanDetVO.BALLOON_PAYMENT" column="BALLOON_PAYMENT"/>
+		<result property="dateSettled" column="DATE_SETTLED"/>
+		<result property="settlementAmount" column="SETTLEMENT_AMOUNT"/>
+		<result property="currDecimalPoints" column="DECIMAL_POINTS"/>
+		<result property="approvedSettlement" column="APPROVED_SETTLMT"/>
+		<result property="trsPayPlanDetVO.RESERVE_AMOUNT" column="RESERVE_AMOUNT"/>
+		<result property="trsPayPlanDetVO.REIMBURSED_PROFIT" column="REIMBURSED_PROFIT"/>
+		<result property="cfIncidentCost" column="CF_INCIDENT_COST"/>
+		<result property="advInsuranceAmt" column="ADVANCE_INSURANCE_AMOUNT"/>
+		<result property="dealStatus" column="cf_deal_sts"/>
+		<result property="trsPayPlanDetVO.ACC_BR" column="ACC_BR"/>
+		<result property="trsPayPlanDetVO.ACC_CY" column="ACC_CY"/>
+		<result property="trsPayPlanDetVO.ACC_GL" column="ACC_GL"/>
+		<result property="trsPayPlanDetVO.ACC_CIF" column="ACC_CIF"/>
+		<result property="trsPayPlanDetVO.ACC_SL" column="ACC_SL"/>
+		<result property="accountName" column="ACC_NAME"/>
+		<result property="trsPayPlanDetVO.COVERING_ACC_BR" column="COVERING_ACC_BR"/>
+		<result property="trsPayPlanDetVO.COVERING_ACC_CY" column="COVERING_ACC_CY"/>
+		<result property="trsPayPlanDetVO.COVERING_ACC_GL" column="COVERING_ACC_GL"/>
+		<result property="trsPayPlanDetVO.COVERING_ACC_CIF" column="COVERING_ACC_CIF"/>
+		<result property="trsPayPlanDetVO.COVERING_ACC_SL" column="COVERING_ACC_SL"/>
+		<result property="coveringAccountName" column="COVERING_ACC_NAME"/>
+		<result property="trsPayPlanDetVO.SETTLED_VAT_AMT" column="SETTLED_VAT_AMT"/>
+	</resultMap>
+	<resultMap id="financingDealsLimitUtilizationCOMap" type="financingDealsLimitUtilizationCO">
+		<result property="globalLimit" column="GLOBAL_LIMIT"/>
+		<result property="utilizedAmt" column="LIMIT_UTILIZED"/>
+		<result property="outstandingAmt" column="OUTSTANDING_AMOUNT"/>
+		<result property="currency" column="LIMIT_CY"/>
+		<result property="currencyDesc" column="BRIEF_DESC_ENG"/>
+		<result property="decimalPoints" column="DECIMAL_POINTS"/>
+	</resultMap>
+	<resultMap id="financingDealsDetailsCOMap" type="financingDealDetailsCO">
+		<result property="trsDealVO.SERIAL_NO" column="SERIAL_NO"/>
+		<result property="trsDealVO.STATUS" column="TRSDEAL_STATUS"/>
+		<result property="trsDealVO.DEAL_DATE" column="DEAL_DATE"/>
+		<result property="trsDealVO.DEAL_CY" column="DEAL_CY"/>
+		<result property="trsDealVO.DEAL_RATE" column="DEAL_RATE"/>
+		<result property="trsDealVO.DEAL_UNIT" column="DEAL_UNIT"/>
+		<result property="trsDealVO.DEAL_MULTDIV" column="DEAL_MULTDIV"/>
+		<result property="trsDealVO.VALUE_DATE" column="VALUE_DATE"/>
+		<result property="trsDealVO.MATURITY_DATE" column="MATURITY_DATE"/>
+		<result property="trsDealVO.DEAL_EXPECTED_YIELD" column="DEAL_EXPECTED_YIELD"/>
+		<result property="trsDealVO.MINIMUM_YIELD" column="MINIMUM_YIELD"/>
+		<result property="trsDealVO.MGMT_PCNT" column="MGMT_PCNT"/>
+		<result property="trsDealVO.LIBOR_RATE" column="LIBOR_RATE"/>
+		<result property="trsDealVO.USER_ID" column="USER_ID"/>
+		<result property="trsDealVO.CIF_NO" column="CIF_NO"/>
+		<result property="trsDealVO.LINKED_DEAL_NO" column="LINKED_DEAL_NO"/>
+		<result property="trsDealVO.BRANCH_CODE" column="BRANCH_CODE"/>
+		<result property="trsDealVO.ECO_SECTOR" column="ECO_SECTOR"/>
+		<result property="trsDealVO.SUB_ECO_SECTOR" column="SUB_ECO_SECTOR"/>
+		<result property="prodBriefNameEng" column="PROD_BRIEF_NAME_ENG"/>
+		<result property="prodClassCode" column="PROD_CLASS_CODE"/>
+		<result property="dealAmt" column="DEAL_AMOUNT"/>
+		<result property="yield" column="YIELD"/>
+		<result property="currDecimalPoints" column="DECIMAL_POINTS"/>
+		<result property="currBriefDescEng" column="CURR_BRIEF_DESC_ENG"/>
+		<result property="cifLongNameEng" column="CIF_LONG_NAME_ENG"/>
+		<result property="branchBriefDescEng" column="BRANCH_BRIEF_DESC_ENG"/>
+		<result property="trsDealVO.DEAL_TYPE" column="DEAL_TYPE"/>
+		<result property="appName" column="TRSCLASS_APP_NAME"/>
+	</resultMap>
+	<resultMap id="financingDealsPromissoryCOMap" type="financingDealDetailsCO">
+		<result property="trsDealVO.SERIAL_NO" column="SERIAL_NO"/>
+		<result property="trsDealVO.DEAL_CY" column="DEAL_CY"/>
+		<result property="amount" column="AMOUNT"/>
+		<result property="valueDate" column="VALUE_DATE"/>
+		<result property="currDecimalPoints" column="DEAL_CURR_DEC_POINTS"/>
+		<result property="baseCurrDecPoint" column="BASE_CURR_DEC_POINTS"/>
+		<result property="fromFacility" column="FROM_FACILITY"/>
+		<result property="cvAmt" column="AMOUNT_CV"/>
+	</resultMap>
+	<select id="selectLimitUtilizationDetails" resultMap="financingDealsLimitUtilizationCOMap" parameterType="financingDealsSC">SELECT 
+SUM( TRSCIFLIMIT.LIMIT) GLOBAL_LIMIT,
+                                                SUM(CASE WHEN TRSCIFLIMIT. 
+LIMIT_UTILIZATION  IS NULL THEN 0 ELSE TRSCIFLIMIT.LIMIT_UTILIZATION END)  LIMIT_UTILIZED,
+                                                
+SUM( TRSCIFLIMIT.LIMIT)-SUM(CASE WHEN TRSCIFLIMIT. LIMIT_UTILIZATION  IS NULL THEN 0 ELSE TRSCIFLIMIT.LIMIT_UTILIZATION 
+END)  OUTSTANDING_AMOUNT,
+                                                TRSCIFLIMIT.LIMIT_CY,CURRENCIES.BRIEF_DESC_ENG,CURRENCIES.DECIMAL_POINTS  
+
+    FROM TRSCIFLIMIT,CURRENCIES  
+   WHERE ( TRSCIFLIMIT.COMP_CODE = #{compCode})   
+   AND  ((#{branchFilter} 
+= 'A' AND TRSCIFLIMIT.BRANCH_CODE = TRSCIFLIMIT.BRANCH_CODE)       
+   OR                       (#{branchFilter} 
+= 'S' AND TRSCIFLIMIT.BRANCH_CODE = #{branchCode}))  
+   AND   ( TRSCIFLIMIT.CIF = #{cifNo} ) AND TRSCIFLIMIT.COMP_CODE 
+= CURRENCIES.COMP_CODE
+   AND TRSCIFLIMIT.LIMIT_CY  = CURRENCIES.CURRENCY_CODE 
+   GROUP BY TRSCIFLIMIT.LIMIT_CY,CURRENCIES.BRIEF_DESC_ENG,CURRENCIES.DECIMAL_POINTS</select>
+	<select id="getProductClasses" resultMap="productClassCOMap" parameterType="financingDealsSC">
+		SELECT TRSCLASS.CODE,   
+       		   TRSCLASS.BRIEF_NAME_ENG,   
+       		   TRSCLASS.LONG_NAME_ENG,   
+
+               TRSCLASS.BRIEF_NAME_ARAB,   
+               TRSCLASS.LONG_NAME_ARAB,
+   		  SUM (
+    			
+CASE WHEN #{branchFilter} = 'B' THEN
+     				CASE WHEN TRSDEAL.DEAL_TYPE IN (2, 13) 
+      				THEN 
+TRSDEAL.DEAL_AMOUNT
+     				ELSE TRSPAYPLAN.TOTAL_AMT - (CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL 
+THEN 0 ELSE TRSPAYPLAN.TOTAL_AMT_PAID END)
+     				END
+    			ELSE
+     				CASE WHEN TRSDEAL.DEAL_TYPE 
+IN (1, 15) 
+      				THEN TRSDEAL.DEAL_AMOUNT
+     				WHEN TRSDEAL.DEAL_TYPE = 13
+      				THEN TRSDEAL.OTHER_AMOUNT
+     				
+ELSE TRSPAYPLAN.TOTAL_AMT - (CASE WHEN TRSPAYPLAN.TOTAL_AMT_PAID IS NULL THEN 0 ELSE TRSPAYPLAN.TOTAL_AMT_PAID 
+END)
+     				END
+    			END
+    			) AMOUNT,
+   				CIF.LONG_NAME_ENG,
+  				CURRENCIES.DECIMAL_POINTS
+				
+FROM   TRSCLASS, TRSDEAL, TRSPAYPLAN, CIF, CURRENCIES
+				WHERE  CIF.COMP_CODE = #{compCode}
+				AND  
+CIF.CIF_NO = #{cifNo}
+				AND  TRSCLASS.COMP_CODE = #{compCode}
+		<![CDATA[
+AND TRSDEAL.DEAL_TYPE <> 30 
+		]]>
+		AND    TRSCLASS.CODE = TRSDEAL.CLASS 
+				AND    TRSDEAL.COMP_CODE   =#{compCode}
+				AND    ((	#{branchFilter} 
+= 'A' AND TRSDEAL.BRANCH_CODE = TRSDEAL.BRANCH_CODE)       
+				OR    (	#{branchFilter} = 'S' AND TRSDEAL.BRANCH_CODE 
+= #{branchCode}))  
+				AND    TRSDEAL.CIF_NO      = #{cifNo}
+				AND    TRSDEAL.DEAL_CY     = #{dealCurrency}
+				
+AND    TRSDEAL.STATUS = 'P'
+				AND  (
+   					(
+    				TRSDEAL.DEAL_TYPE   IN (2, 19, 13, 23) AND
+    				
+#{dealType} = 'B' /*Assets*/
+   					)
+   				OR
+   					(
+    				TRSDEAL.DEAL_TYPE   NOT IN (2, 19, 
+17, 23) AND
+    				#{dealType} = 'L' /*Liabilities*/
+   					)
+   					)
+				AND    TRSPAYPLAN.COMP_CODE      
+= TRSDEAL.COMP_CODE
+				AND  TRSPAYPLAN.BRANCH    = TRSDEAL.BRANCH_CODE 
+				AND    ((#{branchFilter} 
+= 'A' AND TRSPAYPLAN.BRANCH = TRSPAYPLAN.BRANCH)       
+				OR    (	#{branchFilter} = 'S' AND TRSPAYPLAN.BRANCH 
+= #{branchCode}))
+				AND    TRSPAYPLAN.TRX_NBR      = TRSDEAL.SERIAL_NO 
+				AND  TRSPAYPLAN.STATUS      
+= 'P'
+				AND    CURRENCIES.COMP_CODE = #{compCode}
+				AND    CURRENCIES.CURRENCY_CODE = TRSDEAL.DEAL_CY
+				
+GROUP BY TRSCLASS.CODE,   
+       			TRSCLASS.BRIEF_NAME_ENG,   
+       			TRSCLASS.LONG_NAME_ENG,   
+
+       			TRSCLASS.BRIEF_NAME_ARAB,   
+       			TRSCLASS.LONG_NAME_ARAB,
+   				CIF.LONG_NAME_ENG,
+   				
+CURRENCIES.DECIMAL_POINTS
+	</select>
+	<sql id="sqlFinancingDealsByProduct">
+		SELECT TRSDEAL.SERIAL_NO,  
+                TRSCLASS.BRIEF_NAME_ENG PROD_BRIEF_NAME_ENG,
+                
+TRSCLASS.CODE PROD_CLASS_CODE,
+                TRSDEAL.STATUS TRSDEAL_STATUS,       
+                
+TRSDEAL.DEAL_DATE,
+                CASE WHEN #{dealType} = 'L' AND TRSDEAL.DEAL_TYPE = 13 THEN TRSDEAL.OTHER_CY 
+ELSE TRSDEAL.DEAL_CY END DEAL_CY,
+                CASE WHEN #{dealType} = 'L' AND TRSDEAL.DEAL_TYPE = 
+13 THEN TRSDEAL.OTHER_RATE ELSE TRSDEAL.DEAL_RATE END DEAL_RATE,
+                CASE WHEN #{dealType} 
+= 'L' AND TRSDEAL.DEAL_TYPE = 13 THEN TRSDEAL.OTHER_UNIT ELSE TRSDEAL.DEAL_UNIT END DEAL_UNIT,
+                
+CASE WHEN #{dealType} = 'L' AND TRSDEAL.DEAL_TYPE = 13 THEN TRSDEAL.OTHER_MULTDIV ELSE TRSDEAL.DEAL_MULTDIV 
+END DEAL_MULTDIV,
+                CASE WHEN #{dealType} = 'L' AND TRSDEAL.DEAL_TYPE = 13 THEN TRSDEAL.OTHER_AMOUNT 
+ELSE TRSDEAL.DEAL_AMOUNT END DEAL_AMOUNT,
+                TRSDEAL.VALUE_DATE,
+                TRSDEAL.MATURITY_DATE,
+                
+TRSDEAL.DEAL_EXPECTED_YIELD,
+                TRSDEAL.MINIMUM_YIELD,
+                CASE WHEN TRSCLASS.PROFIT_UPFRONT 
+= 'Y' THEN TRSDEAL.YIELD ELSE TRSDEAL.DEAL_EXPECTED_YIELD + CASE WHEN LIBOR_RATE IS NULL THEN 0 ELSE 
+LIBOR_RATE END END YIELD,
+                TRSDEAL.MGMT_PCNT,
+                TRSDEAL.LIBOR_RATE,
+                
+CURRENCIES.DECIMAL_POINTS,
+                CURRENCIES.BRIEF_DESC_ENG CURR_BRIEF_DESC_ENG,
+                
+CIF.LONG_NAME_ENG CIF_LONG_NAME_ENG,
+                BRANCHES.BRIEF_DESC_ENG BRANCH_BRIEF_DESC_ENG,
+                
+TRSDEAL.USER_ID,
+                TRSDEAL.CIF_NO,
+                TRSDEAL.LINKED_DEAL_NO,
+                
+TRSDEAL.BRANCH_CODE,   
+                ' ' COLOR_FLAG,
+                TRSDEAL.ECO_SECTOR,
+                
+TRSDEAL.SUB_ECO_SECTOR,
+                TRSDEAL.DEAL_TYPE,
+                TRSCLASS.APP_NAME TRSCLASS_APP_NAME
+FROM   
+TRSDEAL, CURRENCIES, TRSCLASS,CIF,BRANCHES
+		<if test='category.equals("I")'>,TRSDEAL_GUARANTOR</if>
+		WHERE   CIF.COMP_CODE            = TRSDEAL.COMP_CODE
+AND     CIF.CIF_NO                         = TRSDEAL.CIF_NO
+AND       TRSDEAL.COMP_CODE  = #{compCode}
+AND    ((#{branchFilter} = 'A' AND TRSDEAL.BRANCH_CODE = TRSDEAL.BRANCH_CODE)       
+OR                            (#{branchFilter} = 'S' AND TRSDEAL.BRANCH_CODE = #{branchCode}))
+		<choose>
+			<when test='category.equals("I")'>AND TRSDEAL.COMP_CODE 	= TRSDEAL_GUARANTOR.COMP_CODE
+					AND TRSDEAL.BRANCH_CODE = TRSDEAL_GUARANTOR.BRANCH_CODE
+				AND TRSDEAL.SERIAL_NO 	= TRSDEAL_GUARANTOR.SERIAL_NO
+				AND TRSDEAL_GUARANTOR.GUARANTOR_CIF = #{cifNo}</when>
+			<otherwise>AND    TRSDEAL.CIF_NO      = #{cifNo}</otherwise>
+		</choose>
+		<![CDATA[
+AND    ((#{status}= 'P'  AND TRSDEAL.STATUS = 'P' )OR 
+                                (#{status} <> 'P'  AND TRSDEAL.STATUS = 'A'))	
+		]]>
+		AND    ((#{dealType}= 'B' AND
+		<choose>
+			<when test="appName!=null">TRSDEAL.DEAL_TYPE IN (2, 19, 13, 23,25)</when>
+			<otherwise>TRSDEAL.DEAL_TYPE IN ( 19, 23,25)</otherwise>
+		</choose>
+		)
+		OR
+		(#{dealType} = 'L' AND
+		<choose>
+			<when test="appName!=null">TRSDEAL.DEAL_TYPE NOT IN (2, 19, 17, 23,25)</when>
+			<otherwise>TRSDEAL.DEAL_TYPE NOT IN (1,2,13, 19, 17, 23,25)</otherwise>
+		</choose>
+		)
+		)
+			
+AND    BRANCHES.COMP_CODE    = TRSDEAL.COMP_CODE
+AND    BRANCHES.BRANCH_CODE =  TRSDEAL.BRANCH_CODE
+AND    TRSCLASS.COMP_CODE                  = TRSDEAL.COMP_CODE
+AND    TRSCLASS.CODE                                  = TRSDEAL.CLASS
+AND    CURRENCIES.COMP_CODE             = TRSDEAL.COMP_CODE
+AND    CURRENCIES.CURRENCY_CODE = CASE WHEN #{dealType} = 'L' AND TRSDEAL.DEAL_TYPE = 13 THEN TRSDEAL.OTHER_CY ELSE TRSDEAL.DEAL_CY END
+		<if test="appName!=null">AND TRSCLASS.APP_NAME = 'ITRS'</if>
+	</sql>
+	<select id="selectFinancingDealsByProductCount" parameterType="financingDealsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="sqlFinancingDealsByProduct"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<select id="selectFinancingDealsByProductList" parameterType="financingDealsSC" resultMap="financingDealsDetailsCOMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="sqlFinancingDealsByProduct"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="selectRepaymentPlanHeaderDtls" parameterType="financingDealsSC" resultMap="financingDealsRepaymentPlanCOMap">SELECT 
+TRSPAYPLAN.PLAN_NBR,   
+       TRSPAYPLAN.PLAN_SEQ,   
+       TRSPAYPLAN.TRX_TYPE,   
+       TRSPAYPLAN.TRX_NBR,   
+
+       TRSPAYPLAN.TOTAL_AMT,   
+       TRSPAYPLAN.TOTAL_AMT_PAID,   
+       TRSPAYPLAN.CURRENCY,   
+       
+TRSPAYPLAN.NO_OF_PAYMENTS,   
+       TRSPAYPLAN.AMT_PER_PAYMENT,
+                                CURRENCIES.BRIEF_DESC_ENG,
+       
+CURRENCIES.DECIMAL_POINTS,
+                                CASE WHEN
+                                
+(SELECT SUM(PAID_AMOUNT) FROM TRSSETLMT
+                                                WHERE TRSSETLMT.COMP_CODE 
+= TRSPAYPLAN.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLAN.BRANCH
+                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+                                                AND TRSSETLMT.STATUS 
+= 'A') IS NULL THEN 0 ELSE
+                                (SELECT SUM(PAID_AMOUNT) FROM TRSSETLMT
+                                                
+WHERE TRSSETLMT.COMP_CODE = TRSPAYPLAN.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLAN.BRANCH
+                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+                                                AND TRSSETLMT.STATUS 
+= 'A') END AS ACTIVE_SETTL_AMT,
+		CIF.LONG_NAME_ENG    cifName                                     
+FROM   
+TRSPAYPLAN, CURRENCIES , CIF
+WHERE  TRSPAYPLAN.COMP_CODE             = #{compCode}
+AND    TRSPAYPLAN.BRANCH          
+= #{branchCode}
+AND    TRSPAYPLAN.TRX_NBR                    = #{dealNo}
+
+AND    TRSPAYPLAN.PLAN_NBR                                 = (SELECT MAX(PLAN_NBR) 
+                                                                                                                                                                                   
+FROM   TRSPAYPLAN B
+                                                                                                                                                                                   
+WHERE  TRSPAYPLAN.COMP_CODE                          = B.COMP_CODE                                                                                                                                                                                            
+
+                                                                                                                                                                                   
+AND    TRSPAYPLAN.BRANCH                    = B.BRANCH
+                                                                                                                                                                                   
+AND    TRSPAYPLAN.TRX_NBR                                  = B.TRX_NBR
+                                                                                                                                                                                                
+AND    B.STATUS IN ('P','W','A')
+                                                                                                                                                                                                
+)
+AND    TRSPAYPLAN.PLAN_SEQ       = (SELECT MAX(PLAN_SEQ) 
+                                                                                                                                                                                   
+FROM   TRSPAYPLAN B
+                                                                                                                                                                                   
+WHERE  TRSPAYPLAN.COMP_CODE                          = B.COMP_CODE                                                                                                                                                                                            
+
+                                                                                                                                                                                   
+AND    TRSPAYPLAN.BRANCH                    = B.BRANCH 
+                                                                                                                                                                                   
+AND    TRSPAYPLAN.TRX_NBR                                  = B.TRX_NBR
+                                                                                                                                                                                                
+AND    B.PLAN_NBR         =( SELECT MAX(PLAN_NBR) 
+                                                                                                                                                                                                                                                                                                                                                                                                                
+FROM   TRSPAYPLAN B
+                                                                                                                                                                                                                                                                                                                                                                                                                
+WHERE  TRSPAYPLAN.COMP_CODE                          = B.COMP_CODE                                                                                                                                                                                            
+
+                                                                                                                                                                                                                                                                                                                                                                                                                
+AND    TRSPAYPLAN.BRANCH                                                  = B.BRANCH
+                                                                                                                                                                                                                                                                                                                                                                                                                
+AND    TRSPAYPLAN.TRX_NBR                                    = B.TRX_NBR
+                                                                                                                                                                                                                                                                                                                                                                                                                
+AND    B.STATUS IN ('P','W','A')
+                                                                                                                                                                                                
+
+                                                                                                                                                                                                                                                                                                                                                                                                
+)
+                                                                                                                                                                                                
+AND    B.STATUS IN ('P','W','A')
+                                                                                                                                                                                                
+
+                                                                                                                                                                                                
+)
+
+AND    CURRENCIES.COMP_CODE     = TRSPAYPLAN.COMP_CODE
+AND    CURRENCIES.CURRENCY_CODE = TRSPAYPLAN.CURRENCY
+AND    
+CIF.COMP_CODE     = TRSPAYPLAN.COMP_CODE
+AND    CIF.CIF_NO     = #{cifNo}</select>
+	<select id="selectFinancingDealsRepaymentPlanDtlsCount" parameterType="financingDealsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="sqlFinancingDealRepaymentPlanDtls"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<select id="selectFinancingDealsRepaymentPlanDtlsList" parameterType="financingDealsSC" resultMap="financingDealsRepaymentPlanDtlsCOMap">
+		<!--
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		-->
+		<include refid="sqlFinancingDealRepaymentPlanDtls"/>
+		<!--
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+		-->
+	</select>
+	<sql id="sqlFinancingDealRepaymentPlanDtls">
+		SELECT	   
+	  	 TRSPAYPLANDET.COMP_CODE,   
+         TRSPAYPLANDET.BRANCH,   
+         TRSPAYPLANDET.PLAN_NBR,   
+
+         TRSPAYPLANDET.PLAN_SEQ,   
+         TRSPAYPLANDET.LINE_NBR,   
+         CASE WHEN TRSCLASS.PROFIT_UPFRONT 
+= 'Y' THEN TRSPAYPLANDET.AMOUNT ELSE TRSPAYPLANDET.AMOUNT_NEW END
+         + CASE WHEN TRSPAYPLAN.INCLUDE_VAT_IN_INSTL_YN 
+= 'Y' THEN CASE WHEN VAT_AMOUNT IS NULL THEN 0 ELSE VAT_AMOUNT END ELSE 0 END AMOUNT,
+         TRSPAYPLANDET.CURRENCY,   
+
+         TRSPAYPLANDET.BALLOON_PAYMENT,   
+		 TRSPAYPLANDET.SETTLED_VAT_AMT,
+         TRSPAYPLANDET.VALUE_DATE,   
+
+         TRSPAYPLANDET.PAYMENT_DATE,   
+         TRSPAYPLANDET.STATUS,   
+         TRSPAYPLANDET.CHEQUE_BANK,   
+
+         TRSPAYPLANDET.CHEQUE_BANK_ACCOUNT_NBR,   
+         TRSPAYPLANDET.CHEQUE_NUMBER,   
+         
+TRSPAYPLANDET.CHEQUE_DATE,    
+        
+                                                (SELECT MAX(CASE 
+WHEN TRSSETLMT.VALUE_DATE IS NULL OR TRSSETLMT.VALUE_DATE =
+		<choose>
+			<when test="isSybase == 1">'01/01/1900'</when>
+			<otherwise>TO_DATE('01/01/1900','DD/MM/YYYY')</otherwise>
+		</choose>
+		THEN TRSSETLMT.SETTLEMENT_DATE ELSE TRSSETLMT.VALUE_DATE END) 
+                                                
+FROM TRSSETLMT,TRSSETLMTDET
+                                                                WHERE TRSSETLMT.COMP_CODE                              
+= TRSSETLMTDET.COMP_CODE 
+                                                                AND TRSSETLMT.BRANCH                                             
+= TRSSETLMTDET.BRANCH
+                                                                AND TRSSETLMT.SETTLEMENT_NBR         
+= TRSSETLMTDET.SETTLEMENT_NBR
+                                                                AND TRSSETLMT.COMP_CODE                   
+=  TRSPAYPLANDET.COMP_CODE 
+                                                                AND TRSSETLMT.BRANCH                                             
+= TRSPAYPLANDET.BRANCH
+                                                                AND TRSSETLMT.PLAN_NBR                                        
+= TRSPAYPLANDET.PLAN_NBR
+                                                                AND TRSSETLMTDET.PLAN_LINE_NBR 
+= TRSPAYPLANDET.LINE_NBR 
+                                                                AND TRSSETLMT.STATUS                                               
+= 'P'
+		<![CDATA[
+           AND TRSSETLMTDET.SETTLEMENT_AMOUNT + CASE WHEN ADV_PMT_REIMBURSE_PROFIT_AMT IS NULL THEN 0 ELSE ADV_PMT_REIMBURSE_PROFIT_AMT END > 0
+		]]>
+		) DATE_SETTLED,   
+         (CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT 
+END) SETTLEMENT_AMOUNT,
+         CASE WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN TRSPAYPLANDET.PROFIT_AMT 
+
+                                                                ELSE TRSPAYPLANDET.PROFIT_AMT_NEW END 
+PROFIT_AMT,
+                                                TRSPAYPLANDET.PROFIT_AMT_BEFORE_XIRR,
+                                                
+TRSPAYPLANDET.CAPITAL_AMT_BEFORE_XIRR,
+         TRSPAYPLANDET.PROFIT_AMT_NEW,
+         TRSPAYPLANDET.AMOUNT_NEW,
+         
+TRSPAYPLANDET.ORG_PROFIT_AMT,
+         (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE = 
+TRSPAYPLANDET.PAYMENT_TYPE AND LOV_TYPE_ID = 248 AND LANG_CODE = #{preferredLanguage}) PAYMENT_TYPE,TRSPAYPLANDET.ACC_BR,
+         
+TRSPAYPLANDET.ACC_CY,
+         TRSPAYPLANDET.ACC_GL,
+         TRSPAYPLANDET.ACC_CIF,
+         TRSPAYPLANDET.ACC_SL,
+         
+(SELECT BRIEF_NAME_ENG
+				FROM AMF
+				WHERE AMF.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+				AND AMF.BRANCH_CODE 
+=
+				TRSPAYPLANDET.ACC_BR
+				AND AMF.CURRENCY_CODE = TRSPAYPLANDET.ACC_CY
+				AND
+				AMF.GL_CODE = 
+TRSPAYPLANDET.ACC_GL
+				AND AMF.CIF_SUB_NO =
+				TRSPAYPLANDET.ACC_CIF
+				AND AMF.SL_NO = TRSPAYPLANDET.ACC_SL) 
+ACC_NAME,
+		 TRSPAYPLANDET.COVERING_ACC_BR,
+         TRSPAYPLANDET.COVERING_ACC_CY,
+         TRSPAYPLANDET.COVERING_ACC_GL,
+         
+TRSPAYPLANDET.COVERING_ACC_CIF,
+         TRSPAYPLANDET.COVERING_ACC_SL,		
+				(SELECT BRIEF_NAME_ENG
+				
+FROM AMF
+				WHERE AMF.COMP_CODE = TRSPAYPLANDET.COMP_CODE
+				AND AMF.BRANCH_CODE =
+				TRSPAYPLANDET.COVERING_ACC_BR
+				
+AND AMF.CURRENCY_CODE =
+				TRSPAYPLANDET.COVERING_ACC_BR
+				AND AMF.GL_CODE =
+				TRSPAYPLANDET.COVERING_ACC_GL
+				
+AND AMF.CIF_SUB_NO =
+				TRSPAYPLANDET.COVERING_ACC_CIF
+				AND AMF.SL_NO =
+				TRSPAYPLANDET.COVERING_ACC_SL) 
+COVERING_ACC_NAME,TRSPAYPLANDET.CAPITAL_AMT,
+         CASE WHEN TRSPAYPLANDET.REIMBURSED_PROFIT IS NULL 
+THEN 0 ELSE TRSPAYPLANDET.REIMBURSED_PROFIT END REIMBURSED_PROFIT ,
+                                                
+TRSPAYPLANDET.RESERVE_AMOUNT RESERVE_AMOUNT,
+                                                CURRENCIES.DECIMAL_POINTS,
+		<choose>
+			<when test="isSybase == 1">ISNULL</when>
+			<otherwise>NVL</otherwise>
+		</choose>
+		((CASE WHEN 
+                                                (SELECT SUM(TRSSETLMTDET.SETTLEMENT_AMOUNT) 
+FROM TRSSETLMT,TRSSETLMTDET
+                                                WHERE TRSSETLMT.COMP_CODE 
+= TRSSETLMTDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSSETLMTDET.BRANCH
+                                                
+AND TRSSETLMT.SETTLEMENT_NBR = TRSSETLMTDET.SETTLEMENT_NBR
+                                                
+AND TRSSETLMT.COMP_CODE =  TRSPAYPLANDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLANDET.BRANCH
+                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR 
+                                                AND  
+TRSSETLMTDET.PLAN_LINE_NBR = TRSPAYPLANDET.LINE_NBR AND TRSSETLMT.STATUS = 'P') IS NULL THEN 0
+                                                
+ELSE
+                                                (SELECT SUM(TRSSETLMTDET.SETTLEMENT_AMOUNT) FROM 
+TRSSETLMT,TRSSETLMTDET
+                                                WHERE TRSSETLMT.COMP_CODE = TRSSETLMTDET.COMP_CODE 
+AND TRSSETLMT.BRANCH = TRSSETLMTDET.BRANCH
+                                                AND TRSSETLMT.SETTLEMENT_NBR 
+= TRSSETLMTDET.SETTLEMENT_NBR
+                                                AND TRSSETLMT.COMP_CODE 
+=  TRSPAYPLANDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLANDET.BRANCH
+                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR 
+                                                AND  
+TRSSETLMTDET.PLAN_LINE_NBR = TRSPAYPLANDET.LINE_NBR AND TRSSETLMT.STATUS = 'P') END
+                                                
+)+
+                                                (CASE WHEN(SELECT SUM(
+		<choose>
+			<when test="isSybase == 1">ISNULL</when>
+			<otherwise>NVL</otherwise>
+		</choose>
+		( TRSSETLMTDET.ADV_PMT_REIMBURSE_PROFIT_AMT,0)) FROM TRSSETLMT,TRSSETLMTDET
+                                                                
+WHERE TRSSETLMT.COMP_CODE = TRSSETLMTDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSSETLMTDET.BRANCH
+                                                                
+AND TRSSETLMT.SETTLEMENT_NBR = TRSSETLMTDET.SETTLEMENT_NBR
+                                                                
+AND TRSSETLMT.COMP_CODE =  TRSPAYPLANDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLANDET.BRANCH
+                                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR 
+                                                                
+AND  TRSSETLMTDET.PLAN_LINE_NBR = TRSPAYPLANDET.LINE_NBR AND TRSSETLMT.STATUS = 'P'  ) IS NULL THEN 0
+                                                
+ELSE
+                                                                (SELECT SUM(
+		<choose>
+			<when test="isSybase == 1">ISNULL</when>
+			<otherwise>NVL</otherwise>
+		</choose>
+		( TRSSETLMTDET.ADV_PMT_REIMBURSE_PROFIT_AMT,0)) FROM TRSSETLMT,TRSSETLMTDET
+                                                                
+WHERE TRSSETLMT.COMP_CODE = TRSSETLMTDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSSETLMTDET.BRANCH
+                                                                
+AND TRSSETLMT.SETTLEMENT_NBR = TRSSETLMTDET.SETTLEMENT_NBR
+                                                                
+AND TRSSETLMT.COMP_CODE =  TRSPAYPLANDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSPAYPLANDET.BRANCH
+                                                                
+AND TRSSETLMT.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR 
+                                                                
+AND  TRSSETLMTDET.PLAN_LINE_NBR = TRSPAYPLANDET.LINE_NBR AND TRSSETLMT.STATUS = 'P'  ) END
+                                                
+) + (CASE WHEN SETTLED_AMT_BEFORE_SWITCHING IS NULL THEN 0 ELSE SETTLED_AMT_BEFORE_SWITCHING END ),0) 
+APPROVED_SETTLMT,
+                                                (SELECT STATUS FROM TRSDEAL
+                                                                
+WHERE COMP_CODE = TRSPAYPLAN.COMP_CODE
+                                                                
+AND       BRANCH_CODE                 =             TRSPAYPLAN.BRANCH
+                                                                
+AND       SERIAL_NO                         = TRSPAYPLAN.TRX_NBR ) cf_deal_sts,
+         (SELECT
+		<choose>
+			<when test="isSybase == 1">ISNULL</when>
+			<otherwise>NVL</otherwise>
+		</choose>
+		(SUM(TRSTRACK_CHARGES.CHARGE_AMOUNT),0) FROM TRSTRACK_CHARGES, TRSTRACK
+                                                                
+WHERE TRSTRACK_CHARGES.COMP_CODE = TRSTRACK.COMP_CODE
+                                                                
+AND   TRSTRACK_CHARGES.BRANCH_CODE = TRSTRACK.BRANCH
+                                                                
+AND   TRSTRACK_CHARGES.TRACK_NBR = TRSTRACK.TRACK_NBR
+                                                                
+AND   TRSTRACK.COMP_CODE = TRSPAYPLAN.COMP_CODE
+                                                                
+AND   TRSTRACK.BRANCH = TRSPAYPLAN.BRANCH
+                                                                
+AND   TRSTRACK.TRS_DEAL_SERIAL_NO = TRSPAYPLAN.TRX_NBR
+                                                                
+AND   TRSTRACK.STATUS = 'P'
+		<![CDATA[
+                                                                AND   TRSTRACK_CHARGES.DUE_DATE <= TRSPAYPLANDET.VALUE_DATE) +
+		]]>
+		(SELECT
+		<choose>
+			<when test="isSybase == 1">ISNULL</when>
+			<otherwise>NVL</otherwise>
+		</choose>
+		(SUM(TRSTRACK_CHARGES.CHARGE_AMOUNT),0) FROM TRSTRACK_CHARGES, TRSTRACK
+                                                                
+WHERE TRSTRACK_CHARGES.COMP_CODE = TRSTRACK.COMP_CODE
+                                                                
+AND   TRSTRACK_CHARGES.BRANCH_CODE = TRSTRACK.BRANCH
+                                                                
+AND   TRSTRACK_CHARGES.TRACK_NBR = TRSTRACK.TRACK_NBR
+                                                                
+AND   TRSTRACK.COMP_CODE = TRSPAYPLAN.COMP_CODE
+                                                                
+AND   TRSTRACK.BRANCH = TRSPAYPLAN.BRANCH
+                                                                
+AND   TRSTRACK.TRS_DEAL_SERIAL_NO = TRSPAYPLAN.TRX_NBR
+                                                                
+AND   TRSTRACK.STATUS = 'P'
+                                                                AND   TRSPAYPLANDET.LINE_NBR 
+= (SELECT MAX(T2.LINE_NBR) FROM TRSPAYPLANDET T2 WHERE T2.COMP_CODE = TRSPAYPLANDET.COMP_CODE AND T2.BRANCH 
+= TRSPAYPLANDET.BRANCH AND T2.PLAN_NBR = TRSPAYPLANDET.PLAN_NBR AND T2.PLAN_SEQ = TRSPAYPLANDET.PLAN_SEQ)
+		<![CDATA[
+                                                                AND   TRSTRACK_CHARGES.DUE_DATE > TRSPAYPLANDET.VALUE_DATE) CF_INCIDENT_COST,
+		]]>
+		(SELECT CASE WHEN SUM(TRSADVANCEINSURANCE_ALLOCATION.INSURANCE_AMOUNT) IS NULL THEN 0 ELSE SUM(TRSADVANCEINSURANCE_ALLOCATION.INSURANCE_AMOUNT) 
+END 
+                                                FROM   TRSADVANCEINSURANCE_ALLOCATION , TRSDEAL_ADVANCE_INSURANCE
+                                                
+WHERE TRSADVANCEINSURANCE_ALLOCATION.COMP_CODE                                                                                   
+= TRSDEAL_ADVANCE_INSURANCE.COMP_CODE
+                                                AND                       
+TRSADVANCEINSURANCE_ALLOCATION.BRANCH_CODE                                                                              
+= TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE        
+                                                AND                       
+TRSADVANCEINSURANCE_ALLOCATION.ADVANCE_INSURANCE_SERIAL_NO  = TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO
+                                                
+AND                       TRSDEAL_ADVANCE_INSURANCE.COMP_CODE                                                
+= TRSPAYPLAN.COMP_CODE
+                                                AND                       TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE                                            
+= TRSPAYPLAN.BRANCH
+                                                AND       TRSDEAL_ADVANCE_INSURANCE.DEAL_NO                                                                       
+=  TRSPAYPLAN.TRX_NBR
+                                                AND                       TRSDEAL_ADVANCE_INSURANCE.STATUS                                                           
+= 'P'                
+                                                AND       TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO 
+=  (SELECT MAX( TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO) 
+                                                                                                                                                                                                                                                                                                                                                
+FROM   TRSDEAL_ADVANCE_INSURANCE
+                                                                                                                                                                                                                                                                                                                                                
+WHERE TRSDEAL_ADVANCE_INSURANCE.COMP_CODE                 = TRSPAYPLAN.COMP_CODE 
+                                                                                                                                                                                                                                                                                                                                                
+AND       TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE                 = TRSPAYPLAN.BRANCH
+		<![CDATA[
+                                                                                                                                                                                                                                                                                               
+AND       TRSDEAL_ADVANCE_INSURANCE.DEAL_NO                       = TRSPAYPLAN.TRX_NBR
+                                                                                                                                                                                                                                                                                                                                                
+AND       STATUS IN ('P'))                
+                                                AND       
+TRSADVANCEINSURANCE_ALLOCATION.DUE_DATE   <= TRSPAYPLANDET.VALUE_DATE  )+  
+		]]>
+		(SELECT CASE WHEN SUM(TRSADVANCEINSURANCE_ALLOCATION.INSURANCE_AMOUNT) IS NULL THEN 0 ELSE SUM(TRSADVANCEINSURANCE_ALLOCATION.INSURANCE_AMOUNT) 
+END 
+                                                FROM   TRSADVANCEINSURANCE_ALLOCATION , TRSDEAL_ADVANCE_INSURANCE
+                                                
+WHERE TRSADVANCEINSURANCE_ALLOCATION.COMP_CODE                                                                                   
+= TRSDEAL_ADVANCE_INSURANCE.COMP_CODE
+                                                AND                       
+TRSADVANCEINSURANCE_ALLOCATION.BRANCH_CODE                                                                              
+= TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE        
+                                                AND                       
+TRSADVANCEINSURANCE_ALLOCATION.ADVANCE_INSURANCE_SERIAL_NO  = TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO
+                                                
+AND                       TRSDEAL_ADVANCE_INSURANCE.COMP_CODE                                                
+=TRSPAYPLAN.COMP_CODE
+                                                AND                       TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE                                            
+= TRSPAYPLAN.BRANCH
+                                                AND       TRSDEAL_ADVANCE_INSURANCE.DEAL_NO                                                       
+= TRSPAYPLAN.TRX_NBR
+                                                AND                       TRSDEAL_ADVANCE_INSURANCE.STATUS                                                           
+= 'P'                
+                                                AND       TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO 
+=  (SELECT               MAX( TRSDEAL_ADVANCE_INSURANCE.SERIAL_NO) 
+                                                                                                                                                                                                                                                                                                                                                
+FROM   TRSDEAL_ADVANCE_INSURANCE
+                                                                                                                                                                                                                                                                                                                                                
+WHERE TRSDEAL_ADVANCE_INSURANCE.COMP_CODE                 = TRSPAYPLAN.COMP_CODE
+                                                                                                                                                                                                                                                                                                                                                
+AND       TRSDEAL_ADVANCE_INSURANCE.BRANCH_CODE                 = TRSPAYPLAN.BRANCH 
+                                                                                                                                                                                                                                                                                                                                                
+AND       TRSDEAL_ADVANCE_INSURANCE.DEAL_NO                       = TRSPAYPLAN.TRX_NBR
+                                                                                                                                                                                                                                                                                                                                                
+AND       STATUS IN ('P'))                                                
+                                                
+AND   TRSPAYPLANDET.LINE_NBR = (SELECT        MAX(T2.LINE_NBR) 
+                                                                                                                                                                                
+FROM   TRSPAYPLANDET T2 
+                                                                                                                                                                                
+WHERE T2.COMP_CODE                 = TRSPAYPLANDET.COMP_CODE 
+                                                                                                                                                                                
+AND       T2.BRANCH                         = TRSPAYPLANDET.BRANCH 
+                                                                                                                                                                                
+AND       T2.PLAN_NBR    = TRSPAYPLANDET.PLAN_NBR
+		<![CDATA[
+                                                                                                                              AND       T2.PLAN_SEQ    = TRSPAYPLANDET.PLAN_SEQ)
+                                                AND   TRSADVANCEINSURANCE_ALLOCATION.DUE_DATE > TRSPAYPLANDET.VALUE_DATE) ADVANCE_INSURANCE_AMOUNT
+		]]>
+		FROM TRSPAYPLANDET, TRSCLASS,  TRSPAYPLAN LEFT OUTER JOIN CURRENCIES ON
+                        CURRENCIES.COMP_CODE              
+= TRSPAYPLAN.COMP_CODE AND
+                        CURRENCIES.CURRENCY_CODE          = TRSPAYPLAN.CURRENCY
+   
+WHERE  TRSPAYPLANDET.COMP_CODE   = #{compCode}   AND  
+                                TRSPAYPLANDET.BRANCH                           
+= #{branchCode}  AND
+                                TRSPAYPLANDET.PLAN_NBR      = #{planNbr}  AND  
+                                
+TRSPAYPLANDET.PLAN_SEQ       =#{planSeq}      AND
+                                TRSPAYPLAN.COMP_CODE                         
+= TRSPAYPLANDET.COMP_CODE AND  
+                                TRSPAYPLAN.BRANCH                                   
+= TRSPAYPLANDET.BRANCH AND
+                                TRSPAYPLAN.PLAN_NBR                              
+= TRSPAYPLANDET.PLAN_NBR  AND  
+                                TRSPAYPLAN.PLAN_SEQ                               
+= TRSPAYPLANDET.PLAN_SEQ  AND
+                                TRSCLASS.COMP_CODE                = #{compCode} 
+AND
+                                TRSCLASS.CODE                     = #{prodClassCode}
+	</sql>
+	<select id="selectFinancingDealsGuarantor" parameterType="financingDealsSC" resultMap="financingDealsGuarantorCOMap">SELECT    
+
+         TRSDEAL_GUARANTOR.BRANCH_CODE,  
+         TRSDEAL_GUARANTOR.COMP_CODE, 
+         TRSDEAL_GUARANTOR.SERIAL_NO,
+         
+TRSDEAL_GUARANTOR.ORDER_NUMBER,
+         TRSDEAL_GUARANTOR.GUARANTOR_CIF,   
+         TRSDEAL_GUARANTOR.DEAL_CY,   
+
+         TRSDEAL_GUARANTOR.GUARANTOR_AMOUNT,   
+         TRSDEAL_GUARANTOR.DEAL_AMOUNT,   
+         
+TRSDEAL_GUARANTOR.ACC_BRANCH,   
+         TRSDEAL_GUARANTOR.ACC_CURRENCY,   
+         TRSDEAL_GUARANTOR.ACC_CIF_NO,   
+
+         TRSDEAL_GUARANTOR.ACC_GL_CODE,   
+         TRSDEAL_GUARANTOR.ACC_SL_NO,   
+         'O' ITEMSTATUS,   
+
+         CURRENCIES.DECIMAL_POINTS DEC_POINTS,   
+         '' CY_DESC,                                                  
+
+         CIF.LONG_NAME_ENG GUARANTOR_NAME,    
+         TRSDEAL_GUARANTOR.TOTAL_DEAL_AMOUNT_IN_LIMIT_CY,   
+
+         TRSDEAL_GUARANTOR.AMOUNT_SETTLED_LIMIT_CY ,
+         (SELECT BRIEF_NAME_ENG FROM AMF WHERE 
+BRANCH_CODE=TRSDEAL_GUARANTOR.ACC_BRANCH AND COMP_CODE=TRSDEAL_GUARANTOR.COMP_CODE AND CURRENCY_CODE 
+= TRSDEAL_GUARANTOR.ACC_CURRENCY  AND GL_CODE = TRSDEAL_GUARANTOR.ACC_GL_CODE AND CIF_SUB_NO = TRSDEAL_GUARANTOR.ACC_CIF_NO   
+AND SL_NO = TRSDEAL_GUARANTOR.ACC_SL_NO)  ACCOUNT_DESC ,
+         TRSDEAL_GUARANTOR.AMOUNT_WITH_COMPANY,
+         
+TRSDEAL_GUARANTOR.AMOUNT_WITH_CLIENT    
+    FROM TRSDEAL_GUARANTOR,   
+         CIF,CURRENCIES,TRSDEAL  
+
+   WHERE ( CIF.COMP_CODE = TRSDEAL_GUARANTOR.COMP_CODE ) and  
+         ( CIF.CIF_NO = TRSDEAL_GUARANTOR.GUARANTOR_CIF 
+) and  
+         ( ( TRSDEAL_GUARANTOR.COMP_CODE = #{compCode} ) AND  
+         ( TRSDEAL_GUARANTOR.BRANCH_CODE 
+= #{branchCode} ) AND  
+                                                ( TRSDEAL_GUARANTOR.GUARANTOR_FLAG 
+= 'Y' ) AND 
+         ( TRSDEAL_GUARANTOR.SERIAL_NO = #{dealNo} ) )
+         AND TRSDEAL.SERIAL_NO = 
+TRSDEAL_GUARANTOR.SERIAL_NO AND TRSDEAL.COMP_CODE= TRSDEAL_GUARANTOR.COMP_CODE AND
+         TRSDEAL.BRANCH_CODE=TRSDEAL_GUARANTOR.BRANCH_CODE                  
+
+          AND CURRENCIES.COMP_CODE = TRSDEAL_GUARANTOR.COMP_CODE AND
+          CURRENCIES.CURRENCY_CODE          
+= TRSDEAL.DEAL_CY    
+   ORDER BY TRSDEAL_GUARANTOR.ORDER_NUMBER</select>
+	<select id="selectFinancingDealsCollateral" parameterType="financingDealsSC" resultMap="financingDealsCollateralCOMap">SELECT
+                                                
+TRSCOLLATERALDET.COMP_CODE,
+                                                TRSCOLLATERALDET.BRANCH_CODE,
+                                                
+TRSCOLLATERALDET.DEAL_NO,
+                                                TRSCOLLATERALDET.COLLATERAL_NO,
+                                                
+FMSCOLLATERAL.CURRENCY,
+                                                FMSCOLLATERAL.FACILITY_COVERAGE,
+                                                
+FMSCOLLATERAL.ACTUAL_ALLOCATED,                                                 
+                                                
+FMSCOLLATERAL.TYPE,
+                                                FMSCOLLATERAL.APPL_REF,
+                                                
+FMSCOLLATERAL.LEVERAGE_RATIO,
+                                                FMSCOLLATERAL.BRIEF_NAME_ENG,
+                                                
+(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE VALUE_CODE =FMSCOLATTYPE.ASSET_TYPE AND LOV_TYPE_ID 
+= 234 AND LANG_CODE = #{preferredLanguage}) ASSET_TYPE,
+                                                
+'O' ITEMSTATUS,
+          										TRSCOLLATERALDET.DEAL_ALLOCATED,
+                                                
+FMSCOLLATERAL.APPROVED_COVERAGE,
+                                                FMSCOLLATERAL.ACCEPT_VALUE,
+                                                
+FMSCOLLATERAL.MARKET_VALUE,
+                                                ' ' DEAL_STATUS,
+                                                
+TRSCOLLATERALDET.COLLATERAL_BRANCH,
+                                                CURRENCIES.DECIMAL_POINTS
+                
+FROM  FMSCOLLATERAL  LEFT OUTER JOIN  FMSCOLATTYPE  ON  FMSCOLLATERAL.COMP_CODE  = FMSCOLATTYPE.COMP_CODE
+                                
+AND      FMSCOLLATERAL.TYPE  = FMSCOLATTYPE.CODE LEFT OUTER JOIN CURRENCIES ON
+                                                  
+CURRENCIES.COMP_CODE              = FMSCOLLATERAL.COMP_CODE AND
+                                                  
+CURRENCIES.CURRENCY_CODE          = FMSCOLLATERAL.CURRENCY 	,
+                                TRSCOLLATERALDET 
+
+                WHERE (FMSCOLLATERAL.COMP_CODE  = TRSCOLLATERALDET.COMP_CODE)
+                AND      
+(FMSCOLLATERAL.BRANCH  = TRSCOLLATERALDET.COLLATERAL_BRANCH)
+                AND      (FMSCOLLATERAL.CODE  
+= TRSCOLLATERALDET.COLLATERAL_NO)
+                AND      (TRSCOLLATERALDET.COMP_CODE  = #{compCode})
+                
+AND      (TRSCOLLATERALDET.BRANCH_CODE  = #{branchCode})
+                AND      (TRSCOLLATERALDET.DEAL_NO  
+= #{dealNo})</select>
+	<select id="getDealColorStatusCriteria" parameterType="financingDealsSC" resultMap="financingDealStatusCriteriaCOMap">
+		SELECT TRSDEAL.DEAL_TYPE,
+TRSDEAL.MATURITY_DATE,
+TRSDEAL.STATUS, 
+TRSDEAL.MAT_REC_INS_NBR ,
+TRSDEAL.MAT_PAYMENT_INS_NBR,
+(SELECT 
+COUNT(1)           FROM TRSSETLMT           
+                WHERE TRSSETLMT.COMP_CODE             = 
+TRSDEAL.COMP_CODE
+                AND TRSSETLMT.BRANCH                                           = TRSDEAL.BRANCH_CODE          
+
+                AND TRSSETLMT.DEAL_NBR                        = TRSDEAL.SERIAL_NO
+                AND 
+TRSSETLMT.STATUS IN ('A','Y'))ACTIVE_SETTLEMENT_COUNT,
+
+(SELECT SUM(CASE WHEN TRSSETLMTDET.SETTLEMENT_AMOUNT 
+IS NULL THEN 0 ELSE TRSSETLMTDET.SETTLEMENT_AMOUNT END)+
+                   SUM(CASE WHEN TRSSETLMTDET.ADV_PMT_REIMBURSE_PROFIT_AMT 
+IS NULL THEN 0 ELSE TRSSETLMTDET.ADV_PMT_REIMBURSE_PROFIT_AMT END)
+                FROM TRSSETLMT,TRSSETLMTDET
+                
+WHERE TRSSETLMT.COMP_CODE = TRSSETLMTDET.COMP_CODE AND TRSSETLMT.BRANCH = TRSSETLMTDET.BRANCH
+                
+AND TRSSETLMT.SETTLEMENT_NBR = TRSSETLMTDET.SETTLEMENT_NBR
+                AND TRSSETLMT.COMP_CODE =  
+TRSDEAL.COMP_CODE
+                AND TRSSETLMT.BRANCH            = TRSDEAL.BRANCH_CODE
+                
+AND TRSSETLMT.DEAL_NBR  = TRSDEAL.SERIAL_NO
+                AND TRSSETLMT.STATUS              = 'P' )APPROVED_SETTLMENT_AMOUNT,
+                
+PLANDET.OVERDUE_AMOUNT,
+                PLANDET.SETTLED_AMT_BEFORE_SWITCHING,
+   PLANDET.REIMBURSED_PROFIT,
+   
+PLANDET.TOTAL_AMT,
+   PLANDET.TOTAL_AMT_PAID   
+FROM TRSDEAL  ,
+		<![CDATA[
+(  SELECT SUM(CASE WHEN TRSPAYPLANDET.VALUE_DATE  < #{runningDate} THEN  
+		]]>
+		CASE WHEN (CASE WHEN TRSCLASS.PROFIT_UPFRONT  IS NULL THEN 'Y' ELSE TRSCLASS.PROFIT_UPFRONT  END) = 
+'Y'
+                                                                                                                                
+THEN  CASE WHEN TRSPAYPLANDET.AMOUNT     IS NULL THEN  0  ELSE TRSPAYPLANDET.AMOUNT   END   
+                                                                                                                                 
+ELSE  CASE WHEN TRSPAYPLANDET.AMOUNT_NEW IS NULL THEN  0  ELSE TRSPAYPLANDET.AMOUNT_NEW END
+                                                                                                  
+END
+                                                                                                 
+ELSE 0 END  ) OVERDUE_AMOUNT,
+                                                                                
+SUM(CASE WHEN SETTLED_AMT_BEFORE_SWITCHING IS NULL THEN 0 ELSE SETTLED_AMT_BEFORE_SWITCHING END ) SETTLED_AMT_BEFORE_SWITCHING,
+                                                                                
+SUM(CASE WHEN TRSPAYPLANDET.REIMBURSED_PROFIT IS NULL THEN 0 ELSE TRSPAYPLANDET.REIMBURSED_PROFIT END 
+) REIMBURSED_PROFIT,
+                                                                                
+CASE WHEN TOTAL_AMT IS NULL THEN 0 ELSE TOTAL_AMT END  TOTAL_AMT,
+                                                                                  
+CASE WHEN TOTAL_AMT_PAID IS NULL  THEN  0 ELSE TOTAL_AMT_PAID END TOTAL_AMT_PAID,
+                                                                                  
+TRSPAYPLAN.COMP_CODE, TRSPAYPLAN.BRANCH, TRSPAYPLAN.TRX_NBR
+                                                
+FROM   TRSPAYPLANDET, 
+                                                                                 
+TRSPAYPLAN,  
+                                                                                 TRSCLASS  
+
+                                                WHERE  TRSPAYPLAN.COMP_CODE         =#{compCode}   
+                                                 
+AND   (TRSPAYPLAN.BRANCH                    =#{branchCode}) 
+                                                 
+AND   (TRSPAYPLAN.TRX_NBR                  = #{dealNo})
+
+                                                 
+AND   TRSPAYPLAN.COMP_CODE  = TRSPAYPLANDET.COMP_CODE  
+                                                 
+AND   TRSPAYPLAN.BRANCH     = TRSPAYPLANDET.BRANCH 
+                                                 
+AND   TRSPAYPLAN.PLAN_NBR   = TRSPAYPLANDET.PLAN_NBR 
+                                                 
+AND   TRSPAYPLAN.PLAN_SEQ   = TRSPAYPLANDET.PLAN_SEQ 
+                                                 
+AND   TRSPAYPLAN.STATUS     IN ('P','W')    
+                                                 AND   TRSCLASS.COMP_CODE    
+= TRSPAYPLAN.COMP_CODE 
+                                                 AND   TRSCLASS.CODE         
+= TRSPAYPLAN.TRSCLASS 
+                                                 GROUP BY  TRSPAYPLAN.TOTAL_AMT,TRSPAYPLAN.TOTAL_AMT_PAID,TRSPAYPLAN.COMP_CODE, 
+TRSPAYPLAN.BRANCH, TRSPAYPLAN.TRX_NBR) PLANDET
+WHERE TRSDEAL.COMP_CODE = #{compCode}
+AND  TRSDEAL.BRANCH_CODE 
+= #{branchCode} 
+AND  TRSDEAL.SERIAL_NO                           = #{dealNo} 
+AND PLANDET.COMP_CODE                       
+= TRSDEAL.COMP_CODE
+AND PLANDET.BRANCH                                = TRSDEAL.BRANCH_CODE 
+AND PLANDET.TRX_NBR                               
+= TRSDEAL.SERIAL_NO
+	</select>
+	<select id="selectFinancingDealsPromissoryNotes" resultMap="financingDealsPromissoryCOMap" parameterType="financingDealsSC">
+		SELECT TRSPAYPLANDET.VALUE_DATE,
+                               TRSPAYPLANDET.AMOUNT,
+                               
+TRSDEAL.SERIAL_NO,
+                               TRSDEAL.DEAL_CY,
+                               FMSDRWDWN.FROM_FACILITY,                                                
+
+                               CASE WHEN TRSDEAL.DEAL_CY = COMP.BASE_CURRENCY 
+                               	
+THEN TRSPAYPLANDET.AMOUNT
+               				  ELSE CASE WHEN TRSDEAL.DEAL_MULTDIV = 'M' THEN ROUND((AMOUNT 
+* DEAL_RATE) / TRSDEAL.DEAL_UNIT, CUR.DECIMAL_POINTS)
+                			  ELSE CASE WHEN TRSDEAL.DEAL_MULTDIV 
+= 'D' THEN ROUND((AMOUNT * TRSDEAL.DEAL_UNIT ) / DEAL_RATE, CUR.DECIMAL_POINTS)
+                			  
+END END END AMOUNT_CV,
+                			  CUR.DECIMAL_POINTS BASE_CURR_DEC_POINTS,
+                			  
+DEAL_CUR.DECIMAL_POINTS DEAL_CURR_DEC_POINTS 
+                FROM  TRSPAYPLAN,
+                                
+TRSPAYPLANDET,
+                                FMSDRWDWN,
+                                TRSDEAL ,COMPANIES 
+COMP,CURRENCIES CUR,CURRENCIES DEAL_CUR
+                WHERE (TRSDEAL.COMP_CODE  = #{compCode})
+                
+AND      (TRSDEAL.BRANCH_CODE  = #{branchCode})
+                AND      (TRSDEAL.CIF_NO  = #{cifNo})
+                
+AND      (FMSDRWDWN.COMP_CODE  = TRSDEAL.COMP_CODE)
+                AND      (FMSDRWDWN.BRANCH  = TRSDEAL.BRANCH_CODE)
+                
+AND      (FMSDRWDWN.CODE  = TRSDEAL.REFERENCE_NO)
+                AND      (TRSPAYPLAN.COMP_CODE  = TRSDEAL.COMP_CODE)
+                
+AND      (TRSPAYPLAN.BRANCH  = TRSDEAL.BRANCH_CODE)
+                AND      (TRSPAYPLAN.TRX_NBR  = TRSDEAL.SERIAL_NO)
+                
+AND      (TRSPAYPLAN.STATUS  = 'P')
+                AND      (TRSPAYPLAN.PROMISSORY_NOTES  = 1)
+                
+AND      (TRSPAYPLAN.COMP_CODE  = TRSPAYPLANDET.COMP_CODE)
+                AND      (TRSPAYPLAN.BRANCH  
+= TRSPAYPLANDET.BRANCH)
+                AND      (TRSPAYPLAN.PLAN_NBR  = TRSPAYPLANDET.PLAN_NBR)
+                
+AND      (TRSPAYPLAN.PLAN_SEQ  = TRSPAYPLANDET.PLAN_SEQ)
+                AND      (CASE WHEN TRSPAYPLANDET.AMOUNT 
+IS NULL THEN  0 ELSE TRSPAYPLANDET.AMOUNT END  - CASE WHEN TRSPAYPLANDET.SETTLEMENT_AMOUNT IS NULL THEN  
+0 ELSE TRSPAYPLANDET.SETTLEMENT_AMOUNT END   > 0)
+		<![CDATA[
+                AND      (TRSPAYPLANDET.VALUE_DATE  < #{runningDate})
+		]]>
+		AND  COMP.COMP_CODE  	 = TRSDEAL.COMP_CODE
+                AND  CUR.COMP_CODE       = COMP.COMP_CODE
+                AND  CUR.CURRENCY_CODE   = COMP.BASE_CURRENCY
+                AND  DEAL_CUR.COMP_CODE  = TRSDEAL.COMP_CODE
+                AND  DEAL_CUR.CURRENCY_CODE   = TRSDEAL.DEAL_CY
+	</select>
+	<select id="selectRepaymentPlanHeaderOutstandingAmount" parameterType="financingDealsSC" resultType="BigDecimal">SELECT SUM(CASE WHEN
+		AMOUNT_NEW IS NULL THEN 0 ELSE
+		AMOUNT_NEW END) -
+		SUM(CASE WHEN
+		SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE
+		SETTLEMENT_AMOUNT
+		END)
+		FROM
+		TRSPAYPLANDET
+		WHERE COMP_CODE = #{compCode}
+		AND BRANCH = #{branchCode}
+		AND PLAN_NBR = #{planNbr}
+		AND PLAN_SEQ =#{planSeq}</select>
+	<select id="selectRepaymentPlanHeaderRemainingProfit" parameterType="financingDealsSC" resultType="BigDecimal">
+		SELECT SUM(CASE WHEN
+		PROFIT_AMT_NEW IS NULL THEN 0 ELSE PROFIT_AMT_NEW
+		END)
+		FROM TRSPAYPLANDET
+		WHERE COMP_CODE =
+		#{compCode}
+		AND BRANCH =
+		#{branchCode}
+		AND PLAN_NBR = #{planNbr}
+		AND
+		PLAN_SEQ = #{planSeq}
+		<![CDATA[AND VALUE_DATE > #{rateRevDate}]]>
+	</select>
+	<select id="selectRepaymentPlanHeaderNoOfInstallment" parameterType="financingDealsSC" resultType="BigDecimal">
+		SELECT COUNT(1)
+		FROM TRSPAYPLANDET
+		WHERE COMP_CODE = #{compCode}
+		AND
+		BRANCH = #{branchCode}
+		AND PLAN_NBR = #{planNbr}
+		AND PLAN_SEQ =
+		#{planSeq}
+		AND ADVANCE_PRINCIPAL_SETLMT_YN
+		<![CDATA[
+<> 'Y'
+		]]>
+	</select>
+	<select id="selectgetTrsDealValues" parameterType="financingDealsSC" resultType="TRSDEALVO" resultMap="selectgetTrsDealValuesMap">SELECT RATE_REV_DATE,
+  DEAL_TYPE,
+  CLASS,
+  case when RATE_PERIODICITY is null then 0 else RATE_PERIODICITY end RATE_PERIODICITY,
+  RATE_PERIODICITY_TYPE 
+  FROM TRSDEAL
+  WHERE
+  COMP_CODE = #{compCode}
+  AND BRANCH_CODE =#{branchCode}
+  AND SERIAL_NO =#{dealNo}
+  AND STATUS = 'P'</select>
+	<resultMap id="selectgetTrsDealValuesMap" type="TRSDEALVO">
+		<result property="RATE_REV_DATE" column="RATE_REV_DATE"/>
+		<result property="DEAL_TYPE" column="DEAL_TYPE"/>
+		<result property="CLASS" column="CLASS"/>
+		<result property="RATE_PERIODICITY" column="RATE_PERIODICITY"/>
+		<result property="RATE_PERIODICITY_TYPE" column="RATE_PERIODICITY_TYPE"/>
+	</resultMap>
+	<select id="selectUpFrontValue" parameterType="financingDealsSC" resultType="String">SELECT PROFIT_UPFRONT
+		FROM TRSCLASS
+		WHERE COMP_CODE = #{compCode}
+		AND CODE = #{prodClassCode}</select>
+	<resultMap id="unmaturedInstallmentSummaryMap" type="financingDealRepaymentPlanCO">
+		<result property="trsPayPlanDetVO.AMOUNT" 			column="INSTALLMENT_AMT"/>
+		<result property="trsPayPlanDetVO.PROFIT_AMT" 		column="PROFIT"/>
+		<result property="trsPayPlanDetVO.CAPITAL_AMT" 		column="PRINCIPAL"/>
+		<result property="trsPayPlanDetVO.CHARGE_AMOUNT" 	column="CHARGE_AMOUNT"/>
+		<result property="trsPayPlanDetVO.INSURANCE_AMOUNT" column="INSURANCE_AMOUNT"/>		
+		<result property="trsPayPlanDetVO.ACCRUAL_AMT" column="ACCRUAL_AMT"/>	
+	</resultMap>
+	<select id="loadUnmaturedInstallmentSummary" parameterType="financingDealsSC" resultMap="unmaturedInstallmentSummaryMap">
+		SELECT 
+			SUM(CASE
+             WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN
+              CASE
+             WHEN TRSPAYPLANDET.AMOUNT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.AMOUNT
+           END ELSE CASE
+             WHEN TRSPAYPLANDET.AMOUNT_NEW IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.AMOUNT_NEW
+           END END) INSTALLMENT_AMT,
+       SUM(CASE
+             WHEN TRSCLASS.PROFIT_UPFRONT = 'Y' THEN
+              CASE
+             WHEN TRSPAYPLANDET.PROFIT_AMT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.PROFIT_AMT
+           END ELSE CASE
+             WHEN TRSPAYPLANDET.PROFIT_AMT_NEW IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.PROFIT_AMT_NEW
+           END END) PROFIT,
+       SUM(CASE
+             WHEN TRSPAYPLANDET.CAPITAL_AMT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.CAPITAL_AMT
+           END) PRINCIPAL,
+       SUM(CASE
+             WHEN TRSPAYPLANDET.CHARGE_AMOUNT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.CHARGE_AMOUNT
+           END) CHARGE_AMOUNT,
+       SUM(CASE
+             WHEN TRSPAYPLANDET.INSURANCE_AMOUNT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.INSURANCE_AMOUNT
+           END) INSURANCE_AMOUNT,
+      		SUM(CASE
+             WHEN TRSPAYPLANDET.ACCRUAL_AMT IS NULL THEN
+              0
+             ELSE
+              TRSPAYPLANDET.ACCRUAL_AMT
+           END) ACCRUAL_AMT
+  FROM TRSPAYPLANDET, TRSPAYPLAN, TRSCLASS
+ WHERE TRSPAYPLAN.COMP_CODE = #{compCode}
+   AND TRSPAYPLAN.BRANCH = #{branchCode}
+   AND TRSPAYPLAN.PLAN_NBR = #{planNbr}
+   AND TRSPAYPLAN.PLAN_SEQ = #{planSeq}
+   AND TRSPAYPLANDET.COMP_CODE = TRSPAYPLAN.COMP_CODE
+   AND TRSPAYPLANDET.BRANCH = TRSPAYPLAN.BRANCH
+   AND TRSPAYPLANDET.PLAN_NBR = TRSPAYPLAN.PLAN_NBR
+   AND TRSPAYPLANDET.PLAN_SEQ = TRSPAYPLAN.PLAN_SEQ
+   AND TRSPAYPLANDET.VALUE_DATE >= #{runningDate}
+   AND TRSCLASS.COMP_CODE = TRSPAYPLAN.COMP_CODE
+   AND TRSCLASS.CODE = TRSPAYPLAN.TRSCLASS
+   AND TRSPAYPLANDET.SETTLEMENT_AMOUNT <![CDATA[<>]]> CASE WHEN
+ TRSCLASS.PROFIT_UPFRONT = 'Y' THEN CASE WHEN TRSPAYPLANDET.AMOUNT IS NULL THEN 0 ELSE TRSPAYPLANDET.AMOUNT END ELSE CASE WHEN TRSPAYPLANDET.AMOUNT_NEW IS NULL THEN 0 ELSE TRSPAYPLANDET.AMOUNT_NEW END END
+  </select>
+		
+  
+  
+  <!-- DBU191081 Muhammed Anas Start -->
+  
+  <resultMap id="treasuryForexDealsDetailsCOMap" type="financingDealDetailsCO">
+  		<result property="branchBriefDescEng" column="BRANCH_BRIEF_DESC_ENG"/>
+  		<result property="trsDealVO.USER_ID" column="USER_ID"/>
+  		<result property="status" column="STATUS_DESC"/>
+		<result property="trsDealVO.SERIAL_NO" column="SERIAL_NO"/>
+		<result property="trsDealVO.DEAL_DATE" column="DEAL_DATE"/>
+		<result property="trsDealVO.VALUE_DATE" column="VALUE_DATE"/>
+		<result property="trsDealVO.FOREX_TYPE" column="FOREX_TYPE_DESC"/>
+		<result property="boughtCurrency" column="boughtCurrency"/>
+		<result property="trsDealVO.OTHER_AMOUNT" column="OTHER_AMOUNT"/>
+		<result property="trsDealVO.SALES_DATE" column="SALES_DATE"/>
+		<result property="trsDealVO.CROSS_EXCH_RATE" column="CROSS_EXCH_RATE"/>
+		<result property="soldCurrency" column="soldCurrency"/>
+		<result property="trsDealVO.DEAL_AMOUNT" column="DEAL_AMOUNT"/>
+		<result property="prodClassCode" column="PROD_CLASS_CODE"/>
+		<result property="prodBriefNameEng" column="PROD_BRIEF_NAME_ENG"/>
+	</resultMap>
+  <select id="selectTreasuryForexDealsCount" parameterType="financingDealsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="sqlTreasuryForexDeals"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<select id="selectTreasuryForexDealsList" parameterType="financingDealsSC" resultMap="treasuryForexDealsDetailsCOMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="sqlTreasuryForexDeals"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<sql id="sqlTreasuryForexDeals">
+		SELECT BRANCHES.BRIEF_DESC_ENG BRANCH_BRIEF_DESC_ENG,
+	   TRSDEAL.USER_ID,
+	   TRSDEAL.STATUS,
+	   (SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS
+		 WHERE LOV_TYPE_ID = #{lovType} 
+	   	   AND LANG_CODE = #{langCode} 
+	   	   AND VALUE_CODE = CASE WHEN TRSDEAL.STATUS IS NULL THEN 'R' ELSE TRSDEAL.STATUS END) STATUS_DESC,
+	   TRSDEAL.SERIAL_NO,
+	   TRSDEAL.DEAL_DATE,
+       TRSDEAL.VALUE_DATE,
+	   TRSDEAL.FOREX_TYPE,
+	   CASE WHEN TRSDEAL.FOREX_TYPE = 'P' THEN 'Purchase' ELSE 'Sales' END FOREX_TYPE_DESC,
+	   (SELECT CURRENCIES.BRIEF_DESC_ENG FROM CURRENCIES
+		 WHERE CURRENCIES.COMP_CODE = TRSDEAL.COMP_CODE
+		   AND CURRENCIES.CURRENCY_CODE = TRSDEAL.OTHER_CY) boughtCurrency,
+	   TRSDEAL.OTHER_AMOUNT,
+	   TRSDEAL.SALES_DATE,
+	   TRSDEAL.CROSS_EXCH_RATE,
+	   (SELECT CURRENCIES.BRIEF_DESC_ENG FROM CURRENCIES
+		 WHERE CURRENCIES.COMP_CODE = TRSDEAL.COMP_CODE
+		   AND CURRENCIES.CURRENCY_CODE = TRSDEAL.DEAL_CY) soldCurrency,
+			   TRSDEAL.DEAL_AMOUNT,
+			   TRSCLASS.CODE PROD_CLASS_CODE,
+			   TRSCLASS.BRIEF_NAME_ENG PROD_BRIEF_NAME_ENG
+		FROM TRSDEAL,
+		       TRSCLASS,
+		       BRANCHES	   
+		WHERE TRSDEAL.COMP_CODE = #{compCode}
+		  AND TRSDEAL.CIF_NO = #{cifNo}
+		  AND ((#{branchFilter} = 'A' 
+		  AND TRSDEAL.BRANCH_CODE = TRSDEAL.BRANCH_CODE) OR
+		       (#{branchFilter} = 'S' 
+		  AND TRSDEAL.BRANCH_CODE = #{branchCode}))
+		  AND ((#{status} = 'P' AND TRSDEAL.STATUS = 'P') OR
+					   (#{status} <![CDATA[ <> ]]>'P' AND TRSDEAL.STATUS = 'A')) 
+		  AND TRSDEAL.DEAL_TYPE  = 17
+		  AND BRANCHES.COMP_CODE = TRSDEAL.COMP_CODE
+		  AND BRANCHES.BRANCH_CODE = TRSDEAL.BRANCH_CODE
+		  AND TRSCLASS.COMP_CODE = TRSDEAL.COMP_CODE
+		  AND TRSCLASS.CODE = TRSDEAL.CLASS
+		  <if test="appName!=null"> 
+		  	AND TRSCLASS.APP_NAME = 'ITRS' 
+		  </if>
+		  <if test='outstandingDealsFlag.equals("Y")'>
+		  	<![CDATA[ AND TRSDEAL.VALUE_DATE > = #{runningDate} ]]>
+		  </if>
+	</sql>	
+	
+  <!-- DBU191081 Muhammed Anas End -->
+  
+		
+		
+</mapper>

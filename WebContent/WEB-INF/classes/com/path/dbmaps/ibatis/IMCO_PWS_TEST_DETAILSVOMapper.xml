@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="IMCO_PWS_TEST_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.IMCO_PWS_TEST_DETAILSVO" >
+    <id column="CONFIG_ID" property="CONFIG_ID" />
+    <result column="FIELD_ROW_ID" property="FIELD_ROW_ID" />
+    <result column="VALUE" property="VALUE" />
+    <result column="FIELD_TYPE" property="FIELD_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONFIG_ID, FIELD_ROW_ID, VALUE, FIELD_TYPE
+  </sql>
+  <select id="selectIMCO_PWS_TEST_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from IMCO_PWS_TEST_DETAILS
+    where CONFIG_ID = #{CONFIG_ID}
+  </select>
+  <delete id="deleteIMCO_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_DETAILSVOKey" >
+    delete from IMCO_PWS_TEST_DETAILS
+    where CONFIG_ID = #{CONFIG_ID}
+  </delete>
+  <insert id="insertIMCO_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_DETAILSVO" >
+    insert into IMCO_PWS_TEST_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null" >
+        CONFIG_ID,
+      </if>
+      <if test="FIELD_ROW_ID != null" >
+        FIELD_ROW_ID,
+      </if>
+      <if test="VALUE != null" >
+        VALUE,
+      </if>
+      <if test="FIELD_TYPE != null" >
+        FIELD_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CONFIG_ID != null" >
+        #{CONFIG_ID},
+      </if>
+      <if test="FIELD_ROW_ID != null" >
+        #{FIELD_ROW_ID},
+      </if>
+      <if test="VALUE != null" >
+        #{VALUE},
+      </if>
+      <if test="FIELD_TYPE != null" >
+        #{FIELD_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateIMCO_PWS_TEST_DETAILS" >
+    update IMCO_PWS_TEST_DETAILS
+    <set >
+      <if test="FIELD_ROW_ID != null" >
+        FIELD_ROW_ID = #{FIELD_ROW_ID},
+      </if>
+      <if test="VALUE != null" >
+        VALUE = #{VALUE},
+      </if>
+      <if test="FIELD_TYPE != null" >
+        FIELD_TYPE = #{FIELD_TYPE},
+      </if>
+    </set>
+    where CONFIG_ID = #{CONFIG_ID}
+  </sql>
+  <update id="updateIMCO_PWS_TEST_DETAILS" parameterType="com.path.dbmaps.vo.IMCO_PWS_TEST_DETAILSVO" >
+    <include refid="sql_updateIMCO_PWS_TEST_DETAILS" />
+  </update>
+</mapper>

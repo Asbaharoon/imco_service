@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_CONNECTION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_CONNECTIONVO" >
+    <id column="BR_CODE" property="BR_CODE" />
+    <id column="PROCESS" property="PROCESS" />
+    <result column="TIMER" property="TIMER" />
+    <result column="STATUS" property="STATUS" />
+    <result column="RECONNECT" property="RECONNECT" />
+    <result column="ACTION_TYPE" property="ACTION_TYPE" />
+    <result column="ACTION_DATETIME" property="ACTION_DATETIME" />
+    <result column="PERIOD" property="PERIOD" />
+    <result column="PERIOD_TYPE" property="PERIOD_TYPE" />
+    <result column="PERIOD_DAY" property="PERIOD_DAY" />
+    <result column="LAST_ID" property="LAST_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BR_CODE, PROCESS, TIMER, STATUS, RECONNECT, ACTION_TYPE, ACTION_DATETIME, PERIOD, 
+    PERIOD_TYPE, PERIOD_DAY, LAST_ID
+  </sql>
+  <select id="selectSYNC_CONNECTION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_CONNECTIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_CONNECTION
+    where BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </select>
+  <delete id="deleteSYNC_CONNECTION" parameterType="com.path.dbmaps.vo.SYNC_CONNECTIONVOKey" >
+    delete from SYNC_CONNECTION
+    where BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </delete>
+  <insert id="insertSYNC_CONNECTION" parameterType="com.path.dbmaps.vo.SYNC_CONNECTIONVO" >
+    insert into SYNC_CONNECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        BR_CODE,
+      </if>
+      <if test="PROCESS != null" >
+        PROCESS,
+      </if>
+      <if test="TIMER != null and TIMER != emptyBigDecimalValue" >
+        TIMER,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="RECONNECT != null and RECONNECT != emptyBigDecimalValue" >
+        RECONNECT,
+      </if>
+      <if test="ACTION_TYPE != null and ACTION_TYPE != emptyBigDecimalValue" >
+        ACTION_TYPE,
+      </if>
+      <if test="ACTION_DATETIME != null" >
+        ACTION_DATETIME,
+      </if>
+      <if test="PERIOD != null and PERIOD != emptyBigDecimalValue" >
+        PERIOD,
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE,
+      </if>
+      <if test="PERIOD_DAY != null and PERIOD_DAY != emptyBigDecimalValue" >
+        PERIOD_DAY,
+      </if>
+      <if test="LAST_ID != null and LAST_ID != emptyBigDecimalValue" >
+        LAST_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        #{BR_CODE},
+      </if>
+      <if test="PROCESS != null" >
+        #{PROCESS},
+      </if>
+      <if test="TIMER != null and TIMER != emptyBigDecimalValue" >
+        #{TIMER},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="RECONNECT != null and RECONNECT != emptyBigDecimalValue" >
+        #{RECONNECT},
+      </if>
+      <if test="ACTION_TYPE != null and ACTION_TYPE != emptyBigDecimalValue" >
+        #{ACTION_TYPE},
+      </if>
+      <if test="ACTION_DATETIME != null" >
+        #{ACTION_DATETIME},
+      </if>
+      <if test="PERIOD != null and PERIOD != emptyBigDecimalValue" >
+        #{PERIOD},
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        #{PERIOD_TYPE},
+      </if>
+      <if test="PERIOD_DAY != null and PERIOD_DAY != emptyBigDecimalValue" >
+        #{PERIOD_DAY},
+      </if>
+      <if test="LAST_ID != null and LAST_ID != emptyBigDecimalValue" >
+        #{LAST_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_CONNECTION" >
+    update SYNC_CONNECTION
+    <set >
+      <if test="TIMER != null" >
+        <choose >
+          <when test="TIMER == emptyBigDecimalValue" >
+            TIMER = NULL ,
+          </when>
+          <otherwise >
+            TIMER = #{TIMER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="RECONNECT != null" >
+        <choose >
+          <when test="RECONNECT == emptyBigDecimalValue" >
+            RECONNECT = NULL ,
+          </when>
+          <otherwise >
+            RECONNECT = #{RECONNECT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTION_TYPE != null" >
+        <choose >
+          <when test="ACTION_TYPE == emptyBigDecimalValue" >
+            ACTION_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ACTION_TYPE = #{ACTION_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTION_DATETIME != null" >
+        ACTION_DATETIME = #{ACTION_DATETIME},
+      </if>
+      <if test="PERIOD != null" >
+        <choose >
+          <when test="PERIOD == emptyBigDecimalValue" >
+            PERIOD = NULL ,
+          </when>
+          <otherwise >
+            PERIOD = #{PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE = #{PERIOD_TYPE},
+      </if>
+      <if test="PERIOD_DAY != null" >
+        <choose >
+          <when test="PERIOD_DAY == emptyBigDecimalValue" >
+            PERIOD_DAY = NULL ,
+          </when>
+          <otherwise >
+            PERIOD_DAY = #{PERIOD_DAY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LAST_ID != null" >
+        <choose >
+          <when test="LAST_ID == emptyBigDecimalValue" >
+            LAST_ID = NULL ,
+          </when>
+          <otherwise >
+            LAST_ID = #{LAST_ID},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BR_CODE = #{BR_CODE}
+      and PROCESS = #{PROCESS}
+  </sql>
+  <update id="updateSYNC_CONNECTION" parameterType="com.path.dbmaps.vo.SYNC_CONNECTIONVO" >
+    <include refid="sql_updateSYNC_CONNECTION" />
+  </update>
+</mapper>

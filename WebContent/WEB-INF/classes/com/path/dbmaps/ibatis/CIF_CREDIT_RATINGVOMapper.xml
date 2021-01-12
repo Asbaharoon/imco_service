@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CREDIT_RATING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CREDIT_RATINGVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CREDIT_RATING" property="CREDIT_RATING" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, CREDIT_RATING, FROM_DATE, TO_DATE
+  </sql>
+  <select id="selectCIF_CREDIT_RATING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CREDIT_RATINGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CREDIT_RATING
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_CREDIT_RATING" parameterType="com.path.dbmaps.vo.CIF_CREDIT_RATINGVOKey" >
+    delete from CIF_CREDIT_RATING
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_CREDIT_RATING" parameterType="com.path.dbmaps.vo.CIF_CREDIT_RATINGVO" >
+    insert into CIF_CREDIT_RATING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue" >
+        CREDIT_RATING,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue" >
+        #{CREDIT_RATING},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CREDIT_RATING" >
+    update CIF_CREDIT_RATING
+    <set >
+      <if test="CREDIT_RATING != null" >
+        <choose >
+          <when test="CREDIT_RATING == emptyBigDecimalValue" >
+            CREDIT_RATING = NULL ,
+          </when>
+          <otherwise >
+            CREDIT_RATING = #{CREDIT_RATING},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_CREDIT_RATING" parameterType="com.path.dbmaps.vo.CIF_CREDIT_RATINGVO" >
+    <include refid="sql_updateCIF_CREDIT_RATING" />
+  </update>
+</mapper>

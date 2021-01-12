@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PASSBOOK_INVENTORY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PASSBOOK_INVENTORYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PASSBOOK_TYPE" property="PASSBOOK_TYPE" />
+    <id column="VAULT_NO" property="VAULT_NO" />
+    <result column="DATE_RECEIVED" property="DATE_RECEIVED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="QUANTITY" property="QUANTITY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PASSBOOK_TYPE, VAULT_NO, DATE_RECEIVED, STATUS, QUANTITY
+  </sql>
+  <select id="selectPASSBOOK_INVENTORY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PASSBOOK_INVENTORYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PASSBOOK_INVENTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PASSBOOK_TYPE = #{PASSBOOK_TYPE}
+      and VAULT_NO = #{VAULT_NO}
+  </select>
+  <delete id="deletePASSBOOK_INVENTORY" parameterType="com.path.dbmaps.vo.PASSBOOK_INVENTORYVOKey" >
+    delete from PASSBOOK_INVENTORY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PASSBOOK_TYPE = #{PASSBOOK_TYPE}
+      and VAULT_NO = #{VAULT_NO}
+  </delete>
+  <insert id="insertPASSBOOK_INVENTORY" parameterType="com.path.dbmaps.vo.PASSBOOK_INVENTORYVO" >
+    insert into PASSBOOK_INVENTORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PASSBOOK_TYPE != null and PASSBOOK_TYPE != emptyBigDecimalValue" >
+        PASSBOOK_TYPE,
+      </if>
+      <if test="VAULT_NO != null and VAULT_NO != emptyBigDecimalValue" >
+        VAULT_NO,
+      </if>
+      <if test="DATE_RECEIVED != null" >
+        DATE_RECEIVED,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="QUANTITY != null and QUANTITY != emptyBigDecimalValue" >
+        QUANTITY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PASSBOOK_TYPE != null and PASSBOOK_TYPE != emptyBigDecimalValue" >
+        #{PASSBOOK_TYPE},
+      </if>
+      <if test="VAULT_NO != null and VAULT_NO != emptyBigDecimalValue" >
+        #{VAULT_NO},
+      </if>
+      <if test="DATE_RECEIVED != null" >
+        #{DATE_RECEIVED},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="QUANTITY != null and QUANTITY != emptyBigDecimalValue" >
+        #{QUANTITY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePASSBOOK_INVENTORY" >
+    update PASSBOOK_INVENTORY
+    <set >
+      <if test="DATE_RECEIVED != null" >
+        DATE_RECEIVED = #{DATE_RECEIVED},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="QUANTITY != null" >
+        <choose >
+          <when test="QUANTITY == emptyBigDecimalValue" >
+            QUANTITY = NULL ,
+          </when>
+          <otherwise >
+            QUANTITY = #{QUANTITY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PASSBOOK_TYPE = #{PASSBOOK_TYPE}
+      and VAULT_NO = #{VAULT_NO}
+  </sql>
+  <update id="updatePASSBOOK_INVENTORY" parameterType="com.path.dbmaps.vo.PASSBOOK_INVENTORYVO" >
+    <include refid="sql_updatePASSBOOK_INVENTORY" />
+  </update>
+</mapper>

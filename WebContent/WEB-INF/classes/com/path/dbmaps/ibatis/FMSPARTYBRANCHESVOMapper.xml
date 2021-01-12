@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSPARTYBRANCHES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSPARTYBRANCHESVO" >
+    <id column="CIF" property="CIF" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="BRANCH_CIF" property="BRANCH_CIF" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF, COMP_CODE, LINE_NBR, BRANCH_CIF
+  </sql>
+  <select id="selectFMSPARTYBRANCHES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSPARTYBRANCHESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSPARTYBRANCHES
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSPARTYBRANCHES" parameterType="com.path.dbmaps.vo.FMSPARTYBRANCHESVOKey" >
+    delete from FMSPARTYBRANCHES
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSPARTYBRANCHES" parameterType="com.path.dbmaps.vo.FMSPARTYBRANCHESVO" >
+    insert into FMSPARTYBRANCHES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        CIF,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="BRANCH_CIF != null and BRANCH_CIF != emptyBigDecimalValue" >
+        BRANCH_CIF,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF != null and CIF != emptyBigDecimalValue" >
+        #{CIF},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="BRANCH_CIF != null and BRANCH_CIF != emptyBigDecimalValue" >
+        #{BRANCH_CIF},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSPARTYBRANCHES" >
+    update FMSPARTYBRANCHES
+    <set >
+      <if test="BRANCH_CIF != null" >
+        <choose >
+          <when test="BRANCH_CIF == emptyBigDecimalValue" >
+            BRANCH_CIF = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CIF = #{BRANCH_CIF},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF = #{CIF}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSPARTYBRANCHES" parameterType="com.path.dbmaps.vo.FMSPARTYBRANCHESVO" >
+    <include refid="sql_updateFMSPARTYBRANCHES" />
+  </update>
+</mapper>

@@ -1,0 +1,1302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="generatorMapper" > 
+   <insert id="insertMainInfo" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_DEFVO">
+      INSERT INTO SYS_DYN_SCREEN_DEF(DYN_SCREEN_ID
+                                     <if test="APP_NAME!=null"> 
+                                     ,APP_NAME
+                                     </if>
+                                     <if test="PROG_REF!=null">
+                                     ,PROG_REF
+                                     </if>
+									 ,DYN_SCREEN_DESC
+									 <if test="ON_LOAD_SCRIPT!=null">
+									 ,ON_LOAD_SCRIPT
+									 </if>
+									 ,CREATED_BY
+									 ,CREATED_DATE)
+      VALUES(#{DYN_SCREEN_ID}
+            <if test="APP_NAME!=null"> 
+            ,#{APP_NAME}
+            </if>
+            <if test="PROG_REF!=null">
+            ,#{PROG_REF}
+            </if>
+            ,#{DYN_SCREEN_DESC}
+            <if test="ON_LOAD_SCRIPT!=null">
+            ,#{ON_LOAD_SCRIPT}
+            </if>
+            ,#{CREATED_BY}
+            ,<include refid="commonLibMapper.systemDate"/>)
+   </insert>
+   
+   <update id="updateMainInfo" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_DEFVO">
+   UPDATE SYS_DYN_SCREEN_DEF
+      SET DYN_SCREEN_DESC = #{DYN_SCREEN_DESC}
+       <if test="ON_LOAD_SCRIPT!=null">
+         ,ON_LOAD_SCRIPT = #{ON_LOAD_SCRIPT}
+       </if>   
+    WHERE DYN_SCREEN_ID = #{DYN_SCREEN_ID}
+   </update>
+      
+   <select id="returnScreenCounter" resultType="int">
+     SELECT CASE WHEN MAX(DYN_SCREEN_ID) IS NOT NULL
+                 THEN MAX(DYN_SCREEN_ID)+1
+                 ELSE 1
+             END
+       FROM SYS_DYN_SCREEN_DEF
+   </select>
+   
+   <select id="returnElemCounter" resultType="int">
+     SELECT CASE WHEN MAX(ELEMENT_ID) IS NOT NULL
+                 THEN MAX(ELEMENT_ID)+1
+                 ELSE 1
+             END
+       FROM SYS_DYN_SCREEN_ELEMENTS
+   </select>
+   <sql id="insertElemQuery">
+        INSERT INTO SYS_DYN_SCREEN_ELEMENTS
+        (ELEMENT_ID
+        ,DYN_SCREEN_ID
+        ,ELEMENT_TYPE_CODE
+        <if test="sysDynScreenElemVO.TECH_ID != null">
+        ,TECH_ID
+        </if>
+        <if test="sysDynScreenElemVO.PARENT_TECH_ID != null">
+        ,PARENT_TECH_ID
+        </if>
+        ,CREATED_BY
+        ,CREATED_DATE)
+        VALUES
+        (#{sysDynScreenElemVO.ELEMENT_ID}
+        ,#{sysDynScreenElemVO.DYN_SCREEN_ID}
+        ,#{sysDynScreenElemVO.ELEMENT_TYPE_CODE}
+        <if test="sysDynScreenElemVO.TECH_ID != null">
+        ,#{sysDynScreenElemVO.TECH_ID}
+        </if>
+        <if test="sysDynScreenElemVO.PARENT_TECH_ID != null">
+        ,#{sysDynScreenElemVO.PARENT_TECH_ID}
+        </if>
+        ,#{userName}
+        ,<include refid="commonLibMapper.systemDate"/>)<if test="isOracle == 1">;</if>
+        <if test="createFromElemId!=null">
+           INSERT 
+             INTO SYS_DYN_SCREEN_ELEMENTS_DET(ELEMENT_ID
+                  ,PROPERTY_CODE
+                  ,PROPERTY_VALUE
+                  ,PROPERTY_EXPRESSION_VALUE
+                  ,CREATED_BY
+				  ,CREATED_DATE)
+		SELECT
+		       #{sysDynScreenElemVO.ELEMENT_ID}
+               ,PROPERTY_CODE
+               ,PROPERTY_VALUE
+               ,PROPERTY_EXPRESSION_VALUE
+               ,#{userName}
+               ,<include refid="commonLibMapper.systemDate"/>
+		  FROM SYS_DYN_SCREEN_ELEMENTS_DET where ELEMENT_ID = #{createFromElemId} <if test="isOracle == 1">;</if>
+                           
+        </if>
+        <foreach collection="elementDetLst" item="SYS_DYN_SCREEN_ELEMENTS_DETVO">
+           INSERT 
+             INTO SYS_DYN_SCREEN_ELEMENTS_DET(ELEMENT_ID
+                  ,PROPERTY_CODE
+                  <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE != null">
+                  ,PROPERTY_VALUE
+                  </if>
+                  <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+                  ,PROPERTY_EXPRESSION_VALUE
+                  </if>
+                  ,CREATED_BY
+				  ,CREATED_DATE
+                  )
+                  <choose>
+                    <when test="createFromElemId!=null">
+                     SELECT 
+                    </when>
+                    <otherwise>
+                     VALUES(
+                    </otherwise>
+                  </choose>
+                    #{sysDynScreenElemVO.ELEMENT_ID}
+                   ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE}
+                   <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE != null">
+                   ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE}
+                   </if>
+                   <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+                   ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE}
+                   </if>
+                   ,#{userName},<include refid="commonLibMapper.systemDate"/>
+                  <choose>
+                    <when test="createFromElemId!=null">
+                      <if test="isOracle == 1">FROM DUAL</if>
+                     WHERE NOT EXISTS(SELECT 1 
+                                        FROM SYS_DYN_SCREEN_ELEMENTS_DET 
+                                       WHERE ELEMENT_ID    = #{sysDynScreenElemVO.ELEMENT_ID} 
+                                         AND PROPERTY_CODE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE})<if test="isOracle == 1">;</if>
+                    </when>
+                    <otherwise>
+                       )<if test="isOracle == 1">;</if>
+                    </otherwise>
+                  </choose> 
+             <if test="createFromElemId!=null">
+             UPDATE SYS_DYN_SCREEN_ELEMENTS_DET
+                SET CREATED_BY   = #{userName}
+                   ,CREATED_DATE = <include refid="commonLibMapper.systemDate"/>
+			       <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE != null">
+			       ,PROPERTY_VALUE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE}
+			       </if> 
+			       <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+			       ,PROPERTY_EXPRESSION_VALUE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE}
+			       </if>
+              WHERE ELEMENT_ID = #{sysDynScreenElemVO.ELEMENT_ID} AND PROPERTY_CODE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE}<if test="isOracle == 1">;</if>
+             </if>    
+        </foreach>
+   </sql>
+   <delete id="deleteOldElementsBeforeUpdate" parameterType="com.path.vo.common.screengenerator.DynamicScreenDetailsCO">
+      BEGIN
+          DELETE 
+            FROM SYS_DYN_SCREEN_ELEMENTS_DET 
+           WHERE ELEMENT_ID IN (SELECT ELEMENT_ID 
+                                  FROM SYS_DYN_SCREEN_ELEMENTS 
+                                 WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID})<if test="isOracle == 1">;</if>
+          DELETE
+            FROM SYS_DYN_SCREEN_ELEMENTS
+           WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}<if test="isOracle == 1">;</if>
+       END<if test="isOracle == 1">;</if> 
+   </delete>
+   <insert id="currentElementData" parameterType="com.path.vo.common.screengenerator.DynamicScreenDetailsCO">
+     BEGIN
+        <include refid="generatorMapper.insertElemQuery"/>
+     END<if test="isOracle == 1">;</if>
+   </insert>
+   <update id="updateElementDetails" parameterType="com.path.vo.common.screengenerator.DynamicScreenDetailsCO">
+     BEGIN
+        <foreach collection="elementDetLst" item="SYS_DYN_SCREEN_ELEMENTS_DETVO">
+			UPDATE SYS_DYN_SCREEN_ELEMENTS_DET 
+			   SET MODIFIED_BY = #{userName}
+			      ,MODIFIED_DATE = <include refid="commonLibMapper.systemDate"/>   
+			      ,PROPERTY_VALUE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE,jdbcType=VARCHAR}
+			      <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+			      ,PROPERTY_EXPRESSION_VALUE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE}
+			      </if>
+			 WHERE ELEMENT_ID = #{sysDynScreenElemVO.ELEMENT_ID}
+			   AND PROPERTY_CODE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE} <if test="isOracle == 1">;</if>
+			
+			<choose>
+			<when test="isSybase == 1">
+			
+			if not exists( SELECT 1 FROM SYS_DYN_SCREEN_ELEMENTS_DET WHERE ELEMENT_ID = #{sysDynScreenElemVO.ELEMENT_ID} AND PROPERTY_CODE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE}) 
+			BEGIN
+			 INSERT INTO SYS_DYN_SCREEN_ELEMENTS_DET
+			(ELEMENT_ID
+			,PROPERTY_CODE
+			<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE != null">
+			,PROPERTY_VALUE
+			</if>
+			<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE != null">
+			,PROPERTY_EXPRESSION_VALUE
+			</if>
+			,CREATED_BY
+			,CREATED_DATE)
+			values(
+			       #{sysDynScreenElemVO.ELEMENT_ID}
+			      ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE}
+			      <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE!=null">
+			      ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE}
+			      </if>
+			      <if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+			      ,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE}
+			      </if>
+			      ,#{userName}
+			      ,<include refid="commonLibMapper.systemDate"/>
+			  	)END
+			  	</when>
+		 		<otherwise>
+		 		DECLARE
+		 		elem_exists NUMBER;
+		 		BEGIN
+		 			SELECT Count(1) into elem_exists FROM SYS_DYN_SCREEN_ELEMENTS_DET WHERE ELEMENT_ID = #{sysDynScreenElemVO.ELEMENT_ID} AND PROPERTY_CODE = #{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE};
+		 			IF elem_exists = 0 THEN
+		 			 INSERT INTO SYS_DYN_SCREEN_ELEMENTS_DET
+						(ELEMENT_ID
+						,PROPERTY_CODE
+						<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE != null">
+						,PROPERTY_VALUE
+						</if>
+						<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE != null">
+						,PROPERTY_EXPRESSION_VALUE
+						</if>
+						,CREATED_BY
+						,CREATED_DATE)
+						VALUES(
+			      		 #{sysDynScreenElemVO.ELEMENT_ID}
+			      		,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_CODE}
+			      		<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE!=null">
+			     		,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_VALUE}
+			      		</if>
+			      		<if test="SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE!=null">
+			      		,#{SYS_DYN_SCREEN_ELEMENTS_DETVO.PROPERTY_EXPRESSION_VALUE}
+			      		</if>
+			      		,#{userName}
+			     		,<include refid="commonLibMapper.systemDate"/>
+			  			);
+			  		END IF;
+			  	  END;
+            </otherwise> 
+            </choose>     
+       </foreach>
+	 END<if test="isOracle == 1">;</if>
+   </update>
+   <resultMap id="returnScreenElementsDataMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+       <result property="elementId"          column="ELEMENT_ID"/>
+       <result property="elementType"        column="ELEMENT_TYPE_CODE"/>
+       <result property="property_code"      column="PROPERTY_CODE"/>
+       <result property="property_value"     column="PROPERTY_VALUE"/>
+       <result property="property_big_value" column="PROPERTY_EXPRESSION_VALUE"/>
+       <result property="techId"             column="TECH_ID"/>
+       <result property="parentTechId"       column="PARENT_TECH_ID"/>
+       <result property="theId"              column="ID"/>
+       <result property="onLoadScript"       column="ON_LOAD_SCRIPT"/>
+       <result property="screenDesc"         column="DYN_SCREEN_DESC"/>
+       <result property="currElemMode"       column="currElemMode"/>
+       <result property="scrTableId"		 column="TABLE_ID"/>
+       <result property="scrGridFlag"		 column="GRID_YN"/>
+       <result property="lookupDesc"		 column="lookupDesc"/>
+       
+   </resultMap>
+   <select id="returnScreenElementsData" parameterType="screenGeneratorSC" resultMap="returnScreenElementsDataMap">
+	SELECT * FROM
+	(	
+	SELECT SD.DYN_SCREEN_ID
+	      ,SD.DYN_SCREEN_DESC
+	      ,SD.ON_LOAD_SCRIPT
+	      ,SE.ELEMENT_ID
+	      ,SE.ELEMENT_TYPE_CODE
+	      ,ED.PROPERTY_CODE
+	      ,ED.PROPERTY_VALUE
+	      ,ED.PROPERTY_EXPRESSION_VALUE
+	      ,SE.TECH_ID
+	      ,SE.PARENT_TECH_ID
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'id') as ID
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'mode') as currElemMode
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'lookupDesc') as lookupDesc             
+	      ,SCT.TABLE_ID  
+	      ,SCT.GRID_YN
+          ,(CASE WHEN SE.PARENT_TECH_ID IS NULL THEN SE.TECH_ID ELSE SE.PARENT_TECH_ID END) as FOR_ORDER_PARENT_ID
+	  FROM SYS_DYN_SCREEN_DEF SD LEFT OUTER JOIN SYS_DYN_SCREEN_TABLE SCT
+   								   ON SD.DYN_SCREEN_ID = SCT.DYN_SCREEN_ID
+   		   ,SYS_DYN_SCREEN_ELEMENTS SE,SYS_DYN_SCREEN_ELEMENTS_DET ED
+	 WHERE SE.ELEMENT_ID = ED.ELEMENT_ID
+	   AND SD.DYN_SCREEN_ID = SE.DYN_SCREEN_ID
+	   AND SD.DYN_SCREEN_ID = #{screenId}
+	   <if test="elementId!=null">
+         AND SE.ELEMENT_ID= #{elementId}
+       </if> 
+	)TBL     
+	ORDER BY TBL.FOR_ORDER_PARENT_ID,TBL.ELEMENT_ID ASC
+   </select>
+   <resultMap id="returnScreenElementsDataMapNew" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+       <result property="sysDynScreenDefVO.DYN_SCREEN_ID" column="DYN_SCREEN_ID"/>
+       <result property="elementId"          column="ELEMENT_ID"/>
+       <result property="elementType"        column="ELEMENT_TYPE_CODE"/>
+       <result property="techId"             column="TECH_ID"/>
+       <result property="parentTechId"       column="PARENT_TECH_ID"/>
+       <result property="theId"              column="ID"/>
+       <result property="propName"           column="propName"/>       
+       <result property="onLoadScript"       column="ON_LOAD_SCRIPT"/>
+       <result property="screenDesc"         column="DYN_SCREEN_DESC"/>
+       <result property="currElemMode"       column="currElemMode"/>
+       <result property="scrTableId"		 column="TABLE_ID"/>
+       <result property="scrGridFlag"		 column="GRID_YN"/>
+       <result property="lookupDesc"		 column="lookupDesc"/>
+       <result property="topPos"		     column="topPos"/>
+       <result property="leftPos"		     column="leftPos"/>
+       <result property="widthProp"		     column="widthProp"/>
+       <result property="heightProp"		 column="heightProp"/>       
+       <result property="onChangeProp"		 column="onChangeProp"/>       
+       <result property="stepperProp"		 column="stepperProp"/>       
+       <collection property="elemDets" ofType="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVO">
+	       <result property="PROPERTY_CODE"             column="PROPERTY_CODE"/>
+	       <result property="PROPERTY_VALUE"            column="PROPERTY_VALUE"/>
+	       <result property="PROPERTY_EXPRESSION_VALUE" column="PROPERTY_EXPRESSION_VALUE"/>
+	       <result property="ELEMENT_ID" 				column="ELEMENT_ID"/>
+       </collection>
+   </resultMap>   
+   
+   <select id="returnScreenElementsDataNew" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="returnScreenElementsDataMapNew">
+	SELECT * FROM
+	(	
+	SELECT SD.DYN_SCREEN_ID
+	      ,SD.DYN_SCREEN_DESC
+	      ,SD.ON_LOAD_SCRIPT
+	      ,SE.ELEMENT_ID
+	      ,SE.ELEMENT_TYPE_CODE
+	      ,ED.PROPERTY_CODE
+	      ,ED.PROPERTY_VALUE
+	      ,ED.PROPERTY_EXPRESSION_VALUE
+	      ,SE.TECH_ID
+	      ,SE.PARENT_TECH_ID
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'id') as ID
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'name') as propName             
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'mode') as currElemMode
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'lookupDesc') as lookupDesc
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'top') as topPos
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'left') as leftPos
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'width') as widthProp
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'height') as heightProp             
+          ,(SELECT <if test="isSybase == 1">CONVERT(VARCHAR(4000),</if>ED1.PROPERTY_EXPRESSION_VALUE<if test="isSybase == 1">)</if>
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'onChange') as onChangeProp             
+          ,(SELECT ED1.PROPERTY_VALUE
+              FROM SYS_DYN_SCREEN_ELEMENTS_DET ED1
+             WHERE ED1.ELEMENT_ID = ED.ELEMENT_ID AND ED1.PROPERTY_CODE = 'stepper') as stepperProp             
+	      ,SCT.TABLE_ID  
+	      ,SCT.GRID_YN
+          ,(CASE WHEN SE.PARENT_TECH_ID IS NULL THEN SE.TECH_ID ELSE SE.PARENT_TECH_ID END) as FOR_ORDER_PARENT_ID
+	  FROM SYS_DYN_SCREEN_DEF SD LEFT OUTER JOIN SYS_DYN_SCREEN_TABLE SCT
+   								   ON SD.DYN_SCREEN_ID = SCT.DYN_SCREEN_ID
+   		   ,SYS_DYN_SCREEN_ELEMENTS SE,SYS_DYN_SCREEN_ELEMENTS_DET ED
+	 WHERE SE.ELEMENT_ID    = ED.ELEMENT_ID
+	   AND SD.DYN_SCREEN_ID = SE.DYN_SCREEN_ID
+	    <choose>
+          <when test='fromServiceCall == true'>
+           AND ED.PROPERTY_CODE NOT IN ('id','mode','lookupDesc','width','height','onChange','stepper')
+          </when>
+          <otherwise>
+           AND ED.PROPERTY_CODE NOT IN ('id','name','mode','lookupDesc','top','left','width','height','onChange','stepper')
+          </otherwise>
+        </choose>
+	   AND SD.DYN_SCREEN_ID = #{screenId}
+	)TBL     
+	ORDER BY TBL.FOR_ORDER_PARENT_ID,TBL.ELEMENT_ID ASC
+   </select>
+   <select id="linkedElements" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType="com.path.vo.common.screengenerator.LinkedElementsCO"> 
+	SELECT (SELECT D.PROPERTY_VALUE
+	          FROM SYS_DYN_SCREEN_ELEMENTS_DET D 
+	         WHERE D.PROPERTY_CODE = 'id' 
+	           AND D.ELEMENT_ID = DET.ELEMENT_ID) AS ID
+		  ,(SELECT D.PROPERTY_VALUE
+			  FROM SYS_DYN_SCREEN_ELEMENTS_DET D 
+			 WHERE D.PROPERTY_CODE = 'name' 
+			   AND D.ELEMENT_ID = DET.ELEMENT_ID) AS NAME	           
+	      ,DET.PROPERTY_EXPRESSION_VALUE AS EXPRESSION
+	  FROM SYS_DYN_SCREEN_ELEMENTS_DET DET,SYS_DYN_SCREEN_ELEMENTS E
+	 WHERE DET.PROPERTY_EXPRESSION_VALUE IS NOT NULL
+	   AND (DET.PROPERTY_EXPRESSION_VALUE LIKE #{paramId}||' %'
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE #{paramId}||'=%'
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE '% '||#{paramId}||''
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE '%='||#{paramId}||''
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE '% '||#{paramId}||' %'
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE '%='||#{paramId}||' %'
+	        OR DET.PROPERTY_EXPRESSION_VALUE LIKE '% '||#{paramId}||'=%')
+	   AND DET.PROPERTY_CODE IN ('visible','readOnly','required','validate','value')
+	   AND DET.ELEMENT_ID = E.ELEMENT_ID
+	   AND E.DYN_SCREEN_ID = #{screenId}   
+   </select>
+
+   
+   <sql id="dynScreenQuery">
+     SELECT DYN_SCREEN_ID
+           ,DYN_SCREEN_DESC 
+       FROM SYS_DYN_SCREEN_DEF
+      <if test='!"OADM".equals(currAppName)'>
+      WHERE OMNI_SCREEN_YN = '0' 
+      </if> 
+   </sql>
+   <resultMap id="dynScreensListMap" type="com.path.dbmaps.vo.SYS_DYN_SCREEN_DEFVO">
+     <result property="DYN_SCREEN_ID"   column="DYN_SCREEN_ID"/>
+     <result property="DYN_SCREEN_DESC" column="DYN_SCREEN_DESC"/>
+   </resultMap>
+   <select id="dynScreensList"
+	        resultMap="dynScreensListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="generatorMapper.dynScreenQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="dynScreensListCount"  resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="generatorMapper.dynScreenQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+    <sql id="screenMainInfoQuery">
+		SELECT DEF.DYN_SCREEN_ID
+		      ,DEF.DYN_SCREEN_DESC
+		      ,DEF.PROG_REF
+		      ,DEF.APP_NAME
+		      ,ON_LOAD_SCRIPT
+	          ,ST.TABLE_ID
+	          ,ST.GRID_YN
+	          ,DEF.OMNI_SCREEN_YN
+	          ,(SELECT T.TABLE_TECH_NAME FROM SYS_DYN_TABLE T WHERE T.TABLE_ID = ST.TABLE_ID) AS TABLE_TECH_NAME
+	          ,(SELECT T.TABLE_DESC FROM SYS_DYN_TABLE T WHERE T.TABLE_ID = ST.TABLE_ID) AS TABLE_DESC
+	      FROM SYS_DYN_SCREEN_DEF DEF LEFT OUTER JOIN SYS_DYN_SCREEN_TABLE ST
+	        ON DEF.DYN_SCREEN_ID = ST.DYN_SCREEN_ID
+		 WHERE DEF.DYN_SCREEN_ID = #{screenId}    
+    </sql>
+    <resultMap id="returnScreenMainInfoMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+       <result property="sysDynScreenDefVO.DYN_SCREEN_ID"    column="DYN_SCREEN_ID"/>
+       <result property="sysDynScreenDefVO.DYN_SCREEN_DESC"  column="DYN_SCREEN_DESC"/>
+       <result property="sysDynScreenDefVO.PROG_REF"         column="PROG_REF"/>
+       <result property="sysDynScreenDefVO.APP_NAME"         column="APP_NAME"/>
+       <result property="sysDynScreenDefVO.ON_LOAD_SCRIPT"   column="ON_LOAD_SCRIPT"/>
+       <result property="scrTableId"       column="TABLE_ID"/>
+       <result property="scrTableTechName" column="TABLE_TECH_NAME"/>
+       <result property="scrTableDesc"     column="TABLE_DESC"/>
+       <result property="scrGridFlag"      column="GRID_YN"/>
+       <result property="omniChannelScr"   column="OMNI_SCREEN_YN"/>
+       
+    </resultMap>
+    <select id="returnScreenMainInfo" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="returnScreenMainInfoMap">
+      <include refid="generatorMapper.screenMainInfoQuery"/>
+    </select>
+    <resultMap id="returnElementPropDetailsMap" type="com.path.vo.common.screengenerator.ElementPropertiesDetCO">
+       <result property="elementId"         column="ELEMENT_ID"/> 
+       <result property="propertyCode"      column="PROPERTY_CODE"/> 
+       <result property="propertyValue"     column="PROPERTY_VALUE"/> 
+       <result property="propertyValueExpr" column="PROPERTY_EXPRESSION_VALUE"/> 
+       <result property="dataType"          column="DATA_TYPE"/> 
+       <result property="layoutType"        column="LAYOUT_TYPE"/> 
+       <result property="dataLength"        column="DATA_LENGTH"/> 
+       <result property="labelDesc"         column="LABELDESC"/> 
+    </resultMap>
+    <select id="returnElementPropDetails" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="returnElementPropDetailsMap">
+    SELECT #{elementId} AS ELEMENT_ID
+          ,PD.PROPERTY_CODE
+          ,(SELECT VALUE_DESC
+              FROM SYS_PARAM_LOV_TRANS 
+             WHERE LOV_TYPE_ID  = #{lovTypeId} 
+               AND VALUE_CODE = PD.PROPERTY_CODE
+               AND LANG_CODE = #{langCode}) AS LABELDESC
+          ,PD.DATA_TYPE
+          ,PD.LAYOUT_TYPE
+          ,PD.DATA_LENGTH
+          ,ED.PROPERTY_VALUE
+          ,ED.PROPERTY_EXPRESSION_VALUE  
+      FROM SYS_DYN_SCREEN_PROPERTY_DET PD LEFT OUTER JOIN SYS_DYN_SCREEN_ELEMENTS_DET ED 
+        on PD.PROPERTY_CODE = ED.PROPERTY_CODE
+        <choose>
+          <when test='newElem=="true"'>
+          AND ED.ELEMENT_ID = -1
+          </when>
+          <otherwise>
+          AND ED.ELEMENT_ID = #{elementId}
+          </otherwise>
+        </choose>
+     WHERE (PD.ELEMENT_TYPE_CODE = #{elementType} OR PD.ELEMENT_TYPE_CODE = '0')
+     <choose>
+          <when test="omniFlagScr">
+              AND (PD.SPECIFIC_MODULE = '0' OR PD.SPECIFIC_MODULE = '1')  
+          </when>
+          <otherwise>
+              AND PD.SPECIFIC_MODULE = '0'
+          </otherwise>
+     </choose>
+     ORDER BY PROPERTY_CODE ASC   
+    </select>
+    <delete id="deleteScreen" parameterType="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+    BEGIN
+       DELETE 
+         FROM SYS_DYN_SCREEN_TABLE 
+        WHERE DYN_SCREEN_ID= #{sysDynScreenDefVO.DYN_SCREEN_ID}<if test="isOracle == 1">;</if>
+    
+		DELETE
+		  FROM SYS_DYN_SCREEN_ELEMENTS_DET 
+		 WHERE ELEMENT_ID IN (SELECT ELEMENT_ID 
+		                        FROM SYS_DYN_SCREEN_ELEMENTS 
+		                       WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID})<if test="isOracle == 1">;</if>
+		
+		DELETE
+		  FROM SYS_DYN_SCREEN_ELEMENTS
+		 WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}<if test="isOracle == 1">;</if>
+		 
+		DELETE 
+		  FROM SYS_DYN_SCREEN_DEF 
+		 WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}<if test="isOracle == 1">;</if>    
+    END<if test="isOracle == 1">;</if>
+    </delete>
+    <select id="checkQueryValidation" parameterType="string" resultType="int">
+      SELECT COUNT(1) FROM
+      (
+       ${value}
+      )TBL
+    </select>
+    <delete id="deleteElements" parameterType="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+    BEGIN      	      
+	DELETE FROM SYS_PARAM_ELM_DYN_SCRN_MAP_DET
+	 WHERE TO_ELEMENT_ID IN (SELECT ELEMENT_ID 
+	                           FROM SYS_DYN_SCREEN_ELEMENTS 
+	                          WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}
+	                            AND ELEMENT_ID NOT IN 
+      <foreach item="item" index="index" open="(" close=")" separator="," collection="existElemIds" >
+         #{item}
+      </foreach>)<if test="isOracle == 1">;</if> 
+      
+     DELETE 
+       FROM SYS_DYN_SCREEN_ELEMENTS_DET
+      WHERE ELEMENT_ID IN (SELECT ELEMENT_ID 
+                             FROM SYS_DYN_SCREEN_ELEMENTS 
+                            WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}) 
+        AND ELEMENT_ID NOT IN
+      <foreach item="item" index="index" open="(" close=")" separator="," collection="existElemIds" >
+          #{item}
+      </foreach><if test="isOracle == 1">;</if>
+
+	DELETE
+	  FROM SYS_DYN_SCREEN_ELEMENTS
+     WHERE DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID}
+       AND ELEMENT_ID NOT IN
+      <foreach item="item" index="index" open="(" close=")" separator="," collection="existElemIds" >
+         #{item}
+      </foreach><if test="isOracle == 1">;</if>
+    END<if test="isOracle == 1">;</if>
+    </delete>
+
+	<resultMap id="returnElementsListMap" type="selectCO">
+		<result column="ELEMENT_ID" property="code" />
+		<result column="SCREENNAME" property="descValue" />
+	</resultMap>
+
+	<select id="returnLinkedElementsList"
+		parameterType="com.path.vo.common.screengenerator.DynamicScreenCreatorCO"
+		resultMap="returnElementsListMap">
+		SELECT SED.PROPERTY_VALUE AS ELEMENT_ID, (SELECT
+		CASE WHEN #{langCode} = 'AR'
+		THEN OPT.MENU_TITLE_ARAB
+		WHEN #{langCode} = 'FR'
+		THEN OPT.MENU_TITLE_FR
+		ELSE OPT.MENU_TITLE_ENG
+		END
+		FROM OPT
+		WHERE OPT.PROG_REF = (SELECT CASE WHEN OPTS.PARENT_REF IS NOT NULL AND
+		OPTS.PARENT_REF != 'ROOT' THEN OPTS.PARENT_REF ELSE OPTS.PROG_REF END
+		FROM
+		OPT OPTS WHERE OPTS.PROG_REF = FG.FROM_FLD_PROG_REF AND OPTS.APP_NAME =
+		'RET')
+		AND OPT.APP_NAME = FG.FROM_FLD_APP_NAME) <choose> <when test="isSQLServer == 1"> + </when> <otherwise> || </otherwise></choose> 
+												 ' - ' 
+												 <choose> <when test="isSQLServer == 1"> + </when> <otherwise> || </otherwise></choose>
+		(SELECT
+		CASE WHEN #{langCode} = 'AR'
+		THEN OPT.MENU_TITLE_ARAB
+		WHEN #{langCode} = 'FR'
+		THEN OPT.MENU_TITLE_FR
+		ELSE OPT.MENU_TITLE_ENG
+		END
+		FROM OPT
+		WHERE OPT.PROG_REF = FG.FROM_FLD_PROG_REF
+		AND OPT.APP_NAME = FG.FROM_FLD_APP_NAME
+		AND OPT.PARENT_REF IS NOT NULL AND OPT.PARENT_REF != 'ROOT') AS
+		SCREENNAME
+
+		FROM SYS_DYN_SCREEN_ELEMENTS SE, SYS_DYN_SCREEN_ELEMENTS_DET SED,
+		SYS_PARAM_ELM_DYN_SCRN_MAP_DET FG
+		WHERE SE.DYN_SCREEN_ID = #{sysDynScreenDefVO.DYN_SCREEN_ID} AND
+		<if test="existElemIds != null and existElemIds.size() > 0" >
+		SE.ELEMENT_ID NOT IN
+		<foreach item="item" index="index" open="(" close=")"
+			separator="," collection="existElemIds">
+			#{item}
+		</foreach>
+		AND
+		</if>
+		SE.ELEMENT_ID = FG.TO_ELEMENT_ID AND
+		SED.ELEMENT_ID = SE.ELEMENT_ID
+		AND
+		SED.PROPERTY_CODE = 'id' AND
+		FG.FROM_FLD_PROG_REF IS NOT NULL
+	</select>
+	<select id="returnInitialDynScrProperties" resultType="string">
+	   SELECT PROPERTY_CODE||'_'||ELEMENT_TYPE_CODE
+       FROM   SYS_DYN_SCREEN_PROPERTY_DET
+	</select>
+	<select id="checkGlobalActSrc" resultType="int" parameterType="java.util.List">
+	SELECT COUNT(1) 
+	  FROM SYS_PARAM_BTN_CUST 
+	 WHERE APP_NAME = 'IMAL' 
+	   AND PROG_REF = 'ROOT'
+	   AND BTN_ID IN
+	    <foreach item="item" index="index" collection="list"
+	        open="(" separator="," close=")">
+	          #{item}
+	    </foreach>
+	</select>
+	<select id="checkInternalBtnSrc" resultType="int" parameterType="java.util.List">
+	   SELECT COUNT(1) 
+	     FROM SYS_DYN_SCREEN_DEF 
+	    WHERE DYN_SCREEN_ID IN
+	    <foreach item="item" index="index" collection="list"
+	        open="(" separator="," close=")">
+	          #{item}
+	    </foreach>	   
+	</select>
+	
+	<sql id="dynScrGeneratedTblQuery">
+         SELECT TABLE_ID,TABLE_TECH_NAME,TABLE_DESC FROM SYS_DYN_TABLE	
+    </sql>
+	<resultMap id="dynScrGeneratedTblListMap" type="com.path.vo.common.screengenerator.DynScrTablesCO">
+	   <result property="TABLE_ID"        column="TABLE_ID"/>
+	   <result property="TABLE_TECH_NAME" column="TABLE_TECH_NAME"/>
+	   <result property="TABLE_DESC"      column="TABLE_DESC"/>
+	</resultMap>
+    <select id="dynScrGeneratedTblList"
+	        resultMap="dynScrGeneratedTblListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="generatorMapper.dynScrGeneratedTblQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dynScrGeneratedTblListCount"  resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="generatorMapper.dynScrGeneratedTblQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 
+	<sql id="dynScrTablesQuery">
+		SELECT TD.TABLE_ID
+		      ,T.TABLE_TECH_NAME
+		      ,T.TABLE_DESC
+		      ,TD.COL_ID
+		      ,TD.COL_TECH_NAME
+		      ,TD.COL_DESC
+		      ,TD.PRIMARY_KEY		      
+		      ,TD.COL_TYPE
+		      ,TD.VISIBLE_YN
+		      ,TD.COL_LENGTH
+		      ,TD.DECIMAL_VALUE
+		       <if test="lovTypeId!=null">
+		      ,S.VALUE_DESC COL_TYPE_DESC
+		       </if>
+		  FROM SYS_DYN_TABLE T,SYS_DYN_TABLE_DET TD 
+		  <if test="lovTypeId!=null">
+		  JOIN SYS_PARAM_LOV_TRANS S 
+		  <if test="isOracle == 1">ON TD.COL_TYPE = S.VALUE_CODE</if>
+		  <if test="isOracle == 0">ON CONVERT(VARCHAR,TD.COL_TYPE) = S.VALUE_CODE</if>
+		  </if>
+		  WHERE T.TABLE_ID = TD.TABLE_ID
+		  		<if test="tableId!=null">
+		 		AND TD.TABLE_ID = #{tableId,jdbcType=NUMERIC}
+		 		</if>
+		 		<if test="tableName!=null">
+		 		AND T.TABLE_TECH_NAME = #{tableName}
+		 		</if>
+		   		<if test="lovTypeId!=null">
+		   		AND S.LOV_TYPE_ID = #{lovTypeId}  
+		   		</if>	
+		   		<if test="langCode!=null">
+		   		AND S.LANG_CODE = #{langCode}
+		   		</if>
+		   		<if test="colType!=null">
+		   		AND TD.COL_TYPE = #{colType}
+		   		</if>
+	</sql>
+	<resultMap id="dynScrTablesListMap" type="com.path.vo.common.screengenerator.DynScrTableColsCO">
+	   <result property="TABLE_ID"        column="TABLE_ID"/>
+	   <result property="TABLE_TECH_NAME" column="TABLE_TECH_NAME"/>
+	   <result property="TABLE_DESC"      column="TABLE_DESC"/>
+	   <result property="COL_ID"          column="COL_ID"/>
+	   <result property="COL_TECH_NAME"   column="COL_TECH_NAME"/>
+	   <result property="COL_DESC"        column="COL_DESC"/>
+	   <result property="PRIMARY_KEY"     column="PRIMARY_KEY"/>
+	   <result property="COL_TYPE"        column="COL_TYPE"/>
+	   <result property="COL_TYPE_DESC"   column="COL_TYPE_DESC"/>
+	   <result property="VISIBLE_YN"	  column="VISIBLE_YN"/>
+	   <result property="COL_LENGTH"   	  column="COL_LENGTH"/>
+	   <result property="DECIMAL_VALUE"   column="DECIMAL_VALUE"/>
+	</resultMap>
+    <select id="dynScrTablesList"
+	        resultMap="dynScrTablesListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="generatorMapper.dynScrTablesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dynScrTablesListCount"  resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="generatorMapper.dynScrTablesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 <select id="checkTableNameExisting" resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+       	<choose>
+		  <when test="isOracle == 1">SELECT COUNT(1) FROM USER_TABLES WHERE TABLE_NAME = #{tableName}</when>
+		  <otherwise>SELECT COUNT(1) FROM sysobjects o WHERE o.type = 'U' AND o.name = #{tableName}</otherwise>
+		</choose>
+	 </select>
+	 <update id="generateDynScrTable" parameterType="com.path.vo.common.screengenerator.DynScrTablesCO">
+	    <![CDATA[${createTblScript}]]>
+	 </update>
+	 <select id="selectMaxTableId" resultType="int">
+	   SELECT CASE 
+	            WHEN MAX(TABLE_ID) IS NULL 
+	            THEN 0
+	            ELSE MAX(TABLE_ID) 
+	          END 
+	     FROM SYS_DYN_TABLE
+	 </select>
+	<insert id="insertTableDataInfo" parameterType="com.path.vo.common.screengenerator.DynScrTablesCO">
+		BEGIN
+		INSERT INTO
+		SYS_DYN_TABLE(TABLE_ID,TABLE_TECH_NAME,TABLE_DESC,CREATED_BY)VALUES(#{TABLE_ID},#{TABLE_TECH_NAME},#{TABLE_DESC},#{createdBy})
+		<if test="isOracle == 1">;</if>
+		
+		<if test="isOracle == 1">
+			<foreach collection="colsLst" item="dynScrTableColsCO" separator=";">
+				INSERT INTO SYS_DYN_TABLE_DET(
+				COL_ID
+				,TABLE_ID
+				,COL_TECH_NAME
+				,COL_DESC
+				,COL_TYPE
+				,PRIMARY_KEY
+				,VISIBLE_YN
+				,CREATED_BY
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+				,COL_LENGTH
+   			   </if>
+     			 <if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+				,DECIMAL_VALUE
+     			 </if>
+				)
+				SELECT
+				(
+				CASE
+				WHEN
+				(SELECT MAX(COL_ID) FROM SYS_DYN_TABLE_DET) IS NULL
+				THEN
+				1
+				ELSE
+				(SELECT MAX(COL_ID)+1 FROM SYS_DYN_TABLE_DET)
+				END
+				)
+				,#{TABLE_ID}
+				,#{dynScrTableColsCO.COL_TECH_NAME}
+				,#{dynScrTableColsCO.COL_DESC}
+				,#{dynScrTableColsCO.COL_TYPE}
+				,#{dynScrTableColsCO.PRIMARY_KEY}
+				,#{dynScrTableColsCO.VISIBLE_YN}
+				,#{createdBy}
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+				,#{dynScrTableColsCO.COL_LENGTH,jdbcType=NUMERIC}
+   			   </if>
+     			 <if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+				,#{dynScrTableColsCO.DECIMAL_VALUE,jdbcType=NUMERIC}
+     			 </if>
+				FROM DUAL
+			</foreach>
+			;
+			END;
+		</if>
+		<if test="isOracle == 0">
+			<foreach collection="colsLst" item="dynScrTableColsCO" >
+				INSERT INTO SYS_DYN_TABLE_DET(
+				COL_ID
+				,TABLE_ID
+				,COL_TECH_NAME
+				,COL_DESC
+				,COL_TYPE
+				,PRIMARY_KEY
+				,VISIBLE_YN
+				,CREATED_BY
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+				,COL_LENGTH
+   			   </if>
+     			 <if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+				,DECIMAL_VALUE
+     			 </if>
+				)
+				SELECT
+				(
+				CASE
+				WHEN
+				(SELECT MAX(COL_ID) FROM SYS_DYN_TABLE_DET) IS NULL
+				THEN
+				1
+				ELSE
+				(SELECT MAX(COL_ID)+1 FROM SYS_DYN_TABLE_DET)
+				END
+				)
+				,#{TABLE_ID}
+				,#{dynScrTableColsCO.COL_TECH_NAME}
+				,#{dynScrTableColsCO.COL_DESC}
+				,CONVERT(NUMERIC,#{dynScrTableColsCO.COL_TYPE})
+				,#{dynScrTableColsCO.PRIMARY_KEY}
+				,#{dynScrTableColsCO.VISIBLE_YN}
+				,#{createdBy}
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+				,#{dynScrTableColsCO.COL_LENGTH,jdbcType=NUMERIC}
+   			   	</if>
+     			 <if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+				,#{dynScrTableColsCO.DECIMAL_VALUE,jdbcType=NUMERIC}
+     			 </if>
+				FROM DUAL
+			</foreach>
+			END
+		</if>
+	</insert>
+
+	<insert id="insertScreenTableInfo" parameterType="screenGeneratorSC">
+		INSERT INTO SYS_DYN_SCREEN_TABLE (DYN_SCREEN_ID
+		,TABLE_ID
+		,CREATED_BY
+		,CREATION_DATE
+		,MODIFIED_BY
+		,MODIFIED_DATE
+		,GRID_YN
+		)
+		VALUES(#{screenId}
+		,#{tableId}
+		,#{userId}
+		,<include refid="commonLibMapper.systemDate" />
+		,#{userId}
+		,<include refid="commonLibMapper.systemDate" />
+		,#{scrGridFlag}
+		)
+	</insert>
+	<update id="updateScreenTableInfo" parameterType="screenGeneratorSC">
+		UPDATE SYS_DYN_SCREEN_TABLE
+		SET TABLE_ID = #{tableId}
+		,MODIFIED_BY = #{userId}
+		,MODIFIED_DATE = <include refid="commonLibMapper.systemDate" />
+		,GRID_YN = #{scrGridFlag}
+		WHERE DYN_SCREEN_ID = #{screenId}
+	</update>
+	<select id="screenTableCounter" parameterType="screenGeneratorSC" resultType="int">
+		SELECT COUNT(1)
+		FROM SYS_DYN_SCREEN_TABLE
+		WHERE DYN_SCREEN_ID = #{screenId}
+	</select>
+   
+	<select id="screenTableAssignedColsCounter" parameterType="screenGeneratorSC" resultType="int">
+		SELECT COUNT(1) 
+
+		FROM SYS_DYN_SCREEN_ELEMENTS_DET SDD, SYS_DYN_SCREEN_ELEMENTS SDE
+		
+		WHERE SDD.ELEMENT_ID = SDE.ELEMENT_ID
+		AND SDD.PROPERTY_CODE = 'relatedCol'
+		AND SDD.PROPERTY_VALUE IS NOT NULL
+		AND SDE.DYN_SCREEN_ID = #{screenId}
+	</select>
+	<select id="checkScreenTableLink" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultType="int">
+		SELECT COUNT(1)
+		FROM SYS_DYN_SCREEN_TABLE
+		WHERE TABLE_ID = #{tableId}
+	</select>
+	<select id="dynScrGeneratedTblInfo"
+	        resultMap="dynScrGeneratedTblListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	 SELECT  TABLE_ID,TABLE_TECH_NAME,TABLE_DESC FROM SYS_DYN_TABLE WHERE TABLE_ID = #{tableId}
+	 </select>
+	<delete id="deleteDynScrTable" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+    BEGIN
+		DELETE
+		  FROM SYS_DYN_TABLE_DET
+		 WHERE TABLE_ID = #{tableId}<if test="isOracle == 1">;</if>
+ 
+		DELETE
+		  FROM SYS_DYN_TABLE
+		 WHERE TABLE_ID = #{tableId}<if test="isOracle == 1">;</if>
+		
+		<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>('DROP TABLE ${tableName}')<if test="isOracle == 1">;</if>
+		
+    END<if test="isOracle == 1">;</if>
+    </delete>
+	<select id="retrieveTblIdFromTblName"
+	        resultType="int" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	 SELECT  MAX(TABLE_ID) FROM SYS_DYN_TABLE WHERE TABLE_TECH_NAME = #{tableName}
+	 </select>
+	 	 <update id="updateDynScrTableId"  parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	     BEGIN
+	     UPDATE SYS_DYN_SCREEN_TABLE SET TABLE_ID = #{scrTableId} WHERE TABLE_ID = #{tableId}<if test="isOracle == 1">;</if>
+	     
+		 DELETE FROM SYS_DYN_TABLE_DET  
+		 WHERE TABLE_ID = #{tableId}<if test="isOracle == 1">;</if>
+ 
+		DELETE FROM SYS_DYN_TABLE 
+		 WHERE TABLE_ID = #{tableId}<if test="isOracle == 1">;</if>
+    END<if test="isOracle == 1">;</if>
+	 </update>
+	<delete id="deleteTableAndScreenRelation" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 BEGIN
+	 DELETE
+	 FROM SYS_DYN_SCREEN_TABLE
+	 WHERE DYN_SCREEN_ID= #{screenId}<if test="isOracle == 1">;</if>
+	 END<if test="isOracle == 1">;</if>
+	 </delete>
+	 
+	<sql id="dynScrGridWidgetColsQuery">
+		SELECT TD.TABLE_ID
+		      ,T.TABLE_TECH_NAME
+		      ,T.TABLE_DESC
+		      ,TD.COL_ID
+		      ,TD.COL_TECH_NAME
+		      ,TD.COL_DESC
+		      ,TD.PRIMARY_KEY		      
+		      ,TD.COL_TYPE
+		      ,S.VALUE_DESC COL_TYPE_DESC
+		  FROM SYS_DYN_TABLE T,SYS_DYN_TABLE_DET TD 
+		  JOIN SYS_PARAM_LOV_TRANS S 
+		  <if test="isOracle == 1">ON TD.COL_TYPE = S.VALUE_CODE</if>
+		  <if test="isOracle == 0">ON CONVERT(VARCHAR,TD.COL_TYPE) = S.VALUE_CODE</if>
+		  WHERE T.TABLE_ID = TD.TABLE_ID
+		 		AND T.TABLE_TECH_NAME = #{tableName}
+		   		AND S.LOV_TYPE_ID = #{lovTypeId}
+		   		AND S.LANG_CODE = #{langCode}
+		   		<!-- col types date, Dateime, Number , Dacimal, Flag LOV 661-->
+		   		AND TD.COL_TYPE in (1,2,3,4,5)
+				AND VISIBLE_YN = 1
+	</sql>
+    <select id="dynScrGridWidgetColsList"
+	        resultMap="dynScrTablesListMap" 
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="generatorMapper.dynScrGridWidgetColsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	 <select id="dynScrGridWidgetColsListCount"  resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="generatorMapper.dynScrGridWidgetColsQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	 </select>
+	 
+ 	<sql id="dynScrExportQuery">
+	SELECT TD.TABLE_ID,
+                  T.TABLE_TECH_NAME,
+                  T.TABLE_DESC,
+                  TD.COL_ID,
+                  TD.COL_TECH_NAME,
+                  TD.COL_DESC,
+                  TD.PRIMARY_KEY,
+                  TD.COL_TYPE,
+                  TD.VISIBLE_YN,
+                  TD.COL_LENGTH,
+                  TD.DECIMAL_VALUE
+             FROM SYS_DYN_TABLE T, SYS_DYN_TABLE_DET TD
+            WHERE T.TABLE_ID = TD.TABLE_ID
+              AND TD.TABLE_ID = #{tableId}
+           union
+           select sd.TABLE_ID,
+                  s.TABLE_TECH_NAME,
+                  s.TABLE_DESC,
+                  sd.COL_ID,
+                  sd.COL_TECH_NAME,
+                  sd.COL_DESC,
+                  sd.PRIMARY_KEY,
+                  sd.COL_TYPE,
+                  sd.VISIBLE_YN,
+                  sd.COL_LENGTH,
+                  sd.DECIMAL_VALUE
+             from SYS_DYN_TABLE s, SYS_DYN_TABLE_DET sd
+            where s.TABLE_ID = sd.TABLE_ID
+              and TABLE_TECH_NAME in
+                  (select PROPERTY_VALUE
+                     From SYS_DYN_SCREEN_ELEMENTS     SE,
+                          SYS_DYN_SCREEN_ELEMENTS_DET ED
+                    WHERE SE.ELEMENT_ID = ED.ELEMENT_ID
+                      AND SE.DYN_SCREEN_ID = #{screenId}
+                      and PROPERTY_CODE = 'tableName'
+                      and PROPERTY_VALUE is not null)		
+	</sql>
+    <select id="returnExportedDynTablesCols"
+	        resultMap="dynScrTablesListMap"
+	        parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		<include refid="generatorMapper.dynScrExportQuery"/>
+	</select>
+	<update id="addUpdateDynScrTableCols" parameterType="com.path.vo.common.screengenerator.DynScrTablesCO">
+		<![CDATA[${createTblScript}]]>
+	</update>
+    <update id="updateTableColsDataInfo" parameterType="com.path.vo.common.screengenerator.DynScrTablesCO">
+    	BEGIN
+		<foreach collection="colsLst" item="dynScrTableColsCO">
+			UPDATE SYS_DYN_TABLE_DET
+				SET MODIFIED_BY = #{modifiedBy}
+				,MODIFIED_DATE = <include refid="commonLibMapper.systemDate"/>
+				<if test="dynScrTableColsCO.COL_DESC != null and !''.equals(dynScrTableColsCO.COL_DESC)">
+					,COL_DESC = #{dynScrTableColsCO.COL_DESC}
+				</if>
+				<if test="dynScrTableColsCO.VISIBLE_YN != null">
+					,VISIBLE_YN = #{dynScrTableColsCO.VISIBLE_YN}
+				</if>
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue">
+					,COL_LENGTH = #{dynScrTableColsCO.COL_LENGTH}
+				</if>
+				<if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue">
+					,DECIMAL_VALUE = #{dynScrTableColsCO.DECIMAL_VALUE}
+				</if>
+			WHERE TABLE_ID = #{dynScrTableColsCO.TABLE_ID} 
+			AND COL_ID = #{dynScrTableColsCO.COL_ID}
+			<if test="isOracle == 1">;</if>
+		</foreach>
+		END<if test="isOracle == 1">;</if>
+	</update>
+	<insert id="insertTableColsDataInfo" parameterType="com.path.vo.common.screengenerator.DynScrTablesCO">
+		BEGIN
+		<foreach collection="colsLst" item="dynScrTableColsCO">
+			INSERT INTO SYS_DYN_TABLE_DET(
+				COL_ID
+				,TABLE_ID
+				,COL_TECH_NAME
+				,COL_DESC
+				,COL_TYPE
+				,PRIMARY_KEY
+				,VISIBLE_YN
+				,CREATED_BY
+				<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+				,COL_LENGTH
+				</if>
+	     		<if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+				,DECIMAL_VALUE
+	     		 </if>
+			)
+			SELECT(
+				CASE WHEN (SELECT MAX(COL_ID) FROM SYS_DYN_TABLE_DET) IS NULL
+					THEN 1 ELSE (SELECT MAX(COL_ID)+1 FROM SYS_DYN_TABLE_DET)
+				END
+			)
+			,#{TABLE_ID}
+			,#{dynScrTableColsCO.COL_TECH_NAME}
+			,#{dynScrTableColsCO.COL_DESC}
+			<if test="isOracle == 1">
+			,#{dynScrTableColsCO.COL_TYPE}
+			</if>
+			<if test="isOracle == 0">
+			,CONVERT(NUMERIC,#{dynScrTableColsCO.COL_TYPE})
+			</if>
+			,#{dynScrTableColsCO.PRIMARY_KEY}
+			,#{dynScrTableColsCO.VISIBLE_YN}
+			,#{createdBy}
+			<if test="dynScrTableColsCO.COL_LENGTH != null and dynScrTableColsCO.COL_LENGTH != emptyBigDecimalValue" >
+			,#{dynScrTableColsCO.COL_LENGTH,jdbcType=NUMERIC}
+			</if>
+	     	<if test="dynScrTableColsCO.DECIMAL_VALUE != null and dynScrTableColsCO.DECIMAL_VALUE != emptyBigDecimalValue" >
+			,#{dynScrTableColsCO.DECIMAL_VALUE,jdbcType=NUMERIC}
+	     	</if>
+			FROM DUAL
+			<if test="isOracle == 1">;</if>
+		</foreach>
+		END<if test="isOracle == 1">;</if>
+	</insert>
+	 	<resultMap id="globalActivityListMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+     <result property="globalActivityId"   column="BTN_ID"/>
+     <result property="globalActivityDesc" column="DESCRIPTION"/>
+   	</resultMap>
+   	
+   	<select id="globalActivityListCount" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC"
+		resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryGlobalActivity" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>	
+	
+	<select id="globalActivityList" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="globalActivityListMap">
+		<include refid="queryGlobalActivity" />
+	</select>
+	
+	<select id="returnDependencyByGlobalActivityId" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="globalActivityListMap">
+		<include refid="queryGlobalActivity" />
+	</select>
+	
+	<sql id="queryGlobalActivity">
+	  	SELECT 	PBC.BTN_ID , PBC.DESCRIPTION
+	  	FROM 	SYS_PARAM_BTN_CUST PBC
+	  	WHERE 	EXISTS ( SELECT 1 FROM SYS_PARAM_BTN_CUST_ACTIONS PBCA , IM_IMAL_API A 
+	  						WHERE PBC.BTN_ID  = PBCA.BTN_ID 
+	  						AND   PBCA.OP_TYPE= 'A'
+	  						AND   PBCA.API_CODE = A.API_CODE 
+	  						AND   A.SERVICE_TYPE = 'R'   
+	  					)  	 
+	  						
+	  	<!-- Add one join to select rest service action only  -->
+	  	<if test='globalActivityId != null '>
+  	 		AND 	PBC.BTN_ID = #{globalActivityId,jdbcType=NUMERIC} 
+  		</if>
+  		
+  </sql>
+  
+  
+  <resultMap id="restOperationMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+		 <result property="restOperationId"       		column="API_CODE"/>
+		 <result property="restOperationDesc"     	column="DESCRIPTION"/>
+	</resultMap>
+	
+  <select id="loadRestOperation" resultMap="restOperationMap" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="restOperationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="loadRestOperationCount" resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="restOperationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+   <select id="returnDependencyByRestOperationId" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="restOperationMap">
+		<include refid="restOperationSQL" />
+	</select>
+	
+	<sql id="restOperationSQL">
+	 	SELECT 	A.API_CODE    ,A.DESCRIPTION
+       	FROM 	IM_IMAL_API A  , SYS_PARAM_BTN_CUST_ACTIONS ACS 
+		WHERE 	A.API_CODE = ACS.API_CODE 
+		AND 	ACS.BTN_ID = #{buttonId,jdbcType=NUMERIC}
+        <if test=' actionType != null and !"".equals(actionType)'>
+			AND A.SERVICE_TYPE = #{actionType,jdbcType=VARCHAR}
+		</if>
+        <if test='restOperationId != null'>
+	          AND  A.API_CODE = #{restOperationId,jdbcType=NUMERIC}
+	    </if> 
+  	</sql>
+	
+     <resultMap id="operationOutParameterMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+		 <result property="operationOutParameter"       		column="ARG_ID"/>
+		 <result property="operationOutParameterDesc"     		column="DESCRIPTION"/>
+		 <result property="restOperationOutArgName"     		column="ARG_NAME"/>
+	</resultMap>
+	
+  <select id="loadOperationOutParameter" resultMap="operationOutParameterMap" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="operationOutParameterSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="loadOperationOutParameterCount" resultType="int" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="operationOutParameterSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+   <select id="returnDependencyByOperationOutParameter" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC" resultMap="operationOutParameterMap">
+		<include refid="operationOutParameterSQL" />
+	</select>
+	
+	<sql id="operationOutParameterSQL">
+		SELECT R.ARG_ID,  R.DESCRIPTION , R.ARG_NAME 
+		FROM IM_API_ARGUMENT R 
+				INNER JOIN  SYS_PARAM_BTN_CUST_ACTIONS A
+					ON  ( R.API_CODE 	= A.API_CODE )
+		WHERE 	A.BTN_ID 	= #{buttonId,jdbcType=NUMERIC}
+		AND 	R.API_CODE 	= #{restOperationId,jdbcType=NUMERIC}
+		AND 	R.ARG_TYPE	= 'A' 
+	 	<if test=' operationOutParameter != null '>
+	 		AND R.ARG_ID = #{operationOutParameter,jdbcType=NUMERIC}
+	 	</if>
+	 	<if test=' mapDirection != null '>
+	         AND R.STATUS = #{mapDirection,jdbcType=VARCHAR}
+	    </if>
+  	</sql>
+  	
+  	<resultMap id="operationDefaultParameterMap" type="com.path.vo.common.screengenerator.DynamicScreenCreatorCO">
+		 <result property="operationOutParameter"       		column="ARG_ID"/>
+		 <result property="operationOutParameterDesc"     		column="DESCRIPTION"/>
+		 <result property="restOperationOutArgName"     		column="ARG_NAME"/>
+		 <result property="operationMapType"     				column="MAP_TYPE"/>
+		 <result property="operationMapValue"     				column="MAP_VALUE"/>
+	</resultMap>
+	
+  	
+  	<select id="returnOperationDefaultParameter" resultMap="operationDefaultParameterMap" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		<include refid="operationDefaultParameterSQL"/>
+	</select>		
+  	<sql id="operationDefaultParameterSQL">
+		SELECT R.ARG_ID,  R.DESCRIPTION , R.ARG_NAME , M.MAP_TYPE , M.MAP_VALUE
+		FROM IM_API_ARGUMENT R 
+				INNER JOIN  SYS_PARAM_BTN_CUST_ACTIONS A
+					ON  ( R.API_CODE 	= A.API_CODE )
+				INNER JOIN SYS_PARAM_ACTION_ARG_MAP M 
+					ON ( M.BTN_ID = A.BTN_ID AND
+						 M.OP_ID = A.OP_ID  AND
+						 M.ARG_ID = R.ARG_ID )  
+		WHERE 	A.BTN_ID 	= #{buttonId,jdbcType=NUMERIC}
+		AND 	R.API_CODE 	= #{restOperationId,jdbcType=NUMERIC}
+	 	<if test=' operationOutParameter != null '>
+	 		AND R.ARG_ID = #{operationOutParameter,jdbcType=NUMERIC}
+	 	</if>
+  	</sql>
+  	
+  	<select id="checkIfTableExists" parameterType="string" resultType="int">
+       SELECT COUNT(1) FROM ${value}
+    </select>
+  	<update id="createTableRestWebservice" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+    BEGIN
+		<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>('${tableCreationSyntax}')<if test="isOracle == 1">;</if>
+	END<if test="isOracle == 1">;</if>
+    </update>
+	<update id="truncateTableRestWebservice" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+    BEGIN
+		<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>('TRUNCATE TABLE ${tableName}')<if test="isOracle == 1">;</if>	
+    END<if test="isOracle == 1">;</if>
+    </update>
+    <update id="dropTableRestWebservice" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+    BEGIN
+		<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>('DROP TABLE ${tableName}')<if test="isOracle == 1">;</if>		
+    END<if test="isOracle == 1">;</if>
+    </update>
+    
+    <update id="deleteDataRestWebservice" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+    BEGIN
+    	<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>('DELETE FROM ${tableName}')<if test="isOracle == 1">;</if>
+    END<if test="isOracle == 1">;</if>
+    </update>
+    
+    <update id="insertDataRestWebservice" parameterType="com.path.vo.common.screengenerator.ScreenGeneratorSC">
+		BEGIN
+		<choose>
+		  <when test="isOracle == 1">EXECUTE IMMEDIATE</when>
+		  <otherwise>EXECUTE</otherwise>
+		</choose>(' ${dataInsertScript} ')<if test="isOracle == 1">;</if>
+    	END<if test="isOracle == 1">;</if>
+	</update>
+	
+</mapper>

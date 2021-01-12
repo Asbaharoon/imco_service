@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_COLLATERALS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_COLLATERALSVO" >
+    <id column="APPLICATION_ID" property="APPLICATION_ID" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL_CODE" property="COLLATERAL_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CARD_COLLATERAL_AMOUNT" property="CARD_COLLATERAL_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPLICATION_ID, BRANCH_CODE, COLLATERAL_CODE, COMP_CODE, CARD_COLLATERAL_AMOUNT
+  </sql>
+  <select id="selectCTSCARDS_COLLATERALS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_COLLATERALSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_COLLATERALS
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCARDS_COLLATERALS" parameterType="com.path.dbmaps.vo.CTSCARDS_COLLATERALSVOKey" >
+    delete from CTSCARDS_COLLATERALS
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCARDS_COLLATERALS" parameterType="com.path.dbmaps.vo.CTSCARDS_COLLATERALSVO" >
+    insert into CTSCARDS_COLLATERALS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        APPLICATION_ID,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        COLLATERAL_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CARD_COLLATERAL_AMOUNT != null and CARD_COLLATERAL_AMOUNT != emptyBigDecimalValue" >
+        CARD_COLLATERAL_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        #{APPLICATION_ID},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        #{COLLATERAL_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CARD_COLLATERAL_AMOUNT != null and CARD_COLLATERAL_AMOUNT != emptyBigDecimalValue" >
+        #{CARD_COLLATERAL_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_COLLATERALS" >
+    update CTSCARDS_COLLATERALS
+    <set >
+      <if test="CARD_COLLATERAL_AMOUNT != null" >
+        <choose >
+          <when test="CARD_COLLATERAL_AMOUNT == emptyBigDecimalValue" >
+            CARD_COLLATERAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CARD_COLLATERAL_AMOUNT = #{CARD_COLLATERAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCARDS_COLLATERALS" parameterType="com.path.dbmaps.vo.CTSCARDS_COLLATERALSVO" >
+    <include refid="sql_updateCTSCARDS_COLLATERALS" />
+  </update>
+</mapper>

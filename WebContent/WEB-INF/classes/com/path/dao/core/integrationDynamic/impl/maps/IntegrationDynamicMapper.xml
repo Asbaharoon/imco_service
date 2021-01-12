@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="integrationDynamicMapper">
+
+<resultMap id="resIntegrationDynamicListMap" type="com.path.vo.core.integrationDynamic.IntegrationDynamicCO">
+		<result property="cts_integrationVO.NUMBER1" 			        column="NUMBER1"/>
+	    <result property="cts_integrationVO.NUMBER2" 			        column="NUMBER2"/>
+	    <result property="cts_integrationVO.NUMBER3" 			        column="NUMBER3"/>
+	    <result property="cts_integrationVO.NUMBER4" 			        column="NUMBER4"/>
+	    <result property="cts_integrationVO.NUMBER5" 			        column="NUMBER5"/>
+	    <result property="cts_integrationVO.NUMBER6" 			        column="NUMBER6"/>
+	    <result property="cts_integrationVO.NUMBER7" 			        column="NUMBER7"/>
+	    <result property="cts_integrationVO.NUMBER8" 			        column="NUMBER8"/>
+	    <result property="cts_integrationVO.NUMBER9" 			        column="NUMBER9"/>
+	    <result property="cts_integrationVO.NUMBER10" 			        column="NUMBER10"/>
+	    <result property="cts_integrationVO.STRING1" 			        column="STRING1"/>
+	    <result property="cts_integrationVO.STRING2" 			        column="STRING2"/>
+	    <result property="cts_integrationVO.STRING3" 			        column="STRING3"/>
+	    <result property="cts_integrationVO.STRING4" 			        column="STRING4"/>
+	    <result property="cts_integrationVO.STRING5" 			        column="STRING5"/>
+	    <result property="cts_integrationVO.STRING6" 			        column="STRING6"/>
+	    <result property="cts_integrationVO.STRING7" 			        column="STRING7"/>
+	    <result property="cts_integrationVO.STRING8" 			        column="STRING8"/>
+	    <result property="cts_integrationVO.STRING9" 			        column="STRING9"/>
+	    <result property="cts_integrationVO.STRING10" 			        column="STRING10"/>
+	    <result property="cts_integrationVO.DATE1" 			            column="DATE1"/>
+	    <result property="cts_integrationVO.DATE2" 			            column="DATE2"/>
+	    <result property="cts_integrationVO.DATE3" 			            column="DATE3"/>
+	    <result property="cts_integrationVO.DATE4" 			            column="DATE4"/>
+	    <result property="cts_integrationVO.DATE5" 			            column="DATE5"/>
+	    <result property="cts_integrationVO.DATE6" 			            column="DATE6"/>
+	    <result property="cts_integrationVO.DATE7" 			            column="DATE7"/>
+	    <result property="cts_integrationVO.DATE8" 			            column="DATE8"/>
+	    <result property="cts_integrationVO.DATE9" 			            column="DATE9"/>
+	    <result property="cts_integrationVO.DATE10"			            column="DATE10"/>
+	    <result property="cts_integrationVO.CODE"			            column="CODE"/>
+	    <result property="cts_integ_paramVO.TYPE_CODE"			        column="TYPE_CODE"/>
+	    <result property="cts_integ_paramVO.BRIEF_DESC_ENG" 		    column="BRIEF_DESC_ENG"/>
+	    <result property="cts_integrationVO.DATE_OF_INSERTION"			column="DATE_OF_INSERTION"/>
+	    <result property="cts_integrationVO.AMOUNT"			            column="AMOUNT"/>
+	    <result property="cts_integrationVO.STATUS"			            column="STATUS"/>
+	    <result property="statusDesc" 					           	    column="STATUSDESC"/>
+	    <result property="cts_integrationVO.ADDITIONAL_REFERENCE"		column="ADDITIONAL_REFERENCE"/>
+	    <result property="cts_integrationVO.CTSTRS_BR"			        column="CTSTRS_BR"/>
+	    <result property="cts_integrationVO.TRS_NO"			            column="TRS_NO"/>
+	    <result property="cts_integrationVO.MODIFIED_DATE"			    column="MODIFIED_DATE"/>
+	    <result property="cts_integrationVO.CREDITING_DATE"			    column="CREDITING_DATE"/>
+	    <result property="cts_integrationVO.REASON"			            column="REASON"/>
+	    <result property="cts_integrationVO.DATE_CLAIMED"			    column="DATE_CLAIMED"/>
+	    <result property="cts_integrationVO.REFUND_DATE"			    column="REFUND_DATE"/>
+	    <result property="cts_integrationVO.EXPIRY_DATE"			    column="EXPIRY_DATE"/>
+	    <result property="cts_integrationVO.REFUND_TRS_BR"			    column="REFUND_TRS_BR"/>
+	    <result property="cts_integrationVO.REFUND_TRS_NO"			    column="REFUND_TRS_NO"/>
+	    <result property="cts_integrationVO.REFUND_CHQ_NO"			    column="REFUND_CHQ_NO"/>
+	    <result property="cts_integrationVO.DATE_STOPPED"			    column="DATE_STOPPED"/>
+	    <result property="cts_integrationVO.DATE_REJECTED"			    column="DATE_REJECTED"/>
+	    <result property="cts_integrationVO.COMP_CODE"			        column="COMP_CODE"/>
+	    
+	   
+	    
+	</resultMap>
+
+<select id="returndynamicIntegrationList" parameterType="com.path.vo.core.integrationDynamic.IntegrationDynamicSC" resultMap="resIntegrationDynamicListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="querydynamicIntegrationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returndynamicIntegrationListCount" parameterType="com.path.vo.core.integrationDynamic.IntegrationDynamicSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="querydynamicIntegrationSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+<!-- Query of the Grid data -->
+	<sql id="querydynamicIntegrationSQL">
+		
+SELECT
+	        CTS_INTEGRATION.COMP_CODE,
+			CTS_INTEGRATION.CODE,
+			CTS_INTEGRATION.DATE_OF_INSERTION,
+			CTS_INTEGRATION.AMOUNT,
+			CTS_INTEGRATION.STATUS,
+			(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+      	         FROM SYS_PARAM_LOV_TRANS
+      	         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTS_INTEGRATION.STATUS
+      	         AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+      	         AND SYS_PARAM_LOV_TRANS.LANG_CODE   = #{lang} ) STATUSDESC,
+			CTS_INTEGRATION.ADDITIONAL_REFERENCE,
+			CTS_INTEG_PARAM.TYPE_CODE  ,
+			CTS_INTEG_PARAM.BRIEF_DESC_ENG,
+			CTS_INTEGRATION.CTSTRS_BR,
+			CTS_INTEGRATION.TRS_NO,
+			CTS_INTEGRATION.MODIFIED_DATE,
+			CTS_INTEGRATION.CREDITING_DATE,
+			CTS_INTEGRATION.REASON,
+			CTS_INTEGRATION.DATE_CLAIMED,
+			CTS_INTEGRATION.REFUND_DATE,
+			CTS_INTEGRATION.EXPIRY_DATE,
+			CTS_INTEGRATION.REFUND_TRS_BR,
+			CTS_INTEGRATION.REFUND_TRS_NO,
+			CTS_INTEGRATION.REFUND_CHQ_NO,
+			CTS_INTEGRATION.DATE_STOPPED,
+			CTS_INTEGRATION.DATE_REJECTED,
+			CTS_INTEGRATION.STRING1,
+			CTS_INTEGRATION.STRING2,
+			CTS_INTEGRATION.STRING3,
+			CTS_INTEGRATION.STRING4,
+			CTS_INTEGRATION.STRING5,
+			CTS_INTEGRATION.STRING6,
+			CTS_INTEGRATION.STRING7,
+			CTS_INTEGRATION.STRING8,
+			CTS_INTEGRATION.STRING9,
+			CTS_INTEGRATION.STRING10,
+			CTS_INTEGRATION.NUMBER1,
+			CTS_INTEGRATION.NUMBER2,
+			CTS_INTEGRATION.NUMBER3,
+			CTS_INTEGRATION.NUMBER4,
+			CTS_INTEGRATION.NUMBER5,
+			CTS_INTEGRATION.NUMBER6,
+			CTS_INTEGRATION.NUMBER7,
+			CTS_INTEGRATION.NUMBER8,
+			CTS_INTEGRATION.NUMBER9,
+			CTS_INTEGRATION.NUMBER10,
+			CTS_INTEGRATION.DATE1,
+			CTS_INTEGRATION.DATE2,
+			CTS_INTEGRATION.DATE3,
+			CTS_INTEGRATION.DATE4,
+			CTS_INTEGRATION.DATE5,
+			CTS_INTEGRATION.DATE6,
+			CTS_INTEGRATION.DATE7,
+			CTS_INTEGRATION.DATE8,
+			CTS_INTEGRATION.DATE9,
+			CTS_INTEGRATION.DATE10
+			
+			FROM CTS_INTEGRATION ,CTS_INTEG_PARAM
+	        WHERE CTS_INTEG_PARAM.COMP_CODE   = CTS_INTEGRATION.COMP_CODE
+	        AND   CTS_INTEG_PARAM.TYPE_CODE   = CTS_INTEGRATION.TYPE_CODE 
+		 	AND   CTS_INTEGRATION.TYPE_CODE   = #{typeCode,jdbcType=NUMERIC}
+			AND   CTS_INTEGRATION.COMP_CODE   = #{compCode}
+			AND   CTS_INTEGRATION.STATUS      = #{status}
+			
+			<choose> 
+					 <when test="isSybase == 1" >
+					  AND CONVERT(DATETIME,CTS_INTEGRATION.CREDITING_DATE,103) <![CDATA[ <= ]]> #{runningDate,jdbcType=DATE}
+					 </when>
+					 <otherwise >
+					  AND TRUNC(CTS_INTEGRATION.CREDITING_DATE)  <![CDATA[ <= ]]> #{runningDate,jdbcType=DATE} 
+					 </otherwise>
+			</choose>
+			
+		
+	</sql>
+	
+<resultMap id="returnColumnsLkpList_map" type="com.path.vo.core.integrationDynamic.IntegrationDynamicCO">
+		
+	    <result property="cts_integ_paramVO.NUMBER1_DESC" 			        column="NUMBER1_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER2_DESC" 			        column="NUMBER2_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER3_DESC" 			        column="NUMBER3_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER4_DESC" 			        column="NUMBER4_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER5_DESC" 			        column="NUMBER5_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER6_DESC" 			        column="NUMBER6_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER7_DESC" 			        column="NUMBER7_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER8_DESC" 			        column="NUMBER8_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER9_DESC" 			        column="NUMBER9_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER10_DESC" 			        column="NUMBER10_DESC"/>
+	    <result property="cts_integ_paramVO.STRING1_DESC" 			        column="STRING1_DESC"/>
+	    <result property="cts_integ_paramVO.STRING2_DESC" 			        column="STRING2_DESC"/>
+	    <result property="cts_integ_paramVO.STRING3_DESC" 			        column="STRING3_DESC"/>
+	    <result property="cts_integ_paramVO.STRING4_DESC" 			        column="STRING4_DESC"/>
+	    <result property="cts_integ_paramVO.STRING5_DESC" 			        column="STRING5_DESC"/>
+	    <result property="cts_integ_paramVO.STRING6_DESC" 			        column="STRING6_DESC"/>
+	    <result property="cts_integ_paramVO.STRING7_DESC" 			        column="STRING7_DESC"/>
+	    <result property="cts_integ_paramVO.STRING8_DESC" 			        column="STRING8_DESC"/>
+	    <result property="cts_integ_paramVO.STRING9_DESC" 			        column="STRING9_DESC"/>
+	    <result property="cts_integ_paramVO.STRING10_DESC" 			        column="STRING10_DESC"/>
+	    <result property="cts_integ_paramVO.DATE1_DESC" 			        column="DATE1_DESC"/>
+	    <result property="cts_integ_paramVO.DATE2_DESC" 			        column="DATE2_DESC"/>
+	    <result property="cts_integ_paramVO.DATE3_DESC" 			        column="DATE3_DESC"/>
+	    <result property="cts_integ_paramVO.DATE4_DESC" 			        column="DATE4_DESC"/>
+	    <result property="cts_integ_paramVO.DATE5_DESC" 			        column="DATE5_DESC"/>
+	    <result property="cts_integ_paramVO.DATE6_DESC" 			        column="DATE6_DESC"/>
+	    <result property="cts_integ_paramVO.DATE7_DESC" 			        column="DATE7_DESC"/>
+	    <result property="cts_integ_paramVO.DATE8_DESC" 			        column="DATE8_DESC"/>
+	    <result property="cts_integ_paramVO.DATE9_DESC" 			        column="DATE9_DESC"/>
+	    <result property="cts_integ_paramVO.DATE10_DESC" 			        column="DATE10_DESC"/>
+	    <result property="cts_integ_paramVO.NUMBER1_DESC_ORDER" 			column="NUMBER1_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER2_DESC_ORDER" 			column="NUMBER2_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER3_DESC_ORDER" 			column="NUMBER3_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER4_DESC_ORDER" 			column="NUMBER4_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER5_DESC_ORDER" 			column="NUMBER5_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER6_DESC_ORDER" 			column="NUMBER6_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER7_DESC_ORDER" 			column="NUMBER7_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER8_DESC_ORDER" 			column="NUMBER8_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER9_DESC_ORDER" 			column="NUMBER9_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER10_DESC_ORDER" 			column="NUMBER10_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING1_DESC_ORDER" 			column="STRING1_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING2_DESC_ORDER" 			column="STRING2_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING3_DESC_ORDER" 			column="STRING3_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING4_DESC_ORDER" 			column="STRING4_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING5_DESC_ORDER" 			column="STRING5_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING6_DESC_ORDER" 			column="STRING6_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING7_DESC_ORDER" 			column="STRING7_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING8_DESC_ORDER" 			column="STRING8_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING9_DESC_ORDER" 			column="STRING9_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.STRING10_DESC_ORDER" 			column="STRING10_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE1_DESC_ORDER" 			    column="DATE1_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE2_DESC_ORDER" 			    column="DATE2_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE3_DESC_ORDER" 			    column="DATE3_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE4_DESC_ORDER" 			    column="DATE4_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE5_DESC_ORDER" 			    column="DATE5_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE6_DESC_ORDER" 			    column="DATE6_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE7_DESC_ORDER" 			    column="DATE7_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE8_DESC_ORDER" 			    column="DATE8_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE9_DESC_ORDER" 			    column="DATE9_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE10_DESC_ORDER" 			    column="DATE10_DESC_ORDER"/>
+	    <result property="cts_integ_paramVO.NUMBER1_DESC_COLUMN"		    column="NUMBER1_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER2_DESC_COLUMN" 			column="NUMBER2_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER3_DESC_COLUMN" 			column="NUMBER3_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER4_DESC_COLUMN" 			column="NUMBER4_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER5_DESC_COLUMN" 			column="NUMBER5_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER6_DESC_COLUMN" 			column="NUMBER6_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER7_DESC_COLUMN" 			column="NUMBER7_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER8_DESC_COLUMN" 			column="NUMBER8_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER9_DESC_COLUMN" 			column="NUMBER9_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER10_DESC_COLUMN" 			column="NUMBER10_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING1_DESC_COLUMN" 			column="STRING1_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING2_DESC_COLUMN" 			column="STRING2_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING3_DESC_COLUMN" 			column="STRING3_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING4_DESC_COLUMN" 			column="STRING4_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING5_DESC_COLUMN" 			column="STRING5_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING6_DESC_COLUMN" 			column="STRING6_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING7_DESC_COLUMN" 			column="STRING7_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING8_DESC_COLUMN" 			column="STRING8_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING9_DESC_COLUMN" 			column="STRING9_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.STRING10_DESC_COLUMN" 			column="STRING10_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE1_DESC_COLUMN" 			    column="DATE1_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE2_DESC_COLUMN" 			    column="DATE2_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE3_DESC_COLUMN" 			    column="DATE3_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE4_DESC_COLUMN" 			    column="DATE4_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE5_DESC_COLUMN" 			    column="DATE5_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE6_DESC_COLUMN" 			    column="DATE6_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE7_DESC_COLUMN" 			    column="DATE7_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE8_DESC_COLUMN" 			    column="DATE8_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE9_DESC_COLUMN" 			    column="DATE9_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.DATE10_DESC_COLUMN" 			column="DATE10_DESC_COLUMN"/>
+	    <result property="cts_integ_paramVO.NUMBER1_DESC_ROW" 			    column="NUMBER1_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER2_DESC_ROW" 			    column="NUMBER2_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER3_DESC_ROW" 			    column="NUMBER3_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER4_DESC_ROW" 			    column="NUMBER4_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER5_DESC_ROW" 			    column="NUMBER5_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER6_DESC_ROW" 			    column="NUMBER6_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER7_DESC_ROW" 			    column="NUMBER7_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER8_DESC_ROW" 			    column="NUMBER8_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER9_DESC_ROW" 			    column="NUMBER9_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.NUMBER10_DESC_ROW" 			    column="NUMBER10_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING1_DESC_ROW" 			    column="STRING1_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING2_DESC_ROW" 			    column="STRING2_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING3_DESC_ROW" 			    column="STRING3_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING4_DESC_ROW" 			    column="STRING4_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING5_DESC_ROW" 			    column="STRING5_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING6_DESC_ROW" 			    column="STRING6_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING7_DESC_ROW" 			    column="STRING7_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING8_DESC_ROW" 			    column="STRING8_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING9_DESC_ROW" 			    column="STRING9_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.STRING10_DESC_ROW" 			    column="STRING10_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE1_DESC_ROW" 			    column="DATE1_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE2_DESC_ROW" 			    column="DATE2_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE3_DESC_ROW" 			    column="DATE3_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE4_DESC_ROW" 			    column="DATE4_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE5_DESC_ROW" 			    column="DATE5_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE6_DESC_ROW" 			    column="DATE6_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE7_DESC_ROW" 			    column="DATE7_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE8_DESC_ROW" 			    column="DATE8_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE9_DESC_ROW" 			    column="DATE9_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.DATE10_DESC_ROW" 			    column="DATE10_DESC_ROW"/>
+	    <result property="cts_integ_paramVO.WINDOW_REFERENCE" 			    column="WINDOW_REFERENCE"/>
+	    <result property="cts_integ_paramVO.DATE_CLAIMED_ORDER" 			column="DATE_CLAIMED_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE_OF_INSERTION_ORDER" 		column="DATE_OF_INSERTION_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE_REJECTED_ORDER" 			column="DATE_REJECTED_ORDER"/>
+	    <result property="cts_integ_paramVO.DATE_STOPPED_ORDER" 			column="DATE_STOPPED_ORDER"/>
+	    <result property="cts_integ_paramVO.EXPIRY_DATE_ORDER" 			    column="EXPIRY_DATE_ORDER"/>
+	    <result property="cts_integ_paramVO.STATUS_ORDER" 			        column="STATUS_ORDER"/>
+	    <result property="cts_integ_paramVO.TRS_NO_ORDER" 			        column="TRS_NO_ORDER"/>
+	    <result property="cts_integ_paramVO.CTSTRS_BR_ORDER" 			    column="CTSTRS_BR_ORDER"/>
+	    <result property="cts_integ_paramVO.MODIFIED_DATE_ORDER" 			column="MODIFIED_DATE_ORDER"/>
+	    <result property="cts_integ_paramVO.REASON_ORDER" 			        column="REASON_ORDER"/>
+	    <result property="cts_integ_paramVO.ADDITIONAL_REFERENCE_ORDER" 	column="ADDITIONAL_REFERENCE_ORDER"/>
+	    <result property="cts_integ_paramVO.CREDITING_DATE_ORDER" 			column="CREDITING_DATE_ORDER"/>
+	    <result property="cts_integ_paramVO.AMOUNT_ORDER" 			        column="AMOUNT_ORDER"/>
+	    <result property="cts_integ_paramVO.REFUND_DATE_ORDER" 			    column="REFUND_DATE_ORDER"/>
+	    <result property="cts_integ_paramVO.REFUND_TRS_BR_ORDER" 			column="REFUND_TRS_BR_ORDER"/>
+	    <result property="cts_integ_paramVO.REFUND_TRS_NO_ORDER" 			column="REFUND_TRS_NO_ORDER"/>
+	    <result property="cts_integ_paramVO.REFUND_CHQ_NO_ORDER" 			column="REFUND_CHQ_NO_ORDER"/>
+	    <result property="cts_integ_paramVO.TYPE_CODE" 			            column="TYPE_CODE"/>
+	    <result property="cts_integ_paramVO.BRIEF_DESC_ENG" 			    column="BRIEF_DESC_ENG"/>
+	 
+	 
+	    
+	</resultMap>
+
+
+ <select id="returnColumnsLkpList" parameterType="com.path.vo.core.integrationDynamic.IntegrationDynamicSC" resultMap="returnColumnsLkpList_map">
+	SELECT 
+	 		CTS_INTEG_PARAM.NUMBER1_DESC ,
+			CTS_INTEG_PARAM.NUMBER2_DESC,
+			CTS_INTEG_PARAM.NUMBER3_DESC,
+			CTS_INTEG_PARAM.NUMBER4_DESC,
+			CTS_INTEG_PARAM.NUMBER5_DESC,
+			CTS_INTEG_PARAM.NUMBER6_DESC,
+			CTS_INTEG_PARAM.NUMBER7_DESC,
+			CTS_INTEG_PARAM.NUMBER8_DESC,
+			CTS_INTEG_PARAM.NUMBER9_DESC,
+			CTS_INTEG_PARAM.NUMBER10_DESC,
+			CTS_INTEG_PARAM.STRING1_DESC,
+			CTS_INTEG_PARAM.STRING2_DESC,
+			CTS_INTEG_PARAM.STRING3_DESC,
+			CTS_INTEG_PARAM.STRING4_DESC,
+			CTS_INTEG_PARAM.STRING5_DESC,
+			CTS_INTEG_PARAM.STRING6_DESC,
+			CTS_INTEG_PARAM.STRING7_DESC,
+			CTS_INTEG_PARAM.STRING8_DESC,
+			CTS_INTEG_PARAM.STRING9_DESC,
+			CTS_INTEG_PARAM.STRING10_DESC,
+			CTS_INTEG_PARAM.DATE1_DESC,
+			CTS_INTEG_PARAM.DATE2_DESC,
+			CTS_INTEG_PARAM.DATE3_DESC,
+			CTS_INTEG_PARAM.DATE4_DESC,
+			CTS_INTEG_PARAM.DATE5_DESC,
+			CTS_INTEG_PARAM.DATE6_DESC,
+			CTS_INTEG_PARAM.DATE7_DESC,
+			CTS_INTEG_PARAM.DATE8_DESC,
+			CTS_INTEG_PARAM.DATE9_DESC,
+			CTS_INTEG_PARAM.DATE10_DESC,
+			CTS_INTEG_PARAM.NUMBER1_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER2_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER3_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER4_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER5_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER6_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER7_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER8_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER9_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER10_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING1_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING2_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING3_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING4_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING5_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING6_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING7_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING8_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING9_DESC_ORDER,
+			CTS_INTEG_PARAM.STRING10_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE1_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE2_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE3_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE4_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE5_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE6_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE7_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE8_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE9_DESC_ORDER,
+			CTS_INTEG_PARAM.DATE10_DESC_ORDER,
+			CTS_INTEG_PARAM.NUMBER1_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER2_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER3_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER4_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER5_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER6_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER7_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER8_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER9_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER10_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING1_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING2_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING3_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING4_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING5_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING6_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING7_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING8_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING9_DESC_COLUMN,
+			CTS_INTEG_PARAM.STRING10_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE1_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE2_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE3_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE4_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE5_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE6_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE7_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE8_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE9_DESC_COLUMN,
+			CTS_INTEG_PARAM.DATE10_DESC_COLUMN,
+			CTS_INTEG_PARAM.NUMBER1_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER2_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER3_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER4_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER5_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER6_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER7_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER8_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER9_DESC_ROW,
+			CTS_INTEG_PARAM.NUMBER10_DESC_ROW,
+			CTS_INTEG_PARAM.STRING1_DESC_ROW,
+			CTS_INTEG_PARAM.STRING2_DESC_ROW,
+			CTS_INTEG_PARAM.STRING3_DESC_ROW,
+			CTS_INTEG_PARAM.STRING4_DESC_ROW,
+			CTS_INTEG_PARAM.STRING5_DESC_ROW,
+			CTS_INTEG_PARAM.STRING6_DESC_ROW,
+			CTS_INTEG_PARAM.STRING7_DESC_ROW,
+			CTS_INTEG_PARAM.STRING8_DESC_ROW,
+			CTS_INTEG_PARAM.STRING9_DESC_ROW,
+			CTS_INTEG_PARAM.STRING10_DESC_ROW,
+			CTS_INTEG_PARAM.DATE1_DESC_ROW,
+			CTS_INTEG_PARAM.DATE2_DESC_ROW,
+			CTS_INTEG_PARAM.DATE3_DESC_ROW,
+			CTS_INTEG_PARAM.DATE4_DESC_ROW,
+			CTS_INTEG_PARAM.DATE5_DESC_ROW,
+			CTS_INTEG_PARAM.DATE6_DESC_ROW,
+			CTS_INTEG_PARAM.DATE7_DESC_ROW,
+			CTS_INTEG_PARAM.DATE8_DESC_ROW,
+			CTS_INTEG_PARAM.DATE9_DESC_ROW,
+			CTS_INTEG_PARAM.DATE10_DESC_ROW,
+			CTS_INTEG_PARAM.WINDOW_REFERENCE,
+			CTS_INTEG_PARAM.DATE_CLAIMED_ORDER,
+			CTS_INTEG_PARAM.DATE_OF_INSERTION_ORDER,
+			CTS_INTEG_PARAM.DATE_REJECTED_ORDER,
+			CTS_INTEG_PARAM.DATE_STOPPED_ORDER,
+			CTS_INTEG_PARAM.EXPIRY_DATE_ORDER,
+			CTS_INTEG_PARAM.STATUS_ORDER,
+			CTS_INTEG_PARAM.TRS_NO_ORDER,
+			CTS_INTEG_PARAM.CTSTRS_BR_ORDER,
+			CTS_INTEG_PARAM.MODIFIED_DATE_ORDER,
+			CTS_INTEG_PARAM.REASON_ORDER,
+			CTS_INTEG_PARAM.ADDITIONAL_REFERENCE_ORDER,
+			CTS_INTEG_PARAM.CREDITING_DATE_ORDER,
+			CTS_INTEG_PARAM.AMOUNT_ORDER,
+			CTS_INTEG_PARAM.REFUND_DATE_ORDER,
+			CTS_INTEG_PARAM.REFUND_TRS_BR_ORDER,
+			CTS_INTEG_PARAM.REFUND_TRS_NO_ORDER,
+			CTS_INTEG_PARAM.REFUND_CHQ_NO_ORDER,
+			CTS_INTEG_PARAM.TYPE_CODE,
+			CTS_INTEG_PARAM.BRIEF_DESC_ENG
+			
+	FROM CTS_INTEG_PARAM 
+	WHERE  CTS_INTEG_PARAM.COMP_CODE  = #{compCode}
+    AND    CTS_INTEG_PARAM.TYPE_CODE  = #{typeCode,jdbcType=NUMERIC}
+
+</select>
+
+
+</mapper>

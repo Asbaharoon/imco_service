@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_TOP_UP_DEAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_TOP_UP_DEALVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRANSACTION_NO" property="TRANSACTION_NO" />
+    <id column="TRANSACTION_TYPE" property="TRANSACTION_TYPE" />
+    <result column="TOP_UP_DEAL_CY" property="TOP_UP_DEAL_CY" />
+    <result column="TOP_UP_DEAL_AMOUNT" property="TOP_UP_DEAL_AMOUNT" />
+    <result column="VALUE_DATE" property="VALUE_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRANSACTION_NO, TRANSACTION_TYPE, TOP_UP_DEAL_CY, TOP_UP_DEAL_AMOUNT, 
+    VALUE_DATE
+  </sql>
+  <select id="selectTRS_TOP_UP_DEAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_TOP_UP_DEALVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_TOP_UP_DEAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+      and TRANSACTION_TYPE = #{TRANSACTION_TYPE}
+  </select>
+  <delete id="deleteTRS_TOP_UP_DEAL" parameterType="com.path.dbmaps.vo.TRS_TOP_UP_DEALVOKey" >
+    delete from TRS_TOP_UP_DEAL
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+      and TRANSACTION_TYPE = #{TRANSACTION_TYPE}
+  </delete>
+  <insert id="insertTRS_TOP_UP_DEAL" parameterType="com.path.dbmaps.vo.TRS_TOP_UP_DEALVO" >
+    insert into TRS_TOP_UP_DEAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        TRANSACTION_NO,
+      </if>
+      <if test="TRANSACTION_TYPE != null" >
+        TRANSACTION_TYPE,
+      </if>
+      <if test="TOP_UP_DEAL_CY != null and TOP_UP_DEAL_CY != emptyBigDecimalValue" >
+        TOP_UP_DEAL_CY,
+      </if>
+      <if test="TOP_UP_DEAL_AMOUNT != null and TOP_UP_DEAL_AMOUNT != emptyBigDecimalValue" >
+        TOP_UP_DEAL_AMOUNT,
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        #{TRANSACTION_NO},
+      </if>
+      <if test="TRANSACTION_TYPE != null" >
+        #{TRANSACTION_TYPE},
+      </if>
+      <if test="TOP_UP_DEAL_CY != null and TOP_UP_DEAL_CY != emptyBigDecimalValue" >
+        #{TOP_UP_DEAL_CY},
+      </if>
+      <if test="TOP_UP_DEAL_AMOUNT != null and TOP_UP_DEAL_AMOUNT != emptyBigDecimalValue" >
+        #{TOP_UP_DEAL_AMOUNT},
+      </if>
+      <if test="VALUE_DATE != null" >
+        #{VALUE_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_TOP_UP_DEAL" >
+    update TRS_TOP_UP_DEAL
+    <set >
+      <if test="TOP_UP_DEAL_CY != null" >
+        <choose >
+          <when test="TOP_UP_DEAL_CY == emptyBigDecimalValue" >
+            TOP_UP_DEAL_CY = NULL ,
+          </when>
+          <otherwise >
+            TOP_UP_DEAL_CY = #{TOP_UP_DEAL_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOP_UP_DEAL_AMOUNT != null" >
+        <choose >
+          <when test="TOP_UP_DEAL_AMOUNT == emptyBigDecimalValue" >
+            TOP_UP_DEAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            TOP_UP_DEAL_AMOUNT = #{TOP_UP_DEAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VALUE_DATE != null" >
+        VALUE_DATE = #{VALUE_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+      and TRANSACTION_TYPE = #{TRANSACTION_TYPE}
+  </sql>
+  <update id="updateTRS_TOP_UP_DEAL" parameterType="com.path.dbmaps.vo.TRS_TOP_UP_DEALVO" >
+    <include refid="sql_updateTRS_TOP_UP_DEAL" />
+  </update>
+</mapper>

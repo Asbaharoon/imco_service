@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYNC_FIXED_MAPPING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYNC_FIXED_MAPPINGVO" >
+    <id column="BR_CODE" property="BR_CODE" />
+    <id column="COL_NBR" property="COL_NBR" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="IMAL_VALUE" property="IMAL_VALUE" />
+    <result column="EXT_SYS_VALUE" property="EXT_SYS_VALUE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BR_CODE, COL_NBR, ENTITY_CODE, LINE_NBR, IMAL_VALUE, EXT_SYS_VALUE
+  </sql>
+  <select id="selectSYNC_FIXED_MAPPING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYNC_FIXED_MAPPINGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYNC_FIXED_MAPPING
+    where BR_CODE = #{BR_CODE}
+      and COL_NBR = #{COL_NBR}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteSYNC_FIXED_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_FIXED_MAPPINGVOKey" >
+    delete from SYNC_FIXED_MAPPING
+    where BR_CODE = #{BR_CODE}
+      and COL_NBR = #{COL_NBR}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertSYNC_FIXED_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_FIXED_MAPPINGVO" >
+    insert into SYNC_FIXED_MAPPING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        BR_CODE,
+      </if>
+      <if test="COL_NBR != null and COL_NBR != emptyBigDecimalValue" >
+        COL_NBR,
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        ENTITY_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="IMAL_VALUE != null" >
+        IMAL_VALUE,
+      </if>
+      <if test="EXT_SYS_VALUE != null" >
+        EXT_SYS_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BR_CODE != null and BR_CODE != emptyBigDecimalValue" >
+        #{BR_CODE},
+      </if>
+      <if test="COL_NBR != null and COL_NBR != emptyBigDecimalValue" >
+        #{COL_NBR},
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="IMAL_VALUE != null" >
+        #{IMAL_VALUE},
+      </if>
+      <if test="EXT_SYS_VALUE != null" >
+        #{EXT_SYS_VALUE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYNC_FIXED_MAPPING" >
+    update SYNC_FIXED_MAPPING
+    <set >
+      <if test="IMAL_VALUE != null" >
+        IMAL_VALUE = #{IMAL_VALUE},
+      </if>
+      <if test="EXT_SYS_VALUE != null" >
+        EXT_SYS_VALUE = #{EXT_SYS_VALUE},
+      </if>
+    </set>
+    where BR_CODE = #{BR_CODE}
+      and COL_NBR = #{COL_NBR}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateSYNC_FIXED_MAPPING" parameterType="com.path.dbmaps.vo.SYNC_FIXED_MAPPINGVO" >
+    <include refid="sql_updateSYNC_FIXED_MAPPING" />
+  </update>
+</mapper>

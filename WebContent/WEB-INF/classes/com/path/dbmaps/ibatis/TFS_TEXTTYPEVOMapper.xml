@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_TEXTTYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_TEXTTYPEVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_REVERSED" property="DATE_REVERSED" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="STATUS" property="STATUS" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.TFS_TEXTTYPEVO" extends="BaseResultMap" >
+    <result column="DETAILS1_ENG" property="DETAILS1_ENG" />
+    <result column="DETAILS1_ARAB" property="DETAILS1_ARAB" />
+    <result column="DETAILS2_ENG" property="DETAILS2_ENG" />
+    <result column="DETAILS2_ARAB" property="DETAILS2_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, DOC_TYPE, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ENG, LONG_NAME_ARAB, 
+    DATE_CREATED, CREATED_BY, DATE_DELETED, DELETED_BY, DATE_APPROVED, APPROVED_BY, DATE_REVERSED, 
+    REVERSED_BY, STATUS
+  </sql>
+  <sql id="Blob_Column_List" >
+    DETAILS1_ENG, DETAILS1_ARAB, DETAILS2_ENG, DETAILS2_ARAB
+  </sql>
+  <select id="selectTFS_TEXTTYPE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPEVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from TFS_TEXTTYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+  </select>
+  <delete id="deleteTFS_TEXTTYPE" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPEVO" >
+    delete from TFS_TEXTTYPE
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+  </delete>
+  <insert id="insertTFS_TEXTTYPE" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPEVO" >
+    insert into TFS_TEXTTYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED,
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="DETAILS1_ENG != null" >
+        DETAILS1_ENG,
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        DETAILS1_ARAB,
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        DETAILS2_ENG,
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        DETAILS2_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        #{DATE_REVERSED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        #{REVERSED_BY},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="DETAILS1_ENG != null" >
+        #{DETAILS1_ENG},
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        #{DETAILS1_ARAB},
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        #{DETAILS2_ENG},
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        #{DETAILS2_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_TEXTTYPE" >
+    update TFS_TEXTTYPE
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED = #{DATE_REVERSED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        REVERSED_BY = #{REVERSED_BY},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="DETAILS1_ENG != null" >
+        DETAILS1_ENG = #{DETAILS1_ENG},
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        DETAILS1_ARAB = #{DETAILS1_ARAB},
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        DETAILS2_ENG = #{DETAILS2_ENG},
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        DETAILS2_ARAB = #{DETAILS2_ARAB},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+  </sql>
+  <update id="updateTFS_TEXTTYPE" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPEVO" >
+    <include refid="sql_updateTFS_TEXTTYPE" />
+  </update>
+</mapper>

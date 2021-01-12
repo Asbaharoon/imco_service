@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOMMITTEEGROUP_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOMMITTEEGROUP_DETVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="COMMITTEE_CODE" property="COMMITTEE_CODE" />
+    <result column="APPROVAL_HIERARCHY" property="APPROVAL_HIERARCHY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NBR, COMMITTEE_CODE, APPROVAL_HIERARCHY
+  </sql>
+  <select id="selectFMSCOMMITTEEGROUP_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUP_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOMMITTEEGROUP_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSCOMMITTEEGROUP_DET" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUP_DETVOKey" >
+    delete from FMSCOMMITTEEGROUP_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSCOMMITTEEGROUP_DET" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUP_DETVO" >
+    insert into FMSCOMMITTEEGROUP_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="COMMITTEE_CODE != null and COMMITTEE_CODE != emptyBigDecimalValue" >
+        COMMITTEE_CODE,
+      </if>
+      <if test="APPROVAL_HIERARCHY != null and APPROVAL_HIERARCHY != emptyBigDecimalValue" >
+        APPROVAL_HIERARCHY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="COMMITTEE_CODE != null and COMMITTEE_CODE != emptyBigDecimalValue" >
+        #{COMMITTEE_CODE},
+      </if>
+      <if test="APPROVAL_HIERARCHY != null and APPROVAL_HIERARCHY != emptyBigDecimalValue" >
+        #{APPROVAL_HIERARCHY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOMMITTEEGROUP_DET" >
+    update FMSCOMMITTEEGROUP_DET
+    <set >
+      <if test="COMMITTEE_CODE != null" >
+        <choose >
+          <when test="COMMITTEE_CODE == emptyBigDecimalValue" >
+            COMMITTEE_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMMITTEE_CODE = #{COMMITTEE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVAL_HIERARCHY != null" >
+        <choose >
+          <when test="APPROVAL_HIERARCHY == emptyBigDecimalValue" >
+            APPROVAL_HIERARCHY = NULL ,
+          </when>
+          <otherwise >
+            APPROVAL_HIERARCHY = #{APPROVAL_HIERARCHY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSCOMMITTEEGROUP_DET" parameterType="com.path.dbmaps.vo.FMSCOMMITTEEGROUP_DETVO" >
+    <include refid="sql_updateFMSCOMMITTEEGROUP_DET" />
+  </update>
+</mapper>

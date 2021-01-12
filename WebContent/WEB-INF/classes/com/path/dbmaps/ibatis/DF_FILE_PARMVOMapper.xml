@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_PARM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_PARMVO" >
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="PARM_NO" property="PARM_NO" />
+    <result column="PARM_NAME" property="PARM_NAME" />
+    <result column="PARM_DSC" property="PARM_DSC" />
+    <result column="PARM_TYPE" property="PARM_TYPE" />
+    <result column="DEFAULT_VALUE" property="DEFAULT_VALUE" />
+    <result column="SPECIFIC_VALUE_FLAG" property="SPECIFIC_VALUE_FLAG" />
+    <result column="PARM_STATUS" property="PARM_STATUS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FILE_CODE, PARM_NO, PARM_NAME, PARM_DSC, PARM_TYPE, DEFAULT_VALUE, SPECIFIC_VALUE_FLAG, 
+    PARM_STATUS
+  </sql>
+  <select id="selectDF_FILE_PARM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_PARMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_PARM
+    where FILE_CODE = #{FILE_CODE}
+      and PARM_NO = #{PARM_NO}
+  </select>
+  <delete id="deleteDF_FILE_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PARMVOKey" >
+    delete from DF_FILE_PARM
+    where FILE_CODE = #{FILE_CODE}
+      and PARM_NO = #{PARM_NO}
+  </delete>
+  <insert id="insertDF_FILE_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PARMVO" >
+    insert into DF_FILE_PARM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="PARM_NO != null and PARM_NO != emptyBigDecimalValue" >
+        PARM_NO,
+      </if>
+      <if test="PARM_NAME != null" >
+        PARM_NAME,
+      </if>
+      <if test="PARM_DSC != null" >
+        PARM_DSC,
+      </if>
+      <if test="PARM_TYPE != null" >
+        PARM_TYPE,
+      </if>
+      <if test="DEFAULT_VALUE != null" >
+        DEFAULT_VALUE,
+      </if>
+      <if test="SPECIFIC_VALUE_FLAG != null" >
+        SPECIFIC_VALUE_FLAG,
+      </if>
+      <if test="PARM_STATUS != null" >
+        PARM_STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="PARM_NO != null and PARM_NO != emptyBigDecimalValue" >
+        #{PARM_NO},
+      </if>
+      <if test="PARM_NAME != null" >
+        #{PARM_NAME},
+      </if>
+      <if test="PARM_DSC != null" >
+        #{PARM_DSC},
+      </if>
+      <if test="PARM_TYPE != null" >
+        #{PARM_TYPE},
+      </if>
+      <if test="DEFAULT_VALUE != null" >
+        #{DEFAULT_VALUE},
+      </if>
+      <if test="SPECIFIC_VALUE_FLAG != null" >
+        #{SPECIFIC_VALUE_FLAG},
+      </if>
+      <if test="PARM_STATUS != null" >
+        #{PARM_STATUS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_PARM" >
+    update DF_FILE_PARM
+    <set >
+      <if test="PARM_NAME != null" >
+        PARM_NAME = #{PARM_NAME},
+      </if>
+      <if test="PARM_DSC != null" >
+        PARM_DSC = #{PARM_DSC},
+      </if>
+      <if test="PARM_TYPE != null" >
+        PARM_TYPE = #{PARM_TYPE},
+      </if>
+      <if test="DEFAULT_VALUE != null" >
+        DEFAULT_VALUE = #{DEFAULT_VALUE},
+      </if>
+      <if test="SPECIFIC_VALUE_FLAG != null" >
+        SPECIFIC_VALUE_FLAG = #{SPECIFIC_VALUE_FLAG},
+      </if>
+      <if test="PARM_STATUS != null" >
+        PARM_STATUS = #{PARM_STATUS},
+      </if>
+    </set>
+    where FILE_CODE = #{FILE_CODE}
+      and PARM_NO = #{PARM_NO}
+  </sql>
+  <update id="updateDF_FILE_PARM" parameterType="com.path.dbmaps.vo.DF_FILE_PARMVO" >
+    <include refid="sql_updateDF_FILE_PARM" />
+  </update>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="occupationMapper">
+
+ <sql id="occupationListCommon">
+	<![CDATA[
+	SELECT
+			 OCCUPATIONS.OCCUPATION_CODE,
+			 OCCUPATIONS.BRIEF_DESC_ENG,
+			 OCCUPATIONS.BRIEF_DESC_ARAB,
+			 OCCUPATIONS.LONG_DESC_ENG,
+			 OCCUPATIONS.LONG_DESC_ARAB
+	FROM  OCCUPATIONS 
+	WHERE	 OCCUPATIONS.COMP_CODE  = #{compCode}
+		AND OCCUPATIONS.SECTOR_CODE = #{sectorCode}
+		AND OCCUPATIONS.SUB_SECTOR_CODE = #{subSectorCode}
+	]]>	 
+ </sql>
+ 
+ <resultMap id="occupationList_ResMap" type="occupationVO">
+	<id property="OCCUPATION_CODE" column="OCCUPATION_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="occupationList" resultMap="occupationList_ResMap" parameterType="occupationSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="occupationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="occupationListCount" resultType="int" parameterType="occupationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="occupationListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+   <select id="returnOccupationById" parameterType="occupationSC" resultType="occupationVO">
+		SELECT 
+			OCCUPATION_CODE,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+		FROM  OCCUPATIONS
+		WHERE OCCUPATIONS.COMP_CODE  = #{compCode}
+		AND   OCCUPATIONS.OCCUPATION_CODE  = #{occupationCode}
+		AND   OCCUPATIONS.SECTOR_CODE =  #{sectorCode,jdbcType=NUMERIC}
+		AND   OCCUPATIONS.SUB_SECTOR_CODE = #{subSectorCode,jdbcType=NUMERIC}
+  </select>
+  
+   <sql id="cifOccupationStatusQuery">
+	<![CDATA[
+	SELECT 	DISTINCT  CIF_OCCUPATION.STATUS
+	FROM  	CIF_OCCUPATION 
+	WHERE	CIF_OCCUPATION.COMP_CODE  = #{compCode}
+	AND 	CIF_OCCUPATION.STATUS IS NOT NULL
+	]]>	 
+  </sql>
+  
+  <select id="cifOccupationStatusList" resultMap="CIF_OCCUPATION.BaseResultMap" parameterType="occupationSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifOccupationStatusQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="cifOccupationStatusListCount" resultType="int" parameterType="occupationSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifOccupationStatusQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnCifOccupationStatus" parameterType="occupationSC" resultType="cifOccupationVO">
+		SELECT 	DISTINCT CIF_OCCUPATION.STATUS
+		FROM  	CIF_OCCUPATION 
+		WHERE	CIF_OCCUPATION.COMP_CODE  	= #{compCode}
+		AND 	CIF_OCCUPATION.STATUS		= #{occupStatus}
+ </select>
+
+</mapper>

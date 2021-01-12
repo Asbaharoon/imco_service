@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chargesListMapper">
+
+ <sql id="chargesListCommon">
+	
+		SELECT
+			 TRSCHARGES.CODE,
+			 TRSCHARGES.BRIEF_NAME_ENG,
+			 TRSCHARGES.LONG_NAME_ENG
+	FROM  TRSCHARGES 
+	WHERE	 TRSCHARGES.COMP_CODE  = #{compCode}
+	
+	<if test='"Y".equals(isBrokerCharge)'>	
+		AND TRSCHARGES.INSURANCE ='B'
+	</if>
+			
+	<if test='"Y".equals(considerFlatAmount)'>	
+		AND   TRSCHARGES.FLAT_AMOUNT > 0 
+	</if>
+ </sql>
+ 
+ <resultMap id="chargesListMap" type="chargesVO">
+	<id property="CODE" column="CODE"/>	
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />	
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	
+ </resultMap>
+ 
+ <select id="chargesList" resultMap="chargesListMap" parameterType="chargesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chargesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="chargesListCount" resultType="int" parameterType="chargesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chargesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <!--	TP#224265;roshin ;21/09/2014-->
+  <select id="returnChargesById" parameterType="chargesSC" resultType="chargesVO">
+  		SELECT
+  			 TRSCHARGES.CODE,			 
+			 TRSCHARGES.BRIEF_NAME_ENG,
+			 TRSCHARGES.FLAT_AMOUNT,
+			 TRSCHARGES.CR_ACC_GL,
+			 TRSCHARGES.CR_ACC_SL_NO,
+			 TRSCHARGES.CR_ACC_CIF_SUB_NO 			 
+			 FROM  TRSCHARGES  
+	WHERE	 TRSCHARGES.COMP_CODE = #{compCode} 
+    AND TRSCHARGES.CODE = #{code}
+ </select>
+ 
+
+</mapper>

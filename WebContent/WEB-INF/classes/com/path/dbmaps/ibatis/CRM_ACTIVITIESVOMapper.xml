@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CRM_ACTIVITIES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CRM_ACTIVITIESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="ACTIVITY_DATE" property="ACTIVITY_DATE" />
+    <result column="ACTIVITY_CODE" property="ACTIVITY_CODE" />
+    <result column="ACTIVITY_DESC" property="ACTIVITY_DESC" />
+    <result column="ACTIVITY_DESC_ARAB" property="ACTIVITY_DESC_ARAB" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, USER_ID, ACTIVITY_DATE, ACTIVITY_CODE, ACTIVITY_DESC, 
+    ACTIVITY_DESC_ARAB, DATE_UPDATED
+  </sql>
+  <select id="selectCRM_ACTIVITIES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CRM_ACTIVITIESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CRM_ACTIVITIES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCRM_ACTIVITIES" parameterType="com.path.dbmaps.vo.CRM_ACTIVITIESVOKey" >
+    delete from CRM_ACTIVITIES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCRM_ACTIVITIES" parameterType="com.path.dbmaps.vo.CRM_ACTIVITIESVO" >
+    insert into CRM_ACTIVITIES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="ACTIVITY_DATE != null" >
+        ACTIVITY_DATE,
+      </if>
+      <if test="ACTIVITY_CODE != null and ACTIVITY_CODE != emptyBigDecimalValue" >
+        ACTIVITY_CODE,
+      </if>
+      <if test="ACTIVITY_DESC != null" >
+        ACTIVITY_DESC,
+      </if>
+      <if test="ACTIVITY_DESC_ARAB != null" >
+        ACTIVITY_DESC_ARAB,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="ACTIVITY_DATE != null" >
+        #{ACTIVITY_DATE},
+      </if>
+      <if test="ACTIVITY_CODE != null and ACTIVITY_CODE != emptyBigDecimalValue" >
+        #{ACTIVITY_CODE},
+      </if>
+      <if test="ACTIVITY_DESC != null" >
+        #{ACTIVITY_DESC},
+      </if>
+      <if test="ACTIVITY_DESC_ARAB != null" >
+        #{ACTIVITY_DESC_ARAB},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCRM_ACTIVITIES" >
+    update CRM_ACTIVITIES
+    <set >
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="ACTIVITY_DATE != null" >
+        ACTIVITY_DATE = #{ACTIVITY_DATE},
+      </if>
+      <if test="ACTIVITY_CODE != null" >
+        <choose >
+          <when test="ACTIVITY_CODE == emptyBigDecimalValue" >
+            ACTIVITY_CODE = NULL ,
+          </when>
+          <otherwise >
+            ACTIVITY_CODE = #{ACTIVITY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACTIVITY_DESC != null" >
+        ACTIVITY_DESC = #{ACTIVITY_DESC},
+      </if>
+      <if test="ACTIVITY_DESC_ARAB != null" >
+        ACTIVITY_DESC_ARAB = #{ACTIVITY_DESC_ARAB},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCRM_ACTIVITIES" parameterType="com.path.dbmaps.vo.CRM_ACTIVITIESVO" >
+    <include refid="sql_updateCRM_ACTIVITIES" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

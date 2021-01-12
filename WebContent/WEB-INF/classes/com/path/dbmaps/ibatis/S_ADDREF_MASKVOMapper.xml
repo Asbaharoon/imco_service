@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_ADDREF_MASK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_ADDREF_MASKVO" >
+    <id column="SEQ" property="SEQ" />
+    <result column="COLUMN_NAME" property="COLUMN_NAME" />
+    <result column="COLUMN_MASK" property="COLUMN_MASK" />
+    <result column="COLUMN_SEPARATOR" property="COLUMN_SEPARATOR" />
+    <result column="COLUMN_ORDER" property="COLUMN_ORDER" />
+    <result column="COLUMN_TYPE" property="COLUMN_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SEQ, COLUMN_NAME, COLUMN_MASK, COLUMN_SEPARATOR, COLUMN_ORDER, COLUMN_TYPE
+  </sql>
+  <select id="selectS_ADDREF_MASK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_ADDREF_MASKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ADDREF_MASK
+    where SEQ = #{SEQ}
+  </select>
+  <delete id="deleteS_ADDREF_MASK" parameterType="com.path.dbmaps.vo.S_ADDREF_MASKVOKey" >
+    delete from S_ADDREF_MASK
+    where SEQ = #{SEQ}
+  </delete>
+  <insert id="insertS_ADDREF_MASK" parameterType="com.path.dbmaps.vo.S_ADDREF_MASKVO" >
+    insert into S_ADDREF_MASK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        SEQ,
+      </if>
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME,
+      </if>
+      <if test="COLUMN_MASK != null" >
+        COLUMN_MASK,
+      </if>
+      <if test="COLUMN_SEPARATOR != null" >
+        COLUMN_SEPARATOR,
+      </if>
+      <if test="COLUMN_ORDER != null and COLUMN_ORDER != emptyBigDecimalValue" >
+        COLUMN_ORDER,
+      </if>
+      <if test="COLUMN_TYPE != null" >
+        COLUMN_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="SEQ != null and SEQ != emptyBigDecimalValue" >
+        #{SEQ},
+      </if>
+      <if test="COLUMN_NAME != null" >
+        #{COLUMN_NAME},
+      </if>
+      <if test="COLUMN_MASK != null" >
+        #{COLUMN_MASK},
+      </if>
+      <if test="COLUMN_SEPARATOR != null" >
+        #{COLUMN_SEPARATOR},
+      </if>
+      <if test="COLUMN_ORDER != null and COLUMN_ORDER != emptyBigDecimalValue" >
+        #{COLUMN_ORDER},
+      </if>
+      <if test="COLUMN_TYPE != null" >
+        #{COLUMN_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_ADDREF_MASK" >
+    update S_ADDREF_MASK
+    <set >
+      <if test="COLUMN_NAME != null" >
+        COLUMN_NAME = #{COLUMN_NAME},
+      </if>
+      <if test="COLUMN_MASK != null" >
+        COLUMN_MASK = #{COLUMN_MASK},
+      </if>
+      <if test="COLUMN_SEPARATOR != null" >
+        COLUMN_SEPARATOR = #{COLUMN_SEPARATOR},
+      </if>
+      <if test="COLUMN_ORDER != null" >
+        <choose >
+          <when test="COLUMN_ORDER == emptyBigDecimalValue" >
+            COLUMN_ORDER = NULL ,
+          </when>
+          <otherwise >
+            COLUMN_ORDER = #{COLUMN_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLUMN_TYPE != null" >
+        COLUMN_TYPE = #{COLUMN_TYPE},
+      </if>
+    </set>
+    where SEQ = #{SEQ}
+  </sql>
+  <update id="updateS_ADDREF_MASK" parameterType="com.path.dbmaps.vo.S_ADDREF_MASKVO" >
+    <include refid="sql_updateS_ADDREF_MASK" />
+  </update>
+</mapper>

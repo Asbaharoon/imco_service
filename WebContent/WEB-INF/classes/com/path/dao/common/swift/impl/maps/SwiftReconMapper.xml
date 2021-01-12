@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="swiftReconMapper">
+  <select id="selectCurrencyDecimalPoints" resultType="BigDecimal" parameterType="com.path.dbmaps.vo.CURRENCIESVO" >
+   SELECT DECIMAL_POINTS 		
+		FROM  CURRENCIES 
+		WHERE	 CURRENCIES.COMP_CODE  = #{COMP_CODE}
+		AND		 CURRENCIES.BRIEF_DESC_ENG   = #{BRIEF_DESC_ENG}
+  </select>
+
+ <select id="selectAccountNoDet" resultType="AMFVO" parameterType="swiftReconcileSC" >
+   SELECT  COMP_CODE, 
+		   BRANCH_CODE, 
+		   CURRENCY_CODE, 
+		   GL_CODE, 
+		   CIF_SUB_NO, 
+		   SL_NO 		
+	FROM  AMF 
+	WHERE AMF.COMP_CODE  = #{compCode}
+	AND	  AMF.ACC_NO     = #{accNo}
+  </select>
+  
+  <resultMap id="selectBankStmtReconcileMap" type="swiftReconBankStmtCO">
+	<result column="SRL_NO" property="srlNo" />
+	<result column="RECON_SET" property="reconSet" />
+	<result column="DATE_ORDER" property="dateOrder" />
+	<result column="BF_FC" property="bfFc" />
+	<result column="BF_CV" property="bfCv" />
+	<result column="OPENING_BALANCE" property="opBal" />
+	<result column="RECON_IND" property="reconInd" />
+	<result column="OP_BAL_IND" property="opBalInd" />
+	<result column="ACC_NO" property="accNo" />
+	<result column="DECIMAL_POINTS" property="decPoint" />
+	<result column="TRX_REF" property="trxRef" />
+	<result column="COMP_CODE" property="hstVO.COMP_CODE" />
+	<result column="BRANCH_CODE" property="hstVO.BRANCH_CODE" />
+	<result column="RECONCILE_IND" property="hstVO.RECONCILE_IND" />
+	<result column="RECONCILED_DT" property="hstVO.RECONCILED_DT" />
+	<result column="RECONCILED_BY" property="hstVO.RECONCILED_BY" />
+	<result column="REASON" property="hstVO.REASON" />
+	<result column="CURRENCY_CODE" property="hstVO.CURRENCY_CODE" />
+	<result column="GL_CODE" property="hstVO.GL_CODE" />
+	<result column="CIF_SUB_NO" property="hstVO.CIF_SUB_NO" />
+	<result column="SL_NO" property="hstVO.SL_NO" />
+	<result column="TRANS_DATE" property="hstVO.TRANS_DATE" />
+	<result column="OP_NO" property="hstVO.OP_NO" />
+	<result column="LINE_NO" property="hstVO.LINE_NO" />
+	<result column="VALUE_DATE" property="hstVO.VALUE_DATE" />
+	<result column="JV_REF" property="hstVO.JV_REF" />
+	<result column="DESCRIPTION" property="hstVO.DESCRIPTION" />
+	<result column="FC_AMOUNT" property="hstVO.FC_AMOUNT" />
+	<result column="EXCH_RATE" property="hstVO.EXCH_RATE" />
+	<result column="CV_AMOUNT" property="hstVO.CV_AMOUNT" />
+	<result column="CHQ_SRL" property="hstVO.CHQ_SRL" />
+	<result column="OP_STATUS" property="hstVO.OP_STATUS" />
+	<result column="BC_FLAG" property="hstVO.BC_FLAG" />
+	<result column="CTS_TRS_NO" property="hstVO.CTS_TRS_NO" />
+	<result column="CTS_TRS_BR" property="hstVO.CTS_TRS_BR" />
+	<result column="JV_TYPE" property="hstVO.JV_TYPE" />
+	<result column="CTS_TRS_TYPE" property="hstVO.CTS_TRS_TYPE" />
+	<result column="CTS_CB_IND" property="hstVO.CTS_CB_IND" />
+	<result column="CREATED_BY" property="hstVO.CREATED_BY" /> 
+  </resultMap>
+	
+  <select id="selectBankStmtReconcile" resultMap="selectBankStmtReconcileMap"
+		parameterType="swiftReconcileSC" >
+    	SELECT 'H' SRL_NO,
+			 HST.COMP_CODE,
+			 HST.BRANCH_CODE,
+			 HST.RECONCILE_IND,
+			 0 RECON_SET,
+			 HST.RECONCILED_DT,
+			 HST.RECONCILED_BY,
+			 HST.REASON,
+			 HST.CURRENCY_CODE,
+			 HST.GL_CODE,
+			 HST.CIF_SUB_NO,
+			 HST.SL_NO,
+			 HST.TRANS_DATE,
+			 HST.OP_NO,
+			 HST.LINE_NO,
+			 HST.VALUE_DATE,
+			 HST.JV_REF,
+			 HST.DESCRIPTION,
+			 HST.FC_AMOUNT,
+			 HST.EXCH_RATE,
+			 HST.CV_AMOUNT,
+			 HST.CHQ_SRL,
+			 CASE 
+				WHEN #{vtFlag} = 'T' THEN HST.TRANS_DATE 
+				ELSE HST.VALUE_DATE 
+			 END DATE_ORDER,
+			 0 BF_FC,
+			 0 BF_CV,
+			 HST.OP_STATUS,
+			 HST.BC_FLAG,
+			 0 OPENING_BALANCE,
+			 0 RECON_IND,
+			 0 OP_BAL_IND,
+			 AMF.ACC_NO,
+          	 CURRENCIES.DECIMAL_POINTS,
+          	 '' TRX_REF,
+			 HST.CTS_TRS_NO, 
+			 HST.CTS_TRS_BR,
+			 HST.JV_TYPE , 
+			 HST.CTS_TRS_TYPE, 
+			 HST.CTS_CB_IND ,
+			 HST.CREATED_BY
+	FROM  HST,
+		  AMF ,
+          CURRENCIES
+	WHERE	HST.COMP_CODE = #{compCode}
+	 AND	HST.COMP_CODE  = AMF.COMP_CODE
+	 AND	HST.BRANCH_CODE  = AMF.BRANCH_CODE
+	 AND	HST.CURRENCY_CODE  = AMF.CURRENCY_CODE
+	 AND	HST.GL_CODE  = AMF.GL_CODE
+	 AND	HST.CIF_SUB_NO  = AMF.CIF_SUB_NO
+	 AND	HST.SL_NO  = AMF.SL_NO
+	 AND	AMF.ACC_NO  = #{accNo}
+	 AND	HST.OP_STATUS  = 'A'
+	 AND	HST.BC_FLAG   <![CDATA[<>]]>  'S'
+	 AND	CASE
+				WHEN #{vtFlag} = 'T' THEN HST.TRANS_DATE 
+				ELSE HST.VALUE_DATE 
+			END  BETWEEN #{minDate}  AND  #{maxDate}
+   AND  HST.COMP_CODE  = CURRENCIES.COMP_CODE
+   AND  HST.CURRENCY_CODE = CURRENCIES.CURRENCY_CODE
+   AND  HST.JV_TYPE   <![CDATA[<>]]>  903 
+
+  </select>
+  
+   <resultMap id="selectOpeningBalMap" type="swiftReconBankStmtCO">
+	<result column="CV_AMOUNT" property="hstVO.CV_AMOUNT" />
+	<result column="FC_AMOUNT" property="hstVO.FC_AMOUNT" />
+  </resultMap>
+  	
+   <select id="selectOpeningBalT" resultMap="selectOpeningBalMap"
+		parameterType="swiftReconcileSC" >
+		
+	SELECT	CASE WHEN SUM(FC_AMOUNT) IS NULL THEN 0 ELSE SUM(FC_AMOUNT) END FC_AMOUNT,
+			CASE WHEN SUM(CV_AMOUNT) IS NULL THEN 0 ELSE SUM(CV_AMOUNT) END CV_AMOUNT
+	FROM HST
+	WHERE HST.COMP_CODE = #{compCode}
+	AND HST.BRANCH_CODE = #{brCode}
+	AND HST.CURRENCY_CODE = #{cyCode}
+	AND HST.GL_CODE = #{glCode}
+	AND HST.CIF_SUB_NO = #{cifNo}
+	AND HST.SL_NO =#{slNo}
+	AND HST.TRANS_DATE <![CDATA[<]]> #{minDate} 
+   </select>
+   
+    <select id="selectOpeningBalV" resultMap="selectOpeningBalMap"
+		parameterType="swiftReconcileSC" >
+		
+	SELECT	CASE WHEN SUM(FC_AMOUNT) IS NULL THEN 0 ELSE SUM(FC_AMOUNT) END FC_AMOUNT,
+			CASE WHEN SUM(CV_AMOUNT) IS NULL THEN 0 ELSE SUM(CV_AMOUNT) END CV_AMOUNT
+	FROM HST
+	WHERE HST.COMP_CODE = #{compCode}
+	AND HST.BRANCH_CODE = #{brCode}
+	AND HST.CURRENCY_CODE = #{cyCode}
+	AND HST.GL_CODE = #{glCode}
+	AND HST.CIF_SUB_NO = #{cifNo}
+	AND HST.SL_NO =#{slNo}
+	AND HST.VALUE_DATE <![CDATA[<]]> #{minDate} 
+   </select>
+   
+</mapper>

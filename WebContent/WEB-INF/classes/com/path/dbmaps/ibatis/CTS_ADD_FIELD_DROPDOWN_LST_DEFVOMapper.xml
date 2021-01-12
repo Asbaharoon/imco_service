@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_ADD_FIELD_DROPDOWN_LST_DEF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="LIST_CODE" property="LIST_CODE" />
+    <result column="FIELD_SEQ" property="FIELD_SEQ" />
+    <result column="FIELD_LABEL" property="FIELD_LABEL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, LIST_CODE, FIELD_SEQ, FIELD_LABEL
+  </sql>
+  <select id="selectCTS_ADD_FIELD_DROPDOWN_LST_DEF" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_ADD_FIELD_DROPDOWN_LST_DEF
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LIST_CODE = #{LIST_CODE}
+  </select>
+  <delete id="deleteCTS_ADD_FIELD_DROPDOWN_LST_DEF" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" >
+    delete from CTS_ADD_FIELD_DROPDOWN_LST_DEF
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LIST_CODE = #{LIST_CODE}
+  </delete>
+  <insert id="insertCTS_ADD_FIELD_DROPDOWN_LST_DEF" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" >
+    insert into CTS_ADD_FIELD_DROPDOWN_LST_DEF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="LIST_CODE != null and LIST_CODE != emptyBigDecimalValue" >
+        LIST_CODE,
+      </if>
+      <if test="FIELD_SEQ != null and FIELD_SEQ != emptyBigDecimalValue" >
+        FIELD_SEQ,
+      </if>
+      <if test="FIELD_LABEL != null and !&quot;&quot;.equals(FIELD_LABEL)" >
+        FIELD_LABEL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="LIST_CODE != null and LIST_CODE != emptyBigDecimalValue" >
+        #{LIST_CODE},
+      </if>
+      <if test="FIELD_SEQ != null and FIELD_SEQ != emptyBigDecimalValue" >
+        #{FIELD_SEQ},
+      </if>
+      <if test="FIELD_LABEL != null and !&quot;&quot;.equals(FIELD_LABEL)" >
+        #{FIELD_LABEL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_ADD_FIELD_DROPDOWN_LST_DEF" >
+    update CTS_ADD_FIELD_DROPDOWN_LST_DEF
+    <set >
+      <if test="FIELD_SEQ != null" >
+        <choose >
+          <when test="FIELD_SEQ == emptyBigDecimalValue" >
+            FIELD_SEQ = NULL ,
+          </when>
+          <otherwise >
+            FIELD_SEQ = #{FIELD_SEQ},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELD_LABEL != null" >
+        <choose >
+          <when test="FIELD_LABEL.equals(&quot;&quot;)" >
+            FIELD_LABEL = NULL ,
+          </when>
+          <otherwise >
+            FIELD_LABEL = #{FIELD_LABEL},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and LIST_CODE = #{LIST_CODE}
+  </sql>
+  <update id="updateCTS_ADD_FIELD_DROPDOWN_LST_DEF" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_DROPDOWN_LST_DEFVO" >
+    <include refid="sql_updateCTS_ADD_FIELD_DROPDOWN_LST_DEF" />
+  </update>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPAYPLAN_NIDC_CALC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_CALCVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <result column="FACE_VALUE" property="FACE_VALUE" />
+    <result column="NO_OF_CERTIFICATE" property="NO_OF_CERTIFICATE" />
+    <result column="ISSUE_AT_TYPE" property="ISSUE_AT_TYPE" />
+    <result column="COUPON_PAYMENT_TYPE" property="COUPON_PAYMENT_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, TRS_NO, FACE_VALUE, NO_OF_CERTIFICATE, ISSUE_AT_TYPE, COUPON_PAYMENT_TYPE
+  </sql>
+  <select id="selectTRSPAYPLAN_NIDC_CALC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_CALCVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPAYPLAN_NIDC_CALC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+  </select>
+  <delete id="deleteTRSPAYPLAN_NIDC_CALC" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_CALCVOKey" >
+    delete from TRSPAYPLAN_NIDC_CALC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+  </delete>
+  <insert id="insertTRSPAYPLAN_NIDC_CALC" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_CALCVO" >
+    insert into TRSPAYPLAN_NIDC_CALC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="FACE_VALUE != null and FACE_VALUE != emptyBigDecimalValue" >
+        FACE_VALUE,
+      </if>
+      <if test="NO_OF_CERTIFICATE != null and NO_OF_CERTIFICATE != emptyBigDecimalValue" >
+        NO_OF_CERTIFICATE,
+      </if>
+      <if test="ISSUE_AT_TYPE != null" >
+        ISSUE_AT_TYPE,
+      </if>
+      <if test="COUPON_PAYMENT_TYPE != null" >
+        COUPON_PAYMENT_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="FACE_VALUE != null and FACE_VALUE != emptyBigDecimalValue" >
+        #{FACE_VALUE},
+      </if>
+      <if test="NO_OF_CERTIFICATE != null and NO_OF_CERTIFICATE != emptyBigDecimalValue" >
+        #{NO_OF_CERTIFICATE},
+      </if>
+      <if test="ISSUE_AT_TYPE != null" >
+        #{ISSUE_AT_TYPE},
+      </if>
+      <if test="COUPON_PAYMENT_TYPE != null" >
+        #{COUPON_PAYMENT_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPAYPLAN_NIDC_CALC" >
+    update TRSPAYPLAN_NIDC_CALC
+    <set >
+      <if test="FACE_VALUE != null" >
+        <choose >
+          <when test="FACE_VALUE == emptyBigDecimalValue" >
+            FACE_VALUE = NULL ,
+          </when>
+          <otherwise >
+            FACE_VALUE = #{FACE_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NO_OF_CERTIFICATE != null" >
+        <choose >
+          <when test="NO_OF_CERTIFICATE == emptyBigDecimalValue" >
+            NO_OF_CERTIFICATE = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_CERTIFICATE = #{NO_OF_CERTIFICATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ISSUE_AT_TYPE != null" >
+        ISSUE_AT_TYPE = #{ISSUE_AT_TYPE},
+      </if>
+      <if test="COUPON_PAYMENT_TYPE != null" >
+        COUPON_PAYMENT_TYPE = #{COUPON_PAYMENT_TYPE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+  </sql>
+  <update id="updateTRSPAYPLAN_NIDC_CALC" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_NIDC_CALCVO" >
+    <include refid="sql_updateTRSPAYPLAN_NIDC_CALC" />
+  </update>
+</mapper>

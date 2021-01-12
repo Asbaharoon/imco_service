@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_LIP_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_LIP_DETAILSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <result column="LIP_YN" property="LIP_YN" />
+    <result column="PERIOD_NBR" property="PERIOD_NBR" />
+    <result column="PERIOD_TYPE" property="PERIOD_TYPE" />
+    <result column="AMENDED_PERIOD_NBR" property="AMENDED_PERIOD_NBR" />
+    <result column="AMENDED_PERIOD_TYPE" property="AMENDED_PERIOD_TYPE" />
+    <result column="START_DATE_BASED_ON" property="START_DATE_BASED_ON" />
+    <result column="ZEC_YN" property="ZEC_YN" />
+    <result column="AMENDMEND_REASON" property="AMENDMEND_REASON" />
+    <result column="STATUS" property="STATUS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, LIP_YN, PERIOD_NBR, PERIOD_TYPE, AMENDED_PERIOD_NBR, 
+    AMENDED_PERIOD_TYPE, START_DATE_BASED_ON, ZEC_YN, AMENDMEND_REASON, STATUS
+  </sql>
+  <select id="selectTRSDEAL_LIP_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_LIP_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_LIP_DETAILS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_LIP_DETAILS" parameterType="com.path.dbmaps.vo.TRSDEAL_LIP_DETAILSVOKey" >
+    delete from TRSDEAL_LIP_DETAILS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_LIP_DETAILS" parameterType="com.path.dbmaps.vo.TRSDEAL_LIP_DETAILSVO" >
+    insert into TRSDEAL_LIP_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LIP_YN != null" >
+        LIP_YN,
+      </if>
+      <if test="PERIOD_NBR != null and PERIOD_NBR != emptyBigDecimalValue" >
+        PERIOD_NBR,
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE,
+      </if>
+      <if test="AMENDED_PERIOD_NBR != null and AMENDED_PERIOD_NBR != emptyBigDecimalValue" >
+        AMENDED_PERIOD_NBR,
+      </if>
+      <if test="AMENDED_PERIOD_TYPE != null" >
+        AMENDED_PERIOD_TYPE,
+      </if>
+      <if test="START_DATE_BASED_ON != null" >
+        START_DATE_BASED_ON,
+      </if>
+      <if test="ZEC_YN != null" >
+        ZEC_YN,
+      </if>
+      <if test="AMENDMEND_REASON != null" >
+        AMENDMEND_REASON,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LIP_YN != null" >
+        #{LIP_YN},
+      </if>
+      <if test="PERIOD_NBR != null and PERIOD_NBR != emptyBigDecimalValue" >
+        #{PERIOD_NBR},
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        #{PERIOD_TYPE},
+      </if>
+      <if test="AMENDED_PERIOD_NBR != null and AMENDED_PERIOD_NBR != emptyBigDecimalValue" >
+        #{AMENDED_PERIOD_NBR},
+      </if>
+      <if test="AMENDED_PERIOD_TYPE != null" >
+        #{AMENDED_PERIOD_TYPE},
+      </if>
+      <if test="START_DATE_BASED_ON != null" >
+        #{START_DATE_BASED_ON},
+      </if>
+      <if test="ZEC_YN != null" >
+        #{ZEC_YN},
+      </if>
+      <if test="AMENDMEND_REASON != null" >
+        #{AMENDMEND_REASON},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_LIP_DETAILS" >
+    update TRSDEAL_LIP_DETAILS
+    <set >
+      <if test="LIP_YN != null" >
+        LIP_YN = #{LIP_YN},
+      </if>
+      <if test="PERIOD_NBR != null" >
+        <choose >
+          <when test="PERIOD_NBR == emptyBigDecimalValue" >
+            PERIOD_NBR = NULL ,
+          </when>
+          <otherwise >
+            PERIOD_NBR = #{PERIOD_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE = #{PERIOD_TYPE},
+      </if>
+      <if test="AMENDED_PERIOD_NBR != null" >
+        <choose >
+          <when test="AMENDED_PERIOD_NBR == emptyBigDecimalValue" >
+            AMENDED_PERIOD_NBR = NULL ,
+          </when>
+          <otherwise >
+            AMENDED_PERIOD_NBR = #{AMENDED_PERIOD_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMENDED_PERIOD_TYPE != null" >
+        AMENDED_PERIOD_TYPE = #{AMENDED_PERIOD_TYPE},
+      </if>
+      <if test="START_DATE_BASED_ON != null" >
+        START_DATE_BASED_ON = #{START_DATE_BASED_ON},
+      </if>
+      <if test="ZEC_YN != null" >
+        ZEC_YN = #{ZEC_YN},
+      </if>
+      <if test="AMENDMEND_REASON != null" >
+        AMENDMEND_REASON = #{AMENDMEND_REASON},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_LIP_DETAILS" parameterType="com.path.dbmaps.vo.TRSDEAL_LIP_DETAILSVO" >
+    <include refid="sql_updateTRSDEAL_LIP_DETAILS" />
+  </update>
+</mapper>

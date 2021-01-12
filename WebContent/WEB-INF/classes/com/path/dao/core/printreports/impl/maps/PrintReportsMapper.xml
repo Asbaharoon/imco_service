@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="printReportsMapper">
+	
+	<sql id="printReportsListCommon">
+		  SELECT REP_ID,
+		  		 ARG_ID,
+	         (SELECT REP_INFO.TITLE
+	            FROM REP_INFO
+	           WHERE REP_INFO.REP_ID = CTSREPORTS_FILE_TYPE.REP_ID) TITLE
+	      FROM CTSREPORTS_FILE_TYPE
+	      WHERE COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	      AND FILE_TYPE = #{filteType,jdbcType=NUMERIC}
+	      AND PRINTING_LEVEL = #{printingLevel,jdbcType=VARCHAR}
+	</sql>
+	
+	<select id="printReportsList" resultMap="printReportsMap" parameterType="printReportsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="printReportsListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="printReportsListCount" parameterType="printReportsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="printReportsListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+    
+    <resultMap id="printReportsMap" type="printReportsCO">
+		<result property="ctsRepFileTypeVO.REP_ID" 		column="REP_ID"/>
+		<result property="ctsRepFileTypeVO.ARG_ID" column="ARG_ID"/>
+		<result property="repInfoVO.TITLE" 				column="TITLE"/>
+	</resultMap>
+    
+
+</mapper>

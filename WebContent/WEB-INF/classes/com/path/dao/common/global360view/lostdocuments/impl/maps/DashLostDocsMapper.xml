@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashLostDocsMapper">
+<sql id="lostDocsList">
+SELECT CTSLOSTFOUND.BRANCH_CODE,
+       CTSLOSTFOUND.TRX_NO,
+       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS
+         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTSLOSTFOUND.STATUS
+           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{langCode}) STATUS,
+       CTSLOSTFOUND.DOC_TYPE,
+       CTSLOSTFOUND.DOC_CODE,
+       CTSLOSTFOUNDDET.DOC_NUMBER,
+       CTSLOSTFOUNDDET.TO_DOC,
+       CTSLOSTFOUND.ACC_BR,
+       CTSLOSTFOUND.ACC_CY,
+       CTSLOSTFOUND.ACC_GL,
+       CTSLOSTFOUND.ACC_CIF,
+       CTSLOSTFOUND.ACC_SL,
+       CTSLOSTFOUND.ACC_ADD_REF,
+       CTSLOSTFOUNDDET.STOP_DATE,
+       (SELECT CTSREASONS.LONG_NAME_ENG
+          FROM CTSREASONS
+         WHERE CTSREASONS.CODE = CTSLOSTFOUNDDET.REASON_CODE
+           AND CTSREASONS.COMP_CODE = CTSLOSTFOUND.COMP_CODE) reasonDesc,
+       CTS_LOSTDOC.BRIEF_DESC_ENG AS DOC_TYPE_BRIEF_NAME,
+       (CASE
+         WHEN CTS_LOSTDOC.DOC_CARD = 'D' THEN
+          (SELECT CTSCARDS.BRIEF_NAME_ENG
+             FROM CTSCARDS
+            WHERE (CTSCARDS.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+              AND (CTSCARDS.CODE = CTSLOSTFOUND.DOC_CODE))
+       
+         WHEN CTS_LOSTDOC.DOC_CARD = 'R' THEN
+          (SELECT BRIEF_NAME_ENG
+             FROM REMITTANCE
+            WHERE (REMITTANCE.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+              AND (REMITTANCE.CODE = CTSLOSTFOUND.DOC_CODE))
+       
+         WHEN CTS_LOSTDOC.DOC_CARD = 'P' THEN
+          (SELECT BRIEF_NAME_ENG
+             FROM CTSPASSBOOK_TYPE
+            WHERE CTSPASSBOOK_TYPE.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+              AND CTSPASSBOOK_TYPE.CODE = CTSLOSTFOUND.DOC_CODE)
+         ELSE
+          ''
+       END) AS DOC_CODE_BRIEF_NAME,
+       (
+        SELECT BRIEF_NAME_ENG
+             FROM AMF
+              WHERE AMF.COMP_CODE = CTSLOSTFOUND.COMP_CODE
+              AND AMF.BRANCH_CODE = CTSLOSTFOUND.ACC_BR
+                AND AMF.CURRENCY_CODE = CTSLOSTFOUND.ACC_CY
+                AND AMF.GL_CODE = CTSLOSTFOUND.ACC_GL
+                AND AMF.CIF_SUB_NO = CTSLOSTFOUND.ACC_CIF
+                AND AMF.SL_NO = CTSLOSTFOUND.ACC_SL
+         ) AS ACC_LONG_NAME
+  FROM CTSLOSTFOUND, CTS_LOSTDOC, CTSLOSTFOUNDDET
+ WHERE CTSLOSTFOUND.DOC_TYPE = CTS_LOSTDOC.DOC_CODE
+   AND CTSLOSTFOUND.COMP_CODE = CTSLOSTFOUNDDET.COMP_CODE
+   AND CTSLOSTFOUND.BRANCH_CODE = CTSLOSTFOUNDDET.BRANCH_CODE
+  AND CTSLOSTFOUND.TRX_NO = CTSLOSTFOUNDDET.TRX_NO
+   AND CTSLOSTFOUND.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+   <if test="branchCode!=null">
+   AND CTSLOSTFOUND.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+   </if>
+   <!--  AND CTSLOSTFOUND.ACC_CIF = #{cif_no}-->
+   AND (CTSLOSTFOUND.ACC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+   AND CTSLOSTFOUND.STATUS <![CDATA[<>]]> 'D'
+   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+	   AND NOT EXISTS
+	    (SELECT 1
+	          FROM AMF, CTSTELLER_ACC_HIDDEN_STATUSES 
+	         WHERE AMF.COMP_CODE = CTSLOSTFOUND.COMP_CODE
+	           AND AMF.BRANCH_CODE =CTSLOSTFOUND.ACC_BR
+	           AND AMF.CURRENCY_CODE =CTSLOSTFOUND.ACC_CY
+	           AND AMF.GL_CODE = CTSLOSTFOUND.ACC_GL
+	           AND AMF.SL_NO = CTSLOSTFOUND.ACC_SL
+	           AND AMF.CIF_SUB_NO = CTSLOSTFOUND.ACC_CIF
+	           AND AMF.STATUS=CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+	           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	 	)
+ </if>
+ 
+	AND NOT EXISTS
+	(SELECT 1
+	FROM AMF,
+	ACC_RESTRICTED AccRest
+	 WHERE AMF.COMP_CODE = CTSLOSTFOUND.COMP_CODE
+	           AND AMF.BRANCH_CODE =CTSLOSTFOUND.ACC_BR
+	           AND AMF.CURRENCY_CODE =CTSLOSTFOUND.ACC_CY
+	           AND AMF.GL_CODE = CTSLOSTFOUND.ACC_GL
+	           AND AMF.SL_NO = CTSLOSTFOUND.ACC_SL
+	           AND AMF.CIF_SUB_NO = CTSLOSTFOUND.ACC_CIF
+	           AND AMF.COMP_CODE = AccRest.COMP_CODE  
+		       	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+				 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+				 AND  AMF.GL_CODE = AccRest.GL_CODE 
+				 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+				 AND  AMF.SL_NO = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )
+ 
+</sql>
+<resultMap id="lostDocsListMap" type="LostDocumentsCO">
+	<result property="branch_code" 					column="BRANCH_CODE"/>
+	<result property="trx_no" 	   					column="TRX_NO"/>
+	<result property="status" 	   				    column="STATUS"/>
+	<result property="ctsLostFoundVO.DOC_TYPE" 	    column="DOC_TYPE"/>
+	<result property="ctsLostDocVO.BRIEF_DESC_ENG" 	column="DOC_TYPE_BRIEF_NAME"/>
+	<result property="ctsLostFoundVO.DOC_CODE" 	    column="DOC_CODE"/>
+	<result property="docTypeBriefName" 	        column="DOC_CODE_BRIEF_NAME"/>
+	<result property="doc_no" 	   					column="DOC_NUMBER"/>
+	<result property="to_doc_no"  	 				column="TO_DOC"/>
+	<result property="acc_br" 	   					column="ACC_BR"/>
+	<result property="acc_cy" 	   					column="ACC_CY"/>
+	<result property="acc_gl"      					column="ACC_GL"/>
+	<result property="acc_cif" 	  				 	column="ACC_CIF"/>
+	<result property="acc_sl" 	   					column="ACC_SL"/>
+	<result property="amfVO.LONG_NAME_ENG" 	   		column="ACC_LONG_NAME"/>
+	<result property="ctsLostFoundVO.ACC_ADD_REF"	column="ACC_ADD_REF"/>
+	<result property="stop_date"   					column="STOP_DATE"/>
+	<result property="stop_reason" 					column="reasonDesc"/>
+</resultMap>
+<select id="lostDocsList" parameterType="dashboardSC" resultMap="lostDocsListMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="lostDocsList"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+<select id="lostDocsListCount" resultType="int" parameterType="dashboardSC"> 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="lostDocsList"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+</mapper>

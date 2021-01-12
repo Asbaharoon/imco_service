@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COMMON_PWS_MAPPING_DEF" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.COMMON_PWS_MAPPING_DEFVO" >
+    <result column="MAPPING_ID" property="MAPPING_ID" />
+    <result column="MAP_DESCRIPTION" property="MAP_DESCRIPTION" />
+    <result column="APP_NAME" property="APP_NAME" />
+  </resultMap>
+  <insert id="insertCOMMON_PWS_MAPPING_DEF" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPING_DEFVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="MAPPING_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(MAPPING_ID),0)+1</when><otherwise>NVL(MAX(MAPPING_ID),0)+1</otherwise></choose> FROM COMMON_PWS_MAPPING_DEF
+    </selectKey>
+    insert into COMMON_PWS_MAPPING_DEF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      MAPPING_ID,
+      <if test="MAP_DESCRIPTION != null and !&quot;&quot;.equals(MAP_DESCRIPTION)" >
+        MAP_DESCRIPTION,
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{MAPPING_ID},
+      <if test="MAP_DESCRIPTION != null and !&quot;&quot;.equals(MAP_DESCRIPTION)" >
+        #{MAP_DESCRIPTION},
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+    </trim>
+  </insert>
+   <sql id="sql_updateCOMMON_PWS_MAPPING_DEF" >
+    update COMMON_PWS_MAPPING_DEF
+    <set >
+      <if test="MAP_DESCRIPTION != null" >
+        <choose >
+          <when test="MAP_DESCRIPTION.equals(&quot;&quot;)" >
+            MAP_DESCRIPTION = NULL ,
+          </when>
+          <otherwise >
+            MAP_DESCRIPTION = #{MAP_DESCRIPTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APP_NAME != null" >
+        <choose >
+          <when test="APP_NAME.equals(&quot;&quot;)" >
+            APP_NAME = NULL ,
+          </when>
+          <otherwise >
+            APP_NAME = #{APP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where MAPPING_ID = #{MAPPING_ID}
+  </sql>
+  <update id="updateCOMMON_PWS_MAPPING_DEF" parameterType="com.path.dbmaps.vo.COMMON_PWS_MAPPINGVO" >
+    <include refid="sql_updateCOMMON_PWS_MAPPING_DEF" />
+  </update>
+  
+</mapper>

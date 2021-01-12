@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_FAMILY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_FAMILY_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FAMILY_CODE" property="FAMILY_CODE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, FAMILY_CODE, DATE_UPDATED
+  </sql>
+  <select id="selectS_FAMILY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_FAMILY_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_FAMILY_DET
+    where COMP_CODE = #{COMP_CODE}
+      and FAMILY_CODE = #{FAMILY_CODE}
+  </select>
+  <delete id="deleteS_FAMILY_DET" parameterType="com.path.dbmaps.vo.S_FAMILY_DETVO" >
+    delete from S_FAMILY_DET
+    where COMP_CODE = #{COMP_CODE}
+      and FAMILY_CODE = #{FAMILY_CODE}
+  </delete>
+  <insert id="insertS_FAMILY_DET" parameterType="com.path.dbmaps.vo.S_FAMILY_DETVO" >
+    insert into S_FAMILY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="FAMILY_CODE != null" >
+        FAMILY_CODE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="FAMILY_CODE != null" >
+        #{FAMILY_CODE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_FAMILY_DET" >
+    update S_FAMILY_DET
+    <set >
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and FAMILY_CODE = #{FAMILY_CODE}
+  </sql>
+  <update id="updateS_FAMILY_DET" parameterType="com.path.dbmaps.vo.S_FAMILY_DETVO" >
+    <include refid="sql_updateS_FAMILY_DET" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

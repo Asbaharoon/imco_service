@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CHQ_OBJECT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CHQ_OBJECTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="MICR_LINE" property="MICR_LINE" />
+    <result column="KEY_CODE" property="KEY_CODE" />
+    <result column="CTS_TRS_BR" property="CTS_TRS_BR" />
+    <result column="CTS_TRS_NO" property="CTS_TRS_NO" />
+    <result column="CTS_TRS_TYPE" property="CTS_TRS_TYPE" />
+    <result column="CTS_CB_IND" property="CTS_CB_IND" />
+    <result column="DATE_CHQ_PHYS_RECEIV" property="DATE_CHQ_PHYS_RECEIV" />
+    <result column="PHYS_RECEIV_BY" property="PHYS_RECEIV_BY" />
+    <result column="ACC_NO" property="ACC_NO" />
+    <result column="BANK_BRANCH" property="BANK_BRANCH" />
+    <result column="BANK_CODE" property="BANK_CODE" />
+    <result column="CHQ_KEY" property="CHQ_KEY" />
+    <result column="CHQ_NUM" property="CHQ_NUM" />
+    <result column="CHQ_LOCATION" property="CHQ_LOCATION" />
+    <result column="SCANNER_PKCS_KEY_LOCATION" property="SCANNER_PKCS_KEY_LOCATION" />
+    <result column="SCANNER_PRIVATE_KEY_LOCATION" property="SCANNER_PRIVATE_KEY_LOCATION" />
+    <result column="SCANNER_PUBLIC_KEY_LOCATION" property="SCANNER_PUBLIC_KEY_LOCATION" />
+    <result column="SIGNATURE_FILE" property="SIGNATURE_FILE" />    
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DATE_LINKED" property="DATE_LINKED" />
+    <result column="DATE_UNLINKED" property="DATE_UNLINKED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="LINKED_BY" property="LINKED_BY" />
+    <result column="STATUS" property="STATUS" />
+    <result column="UNLINKED_BY" property="UNLINKED_BY" />
+    <result column="KEY_REFERENCE" property="KEY_REFERENCE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CHQ_OBJECTVOWithBLOBs" extends="BaseResultMap" >
+    <result column="OLE_OBJECT" property="OLE_OBJECT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+	BRANCH_CODE, CODE, COMP_CODE, LINE_NO, MICR_LINE, KEY_CODE, CTS_TRS_BR,
+	CTS_TRS_NO,
+	CTS_TRS_TYPE, CTS_CB_IND, DATE_CHQ_PHYS_RECEIV, PHYS_RECEIV_BY, ACC_NO, BANK_BRANCH,
+	BANK_CODE, CHQ_KEY,
+	CHQ_NUM,CHQ_LOCATION,SCANNER_PKCS_KEY_LOCATION,SCANNER_PRIVATE_KEY_LOCATION,SCANNER_PUBLIC_KEY_LOCATION,SIGNATURE_FILE,
+	CREATED_BY, DATE_CREATED, DATE_DELETED, DATE_LINKED,
+	DATE_UNLINKED, DELETED_BY, LINKED_BY, STATUS, UNLINKED_BY,KEY_REFERENCE
+  </sql>
+  <sql id="Blob_Column_List" >
+    OLE_OBJECT
+  </sql>
+  <select id="selectCHQ_OBJECT" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CHQ_OBJECTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CHQ_OBJECT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCHQ_OBJECT" parameterType="com.path.dbmaps.vo.CHQ_OBJECTVOKey" >
+    delete from CHQ_OBJECT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCHQ_OBJECT" parameterType="com.path.dbmaps.vo.CHQ_OBJECTVOWithBLOBs" >
+    insert into CHQ_OBJECT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MICR_LINE != null" >
+        MICR_LINE,
+      </if>
+      <if test="KEY_CODE != null" >
+        KEY_CODE,
+      </if>
+      <if test="CTS_TRS_BR != null and CTS_TRS_BR != emptyBigDecimalValue" >
+        CTS_TRS_BR,
+      </if>
+      <if test="CTS_TRS_NO != null and CTS_TRS_NO != emptyBigDecimalValue" >
+        CTS_TRS_NO,
+      </if>
+      <if test="CTS_TRS_TYPE != null" >
+        CTS_TRS_TYPE,
+      </if>
+      <if test="CTS_CB_IND != null" >
+        CTS_CB_IND,
+      </if>
+      <if test="DATE_CHQ_PHYS_RECEIV != null" >
+        DATE_CHQ_PHYS_RECEIV,
+      </if>
+      <if test="PHYS_RECEIV_BY != null" >
+        PHYS_RECEIV_BY,
+      </if>
+      <if test="ACC_NO != null" >
+        ACC_NO,
+      </if>
+      <if test="BANK_BRANCH != null" >
+        BANK_BRANCH,
+      </if>
+      <if test="BANK_CODE != null" >
+        BANK_CODE,
+      </if>
+      <if test="CHQ_KEY != null" >
+        CHQ_KEY,
+      </if>
+      <if test="CHQ_NUM != null" >
+        CHQ_NUM,
+      </if>
+       <if test="CHQ_LOCATION != null" >
+       CHQ_LOCATION,
+       </if>
+        <if test="SCANNER_PKCS_KEY_LOCATION != null" >
+       SCANNER_PKCS_KEY_LOCATION,
+       </if>
+        <if test="SCANNER_PRIVATE_KEY_LOCATION != null" >
+       SCANNER_PRIVATE_KEY_LOCATION,
+       </if>
+		<if test="SCANNER_PUBLIC_KEY_LOCATION != null" >
+       SCANNER_PUBLIC_KEY_LOCATION,
+       </if>
+		<if test="SIGNATURE_FILE != null" >
+       SIGNATURE_FILE,
+       </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DATE_LINKED != null" >
+        DATE_LINKED,
+      </if>
+      <if test="DATE_UNLINKED != null" >
+        DATE_UNLINKED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="LINKED_BY != null" >
+        LINKED_BY,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="UNLINKED_BY != null" >
+        UNLINKED_BY,
+      </if>
+      <if test="OLE_OBJECT != null" >
+        OLE_OBJECT,
+      </if>
+      <if test="KEY_REFERENCE != null" >
+        KEY_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MICR_LINE != null" >
+        #{MICR_LINE},
+      </if>
+      <if test="KEY_CODE != null" >
+        #{KEY_CODE},
+      </if>
+      <if test="CTS_TRS_BR != null and CTS_TRS_BR != emptyBigDecimalValue" >
+        #{CTS_TRS_BR},
+      </if>
+      <if test="CTS_TRS_NO != null and CTS_TRS_NO != emptyBigDecimalValue" >
+        #{CTS_TRS_NO},
+      </if>
+      <if test="CTS_TRS_TYPE != null" >
+        #{CTS_TRS_TYPE},
+      </if>
+      <if test="CTS_CB_IND != null" >
+        #{CTS_CB_IND},
+      </if>
+      <if test="DATE_CHQ_PHYS_RECEIV != null" >
+        #{DATE_CHQ_PHYS_RECEIV},
+      </if>
+      <if test="PHYS_RECEIV_BY != null" >
+        #{PHYS_RECEIV_BY},
+      </if>
+      <if test="ACC_NO != null" >
+        #{ACC_NO},
+      </if>
+      <if test="BANK_BRANCH != null" >
+        #{BANK_BRANCH},
+      </if>
+      <if test="BANK_CODE != null" >
+        #{BANK_CODE},
+      </if>
+      <if test="CHQ_KEY != null" >
+        #{CHQ_KEY},
+      </if>
+      <if test="CHQ_NUM != null" >
+        #{CHQ_NUM},
+      </if>
+       <if test="CHQ_LOCATION != null" >
+        #{CHQ_LOCATION},
+      </if>
+		<if test="SCANNER_PKCS_KEY_LOCATION != null" >
+        #{SCANNER_PKCS_KEY_LOCATION},
+      </if>
+		<if test="SCANNER_PRIVATE_KEY_LOCATION != null" >
+        #{SCANNER_PRIVATE_KEY_LOCATION},
+      </if>
+		<if test="SCANNER_PUBLIC_KEY_LOCATION != null" >
+        #{SCANNER_PUBLIC_KEY_LOCATION},
+      </if>
+		<if test="SIGNATURE_FILE != null" >
+        #{SIGNATURE_FILE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DATE_LINKED != null" >
+        #{DATE_LINKED},
+      </if>
+      <if test="DATE_UNLINKED != null" >
+        #{DATE_UNLINKED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="LINKED_BY != null" >
+        #{LINKED_BY},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="UNLINKED_BY != null" >
+        #{UNLINKED_BY},
+      </if>
+      <if test="OLE_OBJECT != null" >
+        #{OLE_OBJECT},
+      </if>
+      <if test="KEY_REFERENCE != null" >
+        #{KEY_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCHQ_OBJECT" >
+    update CHQ_OBJECT
+    <set >
+      <if test="MICR_LINE != null" >
+        MICR_LINE = #{MICR_LINE},
+      </if>
+      <if test="KEY_CODE != null" >
+        KEY_CODE = #{KEY_CODE},
+      </if>
+      <if test="CTS_TRS_BR != null" >
+        <choose >
+          <when test="CTS_TRS_BR == emptyBigDecimalValue" >
+            CTS_TRS_BR = NULL ,
+          </when>
+          <otherwise >
+            CTS_TRS_BR = #{CTS_TRS_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CTS_TRS_NO != null" >
+        <choose >
+          <when test="CTS_TRS_NO == emptyBigDecimalValue" >
+            CTS_TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            CTS_TRS_NO = #{CTS_TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CTS_TRS_TYPE != null" >
+        CTS_TRS_TYPE = #{CTS_TRS_TYPE},
+      </if>
+      <if test="CTS_CB_IND != null" >
+        CTS_CB_IND = #{CTS_CB_IND},
+      </if>
+      <if test="DATE_CHQ_PHYS_RECEIV != null" >
+        DATE_CHQ_PHYS_RECEIV = #{DATE_CHQ_PHYS_RECEIV},
+      </if>
+      <if test="PHYS_RECEIV_BY != null" >
+        PHYS_RECEIV_BY = #{PHYS_RECEIV_BY},
+      </if>
+      <if test="ACC_NO != null" >
+        ACC_NO = #{ACC_NO},
+      </if>
+      <if test="BANK_BRANCH != null" >
+        BANK_BRANCH = #{BANK_BRANCH},
+      </if>
+      <if test="BANK_CODE != null" >
+        BANK_CODE = #{BANK_CODE},
+      </if>
+      <if test="CHQ_KEY != null" >
+        CHQ_KEY = #{CHQ_KEY},
+      </if>
+      <if test="CHQ_NUM != null" >
+        CHQ_NUM = #{CHQ_NUM},
+      </if>
+      <if test="CHQ_LOCATION != null" >
+        CHQ_LOCATION = #{CHQ_LOCATION},
+      </if>
+		<if test="SCANNER_PKCS_KEY_LOCATION != null" >
+        SCANNER_PKCS_KEY_LOCATION = #{SCANNER_PKCS_KEY_LOCATION},
+      </if>
+      <if test="SCANNER_PRIVATE_KEY_LOCATION != null" >
+        SCANNER_PRIVATE_KEY_LOCATION = #{SCANNER_PRIVATE_KEY_LOCATION},
+      </if>
+	<if test="SCANNER_PUBLIC_KEY_LOCATION != null" >
+        SCANNER_PUBLIC_KEY_LOCATION = #{SCANNER_PUBLIC_KEY_LOCATION},
+      </if>
+	<if test="SIGNATURE_FILE != null" >
+        SIGNATURE_FILE = #{SIGNATURE_FILE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DATE_LINKED != null" >
+        DATE_LINKED = #{DATE_LINKED},
+      </if>
+      <if test="DATE_UNLINKED != null" >
+        DATE_UNLINKED = #{DATE_UNLINKED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="LINKED_BY != null" >
+        LINKED_BY = #{LINKED_BY},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="UNLINKED_BY != null" >
+        UNLINKED_BY = #{UNLINKED_BY},
+      </if>
+      <if test="OLE_OBJECT != null" >
+        OLE_OBJECT = #{OLE_OBJECT},
+      </if>
+      <if test="KEY_REFERENCE != null" >
+        KEY_REFERENCE = #{KEY_REFERENCE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCHQ_OBJECT" parameterType="com.path.dbmaps.vo.CHQ_OBJECTVOWithBLOBs" >
+    <include refid="sql_updateCHQ_OBJECT" />
+  </update>
+</mapper>

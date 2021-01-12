@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPFXCHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPFXCHARGESVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="CHARGES_CODE" property="CHARGES_CODE" />
+    <result column="CHARGES_AMOUNT" property="CHARGES_AMOUNT" />
+    <result column="CR_ACC_BRANCH" property="CR_ACC_BRANCH" />
+    <result column="CR_ACC_CURRENCY" property="CR_ACC_CURRENCY" />
+    <result column="CR_ACC_GL" property="CR_ACC_GL" />
+    <result column="CR_ACC_CIF_SUB_NO" property="CR_ACC_CIF_SUB_NO" />
+    <result column="CR_ACC_SL_NO" property="CR_ACC_SL_NO" />
+    <result column="PROFIT_ON_CHARGES" property="PROFIT_ON_CHARGES" />
+    <result column="CHARGES_AMT_FC" property="CHARGES_AMT_FC" />
+    <result column="CHARGES_AMT_CV" property="CHARGES_AMT_CV" />
+    <result column="EXCH_RATE" property="EXCH_RATE" />
+    <result column="CHARGES_MULTDIV" property="CHARGES_MULTDIV" />
+    <result column="CHARGE_TYPE" property="CHARGE_TYPE" />
+    <result column="COLLECT_CHARGE_AT_DEAL_YN" property="COLLECT_CHARGE_AT_DEAL_YN" />
+    <result column="COLLECT_CHARGES_ACCOUNT_TYPE" property="COLLECT_CHARGES_ACCOUNT_TYPE" />
+    <result column="CHARGES_PERCENTAGE" property="CHARGES_PERCENTAGE" />
+    <result column="AMOUNT_CALCULATION_BASIS" property="AMOUNT_CALCULATION_BASIS" />
+    <result column="CHARGES_CALCULATION_METHOD" property="CHARGES_CALCULATION_METHOD" />
+    <result column="PERIODICAL_NUMBER" property="PERIODICAL_NUMBER" />
+    <result column="PERIODICAL_PERIODICITY" property="PERIODICAL_PERIODICITY" />
+    <result column="PERIODICAL_BASIS" property="PERIODICAL_BASIS" />
+    <result column="CHARGE_AMT_PER_INST_YN" property="CHARGE_AMT_PER_INST_YN" />
+    <result column="VAT_CODE" property="VAT_CODE" />
+    <result column="VAT_CHARGE_INSUR_PERCENT" property="VAT_CHARGE_INSUR_PERCENT" />
+    <result column="VAT_CHARGE_INSUR_AMT" property="VAT_CHARGE_INSUR_AMT" />
+    <result column="CREDIT_TO_SD_ACCOUNT_YN" property="CREDIT_TO_SD_ACCOUNT_YN" />
+    <result column="PAY_AT_DEAL_CLOSURE_YN" property="PAY_AT_DEAL_CLOSURE_YN" />
+    <result column="CHARGES_REVERSED_AMOUNT" property="CHARGES_REVERSED_AMOUNT" />
+    <result column="PFX_TYPE" property="PFX_TYPE" />
+    <result column="PFX_EXTENSION_NO" property="PFX_EXTENSION_NO" />
+    <result column="COLLECT_CHARGES_FROM" property="COLLECT_CHARGES_FROM" />
+    <result column="COLLECT_CHARGES_EXTENSION_NO" property="COLLECT_CHARGES_EXTENSION_NO" />
+    <result column="COLLECT_CHARGES_EXT_STATUS" property="COLLECT_CHARGES_EXT_STATUS" />
+    <result column="PFX_CANCEL_YN" property="PFX_CANCEL_YN" />
+    <result column="PFX_CANCEL_NO" property="PFX_CANCEL_NO" />
+    <result column="RVRS_CHARGE_CANCELLATION_YN" property="RVRS_CHARGE_CANCELLATION_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, SERIAL_NO, CHARGES_CODE, CHARGES_AMOUNT, CR_ACC_BRANCH, 
+    CR_ACC_CURRENCY, CR_ACC_GL, CR_ACC_CIF_SUB_NO, CR_ACC_SL_NO, PROFIT_ON_CHARGES, CHARGES_AMT_FC, 
+    CHARGES_AMT_CV, EXCH_RATE, CHARGES_MULTDIV, CHARGE_TYPE, COLLECT_CHARGE_AT_DEAL_YN, 
+    COLLECT_CHARGES_ACCOUNT_TYPE, CHARGES_PERCENTAGE, AMOUNT_CALCULATION_BASIS, CHARGES_CALCULATION_METHOD, 
+    PERIODICAL_NUMBER, PERIODICAL_PERIODICITY, PERIODICAL_BASIS, CHARGE_AMT_PER_INST_YN, 
+    VAT_CODE, VAT_CHARGE_INSUR_PERCENT, VAT_CHARGE_INSUR_AMT, CREDIT_TO_SD_ACCOUNT_YN, 
+    PAY_AT_DEAL_CLOSURE_YN, CHARGES_REVERSED_AMOUNT, PFX_TYPE, PFX_EXTENSION_NO, COLLECT_CHARGES_FROM, 
+    COLLECT_CHARGES_EXTENSION_NO, COLLECT_CHARGES_EXT_STATUS, PFX_CANCEL_YN, PFX_CANCEL_NO, 
+    RVRS_CHARGE_CANCELLATION_YN
+  </sql>
+  <select id="selectTRSPFXCHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPFXCHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPFXCHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSPFXCHARGES" parameterType="com.path.dbmaps.vo.TRSPFXCHARGESVOKey" >
+    delete from TRSPFXCHARGES
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSPFXCHARGES" parameterType="com.path.dbmaps.vo.TRSPFXCHARGESVO" >
+    insert into TRSPFXCHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="CHARGES_CODE != null and CHARGES_CODE != emptyBigDecimalValue" >
+        CHARGES_CODE,
+      </if>
+      <if test="CHARGES_AMOUNT != null and CHARGES_AMOUNT != emptyBigDecimalValue" >
+        CHARGES_AMOUNT,
+      </if>
+      <if test="CR_ACC_BRANCH != null and CR_ACC_BRANCH != emptyBigDecimalValue" >
+        CR_ACC_BRANCH,
+      </if>
+      <if test="CR_ACC_CURRENCY != null and CR_ACC_CURRENCY != emptyBigDecimalValue" >
+        CR_ACC_CURRENCY,
+      </if>
+      <if test="CR_ACC_GL != null and CR_ACC_GL != emptyBigDecimalValue" >
+        CR_ACC_GL,
+      </if>
+      <if test="CR_ACC_CIF_SUB_NO != null and CR_ACC_CIF_SUB_NO != emptyBigDecimalValue" >
+        CR_ACC_CIF_SUB_NO,
+      </if>
+      <if test="CR_ACC_SL_NO != null and CR_ACC_SL_NO != emptyBigDecimalValue" >
+        CR_ACC_SL_NO,
+      </if>
+      <if test="PROFIT_ON_CHARGES != null and PROFIT_ON_CHARGES != emptyBigDecimalValue" >
+        PROFIT_ON_CHARGES,
+      </if>
+      <if test="CHARGES_AMT_FC != null and CHARGES_AMT_FC != emptyBigDecimalValue" >
+        CHARGES_AMT_FC,
+      </if>
+      <if test="CHARGES_AMT_CV != null and CHARGES_AMT_CV != emptyBigDecimalValue" >
+        CHARGES_AMT_CV,
+      </if>
+      <if test="EXCH_RATE != null and EXCH_RATE != emptyBigDecimalValue" >
+        EXCH_RATE,
+      </if>
+      <if test="CHARGES_MULTDIV != null" >
+        CHARGES_MULTDIV,
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        CHARGE_TYPE,
+      </if>
+      <if test="COLLECT_CHARGE_AT_DEAL_YN != null" >
+        COLLECT_CHARGE_AT_DEAL_YN,
+      </if>
+      <if test="COLLECT_CHARGES_ACCOUNT_TYPE != null" >
+        COLLECT_CHARGES_ACCOUNT_TYPE,
+      </if>
+      <if test="CHARGES_PERCENTAGE != null and CHARGES_PERCENTAGE != emptyBigDecimalValue" >
+        CHARGES_PERCENTAGE,
+      </if>
+      <if test="AMOUNT_CALCULATION_BASIS != null" >
+        AMOUNT_CALCULATION_BASIS,
+      </if>
+      <if test="CHARGES_CALCULATION_METHOD != null" >
+        CHARGES_CALCULATION_METHOD,
+      </if>
+      <if test="PERIODICAL_NUMBER != null and PERIODICAL_NUMBER != emptyBigDecimalValue" >
+        PERIODICAL_NUMBER,
+      </if>
+      <if test="PERIODICAL_PERIODICITY != null" >
+        PERIODICAL_PERIODICITY,
+      </if>
+      <if test="PERIODICAL_BASIS != null" >
+        PERIODICAL_BASIS,
+      </if>
+      <if test="CHARGE_AMT_PER_INST_YN != null" >
+        CHARGE_AMT_PER_INST_YN,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="VAT_CHARGE_INSUR_PERCENT != null and VAT_CHARGE_INSUR_PERCENT != emptyBigDecimalValue" >
+        VAT_CHARGE_INSUR_PERCENT,
+      </if>
+      <if test="VAT_CHARGE_INSUR_AMT != null and VAT_CHARGE_INSUR_AMT != emptyBigDecimalValue" >
+        VAT_CHARGE_INSUR_AMT,
+      </if>
+      <if test="CREDIT_TO_SD_ACCOUNT_YN != null" >
+        CREDIT_TO_SD_ACCOUNT_YN,
+      </if>
+      <if test="PAY_AT_DEAL_CLOSURE_YN != null" >
+        PAY_AT_DEAL_CLOSURE_YN,
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null and CHARGES_REVERSED_AMOUNT != emptyBigDecimalValue" >
+        CHARGES_REVERSED_AMOUNT,
+      </if>
+      <if test="PFX_TYPE != null" >
+        PFX_TYPE,
+      </if>
+      <if test="PFX_EXTENSION_NO != null and PFX_EXTENSION_NO != emptyBigDecimalValue" >
+        PFX_EXTENSION_NO,
+      </if>
+      <if test="COLLECT_CHARGES_FROM != null" >
+        COLLECT_CHARGES_FROM,
+      </if>
+      <if test="COLLECT_CHARGES_EXTENSION_NO != null and COLLECT_CHARGES_EXTENSION_NO != emptyBigDecimalValue" >
+        COLLECT_CHARGES_EXTENSION_NO,
+      </if>
+      <if test="COLLECT_CHARGES_EXT_STATUS != null" >
+        COLLECT_CHARGES_EXT_STATUS,
+      </if>
+      <if test="PFX_CANCEL_YN != null" >
+        PFX_CANCEL_YN,
+      </if>
+      <if test="PFX_CANCEL_NO != null and PFX_CANCEL_NO != emptyBigDecimalValue" >
+        PFX_CANCEL_NO,
+      </if>
+      <if test="RVRS_CHARGE_CANCELLATION_YN != null" >
+        RVRS_CHARGE_CANCELLATION_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="CHARGES_CODE != null and CHARGES_CODE != emptyBigDecimalValue" >
+        #{CHARGES_CODE},
+      </if>
+      <if test="CHARGES_AMOUNT != null and CHARGES_AMOUNT != emptyBigDecimalValue" >
+        #{CHARGES_AMOUNT},
+      </if>
+      <if test="CR_ACC_BRANCH != null and CR_ACC_BRANCH != emptyBigDecimalValue" >
+        #{CR_ACC_BRANCH},
+      </if>
+      <if test="CR_ACC_CURRENCY != null and CR_ACC_CURRENCY != emptyBigDecimalValue" >
+        #{CR_ACC_CURRENCY},
+      </if>
+      <if test="CR_ACC_GL != null and CR_ACC_GL != emptyBigDecimalValue" >
+        #{CR_ACC_GL},
+      </if>
+      <if test="CR_ACC_CIF_SUB_NO != null and CR_ACC_CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CR_ACC_CIF_SUB_NO},
+      </if>
+      <if test="CR_ACC_SL_NO != null and CR_ACC_SL_NO != emptyBigDecimalValue" >
+        #{CR_ACC_SL_NO},
+      </if>
+      <if test="PROFIT_ON_CHARGES != null and PROFIT_ON_CHARGES != emptyBigDecimalValue" >
+        #{PROFIT_ON_CHARGES},
+      </if>
+      <if test="CHARGES_AMT_FC != null and CHARGES_AMT_FC != emptyBigDecimalValue" >
+        #{CHARGES_AMT_FC},
+      </if>
+      <if test="CHARGES_AMT_CV != null and CHARGES_AMT_CV != emptyBigDecimalValue" >
+        #{CHARGES_AMT_CV},
+      </if>
+      <if test="EXCH_RATE != null and EXCH_RATE != emptyBigDecimalValue" >
+        #{EXCH_RATE},
+      </if>
+      <if test="CHARGES_MULTDIV != null" >
+        #{CHARGES_MULTDIV},
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        #{CHARGE_TYPE},
+      </if>
+      <if test="COLLECT_CHARGE_AT_DEAL_YN != null" >
+        #{COLLECT_CHARGE_AT_DEAL_YN},
+      </if>
+      <if test="COLLECT_CHARGES_ACCOUNT_TYPE != null" >
+        #{COLLECT_CHARGES_ACCOUNT_TYPE},
+      </if>
+      <if test="CHARGES_PERCENTAGE != null and CHARGES_PERCENTAGE != emptyBigDecimalValue" >
+        #{CHARGES_PERCENTAGE},
+      </if>
+      <if test="AMOUNT_CALCULATION_BASIS != null" >
+        #{AMOUNT_CALCULATION_BASIS},
+      </if>
+      <if test="CHARGES_CALCULATION_METHOD != null" >
+        #{CHARGES_CALCULATION_METHOD},
+      </if>
+      <if test="PERIODICAL_NUMBER != null and PERIODICAL_NUMBER != emptyBigDecimalValue" >
+        #{PERIODICAL_NUMBER},
+      </if>
+      <if test="PERIODICAL_PERIODICITY != null" >
+        #{PERIODICAL_PERIODICITY},
+      </if>
+      <if test="PERIODICAL_BASIS != null" >
+        #{PERIODICAL_BASIS},
+      </if>
+      <if test="CHARGE_AMT_PER_INST_YN != null" >
+        #{CHARGE_AMT_PER_INST_YN},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="VAT_CHARGE_INSUR_PERCENT != null and VAT_CHARGE_INSUR_PERCENT != emptyBigDecimalValue" >
+        #{VAT_CHARGE_INSUR_PERCENT},
+      </if>
+      <if test="VAT_CHARGE_INSUR_AMT != null and VAT_CHARGE_INSUR_AMT != emptyBigDecimalValue" >
+        #{VAT_CHARGE_INSUR_AMT},
+      </if>
+      <if test="CREDIT_TO_SD_ACCOUNT_YN != null" >
+        #{CREDIT_TO_SD_ACCOUNT_YN},
+      </if>
+      <if test="PAY_AT_DEAL_CLOSURE_YN != null" >
+        #{PAY_AT_DEAL_CLOSURE_YN},
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null and CHARGES_REVERSED_AMOUNT != emptyBigDecimalValue" >
+        #{CHARGES_REVERSED_AMOUNT},
+      </if>
+      <if test="PFX_TYPE != null" >
+        #{PFX_TYPE},
+      </if>
+      <if test="PFX_EXTENSION_NO != null and PFX_EXTENSION_NO != emptyBigDecimalValue" >
+        #{PFX_EXTENSION_NO},
+      </if>
+      <if test="COLLECT_CHARGES_FROM != null" >
+        #{COLLECT_CHARGES_FROM},
+      </if>
+      <if test="COLLECT_CHARGES_EXTENSION_NO != null and COLLECT_CHARGES_EXTENSION_NO != emptyBigDecimalValue" >
+        #{COLLECT_CHARGES_EXTENSION_NO},
+      </if>
+      <if test="COLLECT_CHARGES_EXT_STATUS != null" >
+        #{COLLECT_CHARGES_EXT_STATUS},
+      </if>
+      <if test="PFX_CANCEL_YN != null" >
+        #{PFX_CANCEL_YN},
+      </if>
+      <if test="PFX_CANCEL_NO != null and PFX_CANCEL_NO != emptyBigDecimalValue" >
+        #{PFX_CANCEL_NO},
+      </if>
+      <if test="RVRS_CHARGE_CANCELLATION_YN != null" >
+        #{RVRS_CHARGE_CANCELLATION_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPFXCHARGES" >
+    update TRSPFXCHARGES
+    <set >
+      <if test="CHARGES_CODE != null" >
+        <choose >
+          <when test="CHARGES_CODE == emptyBigDecimalValue" >
+            CHARGES_CODE = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_CODE = #{CHARGES_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGES_AMOUNT != null" >
+        <choose >
+          <when test="CHARGES_AMOUNT == emptyBigDecimalValue" >
+            CHARGES_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_AMOUNT = #{CHARGES_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_BRANCH != null" >
+        <choose >
+          <when test="CR_ACC_BRANCH == emptyBigDecimalValue" >
+            CR_ACC_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_BRANCH = #{CR_ACC_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_CURRENCY != null" >
+        <choose >
+          <when test="CR_ACC_CURRENCY == emptyBigDecimalValue" >
+            CR_ACC_CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_CURRENCY = #{CR_ACC_CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_GL != null" >
+        <choose >
+          <when test="CR_ACC_GL == emptyBigDecimalValue" >
+            CR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_GL = #{CR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_CIF_SUB_NO != null" >
+        <choose >
+          <when test="CR_ACC_CIF_SUB_NO == emptyBigDecimalValue" >
+            CR_ACC_CIF_SUB_NO = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_CIF_SUB_NO = #{CR_ACC_CIF_SUB_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_SL_NO != null" >
+        <choose >
+          <when test="CR_ACC_SL_NO == emptyBigDecimalValue" >
+            CR_ACC_SL_NO = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_SL_NO = #{CR_ACC_SL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PROFIT_ON_CHARGES != null" >
+        <choose >
+          <when test="PROFIT_ON_CHARGES == emptyBigDecimalValue" >
+            PROFIT_ON_CHARGES = NULL ,
+          </when>
+          <otherwise >
+            PROFIT_ON_CHARGES = #{PROFIT_ON_CHARGES},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGES_AMT_FC != null" >
+        <choose >
+          <when test="CHARGES_AMT_FC == emptyBigDecimalValue" >
+            CHARGES_AMT_FC = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_AMT_FC = #{CHARGES_AMT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGES_AMT_CV != null" >
+        <choose >
+          <when test="CHARGES_AMT_CV == emptyBigDecimalValue" >
+            CHARGES_AMT_CV = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_AMT_CV = #{CHARGES_AMT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EXCH_RATE != null" >
+        <choose >
+          <when test="EXCH_RATE == emptyBigDecimalValue" >
+            EXCH_RATE = NULL ,
+          </when>
+          <otherwise >
+            EXCH_RATE = #{EXCH_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGES_MULTDIV != null" >
+        CHARGES_MULTDIV = #{CHARGES_MULTDIV},
+      </if>
+      <if test="CHARGE_TYPE != null" >
+        CHARGE_TYPE = #{CHARGE_TYPE},
+      </if>
+      <if test="COLLECT_CHARGE_AT_DEAL_YN != null" >
+        COLLECT_CHARGE_AT_DEAL_YN = #{COLLECT_CHARGE_AT_DEAL_YN},
+      </if>
+      <if test="COLLECT_CHARGES_ACCOUNT_TYPE != null" >
+        COLLECT_CHARGES_ACCOUNT_TYPE = #{COLLECT_CHARGES_ACCOUNT_TYPE},
+      </if>
+      <if test="CHARGES_PERCENTAGE != null" >
+        <choose >
+          <when test="CHARGES_PERCENTAGE == emptyBigDecimalValue" >
+            CHARGES_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_PERCENTAGE = #{CHARGES_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_CALCULATION_BASIS != null" >
+        AMOUNT_CALCULATION_BASIS = #{AMOUNT_CALCULATION_BASIS},
+      </if>
+      <if test="CHARGES_CALCULATION_METHOD != null" >
+        CHARGES_CALCULATION_METHOD = #{CHARGES_CALCULATION_METHOD},
+      </if>
+      <if test="PERIODICAL_NUMBER != null" >
+        <choose >
+          <when test="PERIODICAL_NUMBER == emptyBigDecimalValue" >
+            PERIODICAL_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            PERIODICAL_NUMBER = #{PERIODICAL_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICAL_PERIODICITY != null" >
+        PERIODICAL_PERIODICITY = #{PERIODICAL_PERIODICITY},
+      </if>
+      <if test="PERIODICAL_BASIS != null" >
+        PERIODICAL_BASIS = #{PERIODICAL_BASIS},
+      </if>
+      <if test="CHARGE_AMT_PER_INST_YN != null" >
+        CHARGE_AMT_PER_INST_YN = #{CHARGE_AMT_PER_INST_YN},
+      </if>
+      <if test="VAT_CODE != null" >
+        <choose >
+          <when test="VAT_CODE == emptyBigDecimalValue" >
+            VAT_CODE = NULL ,
+          </when>
+          <otherwise >
+            VAT_CODE = #{VAT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_CHARGE_INSUR_PERCENT != null" >
+        <choose >
+          <when test="VAT_CHARGE_INSUR_PERCENT == emptyBigDecimalValue" >
+            VAT_CHARGE_INSUR_PERCENT = NULL ,
+          </when>
+          <otherwise >
+            VAT_CHARGE_INSUR_PERCENT = #{VAT_CHARGE_INSUR_PERCENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_CHARGE_INSUR_AMT != null" >
+        <choose >
+          <when test="VAT_CHARGE_INSUR_AMT == emptyBigDecimalValue" >
+            VAT_CHARGE_INSUR_AMT = NULL ,
+          </when>
+          <otherwise >
+            VAT_CHARGE_INSUR_AMT = #{VAT_CHARGE_INSUR_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREDIT_TO_SD_ACCOUNT_YN != null" >
+        CREDIT_TO_SD_ACCOUNT_YN = #{CREDIT_TO_SD_ACCOUNT_YN},
+      </if>
+      <if test="PAY_AT_DEAL_CLOSURE_YN != null" >
+        PAY_AT_DEAL_CLOSURE_YN = #{PAY_AT_DEAL_CLOSURE_YN},
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null" >
+        <choose >
+          <when test="CHARGES_REVERSED_AMOUNT == emptyBigDecimalValue" >
+            CHARGES_REVERSED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_REVERSED_AMOUNT = #{CHARGES_REVERSED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PFX_TYPE != null" >
+        PFX_TYPE = #{PFX_TYPE},
+      </if>
+      <if test="PFX_EXTENSION_NO != null" >
+        <choose >
+          <when test="PFX_EXTENSION_NO == emptyBigDecimalValue" >
+            PFX_EXTENSION_NO = NULL ,
+          </when>
+          <otherwise >
+            PFX_EXTENSION_NO = #{PFX_EXTENSION_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLLECT_CHARGES_FROM != null" >
+        COLLECT_CHARGES_FROM = #{COLLECT_CHARGES_FROM},
+      </if>
+      <if test="COLLECT_CHARGES_EXTENSION_NO != null" >
+        <choose >
+          <when test="COLLECT_CHARGES_EXTENSION_NO == emptyBigDecimalValue" >
+            COLLECT_CHARGES_EXTENSION_NO = NULL ,
+          </when>
+          <otherwise >
+            COLLECT_CHARGES_EXTENSION_NO = #{COLLECT_CHARGES_EXTENSION_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COLLECT_CHARGES_EXT_STATUS != null" >
+        COLLECT_CHARGES_EXT_STATUS = #{COLLECT_CHARGES_EXT_STATUS},
+      </if>
+      <if test="PFX_CANCEL_YN != null" >
+        PFX_CANCEL_YN = #{PFX_CANCEL_YN},
+      </if>
+      <if test="PFX_CANCEL_NO != null" >
+        <choose >
+          <when test="PFX_CANCEL_NO == emptyBigDecimalValue" >
+            PFX_CANCEL_NO = NULL ,
+          </when>
+          <otherwise >
+            PFX_CANCEL_NO = #{PFX_CANCEL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RVRS_CHARGE_CANCELLATION_YN != null" >
+        RVRS_CHARGE_CANCELLATION_YN = #{RVRS_CHARGE_CANCELLATION_YN},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSPFXCHARGES" parameterType="com.path.dbmaps.vo.TRSPFXCHARGESVO" >
+    <include refid="sql_updateTRSPFXCHARGES" />
+  </update>
+</mapper>

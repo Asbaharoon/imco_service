@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        
+<mapper namespace="productClassMapper">
+<sql id="productClassListCount">
+      <![CDATA[
+        SELECT
+			 COUNT(1)	 
+			FROM  TRSCLASS,
+				 TRSCATEGORY 
+			WHERE	 TRSCLASS.CATEGORY  = TRSCATEGORY.CATEGORY_CODE
+			 AND	TRSCLASS.COMP_CODE  = #{compCode}
+			 AND	TRSCLASS.CATEGORY  NOT IN (13, 17)
+		    AND ((TRSCATEGORY.APP_NAME = #{appName} and #{appName} != 'RET')
+		     or		#{appName} = 'RET' and TRSCATEGORY.APP_NAME = 'IIS' )
+			 AND	CASE WHEN TRSCLASS.SET_OF_RATIO IS NULL THEN  'N' ELSE TRSCLASS.SET_OF_RATIO END   = 'N'
+      ]]>   
+ </sql>
+ <sql id="productClassListCommon">
+     <if test="allClass != null">
+    SELECT
+     0 CODE,
+     'All Class' BRIEF_NAME_ENG,
+     'All Class' BRIEF_NAME_ARAB,
+     'All Class' DESC_ENG
+     FROM TRSCLASS,TRSCATEGORY
+     UNION
+     </if>
+        SELECT
+                  TRSCLASS.CODE,               
+                   TRSCLASS.BRIEF_NAME_ENG,
+                  TRSCLASS.BRIEF_NAME_ARAB,                
+                   TRSCATEGORY.DESC_ENG               
+                  FROM  TRSCLASS,
+                        TRSCATEGORY 
+                  WHERE TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+                   AND  TRSCLASS.COMP_CODE  = #{compCode}
+                   <choose>
+                   <when test='!(fromLimitScreen) '>
+                   		AND  TRSCLASS.CATEGORY  NOT IN (13, 17)
+                   </when>
+                   </choose>
+                   
+                   AND ( (TRSCATEGORY.APP_NAME = #{appName} AND #{appName} != 'RET' )
+                   or  #{appName} = 'RET' and TRSCATEGORY.APP_NAME = 'IIS' )
+                AND ((CASE WHEN TRSCLASS.APP_NAME  IS NULL THEN #{appName} ELSE TRSCLASS.APP_NAME END = #{appName} AND #{appName} != 'RET'  )
+                	or  #{appName} = 'RET' and TRSCLASS.APP_NAME = 'IIS' ) 
+                <if test='"T030MT".equals(windowReference)' >
+                  AND   TRSCLASS.BULK_TRADE_DEAL_APPLICABLE_YN ='Y'
+                  </if>
+                  AND ((TRSCLASS.CATEGORY = #{categoryCode} AND #{categoryCode} > 0) or #{categoryCode} = 0)
+           <if test='"Y".equals(isRAhnyn)' >        
+      AND	CASE WHEN TRSCLASS.AR_RAHNU_YN IS NULL THEN  'N' ELSE TRSCLASS.AR_RAHNU_YN END   = 'Y'
+	 AND	CASE WHEN TRSCLASS.ACCRUE_CHARGE_DAILY_YN IS NULL THEN  'N' ELSE TRSCLASS.ACCRUE_CHARGE_DAILY_YN END   = 'Y'
+	        </if>
+	      <if test='"Y".equals(isBillsCalac)' > 
+	         AND	CASE WHEN TRSCLASS.BILLS_YN IS NULL THEN  'N' ELSE TRSCLASS.BILLS_YN END   = 'Y'
+      </if>
+	        
+           </sql>
+ 
+ 
+  <sql id="productClassListCommonOrder">
+      <![CDATA[
+     ORDER BY TRSCLASS.BRIEF_NAME_ENG ASC
+      ]]>   
+ </sql>
+ 
+ <resultMap id="productClassListMap" type="productClassCO" >
+      <result property="CODE" column="CODE" />      
+      <result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+      <result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+      <result property="DESC_ENG" column="DESC_ENG" />
+      <result property="CATEGORY" column="CATEGORY" />    
+ </resultMap>
+ 
+ <select id="productClassList" resultMap="productClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="productClassListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="productClassListCount" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="productClassListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+ 
+  <select id="returnProductClassByCode" parameterType="productClassSC" resultType="productClassCO">
+  		SELECT
+			 TRSCLASS.CODE,			 
+			 TRSCLASS.BRIEF_NAME_ENG,
+			 TRSCLASS.BRIEF_NAME_ARAB,			 
+			 TRSCATEGORY.DESC_ENG			
+			FROM  TRSCLASS,
+				 TRSCATEGORY 
+			WHERE	 TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+			 AND	TRSCLASS.COMP_CODE  = #{compCode}			 
+		    AND  ((TRSCATEGORY.APP_NAME = #{appName} AND #{appName} != 'RET')
+		    	OR #{appName} = 'RET' and TRSCATEGORY.APP_NAME = 'IIS' )
+		    AND	TRSCLASS.CODE  = #{productClassCode}
+		    AND ((TRSCLASS.CATEGORY = #{categoryCode} AND #{categoryCode} > 0) or #{categoryCode} = 0)
+ </select>
+
+
+ <sql id="dealProductClassList">
+     	SELECT TRSCLASS.CODE,
+			TRSCLASS.CATEGORY,
+			TRSCLASS.BRIEF_NAME_ENG,
+			TRSCLASS.BRIEF_NAME_ARAB,
+			TRSCLASS.LINK_TO_FAS,
+			TRSCATEGORY.DESC_ENG,
+			TRSCATEGORY.APP_NAME,
+			TRSCLASS.PRODUCT_TYPE
+		FROM  TRSCLASS,TRSCATEGORY 
+		WHERE TRSCATEGORY.CATEGORY_CODE   =  #{categoryCode}
+		AND TRSCLASS.CATEGORY = TRSCATEGORY.CATEGORY_CODE 
+		AND	TRSCLASS.COMP_CODE  = #{compCode}
+		AND ((TRSCATEGORY.APP_NAME = #{appName} AND #{appName} != 'RET')
+		    	OR #{appName} = 'RET' and TRSCATEGORY.APP_NAME = 'IIS' )
+		AND (( (TRSCLASS.APP_NAME = #{appName} OR TRSCLASS.APP_NAME = NULL ) AND #{appName} != 'RET')
+				OR #{appName} = 'RET' and TRSCLASS.APP_NAME = 'IIS' )
+		AND	CASE WHEN TRSCLASS.SET_OF_RATIO IS NULL THEN  'N' ELSE TRSCLASS.SET_OF_RATIO END   = 'N'
+		<if test='"Y".equals(checkParyLimit)' >
+		AND TRSCLASS.CODE IN ( SELECT TRSCIFLIMITDET.CLASS FROM TRSCIFLIMITDET WHERE COMP_CODE = #{compCode} AND BRANCH_CODE = #{branchCode} AND CIF = #{cifNo} )
+		</if>
+		<if test='"Y".equals(checkUserLimit)' >
+		AND TRSCLASS.CODE IN (SELECT TRSUSRLIMITDET.CLASS 
+								FROM  TRSUSRLIMITDET  
+								WHERE TRSUSRLIMITDET.COMP_CODE  = #{compCode}
+								AND	TRSUSRLIMITDET.BRANCH_CODE  = #{branchCode}
+								AND	TRSUSRLIMITDET.USER_ID  = #{userId})	 
+      	</if>
+ </sql>
+ 
+  <select id="dealProductClassList" resultMap="productClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="dealProductClassList"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="dealProductClassListCount" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="dealProductClassList"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+ <select id="returnDealProductClassByCode" parameterType="productClassSC" resultType="productClassCO">
+	SELECT
+	 TRSCLASS.CODE,			 
+	 TRSCLASS.BRIEF_NAME_ENG,
+	 TRSCLASS.BRIEF_NAME_ARAB,			 
+	 TRSCATEGORY.DESC_ENG			
+	FROM  TRSCLASS,
+		 TRSCATEGORY 
+	WHERE TRSCATEGORY.CATEGORY_CODE   =  #{categoryCode}
+		AND TRSCLASS.CATEGORY = TRSCATEGORY.CATEGORY_CODE 
+		AND	TRSCLASS.COMP_CODE  = #{compCode}
+		AND (( TRSCATEGORY.APP_NAME = #{appName} AND #{appName} != 'RET')
+				OR #{appName} = 'RET' and TRSCATEGORY.APP_NAME = 'IIS' )
+		AND (( ( TRSCLASS.APP_NAME = #{appName} OR TRSCLASS.APP_NAME = NULL ) AND #{appName} != 'RET')
+				OR #{appName} = 'RET' and TRSCLASS.APP_NAME = 'IIS')
+		AND	TRSCLASS.CODE  = #{productClassCode}
+		AND	CASE WHEN TRSCLASS.SET_OF_RATIO IS NULL THEN  'N' ELSE TRSCLASS.SET_OF_RATIO END   = 'N'
+		<if test='"Y".equals(checkParyLimit)' >
+		AND TRSCLASS.CODE IN ( SELECT TRSCIFLIMITDET.CLASS FROM TRSCIFLIMITDET WHERE COMP_CODE = #{compCode} AND BRANCH_CODE = #{branchCode} AND CIF = #{cifNo} )
+		</if>
+		<if test='"Y".equals(checkUserLimit)' >
+		AND TRSCLASS.CODE IN (SELECT TRSUSRLIMITDET.CLASS 
+								FROM  TRSUSRLIMITDET  
+								WHERE TRSUSRLIMITDET.COMP_CODE  = #{compCode}
+								AND	TRSUSRLIMITDET.BRANCH_CODE  = #{branchCode}
+								AND	TRSUSRLIMITDET.USER_ID  = #{userId})	 
+      	</if>
+    
+ </select>
+ 
+ <select id="productClassListFms" resultMap="productClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="productClassListCommonFms"/>      
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="productClassListCountFms" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="productClassListCommonFms"/>      
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+ <select id="facilityTypeClassListFms" resultMap="productClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="facilityTypeClassListCommonFms"/>
+      <if test='item != null and item != ""'>
+				<include refid="facilityTypeClassAdditionalDataFms"  />
+		</if>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="facilityTypeClassListCountFms" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="facilityTypeClassListCommonFms"/>
+      <if test='item != null and item != ""'>
+				<include refid="facilityTypeClassAdditionalDataFms"  />
+		</if>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+<sql id="productClassListCommonFms">
+ 		 	SELECT * FROM (
+				SELECT 
+					0 CODE, 0 CATEGORY,'Indirect Limit' BRIEF_NAME_ENG,'0' DESC_ENG
+				FROM DUAL
+				WHERE #{item} NOT IN ('P','S')
+				UNION
+	      		SELECT 
+	      			TRSCLASS.CODE CODE,
+				 	TRSCLASS.CATEGORY CATEGORY, 
+	 			 	TRSCLASS.BRIEF_NAME_ENG BRIEF_NAME_ENG,
+					(	SELECT 	TRSCATEGORY.DESC_ENG
+						FROM	TRSCATEGORY
+						WHERE	TRSCATEGORY.CATEGORY_CODE  = 	TRSCLASS.CATEGORY
+						AND		TRSCATEGORY.APP_NAME = TRSCLASS.APP_NAME
+					 ) AS DESC_ENG
+	     		FROM TRSCLASS 
+				WHERE TRSCLASS.COMP_CODE = #{compCode}	
+				  <!--   TP#621590 ;13-Feb-2018;d.james-->
+			<if test='"true".equals(allTypesFlag)'> 
+				<include refid="productClassAllTypeSQL"/>
+			</if> 
+			) T1
+   
+ </sql>
+  <sql id="productClassAllTypeSQL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, 0,#{allTypes},#{allTypes} FROM DUAL 
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT  0, 0,#{allTypes},#{allTypes}  
+	        </when>
+        </choose>
+ 	</sql>
+ 
+<sql id="facilityTypeClassListCommonFms">
+     
+		SELECT 	FMSFACILITYTYPE_CLASS.CLASS_CODE CODE, 
+				TRSCLASS.CATEGORY CATEGORY,
+				TRSCLASS.BRIEF_NAME_ENG BRIEF_NAME_ENG,
+				(	SELECT 	TRSCATEGORY.DESC_ENG
+					FROM	TRSCATEGORY
+					WHERE	TRSCATEGORY.CATEGORY_CODE  	= 	TRSCLASS.CATEGORY
+					AND		TRSCATEGORY.APP_NAME = TRSCLASS.APP_NAME
+				) AS DESC_ENG
+		FROM 	FMSFACILITYTYPE_CLASS 
+		LEFT OUTER JOIN TRSCLASS 
+		ON 		FMSFACILITYTYPE_CLASS.COMP_CODE 		= 	TRSCLASS.COMP_CODE
+		AND 	FMSFACILITYTYPE_CLASS.CLASS_CODE 		=	TRSCLASS.CODE
+		WHERE 	FMSFACILITYTYPE_CLASS.COMP_CODE 		= 	#{compCode}
+		AND 	FMSFACILITYTYPE_CLASS.FACILITYTYPE_CODE = 	#{facilityType}
+		  
+ </sql>
+ 
+  <sql id="facilityTypeClassAdditionalDataFms">
+     	
+ 	UNION 
+ 		 	 
+	 SELECT 0, 0,'Indirect Limit','0'
+	 FROM DUAL
+	 WHERE #{item} NOT IN ('P','S')	  
+ </sql>
+ 
+ <select id="returnFmsFacilityTypeClassCount" parameterType="productClassSC" resultType="int">
+  		<![CDATA[
+		 SELECT COUNT(1)
+		  FROM FMSFACILITYTYPE_CLASS 
+		 WHERE FMSFACILITYTYPE_CLASS.COMP_CODE = #{compCode}
+		 AND FMSFACILITYTYPE_CLASS.FACILITYTYPE_CODE = #{facilityType}
+		]]>
+
+	</select>
+ 
+ 
+  <select id="returnProductClassByCodeFms" parameterType="productClassSC" resultType="productClassCO">
+	SELECT TRSCLASS.CODE,
+			 TRSCLASS.CATEGORY, 
+ 			 TRSCLASS.BRIEF_NAME_ENG,
+ 			 TRSCLASS.BRIEF_NAME_ARAB
+     		FROM TRSCLASS 
+			 WHERE TRSCLASS.COMP_CODE = #{compCode}	
+			 AND TRSCLASS.CODE = #{productClassCode}
+ </select>
+  
+<select id="returnGradeByCif"  resultType="String" parameterType="productClassSC" > 
+	SELECT 
+		GRADING_BY_CIF
+  	FROM 
+  		FMSCTRL
+ 	WHERE	
+ 		COMP_CODE	= #{compCode}  AND
+		BRANCH_CODE	= #{branchCode}    
+</select>
+<!--   // TP#178297; Arun.R.Variyath; 25/06/2014- Start-->
+<sql id="productClassListCommonWithoutApp">
+     
+        SELECT
+                  TRSCLASS.CODE,               
+                   TRSCLASS.BRIEF_NAME_ENG,
+                  TRSCLASS.BRIEF_NAME_ARAB,                
+                   TRSCATEGORY.DESC_ENG               
+                  FROM  TRSCLASS,
+                        TRSCATEGORY 
+                  WHERE TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+                   AND  TRSCLASS.COMP_CODE  = #{compCode}
+                  AND  TRSCLASS.CATEGORY  NOT IN (13, 17)               
+</sql>
+ 
+ <select id="productClassListWithoutApp" resultMap="productClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="productClassListCommonWithoutApp"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="productClassListCountWithoutApp" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="productClassListCommonWithoutApp"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+<!--    // TP#178297; Arun.R.Variyath; 25/06/2014- End-->
+
+
+<resultMap id="mergeProductClassListMap" type="productClassCO" >
+      <result property="CODE" column="CODE" />      
+      <result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+         
+ </resultMap>
+
+ <select id="mergeProductClassList" resultMap="mergeProductClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="mergeProductClassListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="mergeProductClassListCount" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="mergeProductClassListCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+  <sql id="mergeProductClassListCommon">
+  SELECT DISTINCT
+			 TRSCLASS.COMP_CODE,
+			 TRSCLASS.CODE,
+			 TRSCLASS.BRIEF_NAME_ENG
+	FROM  TRSCLASS,
+		 TRSPAYPLAN 
+	WHERE	 TRSPAYPLAN.COMP_CODE  = TRSCLASS.COMP_CODE
+	 AND	TRSPAYPLAN.TRSCLASS  = TRSCLASS.CODE
+	 AND	TRSCLASS.EQUAL_ACCRUAL_YN = 'N'
+	 AND  TRSCLASS.COMP_CODE  = #{compCode}
+  
+  </sql>
+  
+    <select id="returnMergeProductClassByCode" parameterType="productClassSC" resultType="productClassCO">
+  	 
+  	  SELECT DISTINCT
+			 TRSCLASS.COMP_CODE,
+			 TRSCLASS.CODE,
+			 TRSCLASS.BRIEF_NAME_ENG
+	FROM  TRSCLASS,
+		 TRSPAYPLAN 
+	WHERE	 TRSPAYPLAN.COMP_CODE  = TRSCLASS.COMP_CODE
+	 AND	TRSPAYPLAN.TRSCLASS  = TRSCLASS.CODE
+	 AND	TRSCLASS.EQUAL_ACCRUAL_YN = 'N'
+   AND TRSPAYPLAN.COMP_CODE=#{compCode}
+    AND	TRSCLASS.CODE  = #{productClassCode}
+    
+ </select>
+ 
+ <select id="returnProductClassCodeArRhanu" parameterType="productClassSC" resultType="productClassCO">
+		SELECT
+                  TRSCLASS.CODE,               
+                   TRSCLASS.BRIEF_NAME_ENG,
+                  TRSCLASS.BRIEF_NAME_ARAB,                
+                   TRSCATEGORY.DESC_ENG               
+                  FROM  TRSCLASS,
+                        TRSCATEGORY 
+                  WHERE TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+                   AND  TRSCLASS.COMP_CODE  = #{compCode}
+                   AND TRSCLASS.CODE = #{productClassCode}
+		<choose>
+			<when test="!(fromLimitScreen) ">AND  TRSCLASS.CATEGORY  NOT IN (13, 17)</when>
+		</choose>
+		AND  TRSCATEGORY.APP_NAME = #{appName}
+                AND (CASE WHEN TRSCLASS.APP_NAME  IS NULL THEN #{appName} ELSE TRSCLASS.APP_NAME END = #{appName} )
+		<if test='"T030MT".equals(windowReference)'>
+			AND   TRSCLASS.BULK_TRADE_DEAL_APPLICABLE_YN ='Y'
+		</if>
+		<if test='"Y".equals(isRAhnyn)'>
+			AND	CASE WHEN TRSCLASS.AR_RAHNU_YN IS NULL THEN  'N' ELSE TRSCLASS.AR_RAHNU_YN END   = 'Y'
+	 		AND	CASE WHEN TRSCLASS.ACCRUE_CHARGE_DAILY_YN IS NULL THEN  'N' ELSE TRSCLASS.ACCRUE_CHARGE_DAILY_YN END   = 'Y'
+ 		</if>
+	</select>
+  <select id="mergeproductClassesWithId" resultMap="mergeProductClassListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="mergeproductClassesWithIdCommon"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ 
+   <sql id="mergeproductClassesWithIdCommon">
+    SELECT DISTINCT
+			 TRSCLASS.COMP_CODE,
+			 TRSCLASS.CODE,
+			 TRSCLASS.BRIEF_NAME_ENG
+	FROM  TRSCLASS WHERE	 
+    TRSCLASS.CODE=#{productClassCode} AND  TRSCLASS.COMP_CODE= #{compCode}
+	 
+  
+  </sql>
+  
+      <select id="returnMergeProductClassById" parameterType="productClassSC" resultType="productClassCO">
+  	 
+  	   SELECT DISTINCT
+			 TRSCLASS.COMP_CODE,
+			 TRSCLASS.CODE,
+			 TRSCLASS.BRIEF_NAME_ENG
+	FROM  TRSCLASS WHERE	 
+    TRSCLASS.CODE=#{productClassCode} AND  TRSCLASS.COMP_CODE= #{compCode}
+    
+ </select>
+ 
+<select id="productClassListCountInFms" resultType="int" parameterType="productClassSC" > 
+              <include refid="servicesCommon.commonGridWrpBefCnt"/>
+              <include refid="productClassListCommonInFms"/>      
+              <include refid="servicesCommon.commonGridWrpAftCnt"/>
+              <include refid="servicesCommon.commonGridCountWrpClose"/>   
+       </select>
+       
+       <select id="productClassListInFms" resultMap="productClassListMap" parameterType="productClassSC" >
+              <include refid="servicesCommon.commonGridWrpBefFlip"/>
+              <include refid="productClassListCommonInFms"/>      
+              <include refid="servicesCommon.commonGridWrpAftFlip"/>
+              <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+       </select>
+       
+       <sql id="productClassListCommonInFms">
+              SELECT
+                     CODE,
+                     CATEGORY,
+                     CASE WHEN #{preferredLanguage} = 'AR' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG
+              FROM
+                     TRSCLASS
+              WHERE TRSCLASS.COMP_CODE = #{compCode}
+       </sql>
+ 
+ <resultMap id="productClassParamListMap" type="productClassCO" >
+      <result property="CODE" column="CODE" />      
+      <result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+      <result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+      <result property="EXPOSURE_LIMIT" column="EXPOSURE_LIMIT" />
+      <result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+      <result property="DESC_ENG" column="DESC_ENG" />    
+ </resultMap>
+ 
+ <select id="productClassLookupFmsParamList" resultMap="productClassParamListMap" parameterType="productClassSC" >
+      <include refid="servicesCommon.commonGridWrpBefFlip"/>
+      <include refid="productClassLookupFmsParam"/>
+      <include refid="servicesCommon.commonGridWrpAftFlip"/>
+      <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="productClassLookupFmsParamCount" resultType="int" parameterType="productClassSC" > 
+      <include refid="servicesCommon.commonGridWrpBefCnt"/>
+      <include refid="productClassLookupFmsParam"/>
+      <include refid="servicesCommon.commonGridWrpAftCnt"/>
+      <include refid="servicesCommon.commonGridCountWrpClose"/>   
+ </select>
+ 
+ <sql id="productClassLookupFmsParam">
+ 
+   SELECT
+		TRSCLASS.CODE,
+		TRSCLASS.BRIEF_NAME_ENG,
+		TRSCLASS.BRIEF_NAME_ARAB,
+		TRSCLASS.LONG_NAME_ENG,
+		TRSCLASS.EXPOSURE_LIMIT,
+		TRSCLASS.LEASE_TYPE,
+       	TRSCATEGORY.DESC_ENG
+ 	FROM  TRSCLASS 
+ 	LEFT OUTER JOIN 
+ 		TRSCATEGORY 
+ 	ON  TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY 
+    AND TRSCATEGORY.APP_NAME = TRSCLASS.APP_NAME
+    AND TRSCLASS.COMP_CODE = #{compCode}
+ 
+<!--  SELECT -->
+<!--    TRSCLASS.CODE,     -->
+<!--    TRSCLASS.BRIEF_NAME_ENG, -->
+<!--    TRSCLASS.BRIEF_NAME_ARAB,    -->
+<!--    TRSCATEGORY.DESC_ENG    -->
+<!--  FROM  TRSCLASS, TRSCATEGORY  -->
+<!--  WHERE TRSCATEGORY.CATEGORY_CODE = TRSCLASS.CATEGORY  -->
+<!--    AND TRSCLASS.COMP_CODE = #{compCode} -->
+<!--    AND TRSCATEGORY.APP_NAME = #{appName} -->
+ </sql>
+ </mapper>
+        

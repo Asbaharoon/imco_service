@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_AVA_CATEG_PAY_LIMIT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    <id column="CATEG_CODE" property="CATEG_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="PAYMENT_TYPE" property="PAYMENT_TYPE" />
+    <result column="RATE_TYPE" property="RATE_TYPE" />
+    <result column="AMOUNT_CV" property="AMOUNT_CV" />
+    <result column="PERIODICITY_TYPE" property="PERIODICITY_TYPE" />
+    <result column="PERIODICITY_NUM" property="PERIODICITY_NUM" />
+    <result column="PERIODICITY_UNIT" property="PERIODICITY_UNIT" />
+    <result column="BALANCE_RESET_YN" property="BALANCE_RESET_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CATEG_CODE, COMP_CODE, LINE_NO, PAYMENT_TYPE, RATE_TYPE, AMOUNT_CV, PERIODICITY_TYPE, 
+    PERIODICITY_NUM, PERIODICITY_UNIT, BALANCE_RESET_YN
+  </sql>
+  <select id="selectCTS_AVA_CATEG_PAY_LIMIT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_AVA_CATEG_PAY_LIMIT
+    where CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTS_AVA_CATEG_PAY_LIMIT" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    delete from CTS_AVA_CATEG_PAY_LIMIT
+    where CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCTS_AVA_CATEG_PAY_LIMIT" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    insert into CTS_AVA_CATEG_PAY_LIMIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CATEG_CODE != null and CATEG_CODE != emptyBigDecimalValue" >
+        CATEG_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PAYMENT_TYPE != null" >
+        PAYMENT_TYPE,
+      </if>
+      <if test="RATE_TYPE != null" >
+        RATE_TYPE,
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        AMOUNT_CV,
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE,
+      </if>
+      <if test="PERIODICITY_NUM != null and PERIODICITY_NUM != emptyBigDecimalValue" >
+        PERIODICITY_NUM,
+      </if>
+      <if test="PERIODICITY_UNIT != null" >
+        PERIODICITY_UNIT,
+      </if>
+      <if test="BALANCE_RESET_YN != null" >
+        BALANCE_RESET_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CATEG_CODE != null and CATEG_CODE != emptyBigDecimalValue" >
+        #{CATEG_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PAYMENT_TYPE != null" >
+        #{PAYMENT_TYPE},
+      </if>
+      <if test="RATE_TYPE != null" >
+        #{RATE_TYPE},
+      </if>
+      <if test="AMOUNT_CV != null and AMOUNT_CV != emptyBigDecimalValue" >
+        #{AMOUNT_CV},
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY_NUM != null and PERIODICITY_NUM != emptyBigDecimalValue" >
+        #{PERIODICITY_NUM},
+      </if>
+      <if test="PERIODICITY_UNIT != null" >
+        #{PERIODICITY_UNIT},
+      </if>
+      <if test="BALANCE_RESET_YN != null" >
+        #{BALANCE_RESET_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_AVA_CATEG_PAY_LIMIT" >
+    update CTS_AVA_CATEG_PAY_LIMIT
+    <set >
+      <if test="PAYMENT_TYPE != null" >
+        PAYMENT_TYPE = #{PAYMENT_TYPE},
+      </if>
+      <if test="RATE_TYPE != null" >
+        RATE_TYPE = #{RATE_TYPE},
+      </if>
+      <if test="AMOUNT_CV != null" >
+        <choose >
+          <when test="AMOUNT_CV == emptyBigDecimalValue" >
+            AMOUNT_CV = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_CV = #{AMOUNT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICITY_TYPE != null" >
+        PERIODICITY_TYPE = #{PERIODICITY_TYPE},
+      </if>
+      <if test="PERIODICITY_NUM != null" >
+        <choose >
+          <when test="PERIODICITY_NUM == emptyBigDecimalValue" >
+            PERIODICITY_NUM = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY_NUM = #{PERIODICITY_NUM},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIODICITY_UNIT != null" >
+        PERIODICITY_UNIT = #{PERIODICITY_UNIT},
+      </if>
+      <if test="BALANCE_RESET_YN != null" >
+        BALANCE_RESET_YN = #{BALANCE_RESET_YN},
+      </if>
+    </set>
+    where CATEG_CODE = #{CATEG_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTS_AVA_CATEG_PAY_LIMIT" parameterType="com.path.dbmaps.vo.CTS_AVA_CATEG_PAY_LIMITVO" >
+    <include refid="sql_updateCTS_AVA_CATEG_PAY_LIMIT" />
+  </update>
+</mapper>

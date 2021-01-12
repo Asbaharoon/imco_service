@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Email Specification -->
+	<bean id="mailSender" lazy-init="true" class="org.springframework.mail.javamail.JavaMailSenderImpl" scope="prototype">
+		<property name="session" ref="mailSession"></property>
+	</bean>
+	<bean id="mailSession" lazy-init="true" class="com.path.lib.common.base.mail.PathMailJndiFactoryBean">
+		<property name="jndiName" value="mailServices.jndi"/>
+	</bean>
+</beans>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="legalStatusMapper">
+
+ <sql id="legalStatusListCommon">
+ 
+	SELECT
+			 LEGAL_STATUS.STATUS_CODE,
+			 LEGAL_STATUS.BRIEF_DESC_ENG,
+			 LEGAL_STATUS.BRIEF_DESC_ARAB,
+			 LEGAL_STATUS.LONG_DESC_ENG,
+			 LEGAL_STATUS.LONG_DESC_ARAB
+	FROM  LEGAL_STATUS 
+	WHERE	LEGAL_STATUS.COMP_CODE  = #{compCode}		
+	  AND ((exists (select 1 from RIFCTT_LEGAL_STATUS
+	  where RIFCTT_LEGAL_STATUS.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	  and RIFCTT_LEGAL_STATUS.STATUS_CODE=LEGAL_STATUS.STATUS_CODE 
+	  AND RIFCTT_LEGAL_STATUS.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+	  or  not exists (select 1 from RIFCTT_LEGAL_STATUS
+	  where RIFCTT_LEGAL_STATUS.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	    AND RIFCTT_LEGAL_STATUS.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+	  )
+	<if test='useCifMatrix != null and "1".equals(useCifMatrix)'>
+	  and ( exists (select 1 from RIFCTT_CIF_MATRIX
+	    where RIFCTT_CIF_MATRIX.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	    and RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE=LEGAL_STATUS.STATUS_CODE 
+	    AND RIFCTT_CIF_MATRIX.ECO_AGENT_CODE = #{ecoAgentCode,jdbcType=NUMERIC}
+	    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+	  or  not exists (select 1 from RIFCTT_CIF_MATRIX
+	  where RIFCTT_CIF_MATRIX.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	  AND RIFCTT_CIF_MATRIX.ECO_AGENT_CODE = #{ecoAgentCode,jdbcType=NUMERIC}
+	    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} ) )
+	</if>
+    )		
+ </sql>
+ 
+ <resultMap id="legalStatusList_ResMap" type="legalStatusVO">
+	<id property="STATUS_CODE" column="STATUS_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="legalStatusList" resultMap="legalStatusList_ResMap" parameterType="legalStatusSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="legalStatusListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="legalStatusListCount" resultType="int" parameterType="legalStatusSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="legalStatusListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnDependencyByStatusCode" parameterType="legalStatusSC" resultType="legalStatusVO">
+
+		SELECT
+				 STATUS_CODE,
+				 CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+				 CASE WHEN #{preferredLanguage} = 'A' THEN LONG_DESC_ARAB ELSE LONG_DESC_ENG END LONG_DESC_ENG
+		FROM  	 LEGAL_STATUS 
+		WHERE	LEGAL_STATUS.COMP_CODE  = #{compCode}
+		  AND		 STATUS_CODE  = #{statusCode}
+		  AND ((exists (select 1 from RIFCTT_LEGAL_STATUS
+		  where RIFCTT_LEGAL_STATUS.COMP_CODE=LEGAL_STATUS.COMP_CODE
+		  and RIFCTT_LEGAL_STATUS.STATUS_CODE=LEGAL_STATUS.STATUS_CODE 
+		  AND RIFCTT_LEGAL_STATUS.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+		  or  not exists (select 1 from RIFCTT_LEGAL_STATUS
+		  where RIFCTT_LEGAL_STATUS.COMP_CODE=LEGAL_STATUS.COMP_CODE
+		    AND RIFCTT_LEGAL_STATUS.CIF_TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+		  )
+	    <if test='useCifMatrix != null and "1".equals(useCifMatrix)'>
+	  and ( exists (select 1 from RIFCTT_CIF_MATRIX
+	    where RIFCTT_CIF_MATRIX.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	    and RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE=LEGAL_STATUS.STATUS_CODE 
+	    AND RIFCTT_CIF_MATRIX.ECO_AGENT_CODE = #{ecoAgentCode,jdbcType=NUMERIC}
+	    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} )
+	  or  not exists (select 1 from RIFCTT_CIF_MATRIX
+	  where RIFCTT_CIF_MATRIX.COMP_CODE=LEGAL_STATUS.COMP_CODE
+	  AND RIFCTT_CIF_MATRIX.ECO_AGENT_CODE = #{ecoAgentCode,jdbcType=NUMERIC}
+	    AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} ) )
+	    </if>
+	    )	
+	  
+</select>
+
+</mapper>

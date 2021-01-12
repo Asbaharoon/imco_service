@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="imcoPwsCommonServiceBO" factory-bean="imcoServiceBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.imco.bo.common.impl.ImcoPwsCommonServiceBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.imco.bo.common.ImcoPwsCommonServiceBO" />
+		<constructor-arg name="remoteServiceName" value="imcoPwsCommonServiceBOService" />
+		<property name="imcoPwsCommonServiceDAO" ref="imcoPwsCommonServiceDAO"></property>
+		<property name="channelBO" ref="channelBO"></property>
+	</bean>	
+
+	<bean id="imcoPwsCommonServiceWrapperBO" factory-bean="imcoServiceBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.imco.bo.common.pws.impl.ImcoPwsCommonServiceWrapperBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.common.pws.ImcoPwsCommonServiceWrapperBO" />
+		<constructor-arg name="remoteServiceName" value="imcoPwsCommonServiceWrapperBOService" />
+		<property name="imcoPwsCommonServiceBO" ref="imcoPwsCommonServiceBO"></property>
+		<property name="loginBO" ref="loginBO"></property>
+	</bean>	
+	
+	<bean id="imcoCommonLookupBO" factory-bean="imcoServiceBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.imco.bo.common.lookup.impl.ImcoCommonLookupBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.imco.bo.common.lookup.ImcoCommonLookupBO" />
+		<constructor-arg name="remoteServiceName" value="imcoCommonLookupBOService" />
+		<property name="imcoCommonLookupDAO" ref="imcoCommonLookupDAO"></property>
+	</bean>	
+	
+		<bean id="imcoPwsMappingBO" factory-bean="imcoServiceBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.imco.bo.common.pws.impl.ImcoPwsMappingBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.imco.bo.common.ImcoPwsMappingBO" />
+		<constructor-arg name="remoteServiceName" value="imcoPwsMappingBOService" />
+		<property name="imcoPwsMappingDAO" ref="imcoPwsMappingDAO"></property>
+	</bean>	
+
+</beans>

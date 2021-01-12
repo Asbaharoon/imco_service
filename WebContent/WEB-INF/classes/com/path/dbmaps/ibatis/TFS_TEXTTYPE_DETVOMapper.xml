@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_TEXTTYPE_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="LC_NBR" property="LC_NBR" />
+    <id column="LC_YEAR" property="LC_YEAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" extends="BaseResultMap" >
+    <result column="DETAILS1_ENG" property="DETAILS1_ENG" />
+    <result column="DETAILS1_ARAB" property="DETAILS1_ARAB" />
+    <result column="DETAILS2_ENG" property="DETAILS2_ENG" />
+    <result column="DETAILS2_ARAB" property="DETAILS2_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, DOC_TYPE, LC_NBR, LC_YEAR
+  </sql>
+  <sql id="Blob_Column_List" >
+    DETAILS1_ENG, DETAILS1_ARAB, DETAILS2_ENG, DETAILS2_ARAB
+  </sql>
+  <select id="selectTFS_TEXTTYPE_DET" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from TFS_TEXTTYPE_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LC_NBR = #{LC_NBR}
+      and LC_YEAR = #{LC_YEAR}
+  </select>
+  <delete id="deleteTFS_TEXTTYPE_DET" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" >
+    delete from TFS_TEXTTYPE_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LC_NBR = #{LC_NBR}
+      and LC_YEAR = #{LC_YEAR}
+  </delete>
+  <insert id="insertTFS_TEXTTYPE_DET" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" >
+    insert into TFS_TEXTTYPE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        LC_NBR,
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        LC_YEAR,
+      </if>
+      <if test="DETAILS1_ENG != null" >
+        DETAILS1_ENG,
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        DETAILS1_ARAB,
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        DETAILS2_ENG,
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        DETAILS2_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="LC_NBR != null and LC_NBR != emptyBigDecimalValue" >
+        #{LC_NBR},
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        #{LC_YEAR},
+      </if>
+      <if test="DETAILS1_ENG != null" >
+        #{DETAILS1_ENG},
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        #{DETAILS1_ARAB},
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        #{DETAILS2_ENG},
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        #{DETAILS2_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_TEXTTYPE_DET" >
+    update TFS_TEXTTYPE_DET
+    <set >
+      <if test="DETAILS1_ENG != null" >
+        DETAILS1_ENG = #{DETAILS1_ENG},
+      </if>
+      <if test="DETAILS1_ARAB != null" >
+        DETAILS1_ARAB = #{DETAILS1_ARAB},
+      </if>
+      <if test="DETAILS2_ENG != null" >
+        DETAILS2_ENG = #{DETAILS2_ENG},
+      </if>
+      <if test="DETAILS2_ARAB != null" >
+        DETAILS2_ARAB = #{DETAILS2_ARAB},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LC_NBR = #{LC_NBR}
+      and LC_YEAR = #{LC_YEAR}
+  </sql>
+  <update id="updateTFS_TEXTTYPE_DET" parameterType="com.path.dbmaps.vo.TFS_TEXTTYPE_DETVO" >
+    <include refid="sql_updateTFS_TEXTTYPE_DET" />
+  </update>
+</mapper>

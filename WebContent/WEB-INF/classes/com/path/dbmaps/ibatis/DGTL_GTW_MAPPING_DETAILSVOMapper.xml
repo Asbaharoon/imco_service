@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_GTW_MAPPING_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_GTW_MAPPING_DETAILSVO" >
+    <id column="MAPPING_ID" property="MAPPING_ID" />
+    <id column="SOURCE_KEY" property="SOURCE_KEY" />
+    <result column="DESTINATION_KEY" property="DESTINATION_KEY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MAPPING_ID, SOURCE_KEY, DESTINATION_KEY
+  </sql>
+  <select id="selectDGTL_GTW_MAPPING_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPING_DETAILSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DGTL_GTW_MAPPING_DETAILS
+    where MAPPING_ID = #{MAPPING_ID}
+      and SOURCE_KEY = #{SOURCE_KEY}
+  </select>
+  <delete id="deleteDGTL_GTW_MAPPING_DETAILS" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPING_DETAILSVO" >
+    delete from DGTL_GTW_MAPPING_DETAILS
+    where MAPPING_ID = #{MAPPING_ID}
+      and SOURCE_KEY = #{SOURCE_KEY}
+  </delete>
+  <insert id="insertDGTL_GTW_MAPPING_DETAILS" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPING_DETAILSVO" >
+    insert into DGTL_GTW_MAPPING_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="MAPPING_ID != null and !&quot;&quot;.equals(MAPPING_ID)" >
+        MAPPING_ID,
+      </if>
+      <if test="SOURCE_KEY != null and !&quot;&quot;.equals(SOURCE_KEY)" >
+        SOURCE_KEY,
+      </if>
+      <if test="DESTINATION_KEY != null and !&quot;&quot;.equals(DESTINATION_KEY)" >
+        DESTINATION_KEY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="MAPPING_ID != null and !&quot;&quot;.equals(MAPPING_ID)" >
+        #{MAPPING_ID},
+      </if>
+      <if test="SOURCE_KEY != null and !&quot;&quot;.equals(SOURCE_KEY)" >
+        #{SOURCE_KEY},
+      </if>
+      <if test="DESTINATION_KEY != null and !&quot;&quot;.equals(DESTINATION_KEY)" >
+        #{DESTINATION_KEY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_GTW_MAPPING_DETAILS" >
+    update DGTL_GTW_MAPPING_DETAILS
+    <set >
+      <if test="DESTINATION_KEY != null" >
+        <choose >
+          <when test="DESTINATION_KEY.equals(&quot;&quot;)" >
+            DESTINATION_KEY = NULL ,
+          </when>
+          <otherwise >
+            DESTINATION_KEY = #{DESTINATION_KEY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where MAPPING_ID = #{MAPPING_ID}
+      and SOURCE_KEY = #{SOURCE_KEY}
+  </sql>
+  <update id="updateDGTL_GTW_MAPPING_DETAILS" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPING_DETAILSVO" >
+    <include refid="sql_updateDGTL_GTW_MAPPING_DETAILS" />
+  </update>
+</mapper>

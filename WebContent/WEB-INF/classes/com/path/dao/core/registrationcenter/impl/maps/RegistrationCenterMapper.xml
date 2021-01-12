@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="registrationCenterMapper">
+	<resultMap id="resRegistrationCenterListMap" type="com.path.dbmaps.vo.CTS_REGISTER_CENTERVO">
+		<result property="REGISTER_CODE" column="REGISTER_CODE"/>
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+	</resultMap>
+	<select id="returnRegistrationCenterList" parameterType="com.path.vo.core.registrationcenter.RegistrationCenterSC" resultMap="resRegistrationCenterListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryRegistrationCenterSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnRegistrationCenterListCount" parameterType="com.path.vo.core.registrationcenter.RegistrationCenterSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryRegistrationCenterSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+<!-- 	<select id="returnRegistrationCenterForDep" parameterType="com.path.vo.core.registrationcenter.RegistrationCenterSC" resultMap="resRegistrationCenterListMap">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryRegistrationCenterForDepSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select> -->
+	
+	<sql id="queryRegistrationCenterSQL">
+		SELECT 	 REGISTER_CODE,
+				 BRIEF_NAME_ENG
+		FROM CTS_REGISTER_CENTER	
+		WHERE COMP_CODE = #{compCode}	
+	</sql>
+	
+	<select id="returnRegistrationCenterForDep" parameterType="com.path.vo.core.registrationcenter.RegistrationCenterSC" resultType="com.path.dbmaps.vo.CTS_REGISTER_CENTERVO">
+		SELECT 	 REGISTER_CODE,
+				 BRIEF_NAME_ENG
+		FROM CTS_REGISTER_CENTER	
+		WHERE COMP_CODE = #{compCode}
+		AND REGISTER_CODE = #{regCode}	
+	</select>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_INFO" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_INFOVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="SEND_TO_RECEIVER" property="SEND_TO_RECEIVER" />
+    <result column="SHOW_TEXT" property="SHOW_TEXT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, SEND_TO_RECEIVER, SHOW_TEXT
+  </sql>
+  <select id="selectSWIFT_INFO" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_INFOVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_INFO
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteSWIFT_INFO" parameterType="com.path.dbmaps.vo.SWIFT_INFOVOKey" >
+    delete from SWIFT_INFO
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertSWIFT_INFO" parameterType="com.path.dbmaps.vo.SWIFT_INFOVO" >
+    insert into SWIFT_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SEND_TO_RECEIVER != null" >
+        SEND_TO_RECEIVER,
+      </if>
+      <if test="SHOW_TEXT != null" >
+        SHOW_TEXT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SEND_TO_RECEIVER != null" >
+        #{SEND_TO_RECEIVER},
+      </if>
+      <if test="SHOW_TEXT != null" >
+        #{SHOW_TEXT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_INFO" >
+    update SWIFT_INFO
+    <set >
+      <if test="SEND_TO_RECEIVER != null" >
+        SEND_TO_RECEIVER = #{SEND_TO_RECEIVER},
+      </if>
+      <if test="SHOW_TEXT != null" >
+        SHOW_TEXT = #{SHOW_TEXT},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateSWIFT_INFO" parameterType="com.path.dbmaps.vo.SWIFT_INFOVO" >
+    <include refid="sql_updateSWIFT_INFO" />
+  </update>
+</mapper>

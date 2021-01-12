@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CEFTS_CONNECT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CEFTS_CONNECTVO" >
+    <result column="LAST_ECHO_MSG" property="LAST_ECHO_MSG" />
+    <result column="LAST_ECHO_MSG_DATE" property="LAST_ECHO_MSG_DATE" />
+    <result column="TIMEOUT" property="TIMEOUT" />
+    <result column="REPEAT_REVERSE_DELAY" property="REPEAT_REVERSE_DELAY" />
+    <result column="REPEAT_REVERSE_TOTAL" property="REPEAT_REVERSE_TOTAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LAST_ECHO_MSG, LAST_ECHO_MSG_DATE, TIMEOUT, REPEAT_REVERSE_DELAY, REPEAT_REVERSE_TOTAL
+  </sql>
+  <select id="selectCEFTS_CONNECT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CEFTS_CONNECTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CEFTS_CONNECT
+  </select>
+  <insert id="insertCEFTS_CONNECT" parameterType="com.path.dbmaps.vo.CEFTS_CONNECTVO" >
+    <selectKey resultType="java.lang.String" keyProperty="LAST_ECHO_MSG" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(LAST_ECHO_MSG),0)+1</when><otherwise>NVL(MAX(LAST_ECHO_MSG),0)+1</otherwise></choose> FROM CEFTS_CONNECT
+    </selectKey>
+    insert into CEFTS_CONNECT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      LAST_ECHO_MSG,
+      <if test="LAST_ECHO_MSG_DATE != null" >
+        LAST_ECHO_MSG_DATE,
+      </if>
+      <if test="TIMEOUT != null" >
+        TIMEOUT,
+      </if>
+      <if test="REPEAT_REVERSE_DELAY != null" >
+        REPEAT_REVERSE_DELAY,
+      </if>
+      <if test="REPEAT_REVERSE_TOTAL != null and REPEAT_REVERSE_TOTAL != emptyBigDecimalValue" >
+        REPEAT_REVERSE_TOTAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{LAST_ECHO_MSG},
+      <if test="LAST_ECHO_MSG_DATE != null" >
+        #{LAST_ECHO_MSG_DATE},
+      </if>
+      <if test="TIMEOUT != null" >
+        #{TIMEOUT},
+      </if>
+      <if test="REPEAT_REVERSE_DELAY != null" >
+        #{REPEAT_REVERSE_DELAY},
+      </if>
+      <if test="REPEAT_REVERSE_TOTAL != null and REPEAT_REVERSE_TOTAL != emptyBigDecimalValue" >
+        #{REPEAT_REVERSE_TOTAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

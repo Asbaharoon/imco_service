@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="remittanceMapper">
+
+	<resultMap id="remittanceListMap" type="com.path.dbmaps.vo.REMITTANCEVO">
+		<result property="CODE" column="CODE" />
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+		<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+		<result property="LONG_NAME_ARAB " column="LONG_NAME_ARAB " />
+	</resultMap>
+
+	<sql id="select_remittanceLookup">
+		SELECT REMITTANCE.COMP_CODE,
+		REMITTANCE.CODE,
+		REMITTANCE.BRIEF_NAME_ENG,
+		REMITTANCE.LONG_NAME_ENG,
+		REMITTANCE.BRIEF_NAME_ARAB,
+		REMITTANCE.LONG_NAME_ARAB
+		FROM REMITTANCE
+		WHERE REMITTANCE.COMP_CODE = #{compCode}
+		<if test="remittanceType != null" >
+		AND REMITTANCE.REMITTANCE_TYPE
+		= CASE WHEN #{remittanceType}='X' THEN
+		REMITTANCE.REMITTANCE_TYPE ELSE
+		#{remittanceType} End
+		</if>
+	
+	</sql>
+
+	<select id="returnRemittanceTypeLookupData" resultMap="remittanceListMap"
+		parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_remittanceLookup" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnRemittanceTypeLookupCount" resultType="int"
+		parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_remittanceLookup" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<sql id="select_remittanceTypeLookup">
+		<include refid="select_remittanceLookup" />
+		<if test="remittanceType == null and remittanceStr != null" >
+			AND REMITTANCE.REMITTANCE_TYPE IN ${remittanceStr}
+		</if>
+	</sql>
+	
+	<select id="returnRemitTypeLookupData" resultMap="remittanceListMap"
+		parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_remittanceTypeLookup" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnRemitTypeLookupCount" resultType="int"
+		parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_remittanceTypeLookup" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnRemittanceTypeByCode" resultType="com.path.dbmaps.vo.REMITTANCEVO" parameterType="com.path.vo.core.remittance.RemittanceSC">
+		 SELECT REMITTANCE.COMP_CODE,
+				REMITTANCE.CODE,
+				(SELECT CASE WHEN #{preferredLanguage} = 'L' THEN REMITTANCE.BRIEF_NAME_ENG ELSE REMITTANCE.BRIEF_NAME_ARAB END) BRIEF_NAME_ENG
+		  FROM REMITTANCE
+		 WHERE REMITTANCE.COMP_CODE = #{compCode}
+		   AND REMITTANCE.CODE = #{remittType}
+	</select>
+	
+	
+	<select id="returnTrxRemitTypeCodeData" resultMap="trxRemitTypeMap" parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_returnTrxRemitTypeCode" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnTrxRemitTypeCodeCount" resultType="int" parameterType="com.path.vo.core.remittance.RemittanceSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_returnTrxRemitTypeCode" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<sql id="select_returnTrxRemitTypeCode">
+		SELECT REMIT_TYPE_CODE trxRemittCode,
+		(SELECT BRIEF_NAME_ENG FROM REMITTANCE WHERE REMITTANCE.COMP_CODE = CTSTRXTYPE_REMIT.COMP_CODE AND REMITTANCE.CODE = CTSTRXTYPE_REMIT.REMIT_TYPE_CODE) BRIEF_NAME_ENG,
+		(SELECT BRIEF_NAME_ARAB FROM REMITTANCE WHERE REMITTANCE.COMP_CODE = CTSTRXTYPE_REMIT.COMP_CODE AND REMITTANCE.CODE = CTSTRXTYPE_REMIT.REMIT_TYPE_CODE) BRIEF_NAME_ARAB
+		FROM CTSTRXTYPE_REMIT
+		WHERE COMP_CODE = #{compCode}
+		AND TRXTYPE_CODE = #{trxType}
+	</sql>
+	
+	
+	<resultMap id="trxRemitTypeMap" type="trxMgntRemtDenomCO">
+		<result property="trxRemittCode" column="trxRemittCode" />
+		<result property="remittanceVO.BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+		<result property="remittanceVO.BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	</resultMap>
+</mapper>

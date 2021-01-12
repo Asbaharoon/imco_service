@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chargesFeesPolicyMapper">
+
+ <sql id="chargesFeesPolicyListCommon" >
+	<![CDATA[
+		
+		SELECT 	CODE				,
+				BRIEF_NAME_ENG	    ,
+				LONG_NAME_ENG       ,
+				BRIEF_NAME_ARAB     ,
+				LONG_NAME_ARAB		,
+				PERIODICITY			,
+				(SELECT VALUE_DESC 
+			                FROM SYS_PARAM_LOV_TRANS 
+			                WHERE LOV_TYPE_ID = #{lovType}
+			                AND LANG_CODE = #{langCode}
+			                AND VALUE_CODE = CTS_CHARGES_FEES_POLICY.PERIODICITY) PERIODICITY_TYPE  
+		FROM CTS_CHARGES_FEES_POLICY
+		WHERE COMP_CODE	= #{compCode}   
+		AND   LINE_NO 	= 0
+		
+	]]>	 
+ </sql>
+  
+  <sql id="chargesFeesPolicyDependency" >
+	<![CDATA[
+		AND CODE 	= #{chargesCode}
+	]]>	 
+ </sql>
+
+ <resultMap id="chargesFeesPolicyListMap" type="chargesFeesPolicyVO">
+	<id property="CODE" column="CODE" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="PERIODICITY" column="PERIODICITY" />
+	<result property="PERIODICITY_TYPE" column="PERIODICITY_TYPE" />
+ </resultMap>
+ 
+ <select id="chargesFeesPolicyList" resultMap="chargesFeesPolicyListMap" parameterType="chargesFeesPolicySC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chargesFeesPolicyListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="chargesFeesPolicyListCount" resultType="int" parameterType="chargesFeesPolicySC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chargesFeesPolicyListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnChargesFeesPolicyById" resultMap="chargesFeesPolicyListMap" parameterType="chargesFeesPolicySC" > 
+	<include refid="chargesFeesPolicyListCommon"/>
+	<include refid="chargesFeesPolicyDependency"/>
+ </select>
+
+</mapper>

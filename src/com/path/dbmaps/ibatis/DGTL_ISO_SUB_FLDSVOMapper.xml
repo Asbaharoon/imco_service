@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_ISO_SUB_FLDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_ISO_SUB_FLDSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FIELD_NO" property="FIELD_NO" />
+    <id column="INT_CODE" property="INT_CODE" />
+    <id column="SUB_FLD_CODE" property="SUB_FLD_CODE" />
+    <result column="SUB_FLD_NAME" property="SUB_FLD_NAME" />
+    <result column="SUB_FLD_TYPE" property="SUB_FLD_TYPE" />
+    <result column="SUB_FLD_LENGTH" property="SUB_FLD_LENGTH" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, FIELD_NO, INT_CODE, SUB_FLD_CODE, SUB_FLD_NAME, SUB_FLD_TYPE, SUB_FLD_LENGTH
+  </sql>
+  <select id="selectDGTL_ISO_SUB_FLDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DGTL_ISO_SUB_FLDSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DGTL_ISO_SUB_FLDS
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+      and SUB_FLD_CODE = #{SUB_FLD_CODE}
+  </select>
+  <delete id="deleteDGTL_ISO_SUB_FLDS" parameterType="com.path.dbmaps.vo.DGTL_ISO_SUB_FLDSVO" >
+    delete from DGTL_ISO_SUB_FLDS
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+      and SUB_FLD_CODE = #{SUB_FLD_CODE}
+  </delete>
+  <insert id="insertDGTL_ISO_SUB_FLDS" parameterType="com.path.dbmaps.vo.DGTL_ISO_SUB_FLDSVO" >
+    insert into DGTL_ISO_SUB_FLDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FIELD_NO != null and FIELD_NO != emptyBigDecimalValue" >
+        FIELD_NO,
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        INT_CODE,
+      </if>
+      <if test="SUB_FLD_CODE != null and SUB_FLD_CODE != emptyBigDecimalValue" >
+        SUB_FLD_CODE,
+      </if>
+      <if test="SUB_FLD_NAME != null and !&quot;&quot;.equals(SUB_FLD_NAME)" >
+        SUB_FLD_NAME,
+      </if>
+      <if test="SUB_FLD_TYPE != null and !&quot;&quot;.equals(SUB_FLD_TYPE)" >
+        SUB_FLD_TYPE,
+      </if>
+      <if test="SUB_FLD_LENGTH != null and SUB_FLD_LENGTH != emptyBigDecimalValue" >
+        SUB_FLD_LENGTH,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FIELD_NO != null and FIELD_NO != emptyBigDecimalValue" >
+        #{FIELD_NO},
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        #{INT_CODE},
+      </if>
+      <if test="SUB_FLD_CODE != null and SUB_FLD_CODE != emptyBigDecimalValue" >
+        #{SUB_FLD_CODE},
+      </if>
+      <if test="SUB_FLD_NAME != null and !&quot;&quot;.equals(SUB_FLD_NAME)" >
+        #{SUB_FLD_NAME},
+      </if>
+      <if test="SUB_FLD_TYPE != null and !&quot;&quot;.equals(SUB_FLD_TYPE)" >
+        #{SUB_FLD_TYPE},
+      </if>
+      <if test="SUB_FLD_LENGTH != null and SUB_FLD_LENGTH != emptyBigDecimalValue" >
+        #{SUB_FLD_LENGTH},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_ISO_SUB_FLDS" >
+    update DGTL_ISO_SUB_FLDS
+    <set >
+      <if test="SUB_FLD_NAME != null" >
+        <choose >
+          <when test="SUB_FLD_NAME.equals(&quot;&quot;)" >
+            SUB_FLD_NAME = NULL ,
+          </when>
+          <otherwise >
+            SUB_FLD_NAME = #{SUB_FLD_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUB_FLD_TYPE != null" >
+        <choose >
+          <when test="SUB_FLD_TYPE.equals(&quot;&quot;)" >
+            SUB_FLD_TYPE = NULL ,
+          </when>
+          <otherwise >
+            SUB_FLD_TYPE = #{SUB_FLD_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUB_FLD_LENGTH != null" >
+        <choose >
+          <when test="SUB_FLD_LENGTH == emptyBigDecimalValue" >
+            SUB_FLD_LENGTH = NULL ,
+          </when>
+          <otherwise >
+            SUB_FLD_LENGTH = #{SUB_FLD_LENGTH},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and FIELD_NO = #{FIELD_NO}
+      and INT_CODE = #{INT_CODE}
+      and SUB_FLD_CODE = #{SUB_FLD_CODE}
+  </sql>
+  <update id="updateDGTL_ISO_SUB_FLDS" parameterType="com.path.dbmaps.vo.DGTL_ISO_SUB_FLDSVO" >
+    <include refid="sql_updateDGTL_ISO_SUB_FLDS" />
+  </update>
+</mapper>

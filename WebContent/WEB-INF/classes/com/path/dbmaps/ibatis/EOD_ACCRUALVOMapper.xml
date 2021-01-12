@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_ACCRUAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_ACCRUALVO" >
+    <id column="ACC_NO" property="ACC_NO" />
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="ORIGIN_BR" property="ORIGIN_BR" />
+    <result column="PRERIODICITY" property="PRERIODICITY" />
+    <result column="PERIODICITY_NBR" property="PERIODICITY_NBR" />
+    <result column="SPECIFIC_DAY" property="SPECIFIC_DAY" />
+    <result column="LAST_ACC_DATE" property="LAST_ACC_DATE" />
+    <result column="TRX_DESC" property="TRX_DESC" />
+    <result column="VALIDITY_FROM" property="VALIDITY_FROM" />
+    <result column="VALIDITY_TO" property="VALIDITY_TO" />
+    <result column="TOTAL_COMMISSION" property="TOTAL_COMMISSION" />
+    <result column="TOTAL_ACCRUABLE" property="TOTAL_ACCRUABLE" />
+    <result column="AMOUNT_ACCRUABLE" property="AMOUNT_ACCRUABLE" />
+    <result column="TOTAL_DAYS" property="TOTAL_DAYS" />
+    <result column="TOTAL_ACCRUABLE_DAYS" property="TOTAL_ACCRUABLE_DAYS" />
+    <result column="TRX_RATE" property="TRX_RATE" />
+    <result column="TRX_SETTLED" property="TRX_SETTLED" />
+    <result column="ADD_REFERENCE" property="ADD_REFERENCE" />
+    <result column="AC_CHARGE_CY" property="AC_CHARGE_CY" />
+    <result column="AC_CHARGE_GL" property="AC_CHARGE_GL" />
+    <result column="AC_CHARGE_CIF" property="AC_CHARGE_CIF" />
+    <result column="AC_CHARGE_SL" property="AC_CHARGE_SL" />
+    <result column="AC_COMMISSION_CY" property="AC_COMMISSION_CY" />
+    <result column="AC_COMMISSION_GL" property="AC_COMMISSION_GL" />
+    <result column="AC_COMMISSION_CIF" property="AC_COMMISSION_CIF" />
+    <result column="AC_COMMISSION_SL" property="AC_COMMISSION_SL" />
+    <result column="CLO_SET_AMOUNT" property="CLO_SET_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ACC_NO, APP_NAME, BRANCH_CODE, COMP_CODE, TRX_NO, ORIGIN_BR, PRERIODICITY, PERIODICITY_NBR, 
+    SPECIFIC_DAY, LAST_ACC_DATE, TRX_DESC, VALIDITY_FROM, VALIDITY_TO, TOTAL_COMMISSION, 
+    TOTAL_ACCRUABLE, AMOUNT_ACCRUABLE, TOTAL_DAYS, TOTAL_ACCRUABLE_DAYS, TRX_RATE, TRX_SETTLED, 
+    ADD_REFERENCE, AC_CHARGE_CY, AC_CHARGE_GL, AC_CHARGE_CIF, AC_CHARGE_SL, AC_COMMISSION_CY, 
+    AC_COMMISSION_GL, AC_COMMISSION_CIF, AC_COMMISSION_SL, CLO_SET_AMOUNT
+  </sql>
+  <select id="selectEOD_ACCRUAL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.EOD_ACCRUALVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from EOD_ACCRUAL
+    where ACC_NO = #{ACC_NO}
+      and APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteEOD_ACCRUAL" parameterType="com.path.dbmaps.vo.EOD_ACCRUALVO" >
+    delete from EOD_ACCRUAL
+    where ACC_NO = #{ACC_NO}
+      and APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertEOD_ACCRUAL" parameterType="com.path.dbmaps.vo.EOD_ACCRUALVO" >
+    insert into EOD_ACCRUAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ACC_NO != null" >
+        ACC_NO,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_NO != null" >
+        TRX_NO,
+      </if>
+      <if test="ORIGIN_BR != null and ORIGIN_BR != emptyBigDecimalValue" >
+        ORIGIN_BR,
+      </if>
+      <if test="PRERIODICITY != null" >
+        PRERIODICITY,
+      </if>
+      <if test="PERIODICITY_NBR != null and PERIODICITY_NBR != emptyBigDecimalValue" >
+        PERIODICITY_NBR,
+      </if>
+      <if test="SPECIFIC_DAY != null" >
+        SPECIFIC_DAY,
+      </if>
+      <if test="LAST_ACC_DATE != null" >
+        LAST_ACC_DATE,
+      </if>
+      <if test="TRX_DESC != null" >
+        TRX_DESC,
+      </if>
+      <if test="VALIDITY_FROM != null" >
+        VALIDITY_FROM,
+      </if>
+      <if test="VALIDITY_TO != null" >
+        VALIDITY_TO,
+      </if>
+      <if test="TOTAL_COMMISSION != null and TOTAL_COMMISSION != emptyBigDecimalValue" >
+        TOTAL_COMMISSION,
+      </if>
+      <if test="TOTAL_ACCRUABLE != null and TOTAL_ACCRUABLE != emptyBigDecimalValue" >
+        TOTAL_ACCRUABLE,
+      </if>
+      <if test="AMOUNT_ACCRUABLE != null and AMOUNT_ACCRUABLE != emptyBigDecimalValue" >
+        AMOUNT_ACCRUABLE,
+      </if>
+      <if test="TOTAL_DAYS != null and TOTAL_DAYS != emptyBigDecimalValue" >
+        TOTAL_DAYS,
+      </if>
+      <if test="TOTAL_ACCRUABLE_DAYS != null and TOTAL_ACCRUABLE_DAYS != emptyBigDecimalValue" >
+        TOTAL_ACCRUABLE_DAYS,
+      </if>
+      <if test="TRX_RATE != null and TRX_RATE != emptyBigDecimalValue" >
+        TRX_RATE,
+      </if>
+      <if test="TRX_SETTLED != null" >
+        TRX_SETTLED,
+      </if>
+      <if test="ADD_REFERENCE != null" >
+        ADD_REFERENCE,
+      </if>
+      <if test="AC_CHARGE_CY != null and AC_CHARGE_CY != emptyBigDecimalValue" >
+        AC_CHARGE_CY,
+      </if>
+      <if test="AC_CHARGE_GL != null and AC_CHARGE_GL != emptyBigDecimalValue" >
+        AC_CHARGE_GL,
+      </if>
+      <if test="AC_CHARGE_CIF != null and AC_CHARGE_CIF != emptyBigDecimalValue" >
+        AC_CHARGE_CIF,
+      </if>
+      <if test="AC_CHARGE_SL != null and AC_CHARGE_SL != emptyBigDecimalValue" >
+        AC_CHARGE_SL,
+      </if>
+      <if test="AC_COMMISSION_CY != null and AC_COMMISSION_CY != emptyBigDecimalValue" >
+        AC_COMMISSION_CY,
+      </if>
+      <if test="AC_COMMISSION_GL != null and AC_COMMISSION_GL != emptyBigDecimalValue" >
+        AC_COMMISSION_GL,
+      </if>
+      <if test="AC_COMMISSION_CIF != null and AC_COMMISSION_CIF != emptyBigDecimalValue" >
+        AC_COMMISSION_CIF,
+      </if>
+      <if test="AC_COMMISSION_SL != null and AC_COMMISSION_SL != emptyBigDecimalValue" >
+        AC_COMMISSION_SL,
+      </if>
+      <if test="CLO_SET_AMOUNT != null and CLO_SET_AMOUNT != emptyBigDecimalValue" >
+        CLO_SET_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ACC_NO != null" >
+        #{ACC_NO},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_NO != null" >
+        #{TRX_NO},
+      </if>
+      <if test="ORIGIN_BR != null and ORIGIN_BR != emptyBigDecimalValue" >
+        #{ORIGIN_BR},
+      </if>
+      <if test="PRERIODICITY != null" >
+        #{PRERIODICITY},
+      </if>
+      <if test="PERIODICITY_NBR != null and PERIODICITY_NBR != emptyBigDecimalValue" >
+        #{PERIODICITY_NBR},
+      </if>
+      <if test="SPECIFIC_DAY != null" >
+        #{SPECIFIC_DAY},
+      </if>
+      <if test="LAST_ACC_DATE != null" >
+        #{LAST_ACC_DATE},
+      </if>
+      <if test="TRX_DESC != null" >
+        #{TRX_DESC},
+      </if>
+      <if test="VALIDITY_FROM != null" >
+        #{VALIDITY_FROM},
+      </if>
+      <if test="VALIDITY_TO != null" >
+        #{VALIDITY_TO},
+      </if>
+      <if test="TOTAL_COMMISSION != null and TOTAL_COMMISSION != emptyBigDecimalValue" >
+        #{TOTAL_COMMISSION},
+      </if>
+      <if test="TOTAL_ACCRUABLE != null and TOTAL_ACCRUABLE != emptyBigDecimalValue" >
+        #{TOTAL_ACCRUABLE},
+      </if>
+      <if test="AMOUNT_ACCRUABLE != null and AMOUNT_ACCRUABLE != emptyBigDecimalValue" >
+        #{AMOUNT_ACCRUABLE},
+      </if>
+      <if test="TOTAL_DAYS != null and TOTAL_DAYS != emptyBigDecimalValue" >
+        #{TOTAL_DAYS},
+      </if>
+      <if test="TOTAL_ACCRUABLE_DAYS != null and TOTAL_ACCRUABLE_DAYS != emptyBigDecimalValue" >
+        #{TOTAL_ACCRUABLE_DAYS},
+      </if>
+      <if test="TRX_RATE != null and TRX_RATE != emptyBigDecimalValue" >
+        #{TRX_RATE},
+      </if>
+      <if test="TRX_SETTLED != null" >
+        #{TRX_SETTLED},
+      </if>
+      <if test="ADD_REFERENCE != null" >
+        #{ADD_REFERENCE},
+      </if>
+      <if test="AC_CHARGE_CY != null and AC_CHARGE_CY != emptyBigDecimalValue" >
+        #{AC_CHARGE_CY},
+      </if>
+      <if test="AC_CHARGE_GL != null and AC_CHARGE_GL != emptyBigDecimalValue" >
+        #{AC_CHARGE_GL},
+      </if>
+      <if test="AC_CHARGE_CIF != null and AC_CHARGE_CIF != emptyBigDecimalValue" >
+        #{AC_CHARGE_CIF},
+      </if>
+      <if test="AC_CHARGE_SL != null and AC_CHARGE_SL != emptyBigDecimalValue" >
+        #{AC_CHARGE_SL},
+      </if>
+      <if test="AC_COMMISSION_CY != null and AC_COMMISSION_CY != emptyBigDecimalValue" >
+        #{AC_COMMISSION_CY},
+      </if>
+      <if test="AC_COMMISSION_GL != null and AC_COMMISSION_GL != emptyBigDecimalValue" >
+        #{AC_COMMISSION_GL},
+      </if>
+      <if test="AC_COMMISSION_CIF != null and AC_COMMISSION_CIF != emptyBigDecimalValue" >
+        #{AC_COMMISSION_CIF},
+      </if>
+      <if test="AC_COMMISSION_SL != null and AC_COMMISSION_SL != emptyBigDecimalValue" >
+        #{AC_COMMISSION_SL},
+      </if>
+      <if test="CLO_SET_AMOUNT != null and CLO_SET_AMOUNT != emptyBigDecimalValue" >
+        #{CLO_SET_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateEOD_ACCRUAL" >
+    update EOD_ACCRUAL
+    <set >
+      <if test="ORIGIN_BR != null" >
+        <choose >
+          <when test="ORIGIN_BR == emptyBigDecimalValue" >
+            ORIGIN_BR = NULL ,
+          </when>
+          <otherwise >
+            ORIGIN_BR = #{ORIGIN_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRERIODICITY != null" >
+        PRERIODICITY = #{PRERIODICITY},
+      </if>
+      <if test="PERIODICITY_NBR != null" >
+        <choose >
+          <when test="PERIODICITY_NBR == emptyBigDecimalValue" >
+            PERIODICITY_NBR = NULL ,
+          </when>
+          <otherwise >
+            PERIODICITY_NBR = #{PERIODICITY_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SPECIFIC_DAY != null" >
+        SPECIFIC_DAY = #{SPECIFIC_DAY},
+      </if>
+      <if test="LAST_ACC_DATE != null" >
+        LAST_ACC_DATE = #{LAST_ACC_DATE},
+      </if>
+      <if test="TRX_DESC != null" >
+        TRX_DESC = #{TRX_DESC},
+      </if>
+      <if test="VALIDITY_FROM != null" >
+        VALIDITY_FROM = #{VALIDITY_FROM},
+      </if>
+      <if test="VALIDITY_TO != null" >
+        VALIDITY_TO = #{VALIDITY_TO},
+      </if>
+      <if test="TOTAL_COMMISSION != null" >
+        <choose >
+          <when test="TOTAL_COMMISSION == emptyBigDecimalValue" >
+            TOTAL_COMMISSION = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_COMMISSION = #{TOTAL_COMMISSION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_ACCRUABLE != null" >
+        <choose >
+          <when test="TOTAL_ACCRUABLE == emptyBigDecimalValue" >
+            TOTAL_ACCRUABLE = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_ACCRUABLE = #{TOTAL_ACCRUABLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_ACCRUABLE != null" >
+        <choose >
+          <when test="AMOUNT_ACCRUABLE == emptyBigDecimalValue" >
+            AMOUNT_ACCRUABLE = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_ACCRUABLE = #{AMOUNT_ACCRUABLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_DAYS != null" >
+        <choose >
+          <when test="TOTAL_DAYS == emptyBigDecimalValue" >
+            TOTAL_DAYS = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_DAYS = #{TOTAL_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TOTAL_ACCRUABLE_DAYS != null" >
+        <choose >
+          <when test="TOTAL_ACCRUABLE_DAYS == emptyBigDecimalValue" >
+            TOTAL_ACCRUABLE_DAYS = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_ACCRUABLE_DAYS = #{TOTAL_ACCRUABLE_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_RATE != null" >
+        <choose >
+          <when test="TRX_RATE == emptyBigDecimalValue" >
+            TRX_RATE = NULL ,
+          </when>
+          <otherwise >
+            TRX_RATE = #{TRX_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRX_SETTLED != null" >
+        TRX_SETTLED = #{TRX_SETTLED},
+      </if>
+      <if test="ADD_REFERENCE != null" >
+        ADD_REFERENCE = #{ADD_REFERENCE},
+      </if>
+      <if test="AC_CHARGE_CY != null" >
+        <choose >
+          <when test="AC_CHARGE_CY == emptyBigDecimalValue" >
+            AC_CHARGE_CY = NULL ,
+          </when>
+          <otherwise >
+            AC_CHARGE_CY = #{AC_CHARGE_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CHARGE_GL != null" >
+        <choose >
+          <when test="AC_CHARGE_GL == emptyBigDecimalValue" >
+            AC_CHARGE_GL = NULL ,
+          </when>
+          <otherwise >
+            AC_CHARGE_GL = #{AC_CHARGE_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CHARGE_CIF != null" >
+        <choose >
+          <when test="AC_CHARGE_CIF == emptyBigDecimalValue" >
+            AC_CHARGE_CIF = NULL ,
+          </when>
+          <otherwise >
+            AC_CHARGE_CIF = #{AC_CHARGE_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_CHARGE_SL != null" >
+        <choose >
+          <when test="AC_CHARGE_SL == emptyBigDecimalValue" >
+            AC_CHARGE_SL = NULL ,
+          </when>
+          <otherwise >
+            AC_CHARGE_SL = #{AC_CHARGE_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_COMMISSION_CY != null" >
+        <choose >
+          <when test="AC_COMMISSION_CY == emptyBigDecimalValue" >
+            AC_COMMISSION_CY = NULL ,
+          </when>
+          <otherwise >
+            AC_COMMISSION_CY = #{AC_COMMISSION_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_COMMISSION_GL != null" >
+        <choose >
+          <when test="AC_COMMISSION_GL == emptyBigDecimalValue" >
+            AC_COMMISSION_GL = NULL ,
+          </when>
+          <otherwise >
+            AC_COMMISSION_GL = #{AC_COMMISSION_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_COMMISSION_CIF != null" >
+        <choose >
+          <when test="AC_COMMISSION_CIF == emptyBigDecimalValue" >
+            AC_COMMISSION_CIF = NULL ,
+          </when>
+          <otherwise >
+            AC_COMMISSION_CIF = #{AC_COMMISSION_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AC_COMMISSION_SL != null" >
+        <choose >
+          <when test="AC_COMMISSION_SL == emptyBigDecimalValue" >
+            AC_COMMISSION_SL = NULL ,
+          </when>
+          <otherwise >
+            AC_COMMISSION_SL = #{AC_COMMISSION_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLO_SET_AMOUNT != null" >
+        <choose >
+          <when test="CLO_SET_AMOUNT == emptyBigDecimalValue" >
+            CLO_SET_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CLO_SET_AMOUNT = #{CLO_SET_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ACC_NO = #{ACC_NO}
+      and APP_NAME = #{APP_NAME}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateEOD_ACCRUAL" parameterType="com.path.dbmaps.vo.EOD_ACCRUALVO" >
+    <include refid="sql_updateEOD_ACCRUAL" />
+  </update>
+</mapper>

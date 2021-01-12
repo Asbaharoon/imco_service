@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="criteriaLookupMapper">
+
+	<resultMap id="criteriaLookupMap" type="com.path.dbmaps.vo.CTS_CRITERIAVO">
+		<result property="CRITERIA_CODE" column="CRITERIA_CODE"/>
+		<result property="CRITERIA_DESC" column="CRITERIA_DESC"/>
+		<result property="CRITERIA_USAGE" column="CRITERIA_USAGE"/>
+		<result property="QUERY_ID" column="QUERY_ID"/>
+		<result property="PROCEDURE_ID" column="PROCEDURE_ID"/>
+	</resultMap>
+	<select id="returnCriteriaLookup" parameterType="com.path.struts2.lib.common.GridParamsSC" resultMap="criteriaLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryCriteriaLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnCriteriaLookupCount" parameterType="com.path.struts2.lib.common.GridParamsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryCriteriaLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="queryCriteriaLkpSQL">
+			SELECT CRITERIA_CODE,
+				   CRITERIA_DESC,
+			       CRITERIA_USAGE,
+			       QUERY_ID,
+			       PROCEDURE_ID
+			  FROM CTS_CRITERIA
+			 WHERE COMP_CODE = #{compCode}
+			  <if test="isSegmentationScore != null and isSegmentationScore != ''">
+			   	AND CRITERIA_USAGE = #{isSegmentationScore}
+			   </if> 
+			  <if test="isSegmentationScore != null and isSegmentationScore != ''">
+			   	AND CRITERIA_USAGE = #{isSegmentationScore}
+			   </if> 
+	</sql>
+</mapper>

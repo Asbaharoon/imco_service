@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SAFEBOX" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SAFEBOXVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TYPE" property="TYPE" />
+    <result column="LOCATION" property="LOCATION" />
+    <result column="CHARGES" property="CHARGES" />
+    <result column="LOCATION_ARABIC" property="LOCATION_ARABIC" />
+    <result column="STATUS" property="STATUS" />
+    <result column="SB_LOCATION" property="SB_LOCATION" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CODE, COMP_CODE, TYPE, LOCATION, CHARGES, LOCATION_ARABIC, STATUS, SB_LOCATION, 
+    DATE_UPDATED
+  </sql>
+  <select id="selectCTS_SAFEBOX" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SAFEBOXVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SAFEBOX
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </select>
+  <delete id="deleteCTS_SAFEBOX" parameterType="com.path.dbmaps.vo.CTS_SAFEBOXVOKey" >
+    delete from CTS_SAFEBOX
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </delete>
+  <insert id="insertCTS_SAFEBOX" parameterType="com.path.dbmaps.vo.CTS_SAFEBOXVO" >
+    insert into CTS_SAFEBOX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="LOCATION != null" >
+        LOCATION,
+      </if>
+      <if test="CHARGES != null and CHARGES != emptyBigDecimalValue" >
+        CHARGES,
+      </if>
+      <if test="LOCATION_ARABIC != null" >
+        LOCATION_ARABIC,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="SB_LOCATION != null and SB_LOCATION != emptyBigDecimalValue" >
+        SB_LOCATION,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="LOCATION != null" >
+        #{LOCATION},
+      </if>
+      <if test="CHARGES != null and CHARGES != emptyBigDecimalValue" >
+        #{CHARGES},
+      </if>
+      <if test="LOCATION_ARABIC != null" >
+        #{LOCATION_ARABIC},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="SB_LOCATION != null and SB_LOCATION != emptyBigDecimalValue" >
+        #{SB_LOCATION},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SAFEBOX" >
+    update CTS_SAFEBOX
+    <set >
+      <if test="LOCATION != null" >
+        LOCATION = #{LOCATION},
+      </if>
+      <if test="CHARGES != null" >
+        <choose >
+          <when test="CHARGES == emptyBigDecimalValue" >
+            CHARGES = NULL ,
+          </when>
+          <otherwise >
+            CHARGES = #{CHARGES},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOCATION_ARABIC != null" >
+        LOCATION_ARABIC = #{LOCATION_ARABIC},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="SB_LOCATION != null" >
+        <choose >
+          <when test="SB_LOCATION == emptyBigDecimalValue" >
+            SB_LOCATION = NULL ,
+          </when>
+          <otherwise >
+            SB_LOCATION = #{SB_LOCATION},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </sql>
+  <update id="updateCTS_SAFEBOX" parameterType="com.path.dbmaps.vo.CTS_SAFEBOXVO" >
+    <include refid="sql_updateCTS_SAFEBOX" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

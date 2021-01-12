@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSINSURANCE_COMPANIES_RATEDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSINSURANCE_COMPANIES_RATEDETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="INSURANCE_CODE" property="INSURANCE_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="ITEM_CODE" property="ITEM_CODE" />
+    <result column="INSURANCE_RATE" property="INSURANCE_RATE" />
+    <result column="FLAT_AMOUNT" property="FLAT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, INSURANCE_CODE, LINE_NBR, ITEM_CODE, INSURANCE_RATE, FLAT_AMOUNT
+  </sql>
+  <select id="selectTRSINSURANCE_COMPANIES_RATEDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSINSURANCE_COMPANIES_RATEDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSINSURANCE_COMPANIES_RATEDET
+    where COMP_CODE = #{COMP_CODE}
+      and INSURANCE_CODE = #{INSURANCE_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteTRSINSURANCE_COMPANIES_RATEDET" parameterType="com.path.dbmaps.vo.TRSINSURANCE_COMPANIES_RATEDETVOKey" >
+    delete from TRSINSURANCE_COMPANIES_RATEDET
+    where COMP_CODE = #{COMP_CODE}
+      and INSURANCE_CODE = #{INSURANCE_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertTRSINSURANCE_COMPANIES_RATEDET" parameterType="com.path.dbmaps.vo.TRSINSURANCE_COMPANIES_RATEDETVO" >
+    insert into TRSINSURANCE_COMPANIES_RATEDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="INSURANCE_CODE != null and INSURANCE_CODE != emptyBigDecimalValue" >
+        INSURANCE_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="ITEM_CODE != null and ITEM_CODE != emptyBigDecimalValue" >
+        ITEM_CODE,
+      </if>
+      <if test="INSURANCE_RATE != null and INSURANCE_RATE != emptyBigDecimalValue" >
+        INSURANCE_RATE,
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        FLAT_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="INSURANCE_CODE != null and INSURANCE_CODE != emptyBigDecimalValue" >
+        #{INSURANCE_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="ITEM_CODE != null and ITEM_CODE != emptyBigDecimalValue" >
+        #{ITEM_CODE},
+      </if>
+      <if test="INSURANCE_RATE != null and INSURANCE_RATE != emptyBigDecimalValue" >
+        #{INSURANCE_RATE},
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        #{FLAT_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSINSURANCE_COMPANIES_RATEDET" >
+    update TRSINSURANCE_COMPANIES_RATEDET
+    <set >
+      <if test="ITEM_CODE != null" >
+        <choose >
+          <when test="ITEM_CODE == emptyBigDecimalValue" >
+            ITEM_CODE = NULL ,
+          </when>
+          <otherwise >
+            ITEM_CODE = #{ITEM_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INSURANCE_RATE != null" >
+        <choose >
+          <when test="INSURANCE_RATE == emptyBigDecimalValue" >
+            INSURANCE_RATE = NULL ,
+          </when>
+          <otherwise >
+            INSURANCE_RATE = #{INSURANCE_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLAT_AMOUNT != null" >
+        <choose >
+          <when test="FLAT_AMOUNT == emptyBigDecimalValue" >
+            FLAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            FLAT_AMOUNT = #{FLAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and INSURANCE_CODE = #{INSURANCE_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateTRSINSURANCE_COMPANIES_RATEDET" parameterType="com.path.dbmaps.vo.TRSINSURANCE_COMPANIES_RATEDETVO" >
+    <include refid="sql_updateTRSINSURANCE_COMPANIES_RATEDET" />
+  </update>
+</mapper>

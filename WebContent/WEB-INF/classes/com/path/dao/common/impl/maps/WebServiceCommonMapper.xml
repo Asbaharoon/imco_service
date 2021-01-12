@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="webServiceMapper">
+	<resultMap id="mappingCO" type="com.path.vo.ws.CommonPwsMappingCO">
+		<result property="definitionVO.MAPPING_ID" column="MAPPING_ID" />
+		<result property="definitionVO.MAP_DESCRIPTION" column="MAP_DESCRIPTION" />
+		<result property="definitionVO.APP_NAME" column="APP_NAME" />
+		<result property="mappingVO.MAPPING_ID" column="MAPPING_ID" />
+		<result property="mappingVO.WS_NAME" column="WS_NAME" />
+		<result property="mappingVO.OPER_NAME" column="OPER_NAME" />
+		<result property="mappingVO.SERVICE_APP_NAME" column="SERVICE_APP_NAME" />
+		<result property="mappingVO.API_CODE" column="API_CODE" />
+		<!--  definition section  -->
+		<result property="apiDefinitionVO.SERVICE_TYPE" column="SERVICE_TYPE" />
+		<result property="apiDefinitionVO.WS_ENDPOINT" column="WS_ENDPOINT" />
+		<result property="apiDefinitionVO.WS_CONTENT_TYPE" column="WS_CONTENT_TYPE" />
+		<result property="apiDefinitionVO.WS_ACCEPT_TYPE" column="WS_ACCEPT_TYPE" />
+		<!--  security section -->
+		<result property="apiSecurityVO.AUTHENTICATION_TYPE" column="AUTHENTICATION_TYPE" />
+		<result property="apiSecurityVO.USER_NAME" column="USER_NAME" />
+		<result property="apiSecurityVO.PASSWORD" column="PASSWORD" />
+		<result property="apiSecurityVO.TOKEN_REGISTRATION_URL" column="TOKEN_REGISTRATION_URL" />
+		<result property="apiSecurityVO.TOKEN_REGISTRATION_APP_PWD" column="TOKEN_REGISTRATION_APP_PWD" />
+		<result property="apiSecurityVO.TOKEN_REGISTRATION_APP_NAME" column="TOKEN_REGISTRATION_APP_NAME" />
+		<result property="apiSecurityVO.TOKEN_GENERATION_URL" column="TOKEN_GENERATION_URL" />
+		<result property="apiSecurityVO.TOKEN_AES_KEY" column="TOKEN_AES_KEY" />
+		<result property="apiSecurityVO.TOKEN_LIFETIME" column="TOKEN_LIFETIME" />
+	</resultMap>
+	
+	<resultMap type="hashmap" id="pwsParamMap">
+		<result property="MAPPING_ID" column="MAPPING_ID" javaType="bigdecimal" />
+		<result property="SOURCE_KEY" column="SOURCE_KEY" javaType="string" />
+		<result property="DESTINATION_KEY" column="DESTINATION_KEY" javaType="string" />
+		<result property="PARAM_NAME" column="PARAM_NAME" javaType="string" />
+		<result property="MAPPING_ARG_VALUE" column="MAPPING_ARG_VALUE" javaType="string" />
+		<result property="MAPPING_ARG_TYPE" column="MAPPING_ARG_TYPE" javaType="string" />		
+		<result property="ARG_NAME" column="ARG_NAME" javaType="string" />
+		<result property="ARG_TYPE" column="ARG_TYPE" javaType="string" />
+		<result property="STATUS" column="STATUS" javaType="string" />
+	</resultMap>	
+	
+	
+	<resultMap type="com.path.dbmaps.vo.COMMON_PWS_MAPPING_DETAILSVO" id="commonPwsMappingDetailsVOMap">
+		<result property="MAPPING_ID" column="MAPPING_ID"/>
+		<result property="WS_NAME" column="WS_NAME"/>
+		<result property="OPER_NAME" column="OPER_NAME"/>
+		<result property="SOURCE_KEY" column="SOURCE_KEY"/>
+		<result property="DESTINATION_KEY" column="DESTINATION_KEY"/>
+		<result property="MAPPING_ARG_TYPE" column="MAPPING_ARG_TYPE"/>
+		<result property="MAPPING_ARG_VALUE" column="MAPPING_ARG_VALUE"/>
+		<result property="CREATED_BY" column="CREATED_BY"/>
+    	<result property="CREATED_DATE" column="CREATED_DATE"/>
+		<result property="MODIFIED_BY" column="MODIFIED_BY"/>
+		<result property="ARG_ID" column="ARG_ID"/>
+	</resultMap>
+	
+	<resultMap type="com.path.vo.common.pwsmapping.PwsDefinitionCO" id="pwsInfoMap">
+		<result property="serviceType" column="API_SERVICE_TYPE"/>
+		<result property="definitionVO.MAPPING_ID" column="MAPPING_ID" />
+		<result property="definitionVO.MAP_DESCRIPTION" column="MAP_DESCRIPTION" />
+		<result property="definitionVO.APP_NAME" column="APP_NAME" />
+		<result property="mappingVO.CREATED_BY" column="MAPPING_ID" />
+		<result property="mappingVO.CREATED_DATE" column="CREATED_DATE" />
+		<result property="mappingVO.MODIFIED_BY" column="MODIFIED_BY" />
+		<result property="mappingVO.MODIFIED_DATE" column="MODIFIED_DATE" />
+		
+		<result property="mappingVO.MAPPING_ID" column="MAPPING_ID" />
+		<result property="mappingVO.WS_NAME" column="WS_NAME" />
+		<result property="mappingVO.OPER_NAME" column="OPER_NAME" />
+		<result property="mappingVO.SERVICE_APP_NAME" column="SERVICE_APP_NAME" />
+		<result property="mappingVO.API_CODE" column="API_CODE" />
+		
+		<!--  definition section Rest -->
+		<result property="apiDefinitionVO.SERVICE_TYPE" column="SERVICE_TYPE" />
+		<result property="apiDefinitionVO.WS_ENDPOINT" column="WS_ENDPOINT" />
+		<result property="apiDefinitionVO.WS_CONTENT_TYPE" column="WS_CONTENT_TYPE" />
+		<result property="apiDefinitionVO.WS_ACCEPT_TYPE" column="WS_ACCEPT_TYPE" />
+		
+		<!--  definition section Soap -->
+		<result property="apiDefinitionVO.SOAP_ACTION" column="SOAP_ACTION" />
+		<result property="apiDefinitionVO.SOAP_MESSAGE_PREFIX" column="SOAP_MESSAGE_PREFIX" />
+		<result property="apiDefinitionVO.SOAP_NAMESPACES" column="SOAP_NAMESPACES" />
+		<result property="apiDefinitionVO.SOAP_OPERATION" column="SOAP_OPERATION" />
+		<result property="apiDefinitionVO.SOAP_OPERATION_LOCAL_PART" column="SOAP_OPERATION_LOCAL_PART" />
+	</resultMap>
+	
+	<resultMap type="com.path.vo.common.pwsmapping.CommonMappingArgCO" id="pwsApiArgMap">
+		<result property="apiArgVO.ARG_ID" column="ARG_ID" />
+		<result property="apiArgVO.API_CODE" column="API_CODE" />
+		<result property="apiArgVO.ARG_NAME" column="ARG_NAME" />
+		<result property="apiArgVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="apiArgVO.ARG_TYPE" column="ARG_TYPE" />
+		<result property="apiArgVO.STATUS" column="STATUS" />
+		<result property="argMap.SOURCE_KEY" column="SOURCE_KEY" />
+		<result property="argMap.DESTINATION_KEY" column="DESTINATION_KEY" />
+	</resultMap>
+					
+<sql id="commonParams">
+		<if test="userID != null" >
+			,USER_ID
+		</if>
+		<if test="hashKey != null" >
+			,HASH_KEY
+		</if>
+		<if test="hostName != null" >
+			,HOST_NAME
+		</if>
+		<if test="channelID != null" >
+			,CHANNEL_ID
+		</if>
+		<if test="companyCode != null and companyCode != emptyBigDecimalValue" >
+			,COMPANY_CODE
+		</if>
+		<if test="branchCode != null and branchCode != emptyBigDecimalValue" >
+			,BRANCH_CODE
+		</if>
+		<if test="serviceID != null" >
+			,SERVICE_ID
+		</if>
+		<if test="businessArea != null" >
+			,BUSINESS_AREA
+		</if>
+		<if test="businessDomain != null" >
+			,BUSINESS_DOMAIN
+		</if>
+		<if test="serviceDomain != null" >
+			,SERVICE_DOMAIN
+		</if>
+		<if test="operationName != null" >
+			,OPERATION_NAME
+		</if>
+		<if test="version != null" >
+			,VERSION
+		</if>
+		<if test="cifNo != null and cifNo != emptyBigDecimalValue" >
+			,CIF_NO
+		</if>
+		<if test="dealNo != null and dealNo != emptyBigDecimalValue" >
+			,DEAL_NO
+		</if>
+		<if test="transactionNo != null and transactionNo != emptyBigDecimalValue" >
+			,TRANSACTION_NO
+		</if>
+		<if test="branch != null and branch != emptyBigDecimalValue" >
+			,BRANCH
+		</if>
+		<if test="currency != null and currency != emptyBigDecimalValue" >
+			,CURRENCY
+		</if>
+		<if test="accGl != null and accGl != emptyBigDecimalValue" >
+			,ACC_GL
+		</if>
+		<if test="serialNo != null and serialNo != emptyBigDecimalValue" >
+			,SERIAL_NO
+		</if>
+		<if test="additionalRef != null" >
+			,ADDITIONAL_REF
+		</if>
+		<if test="ibanAccNo != null" >
+			,IBAN_ACC_NO
+		</if>
+		<if test="opNo != null and opNo != emptyBigDecimalValue" >
+			,OP_NO
+		</if>
+		<if test="cardNo != null" >
+			,CARD_NO
+		</if>
+</sql>
+<sql id="commonParamValues">
+		<if test="userID != null" >
+			,#{userID}
+		</if>
+		<if test="hashKey != null" >
+			,#{hashKey}
+		</if>
+		<if test="hostName != null" >
+			,#{hostName}
+		</if>
+		<if test="channelID != null" >
+			,#{channelID}
+		</if>
+		<if test="companyCode != null and companyCode != emptyBigDecimalValue" >
+			,#{companyCode}
+		</if>
+		<if test="branchCode != null and branchCode != emptyBigDecimalValue" >
+			,#{branchCode}
+		</if>
+		<if test="serviceID != null" >
+			,#{serviceID}
+		</if>
+		<if test="businessArea != null" >
+			,#{businessArea}
+		</if>
+		<if test="businessDomain != null" >
+			,#{businessDomain}
+		</if>
+		<if test="serviceDomain != null" >
+			,#{serviceDomain}
+		</if>
+		<if test="operationName != null" >
+			,#{operationName}
+		</if>
+		<if test="version != null" >
+			,#{version}
+		</if>
+		<if test="cifNo != null and cifNo != emptyBigDecimalValue" >
+			,#{cifNo}
+		</if>
+		<if test="dealNo != null and dealNo != emptyBigDecimalValue" >
+			,#{dealNo}
+		</if>
+		<if test="transactionNo != null and transactionNo != emptyBigDecimalValue" >
+			,#{transactionNo}
+		</if>
+		<if test="branch != null and branch != emptyBigDecimalValue" >
+			,#{branch}
+		</if>
+		<if test="currency != null and currency != emptyBigDecimalValue" >
+			,#{currency}
+		</if>
+		<if test="accGl != null and accGl != emptyBigDecimalValue" >
+			,#{accGl}
+		</if>
+		<if test="serialNo != null and serialNo != emptyBigDecimalValue" >
+			,#{serialNo}
+		</if>
+		<if test="additionalRef != null" >
+			,#{additionalRef}
+		</if>
+		<if test="ibanAccNo != null" >
+			,#{ibanAccNo}
+		</if>
+		<if test="opNo != null and opNo != emptyBigDecimalValue" >
+			,#{opNo}
+		</if>
+		<if test="cardNo != null" >
+			,#{cardNo}
+		</if>
+</sql>
+<insert id="insertLogRequest" parameterType="com.path.vo.ws.CommonPwsReqRespLogCO">
+		INSERT INTO COMMON_PWS_REQUEST_LOG (
+			REQUEST_ID, CORE_REQUEST_TIMESTAMP, REQUEST_CONTENT
+				<include refid="webServiceMapper.commonParams"/>
+        )
+		SELECT #{requestID}, #{coreRequestTimeStamp, jdbcType=TIMESTAMP}, #{requestKernelDetails, jdbcType=CLOB,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathClobTypeHandler}
+				<include refid="webServiceMapper.commonParamValues"/>
+	FROM DUAL
+</insert>
+<insert id="insertLogResponse" parameterType="com.path.vo.ws.CommonPwsReqRespLogCO">
+	INSERT INTO COMMON_PWS_RESPONSE_LOG (
+			RESPONSE_ID, CORE_REQUEST_TIMESTAMP, CORE_RESPONSE_TIMESTAMP
+			<include refid="webServiceMapper.commonParams"/>
+			<if test="statusCode != null" >
+				, STATUS_CODE
+			</if>
+			<if test="statusDesc != null" >
+				,STATUS_DESC
+			</if>
+			<if test="severity != null" >
+				,SEVERITY
+			</if>				
+			<if test="errorType != null" >
+				,ERROR_TYPE
+			</if>
+			<if test="requestKernelDetails != null" >
+				,RESPONSE_CONTENT
+			</if>
+           )
+	
+		SELECT #{responseID}, #{coreRequestTimeStamp, jdbcType=TIMESTAMP}, #{coreResponseTimeStamp, jdbcType=TIMESTAMP}
+		
+		<include refid="webServiceMapper.commonParamValues"/>
+			<if test="statusCode != null" >
+				, #{statusCode}
+			</if>
+			<if test="statusDesc != null" >
+				,#{statusDesc}
+			</if>
+			<if test="severity != null" >
+				,#{severity}
+			</if>				
+			<if test="errorType != null" >
+				,#{errorType}
+			</if>	
+			<if test="requestKernelDetails != null" >
+				,#{requestKernelDetails, jdbcType=CLOB,typeHandler=com.path.lib.common.base.ibatis3.handlers.PathClobTypeHandler}
+			</if>			
+	FROM DUAL
+</insert>
+<cache />
+	<select id="loadCommonPWSMappingDetailsList" resultMap="commonPwsMappingDetailsVOMap" parameterType="com.path.vo.ws.CommonPwsMappingCO">
+			SELECT MAPPING_DET_ID,
+				MAPPING_ID,
+				OPER_NAME,
+				SOURCE_KEY,
+				WS_NAME,
+				DESTINATION_KEY,
+				PARAM_NAME,
+				MAPPING_ARG_TYPE,
+				MAPPING_ARG_VALUE,
+				CREATED_BY,
+				CREATED_DATE,
+				MODIFIED_BY,
+				MODIFIED_DATE,
+				ARG_ID,
+				MAPPING_ARG_MODE
+			FROM COMMON_PWS_MAPPING_DETAILS
+					WHERE MAPPING_ARG_TYPE = 'IS_LIST_OB'
+						AND MAPPING_ID = #{mappingVO.MAPPING_ID}
+	</select>
+
+	<!--  return Mapping definition  -->
+	<select id="returnMappingDef" parameterType="com.path.vo.ws.CommonPwsMappingCO" 
+		resultMap="mappingCO">
+		SELECT def.MAPPING_ID MAPPING_ID, MAP_DESCRIPTION,APP_NAME,WS_NAME,OPER_NAME,
+			SERVICE_APP_NAME,mapping.API_CODE,
+			api.WS_ENDPOINT,api.WS_CONTENT_TYPE,api.WS_ACCEPT_TYPE,
+			security.*,
+			 CASE WHEN mapping.API_CODE IS NULL 
+                 THEN 'M' ELSE api.SERVICE_TYPE END SERVICE_TYPE
+		FROM COMMON_PWS_MAPPING_DEF def
+		JOIN COMMON_PWS_MAPPING mapping
+			ON def.MAPPING_ID = mapping.MAPPING_ID
+		LEFT JOIN IM_IMAL_API api
+			ON api.API_CODE = mapping.API_CODE
+		LEFT JOIN IM_API_SECURITY security
+			ON security.API_CODE = mapping.API_CODE
+		WHERE def.MAPPING_ID = #{mappingVO.MAPPING_ID}
+	</select>	
+	
+<select id="returnPWSMappingParams" parameterType="com.path.vo.ws.CommonPwsMappingCO"
+		resultMap="pwsParamMap">
+			<choose>
+				<when test="mappingVO.API_CODE != null">
+					SELECT detail.MAPPING_ID,
+						CASE WHEN detail.SOURCE_KEY IS NULL 
+	                 		THEN arg.ARG_NAME ELSE detail.SOURCE_KEY END SOURCE_KEY,
+						CASE WHEN detail.DESTINATION_KEY IS NULL 
+	                 		THEN arg.ARG_NAME ELSE detail.DESTINATION_KEY END DESTINATION_KEY,
+						arg.*
+					FROM IM_API_ARGUMENT arg
+					LEFT JOIN COMMON_PWS_MAPPING_DETAILS detail 
+						ON detail.ARG_ID = arg.ARG_ID AND detail.MAPPING_ID = #{mappingVO.MAPPING_ID}
+					WHERE arg.API_CODE = #{mappingVO.API_CODE}
+				</when>
+				<otherwise>
+					SELECT MAPPING_ID,
+					<choose>
+						<when test="isSQLServer == 1 ">
+							(PARAM_NAME + '####'+ SOURCE_KEY + '####'+ MAPPING_ARG_VALUE) AS SOURCE_KEY, (PARAM_NAME + '####'+ DESTINATION_KEY + '####'+ MAPPING_ARG_VALUE) AS DESTINATION_KEY,					
+				        </when>
+				         <otherwise>
+				        	(PARAM_NAME || '####'|| SOURCE_KEY|| '####'|| MAPPING_ARG_VALUE ) AS SOURCE_KEY, (PARAM_NAME || '####'|| DESTINATION_KEY || '####'|| MAPPING_ARG_VALUE) AS DESTINATION_KEY,
+				         </otherwise>
+			         </choose>
+			         	 PARAM_NAME,
+			             MAPPING_ARG_VALUE,
+			             MAPPING_ARG_TYPE,
+			             CASE MAPPING_ARG_MODE
+			               WHEN 'IN' THEN 'I'
+			               WHEN 'OUT' THEN 'O'
+			               WHEN 'INOUT' THEN 'B'
+			             END AS STATUS
+							FROM COMMON_PWS_MAPPING_DETAILS
+								WHERE MAPPING_ID = #{mappingVO.MAPPING_ID}
+						 <![CDATA[ 
+								AND COALESCE(MAPPING_ARG_TYPE, 'X') <> 'IS_LIST_OB'
+								 ]]>
+				</otherwise>
+			</choose>
+	</select>	
+	
+</mapper>

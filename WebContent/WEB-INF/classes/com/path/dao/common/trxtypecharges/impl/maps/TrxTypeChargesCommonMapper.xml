@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="trxtypechargesMapper">
+<!-- 
+(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{policyLovType} AND LANG_CODE = #{langCode} AND VALUE_CODE = CASE WHEN CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY IS NULL THEN '' ELSE CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY END) CHARGES_CY_POLICY,
+(SELECT VALUE_DESC FROM SYS_PARAM_LOV_TRANS WHERE LOV_TYPE_ID = #{cashAccLovType} AND LANG_CODE = #{langCode} AND VALUE_CODE = CASE WHEN CTSTRXTYPE_CHARGES.CASH_ACCOUNT IS NULL THEN '' ELSE CTSTRXTYPE_CHARGES.CASH_ACCOUNT END) CASH_ACCOUNT,  
+-->
+<sql id="trxtypechargesListCommon" >
+	<![CDATA[
+	
+		SELECT
+			 	CTSTRXTYPE_CHARGES.COMP_CODE, 
+			 	CTSTRXTYPE_CHARGES.TRXTYPE_CODE,
+			 	CTSTRXTYPE_CHARGES.ENTITY_TYPE,
+			 	CTSTRXTYPE_CHARGES.ENTITY_CODE,
+			 	CTSTRXTYPE_CHARGES.CHARGE_CODE, 
+			 	'' ENTITY_NAME,
+			 	(SELECT CTSCHARGES_SCHEMA.BRIEF_NAME_ENG FROM CTSCHARGES_SCHEMA WHERE CTSCHARGES_SCHEMA.COMP_CODE  = CTSTRXTYPE_CHARGES.COMP_CODE AND CTSCHARGES_SCHEMA.CODE = CTSTRXTYPE_CHARGES.CHARGE_CODE AND CTSCHARGES_SCHEMA.LINE_NO = 0) CHARGE_NAME,
+			 	CTSTRXTYPE_CHARGES.CHARGES_CY_POLICY,
+				CTSTRXTYPE_CHARGES.CASH_ACCOUNT,
+			 	(SELECT CTSTRXTYPE.SHORT_DESC_ENG FROM CTSTRXTYPE WHERE CTSTRXTYPE.COMP_CODE  = CTSTRXTYPE_CHARGES.COMP_CODE AND CTSTRXTYPE.CODE = CTSTRXTYPE_CHARGES.TRXTYPE_CODE) TRX_TYPE_NAME,
+			 	(SELECT CTSTRXTYPE.STATUS FROM CTSTRXTYPE WHERE CTSTRXTYPE.COMP_CODE  = CTSTRXTYPE_CHARGES.COMP_CODE AND CTSTRXTYPE.CODE = CTSTRXTYPE_CHARGES.TRXTYPE_CODE) TRX_TYPE_STATUS
+		FROM  	CTSTRXTYPE_CHARGES 
+		WHERE	(CTSTRXTYPE_CHARGES.COMP_CODE   = #{compCode})
+	 	AND		(CTSTRXTYPE_CHARGES.ENTITY_CODE = #{cifNo})
+	 	AND		(CTSTRXTYPE_CHARGES.ENTITY_TYPE  = 'C')
+	]]>	 
+ </sql>
+ 
+ <resultMap id="trxtypechargesDetailMap" type="trxTypeChargesCO">
+	<id column="CASH_ACCOUNT" property="CASH_ACCOUNT" />
+    <id column="CHARGES_CY_POLICY" property="CHARGES_CY_POLICY" />
+    <id column="CHARGE_CODE" property="CHARGE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="TRXTYPE_CODE" property="TRXTYPE_CODE" />
+    <result column="TRX_TYPE_NAME" property="TRX_TYPE_NAME" />
+    <result column="CHARGE_NAME" property="CHARGE_NAME" />
+    <result column="TRX_TYPE_STATUS" property="TRX_TYPE_STATUS" />
+ </resultMap>  
+ 	
+  <select id="trxtypechargesList" resultMap="trxtypechargesDetailMap" parameterType="trxTypeChargesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="trxtypechargesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="trxtypechargesListCount" resultType="int" parameterType="trxTypeChargesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="trxtypechargesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ <delete id="deleteTrxtypechargesDetail" parameterType="trxTypeChargesSC">
+	
+        DELETE 
+		FROM  	CTSTRXTYPE_CHARGES 
+		WHERE	(CTSTRXTYPE_CHARGES.COMP_CODE   = #{compCode})
+	 	AND		(CTSTRXTYPE_CHARGES.ENTITY_CODE = #{cifNo})
+	 	AND		(CTSTRXTYPE_CHARGES.ENTITY_TYPE  = #{entityType})
+	 	
+</delete>	 	
+
+</mapper>
+
+ 

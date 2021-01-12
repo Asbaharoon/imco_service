@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="newApiMapper">
+<resultMap id="resNewApiListMap" type="com.path.imco.vo.newapi.NewApiCO">
+		<result property="imImalApiVO.API_CODE" column="API_CODE"/>
+		<result property="imImalApiVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="imImalApiVO.PROCEDURE_NAME" column="PROCEDURE_NAME"/>
+		<result property="imImalApiVO.WB_SERVICE_NAME" column="WB_SERVICE_NAME"/>
+		<result property="imImalApiVO.SUSPENDED" column="SUSPENDED"/>
+		<result property="imImalApiVO.RELATED_APP" column="RELATED_APP"/>
+		<result property="imImalApiVO.API_TYPE" column="API_TYPE"/>
+		<result property="imImalApiVO.API_VERSION" column="API_VERSION"/>
+	</resultMap>
+	<select id="returnNewApiList" parameterType="com.path.imco.vo.newapi.NewApiSC" resultMap="resNewApiListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryNewApiSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnNewApiListCount" parameterType="com.path.imco.vo.newapi.NewApiSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryNewApiSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	 <select id="returnApiDetails"  resultMap="ApiDetails_ResMap" parameterType="com.path.imco.vo.newapi.NewApiSC"  > 
+  SELECT  API_CODE,DESCRIPTION,PROCEDURE_NAME,WB_SERVICE_NAME,API_VERSION, SUSPENDED
+    FROM IM_IMAL_API
+   WHERE IM_IMAL_API.API_CODE = #{apiCode}
+  
+   
+ </select>
+ 
+ 
+  <resultMap id="ApiDetails_ResMap" type="com.path.imco.vo.newapi.NewApiCO">
+  <result property="imImalApiVO.API_CODE" column="API_CODE"/> 
+    <result property="imImalApiVO.DESCRIPTION" column="DESCRIPTION"/>
+     <result property="imImalApiVO.PROCEDURE_NAME" column="PROCEDURE_NAME"/>
+	<result property="imImalApiVO.WB_SERVICE_NAME" column="WB_SERVICE_NAME"/>
+	<result property="imImalApiVO.API_VERSION" column="API_VERSION"/>
+	<result property="imImalApiVO.SUSPENDED" column="SUSPENDED"/>
+	</resultMap>
+	
+	<sql id="queryNewApiSQL">
+		  SELECT IM_IMAL_API.API_CODE,    
+		              IM_IMAL_API.DESCRIPTION,   
+		              IM_IMAL_API.PROCEDURE_NAME,   
+		              IM_IMAL_API.WB_SERVICE_NAME,    
+		              IM_IMAL_API.SUSPENDED,   
+		   IM_IMAL_API.RELATED_APP,   
+		   IM_IMAL_API.API_TYPE,   
+		   IM_IMAL_API.API_VERSION
+		    FROM IM_IMAL_API   
+	</sql>
+
+
+	<resultMap id="resUsersGridMap" type="com.path.imco.vo.newapi.NewApiCO">
+		<result property="imApiUsersVO.API_CODE" column="API_CODE" />
+		<result property="imApiUsersVO.USER_ID" column="USER_ID" />
+	</resultMap>
+	<sql id="queryUsersGridSQL">
+	SELECT API_CODE,USER_ID
+	FROM IM_API_USERS
+	WHERE API_CODE=#{apiCode}
+	</sql>
+	
+	
+	
+	<select id="returnUsersGridList" parameterType="com.path.imco.vo.newapi.NewApiSC" resultMap="resUsersGridMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryUsersGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnUsersGridCount" parameterType="com.path.imco.vo.newapi.NewApiSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryUsersGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<delete id="deleteGridData" parameterType="com.path.imco.vo.newapi.NewApiSC">
+	DELETE FROM IM_API_USERS WHERE API_CODE=#{apiCode}
+	</delete>
+	
+	
+	
+	
+	
+	<resultMap id="resMachineGridMap" type="com.path.imco.vo.newapi.NewApiCO">
+		<result property="imApiMachineVO.API_CODE" column="API_CODE" />
+		<result property="imApiMachineVO.MACHINE_NAME" column="MACHINE_NAME" />
+	</resultMap>
+	<sql id="queryMachineGridSQL">
+	 SELECT API_CODE,   
+         MACHINE_NAME  
+    FROM IM_API_MACHINE  WHERE  API_CODE=#{apiCode}
+
+	</sql>
+	
+	
+	
+	<select id="returnMachineGridList" parameterType="com.path.imco.vo.newapi.NewApiSC" resultMap="resMachineGridMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryMachineGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnMachineGridCount" parameterType="com.path.imco.vo.newapi.NewApiSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryMachineGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<delete id="deleteMachineGridData" parameterType="com.path.imco.vo.newapi.NewApiSC">
+	DELETE FROM IM_API_MACHINE WHERE API_CODE=#{apiCode}
+	</delete>
+	
+	
+	
+	
+	
+<resultMap id="resArgumentsGridMap" type="com.path.imco.vo.newapi.NewApiCO">
+		<result property="imApiArgumentVO.API_CODE" column="API_CODE" />
+		<result property="imApiArgumentVO.ARG_ID" column="ARG_ID" />
+		<result property="imApiArgumentVO.ARG_NAME" column="ARG_NAME" />
+		<result property="imApiArgumentVO.DESCRIPTION" column="DESCRIPTION" />
+		<result property="imApiArgumentVO.ARG_TYPE" column="ARG_TYPE" />
+		<result property="imApiArgumentVO.STATUS" column="STATUS" />
+			<result property="imApiArgumentVO.DEFAULT_VALUE" column="DEFAULT_VALUE" />
+			<result property="imApiArgumentVO.REQ_ARG" column="REQ_ARG" />
+	</resultMap>
+	<sql id="queryArgumentsGridSQL">
+
+   
+    SELECT  ARG_ID, 
+     API_CODE,   
+    ARG_NAME,   
+    DESCRIPTION,   
+    ARG_TYPE,   
+    STATUS,   
+    DEFAULT_VALUE ,
+    REQ_ARG 
+    FROM    IM_API_ARGUMENT  
+
+WHERE API_CODE=#{apiCode}
+  
+    
+
+	</sql>
+	
+	
+	
+	<select id="returnArgumentsGridList" parameterType="com.path.imco.vo.newapi.NewApiSC" resultMap="resArgumentsGridMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryArgumentsGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnArgumentsGridCount" parameterType="com.path.imco.vo.newapi.NewApiSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryArgumentsGridSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<delete id="deleteArgumentsGridData" parameterType="com.path.imco.vo.newapi.NewApiSC">
+	DELETE FROM IM_API_ARGUMENT WHERE API_CODE=#{apiCode}
+	</delete>
+	
+	<select id="returnNewApiParams" parameterType="com.path.imco.vo.newapi.NewApiCO" resultMap="resArgumentsGridMap">
+  	<choose>
+			<when test="isSybase == 1">
+				select c.name ARG_NAME,
+					  (CASE WHEN UPPER(t.name) IN ('NUMERIC', 'NUMBER', 'FLOAT') THEN 'N' 
+					  else CASE WHEN UPPER(t.name) IN ('VARCHAR', 'VARCHAR2') THEN 'V' 
+						   else CASE WHEN UPPER(t.name) IN ('DATE', 'DATETIME','DATETIME2') THEN 'T' 
+								else t.name end end end)ARG_TYPE,
+					  <choose>
+							<when test="isSQLServer == 1">
+								(CASE WHEN c.status=8 THEN 'I' 
+					  				else CASE WHEN c.status=9 THEN 'O'  
+										else c.status end end)STATUS
+							</when>
+							<otherwise>
+								(CASE WHEN c.status2 = 1 THEN 'I' 
+					  				else CASE WHEN c.status2 = 2 THEN 'O'  
+										else c.status2 end end)STATUS
+							</otherwise>
+						</choose>				
+				from sysobjects o, syscolumns c,systypes t
+				where o.name = #{imImalApiVO.PROCEDURE_NAME}
+				and o.id = c.id
+				<choose>
+					<when test="isSQLServer == 1">
+						and c.xtype = t.xtype
+						and c.xusertype = t.xusertype
+						and (c.status = 8 or c.status = 9)
+					</when>
+					<otherwise>
+						and c.type = t.type
+						and c.usertype = t.usertype
+						and (c.status2 = 1 or c.status2 = 2)
+					</otherwise>
+				</choose>
+				order by c.colid
+			</when>
+			<otherwise>
+		     SELECT A.Argument_Name ARG_NAME, 
+	         (CASE WHEN UPPER(A.DATA_TYPE) IN ('NUMERIC', 'NUMBER', 'FLOAT') THEN 'N' 
+	          else CASE WHEN UPPER(A.DATA_TYPE)  IN ('VARCHAR', 'VARCHAR2') THEN 'V' 
+	               else CASE WHEN UPPER(A.DATA_TYPE) IN ('DATE', 'DATETIME') THEN 'T' 
+	         			else A.DATA_TYPE END end end)ARG_TYPE,
+	         (CASE WHEN UPPER(A.IN_OUT) IN ('IN') THEN 'I' 
+					  else CASE WHEN UPPER(A.IN_OUT) IN ('OUT') THEN 'O'  
+								else A.IN_OUT end end)STATUS				
+		     FROM SYS.ALL_ARGUMENTS A
+		     WHERE OWNER = #{schemaName}
+		     AND OBJECT_NAME = #{imImalApiVO.PROCEDURE_NAME}
+		     AND (A.IN_OUT = 'IN' OR A.IN_OUT = 'OUT')
+		     ORDER BY A.POSITION     
+			</otherwise>
+		</choose>
+  	</select>
+  	
+  	<select id="getNewDynApiCode"  resultType="java.math.BigDecimal" parameterType="com.path.imco.vo.newapi.NewApiCO" > 	 
+		SELECT <choose>
+					<when test="isSybase == 1">ISNULL(MAX(API_CODE),400000)+1</when>
+					<otherwise>NVL(MAX(API_CODE),400000)+1</otherwise>
+				</choose> 
+		FROM IM_IMAL_API
+		WHERE API_CODE >= 400000
+	</select>
+
+
+
+
+	
+	
+	
+</mapper>

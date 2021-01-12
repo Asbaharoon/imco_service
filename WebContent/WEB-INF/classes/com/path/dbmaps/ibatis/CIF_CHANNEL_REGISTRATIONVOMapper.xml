@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CHANNEL_REGISTRATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CHANNEL_REGISTRATIONVO" >
+    <id column="CHANNEL" property="CHANNEL" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="IS_REGISTRED_YN" property="IS_REGISTRED_YN" />
+    <result column="ACC_BR" property="ACC_BR" />
+    <result column="ACC_CY" property="ACC_CY" />
+    <result column="ACC_GL" property="ACC_GL" />
+    <result column="ACC_CIF" property="ACC_CIF" />
+    <result column="ACC_SL" property="ACC_SL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CHANNEL, CIF_NO, COMP_CODE, IS_REGISTRED_YN, ACC_BR, ACC_CY, ACC_GL, ACC_CIF, ACC_SL
+  </sql>
+  <select id="selectCIF_CHANNEL_REGISTRATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CHANNEL_REGISTRATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CHANNEL_REGISTRATION
+    where CHANNEL = #{CHANNEL}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCIF_CHANNEL_REGISTRATION" parameterType="com.path.dbmaps.vo.CIF_CHANNEL_REGISTRATIONVOKey" >
+    delete from CIF_CHANNEL_REGISTRATION
+    where CHANNEL = #{CHANNEL}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCIF_CHANNEL_REGISTRATION" parameterType="com.path.dbmaps.vo.CIF_CHANNEL_REGISTRATIONVO" >
+    insert into CIF_CHANNEL_REGISTRATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CHANNEL != null" >
+        CHANNEL,
+      </if>
+      <if test="CIF_NO != null" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="IS_REGISTRED_YN != null" >
+        IS_REGISTRED_YN,
+      </if>
+      <if test="ACC_BR != null" >
+        ACC_BR,
+      </if>
+      <if test="ACC_CY != null" >
+        ACC_CY,
+      </if>
+      <if test="ACC_GL != null" >
+        ACC_GL,
+      </if>
+      <if test="ACC_CIF != null" >
+        ACC_CIF,
+      </if>
+      <if test="ACC_SL != null" >
+        ACC_SL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CHANNEL != null" >
+        #{CHANNEL},
+      </if>
+      <if test="CIF_NO != null" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="IS_REGISTRED_YN != null" >
+        #{IS_REGISTRED_YN},
+      </if>
+       <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        #{ACC_BR},
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        #{ACC_CY},
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        #{ACC_GL},
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        #{ACC_CIF},
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        #{ACC_SL},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CHANNEL_REGISTRATION" >
+    update CIF_CHANNEL_REGISTRATION
+    <set >
+      <if test="IS_REGISTRED_YN != null" >
+        IS_REGISTRED_YN = #{IS_REGISTRED_YN},
+      </if>
+        <if test="ACC_BR != null" >
+        <choose >
+          <when test="ACC_BR == emptyBigDecimalValue" >
+            ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_BR = #{ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CY != null" >
+        <choose >
+          <when test="ACC_CY == emptyBigDecimalValue" >
+            ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            ACC_CY = #{ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_GL != null" >
+        <choose >
+          <when test="ACC_GL == emptyBigDecimalValue" >
+            ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_GL = #{ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CIF != null" >
+        <choose >
+          <when test="ACC_CIF == emptyBigDecimalValue" >
+            ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_CIF = #{ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_SL != null" >
+        <choose >
+          <when test="ACC_SL == emptyBigDecimalValue" >
+            ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_SL = #{ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CHANNEL = #{CHANNEL}
+      and CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCIF_CHANNEL_REGISTRATION" parameterType="com.path.dbmaps.vo.CIF_CHANNEL_REGISTRATIONVO" >
+    <include refid="sql_updateCIF_CHANNEL_REGISTRATION" />
+  </update>
+</mapper>

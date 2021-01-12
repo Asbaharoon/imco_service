@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        <!-- @author: jihanemazloum 2013 -->
+<mapper namespace="merchantMgntMapper">
+
+	<sql id="select_merchantMgnt">			
+		SELECT  	
+				CTS_MERCHANT.COMP_CODE,   
+				CTS_MERCHANT.BRANCH_CODE,   
+				CTS_MERCHANT.CODE,   
+				CTS_MERCHANT.CIF_NO,   
+				CTS_MERCHANT.CONTRACT_NUM,   
+				CTS_MERCHANT.ECO_SECTOR_CODE,   
+				CTS_MERCHANT.MAX_AMOUNT,   
+				CTS_MERCHANT.CONTACT_TYPE ,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				 FROM SYS_PARAM_LOV_TRANS
+				 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   =  CTS_MERCHANT.CONTACT_TYPE 
+				  AND  SYS_PARAM_LOV_TRANS.LOV_TYPE_ID  = #{lovTypeContact, jdbcType=NUMERIC}
+				  AND  SYS_PARAM_LOV_TRANS.LANG_CODE    = #{lang, jdbcType=NUMERIC} ) CONTACT_TYPE_DESC,   
+				CTS_MERCHANT.ACC_BR,     
+				CTS_MERCHANT.ACC_CY,   
+				CTS_MERCHANT.ACC_GL,    
+				CTS_MERCHANT.ACC_CIF,   
+				CTS_MERCHANT.ACC_SL,   
+				CTS_MERCHANT.STATUS,   
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+      	  		 FROM SYS_PARAM_LOV_TRANS
+      	 		 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTS_MERCHANT.STATUS 
+      	  		 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID   = #{lovType,jdbcType=NUMERIC}
+      	  		 AND SYS_PARAM_LOV_TRANS.LANG_CODE     = #{lang, jdbcType=NUMERIC} ) statusDesc,
+				CTS_MERCHANT.DATE_CREATED,   
+				CTS_MERCHANT.CREATED_BY,   
+				CTS_MERCHANT.APPROVED_BY,   
+				CTS_MERCHANT.DATE_APPROVED,   
+				CTS_MERCHANT.DELETED_BY,   
+				CTS_MERCHANT.DATE_DELETED,   
+				CTS_MERCHANT.DATE_MODIFIED,   
+				CTS_MERCHANT.MODIFIED_BY,   
+				CTS_MERCHANT.DATE_TOBE_CANCELED,   
+				CTS_MERCHANT.TOBE_CANCELED_BY,   
+				CTS_MERCHANT.DATE_CANCELED,   
+				CTS_MERCHANT.CANCELED_BY,   
+				CTS_MERCHANT.SENT_FLAG ,
+				CTS_MERCHANT.ACC_ADDITIONAL_REF,
+				CTS_MERCHANT.STATUS_REMARK	,
+				CTS_MERCHANT.DATE_UPDATED,
+				(SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR}  = 'A' THEN E.LONG_DESC_ARAB ELSE E.LONG_DESC_ENG END 
+				 FROM ECO_SECTORS E
+				  WHERE E.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+				  AND E.SECTOR_CODE = CTS_MERCHANT.ECO_SECTOR_CODE
+				  AND E.SHOW_IN_POS = #{showInPos,jdbcType=VARCHAR}  )	ECO_SECTOR_DESC 			
+		FROM 	CTS_MERCHANT
+		<if test='ivCrud!="R"'>
+        	, SYS_PARAM_LOV_LK_OPT lovOpt
+  		</if>
+		WHERE   CTS_MERCHANT.COMP_CODE    = (#{compCode,    jdbcType=NUMERIC})
+		AND     CTS_MERCHANT.BRANCH_CODE  = (#{branchCode,  jdbcType=NUMERIC})
+		<if test='ivCrud!="R"'>
+       		AND CTS_MERCHANT.STATUS  = lovOpt.VALUE_CODE
+       		AND lovOpt.LOV_TYPE_ID  = #{lovType,jdbcType=NUMERIC}
+       		AND lovOpt.PROG_REF     = #{progRef,jdbcType=VARCHAR}
+       		AND lovOpt.APP_NAME     = #{appName,jdbcType=VARCHAR}
+       	</if> 
+       	
+       	<if test='scannedCIF != null and scannedCIF > 0'>
+       		AND CTS_MERCHANT.ACC_CIF = #{scannedCIF,jdbcType=NUMERIC}
+       	</if>
+		<!--AND     CTS_MERCHANT.STATUS  = CASE 
+		                          WHEN (#{status,jdbcType=VARCHAR}) = 'R'  THEN CTS_MERCHANT.STATUS                           
+                                  WHEN (#{status,jdbcType=VARCHAR}) = 'P'  THEN 'A' 
+                                  WHEN (#{status,jdbcType=VARCHAR}) = 'UP' THEN 'P'
+                                  WHEN (#{status,jdbcType=VARCHAR}) = 'K'  THEN 'P'
+                                  WHEN (#{status,jdbcType=VARCHAR}) = 'N'  THEN 'K' END-->
+                                  
+	</sql>
+	
+	<update id="updateCtsMerchantPos" parameterType="merchantMgntCO">
+		UPDATE CTS_MERCHANT_POS 
+		   SET STATUS = 'N'
+       		   ,DATE_CANCELED = #{runningDate}
+			   ,CANCELED_BY = #{loginUserId}
+		 WHERE COMP_CODE = #{loginCompCode}
+		   AND BRANCH_CODE = #{loginBraCode}
+		   AND MERCHANT_CODE = #{ctsMerchantVO.CODE}
+		   AND STATUS IN ('K','A','P')
+	</update>
+		
+	<select id ="returnActiveResult" parameterType="merchantMgntCO" resultType="int">
+		select count(1)
+		  From CTS_MERCHANT_POS
+		 WHERE COMP_CODE = #{loginCompCode}
+		   AND BRANCH_CODE = #{loginBraCode}
+		   AND MERCHANT_CODE = #{ctsMerchantVO.CODE}
+		   AND STATUS  IN ('A','P')
+	</select>
+<!--	-->
+	<sql id="select_merchantMgntDetails">			
+		SELECT  	
+				CTS_MERCHANT.COMP_CODE,   
+				CTS_MERCHANT.BRANCH_CODE,   
+				CTS_MERCHANT.CODE,   
+				CTS_MERCHANT.CIF_NO,   
+				CTS_MERCHANT.CONTRACT_NUM,   
+				CTS_MERCHANT.ECO_SECTOR_CODE,   
+				CTS_MERCHANT.MAX_AMOUNT,   
+				CTS_MERCHANT.CONTACT_TYPE ,
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+				 FROM SYS_PARAM_LOV_TRANS
+				 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE   =  CTS_MERCHANT.CONTACT_TYPE 
+				  AND  SYS_PARAM_LOV_TRANS.LOV_TYPE_ID  = #{lovTypeContact, jdbcType=NUMERIC}
+				  AND  SYS_PARAM_LOV_TRANS.LANG_CODE    = #{lang, jdbcType=NUMERIC} ) CONTACT_TYPE_DESC,   
+				CTS_MERCHANT.ACC_BR,     
+				CTS_MERCHANT.ACC_CY,   
+				CTS_MERCHANT.ACC_GL,    
+				CTS_MERCHANT.ACC_CIF,   
+				CTS_MERCHANT.ACC_SL,   
+				CTS_MERCHANT.STATUS,   
+				(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC 
+      	  		 FROM SYS_PARAM_LOV_TRANS
+      	 		 WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE  = CTS_MERCHANT.STATUS 
+      	  		 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID   = #{lovType,jdbcType=NUMERIC}
+      	  		 AND SYS_PARAM_LOV_TRANS.LANG_CODE     = #{lang, jdbcType=NUMERIC} ) statusDesc,
+				CTS_MERCHANT.DATE_CREATED,   
+				CTS_MERCHANT.CREATED_BY,   
+				CTS_MERCHANT.APPROVED_BY,   
+				CTS_MERCHANT.DATE_APPROVED,   
+				CTS_MERCHANT.DELETED_BY,   
+				CTS_MERCHANT.DATE_DELETED,   
+				CTS_MERCHANT.DATE_MODIFIED,   
+				CTS_MERCHANT.MODIFIED_BY,   
+				CTS_MERCHANT.DATE_TOBE_CANCELED,   
+				CTS_MERCHANT.TOBE_CANCELED_BY,   
+				CTS_MERCHANT.DATE_CANCELED,   
+				CTS_MERCHANT.CANCELED_BY,   
+				CTS_MERCHANT.SENT_FLAG ,
+				CTS_MERCHANT.ACC_ADDITIONAL_REF,
+				CTS_MERCHANT.STATUS_REMARK	,
+				CTS_MERCHANT.DATE_UPDATED,
+				(SELECT CASE WHEN #{preferredLanguage, jdbcType=VARCHAR}  = 'A' THEN E.LONG_DESC_ARAB ELSE E.LONG_DESC_ENG END 
+				 FROM ECO_SECTORS E
+				  WHERE E.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+				  AND E.SECTOR_CODE = CTS_MERCHANT.ECO_SECTOR_CODE
+				  AND E.SHOW_IN_POS = #{showInPos,jdbcType=VARCHAR} )	ECO_SECTOR_DESC,
+				CTS_MERCHANT.MERCHANT_TYPE,  
+				CTS_MERCHANT.BLOCK_MERCHANT_POS_YN
+		FROM 	CTS_MERCHANT
+		WHERE   CTS_MERCHANT.COMP_CODE    = (#{compCode,    jdbcType=NUMERIC})
+		AND     CTS_MERCHANT.BRANCH_CODE  = (#{branchCode,  jdbcType=NUMERIC})
+		AND     CTS_MERCHANT.CODE 		  = (#{code,jdbcType=NUMERIC})	
+	</sql>
+	
+	
+	<resultMap id="merchantMgntResultMap" type="merchantMgntCO">
+		<result property="ctsMerchantVO.COMP_CODE"				column="COMP_CODE" />
+		<result property="ctsMerchantVO.BRANCH_CODE"			column="BRANCH_CODE" />
+		<result property="ctsMerchantVO.CODE"					column="CODE" />
+		<result property="ctsMerchantVO.CIF_NO"					column="CIF_NO" />
+		<result property="ctsMerchantVO.CONTRACT_NUM"			column="CONTRACT_NUM" />
+		<result property="ctsMerchantVO.ECO_SECTOR_CODE"		column="ECO_SECTOR_CODE" />
+		<result property="ctsMerchantVO.MAX_AMOUNT"				column="MAX_AMOUNT" />
+		<result property="ctsMerchantVO.CONTACT_TYPE"			column="CONTACT_TYPE" />
+		<result property="ctsMerchantVO.ACC_BR"					column="ACC_BR" />
+		<result property="ctsMerchantVO.ACC_CY"					column="ACC_CY" />
+		<result property="ctsMerchantVO.ACC_GL"					column="ACC_GL" />
+		<result property="ctsMerchantVO.ACC_CIF"				column="ACC_CIF" />
+		<result property="ctsMerchantVO.ACC_SL"					column="ACC_SL" />
+		<result property="ctsMerchantVO.ACC_ADDITIONAL_REF"		column="ACC_ADDITIONAL_REF" />
+		<result property="ctsMerchantVO.STATUS"					column="STATUS" />
+		<result property="ctsMerchantVO.DATE_CREATED"			column="DATE_CREATED" /> 
+		<result property="ctsMerchantVO.CREATED_BY"				column="CREATED_BY" /> 
+		<result property="ctsMerchantVO.APPROVED_BY"			column="APPROVED_BY" /> 
+		<result property="ctsMerchantVO.DATE_APPROVED"			column="DATE_APPROVED" /> 
+		<result property="ctsMerchantVO.DELETED_BY"				column="DELETED_BY" /> 
+		<result property="ctsMerchantVO.DATE_DELETED"			column="DATE_DELETED" /> 
+		<result property="ctsMerchantVO.DATE_MODIFIED"			column="DATE_MODIFIED" /> 
+		<result property="ctsMerchantVO.MODIFIED_BY"			column="MODIFIED_BY" /> 
+		<result property="ctsMerchantVO.DATE_TOBE_CANCELED"		column="DATE_TOBE_CANCELED" /> 
+		<result property="ctsMerchantVO.TOBE_CANCELED_BY"		column="TOBE_CANCELED_BY" /> 
+		<result property="ctsMerchantVO.DATE_CANCELED"			column="DATE_CANCELED" /> 
+		<result property="ctsMerchantVO.CANCELED_BY"			column="CANCELED_BY" /> 
+		<result property="ctsMerchantVO.STATUS_REMARK"			column="STATUS_REMARK" /> 
+		<result property="ctsMerchantVO.SENT_FLAG"				column="SENT_FLAG" /> 
+		<result property="ecoSectorDesc"						column="ECO_SECTOR_DESC" /> 
+		<result property="contactTypeDesc"					    column="CONTACT_TYPE_DESC" />
+		<result property="statusDesc" 					        column="statusDesc"/>
+		<result property="ctsMerchantVO.DATE_UPDATED"			column="DATE_UPDATED" /> 
+		<result property="ctsMerchantVO.MERCHANT_TYPE"			column="MERCHANT_TYPE" /> 
+		<result property="ctsMerchantVO.BLOCK_MERCHANT_POS_YN"	column="BLOCK_MERCHANT_POS_YN" /> 
+	</resultMap>
+	
+	<select id="returnMerchantMgntList" resultMap="merchantMgntResultMap"	parameterType="merchantMgntSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_merchantMgnt" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="returnMerchantMgntListCount" resultType="int" parameterType="merchantMgntSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_merchantMgnt" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="returnMerchantMgntDetails" resultMap="merchantMgntResultMap" parameterType="merchantMgntSC">
+		<include refid="select_merchantMgntDetails"/>
+	</select>
+	
+</mapper>
+
+ 

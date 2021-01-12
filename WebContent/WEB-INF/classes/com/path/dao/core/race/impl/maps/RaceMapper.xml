@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="raceMapper">
+
+ <sql id="raceListCommon" >
+	<![CDATA[
+		SELECT 	RACE.COMP_CODE,   
+				RACE.CODE,   
+				RACE.BRIEF_DESC_ENG,   
+				RACE.BRIEF_DESC_ARAB,   
+				RACE.LONG_DESC_ENG,   
+				RACE.LONG_DESC_ARAB,   
+				RACE.ADDITIONAL_REFERENCE  
+    	FROM 	RACE   
+		WHERE 	 (RACE.COMP_CODE  = #{compCode})
+	]]>	 
+ </sql>
+ 
+  <sql id="raceListCommonOrder" >
+	<![CDATA[
+     ORDER BY RACE.BRIEF_DESC_ENG,RACE.BRIEF_DESC_ARAB
+	]]>	 
+ </sql>
+ 
+ <resultMap id="raceListMap" type="raceVO">
+ 	<id property="COMP_CODE" column="COMP_CODE" />
+	<id property="CODE" column="CODE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="raceList" resultMap="raceListMap" parameterType="raceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="raceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="raceListCount" resultType="int" parameterType="raceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="raceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnRaceById" parameterType="raceSC" resultType="raceVO">
+	SELECT CODE,   
+		   CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+	FROM   RACE 
+	WHERE  RACE.COMP_CODE  = #{compCode}
+	AND    RACE.CODE       = #{raceCode}
+ </select>
+
+</mapper>

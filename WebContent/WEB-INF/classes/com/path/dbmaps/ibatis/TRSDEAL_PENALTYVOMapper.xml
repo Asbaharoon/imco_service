@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_PENALTY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_PENALTYVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <result column="PER_INSTANCE_AMOUNT" property="PER_INSTANCE_AMOUNT" />
+    <result column="PER_INSTANCE_TYPE" property="PER_INSTANCE_TYPE" />
+    <result column="PER_INSTANCE_NUMBER" property="PER_INSTANCE_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, PER_INSTANCE_AMOUNT, PER_INSTANCE_TYPE, PER_INSTANCE_NUMBER
+  </sql>
+  <select id="selectTRSDEAL_PENALTY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_PENALTY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_PENALTY" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYVOKey" >
+    delete from TRSDEAL_PENALTY
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_PENALTY" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYVO" >
+    insert into TRSDEAL_PENALTY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="PER_INSTANCE_AMOUNT != null and PER_INSTANCE_AMOUNT != emptyBigDecimalValue" >
+        PER_INSTANCE_AMOUNT,
+      </if>
+      <if test="PER_INSTANCE_TYPE != null" >
+        PER_INSTANCE_TYPE,
+      </if>
+      <if test="PER_INSTANCE_NUMBER != null and PER_INSTANCE_NUMBER != emptyBigDecimalValue" >
+        PER_INSTANCE_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="PER_INSTANCE_AMOUNT != null and PER_INSTANCE_AMOUNT != emptyBigDecimalValue" >
+        #{PER_INSTANCE_AMOUNT},
+      </if>
+      <if test="PER_INSTANCE_TYPE != null" >
+        #{PER_INSTANCE_TYPE},
+      </if>
+      <if test="PER_INSTANCE_NUMBER != null and PER_INSTANCE_NUMBER != emptyBigDecimalValue" >
+        #{PER_INSTANCE_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_PENALTY" >
+    update TRSDEAL_PENALTY
+    <set >
+      <if test="PER_INSTANCE_AMOUNT != null" >
+        <choose >
+          <when test="PER_INSTANCE_AMOUNT == emptyBigDecimalValue" >
+            PER_INSTANCE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            PER_INSTANCE_AMOUNT = #{PER_INSTANCE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PER_INSTANCE_TYPE != null" >
+        PER_INSTANCE_TYPE = #{PER_INSTANCE_TYPE},
+      </if>
+      <if test="PER_INSTANCE_NUMBER != null" >
+        <choose >
+          <when test="PER_INSTANCE_NUMBER == emptyBigDecimalValue" >
+            PER_INSTANCE_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            PER_INSTANCE_NUMBER = #{PER_INSTANCE_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_PENALTY" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYVO" >
+    <include refid="sql_updateTRSDEAL_PENALTY" />
+  </update>
+</mapper>

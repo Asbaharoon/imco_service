@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifTypeMapper">
+
+
+	<select id="returnExpiryDays" resultType="BigDecimal"
+		parameterType="cifTypeSC">
+		SELECT	EXPIRY_DAYS
+		FROM	ID_TYPES
+		WHERE	COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		AND		CODE = #{idType,jdbcType=NUMERIC}
+	</select>
+
+
+	<sql id="cifTypeListCommon">
+	<![CDATA[
+		SELECT
+				 RIFCTT.TYPE_CODE,
+				 RIFCTT.BRIEF_DESC_ENG,
+				 RIFCTT.LONG_DESC_ENG,
+				 RIFCTT.BRIEF_DESC_ARAB,
+				 RIFCTT.LONG_DESC_ARAB,
+				 RIFCTT.ADDITIONAL_REFERENCE,
+				 RIFCTT.MIN_AGE,
+				 RIFCTT.MIN_AGE_PROCEED,
+				 RIFCTT.MAX_AGE,
+				 RIFCTT.MAX_AGE_PROCEED,
+				 RIFCTT.VT_IND,
+				 RIFCTT.JOINT_ACCOUNTS
+		FROM  RIFCTT 
+		WHERE	 RIFCTT.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+	]]>
+	<!--   TP#621590 ;13-Feb-2018;d.james-->
+	<if test='"true".equals(allTypesFlag)'> 
+		<include refid="cifTypeAllTypeSQL"/>
+	</if>
+	</sql>
+	 <sql id="cifTypeAllTypeSQL">
+ 	   <choose >
+	        <when test="isOracle == 1" >
+	         	UNION ALL SELECT 0, #{allTypes},#{allTypes},'','','',NULL,NULL,NULL,NULL FROM DUAL
+	        </when>
+	        <when test="isSybase == 1" >
+	        	UNION ALL SELECT 0, #{allTypes},#{allTypes},'','','',NULL,NULL,NULL,NULL
+	        </when>
+        </choose>
+ 	</sql>
+	<sql id="cifTypeListCommonOrder">
+	<![CDATA[
+     ORDER BY RIFCTT.TYPE_CODE ASC
+	]]>
+	</sql>
+
+	<sql id="cifAgeDetAddCondition">
+	<![CDATA[
+		AND RIFCTT.TYPE_CODE =	#{cifTypeCode,jdbcType=NUMERIC}
+		AND RIFCTT.VT_IND = 	#{vtIndicator,jdbcType=VARCHAR}
+		AND RIFCTT.CLIENT =		#{clientIndicator,jdbcType=VARCHAR}
+			]]>
+	</sql>
+
+	<resultMap id="cifTypeListMap" type="cifTypeVO">
+		<id property="TYPE_CODE" column="TYPE_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+		<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+		<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+		<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	</resultMap>
+
+	<resultMap id="cifAgeDetMap" type="cifTypeVO">
+		<id property="TYPE_CODE" column="TYPE_CODE" />
+		<result property="MIN_AGE" column="MIN_AGE" />
+		<result property="MIN_AGE_PROCEED" column="MIN_AGE_PROCEED" />
+		<result property="MAX_AGE" column="MAX_AGE" />
+		<result property="MAX_AGE_PROCEED" column="MAX_AGE_PROCEED" />
+		<result property="VT_IND" column="VT_IND" />
+		<result property="JOINT_ACCOUNTS" column="JOINT_ACCOUNTS" />
+	</resultMap>
+
+	<select id="cifTypeList" resultMap="cifTypeListMap"
+		parameterType="cifTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifTypeListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="cifTypeListCount" resultType="int" parameterType="cifTypeSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifTypeListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnCifTypeById" parameterType="cifTypeSC"
+		resultType="cifTypeVO">
+    SELECT VT_IND,
+           TYPE_CODE,
+           CASE WHEN #{preferredLanguage,jdbcType=VARCHAR} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG,
+           ALLOW_CHANGE_IDTYPE,
+           VALIDATE_CID,
+           JOINT_ACCOUNTS
+      FROM RIFCTT
+     WHERE RIFCTT.TYPE_CODE = #{cifTypeCode,jdbcType=NUMERIC}
+       AND RIFCTT.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+	</select>
+	
+	<select id="returnCifGender" parameterType="cifTypeSC"
+		resultType="String">
+		SELECT	GENDER
+		FROM	CIVIL_CODES
+		WHERE	CIVIL_CODES.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+		AND		CIVIL_CODES.CIVIL_CODE = #{civilCode,jdbcType=NUMERIC}
+	</select>
+
+	<select id="returnAgeDet" parameterType="cifTypeSC" resultType="cifTypeVO">
+		<include refid="cifTypeListCommon" />
+		<include refid="cifAgeDetAddCondition" />
+	</select>
+
+	<delete id="deleteKycYmcRelatedData" parameterType="fomSC">
+	    <choose>
+		 	<when test="isSybase == 1">
+				DELETE FROM CIF_KYC_FINANCIAL_INFO WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo} AND KYC_FINANCIAL_TYPE IN ('1','2','3','4','5','6','7','8','D','9','F','E')
+				DELETE FROM CIF_KYC_PARAM_LINK WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo}
+				DELETE FROM CIF_ADDRESS WHERE CIF_NO = #{cifNo} and COMP_CODE = #{compCode}
+				DELETE FROM CIF_COUNTRY_INFO WHERE CIF_NO = #{cifNo}  AND COMP_CODE = #{compCode}
+		   </when>
+		   <otherwise>
+		 		begin
+					DELETE FROM CIF_KYC_FINANCIAL_INFO WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo} AND KYC_FINANCIAL_TYPE IN ('1','2','3','4','5','6','7','8','D','9','F','E');
+					DELETE FROM CIF_KYC_PARAM_LINK WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo};
+					DELETE FROM CIF_ADDRESS WHERE CIF_NO = #{cifNo} and COMP_CODE = #{compCode};
+					DELETE FROM CIF_COUNTRY_INFO WHERE CIF_NO = #{cifNo}  AND COMP_CODE = #{compCode};	
+				end;
+		   </otherwise>
+	     </choose>
+	</delete>
+
+
+
+</mapper>

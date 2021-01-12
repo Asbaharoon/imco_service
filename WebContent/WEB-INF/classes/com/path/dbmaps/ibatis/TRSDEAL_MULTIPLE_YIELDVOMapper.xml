@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_MULTIPLE_YIELD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <id column="FROM_DATE" property="FROM_DATE" />
+    <result column="YIELD" property="YIELD" />
+    <result column="FLOATING_RATE" property="FLOATING_RATE" />
+    <result column="MARGIN_RATE" property="MARGIN_RATE" />
+    <result column="FIXED_FLOATING_RATE_YN" property="FIXED_FLOATING_RATE_YN" />
+    <result column="REVAL_YN" property="REVAL_YN" />
+    <result column="NO_OF_MONTHS" property="NO_OF_MONTHS" />
+    <result column="MAXIMUM_YIELD" property="MAXIMUM_YIELD" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, FROM_DATE, YIELD, FLOATING_RATE, MARGIN_RATE, FIXED_FLOATING_RATE_YN, 
+    REVAL_YN, NO_OF_MONTHS, MAXIMUM_YIELD
+  </sql>
+  <select id="selectTRSDEAL_MULTIPLE_YIELD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_MULTIPLE_YIELD
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and FROM_DATE = #{FROM_DATE}
+  </select>
+  <delete id="deleteTRSDEAL_MULTIPLE_YIELD" parameterType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVOKey" >
+    delete from TRSDEAL_MULTIPLE_YIELD
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and FROM_DATE = #{FROM_DATE}
+  </delete>
+  <insert id="insertTRSDEAL_MULTIPLE_YIELD" parameterType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVO" >
+    insert into TRSDEAL_MULTIPLE_YIELD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        YIELD,
+      </if>
+      <if test="FLOATING_RATE != null and FLOATING_RATE != emptyBigDecimalValue" >
+        FLOATING_RATE,
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        MARGIN_RATE,
+      </if>
+      <if test="FIXED_FLOATING_RATE_YN != null" >
+        FIXED_FLOATING_RATE_YN,
+      </if>
+      <if test="REVAL_YN != null" >
+        REVAL_YN,
+      </if>
+      <if test="NO_OF_MONTHS != null and NO_OF_MONTHS != emptyBigDecimalValue" >
+        NO_OF_MONTHS,
+      </if>
+      <if test="MAXIMUM_YIELD != null and MAXIMUM_YIELD != emptyBigDecimalValue" >
+        MAXIMUM_YIELD,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="YIELD != null and YIELD != emptyBigDecimalValue" >
+        #{YIELD},
+      </if>
+      <if test="FLOATING_RATE != null and FLOATING_RATE != emptyBigDecimalValue" >
+        #{FLOATING_RATE},
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        #{MARGIN_RATE},
+      </if>
+      <if test="FIXED_FLOATING_RATE_YN != null" >
+        #{FIXED_FLOATING_RATE_YN},
+      </if>
+      <if test="REVAL_YN != null" >
+        #{REVAL_YN},
+      </if>
+      <if test="NO_OF_MONTHS != null and NO_OF_MONTHS != emptyBigDecimalValue" >
+        #{NO_OF_MONTHS},
+      </if>
+      <if test="MAXIMUM_YIELD != null and MAXIMUM_YIELD != emptyBigDecimalValue" >
+        #{MAXIMUM_YIELD},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_MULTIPLE_YIELD" >
+    update TRSDEAL_MULTIPLE_YIELD
+    <set >
+      <if test="YIELD != null" >
+        <choose >
+          <when test="YIELD == emptyBigDecimalValue" >
+            YIELD = NULL ,
+          </when>
+          <otherwise >
+            YIELD = #{YIELD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLOATING_RATE != null" >
+        <choose >
+          <when test="FLOATING_RATE == emptyBigDecimalValue" >
+            FLOATING_RATE = NULL ,
+          </when>
+          <otherwise >
+            FLOATING_RATE = #{FLOATING_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MARGIN_RATE != null" >
+        <choose >
+          <when test="MARGIN_RATE == emptyBigDecimalValue" >
+            MARGIN_RATE = NULL ,
+          </when>
+          <otherwise >
+            MARGIN_RATE = #{MARGIN_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIXED_FLOATING_RATE_YN != null" >
+        FIXED_FLOATING_RATE_YN = #{FIXED_FLOATING_RATE_YN},
+      </if>
+      <if test="REVAL_YN != null" >
+        REVAL_YN = #{REVAL_YN},
+      </if>
+      <if test="NO_OF_MONTHS != null" >
+        <choose >
+          <when test="NO_OF_MONTHS == emptyBigDecimalValue" >
+            NO_OF_MONTHS = NULL ,
+          </when>
+          <otherwise >
+            NO_OF_MONTHS = #{NO_OF_MONTHS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MAXIMUM_YIELD != null" >
+        <choose >
+          <when test="MAXIMUM_YIELD == emptyBigDecimalValue" >
+            MAXIMUM_YIELD = NULL ,
+          </when>
+          <otherwise >
+            MAXIMUM_YIELD = #{MAXIMUM_YIELD},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and FROM_DATE = #{FROM_DATE}
+  </sql>
+  <update id="updateTRSDEAL_MULTIPLE_YIELD" parameterType="com.path.dbmaps.vo.TRSDEAL_MULTIPLE_YIELDVO" >
+    <include refid="sql_updateTRSDEAL_MULTIPLE_YIELD" />
+  </update>
+</mapper>

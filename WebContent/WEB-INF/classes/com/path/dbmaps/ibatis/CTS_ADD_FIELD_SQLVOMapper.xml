@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_ADD_FIELD_SQL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COLUMN_NUMBER" property="COLUMN_NUMBER" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVO" extends="BaseResultMap" >
+    <result column="SQL_QUERY" property="SQL_QUERY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COLUMN_NUMBER, COMP_CODE
+  </sql>
+  <sql id="Blob_Column_List" >
+    SQL_QUERY
+  </sql>
+  <select id="selectCTS_ADD_FIELD_SQL" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CTS_ADD_FIELD_SQL
+    where CODE = #{CODE}
+      and COLUMN_NUMBER = #{COLUMN_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTS_ADD_FIELD_SQL" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVOKey" >
+    delete from CTS_ADD_FIELD_SQL
+    where CODE = #{CODE}
+      and COLUMN_NUMBER = #{COLUMN_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTS_ADD_FIELD_SQL" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVO" >
+    insert into CTS_ADD_FIELD_SQL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COLUMN_NUMBER != null and COLUMN_NUMBER != emptyBigDecimalValue" >
+        COLUMN_NUMBER,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SQL_QUERY != null" >
+        SQL_QUERY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COLUMN_NUMBER != null and COLUMN_NUMBER != emptyBigDecimalValue" >
+        #{COLUMN_NUMBER},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SQL_QUERY != null" >
+        #{SQL_QUERY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_ADD_FIELD_SQL" >
+    update CTS_ADD_FIELD_SQL
+    <set >
+      <if test="SQL_QUERY != null" >
+        SQL_QUERY = #{SQL_QUERY},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COLUMN_NUMBER = #{COLUMN_NUMBER}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTS_ADD_FIELD_SQL" parameterType="com.path.dbmaps.vo.CTS_ADD_FIELD_SQLVO" >
+    <include refid="sql_updateCTS_ADD_FIELD_SQL" />
+  </update>
+</mapper>

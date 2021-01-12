@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSFOREX_BASE_CY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSFOREX_BASE_CYVO" >
+    <id column="BASE_CY" property="BASE_CY" />
+    <id column="BOUGHT_CY" property="BOUGHT_CY" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SOLD_CY" property="SOLD_CY" />
+    <result column="MULT_DIV_IND" property="MULT_DIV_IND" />
+    <result column="PAIR_FIRST_CY" property="PAIR_FIRST_CY" />
+    <result column="SPOT_DAYS" property="SPOT_DAYS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BASE_CY, BOUGHT_CY, COMP_CODE, SOLD_CY, MULT_DIV_IND, PAIR_FIRST_CY, SPOT_DAYS
+  </sql>
+  <select id="selectTRSFOREX_BASE_CY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSFOREX_BASE_CYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSFOREX_BASE_CY
+    where BASE_CY = #{BASE_CY}
+      and BOUGHT_CY = #{BOUGHT_CY}
+      and COMP_CODE = #{COMP_CODE}
+      and SOLD_CY = #{SOLD_CY}
+  </select>
+  <delete id="deleteTRSFOREX_BASE_CY" parameterType="com.path.dbmaps.vo.TRSFOREX_BASE_CYVOKey" >
+    delete from TRSFOREX_BASE_CY
+    where BASE_CY = #{BASE_CY}
+      and BOUGHT_CY = #{BOUGHT_CY}
+      and COMP_CODE = #{COMP_CODE}
+      and SOLD_CY = #{SOLD_CY}
+  </delete>
+  <insert id="insertTRSFOREX_BASE_CY" parameterType="com.path.dbmaps.vo.TRSFOREX_BASE_CYVO" >
+    insert into TRSFOREX_BASE_CY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BASE_CY != null and BASE_CY != emptyBigDecimalValue" >
+        BASE_CY,
+      </if>
+      <if test="BOUGHT_CY != null and BOUGHT_CY != emptyBigDecimalValue" >
+        BOUGHT_CY,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SOLD_CY != null and SOLD_CY != emptyBigDecimalValue" >
+        SOLD_CY,
+      </if>
+      <if test="MULT_DIV_IND != null" >
+        MULT_DIV_IND,
+      </if>
+      <if test="PAIR_FIRST_CY != null and PAIR_FIRST_CY != emptyBigDecimalValue" >
+        PAIR_FIRST_CY,
+      </if>
+      <if test="SPOT_DAYS != null and SPOT_DAYS != emptyBigDecimalValue" >
+        SPOT_DAYS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BASE_CY != null and BASE_CY != emptyBigDecimalValue" >
+        #{BASE_CY},
+      </if>
+      <if test="BOUGHT_CY != null and BOUGHT_CY != emptyBigDecimalValue" >
+        #{BOUGHT_CY},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SOLD_CY != null and SOLD_CY != emptyBigDecimalValue" >
+        #{SOLD_CY},
+      </if>
+      <if test="MULT_DIV_IND != null" >
+        #{MULT_DIV_IND},
+      </if>
+      <if test="PAIR_FIRST_CY != null and PAIR_FIRST_CY != emptyBigDecimalValue" >
+        #{PAIR_FIRST_CY},
+      </if>
+      <if test="SPOT_DAYS != null and SPOT_DAYS != emptyBigDecimalValue" >
+        #{SPOT_DAYS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSFOREX_BASE_CY" >
+    update TRSFOREX_BASE_CY
+    <set >
+      <if test="MULT_DIV_IND != null" >
+        MULT_DIV_IND = #{MULT_DIV_IND},
+      </if>
+      <if test="PAIR_FIRST_CY != null" >
+        <choose >
+          <when test="PAIR_FIRST_CY == emptyBigDecimalValue" >
+            PAIR_FIRST_CY = NULL ,
+          </when>
+          <otherwise >
+            PAIR_FIRST_CY = #{PAIR_FIRST_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SPOT_DAYS != null" >
+        <choose >
+          <when test="SPOT_DAYS == emptyBigDecimalValue" >
+            SPOT_DAYS = NULL ,
+          </when>
+          <otherwise >
+            SPOT_DAYS = #{SPOT_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BASE_CY = #{BASE_CY}
+      and BOUGHT_CY = #{BOUGHT_CY}
+      and COMP_CODE = #{COMP_CODE}
+      and SOLD_CY = #{SOLD_CY}
+  </sql>
+  <update id="updateTRSFOREX_BASE_CY" parameterType="com.path.dbmaps.vo.TRSFOREX_BASE_CYVO" >
+    <include refid="sql_updateTRSFOREX_BASE_CY" />
+  </update>
+</mapper>

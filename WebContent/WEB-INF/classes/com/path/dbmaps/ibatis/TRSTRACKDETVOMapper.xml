@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSTRACKDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSTRACKDETVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="TRACK_NBR" property="TRACK_NBR" />
+    <result column="EXPREV_CODE" property="EXPREV_CODE" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="CROSS_EXCH_RATE" property="CROSS_EXCH_RATE" />
+    <result column="CY_RATE" property="CY_RATE" />
+    <result column="CY_UNIT" property="CY_UNIT" />
+    <result column="CY_MULT_DIV" property="CY_MULT_DIV" />
+    <result column="DR_ACC_CY" property="DR_ACC_CY" />
+    <result column="DR_ACC_GL" property="DR_ACC_GL" />
+    <result column="DR_ACC_CIF" property="DR_ACC_CIF" />
+    <result column="DR_ACC_SL" property="DR_ACC_SL" />
+    <result column="CR_ACC_CY" property="CR_ACC_CY" />
+    <result column="CR_ACC_GL" property="CR_ACC_GL" />
+    <result column="CR_ACC_CIF" property="CR_ACC_CIF" />
+    <result column="CR_ACC_SL" property="CR_ACC_SL" />
+    <result column="CLI_DR_ACC_CY" property="CLI_DR_ACC_CY" />
+    <result column="CLI_DR_ACC_GL" property="CLI_DR_ACC_GL" />
+    <result column="CLI_DR_ACC_CIF" property="CLI_DR_ACC_CIF" />
+    <result column="CLI_DR_ACC_SL" property="CLI_DR_ACC_SL" />
+    <result column="CLI_CR_ACC_CY" property="CLI_CR_ACC_CY" />
+    <result column="CLI_CR_ACC_GL" property="CLI_CR_ACC_GL" />
+    <result column="CLI_CR_ACC_CIF" property="CLI_CR_ACC_CIF" />
+    <result column="CLI_CR_ACC_SL" property="CLI_CR_ACC_SL" />
+    <result column="CROSS_CY_MULT_DIV" property="CROSS_CY_MULT_DIV" />
+    <result column="CHARGE_ALLOCATION_CRITERIA" property="CHARGE_ALLOCATION_CRITERIA" />
+    <result column="CHARGE_NO_INSTALLMENTS" property="CHARGE_NO_INSTALLMENTS" />
+    <result column="CHARGE_FROM_DATE" property="CHARGE_FROM_DATE" />
+    <result column="CHARGE_TO_DATE" property="CHARGE_TO_DATE" />
+    <result column="DR_ACC_BR" property="DR_ACC_BR" />
+    <result column="CR_ACC_BR" property="CR_ACC_BR" />
+    <result column="AMOUNT_CHARGE_CY" property="AMOUNT_CHARGE_CY" />
+    <result column="REASON" property="REASON" />
+    <result column="CHARGES_REVERSED_AMOUNT" property="CHARGES_REVERSED_AMOUNT" />
+    <result column="MUSHARAKA_PSR" property="MUSHARAKA_PSR" />
+    <result column="FUND_DR_ACC_CY" property="FUND_DR_ACC_CY" />
+    <result column="FUND_DR_ACC_GL" property="FUND_DR_ACC_GL" />
+    <result column="FUND_DR_ACC_CIF" property="FUND_DR_ACC_CIF" />
+    <result column="FUND_DR_ACC_SL" property="FUND_DR_ACC_SL" />
+    <result column="FUND_CR_ACC_CY" property="FUND_CR_ACC_CY" />
+    <result column="FUND_CR_ACC_GL" property="FUND_CR_ACC_GL" />
+    <result column="FUND_CR_ACC_CIF" property="FUND_CR_ACC_CIF" />
+    <result column="FUND_CR_ACC_SL" property="FUND_CR_ACC_SL" />
+    <result column="VAT_AMOUNT" property="VAT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LINE_NBR, TRACK_NBR, EXPREV_CODE, AMOUNT, CROSS_EXCH_RATE, CY_RATE, 
+    CY_UNIT, CY_MULT_DIV, DR_ACC_CY, DR_ACC_GL, DR_ACC_CIF, DR_ACC_SL, CR_ACC_CY, CR_ACC_GL, 
+    CR_ACC_CIF, CR_ACC_SL, CLI_DR_ACC_CY, CLI_DR_ACC_GL, CLI_DR_ACC_CIF, CLI_DR_ACC_SL, 
+    CLI_CR_ACC_CY, CLI_CR_ACC_GL, CLI_CR_ACC_CIF, CLI_CR_ACC_SL, CROSS_CY_MULT_DIV, CHARGE_ALLOCATION_CRITERIA, 
+    CHARGE_NO_INSTALLMENTS, CHARGE_FROM_DATE, CHARGE_TO_DATE, DR_ACC_BR, CR_ACC_BR, AMOUNT_CHARGE_CY, 
+    REASON, CHARGES_REVERSED_AMOUNT, MUSHARAKA_PSR, FUND_DR_ACC_CY, FUND_DR_ACC_GL, FUND_DR_ACC_CIF, 
+    FUND_DR_ACC_SL, FUND_CR_ACC_CY, FUND_CR_ACC_GL, FUND_CR_ACC_CIF, FUND_CR_ACC_SL, 
+    VAT_AMOUNT
+  </sql>
+  <select id="selectTRSTRACKDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSTRACKDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSTRACKDET
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </select>
+  <delete id="deleteTRSTRACKDET" parameterType="com.path.dbmaps.vo.TRSTRACKDETVOKey" >
+    delete from TRSTRACKDET
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </delete>
+  <insert id="insertTRSTRACKDET" parameterType="com.path.dbmaps.vo.TRSTRACKDETVO" >
+    insert into TRSTRACKDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        TRACK_NBR,
+      </if>
+      <if test="EXPREV_CODE != null and EXPREV_CODE != emptyBigDecimalValue" >
+        EXPREV_CODE,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="CROSS_EXCH_RATE != null and CROSS_EXCH_RATE != emptyBigDecimalValue" >
+        CROSS_EXCH_RATE,
+      </if>
+      <if test="CY_RATE != null and CY_RATE != emptyBigDecimalValue" >
+        CY_RATE,
+      </if>
+      <if test="CY_UNIT != null and CY_UNIT != emptyBigDecimalValue" >
+        CY_UNIT,
+      </if>
+      <if test="CY_MULT_DIV != null" >
+        CY_MULT_DIV,
+      </if>
+      <if test="DR_ACC_CY != null and DR_ACC_CY != emptyBigDecimalValue" >
+        DR_ACC_CY,
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        DR_ACC_GL,
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        DR_ACC_CIF,
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        DR_ACC_SL,
+      </if>
+      <if test="CR_ACC_CY != null and CR_ACC_CY != emptyBigDecimalValue" >
+        CR_ACC_CY,
+      </if>
+      <if test="CR_ACC_GL != null and CR_ACC_GL != emptyBigDecimalValue" >
+        CR_ACC_GL,
+      </if>
+      <if test="CR_ACC_CIF != null and CR_ACC_CIF != emptyBigDecimalValue" >
+        CR_ACC_CIF,
+      </if>
+      <if test="CR_ACC_SL != null and CR_ACC_SL != emptyBigDecimalValue" >
+        CR_ACC_SL,
+      </if>
+      <if test="CLI_DR_ACC_CY != null and CLI_DR_ACC_CY != emptyBigDecimalValue" >
+        CLI_DR_ACC_CY,
+      </if>
+      <if test="CLI_DR_ACC_GL != null and CLI_DR_ACC_GL != emptyBigDecimalValue" >
+        CLI_DR_ACC_GL,
+      </if>
+      <if test="CLI_DR_ACC_CIF != null and CLI_DR_ACC_CIF != emptyBigDecimalValue" >
+        CLI_DR_ACC_CIF,
+      </if>
+      <if test="CLI_DR_ACC_SL != null and CLI_DR_ACC_SL != emptyBigDecimalValue" >
+        CLI_DR_ACC_SL,
+      </if>
+      <if test="CLI_CR_ACC_CY != null and CLI_CR_ACC_CY != emptyBigDecimalValue" >
+        CLI_CR_ACC_CY,
+      </if>
+      <if test="CLI_CR_ACC_GL != null and CLI_CR_ACC_GL != emptyBigDecimalValue" >
+        CLI_CR_ACC_GL,
+      </if>
+      <if test="CLI_CR_ACC_CIF != null and CLI_CR_ACC_CIF != emptyBigDecimalValue" >
+        CLI_CR_ACC_CIF,
+      </if>
+      <if test="CLI_CR_ACC_SL != null and CLI_CR_ACC_SL != emptyBigDecimalValue" >
+        CLI_CR_ACC_SL,
+      </if>
+      <if test="CROSS_CY_MULT_DIV != null" >
+        CROSS_CY_MULT_DIV,
+      </if>
+      <if test="CHARGE_ALLOCATION_CRITERIA != null" >
+        CHARGE_ALLOCATION_CRITERIA,
+      </if>
+      <if test="CHARGE_NO_INSTALLMENTS != null and CHARGE_NO_INSTALLMENTS != emptyBigDecimalValue" >
+        CHARGE_NO_INSTALLMENTS,
+      </if>
+      <if test="CHARGE_FROM_DATE != null" >
+        CHARGE_FROM_DATE,
+      </if>
+      <if test="CHARGE_TO_DATE != null" >
+        CHARGE_TO_DATE,
+      </if>
+      <if test="DR_ACC_BR != null and DR_ACC_BR != emptyBigDecimalValue" >
+        DR_ACC_BR,
+      </if>
+      <if test="CR_ACC_BR != null and CR_ACC_BR != emptyBigDecimalValue" >
+        CR_ACC_BR,
+      </if>
+      <if test="AMOUNT_CHARGE_CY != null and AMOUNT_CHARGE_CY != emptyBigDecimalValue" >
+        AMOUNT_CHARGE_CY,
+      </if>
+      <if test="REASON != null" >
+        REASON,
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null and CHARGES_REVERSED_AMOUNT != emptyBigDecimalValue" >
+        CHARGES_REVERSED_AMOUNT,
+      </if>
+      <if test="MUSHARAKA_PSR != null and MUSHARAKA_PSR != emptyBigDecimalValue" >
+        MUSHARAKA_PSR,
+      </if>
+      <if test="FUND_DR_ACC_CY != null and FUND_DR_ACC_CY != emptyBigDecimalValue" >
+        FUND_DR_ACC_CY,
+      </if>
+      <if test="FUND_DR_ACC_GL != null and FUND_DR_ACC_GL != emptyBigDecimalValue" >
+        FUND_DR_ACC_GL,
+      </if>
+      <if test="FUND_DR_ACC_CIF != null and FUND_DR_ACC_CIF != emptyBigDecimalValue" >
+        FUND_DR_ACC_CIF,
+      </if>
+      <if test="FUND_DR_ACC_SL != null and FUND_DR_ACC_SL != emptyBigDecimalValue" >
+        FUND_DR_ACC_SL,
+      </if>
+      <if test="FUND_CR_ACC_CY != null and FUND_CR_ACC_CY != emptyBigDecimalValue" >
+        FUND_CR_ACC_CY,
+      </if>
+      <if test="FUND_CR_ACC_GL != null and FUND_CR_ACC_GL != emptyBigDecimalValue" >
+        FUND_CR_ACC_GL,
+      </if>
+      <if test="FUND_CR_ACC_CIF != null and FUND_CR_ACC_CIF != emptyBigDecimalValue" >
+        FUND_CR_ACC_CIF,
+      </if>
+      <if test="FUND_CR_ACC_SL != null and FUND_CR_ACC_SL != emptyBigDecimalValue" >
+        FUND_CR_ACC_SL,
+      </if>
+      <if test="VAT_AMOUNT != null and VAT_AMOUNT != emptyBigDecimalValue" >
+        VAT_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="TRACK_NBR != null and TRACK_NBR != emptyBigDecimalValue" >
+        #{TRACK_NBR},
+      </if>
+      <if test="EXPREV_CODE != null and EXPREV_CODE != emptyBigDecimalValue" >
+        #{EXPREV_CODE},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="CROSS_EXCH_RATE != null and CROSS_EXCH_RATE != emptyBigDecimalValue" >
+        #{CROSS_EXCH_RATE},
+      </if>
+      <if test="CY_RATE != null and CY_RATE != emptyBigDecimalValue" >
+        #{CY_RATE},
+      </if>
+      <if test="CY_UNIT != null and CY_UNIT != emptyBigDecimalValue" >
+        #{CY_UNIT},
+      </if>
+      <if test="CY_MULT_DIV != null" >
+        #{CY_MULT_DIV},
+      </if>
+      <if test="DR_ACC_CY != null and DR_ACC_CY != emptyBigDecimalValue" >
+        #{DR_ACC_CY},
+      </if>
+      <if test="DR_ACC_GL != null and DR_ACC_GL != emptyBigDecimalValue" >
+        #{DR_ACC_GL},
+      </if>
+      <if test="DR_ACC_CIF != null and DR_ACC_CIF != emptyBigDecimalValue" >
+        #{DR_ACC_CIF},
+      </if>
+      <if test="DR_ACC_SL != null and DR_ACC_SL != emptyBigDecimalValue" >
+        #{DR_ACC_SL},
+      </if>
+      <if test="CR_ACC_CY != null and CR_ACC_CY != emptyBigDecimalValue" >
+        #{CR_ACC_CY},
+      </if>
+      <if test="CR_ACC_GL != null and CR_ACC_GL != emptyBigDecimalValue" >
+        #{CR_ACC_GL},
+      </if>
+      <if test="CR_ACC_CIF != null and CR_ACC_CIF != emptyBigDecimalValue" >
+        #{CR_ACC_CIF},
+      </if>
+      <if test="CR_ACC_SL != null and CR_ACC_SL != emptyBigDecimalValue" >
+        #{CR_ACC_SL},
+      </if>
+      <if test="CLI_DR_ACC_CY != null and CLI_DR_ACC_CY != emptyBigDecimalValue" >
+        #{CLI_DR_ACC_CY},
+      </if>
+      <if test="CLI_DR_ACC_GL != null and CLI_DR_ACC_GL != emptyBigDecimalValue" >
+        #{CLI_DR_ACC_GL},
+      </if>
+      <if test="CLI_DR_ACC_CIF != null and CLI_DR_ACC_CIF != emptyBigDecimalValue" >
+        #{CLI_DR_ACC_CIF},
+      </if>
+      <if test="CLI_DR_ACC_SL != null and CLI_DR_ACC_SL != emptyBigDecimalValue" >
+        #{CLI_DR_ACC_SL},
+      </if>
+      <if test="CLI_CR_ACC_CY != null and CLI_CR_ACC_CY != emptyBigDecimalValue" >
+        #{CLI_CR_ACC_CY},
+      </if>
+      <if test="CLI_CR_ACC_GL != null and CLI_CR_ACC_GL != emptyBigDecimalValue" >
+        #{CLI_CR_ACC_GL},
+      </if>
+      <if test="CLI_CR_ACC_CIF != null and CLI_CR_ACC_CIF != emptyBigDecimalValue" >
+        #{CLI_CR_ACC_CIF},
+      </if>
+      <if test="CLI_CR_ACC_SL != null and CLI_CR_ACC_SL != emptyBigDecimalValue" >
+        #{CLI_CR_ACC_SL},
+      </if>
+      <if test="CROSS_CY_MULT_DIV != null" >
+        #{CROSS_CY_MULT_DIV},
+      </if>
+      <if test="CHARGE_ALLOCATION_CRITERIA != null" >
+        #{CHARGE_ALLOCATION_CRITERIA},
+      </if>
+      <if test="CHARGE_NO_INSTALLMENTS != null and CHARGE_NO_INSTALLMENTS != emptyBigDecimalValue" >
+        #{CHARGE_NO_INSTALLMENTS},
+      </if>
+      <if test="CHARGE_FROM_DATE != null" >
+        #{CHARGE_FROM_DATE},
+      </if>
+      <if test="CHARGE_TO_DATE != null" >
+        #{CHARGE_TO_DATE},
+      </if>
+      <if test="DR_ACC_BR != null and DR_ACC_BR != emptyBigDecimalValue" >
+        #{DR_ACC_BR},
+      </if>
+      <if test="CR_ACC_BR != null and CR_ACC_BR != emptyBigDecimalValue" >
+        #{CR_ACC_BR},
+      </if>
+      <if test="AMOUNT_CHARGE_CY != null and AMOUNT_CHARGE_CY != emptyBigDecimalValue" >
+        #{AMOUNT_CHARGE_CY},
+      </if>
+      <if test="REASON != null" >
+        #{REASON},
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null and CHARGES_REVERSED_AMOUNT != emptyBigDecimalValue" >
+        #{CHARGES_REVERSED_AMOUNT},
+      </if>
+      <if test="MUSHARAKA_PSR != null and MUSHARAKA_PSR != emptyBigDecimalValue" >
+        #{MUSHARAKA_PSR},
+      </if>
+      <if test="FUND_DR_ACC_CY != null and FUND_DR_ACC_CY != emptyBigDecimalValue" >
+        #{FUND_DR_ACC_CY},
+      </if>
+      <if test="FUND_DR_ACC_GL != null and FUND_DR_ACC_GL != emptyBigDecimalValue" >
+        #{FUND_DR_ACC_GL},
+      </if>
+      <if test="FUND_DR_ACC_CIF != null and FUND_DR_ACC_CIF != emptyBigDecimalValue" >
+        #{FUND_DR_ACC_CIF},
+      </if>
+      <if test="FUND_DR_ACC_SL != null and FUND_DR_ACC_SL != emptyBigDecimalValue" >
+        #{FUND_DR_ACC_SL},
+      </if>
+      <if test="FUND_CR_ACC_CY != null and FUND_CR_ACC_CY != emptyBigDecimalValue" >
+        #{FUND_CR_ACC_CY},
+      </if>
+      <if test="FUND_CR_ACC_GL != null and FUND_CR_ACC_GL != emptyBigDecimalValue" >
+        #{FUND_CR_ACC_GL},
+      </if>
+      <if test="FUND_CR_ACC_CIF != null and FUND_CR_ACC_CIF != emptyBigDecimalValue" >
+        #{FUND_CR_ACC_CIF},
+      </if>
+      <if test="FUND_CR_ACC_SL != null and FUND_CR_ACC_SL != emptyBigDecimalValue" >
+        #{FUND_CR_ACC_SL},
+      </if>
+      <if test="VAT_AMOUNT != null and VAT_AMOUNT != emptyBigDecimalValue" >
+        #{VAT_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSTRACKDET" >
+    update TRSTRACKDET
+    <set >
+      <if test="EXPREV_CODE != null" >
+        <choose >
+          <when test="EXPREV_CODE == emptyBigDecimalValue" >
+            EXPREV_CODE = NULL ,
+          </when>
+          <otherwise >
+            EXPREV_CODE = #{EXPREV_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CROSS_EXCH_RATE != null" >
+        <choose >
+          <when test="CROSS_EXCH_RATE == emptyBigDecimalValue" >
+            CROSS_EXCH_RATE = NULL ,
+          </when>
+          <otherwise >
+            CROSS_EXCH_RATE = #{CROSS_EXCH_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CY_RATE != null" >
+        <choose >
+          <when test="CY_RATE == emptyBigDecimalValue" >
+            CY_RATE = NULL ,
+          </when>
+          <otherwise >
+            CY_RATE = #{CY_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CY_UNIT != null" >
+        <choose >
+          <when test="CY_UNIT == emptyBigDecimalValue" >
+            CY_UNIT = NULL ,
+          </when>
+          <otherwise >
+            CY_UNIT = #{CY_UNIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CY_MULT_DIV != null" >
+        CY_MULT_DIV = #{CY_MULT_DIV},
+      </if>
+      <if test="DR_ACC_CY != null" >
+        <choose >
+          <when test="DR_ACC_CY == emptyBigDecimalValue" >
+            DR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_CY = #{DR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_ACC_GL != null" >
+        <choose >
+          <when test="DR_ACC_GL == emptyBigDecimalValue" >
+            DR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_GL = #{DR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_ACC_CIF != null" >
+        <choose >
+          <when test="DR_ACC_CIF == emptyBigDecimalValue" >
+            DR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_CIF = #{DR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DR_ACC_SL != null" >
+        <choose >
+          <when test="DR_ACC_SL == emptyBigDecimalValue" >
+            DR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_SL = #{DR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_CY != null" >
+        <choose >
+          <when test="CR_ACC_CY == emptyBigDecimalValue" >
+            CR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_CY = #{CR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_GL != null" >
+        <choose >
+          <when test="CR_ACC_GL == emptyBigDecimalValue" >
+            CR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_GL = #{CR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_CIF != null" >
+        <choose >
+          <when test="CR_ACC_CIF == emptyBigDecimalValue" >
+            CR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_CIF = #{CR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_SL != null" >
+        <choose >
+          <when test="CR_ACC_SL == emptyBigDecimalValue" >
+            CR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_SL = #{CR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_DR_ACC_CY != null" >
+        <choose >
+          <when test="CLI_DR_ACC_CY == emptyBigDecimalValue" >
+            CLI_DR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            CLI_DR_ACC_CY = #{CLI_DR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_DR_ACC_GL != null" >
+        <choose >
+          <when test="CLI_DR_ACC_GL == emptyBigDecimalValue" >
+            CLI_DR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            CLI_DR_ACC_GL = #{CLI_DR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_DR_ACC_CIF != null" >
+        <choose >
+          <when test="CLI_DR_ACC_CIF == emptyBigDecimalValue" >
+            CLI_DR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            CLI_DR_ACC_CIF = #{CLI_DR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_DR_ACC_SL != null" >
+        <choose >
+          <when test="CLI_DR_ACC_SL == emptyBigDecimalValue" >
+            CLI_DR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            CLI_DR_ACC_SL = #{CLI_DR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_CR_ACC_CY != null" >
+        <choose >
+          <when test="CLI_CR_ACC_CY == emptyBigDecimalValue" >
+            CLI_CR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            CLI_CR_ACC_CY = #{CLI_CR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_CR_ACC_GL != null" >
+        <choose >
+          <when test="CLI_CR_ACC_GL == emptyBigDecimalValue" >
+            CLI_CR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            CLI_CR_ACC_GL = #{CLI_CR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_CR_ACC_CIF != null" >
+        <choose >
+          <when test="CLI_CR_ACC_CIF == emptyBigDecimalValue" >
+            CLI_CR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            CLI_CR_ACC_CIF = #{CLI_CR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLI_CR_ACC_SL != null" >
+        <choose >
+          <when test="CLI_CR_ACC_SL == emptyBigDecimalValue" >
+            CLI_CR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            CLI_CR_ACC_SL = #{CLI_CR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CROSS_CY_MULT_DIV != null" >
+        CROSS_CY_MULT_DIV = #{CROSS_CY_MULT_DIV},
+      </if>
+      <if test="CHARGE_ALLOCATION_CRITERIA != null" >
+        CHARGE_ALLOCATION_CRITERIA = #{CHARGE_ALLOCATION_CRITERIA},
+      </if>
+      <if test="CHARGE_NO_INSTALLMENTS != null" >
+        <choose >
+          <when test="CHARGE_NO_INSTALLMENTS == emptyBigDecimalValue" >
+            CHARGE_NO_INSTALLMENTS = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_NO_INSTALLMENTS = #{CHARGE_NO_INSTALLMENTS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_FROM_DATE != null" >
+        CHARGE_FROM_DATE = #{CHARGE_FROM_DATE},
+      </if>
+      <if test="CHARGE_TO_DATE != null" >
+        CHARGE_TO_DATE = #{CHARGE_TO_DATE},
+      </if>
+      <if test="DR_ACC_BR != null" >
+        <choose >
+          <when test="DR_ACC_BR == emptyBigDecimalValue" >
+            DR_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            DR_ACC_BR = #{DR_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CR_ACC_BR != null" >
+        <choose >
+          <when test="CR_ACC_BR == emptyBigDecimalValue" >
+            CR_ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            CR_ACC_BR = #{CR_ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMOUNT_CHARGE_CY != null" >
+        <choose >
+          <when test="AMOUNT_CHARGE_CY == emptyBigDecimalValue" >
+            AMOUNT_CHARGE_CY = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT_CHARGE_CY = #{AMOUNT_CHARGE_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REASON != null" >
+        REASON = #{REASON},
+      </if>
+      <if test="CHARGES_REVERSED_AMOUNT != null" >
+        <choose >
+          <when test="CHARGES_REVERSED_AMOUNT == emptyBigDecimalValue" >
+            CHARGES_REVERSED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_REVERSED_AMOUNT = #{CHARGES_REVERSED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MUSHARAKA_PSR != null" >
+        <choose >
+          <when test="MUSHARAKA_PSR == emptyBigDecimalValue" >
+            MUSHARAKA_PSR = NULL ,
+          </when>
+          <otherwise >
+            MUSHARAKA_PSR = #{MUSHARAKA_PSR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_DR_ACC_CY != null" >
+        <choose >
+          <when test="FUND_DR_ACC_CY == emptyBigDecimalValue" >
+            FUND_DR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            FUND_DR_ACC_CY = #{FUND_DR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_DR_ACC_GL != null" >
+        <choose >
+          <when test="FUND_DR_ACC_GL == emptyBigDecimalValue" >
+            FUND_DR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            FUND_DR_ACC_GL = #{FUND_DR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_DR_ACC_CIF != null" >
+        <choose >
+          <when test="FUND_DR_ACC_CIF == emptyBigDecimalValue" >
+            FUND_DR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            FUND_DR_ACC_CIF = #{FUND_DR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_DR_ACC_SL != null" >
+        <choose >
+          <when test="FUND_DR_ACC_SL == emptyBigDecimalValue" >
+            FUND_DR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            FUND_DR_ACC_SL = #{FUND_DR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_CR_ACC_CY != null" >
+        <choose >
+          <when test="FUND_CR_ACC_CY == emptyBigDecimalValue" >
+            FUND_CR_ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            FUND_CR_ACC_CY = #{FUND_CR_ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_CR_ACC_GL != null" >
+        <choose >
+          <when test="FUND_CR_ACC_GL == emptyBigDecimalValue" >
+            FUND_CR_ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            FUND_CR_ACC_GL = #{FUND_CR_ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_CR_ACC_CIF != null" >
+        <choose >
+          <when test="FUND_CR_ACC_CIF == emptyBigDecimalValue" >
+            FUND_CR_ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            FUND_CR_ACC_CIF = #{FUND_CR_ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FUND_CR_ACC_SL != null" >
+        <choose >
+          <when test="FUND_CR_ACC_SL == emptyBigDecimalValue" >
+            FUND_CR_ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            FUND_CR_ACC_SL = #{FUND_CR_ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_AMOUNT != null" >
+        <choose >
+          <when test="VAT_AMOUNT == emptyBigDecimalValue" >
+            VAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            VAT_AMOUNT = #{VAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and TRACK_NBR = #{TRACK_NBR}
+  </sql>
+  <update id="updateTRSTRACKDET" parameterType="com.path.dbmaps.vo.TRSTRACKDETVO" >
+    <include refid="sql_updateTRSTRACKDET" />
+  </update>
+</mapper>

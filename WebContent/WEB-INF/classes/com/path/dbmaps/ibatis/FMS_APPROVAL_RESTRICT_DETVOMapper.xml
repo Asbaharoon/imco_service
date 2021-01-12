@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMS_APPROVAL_RESTRICT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PRE_APPROVAL_YN" property="PRE_APPROVAL_YN" />
+    <result column="SUSPEND_REASON" property="SUSPEND_REASON" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVOWithBLOBs" extends="BaseResultMap" >
+    <result column="REMARKS" property="REMARKS" />
+    <result column="REACTIVATION_CONDITION" property="REACTIVATION_CONDITION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NO, PRE_APPROVAL_YN, SUSPEND_REASON, CREATED_BY, CREATED_DATE, 
+    MODIFIED_BY, MODIFIED_DATE
+  </sql>
+  <sql id="Blob_Column_List" >
+    REMARKS, REACTIVATION_CONDITION
+  </sql>
+  <select id="selectFMS_APPROVAL_RESTRICT_DET" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from FMS_APPROVAL_RESTRICT_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRE_APPROVAL_YN = #{PRE_APPROVAL_YN}
+  </select>
+  <delete id="deleteFMS_APPROVAL_RESTRICT_DET" parameterType="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVOKey" >
+    delete from FMS_APPROVAL_RESTRICT_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRE_APPROVAL_YN = #{PRE_APPROVAL_YN}
+  </delete>
+  <insert id="insertFMS_APPROVAL_RESTRICT_DET" parameterType="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVOWithBLOBs" >
+    insert into FMS_APPROVAL_RESTRICT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PRE_APPROVAL_YN != null and !&quot;&quot;.equals(PRE_APPROVAL_YN)" >
+        PRE_APPROVAL_YN,
+      </if>
+      <if test="SUSPEND_REASON != null and SUSPEND_REASON != emptyBigDecimalValue" >
+        SUSPEND_REASON,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS,
+      </if>
+      <if test="REACTIVATION_CONDITION != null" >
+        REACTIVATION_CONDITION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PRE_APPROVAL_YN != null and !&quot;&quot;.equals(PRE_APPROVAL_YN)" >
+        #{PRE_APPROVAL_YN},
+      </if>
+      <if test="SUSPEND_REASON != null and SUSPEND_REASON != emptyBigDecimalValue" >
+        #{SUSPEND_REASON},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        #{REMARKS},
+      </if>
+      <if test="REACTIVATION_CONDITION != null" >
+        #{REACTIVATION_CONDITION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMS_APPROVAL_RESTRICT_DET" >
+    update FMS_APPROVAL_RESTRICT_DET
+    <set >
+      <if test="SUSPEND_REASON != null" >
+        <choose >
+          <when test="SUSPEND_REASON == emptyBigDecimalValue" >
+            SUSPEND_REASON = NULL ,
+          </when>
+          <otherwise >
+            SUSPEND_REASON = #{SUSPEND_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS = #{REMARKS},
+      </if>
+      <if test="REACTIVATION_CONDITION != null" >
+        REACTIVATION_CONDITION = #{REACTIVATION_CONDITION},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PRE_APPROVAL_YN = #{PRE_APPROVAL_YN}
+  </sql>
+  <update id="updateFMS_APPROVAL_RESTRICT_DET" parameterType="com.path.dbmaps.vo.FMS_APPROVAL_RESTRICT_DETVOWithBLOBs" >
+    <include refid="sql_updateFMS_APPROVAL_RESTRICT_DET" />
+  </update>
+</mapper>

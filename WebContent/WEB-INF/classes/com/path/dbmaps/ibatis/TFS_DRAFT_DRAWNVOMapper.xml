@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_DRAFT_DRAWN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_DRAFT_DRAWNVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LC_NUMBER" property="LC_NUMBER" />
+    <id column="LC_TYPE" property="LC_TYPE" />
+    <id column="LC_YEAR" property="LC_YEAR" />
+    <result column="DRAFT_DRAWN_ON" property="DRAFT_DRAWN_ON" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LC_NUMBER, LC_TYPE, LC_YEAR, DRAFT_DRAWN_ON
+  </sql>
+  <select id="selectTFS_DRAFT_DRAWN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_DRAFT_DRAWNVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_DRAFT_DRAWN
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+  </select>
+  <delete id="deleteTFS_DRAFT_DRAWN" parameterType="com.path.dbmaps.vo.TFS_DRAFT_DRAWNVO" >
+    delete from TFS_DRAFT_DRAWN
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+  </delete>
+  <insert id="insertTFS_DRAFT_DRAWN" parameterType="com.path.dbmaps.vo.TFS_DRAFT_DRAWNVO" >
+    insert into TFS_DRAFT_DRAWN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LC_NUMBER != null and LC_NUMBER != emptyBigDecimalValue" >
+        LC_NUMBER,
+      </if>
+      <if test="LC_TYPE != null" >
+        LC_TYPE,
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        LC_YEAR,
+      </if>
+      <if test="DRAFT_DRAWN_ON != null" >
+        DRAFT_DRAWN_ON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LC_NUMBER != null and LC_NUMBER != emptyBigDecimalValue" >
+        #{LC_NUMBER},
+      </if>
+      <if test="LC_TYPE != null" >
+        #{LC_TYPE},
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        #{LC_YEAR},
+      </if>
+      <if test="DRAFT_DRAWN_ON != null" >
+        #{DRAFT_DRAWN_ON},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_DRAFT_DRAWN" >
+    update TFS_DRAFT_DRAWN
+    <set >
+      <if test="DRAFT_DRAWN_ON != null" >
+        DRAFT_DRAWN_ON = #{DRAFT_DRAWN_ON},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+  </sql>
+  <update id="updateTFS_DRAFT_DRAWN" parameterType="com.path.dbmaps.vo.TFS_DRAFT_DRAWNVO" >
+    <include refid="sql_updateTFS_DRAFT_DRAWN" />
+  </update>
+</mapper>

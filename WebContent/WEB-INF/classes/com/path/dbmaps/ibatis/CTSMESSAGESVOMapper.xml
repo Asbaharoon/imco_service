@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSMESSAGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSMESSAGESVO" >
+    <id column="CODE" property="CODE" />
+    <result column="ENG_TITLE" property="ENG_TITLE" />
+    <result column="ARAB_TITLE" property="ARAB_TITLE" />
+    <result column="ENG_MESSAGE" property="ENG_MESSAGE" />
+    <result column="ARAB_MESSAGE" property="ARAB_MESSAGE" />
+    <result column="FR_TITLE" property="FR_TITLE" />
+    <result column="FR_MESSAGE" property="FR_MESSAGE" />
+    <result column="FA_TITLE" property="FA_TITLE" />
+    <result column="FA_MESSAGE" property="FA_MESSAGE" />
+    <result column="RU_MESSAGE" property="RU_MESSAGE" />
+    <result column="RU_TITLE" property="RU_TITLE" />
+    <result column="TK_MESSAGE" property="TK_MESSAGE" />
+    <result column="TK_TITLE" property="TK_TITLE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, ENG_TITLE, ARAB_TITLE, ENG_MESSAGE, ARAB_MESSAGE, FR_TITLE, FR_MESSAGE, FA_TITLE, 
+    FA_MESSAGE, RU_MESSAGE, RU_TITLE, TK_MESSAGE, TK_TITLE, DATE_UPDATED
+  </sql>
+  <select id="selectCTSMESSAGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSMESSAGESVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSMESSAGES
+    where CODE = #{CODE}
+  </select>
+  <delete id="deleteCTSMESSAGES" parameterType="com.path.dbmaps.vo.CTSMESSAGESVO" >
+    delete from CTSMESSAGES
+    where CODE = #{CODE}
+  </delete>
+  <insert id="insertCTSMESSAGES" parameterType="com.path.dbmaps.vo.CTSMESSAGESVO" >
+    insert into CTSMESSAGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="ENG_TITLE != null and !&quot;&quot;.equals(ENG_TITLE)" >
+        ENG_TITLE,
+      </if>
+      <if test="ARAB_TITLE != null and !&quot;&quot;.equals(ARAB_TITLE)" >
+        ARAB_TITLE,
+      </if>
+      <if test="ENG_MESSAGE != null and !&quot;&quot;.equals(ENG_MESSAGE)" >
+        ENG_MESSAGE,
+      </if>
+      <if test="ARAB_MESSAGE != null and !&quot;&quot;.equals(ARAB_MESSAGE)" >
+        ARAB_MESSAGE,
+      </if>
+      <if test="FR_TITLE != null and !&quot;&quot;.equals(FR_TITLE)" >
+        FR_TITLE,
+      </if>
+      <if test="FR_MESSAGE != null and !&quot;&quot;.equals(FR_MESSAGE)" >
+        FR_MESSAGE,
+      </if>
+      <if test="FA_TITLE != null and !&quot;&quot;.equals(FA_TITLE)" >
+        FA_TITLE,
+      </if>
+      <if test="FA_MESSAGE != null and !&quot;&quot;.equals(FA_MESSAGE)" >
+        FA_MESSAGE,
+      </if>
+      <if test="RU_MESSAGE != null and !&quot;&quot;.equals(RU_MESSAGE)" >
+        RU_MESSAGE,
+      </if>
+      <if test="RU_TITLE != null and !&quot;&quot;.equals(RU_TITLE)" >
+        RU_TITLE,
+      </if>
+      <if test="TK_MESSAGE != null and !&quot;&quot;.equals(TK_MESSAGE)" >
+        TK_MESSAGE,
+      </if>
+      <if test="TK_TITLE != null and !&quot;&quot;.equals(TK_TITLE)" >
+        TK_TITLE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="ENG_TITLE != null and !&quot;&quot;.equals(ENG_TITLE)" >
+        #{ENG_TITLE},
+      </if>
+      <if test="ARAB_TITLE != null and !&quot;&quot;.equals(ARAB_TITLE)" >
+        #{ARAB_TITLE},
+      </if>
+      <if test="ENG_MESSAGE != null and !&quot;&quot;.equals(ENG_MESSAGE)" >
+        #{ENG_MESSAGE},
+      </if>
+      <if test="ARAB_MESSAGE != null and !&quot;&quot;.equals(ARAB_MESSAGE)" >
+        #{ARAB_MESSAGE},
+      </if>
+      <if test="FR_TITLE != null and !&quot;&quot;.equals(FR_TITLE)" >
+        #{FR_TITLE},
+      </if>
+      <if test="FR_MESSAGE != null and !&quot;&quot;.equals(FR_MESSAGE)" >
+        #{FR_MESSAGE},
+      </if>
+      <if test="FA_TITLE != null and !&quot;&quot;.equals(FA_TITLE)" >
+        #{FA_TITLE},
+      </if>
+      <if test="FA_MESSAGE != null and !&quot;&quot;.equals(FA_MESSAGE)" >
+        #{FA_MESSAGE},
+      </if>
+      <if test="RU_MESSAGE != null and !&quot;&quot;.equals(RU_MESSAGE)" >
+        #{RU_MESSAGE},
+      </if>
+      <if test="RU_TITLE != null and !&quot;&quot;.equals(RU_TITLE)" >
+        #{RU_TITLE},
+      </if>
+      <if test="TK_MESSAGE != null and !&quot;&quot;.equals(TK_MESSAGE)" >
+        #{TK_MESSAGE},
+      </if>
+      <if test="TK_TITLE != null and !&quot;&quot;.equals(TK_TITLE)" >
+        #{TK_TITLE},
+      </if>
+      <choose >
+        <when test="isOracle == 1" >
+           SYSDATE,
+        </when>
+        <otherwise >
+           GETDATE(),
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSMESSAGES" >
+    update CTSMESSAGES
+    <set >
+      <if test="ENG_TITLE != null" >
+        <choose >
+          <when test="ENG_TITLE.equals(&quot;&quot;)" >
+            ENG_TITLE = NULL ,
+          </when>
+          <otherwise >
+            ENG_TITLE = #{ENG_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ARAB_TITLE != null" >
+        <choose >
+          <when test="ARAB_TITLE.equals(&quot;&quot;)" >
+            ARAB_TITLE = NULL ,
+          </when>
+          <otherwise >
+            ARAB_TITLE = #{ARAB_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ENG_MESSAGE != null" >
+        <choose >
+          <when test="ENG_MESSAGE.equals(&quot;&quot;)" >
+            ENG_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            ENG_MESSAGE = #{ENG_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ARAB_MESSAGE != null" >
+        <choose >
+          <when test="ARAB_MESSAGE.equals(&quot;&quot;)" >
+            ARAB_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            ARAB_MESSAGE = #{ARAB_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FR_TITLE != null" >
+        <choose >
+          <when test="FR_TITLE.equals(&quot;&quot;)" >
+            FR_TITLE = NULL ,
+          </when>
+          <otherwise >
+            FR_TITLE = #{FR_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FR_MESSAGE != null" >
+        <choose >
+          <when test="FR_MESSAGE.equals(&quot;&quot;)" >
+            FR_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            FR_MESSAGE = #{FR_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FA_TITLE != null" >
+        <choose >
+          <when test="FA_TITLE.equals(&quot;&quot;)" >
+            FA_TITLE = NULL ,
+          </when>
+          <otherwise >
+            FA_TITLE = #{FA_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FA_MESSAGE != null" >
+        <choose >
+          <when test="FA_MESSAGE.equals(&quot;&quot;)" >
+            FA_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            FA_MESSAGE = #{FA_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RU_MESSAGE != null" >
+        <choose >
+          <when test="RU_MESSAGE.equals(&quot;&quot;)" >
+            RU_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            RU_MESSAGE = #{RU_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RU_TITLE != null" >
+        <choose >
+          <when test="RU_TITLE.equals(&quot;&quot;)" >
+            RU_TITLE = NULL ,
+          </when>
+          <otherwise >
+            RU_TITLE = #{RU_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TK_MESSAGE != null" >
+        <choose >
+          <when test="TK_MESSAGE.equals(&quot;&quot;)" >
+            TK_MESSAGE = NULL ,
+          </when>
+          <otherwise >
+            TK_MESSAGE = #{TK_MESSAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TK_TITLE != null" >
+        <choose >
+          <when test="TK_TITLE.equals(&quot;&quot;)" >
+            TK_TITLE = NULL ,
+          </when>
+          <otherwise >
+            TK_TITLE = #{TK_TITLE},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isOracle == 1" >
+           SYSDATE,
+        </when>
+        <otherwise >
+           GETDATE(),
+        </otherwise>
+      </choose>
+    </set>
+    where CODE = #{CODE}
+  </sql>
+  <update id="updateCTSMESSAGES" parameterType="com.path.dbmaps.vo.CTSMESSAGESVO" >
+    <include refid="sql_updateCTSMESSAGES" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

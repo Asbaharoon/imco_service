@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCREDITPOLICY_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCREDITPOLICY_DETVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="APPLY_CRITERIA_YN" property="APPLY_CRITERIA_YN" />
+    <result column="EXCEPTION_CODE" property="EXCEPTION_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, LINE_NBR, APPLY_CRITERIA_YN, EXCEPTION_CODE
+  </sql>
+  <select id="selectFMSCREDITPOLICY_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCREDITPOLICY_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCREDITPOLICY_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSCREDITPOLICY_DET" parameterType="com.path.dbmaps.vo.FMSCREDITPOLICY_DETVOKey" >
+    delete from FMSCREDITPOLICY_DET
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSCREDITPOLICY_DET" parameterType="com.path.dbmaps.vo.FMSCREDITPOLICY_DETVO" >
+    insert into FMSCREDITPOLICY_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null" >
+        LINE_NBR,
+      </if>
+      <if test="APPLY_CRITERIA_YN != null" >
+        APPLY_CRITERIA_YN,
+      </if>
+      <if test="EXCEPTION_CODE != null" >
+        EXCEPTION_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null" >
+        #{LINE_NBR},
+      </if>
+      <if test="APPLY_CRITERIA_YN != null" >
+        #{APPLY_CRITERIA_YN},
+      </if>
+      <if test="EXCEPTION_CODE != null" >
+        #{EXCEPTION_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCREDITPOLICY_DET" >
+    update FMSCREDITPOLICY_DET
+    <set >
+      <if test="APPLY_CRITERIA_YN != null" >
+        APPLY_CRITERIA_YN = #{APPLY_CRITERIA_YN},
+      </if>
+      <if test="EXCEPTION_CODE != null" >
+        EXCEPTION_CODE = #{EXCEPTION_CODE},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSCREDITPOLICY_DET" parameterType="com.path.dbmaps.vo.FMSCREDITPOLICY_DETVO" >
+    <include refid="sql_updateFMSCREDITPOLICY_DET" />
+  </update>
+</mapper>

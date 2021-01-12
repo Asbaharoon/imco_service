@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCOUNTER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCOUNTERVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TYPE" property="TYPE" />
+    <result column="LAST_NUMBER" property="LAST_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, TYPE, LAST_NUMBER
+  </sql>
+  <select id="selectTRSCOUNTER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCOUNTERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </select>
+  <delete id="deleteTRSCOUNTER" parameterType="com.path.dbmaps.vo.TRSCOUNTERVOKey" >
+    delete from TRSCOUNTER
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </delete>
+  <insert id="insertTRSCOUNTER" parameterType="com.path.dbmaps.vo.TRSCOUNTERVO" >
+    insert into TRSCOUNTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        LAST_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="LAST_NUMBER != null and LAST_NUMBER != emptyBigDecimalValue" >
+        #{LAST_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCOUNTER" >
+    update TRSCOUNTER
+    <set >
+      <if test="LAST_NUMBER != null" >
+        <choose >
+          <when test="LAST_NUMBER == emptyBigDecimalValue" >
+            LAST_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            LAST_NUMBER = #{LAST_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and TYPE = #{TYPE}
+  </sql>
+  <update id="updateTRSCOUNTER" parameterType="com.path.dbmaps.vo.TRSCOUNTERVO" >
+    <include refid="sql_updateTRSCOUNTER" />
+  </update>
+</mapper>

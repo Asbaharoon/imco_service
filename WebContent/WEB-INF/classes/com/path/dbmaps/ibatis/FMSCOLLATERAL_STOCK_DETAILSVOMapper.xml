@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCOLLATERAL_STOCK_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCOLLATERAL_STOCK_DETAILSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL_CODE" property="COLLATERAL_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="STOCK_NO" property="STOCK_NO" />
+    <result column="WAREHOUSE_NO" property="WAREHOUSE_NO" />
+    <result column="RECEIPT_DATE" property="RECEIPT_DATE" />
+    <result column="INITIAL_PHYSICAL_QTY" property="INITIAL_PHYSICAL_QTY" />
+    <result column="RELEASED_QTY" property="RELEASED_QTY" />
+    <result column="WHR_NO" property="WHR_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COLLATERAL_CODE, COMP_CODE, LINE_NBR, STOCK_NO, WAREHOUSE_NO, RECEIPT_DATE, 
+    INITIAL_PHYSICAL_QTY, RELEASED_QTY, WHR_NO
+  </sql>
+  <select id="selectFMSCOLLATERAL_STOCK_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_STOCK_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCOLLATERAL_STOCK_DETAILS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSCOLLATERAL_STOCK_DETAILS" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_STOCK_DETAILSVOKey" >
+    delete from FMSCOLLATERAL_STOCK_DETAILS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSCOLLATERAL_STOCK_DETAILS" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_STOCK_DETAILSVO" >
+    insert into FMSCOLLATERAL_STOCK_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        COLLATERAL_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="STOCK_NO != null and STOCK_NO != emptyBigDecimalValue" >
+        STOCK_NO,
+      </if>
+      <if test="WAREHOUSE_NO != null and WAREHOUSE_NO != emptyBigDecimalValue" >
+        WAREHOUSE_NO,
+      </if>
+      <if test="RECEIPT_DATE != null" >
+        RECEIPT_DATE,
+      </if>
+      <if test="INITIAL_PHYSICAL_QTY != null and INITIAL_PHYSICAL_QTY != emptyBigDecimalValue" >
+        INITIAL_PHYSICAL_QTY,
+      </if>
+      <if test="RELEASED_QTY != null and RELEASED_QTY != emptyBigDecimalValue" >
+        RELEASED_QTY,
+      </if>
+      <if test="WHR_NO != null and !&quot;&quot;.equals(WHR_NO)" >
+        WHR_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL_CODE != null and COLLATERAL_CODE != emptyBigDecimalValue" >
+        #{COLLATERAL_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="STOCK_NO != null and STOCK_NO != emptyBigDecimalValue" >
+        #{STOCK_NO},
+      </if>
+      <if test="WAREHOUSE_NO != null and WAREHOUSE_NO != emptyBigDecimalValue" >
+        #{WAREHOUSE_NO},
+      </if>
+      <if test="RECEIPT_DATE != null" >
+        #{RECEIPT_DATE},
+      </if>
+      <if test="INITIAL_PHYSICAL_QTY != null and INITIAL_PHYSICAL_QTY != emptyBigDecimalValue" >
+        #{INITIAL_PHYSICAL_QTY},
+      </if>
+      <if test="RELEASED_QTY != null and RELEASED_QTY != emptyBigDecimalValue" >
+        #{RELEASED_QTY},
+      </if>
+      <if test="WHR_NO != null and !&quot;&quot;.equals(WHR_NO)" >
+        #{WHR_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCOLLATERAL_STOCK_DETAILS" >
+    update FMSCOLLATERAL_STOCK_DETAILS
+    <set >
+      <if test="STOCK_NO != null" >
+        <choose >
+          <when test="STOCK_NO == emptyBigDecimalValue" >
+            STOCK_NO = NULL ,
+          </when>
+          <otherwise >
+            STOCK_NO = #{STOCK_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WAREHOUSE_NO != null" >
+        <choose >
+          <when test="WAREHOUSE_NO == emptyBigDecimalValue" >
+            WAREHOUSE_NO = NULL ,
+          </when>
+          <otherwise >
+            WAREHOUSE_NO = #{WAREHOUSE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RECEIPT_DATE != null" >
+        RECEIPT_DATE = #{RECEIPT_DATE},
+      </if>
+      <if test="INITIAL_PHYSICAL_QTY != null" >
+        <choose >
+          <when test="INITIAL_PHYSICAL_QTY == emptyBigDecimalValue" >
+            INITIAL_PHYSICAL_QTY = NULL ,
+          </when>
+          <otherwise >
+            INITIAL_PHYSICAL_QTY = #{INITIAL_PHYSICAL_QTY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RELEASED_QTY != null" >
+        <choose >
+          <when test="RELEASED_QTY == emptyBigDecimalValue" >
+            RELEASED_QTY = NULL ,
+          </when>
+          <otherwise >
+            RELEASED_QTY = #{RELEASED_QTY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WHR_NO != null" >
+        <choose >
+          <when test="WHR_NO.equals(&quot;&quot;)" >
+            WHR_NO = NULL ,
+          </when>
+          <otherwise >
+            WHR_NO = #{WHR_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_CODE = #{COLLATERAL_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSCOLLATERAL_STOCK_DETAILS" parameterType="com.path.dbmaps.vo.FMSCOLLATERAL_STOCK_DETAILSVO" >
+    <include refid="sql_updateFMSCOLLATERAL_STOCK_DETAILS" />
+  </update>
+</mapper>

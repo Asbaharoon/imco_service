@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFMESSAGE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFMESSAGEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="MSG_CODE" property="MSG_CODE" />
+    <result column="INCLUDE_INSTR" property="INCLUDE_INSTR" />
+    <result column="MSG_ENG" property="MSG_ENG" />
+    <result column="MSG_ARAB" property="MSG_ARAB" />
+    <result column="MSG_ENG1" property="MSG_ENG1" />
+    <result column="MSG_ARAB1" property="MSG_ARAB1" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, MSG_CODE, INCLUDE_INSTR, MSG_ENG, MSG_ARAB, MSG_ENG1, MSG_ARAB1
+  </sql>
+  <select id="selectRIFMESSAGE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFMESSAGEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFMESSAGE
+    where COMP_CODE = #{COMP_CODE}
+      and MSG_CODE = #{MSG_CODE}
+  </select>
+  <delete id="deleteRIFMESSAGE" parameterType="com.path.dbmaps.vo.RIFMESSAGEVOKey" >
+    delete from RIFMESSAGE
+    where COMP_CODE = #{COMP_CODE}
+      and MSG_CODE = #{MSG_CODE}
+  </delete>
+  <insert id="insertRIFMESSAGE" parameterType="com.path.dbmaps.vo.RIFMESSAGEVO" >
+    <selectKey resultType="java.math.BigDecimal" keyProperty="MSG_CODE" order="BEFORE" >
+      SELECT MAX(MSG_CODE)+1 FROM RIFMESSAGE
+    </selectKey>
+    insert into RIFMESSAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      MSG_CODE,
+      <if test="INCLUDE_INSTR != null" >
+        INCLUDE_INSTR,
+      </if>
+      <if test="MSG_ENG != null" >
+        MSG_ENG,
+      </if>
+      <if test="MSG_ARAB != null" >
+        MSG_ARAB,
+      </if>
+      <if test="MSG_ENG1 != null" >
+        MSG_ENG1,
+      </if>
+      <if test="MSG_ARAB1 != null" >
+        MSG_ARAB1,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      #{MSG_CODE},
+      <if test="INCLUDE_INSTR != null" >
+        #{INCLUDE_INSTR},
+      </if>
+      <if test="MSG_ENG != null" >
+        #{MSG_ENG},
+      </if>
+      <if test="MSG_ARAB != null" >
+        #{MSG_ARAB},
+      </if>
+      <if test="MSG_ENG1 != null" >
+        #{MSG_ENG1},
+      </if>
+      <if test="MSG_ARAB1 != null" >
+        #{MSG_ARAB1},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFMESSAGE" >
+    update RIFMESSAGE
+    <set >
+      <if test="INCLUDE_INSTR != null" >
+        INCLUDE_INSTR = #{INCLUDE_INSTR},
+      </if>
+      <if test="MSG_ENG != null" >
+        MSG_ENG = #{MSG_ENG},
+      </if>
+      <if test="MSG_ARAB != null" >
+        MSG_ARAB = #{MSG_ARAB},
+      </if>
+      <if test="MSG_ENG1 != null" >
+        MSG_ENG1 = #{MSG_ENG1},
+      </if>
+      <if test="MSG_ARAB1 != null" >
+        MSG_ARAB1 = #{MSG_ARAB1},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and MSG_CODE = #{MSG_CODE}
+  </sql>
+  <update id="updateRIFMESSAGE" parameterType="com.path.dbmaps.vo.RIFMESSAGEVO" >
+    <include refid="sql_updateRIFMESSAGE" />
+  </update>
+</mapper>

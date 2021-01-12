@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cifSwiftMapper">
+
+	<sql id="cifSwiftListCommon">
+	<![CDATA[
+		SELECT  
+				S_PMSCIFSWIFT.BRANCH_CODE				,
+			 	S_PMSCIFSWIFT.CIF				  		,
+			 	S_PMSCIFSWIFT.SWIFT_BIC_BBBB 			,
+			 	S_PMSCIFSWIFT.SWIFT_BIC_CC   			,
+			 	S_PMSCIFSWIFT.SWIFT_BIC_LL				,
+			 	S_PMSCIFSWIFT.SWIFT_BIC_T				,
+			 	S_PMSCIFSWIFT.SWIFT_BIC_BCD		        ,						 
+          		S_PMSCIFSWIFT.CIF_NAME             		,
+			       S_PMSCIFSWIFT.SWIFT_BIC_BBBB || S_PMSCIFSWIFT.SWIFT_BIC_CC ||
+			       S_PMSCIFSWIFT.SWIFT_BIC_LL || SWIFT_BIC_T || SWIFT_BIC_BCD  bicCodeNumber 
+		FROM   	S_PMSCIFSWIFT              		
+		WHERE	S_PMSCIFSWIFT.COMP_CODE  = #{compCode}
+		AND 	(#{clientIsBank} = 'N' 
+		OR  	S_PMSCIFSWIFT.CIF <0 
+		OR 		(#{clientIsBank} = 'Y' AND S_PMSCIFSWIFT.CIF >0 
+		AND 	EXISTS 
+				(SELECT 1 
+					FROM RIFCTT,CIF
+					WHERE CIF.COMP_CODE = #{compCode}
+					AND CIF.CIF_NO =  S_PMSCIFSWIFT.CIF
+					AND RIFCTT.COMP_CODE = CIF.COMP_CODE
+					AND RIFCTT. TYPE_CODE = CIF.CIF_TYPE 
+					AND RIFCTT.BANK = 'Y')) )
+
+		AND 	CASE WHEN S_PMSCIFSWIFT.RMA IS NULL THEN '0' ELSE S_PMSCIFSWIFT.RMA END = CASE WHEN  #{rma} = '1' THEN 'Y' ELSE CASE WHEN S_PMSCIFSWIFT.RMA IS NULL THEN '0' ELSE S_PMSCIFSWIFT.RMA END END
+	]]>
+	</sql>
+
+	<select id="cifSwiftList" resultMap="S_PMSCIFSWIFT.BaseResultMap"
+		parameterType="cifSwiftSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifSwiftListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="cifSwiftListCount" resultType="int" parameterType="cifSwiftSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifSwiftListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnNameById" parameterType="cifSwiftSC"
+		resultType="cifSwiftVO">
+		SELECT
+		S_PMSCIFSWIFT.CIF ,
+		S_PMSCIFSWIFT.CIF_NAME
+		FROM
+		S_PMSCIFSWIFT
+		WHERE S_PMSCIFSWIFT.COMP_CODE = #{compCode}
+		AND
+		S_PMSCIFSWIFT.CIF =
+		#{cifCode}
+ </select>
+
+	<resultMap id="PMSCIFSWIFTMinCIFBICMap" type="PMSCIFSWIFTVO">
+		<result property="CIF" column="CIF" />
+		<result property="BANK_NAME" column="BANK_NAME" />
+		<result property="BANK_NAME_A" column="BANK_NAME_A" />
+		
+		<result property="SWIFT_BIC_BBBB" 	column="SWIFT_BIC_BBBB" />
+		<result property="SWIFT_BIC_CC" 	column="SWIFT_BIC_CC" />
+		<result property="SWIFT_BIC_LL" 	column="SWIFT_BIC_LL" />
+		<result property="SWIFT_BIC_BCD" 	column="SWIFT_BIC_BCD" />
+		<result property="SWIFT_BIC_T" 	column="SWIFT_BIC_T" />
+	</resultMap>
+
+	<select id="returnPMSCIFSWIFTMinCIFBIC" resultMap="PMSCIFSWIFTMinCIFBICMap" parameterType="CifSwiftSC">
+		SELECT 	PMSCIFSWIFT.CIF CIF,
+           		CASE WHEN PMSCIFSWIFT.BANK_NAME IS NULL THEN CIF.SHORT_NAME_ENG ELSE PMSCIFSWIFT.BANK_NAME END BANK_NAME,
+           		CASE WHEN PMSCIFSWIFT.BANK_NAME_A IS NULL THEN CIF.SHORT_NAME_ARAB ELSE PMSCIFSWIFT.BANK_NAME_A END BANK_NAME_A,
+				PMSCIFSWIFT.SWIFT_BIC_BBBB,   
+				PMSCIFSWIFT.SWIFT_BIC_CC,   
+				PMSCIFSWIFT.SWIFT_BIC_LL,   
+				PMSCIFSWIFT.SWIFT_BIC_T,   
+				PMSCIFSWIFT.SWIFT_BIC_BCD
+		FROM (	SELECT MIN(PMSCIFSWIFT.CIF) CIF_A
+              	FROM PMSCIFSWIFT
+				WHERE PMSCIFSWIFT.COMP_CODE = #{compCode}
+               	AND PMSCIFSWIFT.SWIFT_BIC_BBBB = #{bankCode,jdbcType=VARCHAR}
+               	AND PMSCIFSWIFT.SWIFT_BIC_CC = #{countryCode,jdbcType=VARCHAR}
+               	AND PMSCIFSWIFT.SWIFT_BIC_LL = #{locationCode,jdbcType=VARCHAR}
+               	AND (CASE WHEN #{bicCodeLimit,jdbcType=NUMERIC} = 12 THEN(CASE WHEN PMSCIFSWIFT.SWIFT_BIC_T IS NULL THEN 'X' ELSE PMSCIFSWIFT.SWIFT_BIC_T END) ELSE 'X' END = #{terminalCode,jdbcType=VARCHAR})
+               	AND ((#{strBranchCode,jdbcType=VARCHAR} = 'XXX' AND PMSCIFSWIFT.SWIFT_BIC_BCD = #{strBranchCode,jdbcType=VARCHAR}) OR
+               		(#{strBranchCode,jdbcType=VARCHAR} != 'XXX' AND (PMSCIFSWIFT.SWIFT_BIC_BCD = #{strBranchCode,jdbcType=VARCHAR} OR PMSCIFSWIFT.SWIFT_BIC_BCD IS NULL)))) MIN_CIF,
+           PMSCIFSWIFT  LEFT OUTER JOIN CIF ON   CIF.CIF_NO = PMSCIFSWIFT.CIF
+                                   AND CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+		WHERE PMSCIFSWIFT.CIF = MIN_CIF.CIF_A
+        AND PMSCIFSWIFT.COMP_CODE = #{compCode}
+	</select>
+	
+	<resultMap id="PMSCIFSWIFTMap" type="PMSCIFSWIFTVO">
+			<result property="CIF" column="CIF" />
+            <result property="SWIFT_BIC_BBBB" column="SWIFT_BIC_BBBB" />
+            <result property="SWIFT_BIC_CC" column="SWIFT_BIC_CC" />
+            <result property="SWIFT_BIC_LL" column="SWIFT_BIC_LL" />
+            <result property="SWIFT_BIC_T" column="SWIFT_BIC_T" />
+            <result property="SWIFT_BIC_BCD" column="SWIFT_BIC_BCD" />
+            <result property="BANK_NAME" column="BANK_NAME" />
+      </resultMap>
+      
+      <select id="returnPMSCIFSWIFT" resultMap="PMSCIFSWIFTMap"
+            parameterType="CifSwiftSC">
+         SELECT PMSCIFSWIFT.CIF,
+                PMSCIFSWIFT.SWIFT_BIC_BBBB,   
+                PMSCIFSWIFT.SWIFT_BIC_CC,   
+                PMSCIFSWIFT.SWIFT_BIC_LL,   
+                PMSCIFSWIFT.SWIFT_BIC_T,   
+                PMSCIFSWIFT.SWIFT_BIC_BCD ,
+                CASE WHEN #{isRTLDir} = 1 THEN  PMSCIFSWIFT.BANK_NAME_A  ELSE  PMSCIFSWIFT.BANK_NAME  END BANK_NAME
+         FROM PMSCIFSWIFT  
+         WHERE PMSCIFSWIFT.COMP_CODE = #{compCode}  AND  
+               PMSCIFSWIFT.CIF       = #{cifCode} 
+
+      </select>
+
+
+
+  <resultMap id="bankStatusBicCodeMap" type="fomCifSwiftCO">
+ 	<id column="CIF" property="cifSwiftVO.CIF" />
+    <id column="SHORT_NAME_ENG" property="cifName" />
+    <id column="STATUS" property="status" />
+    <id column="SWIFT_BIC_BBBB" property="cifSwiftVO.SWIFT_BIC_BBBB" />
+    <id column="SWIFT_BIC_CC" property="cifSwiftVO.SWIFT_BIC_CC" />
+    <id column="SWIFT_BIC_LL" property="cifSwiftVO.SWIFT_BIC_LL" />
+    <id column="SWIFT_BIC_T" property="cifSwiftVO.SWIFT_BIC_T" />
+    <id column="SWIFT_BIC_BCD" property="cifSwiftVO.SWIFT_BIC_BCD" />
+    <id column="bicCodeNumber" property="bicCodeNumber" />
+
+  </resultMap>
+
+<select id="returnBankStatusBicCodeById" parameterType="cifSwiftSC"
+		resultMap="bankStatusBicCodeMap">
+		<include refid="returnBicCodeByCif" />
+	</select>
+
+	<sql id="returnBicCodeByCif">
+		SELECT PMSCIFSWIFT.CIF   
+	    , CASE WHEN PMSCIFSWIFT.CIF  <![CDATA[<]]> 0 THEN PMSCIFSWIFT.BANK_NAME ELSE CIF.SHORT_NAME_ENG END SHORT_NAME_ENG 
+	    , CIF.STATUS
+	    , PMSCIFSWIFT.SWIFT_BIC_BBBB 
+	    , PMSCIFSWIFT.SWIFT_BIC_CC
+	    , PMSCIFSWIFT.SWIFT_BIC_LL
+	    , PMSCIFSWIFT.SWIFT_BIC_T   
+	    , PMSCIFSWIFT.SWIFT_BIC_BCD     
+	    FROM   PMSCIFSWIFT LEFT OUTER JOIN CIF ON CIF.CIF_NO = PMSCIFSWIFT.CIF  
+	    AND CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE 
+	    WHERE	PMSCIFSWIFT.COMP_CODE  = #{compCode}
+	    AND PMSCIFSWIFT.CIF		 = #{cifCode}
+	</sql>
+
+
+<resultMap id="swiftReceiverBIC_map" type="fomCifSwiftCO">
+	<result property="cifSwiftVO.BRANCH_CODE" column="BRANCH_CODE" />
+	<result property="cifSwiftVO.CIF" column="CIF" />
+	<result property="bicCodeNumber" column="bicCodeNumber" />
+	<result property="cifName" column="CIF_NAME" />
+</resultMap>
+
+
+<select id="dependencySwiftReceiverBIC" parameterType="cifSwiftSC" resultMap="swiftReceiverBIC_map" >
+	<include refid="cifSwiftListCommon"/>
+	and S_PMSCIFSWIFT.CIF = #{cifCode}
+</select>
+
+
+
+	<sql id="cifSwiftBicCodeList">
+	  SELECT PMSCIFSWIFT.CIF ,
+	      CASE WHEN PMSCIFSWIFT.CIF  <![CDATA[ < ]]>0 THEN PMSCIFSWIFT.BANK_NAME ELSE CIF.SHORT_NAME_ENG END SHORT_NAME_ENG,
+	      CIF.STATUS,
+	      CASE WHEN PMSCIFSWIFT.SWIFT_BIC_BBBB IS NULL THEN 'XXXX' ELSE PMSCIFSWIFT.SWIFT_BIC_BBBB END SWIFT_BIC_BBBB,
+	      CASE WHEN PMSCIFSWIFT.SWIFT_BIC_CC IS NULL THEN 'XX' ELSE PMSCIFSWIFT.SWIFT_BIC_CC END SWIFT_BIC_CC,
+	      CASE WHEN PMSCIFSWIFT.SWIFT_BIC_LL IS NULL THEN 'XX' ELSE PMSCIFSWIFT.SWIFT_BIC_LL END SWIFT_BIC_LL,
+	      CASE WHEN PMSCIFSWIFT.SWIFT_BIC_BCD IS NULL THEN 'XXX' ELSE PMSCIFSWIFT.SWIFT_BIC_BCD END SWIFT_BIC_BCD,
+	      PMSCIFSWIFT.SWIFT_BIC_T, 
+	      ( CASE WHEN PMSCIFSWIFT.SWIFT_BIC_BBBB IS NULL THEN 'XXXX' ELSE PMSCIFSWIFT.SWIFT_BIC_BBBB END 
+	                  || CASE WHEN PMSCIFSWIFT.SWIFT_BIC_CC IS NULL THEN 'XX' ELSE PMSCIFSWIFT.SWIFT_BIC_CC END
+	                  || CASE WHEN PMSCIFSWIFT.SWIFT_BIC_LL IS NULL THEN 'XX' ELSE PMSCIFSWIFT.SWIFT_BIC_LL END
+	                  || PMSCIFSWIFT.SWIFT_BIC_T 
+	                  || CASE WHEN PMSCIFSWIFT.SWIFT_BIC_BCD IS NULL THEN 'XXX' ELSE PMSCIFSWIFT.SWIFT_BIC_BCD END ) bicCodeNumber    
+	   FROM PMSCIFSWIFT LEFT OUTER JOIN CIF 
+	   ON CIF.COMP_CODE = PMSCIFSWIFT.COMP_CODE   
+	   AND CIF.CIF_NO = PMSCIFSWIFT.CIF
+	
+	 WHERE PMSCIFSWIFT.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+	   AND PMSCIFSWIFT.CIF  <![CDATA[ <>]]> 0
+	   
+<if test='"BENEF".equals(fromWhere)'>
+	<if test='countryCode != null and countryCode != "" and !"0".equals(countryCode)'>
+        AND PMSCIFSWIFT.SWIFT_BIC_CC = #{countryCode}
+	</if>
+   AND ((((SELECT COUNT(1)
+             FROM CIF_TRXTYPE_LIMITS
+            WHERE CIF_TRXTYPE_LIMITS.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+              AND (CIF_TRXTYPE_LIMITS.CY = #{currencyCode} OR #{currencyCode} = 0)
+              AND CIF_TRXTYPE_LIMITS.TRX_TYPE = #{trxType}
+             <if test="cifCode != null and cifCode != emptyBigDecimalValue and cifCode !=0" >
+             AND CIF_TRXTYPE_LIMITS.CIF_NO = #{cifCode}
+             </if>
+              AND CIF_TRXTYPE_LIMITS.COVER_EXIST = '1') > 0) AND
+       (#{rma} = 1 AND PMSCIFSWIFT.RMA = 'Y')) OR
+       ((SELECT COUNT(1)
+            FROM CIF_TRXTYPE_LIMITS
+           WHERE CIF_TRXTYPE_LIMITS.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+              AND (CIF_TRXTYPE_LIMITS.CY = #{currencyCode} OR #{currencyCode} = 0)
+             AND CIF_TRXTYPE_LIMITS.TRX_TYPE = #{trxType}
+             <if test="cifCode != null and cifCode != emptyBigDecimalValue and cifCode !=0" >
+             AND CIF_TRXTYPE_LIMITS.CIF_NO = #{cifCode}
+             </if>
+             AND CIF_TRXTYPE_LIMITS.COVER_EXIST = '1') <![CDATA[<=]]> 0))
+
+</if>
+	   
+	</sql>
+
+	<select id="returnBicCodeLookupList" parameterType="cifSwiftSC"
+		resultMap="bankStatusBicCodeMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="cifSwiftMapper.cifSwiftBicCodeList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnBicCodeLookupCount" resultType="int"
+		parameterType="cifSwiftSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="cifSwiftMapper.cifSwiftBicCodeList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnBicCodeById" parameterType="cifSwiftSC"
+		resultType="fomCifSwiftCO">
+		<include refid="returnBicCodeByCif" />
+	</select>
+	<select id="returnCifBankDetails" parameterType="cifBankDetailsVO"
+	  resultType="cifBankDetailsVO">
+	  select PARTY_ACCNO, 
+	   BIC_CODE , 
+	   SORT_CODE  
+	  from CIF_BANK_DETAILS 
+	  where COMP_CODE = #{COMP_CODE} 
+	  and CIF_NO = #{CIF_NO}
+	  and LINE_NO = #{LINE_NO}
+	 </select>
+	
+	 <sql id="returnBenefBankBicByCountry">
+	 <![CDATA[
+	 SELECT PMSCIFSWIFT.BRANCH_CODE,
+       PMSCIFSWIFT.CIF,
+       PMSCIFSWIFT.SWIFT_BIC_BBBB,
+       PMSCIFSWIFT.SWIFT_BIC_CC,
+       PMSCIFSWIFT.SWIFT_BIC_LL,
+       PMSCIFSWIFT.SWIFT_BIC_T,
+       PMSCIFSWIFT.SWIFT_BIC_BCD,
+       CASE
+         WHEN PMSCIFSWIFT.CIF < 0 THEN
+          PMSCIFSWIFT.BANK_NAME
+         ELSE
+          CIF.SHORT_NAME_ENG
+       END CIF_NAME
+
+  FROM PMSCIFSWIFT
+  LEFT OUTER JOIN CIF ON PMSCIFSWIFT.COMP_CODE = CIF.COMP_CODE
+                     AND PMSCIFSWIFT.CIF = CIF.CIF_NO
+
+ WHERE PMSCIFSWIFT.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+   AND (PMSCIFSWIFT.SWIFT_BIC_CC = CASE WHEN #{countryCode,jdbcType=VARCHAR} = '0' THEN PMSCIFSWIFT.SWIFT_BIC_CC ELSE #{countryCode,jdbcType=VARCHAR} END 
+   AND PMSCIFSWIFT.CIF <> 0)
+   AND ((((SELECT COUNT(1)
+             FROM CIF_TRXTYPE_LIMITS
+            WHERE CIF_TRXTYPE_LIMITS.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+              AND (CIF_TRXTYPE_LIMITS.CY = #{currencyCode,jdbcType=NUMERIC} OR #{currencyCode,jdbcType=NUMERIC} = 0)
+              AND CIF_TRXTYPE_LIMITS.TRX_TYPE = #{trxType,jdbcType=NUMERIC}
+              AND (CIF_TRXTYPE_LIMITS.CIF_NO = CASE WHEN #{bankCif,jdbcType=NUMERIC} = 0 THEN
+                   CIF_TRXTYPE_LIMITS.CIF_NO ELSE #{bankCif,jdbcType=NUMERIC} END)
+              AND CIF_TRXTYPE_LIMITS.COVER_EXIST = '1') > 0) AND
+       (#{rma,jdbcType=VARCHAR} = '1' AND PMSCIFSWIFT.RMA = 'Y')) OR
+       ((SELECT COUNT(1)
+            FROM CIF_TRXTYPE_LIMITS
+           WHERE CIF_TRXTYPE_LIMITS.COMP_CODE = PMSCIFSWIFT.COMP_CODE
+       AND (CIF_TRXTYPE_LIMITS.CY = #{currencyCode,jdbcType=NUMERIC} OR #{currencyCode,jdbcType=NUMERIC} = 0)
+             AND CIF_TRXTYPE_LIMITS.TRX_TYPE = #{trxType,jdbcType=NUMERIC}
+             AND (CIF_TRXTYPE_LIMITS.CIF_NO = CASE WHEN #{bankCif,jdbcType=NUMERIC} = 0 THEN
+                  CIF_TRXTYPE_LIMITS.CIF_NO ELSE #{bankCif,jdbcType=NUMERIC} END)
+             AND CIF_TRXTYPE_LIMITS.COVER_EXIST = '1') <= 0))
+	 ]]>
+	 </sql>
+	<select id="benefBankBicByCountryList" resultMap="S_PMSCIFSWIFT.BaseResultMap" parameterType="cifSwiftSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnBenefBankBicByCountry" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="benefBankBicByCountryCount" resultType="int" parameterType="cifSwiftSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnBenefBankBicByCountry" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>	 	 
+</mapper>

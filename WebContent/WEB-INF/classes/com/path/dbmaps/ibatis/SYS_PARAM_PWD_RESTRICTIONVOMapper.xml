@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_PWD_RESTRICTION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO" >
+    <id column="RESTRICTION_CODE" property="RESTRICTION_CODE" />
+    <result column="RESTRICTION_DESC" property="RESTRICTION_DESC" />
+    <result column="RESTRICTION_DATA_TYPE" property="RESTRICTION_DATA_TYPE" />
+    <result column="DB_COL_NAME" property="DB_COL_NAME" />
+    <result column="DATA_ORDER" property="DATA_ORDER" />
+    <result column="DATA_VALUE" property="DATA_VALUE" />
+    <result column="IS_SELECTED_YN" property="IS_SELECTED_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RESTRICTION_CODE, RESTRICTION_DESC, RESTRICTION_DATA_TYPE, DB_COL_NAME, DATA_ORDER, 
+    DATA_VALUE, IS_SELECTED_YN
+  </sql>
+  <select id="selectSYS_PARAM_PWD_RESTRICTION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_PWD_RESTRICTION
+    where RESTRICTION_CODE = #{RESTRICTION_CODE}
+  </select>
+  <delete id="deleteSYS_PARAM_PWD_RESTRICTION" parameterType="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO" >
+    delete from SYS_PARAM_PWD_RESTRICTION
+    where RESTRICTION_CODE = #{RESTRICTION_CODE}
+  </delete>
+  <insert id="insertSYS_PARAM_PWD_RESTRICTION" parameterType="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO" >
+    insert into SYS_PARAM_PWD_RESTRICTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="RESTRICTION_CODE != null and RESTRICTION_CODE != emptyBigDecimalValue" >
+        RESTRICTION_CODE,
+      </if>
+      <if test="RESTRICTION_DESC != null" >
+        RESTRICTION_DESC,
+      </if>
+      <if test="RESTRICTION_DATA_TYPE != null" >
+        RESTRICTION_DATA_TYPE,
+      </if>
+      <if test="DB_COL_NAME != null" >
+        DB_COL_NAME,
+      </if>
+      <if test="DATA_ORDER != null and DATA_ORDER != emptyBigDecimalValue" >
+        DATA_ORDER,
+      </if>
+      <if test="DATA_VALUE != null and DATA_VALUE != emptyBigDecimalValue" >
+        DATA_VALUE,
+      </if>
+      <if test="IS_SELECTED_YN != null and IS_SELECTED_YN != emptyBigDecimalValue" >
+        IS_SELECTED_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="RESTRICTION_CODE != null and RESTRICTION_CODE != emptyBigDecimalValue" >
+        #{RESTRICTION_CODE},
+      </if>
+      <if test="RESTRICTION_DESC != null" >
+        #{RESTRICTION_DESC},
+      </if>
+      <if test="RESTRICTION_DATA_TYPE != null" >
+        #{RESTRICTION_DATA_TYPE},
+      </if>
+      <if test="DB_COL_NAME != null" >
+        #{DB_COL_NAME},
+      </if>
+      <if test="DATA_ORDER != null and DATA_ORDER != emptyBigDecimalValue" >
+        #{DATA_ORDER},
+      </if>
+      <if test="DATA_VALUE != null and DATA_VALUE != emptyBigDecimalValue" >
+        #{DATA_VALUE},
+      </if>
+      <if test="IS_SELECTED_YN != null and IS_SELECTED_YN != emptyBigDecimalValue" >
+        #{IS_SELECTED_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_PWD_RESTRICTION" >
+    update SYS_PARAM_PWD_RESTRICTION
+    <set >
+      <if test="RESTRICTION_DESC != null" >
+        RESTRICTION_DESC = #{RESTRICTION_DESC},
+      </if>
+      <if test="RESTRICTION_DATA_TYPE != null" >
+        RESTRICTION_DATA_TYPE = #{RESTRICTION_DATA_TYPE},
+      </if>
+      <if test="DB_COL_NAME != null" >
+        DB_COL_NAME = #{DB_COL_NAME},
+      </if>
+      <if test="DATA_ORDER != null" >
+        <choose >
+          <when test="DATA_ORDER == emptyBigDecimalValue" >
+            DATA_ORDER = NULL ,
+          </when>
+          <otherwise >
+            DATA_ORDER = #{DATA_ORDER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATA_VALUE != null" >
+        <choose >
+          <when test="DATA_VALUE == emptyBigDecimalValue" >
+            DATA_VALUE = NULL ,
+          </when>
+          <otherwise >
+            DATA_VALUE = #{DATA_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="IS_SELECTED_YN != null" >
+        <choose >
+          <when test="IS_SELECTED_YN == emptyBigDecimalValue" >
+            IS_SELECTED_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_SELECTED_YN = #{IS_SELECTED_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where RESTRICTION_CODE = #{RESTRICTION_CODE}
+  </sql>
+  <update id="updateSYS_PARAM_PWD_RESTRICTION" parameterType="com.path.dbmaps.vo.SYS_PARAM_PWD_RESTRICTIONVO" >
+    <include refid="sql_updateSYS_PARAM_PWD_RESTRICTION" />
+  </update>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_PROCESS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_PROCESSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="PROCESS_CODE" property="PROCESS_CODE" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="REP_REF" property="REP_REF" />
+    <result column="DESCRIPTION_FR" property="DESCRIPTION_FR" />
+    <result column="DESCRIPTION_AR" property="DESCRIPTION_AR" />
+    <result column="DESCRIPTION_FA" property="DESCRIPTION_FA" />
+    <result column="DESCRIPTION_RU" property="DESCRIPTION_RU" />
+    <result column="DESCRIPTION_TK" property="DESCRIPTION_TK" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, PROCESS_CODE, DESCRIPTION, REP_REF, DESCRIPTION_FR, DESCRIPTION_AR, 
+    DESCRIPTION_FA, DESCRIPTION_RU, DESCRIPTION_TK
+  </sql>
+  <select id="selectEOD_PROCESS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.EOD_PROCESSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from EOD_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </select>
+  <delete id="deleteEOD_PROCESS" parameterType="com.path.dbmaps.vo.EOD_PROCESSVOKey" >
+    delete from EOD_PROCESS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </delete>
+  <insert id="insertEOD_PROCESS" parameterType="com.path.dbmaps.vo.EOD_PROCESSVO" >
+    insert into EOD_PROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        PROCESS_CODE,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+      <if test="REP_REF != null" >
+        REP_REF,
+      </if>
+      <if test="DESCRIPTION_FR != null" >
+        DESCRIPTION_FR,
+      </if>
+      <if test="DESCRIPTION_AR != null" >
+        DESCRIPTION_AR,
+      </if>
+      <if test="DESCRIPTION_FA != null" >
+        DESCRIPTION_FA,
+      </if>
+      <if test="DESCRIPTION_RU != null" >
+        DESCRIPTION_RU,
+      </if>
+      <if test="DESCRIPTION_TK != null" >
+        DESCRIPTION_TK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="PROCESS_CODE != null and PROCESS_CODE != emptyBigDecimalValue" >
+        #{PROCESS_CODE},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+      <if test="REP_REF != null" >
+        #{REP_REF},
+      </if>
+      <if test="DESCRIPTION_FR != null" >
+        #{DESCRIPTION_FR},
+      </if>
+      <if test="DESCRIPTION_AR != null" >
+        #{DESCRIPTION_AR},
+      </if>
+      <if test="DESCRIPTION_FA != null" >
+        #{DESCRIPTION_FA},
+      </if>
+      <if test="DESCRIPTION_RU != null" >
+        #{DESCRIPTION_RU},
+      </if>
+      <if test="DESCRIPTION_TK != null" >
+        #{DESCRIPTION_TK},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateEOD_PROCESS" >
+    update EOD_PROCESS
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+      <if test="REP_REF != null" >
+        REP_REF = #{REP_REF},
+      </if>
+      <if test="DESCRIPTION_FR != null" >
+        DESCRIPTION_FR = #{DESCRIPTION_FR},
+      </if>
+      <if test="DESCRIPTION_AR != null" >
+        DESCRIPTION_AR = #{DESCRIPTION_AR},
+      </if>
+      <if test="DESCRIPTION_FA != null" >
+        DESCRIPTION_FA = #{DESCRIPTION_FA},
+      </if>
+      <if test="DESCRIPTION_RU != null" >
+        DESCRIPTION_RU = #{DESCRIPTION_RU},
+      </if>
+      <if test="DESCRIPTION_TK != null" >
+        DESCRIPTION_TK = #{DESCRIPTION_TK},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and PROCESS_CODE = #{PROCESS_CODE}
+  </sql>
+  <update id="updateEOD_PROCESS" parameterType="com.path.dbmaps.vo.EOD_PROCESSVO" >
+    <include refid="sql_updateEOD_PROCESS" />
+  </update>
+</mapper>

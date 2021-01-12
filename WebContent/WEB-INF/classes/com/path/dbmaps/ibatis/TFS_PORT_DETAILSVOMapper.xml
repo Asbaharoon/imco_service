@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_PORT_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_PORT_DETAILSVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LC_NUMBER" property="LC_NUMBER" />
+    <id column="LC_TYPE" property="LC_TYPE" />
+    <id column="LC_YEAR" property="LC_YEAR" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <result column="PORT_DETAILS" property="PORT_DETAILS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, LC_NUMBER, LC_TYPE, LC_YEAR, LINE_NUMBER, PORT_DETAILS
+  </sql>
+  <select id="selectTFS_PORT_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_PORT_DETAILSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_PORT_DETAILS
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </select>
+  <delete id="deleteTFS_PORT_DETAILS" parameterType="com.path.dbmaps.vo.TFS_PORT_DETAILSVO" >
+    delete from TFS_PORT_DETAILS
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </delete>
+  <insert id="insertTFS_PORT_DETAILS" parameterType="com.path.dbmaps.vo.TFS_PORT_DETAILSVO" >
+    insert into TFS_PORT_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LC_NUMBER != null and LC_NUMBER != emptyBigDecimalValue" >
+        LC_NUMBER,
+      </if>
+      <if test="LC_TYPE != null" >
+        LC_TYPE,
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        LC_YEAR,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        LINE_NUMBER,
+      </if>
+      <if test="PORT_DETAILS != null" >
+        PORT_DETAILS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LC_NUMBER != null and LC_NUMBER != emptyBigDecimalValue" >
+        #{LC_NUMBER},
+      </if>
+      <if test="LC_TYPE != null" >
+        #{LC_TYPE},
+      </if>
+      <if test="LC_YEAR != null and LC_YEAR != emptyBigDecimalValue" >
+        #{LC_YEAR},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        #{LINE_NUMBER},
+      </if>
+      <if test="PORT_DETAILS != null" >
+        #{PORT_DETAILS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_PORT_DETAILS" >
+    update TFS_PORT_DETAILS
+    <set >
+      <if test="PORT_DETAILS != null" >
+        PORT_DETAILS = #{PORT_DETAILS},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and LC_NUMBER = #{LC_NUMBER}
+      and LC_TYPE = #{LC_TYPE}
+      and LC_YEAR = #{LC_YEAR}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </sql>
+  <update id="updateTFS_PORT_DETAILS" parameterType="com.path.dbmaps.vo.TFS_PORT_DETAILSVO" >
+    <include refid="sql_updateTFS_PORT_DETAILS" />
+  </update>
+</mapper>

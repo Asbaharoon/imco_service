@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FATCA_CONTROL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FATCA_CONTROLVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="ACC_BAL_CHEKING" property="ACC_BAL_CHEKING" />
+    <result column="CURRENCY" property="CURRENCY" />
+    <result column="MIN_ACC_BAL_INDIVIDUAL" property="MIN_ACC_BAL_INDIVIDUAL" />
+    <result column="MIN_ACC_BAL_INSTITUTION" property="MIN_ACC_BAL_INSTITUTION" />
+    <result column="COUNTRY" property="COUNTRY" />
+    <result column="NATIONALITY" property="NATIONALITY" />
+    <result column="GREEN_CARD" property="GREEN_CARD" />
+    <result column="DAYS_BEFORE_RECALCITRANT" property="DAYS_BEFORE_RECALCITRANT" />
+    <result column="COMPLIANCE_DATE" property="COMPLIANCE_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, ACC_BAL_CHEKING, CURRENCY, MIN_ACC_BAL_INDIVIDUAL, MIN_ACC_BAL_INSTITUTION, 
+    COUNTRY, NATIONALITY, GREEN_CARD, DAYS_BEFORE_RECALCITRANT, COMPLIANCE_DATE
+  </sql>
+  <select id="selectFATCA_CONTROL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FATCA_CONTROLVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FATCA_CONTROL
+    where COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFATCA_CONTROL" parameterType="com.path.dbmaps.vo.FATCA_CONTROLVOKey" >
+    delete from FATCA_CONTROL
+    where COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFATCA_CONTROL" parameterType="com.path.dbmaps.vo.FATCA_CONTROLVO" >
+    insert into FATCA_CONTROL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ACC_BAL_CHEKING != null and ACC_BAL_CHEKING != emptyBigDecimalValue" >
+        ACC_BAL_CHEKING,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="MIN_ACC_BAL_INDIVIDUAL != null and MIN_ACC_BAL_INDIVIDUAL != emptyBigDecimalValue" >
+        MIN_ACC_BAL_INDIVIDUAL,
+      </if>
+      <if test="MIN_ACC_BAL_INSTITUTION != null and MIN_ACC_BAL_INSTITUTION != emptyBigDecimalValue" >
+        MIN_ACC_BAL_INSTITUTION,
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        COUNTRY,
+      </if>
+      <if test="NATIONALITY != null and NATIONALITY != emptyBigDecimalValue" >
+        NATIONALITY,
+      </if>
+      <if test="GREEN_CARD != null and GREEN_CARD != emptyBigDecimalValue" >
+        GREEN_CARD,
+      </if>
+      <if test="DAYS_BEFORE_RECALCITRANT != null and DAYS_BEFORE_RECALCITRANT != emptyBigDecimalValue" >
+        DAYS_BEFORE_RECALCITRANT,
+      </if>
+      <if test="COMPLIANCE_DATE != null" >
+        COMPLIANCE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ACC_BAL_CHEKING != null and ACC_BAL_CHEKING != emptyBigDecimalValue" >
+        #{ACC_BAL_CHEKING},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="MIN_ACC_BAL_INDIVIDUAL != null and MIN_ACC_BAL_INDIVIDUAL != emptyBigDecimalValue" >
+        #{MIN_ACC_BAL_INDIVIDUAL},
+      </if>
+      <if test="MIN_ACC_BAL_INSTITUTION != null and MIN_ACC_BAL_INSTITUTION != emptyBigDecimalValue" >
+        #{MIN_ACC_BAL_INSTITUTION},
+      </if>
+      <if test="COUNTRY != null and COUNTRY != emptyBigDecimalValue" >
+        #{COUNTRY},
+      </if>
+      <if test="NATIONALITY != null and NATIONALITY != emptyBigDecimalValue" >
+        #{NATIONALITY},
+      </if>
+      <if test="GREEN_CARD != null and GREEN_CARD != emptyBigDecimalValue" >
+        #{GREEN_CARD},
+      </if>
+      <if test="DAYS_BEFORE_RECALCITRANT != null and DAYS_BEFORE_RECALCITRANT != emptyBigDecimalValue" >
+        #{DAYS_BEFORE_RECALCITRANT},
+      </if>
+      <if test="COMPLIANCE_DATE != null" >
+        #{COMPLIANCE_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFATCA_CONTROL" >
+    update FATCA_CONTROL
+    <set >
+      <if test="ACC_BAL_CHEKING != null" >
+        <choose >
+          <when test="ACC_BAL_CHEKING == emptyBigDecimalValue" >
+            ACC_BAL_CHEKING = NULL ,
+          </when>
+          <otherwise >
+            ACC_BAL_CHEKING = #{ACC_BAL_CHEKING},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CURRENCY != null" >
+        <choose >
+          <when test="CURRENCY == emptyBigDecimalValue" >
+            CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY = #{CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_ACC_BAL_INDIVIDUAL != null" >
+        <choose >
+          <when test="MIN_ACC_BAL_INDIVIDUAL == emptyBigDecimalValue" >
+            MIN_ACC_BAL_INDIVIDUAL = NULL ,
+          </when>
+          <otherwise >
+            MIN_ACC_BAL_INDIVIDUAL = #{MIN_ACC_BAL_INDIVIDUAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MIN_ACC_BAL_INSTITUTION != null" >
+        <choose >
+          <when test="MIN_ACC_BAL_INSTITUTION == emptyBigDecimalValue" >
+            MIN_ACC_BAL_INSTITUTION = NULL ,
+          </when>
+          <otherwise >
+            MIN_ACC_BAL_INSTITUTION = #{MIN_ACC_BAL_INSTITUTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COUNTRY != null" >
+        <choose >
+          <when test="COUNTRY == emptyBigDecimalValue" >
+            COUNTRY = NULL ,
+          </when>
+          <otherwise >
+            COUNTRY = #{COUNTRY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NATIONALITY != null" >
+        <choose >
+          <when test="NATIONALITY == emptyBigDecimalValue" >
+            NATIONALITY = NULL ,
+          </when>
+          <otherwise >
+            NATIONALITY = #{NATIONALITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GREEN_CARD != null" >
+        <choose >
+          <when test="GREEN_CARD == emptyBigDecimalValue" >
+            GREEN_CARD = NULL ,
+          </when>
+          <otherwise >
+            GREEN_CARD = #{GREEN_CARD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DAYS_BEFORE_RECALCITRANT != null" >
+        <choose >
+          <when test="DAYS_BEFORE_RECALCITRANT == emptyBigDecimalValue" >
+            DAYS_BEFORE_RECALCITRANT = NULL ,
+          </when>
+          <otherwise >
+            DAYS_BEFORE_RECALCITRANT = #{DAYS_BEFORE_RECALCITRANT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMPLIANCE_DATE != null" >
+        COMPLIANCE_DATE = #{COMPLIANCE_DATE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFATCA_CONTROL" parameterType="com.path.dbmaps.vo.FATCA_CONTROLVO" >
+    <include refid="sql_updateFATCA_CONTROL" />
+  </update>
+</mapper>

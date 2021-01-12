@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCOLLATERALDET_DEAL_SWITCH" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCOLLATERALDET_DEAL_SWITCHVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COLLATERAL_BRANCH" property="COLLATERAL_BRANCH" />
+    <id column="COLLATERAL_NO" property="COLLATERAL_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="DEAL_NO" property="DEAL_NO" />
+    <result column="DEAL_ALLOCATED" property="DEAL_ALLOCATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COLLATERAL_BRANCH, COLLATERAL_NO, COMP_CODE, TRX_NO, DEAL_NO, DEAL_ALLOCATED
+  </sql>
+  <select id="selectTRSCOLLATERALDET_DEAL_SWITCH" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_DEAL_SWITCHVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCOLLATERALDET_DEAL_SWITCH
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteTRSCOLLATERALDET_DEAL_SWITCH" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_DEAL_SWITCHVOKey" >
+    delete from TRSCOLLATERALDET_DEAL_SWITCH
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertTRSCOLLATERALDET_DEAL_SWITCH" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_DEAL_SWITCHVO" >
+    insert into TRSCOLLATERALDET_DEAL_SWITCH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        COLLATERAL_BRANCH,
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        COLLATERAL_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="DEAL_ALLOCATED != null and DEAL_ALLOCATED != emptyBigDecimalValue" >
+        DEAL_ALLOCATED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        #{COLLATERAL_BRANCH},
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        #{COLLATERAL_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="DEAL_ALLOCATED != null and DEAL_ALLOCATED != emptyBigDecimalValue" >
+        #{DEAL_ALLOCATED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCOLLATERALDET_DEAL_SWITCH" >
+    update TRSCOLLATERALDET_DEAL_SWITCH
+    <set >
+      <if test="DEAL_NO != null" >
+        <choose >
+          <when test="DEAL_NO == emptyBigDecimalValue" >
+            DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NO = #{DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_ALLOCATED != null" >
+        <choose >
+          <when test="DEAL_ALLOCATED == emptyBigDecimalValue" >
+            DEAL_ALLOCATED = NULL ,
+          </when>
+          <otherwise >
+            DEAL_ALLOCATED = #{DEAL_ALLOCATED},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateTRSCOLLATERALDET_DEAL_SWITCH" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_DEAL_SWITCHVO" >
+    <include refid="sql_updateTRSCOLLATERALDET_DEAL_SWITCH" />
+  </update>
+</mapper>

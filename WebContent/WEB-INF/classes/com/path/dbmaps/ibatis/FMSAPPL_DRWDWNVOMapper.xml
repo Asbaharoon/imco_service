@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPL_DRWDWN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPL_DRWDWNVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DRWDWN_CODE" property="DRWDWN_CODE" />
+    <id column="FACILITY_CODE" property="FACILITY_CODE" />
+    <result column="TOTAL_AMOUNT" property="TOTAL_AMOUNT" />
+    <result column="UTILIZED_AMOUNT" property="UTILIZED_AMOUNT" />
+    <result column="UNUTILIZED_AMOUNT" property="UNUTILIZED_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, DRWDWN_CODE, FACILITY_CODE, TOTAL_AMOUNT, UTILIZED_AMOUNT, UNUTILIZED_AMOUNT
+  </sql>
+  <select id="selectFMSAPPL_DRWDWN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPL_DRWDWNVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPL_DRWDWN
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and FACILITY_CODE = #{FACILITY_CODE}
+  </select>
+  <delete id="deleteFMSAPPL_DRWDWN" parameterType="com.path.dbmaps.vo.FMSAPPL_DRWDWNVOKey" >
+    delete from FMSAPPL_DRWDWN
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and FACILITY_CODE = #{FACILITY_CODE}
+  </delete>
+  <insert id="insertFMSAPPL_DRWDWN" parameterType="com.path.dbmaps.vo.FMSAPPL_DRWDWNVO" >
+    insert into FMSAPPL_DRWDWN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DRWDWN_CODE != null and DRWDWN_CODE != emptyBigDecimalValue" >
+        DRWDWN_CODE,
+      </if>
+      <if test="FACILITY_CODE != null and FACILITY_CODE != emptyBigDecimalValue" >
+        FACILITY_CODE,
+      </if>
+      <if test="TOTAL_AMOUNT != null and TOTAL_AMOUNT != emptyBigDecimalValue" >
+        TOTAL_AMOUNT,
+      </if>
+      <if test="UTILIZED_AMOUNT != null and UTILIZED_AMOUNT != emptyBigDecimalValue" >
+        UTILIZED_AMOUNT,
+      </if>
+      <if test="UNUTILIZED_AMOUNT != null and UNUTILIZED_AMOUNT != emptyBigDecimalValue" >
+        UNUTILIZED_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DRWDWN_CODE != null and DRWDWN_CODE != emptyBigDecimalValue" >
+        #{DRWDWN_CODE},
+      </if>
+      <if test="FACILITY_CODE != null and FACILITY_CODE != emptyBigDecimalValue" >
+        #{FACILITY_CODE},
+      </if>
+      <if test="TOTAL_AMOUNT != null and TOTAL_AMOUNT != emptyBigDecimalValue" >
+        #{TOTAL_AMOUNT},
+      </if>
+      <if test="UTILIZED_AMOUNT != null and UTILIZED_AMOUNT != emptyBigDecimalValue" >
+        #{UTILIZED_AMOUNT},
+      </if>
+      <if test="UNUTILIZED_AMOUNT != null and UNUTILIZED_AMOUNT != emptyBigDecimalValue" >
+        #{UNUTILIZED_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPL_DRWDWN" >
+    update FMSAPPL_DRWDWN
+    <set >
+      <if test="TOTAL_AMOUNT != null" >
+        <choose >
+          <when test="TOTAL_AMOUNT == emptyBigDecimalValue" >
+            TOTAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            TOTAL_AMOUNT = #{TOTAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UTILIZED_AMOUNT != null" >
+        <choose >
+          <when test="UTILIZED_AMOUNT == emptyBigDecimalValue" >
+            UTILIZED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            UTILIZED_AMOUNT = #{UTILIZED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UNUTILIZED_AMOUNT != null" >
+        <choose >
+          <when test="UNUTILIZED_AMOUNT == emptyBigDecimalValue" >
+            UNUTILIZED_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            UNUTILIZED_AMOUNT = #{UNUTILIZED_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and FACILITY_CODE = #{FACILITY_CODE}
+  </sql>
+  <update id="updateFMSAPPL_DRWDWN" parameterType="com.path.dbmaps.vo.FMSAPPL_DRWDWNVO" >
+    <include refid="sql_updateFMSAPPL_DRWDWN" />
+  </update>
+</mapper>

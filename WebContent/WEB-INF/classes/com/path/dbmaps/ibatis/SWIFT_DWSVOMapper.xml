@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_DWS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_DWSVO" >
+    <id column="REP_ID" property="REP_ID" />
+    <result column="MODULE" property="MODULE" />
+    <result column="SUSPENDED" property="SUSPENDED" />
+    <result column="STAT_ACC" property="STAT_ACC" />
+    <result column="UPDATE_STMT" property="UPDATE_STMT" />
+    <result column="SKIP_COND" property="SKIP_COND" />
+    <result column="ERROR_COND" property="ERROR_COND" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REP_ID, MODULE, SUSPENDED, STAT_ACC, UPDATE_STMT, SKIP_COND, ERROR_COND
+  </sql>
+  <select id="selectSWIFT_DWS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_DWSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_DWS
+    where REP_ID = #{REP_ID}
+  </select>
+  <delete id="deleteSWIFT_DWS" parameterType="com.path.dbmaps.vo.SWIFT_DWSVO" >
+    delete from SWIFT_DWS
+    where REP_ID = #{REP_ID}
+  </delete>
+  <insert id="insertSWIFT_DWS" parameterType="com.path.dbmaps.vo.SWIFT_DWSVO" >
+    insert into SWIFT_DWS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        REP_ID,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="SUSPENDED != null" >
+        SUSPENDED,
+      </if>
+      <if test="STAT_ACC != null and STAT_ACC != emptyBigDecimalValue" >
+        STAT_ACC,
+      </if>
+      <if test="UPDATE_STMT != null" >
+        UPDATE_STMT,
+      </if>
+      <if test="SKIP_COND != null" >
+        SKIP_COND,
+      </if>
+      <if test="ERROR_COND != null" >
+        ERROR_COND,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="REP_ID != null and REP_ID != emptyBigDecimalValue" >
+        #{REP_ID},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="SUSPENDED != null" >
+        #{SUSPENDED},
+      </if>
+      <if test="STAT_ACC != null and STAT_ACC != emptyBigDecimalValue" >
+        #{STAT_ACC},
+      </if>
+      <if test="UPDATE_STMT != null" >
+        #{UPDATE_STMT},
+      </if>
+      <if test="SKIP_COND != null" >
+        #{SKIP_COND},
+      </if>
+      <if test="ERROR_COND != null" >
+        #{ERROR_COND},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_DWS" >
+    update SWIFT_DWS
+    <set >
+      <if test="MODULE != null" >
+        MODULE = #{MODULE},
+      </if>
+      <if test="SUSPENDED != null" >
+        SUSPENDED = #{SUSPENDED},
+      </if>
+      <if test="STAT_ACC != null" >
+        <choose >
+          <when test="STAT_ACC == emptyBigDecimalValue" >
+            STAT_ACC = NULL ,
+          </when>
+          <otherwise >
+            STAT_ACC = #{STAT_ACC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UPDATE_STMT != null" >
+        UPDATE_STMT = #{UPDATE_STMT},
+      </if>
+      <if test="SKIP_COND != null" >
+        SKIP_COND = #{SKIP_COND},
+      </if>
+      <if test="ERROR_COND != null" >
+        ERROR_COND = #{ERROR_COND},
+      </if>
+    </set>
+    where REP_ID = #{REP_ID}
+  </sql>
+  <update id="updateSWIFT_DWS" parameterType="com.path.dbmaps.vo.SWIFT_DWSVO" >
+    <include refid="sql_updateSWIFT_DWS" />
+  </update>
+</mapper>

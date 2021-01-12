@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSCHARGES_FOREIGN_CY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSCHARGES_FOREIGN_CYVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CHARGE_CODE" property="CHARGE_CODE" />
+    <id column="DOCTYPE" property="DOCTYPE" />
+    <id column="TYPE_CODE" property="TYPE_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="SPECIAL_CODE" property="SPECIAL_CODE" />
+    <result column="FLAT_AMOUNT" property="FLAT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CHARGE_CODE, DOCTYPE, TYPE_CODE, LINE_NO,
+	CURRENCY_CODE, FLAT_AMOUNT, SPECIAL_CODE
+  </sql>
+  <select id="selectTFSCHARGES_FOREIGN_CY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSCHARGES_FOREIGN_CYVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSCHARGES_FOREIGN_CY
+    where COMP_CODE = #{COMP_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and TYPE_CODE = #{TYPE_CODE}
+      and LINE_NO = #{LINE_NO}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+  </select>
+  <delete id="deleteTFSCHARGES_FOREIGN_CY" parameterType="com.path.dbmaps.vo.TFSCHARGES_FOREIGN_CYVO" >
+    delete from TFSCHARGES_FOREIGN_CY
+    where COMP_CODE = #{COMP_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and TYPE_CODE = #{TYPE_CODE}
+      and LINE_NO = #{LINE_NO}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+  </delete>
+  <insert id="insertTFSCHARGES_FOREIGN_CY" parameterType="com.path.dbmaps.vo.TFSCHARGES_FOREIGN_CYVO" >
+    insert into TFSCHARGES_FOREIGN_CY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      COMP_CODE,
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        TYPE_CODE,
+      </if>
+      <if test="DOCTYPE != null" >
+        DOCTYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SPECIAL_CODE != null and SPECIAL_CODE != emptyBigDecimalValue" >
+        SPECIAL_CODE,
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        FLAT_AMOUNT,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      #{COMP_CODE},
+      <if test="TYPE_CODE != null and TYPE_CODE != emptyBigDecimalValue" >
+        #{TYPE_CODE},
+      </if>
+      <if test="DOCTYPE != null" >
+        #{DOCTYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SPECIAL_CODE != null and SPECIAL_CODE != emptyBigDecimalValue" >
+        #{SPECIAL_CODE},
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        #{FLAT_AMOUNT},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSCHARGES_FOREIGN_CY" >
+    update TFSCHARGES_FOREIGN_CY
+    <set >
+      <if test="FLAT_AMOUNT != null" >
+        <choose >
+          <when test="FLAT_AMOUNT == emptyBigDecimalValue" >
+            FLAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            FLAT_AMOUNT = #{FLAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and DOCTYPE = #{DOCTYPE}
+      and TYPE_CODE = #{TYPE_CODE}
+      and LINE_NO = #{LINE_NO}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and SPECIAL_CODE = #{SPECIAL_CODE}
+  </sql>
+  <update id="updateTFSCHARGES_FOREIGN_CY" parameterType="com.path.dbmaps.vo.TFSCHARGES_FOREIGN_CYVO" >
+    <include refid="sql_updateTFSCHARGES_FOREIGN_CY" />
+  </update>
+</mapper>

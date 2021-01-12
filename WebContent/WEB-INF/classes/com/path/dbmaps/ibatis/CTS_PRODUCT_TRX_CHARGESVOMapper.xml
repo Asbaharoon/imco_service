@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_PRODUCT_TRX_CHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_PRODUCT_TRX_CHARGESVO" >   
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="PRODUCT_CODE" property="PRODUCT_CODE" />
+    <result column="PRODUCT_TYPE" property="PRODUCT_TYPE" />
+    <result column="TRS_NO" property="TRS_NO" />
+    <result column="TRS_BRANCH_CODE" property="TRS_BRANCH_CODE" />
+    <result column="STATUS" property="STATUS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+     COMP_CODE, BRANCH_CODE, PRODUCT_CODE, PRODUCT_TYPE, TRS_NO, TRS_BRANCH_CODE, STATUS   
+  </sql>
+  <select id="selectCTS_PRODUCT_TRX_CHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_PRODUCT_TRX_CHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_PRODUCT_TRX_CHARGES
+    where COMP_CODE = #{COMP_CODE}
+    	and BRANCH_CODE =#{BRANCH_CODE}
+    	and PRODUCT_CODE = #{PRODUCT_CODE}
+    	and PRODUCT_TYPE = #{PRODUCT_TYPE}
+    	and TRS_NO = #{TRS_NO}
+    	and TRS_BRANCH_CODE = #{TRS_BRANCH_CODE}
+  </select>
+  <delete id="deleteCTS_PRODUCT_TRX_CHARGES" parameterType="com.path.dbmaps.vo.CTS_PRODUCT_TRX_CHARGESVOKey" >
+    delete from CTS_PRODUCT_TRX_CHARGES
+    where COMP_CODE = #{COMP_CODE}
+    	and BRANCH_CODE = #{BRANCH_CODE}
+    	and PRODUCT_CODE = #{PRODUCT_CODE}
+    	and PRODUCT_TYPE = #{PRODUCT_TYPE}
+    	and TRS_NO = #{TRS_NO}
+    	and TRS_BRANCH_CODE = #{TRS_BRANCH_CODE}
+  </delete>
+  <insert id="insertCTS_PRODUCT_TRX_CHARGES" parameterType="com.path.dbmaps.vo.CTS_PRODUCT_TRX_CHARGESVO" >
+    insert into CTS_PRODUCT_TRX_CHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >      
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="PRODUCT_CODE != null and PRODUCT_CODE != emptyBigDecimalValue" >
+        PRODUCT_CODE,
+      </if>
+      <if test="PRODUCT_TYPE != null" >
+        PRODUCT_TYPE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+       <if test="TRS_BRANCH_CODE != null and TRS_BRANCH_CODE != emptyBigDecimalValue" >      
+        TRS_BRANCH_CODE,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >     
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="PRODUCT_CODE != null and PRODUCT_CODE != emptyBigDecimalValue" >
+        #{PRODUCT_CODE},
+      </if>
+      <if test="PRODUCT_TYPE != null" >
+        #{PRODUCT_TYPE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_BRANCH_CODE != null and TRS_BRANCH_CODE != emptyBigDecimalValue" >   
+        #{TRS_BRANCH_CODE},
+      </if>
+     <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_PRODUCT_TRX_CHARGES" >
+    update CTS_PRODUCT_TRX_CHARGES
+    <set >
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRODUCT_CODE != null" >
+        <choose >
+          <when test="PRODUCT_CODE == emptyBigDecimalValue" >
+            PRODUCT_CODE = NULL ,
+          </when>
+          <otherwise >
+            PRODUCT_CODE = #{PRODUCT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRODUCT_TYPE != null" >
+      	PRODUCT_TYPE = #{PRODUCT_TYPE},
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_BRANCH_CODE != null" >
+        <choose >
+          <when test="TRS_BRANCH_CODE == emptyBigDecimalValue" >
+            TRS_BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            TRS_BRANCH_CODE = #{TRS_BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+    	and BRANCH_CODE = #{BRANCH_CODE}
+    	and PRODUCT_CODE = #{PRODUCT_CODE}
+    	and PRODUCT_TYPE = #{PRODUCT_TYPE}
+    	and TRS_NO = #{TRS_NO}
+    	and TRS_BRANCH_CODE = #{TRS_BRANCH_CODE}
+  </sql>
+  <update id="updateCTS_PRODUCT_TRX_CHARGES" parameterType="com.path.dbmaps.vo.CTS_PRODUCT_TRX_CHARGESVO" >
+    <include refid="sql_updateCTS_PRODUCT_TRX_CHARGES" />
+  </update>
+</mapper>

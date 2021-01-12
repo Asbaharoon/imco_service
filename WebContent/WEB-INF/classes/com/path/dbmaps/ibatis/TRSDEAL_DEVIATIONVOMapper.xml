@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_DEVIATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_DEVIATIONVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEVIATION_CODE" property="DEVIATION_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <result column="DEVIATION_YN" property="DEVIATION_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEVIATION_CODE, LINE_NO, SERIAL_NO, DEVIATION_YN
+  </sql>
+  <select id="selectTRSDEAL_DEVIATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_DEVIATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_DEVIATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </select>
+  <delete id="deleteTRSDEAL_DEVIATION" parameterType="com.path.dbmaps.vo.TRSDEAL_DEVIATIONVOKey" >
+    delete from TRSDEAL_DEVIATION
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </delete>
+  <insert id="insertTRSDEAL_DEVIATION" parameterType="com.path.dbmaps.vo.TRSDEAL_DEVIATIONVO" >
+    insert into TRSDEAL_DEVIATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEVIATION_CODE != null and DEVIATION_CODE != emptyBigDecimalValue" >
+        DEVIATION_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="DEVIATION_YN != null" >
+        DEVIATION_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEVIATION_CODE != null and DEVIATION_CODE != emptyBigDecimalValue" >
+        #{DEVIATION_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="DEVIATION_YN != null" >
+        #{DEVIATION_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_DEVIATION" >
+    update TRSDEAL_DEVIATION
+    <set >
+      <if test="DEVIATION_YN != null" >
+        DEVIATION_YN = #{DEVIATION_YN},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+  </sql>
+  <update id="updateTRSDEAL_DEVIATION" parameterType="com.path.dbmaps.vo.TRSDEAL_DEVIATIONVO" >
+    <include refid="sql_updateTRSDEAL_DEVIATION" />
+  </update>
+</mapper>

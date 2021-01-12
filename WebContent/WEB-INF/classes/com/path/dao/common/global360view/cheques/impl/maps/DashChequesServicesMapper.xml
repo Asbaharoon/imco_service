@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashChequesServicesMapper">
+	<sql id="voidedChequesQuery">
+		SELECT *
+  FROM (SELECT CTSTRS.COMP_CODE
+   		      ,CTSTRS.TRS_TYPE
+   		      ,CTSTRS.CB_IND
+   		      ,CTSTRS.TRX_TYPE trxType
+   		      ,CTSTRS.BRANCH_CODE
+		      ,CTSTRS.TRS_NO
+		      ,(CASE
+		         WHEN #{preferredLanguage} = 'L' THEN
+		          CTSTRXTYPE.SHORT_DESC_ENG
+		         ELSE
+		          CTSTRXTYPE.SHORT_DESC_ARAB
+		       END) TRX_TYPE
+		      ,CTSTRS.TRS_DATE
+		      ,CTSTRS.VALUE_DATE
+		      ,CTSTRS.CHQ_DATE
+		      ,CTSTRS.TRS_AC_BR
+		      ,CTSTRS.TRS_AC_CY
+		      ,CTSTRS.TRS_AC_GL
+		      ,CTSTRS.TRS_AC_CIF
+		      ,CTSTRS.TRS_AC_SL
+		      ,(CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                -CTSTRS.AMOUNT
+		            ELSE
+		                CTSTRS.AMOUNT  
+		         END) AS AMOUNT
+		      ,(CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                -CTSTRS.CV_AMOUNT
+		            ELSE
+		                CTSTRS.CV_AMOUNT  
+		         END) AS CV_AMOUNT
+		      ,CTSTRS.TRS_CY
+		      ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+		          FROM CTSREASONS
+		         WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+		         <choose>
+		           <when test="isSybase == 1">
+		           AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+		           </when>
+		           <otherwise>
+		           AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+		           </otherwise>   
+		         </choose>
+		       ) AS VOID_REASON
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode} 
+			       AND C.COMP_CODE     = #{compCode}) as DECIMAL_POINTS
+			  ,AMF.COMP_CODE AMF_COMP_CODE
+			  ,AMF.ADDITIONAL_REFERENCE
+		 	  ,AMF.LONG_NAME_ENG
+		 	  ,AMF.STATUS
+		  FROM CTSTRS, CTSTRXTYPE, AMF
+		 WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+		   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+		      
+		   AND CTSTRXTYPE.CHQ_RELATED <![CDATA[<>]]> 'N'
+		   AND CTSTRXTYPE.TYPE    = 'W'
+		   AND CTSTRS.COMP_CODE   = #{compCode}
+		   <if test="branchCode!=null">
+		   AND CTSTRS.BRANCH_CODE = #{branchCode}
+		   </if>
+		   AND CTSTRS.TRS_TYPE    = 'R'
+		   AND CTSTRS.CB_IND      = 'C'
+		   AND CTSTRS.STATUS      = 'V'
+		   AND CTSTRS.CHQ_NUM > 0
+		   AND (CTSTRS.TRS_AC_CIF  IN (  SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL
+                                                          ))
+		   AND CTSTRS.COMP_CODE  = AMF.COMP_CODE
+		   AND CTSTRS.TRS_AC_BR  = AMF.BRANCH_CODE
+		   AND CTSTRS.TRS_AC_CY  = AMF.CURRENCY_CODE
+		   AND CTSTRS.TRS_AC_GL  = AMF.GL_CODE
+		   AND CTSTRS.TRS_AC_CIF = AMF.CIF_SUB_NO
+		   AND CTSTRS.TRS_AC_SL  = AMF.SL_NO
+		
+		UNION
+		
+		SELECT CTSTRS.COMP_CODE
+   		      ,CTSTRS.TRS_TYPE
+   		      ,CTSTRS.CB_IND
+   		      ,CTSTRS.TRX_TYPE trxType
+			  ,CTSTRS.BRANCH_CODE
+		      ,CTSTRS.TRS_NO
+		      ,(CASE
+		         WHEN #{preferredLanguage} = 'L' THEN
+		          CTSTRXTYPE.SHORT_DESC_ENG
+		         ELSE
+		          CTSTRXTYPE.SHORT_DESC_ARAB
+		       END) TRX_TYPE
+		      ,CTSTRS.TRS_DATE
+		      ,CTSTRS.VALUE_DATE
+		      ,CTSTRS.CHQ_DATE
+		      ,CTSTRS.TRS_AC_BR
+		      ,CTSTRS.TRS_AC_CY
+		      ,CTSTRS.TRS_AC_GL
+		      ,CTSTRS.TRS_AC_CIF
+		      ,CTSTRS.TRS_AC_SL
+		      ,CTSTRS.AMOUNT
+		      ,CTSTRS.CV_AMOUNT
+		      ,CTSTRS.TRS_CY
+		      ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+		          FROM CTSREASONS
+		         WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+		         <choose>
+		           <when test="isSybase == 1">
+		           AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+		           </when>
+		           <otherwise>
+		           AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+		           </otherwise>   
+		         </choose>
+		       ) AS VOID_REASON
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode} 
+			       AND C.COMP_CODE     = #{compCode}) as DECIMAL_POINTS
+			       ,AMF.COMP_CODE AMF_COMP_CODE
+			       ,AMF.ADDITIONAL_REFERENCE
+		 	       ,AMF.LONG_NAME_ENG
+		 	        ,AMF.STATUS
+		  FROM CTSTRS, CTSTRXTYPE, AMF
+		 WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+		   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+		   AND CTSTRXTYPE.CHQ_RELATED <![CDATA[<>]]> 'N'
+		   AND CTSTRXTYPE.TYPE        = 'T'
+		   AND CTSTRXTYPE.CR_DR_FOREX = 'D'
+		   AND CTSTRS.COMP_CODE   = #{compCode}
+		   <if test="branchCode!=null">
+		   AND CTSTRS.BRANCH_CODE = #{branchCode}
+		   </if>
+		   AND CTSTRS.TRS_TYPE    = 'R'
+		   AND CTSTRS.CB_IND      = 'C'
+		   AND CTSTRS.STATUS      = 'V'
+		   AND CTSTRS.CHQ_NUM > 0
+		   AND (CTSTRS.TRS_AC_CIF  IN ( SELECT TBL.CIF_NO FROM(   SELECT CIF_NO
+						                                                          FROM  FMS_SUBSIDIARY_CIFS
+						                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+						                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+						                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+						                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+						                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+						                                                          UNION
+                                                          						  SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+		   AND CTSTRS.COMP_CODE  = AMF.COMP_CODE
+		   AND CTSTRS.TRS_AC_BR  = AMF.BRANCH_CODE
+		   AND CTSTRS.TRS_AC_CY  = AMF.CURRENCY_CODE
+		   AND CTSTRS.TRS_AC_GL  = AMF.GL_CODE
+		   AND CTSTRS.TRS_AC_CIF = AMF.CIF_SUB_NO
+		   AND CTSTRS.TRS_AC_SL  = AMF.SL_NO
+		
+		UNION
+		
+		SELECT CTSTRS.COMP_CODE
+   		      ,CTSTRS.TRS_TYPE
+   		      ,CTSTRS.CB_IND
+   		      ,CTSTRS.TRX_TYPE trxType
+			  ,CTSTRS.BRANCH_CODE
+		      ,CTSTRS.TRS_NO
+		      ,(CASE
+		         WHEN #{preferredLanguage} = 'L' THEN
+		          CTSTRXTYPE.SHORT_DESC_ENG
+		         ELSE
+		          CTSTRXTYPE.SHORT_DESC_ARAB
+		       END) TRX_TYPE
+		      ,CTSTRS.TRS_DATE
+		      ,CTSTRS.VALUE_DATE
+		      ,CTSTRS.CHQ_DATE
+		      ,CTSTRS.TO_TRS_AC_BR
+		      ,CTSTRS.TO_TRS_AC_CY
+		      ,CTSTRS.TO_TRS_AC_GL
+		      ,CTSTRS.TO_TRS_AC_CIF
+		      ,CTSTRS.TO_TRS_AC_SL
+		      ,-CTSTRS.AMOUNT
+		      ,-CTSTRS.CV_AMOUNT
+		      ,CTSTRS.TRS_CY
+		      ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+		          FROM CTSREASONS
+		         WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+		         <choose>
+		           <when test="isSybase == 1">
+		           AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+		           </when>
+		           <otherwise>
+		           AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+		           </otherwise>   
+		         </choose>
+		       ) AS VOID_REASON
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode} 
+			       AND C.COMP_CODE     = #{compCode}) as DECIMAL_POINTS
+			       ,AMF.COMP_CODE AMF_COMP_CODE	
+			       ,AMF.ADDITIONAL_REFERENCE
+		 	       ,AMF.LONG_NAME_ENG	 
+		 	        ,AMF.STATUS     
+		  FROM CTSTRS, CTSTRXTYPE, AMF
+		 WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+		   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+		   AND CTSTRXTYPE.CHQ_RELATED <![CDATA[<>]]> 'N'
+		   AND CTSTRXTYPE.TYPE        = 'T'
+		   AND CTSTRXTYPE.CR_DR_FOREX = 'C'
+		   AND CTSTRS.COMP_CODE       = #{compCode}
+		   <if test="branchCode!=null">
+		   AND CTSTRS.BRANCH_CODE     = #{branchCode}
+		   </if>
+		   AND CTSTRS.TRS_TYPE        = 'R'
+		   AND CTSTRS.CB_IND          = 'C'
+		   AND CTSTRS.STATUS          = 'V'
+		   AND CTSTRS.CHQ_NUM > 0
+		   AND (CTSTRS.TO_TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+		   AND CTSTRS.COMP_CODE     = AMF.COMP_CODE
+		   AND CTSTRS.TO_TRS_AC_BR  = AMF.BRANCH_CODE
+		   AND CTSTRS.TO_TRS_AC_CY  = AMF.CURRENCY_CODE
+		   AND CTSTRS.TO_TRS_AC_GL  = AMF.GL_CODE
+		   AND CTSTRS.TO_TRS_AC_CIF = AMF.CIF_SUB_NO
+		   AND CTSTRS.TO_TRS_AC_SL  = AMF.SL_NO
+		   AND CTSTRXTYPE.CHQ_RELATED = 'H'
+		
+		UNION
+		
+		SELECT CTSTRS.COMP_CODE
+   		      ,CTSTRS.TRS_TYPE
+   		      ,CTSTRS.CB_IND
+   		      ,CTSTRS.TRX_TYPE trxType
+		      ,CTSTRS.BRANCH_CODE
+		      ,CTSTRS.TRS_NO
+		      ,(CASE
+		         WHEN #{preferredLanguage} = 'L' THEN
+		          CTSTRXTYPE.SHORT_DESC_ENG
+		         ELSE
+		          CTSTRXTYPE.SHORT_DESC_ARAB
+		       END) TRX_TYPE 
+		      ,CTSTRS.TRS_DATE
+		      ,CTSTRS.VALUE_DATE
+		      ,CTSTRS.CHQ_DATE
+		      ,CTSTRS.TO_TRS_AC_BR
+		      ,CTSTRS.TO_TRS_AC_CY
+		      ,CTSTRS.TO_TRS_AC_GL
+		      ,CTSTRS.TO_TRS_AC_CIF
+		      ,CTSTRS.TO_TRS_AC_SL
+		      ,(CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                -CTSTRS.AMOUNT
+		            ELSE
+		                CTSTRS.AMOUNT  
+		         END) AS AMOUNT
+		      ,(CASE 
+		            WHEN
+		                CTSTRXTYPE.CR_DR_FOREX = 'C' 
+		            THEN
+		                -CTSTRS.CV_AMOUNT
+		            ELSE
+		                CTSTRS.CV_AMOUNT  
+		         END) AS CV_AMOUNT
+		      ,CTSTRS.TRS_CY
+		      ,(SELECT CTSREASONS.BRIEF_NAME_ENG
+		          FROM CTSREASONS
+		         WHERE CTSREASONS.COMP_CODE = CTSTRS.COMP_CODE
+		         <choose>
+		           <when test="isSybase == 1">
+		           AND CONVERT(VARCHAR, CTSREASONS.CODE) = CTSTRS.VOID_REASON
+		           </when>
+		           <otherwise>
+		           AND CTSREASONS.CODE = TO_NUMBER(CTSTRS.VOID_REASON)
+		           </otherwise>   
+		         </choose>
+		       ) AS VOID_REASON
+			  ,(SELECT C.DECIMAL_POINTS 
+			      FROM CURRENCIES C 
+			     WHERE C.CURRENCY_CODE = #{baseCurrencyCode} 
+			       AND C.COMP_CODE     = #{compCode}) as DECIMAL_POINTS
+			       ,AMF.COMP_CODE AMF_COMP_CODE
+			       ,AMF.ADDITIONAL_REFERENCE
+		 	       ,AMF.LONG_NAME_ENG	
+		 	        ,AMF.STATUS 
+		  FROM CTSTRS, CTSTRXTYPE, AMF
+		 WHERE CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+		   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+		   AND CTSTRXTYPE.CHQ_RELATED <![CDATA[<>]]> 'N'
+		   AND CTSTRXTYPE.TYPE    = 'D'
+		   AND CTSTRS.COMP_CODE   = #{compCode}
+		   <if test="branchCode!=null">
+		   AND CTSTRS.BRANCH_CODE = #{branchCode}
+		   </if>
+		   AND CTSTRS.TRS_TYPE    = 'R'
+		   AND CTSTRS.CB_IND      = 'C'
+		   AND CTSTRS.STATUS      = 'V'
+		   AND CTSTRS.CHQ_NUM > 0
+		   AND (CTSTRS.TO_TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+		   AND CTSTRS.COMP_CODE     = AMF.COMP_CODE
+		   AND CTSTRS.TO_TRS_AC_BR  = AMF.BRANCH_CODE
+		   AND CTSTRS.TO_TRS_AC_CY  = AMF.CURRENCY_CODE
+		   AND CTSTRS.TO_TRS_AC_GL  = AMF.GL_CODE
+		   AND CTSTRS.TO_TRS_AC_CIF = AMF.CIF_SUB_NO
+		   AND CTSTRS.TO_TRS_AC_SL  = AMF.SL_NO
+		   AND CTSTRXTYPE.CHQ_RELATED = 'H') VOIDED_CHEQUES_TEMP
+		   WHERE NOT EXISTS 
+		    (
+	            SELECT 1 
+	            FROM ACC_RESTRICTED AccRest
+	            WHERE 
+	             VOIDED_CHEQUES_TEMP.COMP_CODE      =  AccRest.COMP_CODE
+		         AND VOIDED_CHEQUES_TEMP.TRS_AC_BR  =  AccRest.BRANCH_CODE 
+		         AND VOIDED_CHEQUES_TEMP.TRS_AC_CY  = AccRest.CURRENCY_CODE 
+		         AND VOIDED_CHEQUES_TEMP.TRS_AC_GL  = AccRest.GL_CODE 
+		         AND VOIDED_CHEQUES_TEMP.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+		         AND VOIDED_CHEQUES_TEMP.TRS_AC_SL  = AccRest.SL_NO 
+			     AND  AccRest.USER_ID =  #{userId}
+			     AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			     AND  AccRest.APP_NAME = #{appName}
+             )
+		   
+		   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+	         AND NOT EXISTS (SELECT 1
+	                  FROM CTSTELLER_ACC_HIDDEN_STATUSES 
+	                 WHERE CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS = VOIDED_CHEQUES_TEMP.STATUS
+	                   AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	                   AND VOIDED_CHEQUES_TEMP.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+			           AND VOIDED_CHEQUES_TEMP.TRS_AC_BR = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE)
+		   </if>
+	
+	</sql>
+	<resultMap id="voidedChequesListMap" type="dashChequesServicesCO">
+		<result property="ctstrsVO.COMP_CODE"					column="COMP_CODE"/>
+		<result property="ctstrsVO.TRS_TYPE"					column="TRS_TYPE"/>
+		<result property="ctstrsVO.CB_IND"				    	column="CB_IND"/>
+		<result property="ctstrsVO.TRX_TYPE"				    column="trxType"/>
+		<result property="branch_code"     						column="BRANCH_CODE"/>
+		<result property="trx_no"          						column="TRS_NO"/>
+		<result property="trx_type"        						column="TRX_TYPE"/>
+		<result property="trx_date"       	 					column="TRS_DATE"/>
+		<result property="value_date"      						column="VALUE_DATE"/>
+		<result property="cheque_date"     						column="CHQ_DATE"/>
+		<result property="trs_acc_br"      						column="TRS_AC_BR"/>
+		<result property="trs_acc_cy"      						column="TRS_AC_CY"/>
+		<result property="trs_acc_gl"      						column="TRS_AC_GL"/>
+		<result property="trs_acc_cif"     						column="TRS_AC_CIF"/>
+		<result property="trs_acc_sl"      						column="TRS_AC_SL"/>
+		<result property="amfVO.ADDITIONAL_REFERENCE"      		column="ADDITIONAL_REFERENCE"/>
+		<result property="amfVO.LONG_NAME_ENG"      			column="LONG_NAME_ENG"/>
+		<result property="amount"          						column="AMOUNT"/>
+		<result property="cv_amount"	   						column="CV_AMOUNT"/>
+		<result property="trs_currency"    						column="TRS_CY"/>
+		<result property="void_reason"	   						column="VOID_REASON"/>
+		<result property="decimal_points"  						column="DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="voidedChequesList" parameterType="dashboardSC" resultMap="voidedChequesListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="voidedChequesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	<select id="voidedChequesListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="voidedChequesQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+    
+    <!-- Cheques For Collection -->
+	<sql id="chequesForColQuery">
+   SELECT CTSTRS.COMP_CODE
+   		 ,CTSTRS.BRANCH_CODE
+   		 ,CTSTRS.TRS_TYPE
+   		 ,CTSTRS.CB_IND
+   		 ,CTSTRS.TRX_TYPE
+         ,CTSTRS.TRS_NO
+         ,CTSTRS.TRS_DATE
+         ,CTSTRS.VALUE_DATE
+         ,CTSTRS.CHQ_DATE
+         ,CTSTRS.TRS_AC_BR
+         ,CTSTRS.TRS_AC_CY
+         ,CTSTRS.TRS_AC_GL
+         ,CTSTRS.TRS_AC_CIF
+         ,CTSTRS.TRS_AC_SL
+         ,CTSTRS.TRS_CY
+		 ,AMF.ADDITIONAL_REFERENCE
+		 ,AMF.LONG_NAME_ENG
+         ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+          END) AS AMOUNT
+         ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+          END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	   FROM CTSTRS,CTSTRXTYPE,AMF
+	  WHERE CTSTRS.COMP_CODE  = #{compCode}
+	    <if test="branchCode!=null"> 
+		AND CTSTRS.BRANCH_CODE = #{branchCode,jdbcType=NUMERIC}
+		</if>
+		 AND (CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL
+                                                          ))
+		AND CTSTRS.STATUS    = 'P'
+		AND CTSTRS.VALUE_DATE <![CDATA[>]]> #{runningDate}
+		AND	CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+		AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+		AND CTSTRXTYPE.TYPE  IN ('D','T')
+		AND CTSTRXTYPE.CHQ_RELATED IN ('C','H')
+		AND CTSTRS.TRS_AC_CY = AMF.CURRENCY_CODE
+		AND CTSTRS.TRS_AC_GL = AMF.GL_CODE
+		AND CTSTRS.TRS_AC_CIF = AMF.CIF_SUB_NO
+		AND CTSTRS.TRS_AC_SL = AMF.SL_NO
+		AND CTSTRS.COMP_CODE = AMF.COMP_CODE
+		AND CTSTRS.TRS_AC_BR = AMF.BRANCH_CODE
+		<if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+			AND NOT EXISTS 
+			(SELECT 1 FROM CTSTELLER_ACC_HIDDEN_STATUSES WHERE
+	        CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+			AND AMF.COMP_CODE= CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+			AND AMF.BRANCH_CODE= CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+			AND AMF.STATUS= CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS)
+       </if>     
+       	
+		AND NOT EXISTS (
+            SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  AMF.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  AMF.BRANCH_CODE = AccRest.BRANCH_CODE 
+			 AND  AMF.CURRENCY_CODE = AccRest.CURRENCY_CODE 
+			 AND  AMF.GL_CODE = AccRest.GL_CODE 
+			 AND  AMF.CIF_SUB_NO = AccRest.CIF_SUB_NO 
+			 AND  AMF.SL_NO = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+                                
+	</sql>
+	<resultMap id="chequesForColListMap" type="dashChequesServicesCO">
+		<result property="ctstrsVO.COMP_CODE"					column="COMP_CODE"/>
+		<result property="ctstrsVO.TRS_TYPE"					column="TRS_TYPE"/>
+		<result property="ctstrsVO.TRX_TYPE"					column="TRX_TYPE"/>
+		<result property="ctstrsVO.CB_IND"				    	column="CB_IND"/>
+		<result property="branch_code"     						column="BRANCH_CODE"/>
+		<result property="trx_no"          						column="TRS_NO"/>
+		<result property="trx_date"       						column="TRS_DATE"/>
+		<result property="value_date"      						column="VALUE_DATE"/>
+		<result property="cheque_date"     						column="CHQ_DATE"/>
+		<result property="trs_acc_br"     		 				column="TRS_AC_BR"/>
+		<result property="trs_acc_cy"      						column="TRS_AC_CY"/>
+		<result property="trs_acc_gl"      						column="TRS_AC_GL"/>
+		<result property="trs_acc_cif"     						column="TRS_AC_CIF"/>
+		<result property="trs_acc_sl"     	 					column="TRS_AC_SL"/>
+		<result property="amfVO.ADDITIONAL_REFERENCE"      		column="ADDITIONAL_REFERENCE"/>
+		<result property="amfVO.LONG_NAME_ENG"      			column="LONG_NAME_ENG"/>
+		<result property="trs_currency"    						column="TRS_CY"/>
+		<result property="amount"          						column="AMOUNT"/>
+		<result property="cv_amount"	   						column="CV_AMOUNT"/>
+		<result property="decimal_points"  						column="DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="chequesForColList" parameterType="dashboardSC" resultMap="chequesForColListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="chequesForColQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	<select id="chequesForColCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="chequesForColQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+    <!-- Post Dated Cheques WithDrawal -->
+	<sql id="postDatedChqWDrawalQuery">
+	SELECT * FROM (
+		   SELECT CTSTRS.COMP_CODE
+		  ,CTSTRS.CB_IND
+		  ,CTSTRS.TRS_TYPE
+		  ,CTSTRS.TRX_TYPE 
+		  ,CTSTRS.BRANCH_CODE
+	      ,CTSTRS.TRS_NO
+	      ,CTSTRS.TRS_DATE
+	      ,CTSTRS.VALUE_DATE
+	      ,CTSTRS.TRS_AC_BR
+	      ,CTSTRS.TRS_AC_CY
+	      ,CTSTRS.TRS_AC_GL
+	      ,CTSTRS.TRS_AC_SL
+	      ,CTSTRS.TRS_CY
+	      ,CTSTRS.ACC_ADDITIONAL_REFERENCE ACC_ADD_REF
+	      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTSTRS.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTSTRS.TRS_AC_BR
+         		 AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+        		 AND AMF.GL_CODE       = CTSTRS.TRS_AC_GL
+         		 AND AMF.CIF_SUB_NO    = CTSTRS.TRS_AC_CIF
+                 AND AMF.SL_NO         = CTSTRS.TRS_AC_SL )ACC_LONG_NAME_ENG
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+           END) AS AMOUNT
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+           END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	  FROM CTSTRS, CTSTRXTYPE
+	 WHERE CTSTRS.COMP_CODE   = #{compCode}
+	 <if test="branchCode!=null">
+	   AND CTSTRS.BRANCH_CODE = #{branchCode}
+	  </if>
+	   AND (CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	   AND CTSTRS.STATUS      = 'P'
+	   AND CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	   AND CTSTRS.VALUE_DATE <![CDATA[>]]> #{runningDate}
+	   AND CTSTRS.TRS_DATE <![CDATA[>]]> #{runningDate}
+	   AND CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL 
+	            THEN 'N' 
+	            ELSE CTSTRS.CHQ_SETTL_FLAG 
+	        END <![CDATA[<>]]> 'Y' 
+	   AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE 
+	   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE 
+	   AND CTSTRXTYPE.TYPE  = 'W' 
+	   AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')
+	   
+	   	UNION ALL
+	
+	SELECT CTSTRS.COMP_CODE
+		  ,CTSTRS.CB_IND
+		  ,CTSTRS.TRS_TYPE
+		  ,CTSTRS.TRX_TYPE 
+		  ,CTSTRS.BRANCH_CODE
+	      ,CTSTRS.TRS_NO
+	      ,CTSTRS.TRS_DATE
+	      ,CTSTRS.VALUE_DATE
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'C' THEN
+	          TRS_AC_BR
+	         ELSE
+	          TO_TRS_AC_BR
+	       END) as TRS_AC_BR
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'C' THEN
+	          TRS_AC_CY
+	         ELSE
+	          TO_TRS_AC_CY
+	       END) as TRS_AC_CY
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'C' THEN
+	          TRS_AC_GL
+	         ELSE
+	          TO_TRS_AC_GL
+	       END) as TRS_AC_GL
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'C' THEN
+	          TRS_AC_CIF
+	         ELSE
+	          TO_TRS_AC_CIF
+	       END) as TRS_AC_CIF
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'C' THEN
+	          TRS_AC_SL
+	         ELSE
+	          TO_TRS_AC_SL
+	       END) as TRS_AC_SL 
+	      ,CTSTRS.TRS_CY
+	       ,CTSTRS.ACC_ADDITIONAL_REFERENCE ACC_ADD_REF
+	      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTSTRS.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTSTRS.TRS_AC_BR
+         		 AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+        		 AND AMF.GL_CODE       = CTSTRS.TRS_AC_GL
+         		 AND AMF.CIF_SUB_NO    = CTSTRS.TRS_AC_CIF
+                 AND AMF.SL_NO         = CTSTRS.TRS_AC_SL )ACC_LONG_NAME_ENG
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+           END) AS AMOUNT
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+           END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	  FROM CTSTRS, CTSTRXTYPE
+	 WHERE CTSTRS.COMP_CODE   = #{compCode}
+	   <if test="branchCode!=null">
+	   AND CTSTRS.BRANCH_CODE = #{branchCode}
+	   </if>   
+	   AND ((CR_DR_FOREX = 'C' 
+	   <!-- CTSTRS.TRS_AC_CIF   = #{cif_no}-->
+	   AND (CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMSSUBSIDIAR_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	   ) 
+	        OR
+	        (CR_DR_FOREX = 'D' 
+	        <!-- AND CTSTRS.TO_TRS_AC_CIF = #{cif_no}-->
+	        AND (CTSTRS.TO_TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	        
+	        )
+	       )
+	   AND CTSTRS.STATUS = 'P'
+	   AND CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	   AND CTSTRS.VALUE_DATE > #{runningDate}
+	   AND CTSTRS.TRS_DATE > #{runningDate}
+	   AND CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL 
+	            THEN 'N' 
+	            ELSE CTSTRS.CHQ_SETTL_FLAG 
+	       END <![CDATA[<>]]> 'Y' 
+	   AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE 
+	   AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE 
+	   AND CTSTRXTYPE.TYPE = 'T' 
+	   AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')) CHQ_WITHDRAWAL_TEMP
+	   WHERE    NOT EXISTS
+	       (
+	        SELECT 1 FROM 
+			ACC_RESTRICTED AccRest
+            WHERE  CHQ_WITHDRAWAL_TEMP.COMP_CODE = AccRest.COMP_CODE  
+          	 AND   CHQ_WITHDRAWAL_TEMP.TRS_AC_BR = AccRest.BRANCH_CODE 
+			 AND  CHQ_WITHDRAWAL_TEMP.TRS_AC_CY = AccRest.CURRENCY_CODE 
+			 AND   CHQ_WITHDRAWAL_TEMP.TRS_AC_GL = AccRest.GL_CODE 
+			 AND  CHQ_WITHDRAWAL_TEMP.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+			 AND  CHQ_WITHDRAWAL_TEMP.TRS_AC_SL = AccRest.SL_NO  
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+	   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+		   AND NOT EXISTS
+	       (SELECT 1
+	          FROM CTSTELLER_ACC_HIDDEN_STATUSES,AMF
+	         WHERE CHQ_WITHDRAWAL_TEMP.COMP_CODE = AMF.COMP_CODE
+	           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	           AND AMF.BRANCH_CODE = CHQ_WITHDRAWAL_TEMP.TRS_AC_BR
+	           AND AMF.CURRENCY_CODE = CHQ_WITHDRAWAL_TEMP.TRS_AC_CY
+	           AND AMF.GL_CODE = CHQ_WITHDRAWAL_TEMP.TRS_AC_GL
+	           AND AMF.CIF_SUB_NO = CHQ_WITHDRAWAL_TEMP.TRS_AC_CIF
+	           AND AMF.SL_NO = CHQ_WITHDRAWAL_TEMP.TRS_AC_SL
+	           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+	           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	           AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	           )
+	   </if>
+	   
+	       
+	   
+	</sql>
+	<resultMap id="postDatedChqWDrawalListMap" type="dashChequesServicesCO">
+		<result property="ctstrsVO.COMP_CODE"					column="COMP_CODE"/>
+		<result property="ctstrsVO.TRS_TYPE"					column="TRS_TYPE"/>
+		<result property="ctstrsVO.TRX_TYPE"					column="TRX_TYPE"/>
+		<result property="ctstrsVO.CB_IND"						column="CB_IND"/>
+		<result property="branch_code"     						column="BRANCH_CODE"/>
+		<result property="trx_no"          						column="TRS_NO"/>
+		<result property="trx_date"        						column="TRS_DATE"/>
+		<result property="value_date"      						column="VALUE_DATE"/>
+		<result property="trs_acc_br"      						column="TRS_AC_BR"/>
+		<result property="trs_acc_cy"      						column="TRS_AC_CY"/>
+		<result property="trs_acc_gl"      						column="TRS_AC_GL"/>
+		<result property="trs_acc_cif"     						column="TRS_AC_CIF"/>
+		<result property="trs_acc_sl"      						column="TRS_AC_SL"/>
+		<result property="ctstrsVO.ACC_ADDITIONAL_REFERENCE"    column="ACC_ADD_REF"/>
+		<result property="amfVO.LONG_NAME_ENG"      			column="ACC_LONG_NAME_ENG"/>
+		<result property="trs_currency"    						column="TRS_CY"/>
+		<result property="amount"          						column="AMOUNT"/>
+		<result property="cv_amount"	   						column="CV_AMOUNT"/>
+		<result property="decimal_points"  						column="DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="postDatedChqWDrawalList" parameterType="dashboardSC" resultMap="postDatedChqWDrawalListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="postDatedChqWDrawalQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	<select id="postDatedChqWDrawalListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="postDatedChqWDrawalQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+	
+	<!-- Post Dated Cheques Deposit -->
+	<sql id="postDatedChqDepQuery">
+	SELECT * FROM (
+	SELECT CTSTRS.COMP_CODE
+		  ,CTSTRS.CB_IND
+		  ,CTSTRS.TRS_TYPE
+		  ,CTSTRS.TRX_TYPE
+		  ,CTSTRS.BRANCH_CODE
+	      ,CTSTRS.TRS_NO
+	      ,CTSTRS.TRS_DATE
+	      ,CTSTRS.VALUE_DATE
+	      ,CTSTRS.TRS_AC_BR
+	      ,CTSTRS.TRS_AC_CY
+	      ,CTSTRS.TRS_AC_GL
+	      ,CTSTRS.TRS_AC_CIF
+	      ,CTSTRS.TRS_AC_SL
+	      ,CTSTRS.TRS_CY
+	      ,CTSTRS.ACC_ADDITIONAL_REFERENCE ACC_ADD_REF
+	      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTSTRS.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTSTRS.TRS_AC_BR
+         		 AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+        		 AND AMF.GL_CODE       = CTSTRS.TRS_AC_GL
+         		 AND AMF.CIF_SUB_NO    = CTSTRS.TRS_AC_CIF
+                 AND AMF.SL_NO         = CTSTRS.TRS_AC_SL )ACC_LONG_NAME_ENG
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+           END) AS AMOUNT
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+           END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	  FROM CTSTRS, CTSTRXTYPE
+	 WHERE CTSTRS.COMP_CODE = #{compCode}
+	   <if test="branchCode!=null">
+	   AND CTSTRS.BRANCH_CODE = #{branchCode}
+	   </if>
+	   AND ( CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	   AND CTSTRS.STATUS = 'P'
+	   AND CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	   AND CTSTRS.VALUE_DATE > #{runningDate}
+	   AND CTSTRS.TRS_DATE > #{runningDate}
+	   AND CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL 
+	            THEN 'N' 
+	            ELSE CTSTRS.CHQ_SETTL_FLAG 
+	       END <![CDATA[<>]]> 'Y' 
+	   AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE 
+	   AND CTSTRS.TRX_TYPE = CTSTRXTYPE.CODE 
+	   AND CTSTRXTYPE.TYPE = 'D' 
+	   AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')
+	
+
+	UNION ALL
+	
+	SELECT CTSTRS.COMP_CODE
+		  ,CTSTRS.CB_IND
+		  ,CTSTRS.TRS_TYPE
+		  ,CTSTRS.TRX_TYPE
+		  ,CTSTRS.BRANCH_CODE
+	      ,CTSTRS.TRS_NO
+	      ,CTSTRS.TRS_DATE
+	      ,CTSTRS.VALUE_DATE
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'D' THEN
+	          TRS_AC_BR
+	         ELSE
+	          TO_TRS_AC_BR
+	        END) TRS_AC_BR
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'D' THEN
+	          TRS_AC_CY
+	         ELSE
+	          TO_TRS_AC_CY
+	        END) TRS_AC_CY
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'D' THEN
+	          TRS_AC_GL
+	         ELSE
+	          TO_TRS_AC_GL
+	        END) TRS_AC_GL
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'D' THEN
+	          TRS_AC_CIF
+	         ELSE
+	          TO_TRS_AC_CIF
+	        END) TRS_AC_CIF
+	      ,(CASE
+	         WHEN CR_DR_FOREX = 'D' THEN
+	          TRS_AC_SL
+	         ELSE
+	          TO_TRS_AC_SL
+	        END) TRS_AC_SL
+	      ,CTSTRS.TRS_CY
+	      ,CTSTRS.ACC_ADDITIONAL_REFERENCE ACC_ADD_REF
+	      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTSTRS.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTSTRS.TRS_AC_BR
+         		 AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+        		 AND AMF.GL_CODE       = CTSTRS.TRS_AC_GL
+         		 AND AMF.CIF_SUB_NO    = CTSTRS.TRS_AC_CIF
+                 AND AMF.SL_NO         = CTSTRS.TRS_AC_SL )ACC_LONG_NAME_ENG
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+           END) AS AMOUNT
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+           END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	  FROM CTSTRS, CTSTRXTYPE
+	 WHERE CTSTRS.COMP_CODE   = #{compCode}
+	 <if test="branchCode!=null">
+	   AND CTSTRS.BRANCH_CODE = #{branchCode}
+	 </if>
+	   AND ((CR_DR_FOREX = 'C' 
+	   				<!-- AND CTSTRS.TO_TRS_AC_BR = #{cif_no}-->
+	   				AND (CTSTRS.TO_TRS_AC_BR IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	   				
+	   				) 
+	        OR
+	        (CR_DR_FOREX  = 'D' 
+	        <!-- AND CTSTRS.TRS_AC_CIF = #{cif_no}-->
+	        AND ( CTSTRS.TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM(SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                           UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	        
+	        )
+	       )
+	   AND CTSTRS.STATUS = 'P'
+	   AND CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	   AND CTSTRS.VALUE_DATE <![CDATA[>]]> #{runningDate}
+	   AND CTSTRS.TRS_DATE <![CDATA[>]]> #{runningDate}
+	   AND CASE WHEN CTSTRS.CHQ_SETTL_FLAG IS NULL 
+	            THEN 'N' 
+	            ELSE CTSTRS.CHQ_SETTL_FLAG 
+	        END <![CDATA[<>]]> 'Y' 
+	   AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE 
+	   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE 
+	   AND CTSTRXTYPE.TYPE  = 'T' 
+	   AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H')
+	
+	UNION ALL
+	
+	SELECT CTSTRS.COMP_CODE
+		  ,CTSTRS.CB_IND
+		  ,CTSTRS.TRS_TYPE
+		  ,CTSTRS.TRX_TYPE
+	      ,CTSTRS.BRANCH_CODE
+	      ,CTSTRS.TRS_NO
+	      ,CTSTRS.TRS_DATE
+	      ,CTSTRS.VALUE_DATE
+	      ,CTSTRS.TO_TRS_AC_BR   TRS_AC_BR
+	      ,CTSTRS.TO_TRS_AC_CY   TRS_AC_CY
+	      ,CTSTRS.TO_TRS_AC_GL   TRS_AC_GL
+	      ,CTSTRS.TO_TRS_AC_CIF  TRS_AC_CIF
+	      ,CTSTRS.TO_TRS_AC_SL   TRS_AC_SL
+	      ,CTSTRS.TRS_CY
+	      ,CTSTRS.ACC_ADDITIONAL_REFERENCE ACC_ADD_REF
+	      ,(SELECT AMF.LONG_NAME_ENG FROM AMF WHERE AMF.COMP_CODE     = CTSTRS.COMP_CODE
+        		 AND AMF.BRANCH_CODE   = CTSTRS.TRS_AC_BR
+         		 AND AMF.CURRENCY_CODE = CTSTRS.TRS_AC_CY
+        		 AND AMF.GL_CODE       = CTSTRS.TRS_AC_GL
+         		 AND AMF.CIF_SUB_NO    = CTSTRS.TRS_AC_CIF
+                 AND AMF.SL_NO         = CTSTRS.TRS_AC_SL )ACC_LONG_NAME_ENG
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.AMOUNT
+            ELSE
+             CTSTRS.AMOUNT
+           END) AS AMOUNT
+          ,(CASE
+            WHEN CTSTRXTYPE.CR_DR_FOREX = 'C' THEN
+             -CTSTRS.CV_AMOUNT
+            ELSE
+             CTSTRS.CV_AMOUNT
+           END) AS CV_AMOUNT
+         ,(SELECT C.DECIMAL_POINTS
+             FROM CURRENCIES C
+            WHERE C.CURRENCY_CODE = #{baseCurrencyCode}
+              AND C.COMP_CODE = #{compCode}) as DECIMAL_POINTS
+	  FROM CTSTRS, CTSTRXTYPE
+	 WHERE CTSTRS.COMP_CODE     = #{compCode}
+	 <if test="branchCode!=null">
+	   AND CTSTRS.BRANCH_CODE   = #{branchCode}
+	 </if>
+	   <!-- AND CTSTRS.TO_TRS_AC_CIF = #{cif_no}-->
+	   AND (CTSTRS.TO_TRS_AC_CIF IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE =#{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no}
+                                                          UNION
+                                                          SELECT #{cif_no}  AS CIF_NO FROM DUAL) TBL))
+	   AND CTSTRS.STATUS        = 'P'
+	   AND CTSTRS.CREATED_DATE <![CDATA[<]]> CTSTRS.TRS_DATE
+	   AND CTSTRS.VALUE_DATE <![CDATA[>]]> #{runningDate}
+	   AND CTSTRS.TRS_DATE <![CDATA[>]]> #{runningDate}
+	   AND CTSTRS.COMP_CODE = CTSTRXTYPE.COMP_CODE
+	   AND CTSTRS.TRX_TYPE  = CTSTRXTYPE.CODE
+	   AND CTSTRXTYPE.TYPE  = 'D'
+	   AND CTSTRXTYPE.CHQ_RELATED IN ('C', 'H'))CHQ_DEPOSIT_TEMP
+	   WHERE NOT EXISTS
+	       (SELECT 1
+	         FROM 
+	         ACC_RESTRICTED AccRest
+	         WHERE CHQ_DEPOSIT_TEMP.COMP_CODE = AccRest.COMP_CODE  
+          	 AND  CHQ_DEPOSIT_TEMP.TRS_AC_BR = AccRest.BRANCH_CODE 
+			 AND  CHQ_DEPOSIT_TEMP.TRS_AC_CY = AccRest.CURRENCY_CODE 
+			 AND  CHQ_DEPOSIT_TEMP.TRS_AC_GL = AccRest.GL_CODE 
+			 AND  CHQ_DEPOSIT_TEMP.TRS_AC_CIF = AccRest.CIF_SUB_NO 
+			 AND   CHQ_DEPOSIT_TEMP.TRS_AC_SL = AccRest.SL_NO 
+			 AND  AccRest.USER_ID =  #{userId}
+			 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+			 AND  AccRest.APP_NAME = #{appName}
+			 )
+	   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+		   AND NOT EXISTS
+	       (SELECT 1
+	          FROM CTSTELLER_ACC_HIDDEN_STATUSES,AMF
+	         WHERE CHQ_DEPOSIT_TEMP.COMP_CODE = AMF.COMP_CODE
+	           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	           AND AMF.BRANCH_CODE = CHQ_DEPOSIT_TEMP.TRS_AC_BR
+	           AND AMF.CURRENCY_CODE = CHQ_DEPOSIT_TEMP.TRS_AC_CY
+	           AND AMF.GL_CODE = CHQ_DEPOSIT_TEMP.TRS_AC_GL
+	           AND AMF.CIF_SUB_NO = CHQ_DEPOSIT_TEMP.TRS_AC_CIF
+	           AND AMF.SL_NO = CHQ_DEPOSIT_TEMP.TRS_AC_SL
+	           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+	           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	           AND AMF.STATUS = CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	           )
+        </if>
+	</sql>
+	<resultMap id="postDatedChqDepListMap" type="dashChequesServicesCO">
+		<result property="ctstrsVO.COMP_CODE"				    column="COMP_CODE"/>
+		<result property="ctstrsVO.TRS_TYPE"					column="TRS_TYPE"/>
+		<result property="ctstrsVO.TRX_TYPE"					column="TRX_TYPE"/>
+		<result property="ctstrsVO.CB_IND"				    	column="CB_IND"/>
+		<result property="branch_code"     						column="BRANCH_CODE"/>
+		<result property="trx_no"         						column="TRS_NO"/>
+		<result property="trx_date"        						column="TRS_DATE"/>
+		<result property="value_date"      						column="VALUE_DATE"/>
+		<result property="trs_acc_br"      						column="TRS_AC_BR"/>
+		<result property="trs_acc_cy"      						column="TRS_AC_CY"/>
+		<result property="trs_acc_gl"      						column="TRS_AC_GL"/>
+		<result property="trs_acc_cif"     						column="TRS_AC_CIF"/>
+		<result property="trs_acc_sl"      						column="TRS_AC_SL"/>
+		<result property="ctstrsVO.ACC_ADDITIONAL_REFERENCE"    column="ACC_ADD_REF"/>
+		<result property="amfVO.LONG_NAME_ENG"      			column="ACC_LONG_NAME_ENG"/>
+		<result property="trs_currency"    						column="TRS_CY"/>
+		<result property="amount"          						column="AMOUNT"/>
+		<result property="cv_amount"	   						column="CV_AMOUNT"/>
+		<result property="decimal_points"  						column="DECIMAL_POINTS"/>
+	</resultMap>
+	<select id="postDatedChqDepList" parameterType="dashboardSC" resultMap="postDatedChqDepListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="postDatedChqDepQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	 </select>
+	<select id="postDatedChqDepListCount" resultType="int" parameterType="dashboardSC"> 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="postDatedChqDepQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+</mapper>

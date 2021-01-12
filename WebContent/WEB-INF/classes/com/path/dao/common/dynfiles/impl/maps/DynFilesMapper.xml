@@ -1,0 +1,1452 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dynFilesMapper">
+	<sql id="selectDynFilesList" >
+		SELECT FILE_CODE, 
+			FILE_DESC
+		FROM (	
+				SELECT FILE_CODE, 
+					FILE_DESC
+				FROM DF_DATA_FILE, DF_FILE_STRUCT 
+				WHERE DF_DATA_FILE.STRUCT_CODE = DF_FILE_STRUCT.STRUCT_CODE
+					AND DF_FILE_STRUCT.STRUCT_TYPE  = #{structType}
+				UNION 
+				SELECT GROUP_CODE AS FILE_CODE,
+					GROUP_DSC AS FILE_DESC
+				FROM DF_HD_FILE_GROUP
+				WHERE STRUCT_TYPE = #{structType}
+		) TBL_FILES, (
+		<include refid="commonLibMapper.select_Common_Priveleges" />
+		) TBL_AXS
+		WHERE 'DF_' <choose >
+        				<when test="isSybase == 1" >
+           					+
+        				</when>
+        				<otherwise >
+           					||
+       					</otherwise>
+      				</choose>
+ 		TBL_FILES.FILE_CODE = TBL_AXS.PROG_REF 
+	</sql>
+		
+	<select id="getDynFilesListCount" resultType="int" parameterType="dynFilesSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectDynFilesList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<select id="getDynFilesList" resultMap="dynFilesListMap" parameterType="dynFilesSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectDynFilesList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+ 		ORDER BY FILE_CODE
+	</select>
+	
+	<resultMap id="dynFilesListMap" type="com.path.vo.common.dynfiles.DynFilesDetCO">
+		<result property="dfDataFileVO.FILE_CODE"	column="FILE_CODE"/>
+		<result property="dfDataFileVO.FILE_DESC"	column="FILE_DESC"/>
+		<result property="dfFileStructVO.FILE_EXT"	    column="FILE_EXT"/>
+	</resultMap>
+	
+	<select id="checkDynFilesFileCode" resultMap="dynFilesListMap" parameterType="dynFilesSC">
+		SELECT FILE_CODE, 
+			FILE_DESC,
+			FILE_EXT
+		FROM (	
+				SELECT FILE_CODE, 
+					FILE_DESC,
+					FILE_EXT
+				FROM DF_DATA_FILE, DF_FILE_STRUCT 
+				WHERE DF_DATA_FILE.STRUCT_CODE = DF_FILE_STRUCT.STRUCT_CODE
+					AND DF_FILE_STRUCT.STRUCT_TYPE  = #{structType}
+					AND DF_DATA_FILE.FILE_CODE = #{fileCode}
+				UNION 
+				SELECT GROUP_CODE AS FILE_CODE,
+					GROUP_DSC AS FILE_DESC,
+					FILE_EXT AS FILE_EXT
+				FROM DF_HD_FILE_GROUP
+				WHERE STRUCT_TYPE = #{structType}
+					AND DF_HD_FILE_GROUP.GROUP_CODE = #{fileCode}
+		) TBL_FILES, (
+		<include refid="commonLibMapper.select_Common_Priveleges" />
+		) TBL_AXS
+		WHERE 'DF_' <choose >
+        				<when test="isSybase == 1" >
+           					+
+        				</when>
+        				<otherwise >
+           					||
+       					</otherwise>
+      				</choose>
+ 		TBL_FILES.FILE_CODE = TBL_AXS.PROG_REF 
+	</select>
+	
+	<select id="getDynFilesProcedureParametersList"  resultMap="getDynFilesProcedureParametersListMap" parameterType="dynFilesSC">
+		SELECT DF_PROCEDURE.PRC_NAME, 
+			DF_PROCEDURE.PRC_NO,
+			DF_FILE_PRC.BF_AF_FLAG,
+			DF_FILE_PRC_INP_PARM.INP_PARM_NO,   
+			DF_FILE_PRC_INP_PARM.INP_PARM_NAME,   
+			DF_FILE_PRC_INP_PARM.INP_PARM_TYPE,
+			DF_FILE_PRC_INP_PARM.FILE_PARM_NO
+		FROM DF_PROCEDURE, DF_FILE_PRC_INP_PARM, DF_FILE_PRC
+		WHERE DF_PROCEDURE.PRC_NO = DF_FILE_PRC.PRC_NO
+			AND DF_FILE_PRC_INP_PARM.FILE_CODE = DF_FILE_PRC.FILE_CODE
+			AND DF_FILE_PRC_INP_PARM.PRC_NO = DF_FILE_PRC.PRC_NO 
+			AND DF_FILE_PRC_INP_PARM.FILE_CODE = #{fileCode}
+				
+		UNION
+		
+		SELECT DF_PROCEDURE.PRC_NAME, 
+			DF_PROCEDURE.PRC_NO,
+			DF_FILE_PRC.BF_AF_FLAG,
+			DF_FILE_PRC_INP_PARM.INP_PARM_NO,   
+			DF_FILE_PRC_INP_PARM.INP_PARM_NAME,   
+			DF_FILE_PRC_INP_PARM.INP_PARM_TYPE,
+			DF_FILE_PRC_INP_PARM.FILE_PARM_NO
+		FROM DF_PROCEDURE, DF_DT_FILE_GROUP, DF_FILE_PRC_INP_PARM, DF_FILE_PRC 
+		WHERE DF_PROCEDURE.PRC_NO = DF_FILE_PRC.PRC_NO
+			AND DF_DT_FILE_GROUP.FILE_CODE = DF_FILE_PRC_INP_PARM.FILE_CODE
+			AND DF_FILE_PRC_INP_PARM.PRC_NO = DF_FILE_PRC.PRC_NO 
+			AND DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+			
+		UNION
+
+		SELECT 	'' AS PRC_NAME,
+			DF_FILE_MISC_SQL.SOURCE_SQL_NO,
+			DF_FILE_MISC_SQL.BF_AF_FLAG,
+			DF_SQL_INP_PARM.INP_PARM_NO, 
+			DF_SQL_INP_PARM.INP_PARM_NAME, 
+			DF_SQL_INP_PARM.INP_PARM_TYPE, 
+			DF_SQL_INP_PARM.FILE_PARM_NO
+		FROM DF_FILE_MISC_SQL, DF_SQL_INP_PARM
+		WHERE DF_FILE_MISC_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO
+			AND DF_FILE_MISC_SQL.FILE_CODE = #{fileCode}
+		
+		ORDER BY PRC_NO,
+			INP_PARM_NO
+	</select>
+	
+	<resultMap id="getDynFilesProcedureParametersListMap" type="dynFilesProcParamCO">
+		<result property="dfProcedureVO.PRC_NAME"			column="PRC_NAME"/>
+		<result property="dfProcedureVO.PRC_NO"				column="PRC_NO"/>
+		<result property="dfFilePrcVO.BF_AF_FLAG"	 		column="BF_AF_FLAG"/>
+		<result property="dfFilePrcInpParm.INP_PARM_NO"		column="INP_PARM_NO"/>
+		<result property="dfFilePrcInpParm.INP_PARM_NAME"	column="INP_PARM_NAME"/>
+		<result property="dfFilePrcInpParm.INP_PARM_TYPE"	column="INP_PARM_TYPE"/>
+		<result property="dfFilePrcInpParm.FILE_PARM_NO"	column="FILE_PARM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesFunctionParametersList"  resultMap="dynFilesFunctionParametersListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_FUNC_INP_PARM.FUNC_NO,
+			DF_FILE_FUNC_INP_PARM.INP_PARM_NO,   
+			DF_FILE_FUNC_INP_PARM.INP_PARM_NAME,   
+			DF_FILE_FUNC_INP_PARM.INP_PARM_DSC,   
+			DF_FILE_FUNC_INP_PARM.INP_PARM_TYPE,
+			DF_FILE_FUNC_INP_PARM.INP_PARM_VALUE
+		FROM DF_FILE_FUNC, DF_FILE_FUNC_INP_PARM
+		WHERE DF_FILE_FUNC.FILE_CODE = DF_FILE_FUNC_INP_PARM.FILE_CODE
+			AND DF_FILE_FUNC.FUNC_NO = DF_FILE_FUNC_INP_PARM.FUNC_NO
+			and DF_FILE_FUNC.FILE_CODE = #{fileCode}
+		ORDER BY DF_FILE_FUNC.FILE_CODE,
+			DF_FILE_FUNC.FUNC_NO, 
+			DF_FILE_FUNC_INP_PARM.INP_PARM_NO
+	</select>
+	
+	<resultMap id="dynFilesFunctionParametersListMap" type="dfFileFuncInpParmVO">
+		<result property="FUNC_NO"			column="FUNC_NO"/>
+		<result property="INP_PARM_NO"		column="INP_PARM_NO"/>
+		<result property="INP_PARM_NAME"	column="INP_PARM_NAME"/>
+		<result property="INP_PARM_DSC"	 	column="INP_PARM_DSC"/>
+		<result property="INP_PARM_TYPE"	column="INP_PARM_TYPE"/>
+		<result property="INP_PARM_VALUE"	column="INP_PARM_VALUE"/>
+	</resultMap>
+	
+				
+	
+	<select id="getDynFilesDetailsList" resultMap="dynFilesDetailsListMap" parameterType="dynFilesSC">
+	<![CDATA[
+		SELECT DF_DATA_FILE.SOURCE_SQL_NO,
+			DF_DATA_FILE.FILE_LOCATION,   
+			DF_DATA_FILE.FILE_NAME,   
+			DF_DATA_FILE.FILE_NAME_SQL,
+			DF_DATA_FILE.ALLOW_FILE_NAME_CHG,   
+			DF_DATA_FILE.ALLOW_FILE_LOC_CHG,
+			DF_DATA_FILE.RUN_SCRIPT,
+			DF_DATA_FILE.UPDATE_SCRIPT,
+			DF_DATA_FILE.SHOW_SCRIPT,
+			DF_DATA_FILE.COMMIT_EACH_SELECT,
+			DF_FILE_STRUCT.STRUCT_CODE, 
+			DF_FILE_STRUCT.STRUCT_DESC,
+			DF_FILE_STRUCT.IMPORT_TYPE,		
+			DF_FILE_STRUCT.FILE_EXT,
+			DF_FILE_STRUCT.XML_DECLARATION,
+        	DF_FILE_STRUCT.DELIMITER_TYPE,   
+        	DF_FILE_STRUCT.DELIMITER_CHAR,   
+        	DF_FILE_STRUCT.FIELD_LENGTH,   
+        	DF_FILE_STRUCT.START_LINE_NO,   
+        	DF_DATA_FILE.INCLUDE_HEADER, 
+        	DF_DATA_FILE.EXCLUDE_FOOTER_YN,
+		  	DF_FILE_STRUCT.FILE_TYPE,
+		  	DF_FILE_STRUCT.SKIP_FILE,
+		  	0 AS GROUP_FLAG
+		FROM DF_DATA_FILE INNER JOIN 
+			DF_FILE_STRUCT ON DF_DATA_FILE.STRUCT_CODE = DF_FILE_STRUCT.STRUCT_CODE
+		WHERE DF_DATA_FILE.FILE_CODE = #{fileCode}
+			AND DF_FILE_STRUCT.STRUCT_TYPE = #{structType}
+			
+		UNION ALL
+		
+		SELECT 0 AS SOURCE_SQL_NO,
+			FILE_LOCATION,   
+			FILE_NAME,   
+			FILE_NAME_SQL,
+			ALLOW_FILE_NAME_CHG, 
+			ALLOW_FILE_LOC_CHG,
+			RUN_SCRIPT,
+			UPDATE_SCRIPT,
+			SHOW_SCRIPT,
+			COMMIT_EACH_SELECT,
+			'' AS STRUCT_CODE,
+			'' AS STRUCT_DESC,
+			IMPORT_TYPE,
+			FILE_EXT,
+			'' AS XML_DECLARATION,
+        	'' AS DELIMITER_TYPE,   
+        	'' AS DELIMITER_CHAR,   
+        	0 AS FIELD_LENGTH,   
+        	0 AS START_LINE_NO,   
+        	'' AS INCLUDE_HEADER, 
+        	'' AS EXCLUDE_FOOTER_YN,
+			FILE_TYPE,
+			'' AS SKIP_FILE,
+			1 AS GROUP_FLAG
+		FROM DF_HD_FILE_GROUP
+		WHERE GROUP_CODE = #{fileCode}
+			AND STRUCT_TYPE = #{structType}
+	]]>
+	</select>
+	
+	<resultMap id="dynFilesDetailsListMap" type="dynFilesDetCO">
+		<result property="dfDataFileVO.SOURCE_SQL_NO"		column="SOURCE_SQL_NO"/>
+		<result property="dfDataFileVO.FILE_LOCATION"		column="FILE_LOCATION"/>
+		<result property="dfDataFileVO.FILE_NAME"			column="FILE_NAME"/>
+		<result property="dfDataFileVO.FILE_NAME_SQL"		column="FILE_NAME_SQL"/>
+		<result property="dfDataFileVO.ALLOW_FILE_NAME_CHG"	column="ALLOW_FILE_NAME_CHG"/>
+		<result property="dfDataFileVO.ALLOW_FILE_LOC_CHG"	column="ALLOW_FILE_LOC_CHG"/>
+		<result property="dfDataFileVO.RUN_SCRIPT"			column="RUN_SCRIPT"/>
+		<result property="dfDataFileVO.UPDATE_SCRIPT"		column="UPDATE_SCRIPT"/>
+		<result property="dfDataFileVO.SHOW_SCRIPT"			column="SHOW_SCRIPT"/>
+		<result property="dfDataFileVO.COMMIT_EACH_SELECT"	column="COMMIT_EACH_SELECT"/>
+		<result property="dfFileStructVO.STRUCT_CODE"		column="STRUCT_CODE"/>
+		<result property="dfFileStructVO.STRUCT_DESC"		column="STRUCT_DESC"/>
+		<result property="dfFileStructVO.IMPORT_TYPE"		column="IMPORT_TYPE"/>
+		<result property="dfFileStructVO.FILE_EXT"			column="FILE_EXT"/>
+		<result property="dfFileStructVO.XML_DECLARATION"	column="XML_DECLARATION"/>
+        <result property="dfFileStructVO.DELIMITER_TYPE"	column="DELIMITER_TYPE"/>   
+        <result property="dfFileStructVO.DELIMITER_CHAR"	column="DELIMITER_CHAR"/>   
+        <result property="dfFileStructVO.FIELD_LENGTH"		column="FIELD_LENGTH"/>   
+        <result property="dfFileStructVO.START_LINE_NO"		column="START_LINE_NO"/>   
+        <result property="dfDataFileVO.INCLUDE_HEADER"		column="INCLUDE_HEADER"/> 
+        <result property="dfDataFileVO.EXCLUDE_FOOTER_YN"	column="EXCLUDE_FOOTER_YN"/> 
+		<result property="dfFileStructVO.FILE_TYPE"			column="FILE_TYPE"/>
+		<result property="dfFileStructVO.SKIP_FILE"			column="SKIP_FILE"/>
+		<result property="fileGroup"						column="GROUP_FLAG"/>
+	</resultMap>
+	
+	<select id="getDynFilesVisibleMiscSQLList" resultMap="DynFilesMiscSQLListMap" parameterType="dynFilesSC">
+	<![CDATA[
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_DESC,    
+         	DF_FILE_MISC_SQL.BF_AF_FLAG,
+			DF_FILE_MISC_SQL.SOURCE_SQL_NO,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT
+    	FROM DF_FILE_MISC_SQL,   
+        	DF_SRC_SQL_STRUCT  
+   		WHERE DF_FILE_MISC_SQL.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO    
+			AND DF_FILE_MISC_SQL.FILE_CODE = #{fileCode}
+			AND DF_FILE_MISC_SQL.EXEC_BY_DEFAULT <> '1'
+		
+		UNION ALL
+		 
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_DESC, 
+			DF_FILE_MISC_SQL.BF_AF_FLAG,
+			DF_FILE_MISC_SQL.SOURCE_SQL_NO,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT
+		FROM DF_FILE_MISC_SQL,
+			DF_DT_FILE_GROUP, 
+			DF_SRC_SQL_STRUCT	
+		WHERE DF_FILE_MISC_SQL.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO    
+			AND DF_FILE_MISC_SQL.FILE_CODE = DF_DT_FILE_GROUP.FILE_CODE
+			AND DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+			AND DF_FILE_MISC_SQL.EXEC_BY_DEFAULT <> '1'
+	]]>
+	</select>
+	
+	<select id="getDynFilesDefaultMiscSQLList" resultMap="DynFilesMiscSQLListMap" parameterType="dynFilesSC">
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_DESC,    
+         	DF_FILE_MISC_SQL.BF_AF_FLAG,
+			DF_FILE_MISC_SQL.SOURCE_SQL_NO,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT
+    	FROM DF_FILE_MISC_SQL,   
+        	DF_SRC_SQL_STRUCT  
+   		WHERE DF_FILE_MISC_SQL.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO    
+			AND DF_FILE_MISC_SQL.FILE_CODE = #{fileCode}
+			AND DF_FILE_MISC_SQL.EXEC_BY_DEFAULT = '1'
+		
+		UNION ALL
+		 
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_DESC, 
+			DF_FILE_MISC_SQL.BF_AF_FLAG,
+			DF_FILE_MISC_SQL.SOURCE_SQL_NO,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT
+		FROM DF_FILE_MISC_SQL,
+			DF_DT_FILE_GROUP, 
+			DF_SRC_SQL_STRUCT	
+		WHERE DF_FILE_MISC_SQL.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO    
+			AND DF_FILE_MISC_SQL.FILE_CODE = DF_DT_FILE_GROUP.FILE_CODE
+			AND DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+			AND DF_FILE_MISC_SQL.EXEC_BY_DEFAULT = '1'
+	</select>
+	
+	<resultMap id="DynFilesMiscSQLListMap" type="dynFilesMiscSQLListCO">
+		<result property="dfSrcSQLStructVO.SOURCE_SQL_DESC"	column="SOURCE_SQL_DESC"/>
+		<result property="dfFileMiscSQLVO.BF_AF_FLAG"		column="BF_AF_FLAG"/>
+		<result property="dfFileMiscSQLVO.SOURCE_SQL_NO"	column="SOURCE_SQL_NO"/>
+		<result property="dfSrcSQLStructVO.SOURCE_SQL_TEXT"	column="SOURCE_SQL_TEXT"/>
+	</resultMap>
+	
+	<select id="getDynFilesSingleFileTagValuesList" resultMap="DynFilesSingleFileTagValuesListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_STRUCT.STRUCT_CODE,
+			DF_FILE_STRUCT_DETAIL.TAG_NO, 
+			DF_FILE_STRUCT_DETAIL.TAG_NAME, 
+			DF_FILE_STRUCT_DETAIL.PARENT_TAG_NO, 
+			DF_FILE_STRUCT_DETAIL.VARIABLE_TAG_NAME,
+			DF_FILE_TAG_VALUES.FIELD_LEN, 
+			DF_FILE_TAG_VALUES.FORMAT_EXPR,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG,
+			DF_FILE_TAG_VALUES.POSITION, 
+			DF_FILE_TAG_VALUES.EXCEL_COLUMN_NO,
+			DF_FILE_TAG_VALUES.DISPLAY_ORDER_NO
+		FROM DF_FILE_STRUCT INNER JOIN 
+			DF_FILE_STRUCT_DETAIL ON DF_FILE_STRUCT.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE LEFT OUTER JOIN 
+			DF_FILE_TAG_VALUES ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_FILE_TAG_VALUES.STRUCT_CODE 
+			AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+		WHERE DF_FILE_STRUCT.STRUCT_CODE = #{structCode}
+		AND DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+		ORDER BY DF_FILE_STRUCT_DETAIL.TAG_NO
+	</select>
+	
+	<resultMap id="DynFilesSingleFileTagValuesListMap" type="dynFilesTagsCO">
+		<result property="dfFileStructVO.STRUCT_CODE"				column="STRUCT_CODE"/>
+		<result property="dfFileStructDetailVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"			column="TAG_NAME"/>
+		<result property="dfFileStructDetailVO.PARENT_TAG_NO"		column="PARENT_TAG_NO"/>
+		<result property="dfFileStructDetailVO.VARIABLE_TAG_NAME"	column="VARIABLE_TAG_NAME"/>
+		<result property="dfTagValuesVO.FIELD_LEN"					column="FIELD_LEN"/>
+		<result property="dfTagValuesVO.FORMAT_EXPR"				column="FORMAT_EXPR"/>
+		<result property="dfTagValuesVO.VISIBLE_FLAG"				column="VISIBLE_FLAG"/>
+		<result property="dfTagValuesVO.POSITION"					column="POSITION"/>
+		<result property="dfTagValuesVO.EXCEL_COLUMN_NO"			column="EXCEL_COLUMN_NO"/>
+		<result property="dfTagValuesVO.DISPLAY_ORDER_NO"			column="DISPLAY_ORDER_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesFileGroupTagValuesList" resultMap="DynFilesFileGroupTagValuesListMap" parameterType="dynFilesSC">
+		SELECT DF_DT_FILE_GROUP.FILE_CODE, 
+			DF_DT_FILE_GROUP.PARENT_FILE_CODE,
+			DF_FILE_STRUCT.STRUCT_CODE, 
+			DF_FILE_STRUCT.FIELD_LENGTH,   
+			DF_FILE_STRUCT.FILE_EXT, 
+			DF_FILE_STRUCT.DELIMITER_TYPE,   
+			DF_FILE_STRUCT.DELIMITER_CHAR,   
+		   	DF_FILE_STRUCT.START_LINE_NO,   
+			DF_FILE_STRUCT.FILE_TYPE,
+			DF_FILE_STRUCT_DETAIL.TAG_NO, 
+			DF_FILE_STRUCT_DETAIL.TAG_NAME, 
+			DF_FILE_STRUCT_DETAIL.PARENT_TAG_NO,
+			DF_FILE_STRUCT_DETAIL.IDENTIFIER_FLAG, 
+			DF_FILE_STRUCT_DETAIL.IDENTIFIER_VALUE,
+			DF_FILE_STRUCT_DETAIL.VARIABLE_TAG_NAME,
+			DF_FILE_TAG_VALUES.FIELD_LEN, 
+			DF_FILE_TAG_VALUES.FORMAT_EXPR,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG,
+			DF_FILE_TAG_VALUES.POSITION, 
+			DF_FILE_TAG_VALUES.EXCEL_COLUMN_NO,
+			DF_FILE_TAG_VALUES.DISPLAY_ORDER_NO 
+		FROM DF_DT_FILE_GROUP INNER JOIN 
+			DF_DATA_FILE ON DF_DT_FILE_GROUP.FILE_CODE = DF_DATA_FILE.FILE_CODE INNER JOIN 
+			DF_FILE_STRUCT ON DF_DATA_FILE.STRUCT_CODE = DF_FILE_STRUCT.STRUCT_CODE INNER JOIN 
+			DF_FILE_STRUCT_DETAIL ON DF_FILE_STRUCT.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE LEFT OUTER JOIN
+			DF_FILE_TAG_VALUES ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_FILE_TAG_VALUES.STRUCT_CODE AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+			AND DF_DT_FILE_GROUP.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE
+		WHERE DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+		ORDER BY DF_DATA_FILE.STRUCT_CODE, DF_FILE_STRUCT_DETAIL.TAG_NO
+	</select>
+	
+	<resultMap id="DynFilesFileGroupTagValuesListMap" type="dynFilesTagsCO">
+		<result property="dfDTFileGroupVO.FILE_CODE"				column="FILE_CODE"/>
+		<result property="dfDTFileGroupVO.PARENT_FILE_CODE"			column="PARENT_FILE_CODE"/>
+		<result property="dfFileStructVO.STRUCT_CODE"				column="STRUCT_CODE"/>
+		<result property="dfFileStructVO.FIELD_LENGTH"				column="FIELD_LENGTH"/>
+		<result property="dfFileStructVO.FILE_EXT"					column="FILE_EXT"/>
+		<result property="dfFileStructVO.DELIMITER_TYPE"			column="DELIMITER_TYPE"/>
+		<result property="dfFileStructVO.DELIMITER_CHAR"			column="DELIMITER_CHAR"/>
+		<result property="dfFileStructVO.START_LINE_NO"				column="START_LINE_NO"/>
+		<result property="dfFileStructVO.FILE_TYPE"					column="FILE_TYPE"/>		
+		<result property="dfFileStructDetailVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"			column="TAG_NAME"/>
+		<result property="dfFileStructDetailVO.PARENT_TAG_NO"		column="PARENT_TAG_NO"/>
+		<result property="dfFileStructDetailVO.IDENTIFIER_FLAG"		column="IDENTIFIER_FLAG"/>
+		<result property="dfFileStructDetailVO.IDENTIFIER_VALUE"	column="IDENTIFIER_VALUE"/>
+		<result property="dfFileStructDetailVO.VARIABLE_TAG_NAME"	column="VARIABLE_TAG_NAME"/>
+		<result property="dfTagValuesVO.FIELD_LEN"					column="FIELD_LEN"/>
+		<result property="dfTagValuesVO.FORMAT_EXPR"				column="FORMAT_EXPR"/>
+		<result property="dfTagValuesVO.VISIBLE_FLAG"				column="VISIBLE_FLAG"/>
+		<result property="dfTagValuesVO.POSITION"					column="POSITION"/>
+		<result property="dfTagValuesVO.EXCEL_COLUMN_NO"			column="EXCEL_COLUMN_NO"/>
+		<result property="dfTagValuesVO.DISPLAY_ORDER_NO"			column="DISPLAY_ORDER_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesSingleFileTagOrder" resultMap="DynFilesSingleFileTagOrderMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_STRUCT_DETAIL.TAG_NO
+		FROM DF_FILE_STRUCT_DETAIL LEFT OUTER JOIN
+			DF_FILE_TAG_VALUES ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_FILE_TAG_VALUES.STRUCT_CODE 
+			AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_TAG_VALUES.TAG_NO 
+		WHERE DF_FILE_STRUCT_DETAIL.STRUCT_CODE = #{structCode}
+		AND DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+		ORDER BY DF_FILE_TAG_VALUES.DISPLAY_ORDER_NO
+	</select>
+	
+	<resultMap id="DynFilesSingleFileTagOrderMap" type="dynFilesCO">
+		<result property="dfFileStructDetailVO.TAG_NO"	column="TAG_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesRowsCount" resultType="int" parameterType="dynFilesSC">
+		SELECT COUNT(1)
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode} 
+			AND LINE_NUMBER > 0
+	</select>
+	
+	<resultMap id="DynFilesTempDataListMap" type="dynFilesDataImportTmpVO">
+		<result property="USER_NAME"		column="USER_NAME"/>
+		<result property="FILE_CODE"		column="FILE_CODE"/>
+		<result property="PROCESSING_DATE"	column="PROCESSING_DATE"/>
+		<result property="SOURCE_SQL_NO"	column="SOURCE_SQL_NO"/>
+		<result property="LINE_NUMBER"		column="LINE_NUMBER"/>
+		<result property="DATA_COLUMN"		column="DATA_COLUMN"/>
+		<result property="STATEMENT"		column="STATEMENT"/>
+		<result property="DELIMITER"		column="DELIMITER"/>
+		<result property="STATUS"			column="STATUS"/>
+		<result property="STRUCT_CODE"		column="STRUCT_CODE"/>
+	</resultMap> 
+	<select id="getDynFilesTempDataList" resultMap="DynFilesTempDataListMap" parameterType="dynFilesSC">
+		SELECT USER_NAME,
+			FILE_CODE,
+			PROCESSING_DATE,
+			SOURCE_SQL_NO,
+			LINE_NUMBER,
+			DATA_COLUMN,
+			STATEMENT,
+			DELIMITER,
+			STATUS,
+			STRUCT_CODE
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode} 
+			AND (LINE_NUMBER = 0
+				OR LINE_NUMBER BETWEEN #{fromRow} AND (#{fromRow} + #{rowRange}))  
+		ORDER BY LINE_NUMBER 
+	</select>
+	
+	
+	<select id="getDynFilesVisibleInputParametersList" resultMap="dynFilesInputParametersListMap" parameterType="dynFilesSC">
+	<![CDATA[
+		SELECT PARM_NO,   
+         	PARM_NAME,   
+         	PARM_DSC, 
+         	PARM_TYPE,
+			DEFAULT_VALUE,
+			PARM_STATUS
+		FROM DF_FILE_PARM
+		WHERE FILE_CODE = #{fileCode}
+			AND PARM_STATUS <> '1'
+		ORDER BY PARM_NO
+	]]>
+	</select>
+	
+	<select id="getDynFilesAllInputParametersList" resultMap="dynFilesInputParametersListMap" parameterType="dynFilesSC">
+		SELECT PARM_NO,   
+         	PARM_NAME,   
+         	PARM_DSC, 
+         	PARM_TYPE,
+			DEFAULT_VALUE,
+			PARM_STATUS
+		FROM DF_FILE_PARM
+		WHERE FILE_CODE = #{fileCode}
+		ORDER BY PARM_NO
+	</select>
+	
+	<resultMap id="dynFilesInputParametersListMap" type="dfFileParmVO">
+		<result property="PARM_NO"			column="PARM_NO"/>
+		<result property="PARM_NAME"		column="PARM_NAME"/>
+		<result property="PARM_DSC"			column="PARM_DSC"/>
+		<result property="PARM_TYPE"		column="PARM_TYPE"/>
+		<result property="DEFAULT_VALUE"	column="DEFAULT_VALUE"/>
+		<result property="PARM_STATUS"		column="PARM_STATUS"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagsCount" resultType="int" parameterType="dynFilesSC">
+		SELECT MAX(COUNT(1))
+		FROM DF_DT_FILE_GROUP, DF_DATA_FILE, DF_FILE_STRUCT_DETAIL 
+		WHERE DF_DT_FILE_GROUP.FILE_CODE = DF_DATA_FILE.FILE_CODE 
+			AND DF_DATA_FILE.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE
+			AND GROUP_CODE = #{fileCode}
+		GROUP BY DF_DT_FILE_GROUP.FILE_CODE
+	</select>
+	
+	<select id="getDynFilesSingleMapColumnsList" resultMap="DynFilesMapColumnsListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_TAG_VALUES.STRUCT_CODE,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,
+			DF_FILE_SQL.PARAM_NO, 
+			DF_FILE_SQL.REF_TAG_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		FROM DF_DATA_FILE INNER JOIN 
+			DF_FILE_SQL ON DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.REF_FILE_CODE INNER JOIN 	
+			DF_SRC_SQL_STRUCT ON DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = DF_FILE_SQL.SOURCE_SQL_NO INNER JOIN 
+			DF_SQL_INP_PARM ON DF_FILE_SQL.PARAM_NO = DF_SQL_INP_PARM.INP_PARM_NO 
+			AND DF_FILE_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO LEFT OUTER JOIN 
+			DF_FILE_TAG_VALUES ON DF_DATA_FILE.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE
+			AND DF_FILE_SQL.REF_TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+		WHERE DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '1'
+		  AND DF_FILE_SQL.FILE_CODE = #{fileCode}
+		  AND DF_FILE_SQL.REF_FILE_CODE = #{fileCode}
+		
+		UNION ALL 
+		
+		SELECT DF_FILE_TAG_VALUES.STRUCT_CODE,
+			null AS SOURCE_SQL_TEXT,
+			DF_SQL_INP_PARM.INP_PARM_NO AS PARAM_NO, 
+			0 AS REF_TAG_NO,
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		FROM DF_DATA_FILE INNER JOIN 
+			DF_FILE_SQL ON DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.FILE_CODE INNER JOIN 
+			DF_SQL_INP_PARM ON DF_FILE_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO LEFT OUTER JOIN 
+			DF_FILE_TAG_VALUES ON DF_DATA_FILE.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE
+			AND DF_FILE_SQL.REF_TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+		WHERE DF_DATA_FILE.FILE_CODE = #{fileCode}
+			AND DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '0'
+		GROUP BY DF_FILE_TAG_VALUES.STRUCT_CODE,
+			DF_SQL_INP_PARM.INP_PARM_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		
+		ORDER BY SOURCE_SQL_NO, PARAM_NO
+	</select>
+	
+	<select id="getDynFilesGroupMapColumnsList" resultMap="DynFilesMapColumnsListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_TAG_VALUES.STRUCT_CODE,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,
+			DF_FILE_SQL.PARAM_NO, 
+			DF_FILE_SQL.REF_TAG_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		FROM DF_DT_FILE_GROUP INNER JOIN 
+			DF_DATA_FILE ON DF_DT_FILE_GROUP.FILE_CODE = DF_DATA_FILE.FILE_CODE INNER JOIN 
+			DF_FILE_SQL ON DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.REF_FILE_CODE INNER JOIN 	
+			DF_SRC_SQL_STRUCT ON DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = DF_FILE_SQL.SOURCE_SQL_NO INNER JOIN 
+			DF_SQL_INP_PARM ON DF_FILE_SQL.PARAM_NO = DF_SQL_INP_PARM.INP_PARM_NO 
+			AND DF_FILE_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO LEFT OUTER JOIN 
+			DF_FILE_TAG_VALUES ON DF_DATA_FILE.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE
+			AND DF_FILE_SQL.REF_TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+		WHERE DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '1'
+			AND DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+		
+		UNION ALL 
+		
+		SELECT DF_FILE_TAG_VALUES.STRUCT_CODE,
+			null SOURCE_SQL_TEXT,
+			DF_SQL_INP_PARM.INP_PARM_NO AS PARAM_NO, 
+			0 AS REF_TAG_NO,
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		FROM DF_DT_FILE_GROUP INNER JOIN 
+			DF_DATA_FILE ON DF_DT_FILE_GROUP.FILE_CODE = DF_DATA_FILE.FILE_CODE INNER JOIN 
+			DF_FILE_SQL ON DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.FILE_CODE INNER JOIN 
+			DF_SQL_INP_PARM ON DF_FILE_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO LEFT OUTER JOIN 
+			DF_FILE_TAG_VALUES ON DF_DATA_FILE.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE
+			AND DF_FILE_SQL.REF_TAG_NO = DF_FILE_TAG_VALUES.TAG_NO
+		WHERE DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+			AND DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '0'
+		GROUP BY DF_FILE_TAG_VALUES.STRUCT_CODE,
+			DF_SQL_INP_PARM.INP_PARM_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE,
+			DF_SQL_INP_PARM.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.TAG_DEPEND_FLAG,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		
+		ORDER BY SOURCE_SQL_NO, PARAM_NO
+	</select>
+	
+	<resultMap id="DynFilesMapColumnsListMap" type="dynFilesColMapCO">
+		<result property="dfFileTagValuesVO.STRUCT_CODE"	column="STRUCT_CODE"/>
+		<result property="dfSrcSQLStructVO.SOURCE_SQL_TEXT"	column="SOURCE_SQL_TEXT"/>
+		<result property="dfFileSQLVO.PARAM_NO"				column="PARAM_NO"/>
+		<result property="dfFileSQLVO.REF_TAG_NO"			column="REF_TAG_NO"/>
+		<result property="dfSQLInpParmVO.FILE_PARM_NO"		column="FILE_PARM_NO"/>
+		<result property="dfSQLInpParmVO.INP_PARM_TYPE"		column="INP_PARM_TYPE"/>
+		<result property="dfSQLInpParmVO.SOURCE_SQL_NO"		column="SOURCE_SQL_NO"/>
+		<result property="dfSQLInpParmVO.TAG_DEPEND_FLAG"	column="TAG_DEPEND_FLAG"/>
+		<result property="dfFileTagValuesVO.VISIBLE_FLAG"	column="VISIBLE_FLAG"/>
+	</resultMap>
+	
+	<select id="dynFilesDynamicQueryResult" parameterType="dynFilesSC" resultType ="java.util.LinkedHashMap">
+		${dynamicSQL}
+	</select>
+	
+	<select id="getDynFilesSQLStatementsList" resultMap="dynFilesSQLStatementsListMap" parameterType="dynFilesSC">
+		SELECT TBL_SQL_NO.SOURCE_SQL_NO, DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT
+		FROM
+		(
+			SELECT DF_FILE_SQL.SOURCE_SQL_NO AS SOURCE_SQL_NO
+			FROM DF_FILE_SQL
+			WHERE DF_FILE_SQL.FILE_CODE = #{fileCode}
+				AND DF_FILE_SQL.REF_FILE_CODE = #{fileCode}
+				
+			UNION 
+			
+			SELECT DF_FILE_SQL_DYN_TAB.SOURCE_SQL_NO AS SOURCE_SQL_NO
+			FROM DF_FILE_SQL_DYN_TAB
+			WHERE DF_FILE_SQL_DYN_TAB.FILE_CODE = #{fileCode}
+				AND DF_FILE_SQL_DYN_TAB.REF_FILE_CODE = #{fileCode}
+	
+			UNION
+			
+			SELECT DF_FILE_SQL_DYN_COL_LIST.SOURCE_SQL_NO AS SOURCE_SQL_NO
+			FROM DF_FILE_SQL_DYN_COL_LIST
+			WHERE DF_FILE_SQL_DYN_COL_LIST.FILE_CODE = #{fileCode}
+				AND DF_FILE_SQL_DYN_COL_LIST.REF_FILE_CODE = #{fileCode}
+		) TBL_SQL_NO, DF_SRC_SQL_STRUCT
+		WHERE TBL_SQL_NO.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO
+	</select>
+	
+	<resultMap id="dynFilesSQLStatementsListMap" type="dfSrcSQLStructVO">
+		<result property="SOURCE_SQL_NO"	column="SOURCE_SQL_NO"/>
+		<result property="SOURCE_SQL_TEXT"	column="SOURCE_SQL_TEXT"/>
+	</resultMap>
+	
+	<select id="getDynFilesXMLTagsList" resultMap="DynFilesXMLTagsListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_STRUCT_DETAIL.TAG_NO, 
+			DF_FILE_STRUCT_DETAIL.TAG_NAME, 
+			DF_FILE_STRUCT_DETAIL.TAG_COUNT_MAX, 
+			DF_FILE_STRUCT_DETAIL.VARIABLE_TAG_NAME, 
+			DF_FILE_STRUCT_DETAIL.PARENT_TAG_NO,
+			DF_FILE_SQL.SOURCE_SQL_NO,
+			DF_FILE_SQL.PARAM_NO
+  		FROM DF_FILE_STRUCT_DETAIL INNER JOIN 
+			DF_DATA_FILE ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_DATA_FILE.STRUCT_CODE
+			LEFT OUTER JOIN DF_FILE_SQL ON DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.FILE_CODE
+			AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_SQL.REF_TAG_NO
+  		WHERE DF_DATA_FILE.FILE_CODE = #{fileCode}
+      		AND DF_FILE_STRUCT_DETAIL.STRUCT_CODE = #{structCode}
+  		ORDER BY DF_FILE_STRUCT_DETAIL.TAG_NO
+	</select>
+	
+	<resultMap id="DynFilesXMLTagsListMap" type="dynFilesTagsCO">
+		<result property="dfFileStructDetailVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"			column="TAG_NAME"/>
+		<result property="dfFileStructDetailVO.TAG_COUNT_MAX"		column="TAG_COUNT_MAX"/>
+		<result property="dfFileStructDetailVO.VARIABLE_TAG_NAME"	column="VARIABLE_TAG_NAME"/>
+		<result property="dfFileStructDetailVO.PARENT_TAG_NO"		column="PARENT_TAG_NO"/>
+		<result property="dfFileSQLVO.SOURCE_SQL_NO"				column="SOURCE_SQL_NO"/>
+		<result property="dfFileSQLVO.PARAM_NO"						column="PARAM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesXMLInputParamList" resultMap="DynFilesXMLInputParamListMap" parameterType="dynFilesSC">
+		SELECT DF_SQL_INP_PARM.INP_PARM_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE
+		FROM DF_DATA_FILE, DF_FILE_SQL, DF_SQL_INP_PARM
+		WHERE DF_DATA_FILE.FILE_CODE = DF_FILE_SQL.FILE_CODE
+			AND DF_FILE_SQL.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO 
+			AND DF_DATA_FILE.FILE_CODE = #{fileCode}
+			AND DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '0'
+		GROUP BY DF_SQL_INP_PARM.INP_PARM_NO, 
+			DF_SQL_INP_PARM.FILE_PARM_NO,
+			DF_SQL_INP_PARM.INP_PARM_TYPE
+		ORDER BY DF_SQL_INP_PARM.INP_PARM_NO
+	</select>
+	
+	<resultMap id="DynFilesXMLInputParamListMap" type="dfSQLInpParmVO">
+		<result property="INP_PARAM_NO"		column="INP_PARAM_NO"/>
+		<result property="FILE_PARM_NO"		column="FILE_PARM_NO"/>
+		<result property="INP_PARM_TYPE"	column="INP_PARM_TYPE"/>
+	</resultMap>
+	
+	<insert id="insertDynFilesTempData" parameterType="dynFilesSC"> 
+		<choose>
+			<when test="isSybase == 1">
+				<foreach collection="dfDataImportTmp" item="DF_DATA_IMPORT_TMPVO">
+					INSERT INTO DF_DATA_IMPORT_TMP
+					<trim prefix="(" suffix=")" suffixOverrides=",">
+						USER_NAME,
+						FILE_CODE,
+						PROCESSING_DATE,
+						SOURCE_SQL_NO,
+						LINE_NUMBER,
+						THREAD_ID,
+						<if test="DF_DATA_IMPORT_TMPVO.DATA_COLUMN != null">
+							DATA_COLUMN,
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.STATEMENT != null">
+							STATEMENT,  
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.DELIMITER != null">
+							DELIMITER, 
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.STATUS != null">
+							STATUS,
+						</if>
+					</trim>
+					<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+						#{DF_DATA_IMPORT_TMPVO.USER_NAME},
+						#{DF_DATA_IMPORT_TMPVO.FILE_CODE},
+						#{DF_DATA_IMPORT_TMPVO.PROCESSING_DATE},
+						#{DF_DATA_IMPORT_TMPVO.SOURCE_SQL_NO},
+						#{DF_DATA_IMPORT_TMPVO.LINE_NUMBER},
+						#{DF_DATA_IMPORT_TMPVO.THREAD_ID,jdbcType=NUMERIC},
+						<if test="DF_DATA_IMPORT_TMPVO.DATA_COLUMN != null">
+							#{DF_DATA_IMPORT_TMPVO.DATA_COLUMN},
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.STATEMENT != null">
+							#{DF_DATA_IMPORT_TMPVO.STATEMENT},  
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.DELIMITER != null">
+							#{DF_DATA_IMPORT_TMPVO.DELIMITER}, 
+						</if>
+						<if test="DF_DATA_IMPORT_TMPVO.STATUS != null">
+							#{DF_DATA_IMPORT_TMPVO.STATUS},
+						</if>
+					</trim>
+				</foreach>
+			</when>
+			<otherwise>
+				INSERT INTO DF_DATA_IMPORT_TMP (
+					USER_NAME,
+					FILE_CODE,
+					PROCESSING_DATE,
+					SOURCE_SQL_NO,
+					LINE_NUMBER,
+					DATA_COLUMN,
+					STATEMENT,  
+					DELIMITER)
+				<foreach collection="dfDataImportTmp" item="DF_DATA_IMPORT_TMPVO" separator="UNION ALL">
+					SELECT
+						#{DF_DATA_IMPORT_TMPVO.USER_NAME},
+						#{DF_DATA_IMPORT_TMPVO.FILE_CODE},
+						#{DF_DATA_IMPORT_TMPVO.PROCESSING_DATE, jdbcType=TIMESTAMP},
+						#{DF_DATA_IMPORT_TMPVO.SOURCE_SQL_NO},
+						#{DF_DATA_IMPORT_TMPVO.LINE_NUMBER},
+						#{DF_DATA_IMPORT_TMPVO.DATA_COLUMN, jdbcType=VARCHAR},
+						#{DF_DATA_IMPORT_TMPVO.STATEMENT, jdbcType=VARCHAR},  
+						#{DF_DATA_IMPORT_TMPVO.DELIMITER, jdbcType=VARCHAR}
+					FROM DUAL
+				</foreach>
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<insert id="insertDynFilesTempDataEnhance" parameterType="com.path.dbmaps.vo.DF_DATA_IMPORT_TMPVO"> 
+		<choose>
+			<when test="isSybase == 1">
+			
+					INSERT INTO DF_DATA_IMPORT_TMP
+					<trim prefix="(" suffix=")" suffixOverrides=",">
+						USER_NAME,
+						FILE_CODE,
+						PROCESSING_DATE,
+						SOURCE_SQL_NO,
+						LINE_NUMBER,
+						THREAD_ID,
+						<if test="DATA_COLUMN != null">
+							DATA_COLUMN,
+						</if>
+						<if test="STATEMENT != null">
+							STATEMENT,  
+						</if>
+						<if test="DELIMITER != null">
+							DELIMITER, 
+						</if>
+						<if test="STATUS != null">
+							STATUS,
+						</if>
+					</trim>
+					<trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+						#{USER_NAME},
+						#{FILE_CODE},
+						#{PROCESSING_DATE},
+						#{SOURCE_SQL_NO},
+						#{LINE_NUMBER},
+						#{THREAD_ID,jdbcType=NUMERIC},
+						<if test="DATA_COLUMN != null">
+							#{DATA_COLUMN},
+						</if>
+						<if test="STATEMENT != null">
+							#{STATEMENT},  
+						</if>
+						<if test="DELIMITER != null">
+							#{DELIMITER}, 
+						</if>
+						<if test="STATUS != null">
+							#{STATUS},
+						</if>
+					</trim>
+				
+			</when>
+			<otherwise>
+				INSERT INTO DF_DATA_IMPORT_TMP (
+					USER_NAME,
+					FILE_CODE,
+					PROCESSING_DATE,
+					SOURCE_SQL_NO,
+					LINE_NUMBER,
+					DATA_COLUMN,
+					STATEMENT,  
+					DELIMITER)
+			
+					SELECT
+						#{USER_NAME},
+						#{FILE_CODE},
+						#{PROCESSING_DATE, jdbcType=TIMESTAMP},
+						#{SOURCE_SQL_NO},
+						#{LINE_NUMBER},
+						#{DATA_COLUMN, jdbcType=VARCHAR},
+						#{STATEMENT, jdbcType=VARCHAR},  
+						#{DELIMITER, jdbcType=VARCHAR}
+					FROM DUAL
+				
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<delete id="deleteDynFilesFileCode" parameterType="dynFilesSC">
+		DELETE
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode}	
+	</delete>
+	
+	<select id="getDynFilesAllTempDataList" resultMap="DynFilesAllTempDataListMap" parameterType="dynFilesSC">
+		SELECT STATEMENT,
+			LINE_NUMBER
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode} 
+			AND LINE_NUMBER > 0
+		ORDER BY LINE_NUMBER 
+	</select>
+	
+	<select id="getDynFilesLineStatementList" resultMap="DynFilesAllTempDataListMap" parameterType="dynFilesSC">
+		SELECT STATEMENT,
+			LINE_NUMBER
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode} 
+			AND LINE_NUMBER = #{fromRow}
+	</select>
+	
+	<select id="getDynFilesPendingStatementList" resultMap="DynFilesAllTempDataListMap" parameterType="dynFilesSC">
+		SELECT STATEMENT,
+			LINE_NUMBER
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode}
+			AND LINE_NUMBER > (SELECT MAX(LINE_NUMBER) 
+								FROM DF_DATA_IMPORT_TMP 
+								WHERE STATUS = 1)
+	</select>
+	
+	<resultMap id="DynFilesAllTempDataListMap" type="dfDataImportTmpVO">
+		<result property="STATEMENT"		column="STATEMENT"/>
+		<result property="LINE_NUMBER"		column="LINE_NUMBER"/>
+	</resultMap>
+	
+	<select id="getDynFilesPKColumnsList" resultMap="DynFilesPKColumnsListMap" parameterType="dynFilesSC">
+		<choose >
+        	<when test="isSybase == 1" >
+        	<![CDATA[
+				select CASE WHEN index_col(object_name(i.id),i.indid,1) IS NOT NULL THEN index_col(object_name(i.id),i.indid,1) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,2) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,2) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,3) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,3) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,4) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,4) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,5) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,5) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,6) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,6) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,7) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,7) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,8) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,8) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,9) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,9) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,10) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,10) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,11) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,11) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,12) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,12) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,13) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,13) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,14) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,14) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,15) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,15) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,16) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,16) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,17) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,17) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,18) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,18) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,19) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,19) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,20) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,20) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,21) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,21) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,22) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,22) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,23) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,23) END +
+					CASE WHEN index_col(object_name(i.id),i.indid,24) IS NOT NULL THEN ',' + index_col(object_name(i.id),i.indid,24) END columnName
+				from sysindexes i, sysobjects o, syssegments s
+				where o.id = i.id 
+					and i.indid between 1 and 254
+					and o.uid = 1
+					and (i.status2 & 3 > 0 or charindex(convert(varchar,i.id),i.name) > 0)
+					and i.segment = s.segment 
+					and o.type = 'U'
+					and o.name = #{tableName}
+			]]>
+			</when>
+			<otherwise >
+				SELECT ALL_CONS_COLUMNS.COLUMN_NAME columnName
+				FROM ALL_CONSTRAINTS, ALL_CONS_COLUMNS
+				WHERE ALL_CONSTRAINTS.TABLE_NAME = ALL_CONS_COLUMNS.TABLE_NAME
+					AND ALL_CONSTRAINTS.CONSTRAINT_NAME = ALL_CONS_COLUMNS.CONSTRAINT_NAME
+					AND ALL_CONSTRAINTS.TABLE_NAME = #{tableName}
+					AND CONSTRAINT_TYPE = 'P'
+			</otherwise>
+		</choose>
+	</select>
+	
+	<resultMap id="DynFilesPKColumnsListMap" type="dynFilesPKColumnsCO">
+		<result property="columnName"	column="columnName"/>
+	</resultMap>
+	
+	<update id="updateDynFilesStatementStatus" parameterType="dynFilesSC">
+		UPDATE DF_DATA_IMPORT_TMP
+		SET STATUS = #{status}, 
+			EXECUTION_LOG = #{message}
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode}
+			AND LINE_NUMBER = #{currLineNo}
+	</update>
+	
+	<select id="getDynFilesStatementDescriptionList" resultMap="DynFilesStatementDescriptionListMap" parameterType="dynFilesSC">
+		SELECT SOURCE_SQL_NO,
+			STATEMENT,
+			EXECUTION_LOG
+		FROM DF_DATA_IMPORT_TMP
+		WHERE USER_NAME = #{userId}
+			AND FILE_CODE = #{fileCode} 
+			AND LINE_NUMBER > 0
+		ORDER BY LINE_NUMBER 
+	</select>
+	
+	<resultMap id="DynFilesStatementDescriptionListMap" type="dfDataImportTmpVO">
+		<result property="SOURCE_SQL_NO"		column="SOURCE_SQL_NO"/>
+		<result property="STATEMENT"			column="STATEMENT"/>
+		<result property="EXECUTION_LOG"		column="EXECUTION_LOG"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagParameterValuesList" resultMap="dynFilesTagParameterValuesListMap" parameterType="dynFilesSC">
+		SELECT TAG_NO, TAG_NAME, DISP_VAL, DATA_VAL
+		FROM (SELECT DF_FILE_STRUCT_DETAIL.TAG_NO,
+					DF_FILE_STRUCT_DETAIL.TAG_NAME,
+		       	  	TBL_TAGS.DISP_VAL,
+		       	  	TBL_TAGS.DATA_VAL
+		      FROM DF_FILE_STRUCT_DETAIL INNER JOIN
+					DF_FILE_TAG_VALUES ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_FILE_TAG_VALUES.STRUCT_CODE
+				    AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_TAG_VALUES.TAG_NO INNER JOIN 
+				    DF_FILE_TAG_INP_PARAM ON DF_FILE_TAG_VALUES.FILE_CODE = DF_FILE_TAG_INP_PARAM.FILE_CODE
+				    AND DF_FILE_TAG_VALUES.STRUCT_CODE = DF_FILE_TAG_INP_PARAM.STRUCT_CODE
+					AND DF_FILE_TAG_VALUES.TAG_NO = DF_FILE_TAG_INP_PARAM.TAG_NO LEFT OUTER JOIN
+					(SELECT TAG_NO, 
+						INP_PARAM_DISP_VALUE AS DISP_VAL,
+						INP_PARAM_DATA_VALUE AS DATA_VAL
+		       		FROM DF_FILE_TAG_INP_PARAM
+		       		WHERE FILE_CODE = #{fileCode}
+					AND STRUCT_CODE = #{structCode}
+					AND DEFAULT_VALUE = '1') TBL_TAGS ON DF_FILE_STRUCT_DETAIL.TAG_NO = TBL_TAGS.TAG_NO
+				WHERE DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+					AND DF_FILE_TAG_VALUES.STRUCT_CODE = #{structCode}
+				    AND DF_FILE_TAG_VALUES.SOURCE_SQL_COL = '?'
+				    AND DF_FILE_TAG_VALUES.FILE_PARM_NO IS NULL) TBL
+		GROUP BY TAG_NO,
+		       TAG_NAME,
+		       DISP_VAL,
+		       DATA_VAL
+		ORDER BY TAG_NO
+	</select>
+	
+	<resultMap id="dynFilesTagParameterValuesListMap" type="dynFilesTagParametersCO">
+		<result property="dfFileStructDetailVO.TAG_NO"					column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"				column="TAG_NAME"/>
+		<result property="dfFileTagInpParamVO.INP_PARAM_DISP_VALUE"		column="DISP_VAL"/>
+		<result property="dfFileTagInpParamVO.INP_PARAM_DATA_VALUE" 	column="DATA_VAL"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagDisplayValuesList" resultMap="dynFilesTagDisplayValuesListMap" parameterType="dynFilesSC">
+		SELECT INP_PARAM_NO, INP_PARAM_DISP_VALUE, INP_PARAM_DATA_VALUE 
+		FROM DF_FILE_TAG_INP_PARAM
+		WHERE FILE_CODE = #{fileCode}
+			AND STRUCT_CODE = #{structCode}
+		    AND TAG_NO = #{tagNo}
+		ORDER BY INP_PARAM_NO
+	</select>
+	
+	<select id="getInputTagValue" resultType="com.path.dbmaps.vo.DF_FILE_TAG_INP_PARAMVO" parameterType="dynFilesSC">
+		SELECT  *
+		FROM DF_FILE_TAG_INP_PARAM
+		WHERE FILE_CODE = #{fileCode}
+			AND STRUCT_CODE = #{structCode}
+		    AND TAG_NO = #{tagNo}		
+			AND INP_PARAM_DISP_VALUE =#{inpParamDispValue}   
+	
+	</select>
+	
+	<resultMap id="dynFilesTagDisplayValuesListMap" type="dfFileTagInpParamVO">
+		<result property="INP_PARAM_NO"				column="INP_PARAM_NO"/>
+		<result property="INP_PARAM_DISP_VALUE"		column="INP_PARAM_DISP_VALUE"/>
+		<result property="INP_PARAM_DATA_VALUE"		column="INP_PARAM_DATA_VALUE"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagInputParametersList" resultMap="dynFilesTagInputParametersListMap" parameterType="dynFilesSC">
+		SELECT TAG_NO, FILE_PARM_NO
+		FROM DF_FILE_TAG_VALUES
+		WHERE FILE_CODE = #{fileCode} 
+			AND STRUCT_CODE = #{structCode}
+		    AND SOURCE_SQL_COL = '?'
+	</select>
+	
+	<resultMap id="dynFilesTagInputParametersListMap" type="dfFileTagValuesVO">
+		<result property="TAG_NO"			column="TAG_NO"/>
+		<result property="FILE_PARM_NO"		column="FILE_PARM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagsExportList" resultMap="dynFilesTagsExportListMap" parameterType="dynFilesSC">
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,   
+  			DF_SRC_SQL_STRUCT.FILTER_EXPR, 
+			DF_FILE_TAG_VALUES.TAG_NO,
+			DF_FILE_STRUCT_DETAIL.TAG_NAME,
+			DF_FILE_TAG_VALUES.SOURCE_SQL_NO,
+			DF_FILE_TAG_VALUES.SOURCE_LST_SQL_NO,
+			DF_FILE_TAG_VALUES.SOURCE_SQL_COL,
+			DF_SRC_SQL_STRUCT.PARENT_SQL_NO,
+			DF_FILE_TAG_VALUES.COMP_EXPR,
+			DF_FILE_TAG_VALUES.FIELD_LEN,
+			DF_FILE_TAG_VALUES.FORMAT_EXPR,
+			DF_FILE_TAG_VALUES.FILE_PARM_NO,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG
+		FROM DF_FILE_TAG_VALUES INNER JOIN 
+			DF_FILE_STRUCT_DETAIL ON DF_FILE_TAG_VALUES.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE
+			AND DF_FILE_TAG_VALUES.TAG_NO = DF_FILE_STRUCT_DETAIL.TAG_NO LEFT OUTER JOIN
+  			DF_SRC_SQL_STRUCT ON DF_FILE_TAG_VALUES.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO  
+		WHERE DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+			AND DF_FILE_TAG_VALUES.STRUCT_CODE = #{structCode}
+			<if test="isDynFiles == true">
+				AND DF_FILE_TAG_VALUES.VISIBLE_FLAG = '1'
+			</if>
+		ORDER BY DF_FILE_TAG_VALUES.TAG_NO
+	</select>
+	
+	<resultMap id="dynFilesTagsExportListMap" type="dynFilesTagsCO">
+		<result property="dfSrcSqlStructVO.SOURCE_SQL_TEXT"	column="SOURCE_SQL_TEXT"/>
+		<result property="dfSrcSqlStructVO.FILTER_EXPR"		column="FILTER_EXPR"/>
+		<result property="dfTagValuesVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"	column="TAG_NAME"/>
+		<result property="dfTagValuesVO.SOURCE_SQL_NO"		column="SOURCE_SQL_NO"/>
+		<result property="dfTagValuesVO.SOURCE_LST_SQL_NO"	column="SOURCE_LST_SQL_NO"/>
+		<result property="dfTagValuesVO.SOURCE_SQL_COL"		column="SOURCE_SQL_COL"/>
+		<result property="dfSrcSqlStructVO.PARENT_SQL_NO"	column="PARENT_SQL_NO"/>
+		<result property="dfTagValuesVO.COMP_EXPR"			column="COMP_EXPR"/>
+		<result property="dfTagValuesVO.FIELD_LEN"			column="FIELD_LEN"/>
+		<result property="dfTagValuesVO.FORMAT_EXPR"		column="FORMAT_EXPR"/>
+		<result property="dfTagValuesVO.FILE_PARM_NO"		column="FILE_PARM_NO"/>
+		<result property="dfTagValuesVO.VISIBLE_FLAG"		column="VISIBLE_FLAG"/>
+	</resultMap>
+	
+	<select id="getDynFilesExistColumnOrder" resultType="int" parameterType="dynFilesSC">
+		SELECT SUM(DF_FILE_TAG_VALUES.DISPLAY_ORDER_NO)
+		FROM DF_FILE_TAG_VALUES INNER JOIN 
+			DF_FILE_STRUCT_DETAIL ON DF_FILE_TAG_VALUES.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE
+			AND DF_FILE_TAG_VALUES.TAG_NO = DF_FILE_STRUCT_DETAIL.TAG_NO
+		WHERE DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+			AND DF_FILE_TAG_VALUES.STRUCT_CODE = #{structCode}
+			<if test="isDynFiles == true">
+				AND DF_FILE_TAG_VALUES.VISIBLE_FLAG = '1'
+			</if>
+	</select>
+	
+	<select id="getDynFilesTagsExportOrderedList" resultMap="dynFilesTagsExportOrderedListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_TAG_VALUES.TAG_NO,
+			DF_FILE_STRUCT_DETAIL.TAG_NAME,
+			DF_FILE_TAG_VALUES.FIELD_LEN,
+			DF_FILE_TAG_VALUES.PAD_LEFT_RIGHT,
+			DF_FILE_TAG_VALUES.PADDING_CHAR,
+			DF_FILE_TAG_VALUES.EXCEL_COLUMN_NO,
+			DF_FILE_TAG_VALUES.VISIBLE_FLAG,
+			DF_FILE_TAG_VALUES.EDITABLE,
+			DF_FILE_TAG_VALUES.SOURCE_LST_SQL_NO
+		FROM DF_FILE_TAG_VALUES INNER JOIN 
+			DF_FILE_STRUCT_DETAIL ON DF_FILE_TAG_VALUES.STRUCT_CODE = DF_FILE_STRUCT_DETAIL.STRUCT_CODE
+			AND DF_FILE_TAG_VALUES.TAG_NO = DF_FILE_STRUCT_DETAIL.TAG_NO
+		WHERE DF_FILE_TAG_VALUES.FILE_CODE = #{fileCode}
+			AND DF_FILE_TAG_VALUES.STRUCT_CODE = #{structCode}
+			<if test="isDynFiles == true">
+				AND DF_FILE_TAG_VALUES.VISIBLE_FLAG = '1'
+			</if>
+		<choose >
+			<when test="isOrdered > 0" >
+		 		ORDER BY DF_FILE_TAG_VALUES.DISPLAY_ORDER_NO
+			</when>
+			<otherwise >
+	 			ORDER BY DF_FILE_TAG_VALUES.TAG_NO
+			</otherwise>
+		</choose>
+	</select>
+	
+	<resultMap id="dynFilesTagsExportOrderedListMap" type="dynFilesTagsCO">
+		<result property="dfTagValuesVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"	column="TAG_NAME"/>
+		<result property="dfTagValuesVO.FIELD_LEN"			column="FIELD_LEN"/>
+		<result property="dfTagValuesVO.PAD_LEFT_RIGHT"		column="PAD_LEFT_RIGHT"/>
+		<result property="dfTagValuesVO.PADDING_CHAR"		column="PADDING_CHAR"/>
+		<result property="dfTagValuesVO.EXCEL_COLUMN_NO"	column="EXCEL_COLUMN_NO"/>
+		<result property="dfTagValuesVO.VISIBLE_FLAG"		column="VISIBLE_FLAG"/>
+		<result property="dfTagValuesVO.EDITABLE"			column="EDITABLE"/>
+		<result property="dfTagValuesVO.SOURCE_LST_SQL_NO"	column="SOURCE_LST_SQL_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesTagsXMLExportList" resultMap="dynFilesTagsXMLExportListMap" parameterType="dynFilesSC">
+		SELECT DF_FILE_STRUCT_DETAIL.TAG_NO, 
+       		DF_FILE_STRUCT_DETAIL.TAG_NAME, 
+       		DF_FILE_STRUCT_DETAIL.TAG_DECLARATION,
+       		DF_FILE_STRUCT_DETAIL.PARENT_TAG_NO,
+			DF_FILE_STRUCT_DETAIL.TAG_COUNT_MAX, 
+			DF_FILE_STRUCT_DETAIL.VARIABLE_TAG_NAME,
+			DF_SRC_SQL_STRUCT.PARENT_SQL_NO,
+			DF_FILE_TAG_VALUES.SOURCE_SQL_NO, 
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,
+			DF_SRC_SQL_STRUCT.FILTER_EXPR,
+			DF_FILE_TAG_VALUES.SOURCE_SQL_COL,
+			CASE WHEN DF_FILE_TAG_VALUES.FIELD_LEN IS NULL THEN 0 ELSE DF_FILE_TAG_VALUES.FIELD_LEN END FIELD_LEN,
+			DF_FILE_TAG_VALUES.PADDING_CHAR,
+			DF_FILE_TAG_VALUES.PAD_LEFT_RIGHT,
+			CASE WHEN DF_FILE_TAG_VALUES.SKIP_TAG IS NULL THEN '0' ELSE DF_FILE_TAG_VALUES.SKIP_TAG END SKIP_TAG,
+			DF_FILE_TAG_VALUES.COMP_EXPR,
+			DF_FILE_TAG_VALUES.FORMAT_EXPR,
+			DF_FILE_TAG_VALUES.FILE_PARM_NO
+      	FROM DF_FILE_STRUCT_DETAIL INNER JOIN 
+      		DF_DATA_FILE ON DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_DATA_FILE.STRUCT_CODE LEFT OUTER JOIN
+      		DF_FILE_TAG_VALUES ON DF_DATA_FILE.FILE_CODE = DF_FILE_TAG_VALUES.FILE_CODE 
+          	AND DF_FILE_STRUCT_DETAIL.STRUCT_CODE = DF_FILE_TAG_VALUES.STRUCT_CODE
+      		AND DF_FILE_STRUCT_DETAIL.TAG_NO = DF_FILE_TAG_VALUES.TAG_NO LEFT OUTER JOIN
+        	DF_SRC_SQL_STRUCT ON DF_FILE_TAG_VALUES.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO
+      	WHERE DF_FILE_STRUCT_DETAIL.STRUCT_CODE = #{structCode}
+            AND DF_DATA_FILE.FILE_CODE = #{fileCode}
+      	ORDER BY DF_FILE_STRUCT_DETAIL.STRUCT_CODE, DF_FILE_STRUCT_DETAIL.TAG_NO
+	</select>
+		
+	
+	<resultMap id="dynFilesTagsXMLExportListMap" type="dynFilesTagsCO">
+		<result property="dfFileStructDetailVO.TAG_NO"				column="TAG_NO"/>
+		<result property="dfFileStructDetailVO.TAG_NAME"			column="TAG_NAME"/>
+       	<result property="dfFileStructDetailVO.TAG_DECLARATION"		column="TAG_DECLARATION"/>
+       	<result property="dfFileStructDetailVO.PARENT_TAG_NO"		column="PARENT_TAG_NO"/>
+       	<result property="dfFileStructDetailVO.TAG_COUNT_MAX"		column="TAG_COUNT_MAX"/>
+		<result property="dfFileStructDetailVO.VARIABLE_TAG_NAME"	column="VARIABLE_TAG_NAME"/>
+		<result property="dfSrcSqlStructVO.PARENT_SQL_NO"			column="PARENT_SQL_NO"/>
+		<result property="dfTagValuesVO.SOURCE_SQL_NO"				column="SOURCE_SQL_NO"/>
+		<result property="dfSrcSqlStructVO.SOURCE_SQL_TEXT"			column="SOURCE_SQL_TEXT"/>
+		<result property="dfSrcSqlStructVO.FILTER_EXPR"				column="FILTER_EXPR"/>
+		<result property="dfTagValuesVO.SOURCE_SQL_COL"				column="SOURCE_SQL_COL"/>
+		<result property="dfTagValuesVO.FIELD_LEN"					column="FIELD_LEN"/>
+		<result property="dfTagValuesVO.PADDING_CHAR"				column="PADDING_CHAR"/>
+		<result property="dfTagValuesVO.PAD_LEFT_RIGHT"				column="PAD_LEFT_RIGHT"/>
+		<result property="dfTagValuesVO.SKIP_TAG"					column="SKIP_TAG"/>
+		<result property="dfTagValuesVO.COMP_EXPR"					column="COMP_EXPR"/>
+		<result property="dfTagValuesVO.FORMAT_EXPR"				column="FORMAT_EXPR"/>
+		<result property="dfTagValuesVO.FILE_PARM_NO"				column="FILE_PARM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesSQLExportList" resultMap="dynFilesSQLExportListMap" parameterType="dynFilesSC">
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,
+			DF_SRC_SQL_STRUCT.SOURCE_SQL_NO,
+			DF_SQL_INP_PARM.FILE_PARM_NO
+		FROM DF_DATA_FILE INNER JOIN 
+			DF_SRC_SQL_STRUCT ON DF_DATA_FILE.SOURCE_SQL_NO = DF_SRC_SQL_STRUCT.SOURCE_SQL_NO LEFT OUTER JOIN 
+			DF_SQL_INP_PARM ON DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO
+		WHERE DF_DATA_FILE.FILE_CODE = #{fileCode}
+			AND DF_DATA_FILE.STRUCT_CODE = #{structCode}
+	</select>
+	
+	<resultMap id="dynFilesSQLExportListMap" type="dynFilesSQLExportCO">
+		<result property="dfSrcSqlStructVO.SOURCE_SQL_TEXT"		column="SOURCE_SQL_TEXT"/>
+		<result property="dfSrcSqlStructVO.SOURCE_SQL_NO"		column="SOURCE_SQL_NO"/>
+		<result property="dfSqlInpParmVO.FILE_PARM_NO"			column="FILE_PARM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesSQLWithInputParamList" resultMap="dynFilesSQLWithInputParamListMap" parameterType="dynFilesSC">
+		SELECT DF_SRC_SQL_STRUCT.SOURCE_SQL_TEXT,
+			DF_SQL_INP_PARM.FILE_PARM_NO
+		FROM DF_SRC_SQL_STRUCT LEFT OUTER JOIN 
+			DF_SQL_INP_PARM ON DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = DF_SQL_INP_PARM.SOURCE_SQL_NO
+		WHERE DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = #{sourceSQLNo}
+	</select>
+	
+	<resultMap id="dynFilesSQLWithInputParamListMap" type="dynFilesSQLExportCO">
+		<result property="dfSrcSqlStructVO.SOURCE_SQL_TEXT"		column="SOURCE_SQL_TEXT"/>
+		<result property="dfSqlInpParmVO.FILE_PARM_NO"			column="FILE_PARM_NO"/>
+	</resultMap>
+	
+	<select id="getDynFilesXMLAttributesList" resultMap="dynFilesXMLAttributesListMap" parameterType="dynFilesSC">
+		SELECT TAG_NO,
+	        PARAM_NAME,
+	        PARAM_VALUE,
+	        COMP_EXP,
+	        SQL_COL_NAME,
+	        TAG_SQL
+		FROM DF_FILE_TAG_PARAM
+	    WHERE FILE_CODE = #{fileCode}
+	        AND STRUCT_CODE = #{structCode}
+	    ORDER BY TAG_NO, PARAM_NO
+    </select>
+    
+    <resultMap id="dynFilesXMLAttributesListMap" type="dfFileTagParamVO">
+		<result property="TAG_NO"			column="TAG_NO"/>
+		<result property="PARAM_NAME"		column="PARAM_NAME"/>
+		<result property="PARAM_VALUE"		column="PARAM_VALUE"/>
+		<result property="COMP_EXP"			column="COMP_EXP"/>
+		<result property="SQL_COL_NAME"		column="SQL_COL_NAME"/>
+		<result property="TAG_SQL"		column="TAG_SQL"/>
+	</resultMap>
+	
+	<select id="getDynFilesGroupOfFilesList" resultMap="dynFilesGroupOfFilesListMap" parameterType="dynFilesSC">
+		SELECT DF_DATA_FILE.FILE_CODE,
+			DF_DATA_FILE.STRUCT_CODE
+		FROM DF_DT_FILE_GROUP INNER JOIN
+			DF_DATA_FILE ON DF_DT_FILE_GROUP.FILE_CODE = DF_DATA_FILE.FILE_CODE
+		WHERE DF_DT_FILE_GROUP.GROUP_CODE = #{fileCode}
+	</select>
+	
+	<resultMap id="dynFilesGroupOfFilesListMap" type="dfDataFileVO">
+		<result property="FILE_CODE"		column="FILE_CODE"/>
+		<result property="STRUCT_CODE"		column="STRUCT_CODE"/>
+	</resultMap>
+	
+	<select id="returnDynFilesSourceLSTSQLNo" resultType="java.math.BigDecimal" parameterType="dynFilesSC">
+		SELECT SOURCE_LST_SQL_NO
+	    FROM DF_FILE_TAG_VALUES
+	    WHERE FILE_CODE = #{fileCode}
+	    	AND STRUCT_CODE = #{structCode}
+	    	AND TAG_NO = #{tagNo}
+	</select>
+	
+	<select id="returnXMLCountTagsSQLMostColumns" resultType="int" parameterType="dynFilesSC">
+		SELECT MAX(COUNT(1))
+      	FROM DF_FILE_SQL 
+      	WHERE FILE_CODE = #{fileCode}
+      	GROUP BY SOURCE_SQL_NO
+	</select>
+	
+	<resultMap id="selectDynamicFileInfoMap" type="dynFilesCO">
+		<result property="dfDataFileVO.FILE_CODE"				column="FILE_CODE"/>
+		<result property="dfDataFileVO.STRUCT_CODE"				column="STRUCT_CODE"/>
+		<result property="dfDataFileVO.FILE_TYPE"				column="FILE_TYPE"/>
+		<result property="dfFileStructVO.STRUCT_TYPE"			column="STRUCT_TYPE"/>
+	</resultMap>
+	
+	<select id="selectDynamicFileInfo" resultMap="selectDynamicFileInfoMap" parameterType="dynFilesSC">
+		SELECT DF_DATA_FILE.FILE_CODE,
+		       DF_DATA_FILE.STRUCT_CODE,
+		       DF_DATA_FILE.FILE_TYPE,
+		       DF_FILE_STRUCT.STRUCT_TYPE
+		  FROM DF_DATA_FILE LEFT OUTER JOIN DF_FILE_STRUCT ON DF_FILE_STRUCT.STRUCT_CODE = DF_DATA_FILE.STRUCT_CODE
+		 WHERE DF_DATA_FILE.FILE_CODE = #{fileCode}
+	</select>
+	
+	<select id="returnStructCompExprCount" resultType="int" parameterType="dynFilesSC">
+		SELECT COUNT(1)
+		FROM DF_FILE_TAG_VALUES
+		WHERE STRUCT_CODE = #{structCode}
+			AND COMP_EXPR IS NOT NULL
+	</select>
+	
+	
+	<select id="returnLineNumberCount" parameterType="dynFilesSC" resultType="BigDecimal">
+     
+	     SELECT COUNT (1) 
+	     FROM DF_DATA_IMPORT_TMP 
+	     WHERE USER_NAME = #{userId}
+	     AND FILE_CODE = #{fileCode}
+	     AND LINE_NUMBER > 0 
+	     AND STATUS = 0          
+	
+	</select>
+	
+	<insert id="insertImportedFile" parameterType="dynFilesSC"> 
+	
+	    INSERT INTO CTSFILE_VALID (COMP_CODE, BRANCH_CODE, FILE_CHECKSUM,FILE_CODE)
+		SELECT #{compCode}, #{branchCode},#{dynFileName},1
+		 FROM DUAL
+		WHERE NOT EXISTS (SELECT 1 FROM CTSFILE_VALID WHERE FILE_CHECKSUM =#{dynFileName}  )
+	
+	</insert>
+<select id="returnImportedFileCount" parameterType="dynFilesSC" resultType="String">	
+	
+	<choose >
+        				<when test="isSybase == 1" >
+                     SELECT TOP 1 PROCESSED FROM CTSFILE_VALID
+	                 WHERE COMP_CODE = #{compCode}
+	                 AND  SUBSTRING(FILE_CHECKSUM,1,CHARINDEX('*',FILE_CHECKSUM)) = #{dynFileName}           					
+        				</when>
+        				<otherwise >
+           			SELECT  MAX(PROCESSED)
+                    FROM CTSFILE_VALID	
+                    WHERE COMP_CODE = #{compCode}
+                    AND SUBSTR(FILE_CHECKSUM, 1, INSTR(FILE_CHECKSUM,'*' )) = #{dynFileName}  
+       					</otherwise>
+      				</choose>
+	
+	<if test="getProcessed == 1">
+	  AND COALESCE(PROCESSED,'0') = '1'  
+	</if>
+	<if test="getProcessed == 0">
+	  AND COALESCE(PROCESSED,'0') = '0'
+	</if>
+	
+	
+	
+	</select>
+	
+	<select id="returnBatchNumber" parameterType="dynFilesSC" resultType="BigDecimal">
+        SELECT MAX(BATCH_NO)
+		FROM   CTSUPLOAD_HEADER 
+		WHERE COMP_CODE  = #{compCode}
+		AND  BRANCH_CODE = #{branchCode}
+		AND  UPLOADED_BY = #{userId}
+		<choose >
+        				<when test="isSybase == 1" >
+		AND  CONVERT(DATE,UPLOAD_DATE,101) >= CONVERT(DATETIME,#{batchSystemDate}, 101)
+		</when>
+        				<otherwise >
+        AND  TRUNC(UPLOAD_DATE) >= TRUNC(#{batchSystemDate})				
+        				</otherwise>
+      				</choose>
+		AND  BATCH_TYPE = #{batchType}
+	</select>
+	
+	<select id="returnBatchType" parameterType="dynFilesSC" resultType="BigDecimal">
+        SELECT BATCH_TYPE 
+        FROM CTS_UPLOAD_FILE_TYPE 
+        WHERE FILE_TYPE = #{batchFileType}
+	</select>
+	
+	<select id="returnDefaultValueTrxType" parameterType="dynFilesSC" resultType="String">
+        SELECT SHORT_DESC_ENG 
+        FROM CTSTRXTYPE WHERE CODE = 
+		( 
+			SELECT CTS_UPLOAD_FILE_TYPE.DEFAULT_TRXTYPE 
+			FROM CTS_UPLOAD_FILE_TYPE 
+			WHERE CTS_UPLOAD_FILE_TYPE.FILE_TYPE = #{batchFileType}
+		) AND COMP_CODE= #{compCode}
+	</select>
+	
+	<select id="returnFuncInpVoParam" parameterType="dynFilesSC" resultType="com.path.vo.common.dynfiles.DynFilesClientFuncCO">
+        SELECT B.INP_PARM_NAME INP_PARM_NAME,
+        	   B.INP_PARM_VALUE INP_PARM_VALUE,
+        	   B.FILE_CODE FILE_CODE,
+        	   B.FUNC_NO FUNC_NO,
+        	   B.INP_PARM_NO INP_PARM_NO,
+        	   C.FUNC_NAME FUNC_NAME
+        FROM   DF_FILE_FUNC A,
+        	   DF_FILE_FUNC_INP_PARM B,
+        	   DF_FUNCTION C 
+		WHERE  A.FILE_CODE = B.FILE_CODE
+		AND    A.FUNC_NO   = B.FUNC_NO
+		AND    A.FUNC_NO   = C.FUNC_NO 
+		AND    B.FILE_CODE  = #{fileCode}
+		AND    A.BF_AF_FLAG = #{bfAfFlag}
+	</select>
+	
+	<resultMap id="parentSqlNumberRelatedToTagSqlNumberMap" type="dynFilesTagsCO">
+		<result property="dfSrcSqlStructVO.PARENT_SQL_NO"	column="PARENT_SQL_NO"/>
+		<result property="dfSrcSqlStructVO.FILTER_EXPR"		column="FILTER_EXPR"/>
+	</resultMap>
+	
+	<select id="returnParentSqlNumberRelatedToTagSqlNumber" resultMap="parentSqlNumberRelatedToTagSqlNumberMap" parameterType="dynFilesSC">
+		SELECT DF_SRC_SQL_STRUCT.PARENT_SQL_NO,
+			   DF_SRC_SQL_STRUCT.FILTER_EXPR
+		FROM DF_SRC_SQL_STRUCT
+		WHERE DF_SRC_SQL_STRUCT.SOURCE_SQL_NO = #{tagSqlNumber}
+	</select>
+	
+	<resultMap id="executeDymmyStatementMap" type="dynFilesSC">
+		<result property="systemDate" column="systemDate" />
+	</resultMap>
+	
+	<select id="executeDymmyStatement" resultMap="executeDymmyStatementMap" parameterType="dynFilesSC">
+     SELECT 
+      <choose>
+	       <when test="isSybase == 1"> GETDATE()</when>
+	       <otherwise>SYSDATE FROM DUAL</otherwise>
+       </choose>
+	</select>
+	
+	<select id="returnSchemaFile" resultType="dfDataFileVO" parameterType="dfDataFileVO">
+     SELECT FILE_CODE, SCHEMA_FILE
+       FROM DF_DATA_FILE
+      WHERE FILE_CODE = #{FILE_CODE}
+	</select>
+	
+	<select id="returnAttributeTagName" resultType="String"	parameterType="dynFilesSC">
+		SELECT DF_FILE_SQL.ATTRIBUTE_NAME
+		FROM DF_FILE_SQL, 
+			 DF_DATA_FILE, 
+			 DF_SQL_INP_PARM
+		WHERE DF_FILE_SQL.REF_FILE_CODE = DF_DATA_FILE.FILE_CODE
+		AND   DF_SQL_INP_PARM.SOURCE_SQL_NO = DF_FILE_SQL.SOURCE_SQL_NO
+		AND   DF_SQL_INP_PARM.INP_PARM_NO = DF_FILE_SQL.PARAM_NO
+		AND   DF_SQL_INP_PARM.TAG_DEPEND_FLAG = '1'
+		AND   DF_FILE_SQL.FILE_CODE = #{fileCode}
+		AND   DF_FILE_SQL.SOURCE_SQL_NO = #{attributeTagSqlNo}
+		AND   DF_SQL_INP_PARM.INP_PARM_NO = #{inpParamNo}
+	</select>
+	<select id="getDynFilesVisibleInputParametersList" resultMap="dynFilesInputParametersListMap" parameterType="dynFilesSC">
+	<![CDATA[
+		SELECT PARM_NO,   
+         	PARM_NAME,   
+         	PARM_DSC, 
+         	PARM_TYPE,
+			DEFAULT_VALUE,
+			PARM_STATUS
+		FROM DF_FILE_PARM
+		WHERE FILE_CODE = #{fileCode}
+			AND PARM_STATUS <> '1'
+		ORDER BY PARM_NO
+	]]>
+	</select>
+</mapper>

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="referenceListMapper">
+
+ <sql id="referenceListCommon">
+	<![CDATA[
+	 SELECT TFSLC1.LC_TYPE,
+        	TFSLC1.LC_NBR,
+         	TFSLC1.LC_REFERENCE_NBR,
+			TFSLC1.LC_STATUS,
+			TFSLC1.LC_REFERENCE_TYPE,
+			TFSLC1.LC_REFERENCE_TIME,
+			TFSLC1.LC_REFERENCE_YEAR,
+        	TFSLC1.CIF,
+         	TFSLC1.APPLICATION_DATE,
+         	TFSLC1.VALIDITY_FROM,
+         	TFSLC1.VALIDITY_TO,
+         	TFSLC1.LC_CURRENCY,
+         	TFSLC1.LC_AMOUNT,
+			TFSLC1.MARGIN_REQUIRED,
+			(CASE WHEN TFSLC1.TOTAL_SHIPMENT_AMOUNT IS NULL THEN 0 ELSE TFSLC1.TOTAL_SHIPMENT_AMOUNT END) TFSLC_TOTAL_SHIPMENT_AMOUNT,
+			(CASE WHEN TFSLC2.SETTLEMENT_AMOUNT IS NULL THEN 0 ELSE TFSLC2.SETTLEMENT_AMOUNT END) TFSLC_SETTLEMENT_AMOUNT,
+			(CASE WHEN TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT IS NULL THEN 0 ELSE TFSLC2.TOTAL_SHIPPING_GUARANTEE_AMT END)TOTAL_SHIPPING_GUARANTEE_AMT,
+			(CASE WHEN TFSLC2.PARTIAL_SHIPMENTS_ALLOWED IS NULL THEN 0 ELSE TFSLC2.PARTIAL_SHIPMENTS_ALLOWED END) PARTIAL_SHIPMENTS_ALLOWED,
+			TFSLC1.CREDIT_AVAILABILITY,
+         	CURRENCIES.BRIEF_DESC_ENG,
+			CURRENCIES.DECIMAL_POINTS,
+            (CASE WHEN (CASE WHEN TFSLC1.CIF IS NULL THEN 0 ELSE TFSLC1.CIF END) = 0 THEN TFSLC1.CIF_NAME ELSE CIF.SHORT_NAME_ENG END) CIF_NAME,
+			TFSLC1.SETTLEMENT_METHOD
+      FROM  TFSLC2, CURRENCIES, TFSLC1 LEFT OUTER JOIN CIF
+        ON (TFSLC1.COMP_CODE  = CIF.COMP_CODE
+            AND TFSLC1.CIF    = CIF.CIF_NO)
+     WHERE ( TFSLC1.COMP_CODE     = TFSLC2.COMP_CODE ) AND
+		   ( TFSLC1.BRANCH     = TFSLC2.BRANCH ) AND
+		   ( TFSLC1.LC_TYPE    = TFSLC2.LC_TYPE ) AND
+		   ( TFSLC1.LC_YEAR    = TFSLC2.LC_YEAR ) AND
+		   ( TFSLC1.LC_NBR     = TFSLC2.LC_NBR ) AND
+		   ( TFSLC1.COMP_CODE  = CURRENCIES.COMP_CODE ) and
+           ( TFSLC1.LC_CURRENCY   = CURRENCIES.CURRENCY_CODE ) and
+           ( ( TFSLC1.COMP_CODE   = #{compCode} ) and
+		   ( TFSLC1.BRANCH   = #{branchCode} ) and
+		   ( TFSLC1.LC_TYPE  = '1' ) and
+	  	   ( TFSLC1.LC_REFERENCE_NBR  > 0 ) and
+		   ( TFSLC1.LC_STATUS = (CASE WHEN #{iv_crud} = 'R' THEN TFSLC1.LC_STATUS WHEN #{iv_crud} = 'I' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'A' END) WHEN #{iv_crud} = 'P' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'A' ELSE 'L' END) WHEN #{iv_crud} = 'V' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'J' THEN 'L' WHEN #{iv_crud} = 'N' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'Z' THEN 'I' WHEN #{iv_crud} = 'W' THEN 'Z' WHEN #{iv_crud} = 'PJ' THEN 'L' WHEN #{iv_crud} = 'VW' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'I' ELSE 'P' END) ELSE 'A' END) 
+				OR TFSLC1.LC_STATUS = (CASE WHEN #{iv_crud} = 'R' THEN TFSLC1.LC_STATUS WHEN #{iv_crud} = 'I' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'A' END) WHEN #{iv_crud} = 'P' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'A' ELSE 'L' END) WHEN #{iv_crud} = 'V' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'J' THEN 'L' WHEN #{iv_crud} = 'N' THEN (CASE WHEN #{iv_crud} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'Z' THEN 'I' WHEN #{iv_crud} = 'W' THEN 'Z' WHEN #{iv_crud} = 'PJ' THEN 'L' WHEN #{iv_crud} = 'VW' THEN 'Z' ELSE 'A' END) ) )       
+
+	]]>	 
+ </sql>
+    
+ <resultMap id="referenceList_ResMap" type="referenceCO">
+	<result property="LNK_REFERENCE" column="LNK_REFERENCE" />
+	<result property="LC_TYPE" column="LC_TYPE" />
+	<result property="LC_NBR" column="LC_NBR" />
+	<result property="LC_REFERENCE_NBR" column="LC_REFERENCE_NBR" />
+	<result property="LC_STATUS" column="LC_STATUS" />
+	<result property="LC_REFERENCE_TYPE" column="LC_REFERENCE_TYPE" />
+	<result property="LC_REFERENCE_TIME" column="LC_REFERENCE_TIME" />
+	<result property="LC_REFERENCE_YEAR" column="LC_REFERENCE_YEAR" />
+	<result property="CIF" column="CIF" />
+	<result property="APPLICATION_DATE" column="APPLICATION_DATE" />
+	<result property="VALIDITY_FROM" column="VALIDITY_FROM" />
+	<result property="VALIDITY_TO" column="VALIDITY_TO" />
+	<result property="LC_CURRENCY" column="LC_CURRENCY" />
+	<result property="LC_AMOUNT" column="LC_AMOUNT" />
+	<result property="MARGIN_REQUIRED" column="MARGIN_REQUIRED" />
+	<result property="TOTAL_SHIPMENT_AMOUNT" column="TOTAL_SHIPMENT_AMOUNT" />
+	<result property="PARTIAL_SHIPMENTS_ALLOWED" column="PARTIAL_SHIPMENTS_ALLOWED" />
+	<result property="CREDIT_AVAILABILITY" column="CREDIT_AVAILABILITY" />
+	<result property="DECIMAL_POINTS" column="DECIMAL_POINTS" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+	<result property="SETTLEMENT_METHOD" column="SETTLEMENT_METHOD" />	
+ </resultMap>
+ 
+ <select id="referenceList" resultMap="referenceList_ResMap" parameterType="referenceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="referenceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="referenceListCount" resultType="int" parameterType="referenceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="referenceListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="dependencyByReference" resultType="BigDecimal" parameterType="referenceSC" >
+ 	SELECT TFSLC1.LC_NBR
+	  FROM TFSLC2, CURRENCIES, TFSLC1 LEFT OUTER JOIN CIF 
+	       ON (TFSLC1.COMP_CODE = CIF.COMP_CODE
+	           AND TFSLC1.CIF   = CIF.CIF_NO) 
+     WHERE ( TFSLC1.COMP_CODE     = TFSLC2.COMP_CODE ) AND
+		   ( TFSLC1.BRANCH     = TFSLC2.BRANCH ) AND
+		   ( TFSLC1.LC_TYPE    = TFSLC2.LC_TYPE ) AND
+		   ( TFSLC1.LC_YEAR    = TFSLC2.LC_YEAR ) AND
+		   ( TFSLC1.LC_NBR     = TFSLC2.LC_NBR ) AND
+		   ( TFSLC1.COMP_CODE  = CURRENCIES.COMP_CODE ) and  
+           ( TFSLC1.LC_CURRENCY   = CURRENCIES.CURRENCY_CODE ) and  
+           ( ( TFSLC1.COMP_CODE   = #{compCode} ) and
+			  ( TFSLC1.BRANCH   = #{branchCode} ) and
+			  ( TFSLC1.LC_TYPE  = #{raType}) and
+			  ( TFSLC1.LC_REFERENCE_NBR  > 0 ) and			
+		     (   TFSLC1.LC_STATUS = (CASE WHEN #{iv_crud} = 'R' THEN TFSLC1.LC_STATUS WHEN #{iv_crud} = 'I' THEN (CASE WHEN #{raType} = 'O' THEN 'A' END) WHEN #{iv_crud} = 'P' THEN (CASE WHEN #{raType} = 'O' THEN 'A' ELSE 'L' END) WHEN #{iv_crud} = 'V' THEN (CASE WHEN #{raType} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'J' THEN 'L' WHEN #{iv_crud} = 'N' THEN (CASE WHEN #{raType} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'Z' THEN 'I' WHEN #{iv_crud} = 'W' THEN 'Z' WHEN #{iv_crud} = 'PJ' THEN 'L' WHEN #{iv_crud} = 'VW' THEN (CASE WHEN #{raType} = 'O' THEN 'I' ELSE 'P' END) ELSE 'A' END) 
+				OR TFSLC1.LC_STATUS = (CASE WHEN #{iv_crud} = 'R' THEN TFSLC1.LC_STATUS WHEN #{iv_crud} = 'I' THEN (CASE WHEN #{raType} = 'O' THEN 'A' END) WHEN #{iv_crud} = 'P' THEN (CASE WHEN #{raType} = 'O' THEN 'A' ELSE 'L' END) WHEN #{iv_crud} = 'V' THEN (CASE WHEN #{raType} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'J' THEN 'L' WHEN #{iv_crud} = 'N' THEN (CASE WHEN #{raType} = 'O' THEN 'I' ELSE 'P' END) WHEN #{iv_crud} = 'Z' THEN 'I' WHEN #{iv_crud} = 'W' THEN 'Z' WHEN #{iv_crud} = 'PJ' THEN 'L' WHEN #{iv_crud} = 'VW' THEN 'Z' ELSE 'A' END) ) )       
+		 AND TFSLC1.LC_NBR = #{referenceNo}
+ </select>
+ 
+ 
+ 
+ 
+  <sql id="referenceListLGCommon">
+	<![CDATA[
+	 SELECT TFSLG.LG_NBR,
+			TFSLG.REQUISITION_NBR,   
+			TFSLG.LG_STATUS,   
+         	TFSLG.CIF,            	
+         	TFSLG.CURRENCY,   
+        	TFSLG.AMOUNT,
+        	TFSLG.DOC_DATE ,
+        	TFSLG.VALIDITY_FROM,
+        	TFSLG.VALIDITY_TO,
+			TFSLG.DOC_NUMBER,
+			TFSLG.DOC_YEAR,   
+         	CURRENCIES.BRIEF_DESC_ENG,
+			CURRENCIES.DECIMAL_POINTS,
+         	CIF.SHORT_NAME_ENG,
+			TFSDOCTYPE.BRIEF_NAME_ENG,
+			TFSLG.MARGIN_REQUIRED
+       FROM CURRENCIES, CIF, TFSLG LEFT OUTER JOIN TFSDOCTYPE
+         ON (TFSLG.COMP_CODE    = TFSDOCTYPE.COMP_CODE
+             AND TFSLG.DOC_TYPE = TFSDOCTYPE.CODE)
+	  WHERE ( TFSLG.COMP_CODE   = CURRENCIES.COMP_CODE ) and  
+            ( TFSLG.CURRENCY = CURRENCIES.CURRENCY_CODE ) and  
+            ( TFSLG.COMP_CODE   = CIF.COMP_CODE ) and  
+            ( TFSLG.CIF         = CIF.CIF_NO ) and
+			( TFSDOCTYPE.DOC_TYPE  = 'G' ) and
+         	( ( TFSLG.COMP_CODE   = #{compCode} ) and
+			( TFSLG.BRANCH      = #{branchCode} ) and			 
+			( TFSLG.LG_NBR > 0 ) AND
+			( TFSLG.LG_STATUS = (CASE WHEN #{iv_crud} = 'R' THEN TFSLG.LG_STATUS WHEN #{iv_crud} = 'V' THEN 'P' WHEN #{iv_crud} = 'Z' THEN 'P' WHEN #{iv_crud} = 'N' THEN 'P' WHEN #{iv_crud} = 'W' THEN 'Z' WHEN #{iv_crud} = 'T' THEN 'P' ELSE 'A' END)))
+	]]>	 
+ </sql>
+ 
+  <resultMap id="referenceLGList_ResMap" type="referenceCO">
+	<result property="LG_NBR" column="LG_NBR" />
+	<result property="REQUISITION_NBR" column="REQUISITION_NBR" />
+	<result property="LG_STATUS" column="LG_STATUS" />
+	<result property="CIF" column="CIF" />
+	<result property="DOC_DATE" column="DOC_DATE" />
+	<result property="VALIDITY_FROM" column="VALIDITY_FROM" />
+	<result property="VALIDITY_TO" column="VALIDITY_TO" />
+	<result property="CURRENCY" column="CURRENCY" />
+	<result property="AMOUNT" column="AMOUNT" />
+	<result property="DOC_NUMBER" column="DOC_NUMBER" />
+	<result property="DOC_YEAR" column="DOC_YEAR" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="DECIMAL_POINTS" column="DECIMAL_POINTS" />
+	<result property="SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="MARGIN_REQUIRED" column="MARGIN_REQUIRED" />
+	 </resultMap>
+	 
+ <select id="referenceLGList" resultMap="referenceLGList_ResMap" parameterType="referenceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="referenceListLGCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="referenceLGListCount" resultType="int" parameterType="referenceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="referenceListLGCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ 
+ 
+   <sql id="referenceListDealCommon">
+	<![CDATA[
+			SELECT
+			 TRSDEAL.SERIAL_NO,
+			  TRSDEAL.VALUE_DATE,
+			  TRSDEAL.MATURITY_DATE,
+			 TRSDEAL.CIF_NO
+	FROM  TRSDEAL 
+	WHERE	 TRSDEAL.COMP_CODE  = #{compCode}
+	 AND	TRSDEAL.BRANCH_CODE  = #{branchCode}
+	 AND	TRSDEAL.STATUS  IN ( 'P'  )	]]>	 
+ </sql>
+ 
+  <resultMap id="referenceDealList_ResMap" type="referenceCO">
+	<result property="SERIAL_NO" column="SERIAL_NO" />
+	<result property="VALUE_DATE" column="VALUE_DATE" />
+	<result property="MATURITY_DATE" column="MATURITY_DATE" />
+	<result property="CIF_NO" column="CIF_NO" />	
+	 </resultMap>
+ 
+ <select id="referenceDealList" resultMap="referenceDealList_ResMap" parameterType="referenceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="referenceListDealCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="referenceDealListCount" resultType="int" parameterType="referenceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="referenceListDealCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 
+ <sql id="referenceListBCCommon">
+	<![CDATA[
+	  SELECT TFSBILL.BILL_TYPE,   
+         	 TFSBILL.BILL_NBR,   
+             TFSBILL.BILL_DATE,
+         	 TFSBILL.PARTY_BANK_CIF,   
+			 A.SHORT_NAME_ENG ,
+         	 TFSBILL.CUSTOMER_CIF,   
+         	 TFSBILL.PAY_METHOD,   
+	         TFSBILL.PAY_FACILITY_NO,   
+    	     TFSBILL.CURRENCY,   
+        	 TFSBILL.STATUS ,
+         	 TFSBILL.BANK_DEF_CIF ,
+         	 CURRENCIES.BRIEF_DESC_ENG,
+		 	 TFSBILL.DOC_NUMBER,
+		     TFSBILL.DOC_YEAR, 
+		     TFSBILL.AMOUNT, 
+         	 TFSBILL.MANUAL_REFERENCE
+        FROM CURRENCIES, TFSBILL LEFT OUTER JOIN CIF A
+             ON (TFSBILL.COMP_CODE = A.COMP_CODE
+                 AND TFSBILL.BANK_DEF_CIF = A.CIF_NO )
+               LEFT OUTER JOIN CIF B
+             ON (TFSBILL.COMP_CODE = B.COMP_CODE 
+                 AND TFSBILL.CUSTOMER_CIF  = B.CIF_NO )     
+	   WHERE ( TFSBILL.COMP_CODE      = #{compCode} ) AND
+	         ( TFSBILL.BRANCH         = #{branchCode} ) AND
+	         ( TFSBILL.BILL_TYPE      = #{billType} ) AND
+			 ( TFSBILL.MARGIN_REQUIRED    = 1) AND 
+	         ( TFSBILL.STATUS         = (CASE WHEN #{iv_crud}  = 'R' THEN TFSBILL.STATUS  WHEN #{iv_crud}  = 'P' THEN 'A' WHEN #{iv_crud}  = 'V' THEN 'P' WHEN #{iv_crud}  = 'N' THEN 'P' END)) AND
+	         ( TFSBILL.COMP_CODE      = CURRENCIES.COMP_CODE ) AND
+	         ( TFSBILL.CURRENCY       = CURRENCIES.CURRENCY_CODE ) ]]>	 
+ </sql>
+ 
+ 
+  	<resultMap id="referenceBCList_ResMap" type="referenceCO">
+	<result property="BILL_TYPE" column="BILL_TYPE" />
+	<result property="BILL_NBR" column="BILL_NBR" />
+	<result property="BILL_DATE" column="BILL_DATE" />	
+	<result property="PARTY_BANK_CIF" column="PARTY_BANK_CIF" />
+	<result property="SHORT_NAME_ENG" column="SHORT_NAME_ENG" />
+	<result property="CUSTOMER_CIF" column="CUSTOMER_CIF" />	
+	<result property="PAY_METHOD" column="PAY_METHOD" />
+	<result property="PAY_FACILITY_NO" column="PAY_FACILITY_NO" />	
+	<result property="CURRENCY" column="CURRENCY" />
+	<result property="STATUS" column="STATUS" />
+	<result property="BANK_DEF_CIF" column="BANK_DEF_CIF" />	
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="DOC_NUMBER" column="DOC_NUMBER" />
+	<result property="DOC_YEAR" column="DOC_YEAR" />
+	<result property="AMOUNT" column="AMOUNT" />
+	<result property="MANUAL_REFERENCE" column="MANUAL_REFERENCE" />	
+	</resultMap>
+ 
+  <select id="referenceBCList" resultMap="referenceBCList_ResMap" parameterType="referenceSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="referenceListBCCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="referenceBCListCount" resultType="int" parameterType="referenceSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="referenceListBCCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ 	<resultMap id="resultFxDealLookupMap" type="referenceCO">
+		<result property="trsDealVO.BRANCH_CODE" 		column="BRANCH_CODE" />
+		<result property="trsDealVO.SERIAL_NO" 			column="SERIAL_NO" />
+		<result property="trsDealVO.PROMISSORY_FX_NO" 	column="PROMISSORY_FX_NO" />
+		<result property="trsDealVO.FORWARD_RATE" 		column="FORWARD_RATE" />
+		<result property="trsDealVO.DEAL_CY" 			column="DEAL_CY" />
+		<result property="trsDealVO.DEAL_AMOUNT" 		column="DEAL_AMOUNT" />
+		<result property="trsDealVO.DEAL_RATE" 			column="DEAL_RATE" />
+		<result property="trsDealVO.DEAL_UNIT" 			column="DEAL_UNIT" />
+		<result property="trsDealVO.OTHER_CY" 			column="OTHER_CY" />
+		<result property="trsDealVO.OTHER_AMOUNT" 		column="OTHER_AMOUNT" />
+		<result property="trsDealVO.OTHER_RATE" 		column="OTHER_RATE" />
+		<result property="trsDealVO.OTHER_UNIT" 		column="OTHER_UNIT" />
+		<result property="trsDealVO.USER_ID" 			column="USER_ID" />
+		<result property="trsDealVO.FOREX_TYPE" 		column="FOREX_TYPE" />
+		<result property="trsDealVO.CIF_NO" 			column="CIF_NO" />
+		<result property="trsFxLinkedUtilizationVO.AMOUNT_FC" 			column="AMOUNT_FC" />
+		<result property="trsFxLinkedUtilizationVO.UTILIZED_AMOUNT_CV"	column="UTILIZED_AMOUNT_CV" />
+		<result property="trsFxLinkedUtilizationVO.UTILIZED_AMOUNT_FC" 	column="UTILIZED_AMOUNT_FC" />
+		<result property="otherCyDesc" 					column="OTHER_CY_DESC" />
+		<result property="otherCyDecPnts" 				column="OTHER_CY_DEC" />
+		<result property="dealCyDesc" 					column="DEAL_CY_DESC" />
+		<result property="dealCyDecPnts" 				column="DEAL_CY_DEC" />
+		<result property="outstandSold" 				column="outstandSold" />
+		<result property="outstandBought" 				column="outstandBought" />
+	</resultMap>
+	
+	<sql id="select_FxDeal">
+		 SELECT TRSDEAL.BRANCH_CODE ,
+		 		TRSDEAL.SERIAL_NO,
+		        TRSDEAL.PROMISSORY_FX_NO,
+		        TRSDEAL.FORWARD_RATE,
+		        TRSDEAL.DEAL_CY,
+		        TRSDEAL.DEAL_AMOUNT,
+		        TRSDEAL.DEAL_RATE,
+		        TRSDEAL.DEAL_UNIT,
+		        TRSDEAL.OTHER_CY,
+		        TRSDEAL.OTHER_AMOUNT,
+		        TRSDEAL.OTHER_RATE,
+		        TRSDEAL.OTHER_UNIT,
+		        TRSDEAL.USER_ID,
+		        TRS_FX_LINKED_UTILIZATION.AMOUNT_FC,
+		        TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_CV,
+		        TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_FC,
+		        CUR1.BRIEF_DESC_ENG OTHER_CY_DESC,
+		        CUR2.BRIEF_DESC_ENG DEAL_CY_DESC,
+		        CUR1.DECIMAL_POINTS OTHER_CY_DEC,
+		        CUR2.DECIMAL_POINTS DEAL_CY_DEC,
+		        TRSDEAL.FOREX_TYPE,
+		        TRSDEAL.CIF_NO,
+		        ((CASE
+		        WHEN TRSDEAL.DEAL_AMOUNT IS NULL THEN
+		          0
+		        ELSE
+		         TRSDEAL.DEAL_AMOUNT
+		        END) 
+		        - 
+		        (CASE
+		          WHEN TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_FC IS NULL THEN
+		            0
+		          ELSE
+		            TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_FC
+		          END)
+		      ) outstandSold,
+		      ((CASE
+		        WHEN TRSDEAL.OTHER_AMOUNT IS NULL THEN
+		          0
+		        ELSE
+		          TRSDEAL.OTHER_AMOUNT
+		        END) 
+		        - 
+		        (CASE
+		          WHEN TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_CV IS NULL THEN
+		            0
+		          ELSE
+		            TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_CV
+		          END)
+		      ) outstandBought
+			FROM TRSDEAL LEFT OUTER JOIN TRS_FX_LINKED_UTILIZATION 
+							ON TRS_FX_LINKED_UTILIZATION.COMP_CODE 			= TRSDEAL.COMP_CODE
+								AND TRS_FX_LINKED_UTILIZATION.BRANCH_CODE 	= TRSDEAL.BRANCH_CODE
+								AND	TRS_FX_LINKED_UTILIZATION.DEAL_NO 		= TRSDEAL.SERIAL_NO
+								AND 
+									CASE WHEN TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_CV IS NULL 
+										THEN 0 
+										ELSE TRS_FX_LINKED_UTILIZATION.UTILIZED_AMOUNT_CV 
+									END
+									 <![CDATA[ < ]]> TRS_FX_LINKED_UTILIZATION.AMOUNT_CV ,
+			CURRENCIES CUR1,  
+			CURRENCIES CUR2
+			WHERE TRSDEAL.COMP_CODE	= CUR1.COMP_CODE
+			AND TRSDEAL.OTHER_CY = CUR1.CURRENCY_CODE 		 
+			AND TRSDEAL.COMP_CODE = CUR2.COMP_CODE		
+			AND TRSDEAL.DEAL_CY = CUR2.CURRENCY_CODE 		
+			AND TRSDEAL.COMP_CODE 		= #{compCode,jdbcType=NUMERIC}
+			
+			<if test="branchCode != null and branchCode > 0">
+				AND TRSDEAL.BRANCH_CODE 	= #{branchCode,jdbcType=NUMERIC} 
+			</if>
+			
+			<if test="trx != null and trx > 0">
+				AND TRSDEAL.SERIAL_NO	 = #{trx,jdbcType=NUMERIC} 
+			</if>
+				
+			AND TRSDEAL.CIF_NO	  		 = #{cif,jdbcType=NUMERIC}
+			AND TRSDEAL.SALES_DATE   	 = #{trxDate,jdbcType=NUMERIC}
+			AND TRSDEAL.OTHER_CY		 = #{baseCy,jdbcType=NUMERIC}
+			AND  TRSDEAL.DEAL_CY		 = #{currency,jdbcType=NUMERIC}
+			AND TRSDEAL.UTILIZATION_FROM = 'T'
+			AND TRSDEAL.STATUS			 = 'P'
+	</sql>
+	
+	<select id="returnFxDealLkpList"
+			resultMap="resultFxDealLookupMap" 
+		    parameterType="referenceSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="referenceListMapper.select_FxDeal"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<select id="returnFxDealLkpCount"  
+			resultType="int" parameterType="referenceSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="referenceListMapper.select_FxDeal"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+ 
+</mapper>

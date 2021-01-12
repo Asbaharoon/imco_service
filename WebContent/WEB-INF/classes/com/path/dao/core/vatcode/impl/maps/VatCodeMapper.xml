@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="vatCodeListMapper">
+
+ <sql id="vatCodeListCommon">
+	                
+		SELECT
+		TRSVAT.VAT_CODE,
+		TRSVAT.BRIEF_NAME_ENG,
+		TRSVAT.LONG_NAME_ENG
+		FROM  TRSVAT 
+		WHERE	 TRSVAT.COMP_CODE  = #{compCode}
+		<if test= 'PERCENTAGE_IND != null and !PERCENTAGE_IND.equals("")'>
+		AND TRSVAT.PERCENTAGE_IND = #{PERCENTAGE_IND}
+		</if> 
+			 
+ </sql>
+ 
+ <resultMap id="vatCodeListMap" type="vatCodeVO">
+	<id property="VAT_CODE" column="VAT_CODE"/>
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />	
+ </resultMap>
+ 
+ <select id="vatCodeList" resultMap="vatCodeListMap" parameterType="vatCodeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="vatCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="vatCodeListCount" resultType="int" parameterType="vatCodeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="vatCodeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+ <select id="returnVatCodeById" parameterType="vatCodeSC" resultType="vatCodeVO">
+  		SELECT
+		TRSVAT.VAT_CODE,TRSVAT.BRIEF_NAME_ENG
+		FROM  TRSVAT 
+		WHERE	 TRSVAT.COMP_CODE  = #{compCode} 
+		AND TRSVAT.VAT_CODE =  #{vatCode}	
+		<if test= 'PERCENTAGE_IND != null and !PERCENTAGE_IND.equals("")'>
+		AND TRSVAT.PERCENTAGE_IND = #{PERCENTAGE_IND}
+		</if>
+			
+ </select>
+</mapper>

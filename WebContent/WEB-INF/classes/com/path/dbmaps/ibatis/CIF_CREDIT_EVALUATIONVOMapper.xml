@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_CREDIT_EVALUATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_CREDIT_EVALUATIONVO" >
+  	<id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />   
+    <id column="EVALUATION_YEAR" property="EVALUATION_YEAR" />
+    <id column="EVALUATION_TYPE" property="EVALUATION_TYPE" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <result column="STATUS" property="STATUS" />
+    <result column="EVALUATION_RECOMMENDATION_CODE" property="EVALUATION_RECOMMENDATION_CODE" />
+    <result column="INTERNAL_RATING_CODE" property="INTERNAL_RATING_CODE" />
+    <result column="COVENANT_COMPLIANCE_YN" property="COVENANT_COMPLIANCE_YN" />
+    <result column="COMMENTS" property="COMMENTS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CIF_NO, EVALUATION_YEAR, EVALUATION_TYPE, LINE_NUMBER, STATUS, EVALUATION_RECOMMENDATION_CODE,
+    INTERNAL_RATING_CODE, COVENANT_COMPLIANCE_YN, COMMENTS
+  </sql>
+  <select id="selectCIF_CREDIT_EVALUATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_CREDIT_EVALUATION
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </select>
+  <delete id="deleteCIF_CREDIT_EVALUATION" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATIONVOKey" >
+    delete from CIF_CREDIT_EVALUATION
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </delete>
+  <insert id="insertCIF_CREDIT_EVALUATION" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATIONVO" >
+    insert into CIF_CREDIT_EVALUATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        EVALUATION_YEAR,
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        EVALUATION_TYPE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+        LINE_NUMBER,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="EVALUATION_RECOMMENDATION_CODE != null and EVALUATION_RECOMMENDATION_CODE != emptyBigDecimalValue">
+        EVALUATION_RECOMMENDATION_CODE,
+      </if>
+      <if test="INTERNAL_RATING_CODE != null and INTERNAL_RATING_CODE != emptyBigDecimalValue">
+        INTERNAL_RATING_CODE,
+      </if>
+      <if test="COVENANT_COMPLIANCE_YN != null" >
+        COVENANT_COMPLIANCE_YN,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+       <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        #{EVALUATION_YEAR},
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        #{EVALUATION_TYPE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue">
+        #{LINE_NUMBER},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="EVALUATION_RECOMMENDATION_CODE != null and EVALUATION_RECOMMENDATION_CODE != emptyBigDecimalValue">
+        #{EVALUATION_RECOMMENDATION_CODE},
+      </if>
+      <if test="INTERNAL_RATING_CODE != null and INTERNAL_RATING_CODE != emptyBigDecimalValue">
+        #{INTERNAL_RATING_CODE},
+      </if>
+      <if test="COVENANT_COMPLIANCE_YN != null" >
+        #{COVENANT_COMPLIANCE_YN},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_CREDIT_EVALUATION" >
+    update CIF_CREDIT_EVALUATION
+    <set >
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="EVALUATION_RECOMMENDATION_CODE != null" >
+         <choose >
+          <when test="EVALUATION_RECOMMENDATION_CODE == emptyBigDecimalValue" >
+            EVALUATION_RECOMMENDATION_CODE = NULL ,
+          </when>
+          <otherwise >
+            EVALUATION_RECOMMENDATION_CODE = #{EVALUATION_RECOMMENDATION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INTERNAL_RATING_CODE != null" >
+        <choose >
+          <when test="INTERNAL_RATING_CODE == emptyBigDecimalValue" >
+            INTERNAL_RATING_CODE = NULL ,
+          </when>
+          <otherwise >
+            INTERNAL_RATING_CODE = #{INTERNAL_RATING_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COVENANT_COMPLIANCE_YN != null" >
+        COVENANT_COMPLIANCE_YN = #{COVENANT_COMPLIANCE_YN},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </sql>
+  <update id="updateCIF_CREDIT_EVALUATION" parameterType="com.path.dbmaps.vo.CIF_CREDIT_EVALUATIONVO" >
+    <include refid="sql_updateCIF_CREDIT_EVALUATION" />
+  </update>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_DEFF_APPORT_TRX_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_DEFF_APPORT_TRX_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="SETTLEMENT_NBR" property="SETTLEMENT_NBR" />
+    <id column="STATUS" property="STATUS" />
+    <id column="TRANS_NO" property="TRANS_NO" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="LINE_NO" property="LINE_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, SETTLEMENT_NBR, STATUS, TRANS_NO, AMOUNT, LINE_NO
+  </sql>
+  <select id="selectTRS_DEFF_APPORT_TRX_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_DEFF_APPORT_TRX_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_DEFF_APPORT_TRX_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+      and STATUS = #{STATUS}
+      and TRANS_NO = #{TRANS_NO}
+  </select>
+  <delete id="deleteTRS_DEFF_APPORT_TRX_DET" parameterType="com.path.dbmaps.vo.TRS_DEFF_APPORT_TRX_DETVOKey" >
+    delete from TRS_DEFF_APPORT_TRX_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+      and STATUS = #{STATUS}
+      and TRANS_NO = #{TRANS_NO}
+  </delete>
+  <insert id="insertTRS_DEFF_APPORT_TRX_DET" parameterType="com.path.dbmaps.vo.TRS_DEFF_APPORT_TRX_DETVO" >
+    insert into TRS_DEFF_APPORT_TRX_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        SETTLEMENT_NBR,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="TRANS_NO != null and TRANS_NO != emptyBigDecimalValue" >
+        TRANS_NO,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="SETTLEMENT_NBR != null and SETTLEMENT_NBR != emptyBigDecimalValue" >
+        #{SETTLEMENT_NBR},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="TRANS_NO != null and TRANS_NO != emptyBigDecimalValue" >
+        #{TRANS_NO},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_DEFF_APPORT_TRX_DET" >
+    update TRS_DEFF_APPORT_TRX_DET
+    <set >
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINE_NO != null" >
+        <choose >
+          <when test="LINE_NO == emptyBigDecimalValue" >
+            LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            LINE_NO = #{LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and SETTLEMENT_NBR = #{SETTLEMENT_NBR}
+      and STATUS = #{STATUS}
+      and TRANS_NO = #{TRANS_NO}
+  </sql>
+  <update id="updateTRS_DEFF_APPORT_TRX_DET" parameterType="com.path.dbmaps.vo.TRS_DEFF_APPORT_TRX_DETVO" >
+    <include refid="sql_updateTRS_DEFF_APPORT_TRX_DET" />
+  </update>
+</mapper>

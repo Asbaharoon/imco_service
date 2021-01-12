@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_MGT_NO" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_MGT_NOVO" >
+    <id column="APPLICATION_ID" property="APPLICATION_ID" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CARD_NO" property="CARD_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CARD_TYPE" property="CARD_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPLICATION_ID, BRANCH_CODE, CARD_NO, COMP_CODE, CARD_TYPE
+  </sql>
+  <select id="selectCTSCARDS_MGT_NO" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_NOVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_MGT_NO
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_NO = #{CARD_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCARDS_MGT_NO" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_NOVOKey" >
+    delete from CTSCARDS_MGT_NO
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_NO = #{CARD_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCARDS_MGT_NO" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_NOVO" >
+    insert into CTSCARDS_MGT_NO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        APPLICATION_ID,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CARD_NO != null" >
+        CARD_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CARD_TYPE != null and CARD_TYPE != emptyBigDecimalValue" >
+        CARD_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        #{APPLICATION_ID},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CARD_NO != null" >
+        #{CARD_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CARD_TYPE != null and CARD_TYPE != emptyBigDecimalValue" >
+        #{CARD_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_MGT_NO" >
+    update CTSCARDS_MGT_NO
+    <set >
+      <if test="CARD_TYPE != null" >
+        <choose >
+          <when test="CARD_TYPE == emptyBigDecimalValue" >
+            CARD_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CARD_TYPE = #{CARD_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CARD_NO = #{CARD_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCARDS_MGT_NO" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_NOVO" >
+    <include refid="sql_updateCTSCARDS_MGT_NO" />
+  </update>
+</mapper>

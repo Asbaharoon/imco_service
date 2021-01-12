@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="segmentGroupingMapper">
+<resultMap id="resSegmentGroupingListMap" type="com.path.vo.core.grouping.SegmentGroupingCO">
+		<result property="ctsSegmentGroupingVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentGroupingVO.GROUP_CODE" column="GROUP_CODE"/>
+		<result property="ctsSegmentGroupingVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="ctsSegmentGroupingVO.PRIORITY" column="PRIORITY"/>
+		<result property="ctsSegmentGroupingVO.STATUS" column="STATUS"/>
+		<result property="statusDesc" column="statusDesc"/>
+		<result property="ctsSegmentGroupingVO.DATE_UPDATED" column="DATE_UPDATED"/>
+	</resultMap>
+	<select id="returnSegmentGroupingList" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultMap="resSegmentGroupingListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="querySegmentGroupingSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnSegmentGroupingListCount" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="querySegmentGroupingSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="querySegmentGroupingSQL">
+		  SELECT DISTINCT  CTS_SEGMENT_GROUPING.COMP_CODE,
+		                   CTS_SEGMENT_GROUPING.GROUP_CODE,
+		                   CTS_SEGMENT_GROUPING.DESCRIPTION,
+		                   CTS_SEGMENT_GROUPING.PRIORITY,
+		                   CTS_SEGMENT_GROUPING.STATUS,
+		                   (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+			                FROM SYS_PARAM_LOV_TRANS
+			               WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SEGMENT_GROUPING.STATUS
+			                 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+			                 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusDesc,
+			                 CTS_SEGMENT_GROUPING.DATE_UPDATED
+		    FROM CTS_SEGMENT_GROUPING
+		  WHERE	(CTS_SEGMENT_GROUPING.COMP_CODE  = #{compCode})
+		  AND	(CTS_SEGMENT_GROUPING.STATUS  = 
+					CASE 
+						WHEN #{ivCrud} = 'R' THEN CTS_SEGMENT_GROUPING.STATUS 
+						WHEN #{ivCrud} = 'P' THEN 'A' 
+						WHEN #{ivCrud} = 'UP' THEN 'P' 
+					END)
+			
+	</sql>
+	
+	<select id="returnSegmentGroupCount" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultType="int">
+		SELECT COUNT(1) FROM CTS_SEGMENT_GROUPING
+		WHERE COMP_CODE = #{compCode} AND GROUP_CODE = #{groupCode}
+	</select>
+	
+	<select id="returnPriorityCountByCompany" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultType="int">
+		SELECT COUNT(1) FROM CTS_SEGMENT_GROUPING
+		WHERE COMP_CODE = #{compCode} AND PRIORITY = #{priority}
+	</select>
+	
+	<select id="checkGroupDateUpdated" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultType="int">
+	       select  COUNT(1)
+		     FROM CTS_SEGMENT_GROUPING
+ 			WHERE COMP_CODE =  #{compCode}
+   			and GROUP_CODE = #{groupCode}
+   			and DATE_UPDATED = #{dateUpdated}
+	 </select>
+	 
+	 <select id="returnGroupCountBySegment" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultType="int">
+	       select  COUNT(1)
+		     FROM CTS_SEGMENT
+ 			WHERE COMP_CODE =  #{compCode}
+   			and GROUP_CODE = #{groupCode}
+	 </select>
+	 
+	 <select id="returnSegmentGroupingForm" parameterType="com.path.vo.core.grouping.SegmentGroupingSC" resultMap="resSegmentGroupingForm">
+		<include refid="querySegmentGroupingForm"/>
+	</select>
+	
+	<sql id="querySegmentGroupingForm">
+          SELECT
+           COMP_CODE,
+           GROUP_CODE,
+           PRIORITY,
+           STATUS,
+                (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+                FROM SYS_PARAM_LOV_TRANS
+               WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_SEGMENT_GROUPING.STATUS
+                 AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+                 AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusDesc,
+           DESCRIPTION,
+           DATE_UPDATED,
+           OLD_STATUS
+      FROM CTS_SEGMENT_GROUPING
+     where COMP_CODE =   #{compCode} 
+       AND GROUP_CODE =  #{groupCode} 
+	</sql>
+	
+	<resultMap id="resSegmentGroupingForm" type="com.path.vo.core.grouping.SegmentGroupingCO">
+		<result property="ctsSegmentGroupingVO.COMP_CODE" column="COMP_CODE"/>
+		<result property="ctsSegmentGroupingVO.GROUP_CODE" column="GROUP_CODE"/>
+		<result property="ctsSegmentGroupingVO.PRIORITY" column="PRIORITY"/>
+		<result property="ctsSegmentGroupingVO.STATUS" column="STATUS"/>
+		<result property="statusDesc" column="statusDesc"/>
+		<result property="ctsSegmentGroupingVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="ctsSegmentGroupingVO.DATE_UPDATED" column="DATE_UPDATED"/>
+		<result property="ctsSegmentGroupingVO.OLD_STATUS" column="OLD_STATUS"/>
+	</resultMap>
+	
+	
+	
+	<resultMap id="resSegmentGroupingGridListMap" type="com.path.vo.core.grouping.SegmentGroupingCO">
+		<result property="ctsSegmentGroupingVO.GROUP_CODE" column="GROUP_CODE"/>
+		<result property="ctsSegmentGroupingVO.DESCRIPTION" column="DESCRIPTION"/>
+		<result property="ctsSegmentGroupingVO.PRIORITY" column="PRIORITY"/>
+	</resultMap>
+	 
+    <select id="returnSegmentGroupingLookupCount" resultType="int" parameterType="com.path.struts2.lib.common.GridParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+ 		<include refid="getSegmentGroupingList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<select id="returnSegmentGroupingLookup" resultType="com.path.dbmaps.vo.CTS_SEGMENT_GROUPINGVO" parameterType="com.path.struts2.lib.common.GridParamsSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="getSegmentGroupingList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	
+	<sql id="getSegmentGroupingList">
+    	SELECT GROUP_CODE, 
+    		   DESCRIPTION,
+    		   PRIORITY
+    	FROM CTS_SEGMENT_GROUPING
+		WHERE COMP_CODE = #{compCode}
+		AND STATUS = 'P'
+    </sql>
+</mapper>

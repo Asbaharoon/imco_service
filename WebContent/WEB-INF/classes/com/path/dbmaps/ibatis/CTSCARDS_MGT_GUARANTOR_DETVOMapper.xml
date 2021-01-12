@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_MGT_GUARANTOR_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_MGT_GUARANTOR_DETVO" >
+    <id column="APPLICATION_ID" property="APPLICATION_ID" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="GUARANTOR_NAME" property="GUARANTOR_NAME" />
+    <result column="ID_NO" property="ID_NO" />
+    <result column="ID_TYPE" property="ID_TYPE" />
+    <result column="MOBILE_NO" property="MOBILE_NO" />
+    <result column="COMMENTS" property="COMMENTS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPLICATION_ID, BRANCH_CODE, COMP_CODE, LINE_NO, CIF_NO, GUARANTOR_NAME, ID_NO, ID_TYPE, 
+    MOBILE_NO, COMMENTS
+  </sql>
+  <select id="selectCTSCARDS_MGT_GUARANTOR_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_GUARANTOR_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_MGT_GUARANTOR_DET
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCTSCARDS_MGT_GUARANTOR_DET" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_GUARANTOR_DETVOKey" >
+    delete from CTSCARDS_MGT_GUARANTOR_DET
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCARDS_MGT_GUARANTOR_DET" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_GUARANTOR_DETVO" >
+    insert into CTSCARDS_MGT_GUARANTOR_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        APPLICATION_ID,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="GUARANTOR_NAME != null" >
+        GUARANTOR_NAME,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        ID_TYPE,
+      </if>
+      <if test="MOBILE_NO != null" >
+        MOBILE_NO,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APPLICATION_ID != null and APPLICATION_ID != emptyBigDecimalValue" >
+        #{APPLICATION_ID},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="GUARANTOR_NAME != null" >
+        #{GUARANTOR_NAME},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        #{ID_TYPE},
+      </if>
+      <if test="MOBILE_NO != null" >
+        #{MOBILE_NO},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_MGT_GUARANTOR_DET" >
+    update CTSCARDS_MGT_GUARANTOR_DET
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="GUARANTOR_NAME != null" >
+        GUARANTOR_NAME = #{GUARANTOR_NAME},
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO = #{ID_NO},
+      </if>
+      <if test="ID_TYPE != null" >
+        <choose >
+          <when test="ID_TYPE == emptyBigDecimalValue" >
+            ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ID_TYPE = #{ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MOBILE_NO != null" >
+        MOBILE_NO = #{MOBILE_NO},
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+    </set>
+    where APPLICATION_ID = #{APPLICATION_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCTSCARDS_MGT_GUARANTOR_DET" parameterType="com.path.dbmaps.vo.CTSCARDS_MGT_GUARANTOR_DETVO" >
+    <include refid="sql_updateCTSCARDS_MGT_GUARANTOR_DET" />
+  </update>
+</mapper>

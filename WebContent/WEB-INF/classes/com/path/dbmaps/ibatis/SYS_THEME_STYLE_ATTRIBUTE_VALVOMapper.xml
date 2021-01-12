@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_THEME_STYLE_ATTRIBUTE_VAL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" >
+    <id column="ATTRIBUTE_CODE" property="ATTRIBUTE_CODE" />
+    <id column="STYLE_ID" property="STYLE_ID" />
+    <id column="THEME_ID" property="THEME_ID" />
+    <result column="VALUE" property="VALUE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" extends="BaseResultMap" >
+    <result column="IMAGE" property="IMAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ATTRIBUTE_CODE, STYLE_ID, THEME_ID, VALUE
+  </sql>
+  <sql id="Blob_Column_List" >
+    IMAGE
+  </sql>
+  <select id="selectSYS_THEME_STYLE_ATTRIBUTE_VAL" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_THEME_STYLE_ATTRIBUTE_VAL
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+      and STYLE_ID = #{STYLE_ID}
+      and THEME_ID = #{THEME_ID}
+  </select>
+  <delete id="deleteSYS_THEME_STYLE_ATTRIBUTE_VAL" parameterType="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" >
+    delete from SYS_THEME_STYLE_ATTRIBUTE_VAL
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+      and STYLE_ID = #{STYLE_ID}
+      and THEME_ID = #{THEME_ID}
+  </delete>
+  <insert id="insertSYS_THEME_STYLE_ATTRIBUTE_VAL" parameterType="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" >
+    insert into SYS_THEME_STYLE_ATTRIBUTE_VAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_CODE != null" >
+        ATTRIBUTE_CODE,
+      </if>
+      <if test="STYLE_ID != null and STYLE_ID != emptyBigDecimalValue" >
+        STYLE_ID,
+      </if>
+      <if test="THEME_ID != null and THEME_ID != emptyBigDecimalValue" >
+        THEME_ID,
+      </if>
+      <if test="VALUE != null" >
+        VALUE,
+      </if>
+      <if test="IMAGE != null" >
+        IMAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ATTRIBUTE_CODE != null" >
+        #{ATTRIBUTE_CODE},
+      </if>
+      <if test="STYLE_ID != null and STYLE_ID != emptyBigDecimalValue" >
+        #{STYLE_ID},
+      </if>
+      <if test="THEME_ID != null and THEME_ID != emptyBigDecimalValue" >
+        #{THEME_ID},
+      </if>
+      <if test="VALUE != null" >
+        #{VALUE},
+      </if>
+      <if test="IMAGE != null" >
+        #{IMAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_THEME_STYLE_ATTRIBUTE_VAL" >
+    update SYS_THEME_STYLE_ATTRIBUTE_VAL
+    <set >
+      <if test="VALUE != null" >
+        VALUE = #{VALUE},
+      </if>
+      <if test="IMAGE != null" >
+        IMAGE = #{IMAGE},
+      </if>
+    </set>
+    where ATTRIBUTE_CODE = #{ATTRIBUTE_CODE}
+      and STYLE_ID = #{STYLE_ID}
+      and THEME_ID = #{THEME_ID}
+  </sql>
+  <update id="updateSYS_THEME_STYLE_ATTRIBUTE_VAL" parameterType="com.path.dbmaps.vo.SYS_THEME_STYLE_ATTRIBUTE_VALVO" >
+    <include refid="sql_updateSYS_THEME_STYLE_ATTRIBUTE_VAL" />
+  </update>
+</mapper>

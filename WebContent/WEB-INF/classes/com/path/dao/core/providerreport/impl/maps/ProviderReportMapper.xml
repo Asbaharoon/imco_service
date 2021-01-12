@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="providerReportMapper">
+
+ <sql id="providerReportListCommon">
+	<![CDATA[
+	SELECT REP_ID, USERID, TITLE 
+			FROM  	REP_INFO  
+			WHERE	APPLICATION   = #{application}
+			AND   	REP_TYPE      = #{repType}
+		]]>	 
+	 <if test="ignoreComp == null">	
+			AND   	COMP_CODE   =  #{compCode}
+	 </if>
+	
+ </sql>
+ <sql id="providerReportListCommonUnique">
+  	<![CDATA[
+  		AND   	REP_ID   =  #{reportId}
+  	]]>	 
+ </sql>
+ 
+ <resultMap id="providerReportList_ResMap" type="providerReportVO">
+	<id property="REP_ID" column="REP_ID"/>
+	<result property="TITLE" column="TITLE" />
+	<result property="USERID" column="USERID" />
+ </resultMap>
+ 
+ <select id="providerReportList" resultMap="providerReportList_ResMap" parameterType="providerReportSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="providerReportListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="providerReportListCount" resultType="int" parameterType="providerReportSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="providerReportListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="providerReportById" parameterType="providerReportSC" resultType="providerReportVO">
+  	<include refid="providerReportListCommon"/>
+  	<include refid="providerReportListCommonUnique"/>
+ </select>
+  
+</mapper>

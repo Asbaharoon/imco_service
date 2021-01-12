@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_REQUEST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_REQUESTVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="REQ_NO" property="REQ_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="REQ_DATE" property="REQ_DATE" />
+    <result column="REQ_EXP_DATE" property="REQ_EXP_DATE" />
+    <result column="EFFECT_DATE_FROM" property="EFFECT_DATE_FROM" />
+    <result column="EFFECT_DATE_TO" property="EFFECT_DATE_TO" />
+    <result column="REQ_PERIOD" property="REQ_PERIOD" />
+    <result column="REQ_REF" property="REQ_REF" />
+    <result column="REQ_DESC" property="REQ_DESC" />
+    <result column="AMOUNT" property="AMOUNT" />
+    <result column="CURRENCY" property="CURRENCY" />
+    <result column="USER_ID" property="USER_ID" />
+    <result column="STATUS" property="STATUS" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="TYPE" property="TYPE" />
+    <result column="APPLICATION_CODE" property="APPLICATION_CODE" />
+    <result column="ALERT_NO" property="ALERT_NO" />
+    <result column="ALERT_TYPE" property="ALERT_TYPE" />
+    <result column="PROCESS_BRANCH" property="PROCESS_BRANCH" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_CANCELED" property="DATE_CANCELED" />
+    <result column="CANCELED_BY" property="CANCELED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="TRX_TEMP_APPROVE" property="TRX_TEMP_APPROVE" />
+    <result column="CLASS_CODE" property="CLASS_CODE" />
+    <result column="MATURITY_DATE" property="MATURITY_DATE" />
+    <result column="TRADE_SERIAL_NBR" property="TRADE_SERIAL_NBR" />
+    <result column="BROKER_CODE" property="BROKER_CODE" />
+    <result column="PERIOD_TYPE" property="PERIOD_TYPE" />
+    <result column="PERIOD_NO" property="PERIOD_NO" />
+    <result column="TRADE_LINE_NO" property="TRADE_LINE_NO" />
+    <result column="NUM_OF_DAYS" property="NUM_OF_DAYS" />
+    <result column="ADD_LINE_NBR" property="ADD_LINE_NBR" />
+    <result column="SUSPENDED_BY" property="SUSPENDED_BY" />
+    <result column="DATE_SUSPENDED" property="DATE_SUSPENDED" />
+    <result column="REPLACED_BY" property="REPLACED_BY" />
+    <result column="DATE_REPLACED" property="DATE_REPLACED" />
+    <result column="REJECT_REASON" property="REJECT_REASON" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="DATE_REJECTED" property="DATE_REJECTED" />
+    <result column="SAVED_AS_DRAFT" property="SAVED_AS_DRAFT" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="REVERSE_DATE" property="REVERSE_DATE" />
+    <result column="DATE_VALIDATED" property="DATE_VALIDATED" />
+    <result column="TB_REJREV_DATE" property="TB_REJREV_DATE" />
+    <result column="TB_REV_DATE" property="TB_REV_DATE" />
+    <result column="VALIDATED_BY" property="VALIDATED_BY" />
+    <result column="REVERSE_BY" property="REVERSE_BY" />
+    <result column="TB_REJREV_BY" property="TB_REJREV_BY" />
+    <result column="TB_REV_BY" property="TB_REV_BY" />
+    <result column="PROCESSED_BY" property="PROCESSED_BY" />
+    <result column="DATE_PROCESSED" property="DATE_PROCESSED" />
+    <result column="EXPIRED_BY" property="EXPIRED_BY" />
+    <result column="DATE_EXPIRED" property="DATE_EXPIRED" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CTS_REQUESTVO" extends="BaseResultMap" >
+    <result column="STATUS_REASON_DESC" property="STATUS_REASON_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, REQ_NO, CIF_NO, REQ_DATE, REQ_EXP_DATE, EFFECT_DATE_FROM, EFFECT_DATE_TO, 
+    REQ_PERIOD, REQ_REF, REQ_DESC, AMOUNT, CURRENCY, USER_ID, STATUS, APP_NAME, TYPE, 
+    APPLICATION_CODE, ALERT_NO, ALERT_TYPE, PROCESS_BRANCH, DATE_CREATED, CREATED_BY, 
+    DATE_CANCELED, CANCELED_BY, DATE_APPROVED, APPROVED_BY, DATE_DELETED, DELETED_BY, 
+    TRX_TEMP_APPROVE, CLASS_CODE, MATURITY_DATE, TRADE_SERIAL_NBR, BROKER_CODE, PERIOD_TYPE, 
+    PERIOD_NO, TRADE_LINE_NO, NUM_OF_DAYS, ADD_LINE_NBR, SUSPENDED_BY, DATE_SUSPENDED, 
+    REPLACED_BY, DATE_REPLACED, REJECT_REASON, REJECTED_BY, DATE_REJECTED, SAVED_AS_DRAFT, 
+    DATE_UPDATED, REVERSE_DATE, DATE_VALIDATED, TB_REJREV_DATE, TB_REV_DATE, VALIDATED_BY, 
+    REVERSE_BY, TB_REJREV_BY, TB_REV_BY, PROCESSED_BY, DATE_PROCESSED, EXPIRED_BY, DATE_EXPIRED
+  </sql>
+  <sql id="Blob_Column_List" >
+    STATUS_REASON_DESC
+  </sql>
+  <select id="selectCTS_REQUEST" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CTS_REQUESTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CTS_REQUEST
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_NO = #{REQ_NO}
+  </select>
+  <delete id="deleteCTS_REQUEST" parameterType="com.path.dbmaps.vo.CTS_REQUESTVO" >
+    delete from CTS_REQUEST
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_NO = #{REQ_NO}
+  </delete>
+  <insert id="insertCTS_REQUEST" parameterType="com.path.dbmaps.vo.CTS_REQUESTVO" >
+    insert into CTS_REQUEST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REQ_NO != null and REQ_NO != emptyBigDecimalValue" >
+        REQ_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="REQ_DATE != null" >
+        REQ_DATE,
+      </if>
+      <if test="REQ_EXP_DATE != null" >
+        REQ_EXP_DATE,
+      </if>
+      <if test="EFFECT_DATE_FROM != null" >
+        EFFECT_DATE_FROM,
+      </if>
+      <if test="EFFECT_DATE_TO != null" >
+        EFFECT_DATE_TO,
+      </if>
+      <if test="REQ_PERIOD != null and REQ_PERIOD != emptyBigDecimalValue" >
+        REQ_PERIOD,
+      </if>
+      <if test="REQ_REF != null" >
+        REQ_REF,
+      </if>
+      <if test="REQ_DESC != null" >
+        REQ_DESC,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        CURRENCY,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="STATUS != null" >
+        STATUS,
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        TYPE,
+      </if>
+      <if test="APPLICATION_CODE != null and APPLICATION_CODE != emptyBigDecimalValue" >
+        APPLICATION_CODE,
+      </if>
+      <if test="ALERT_NO != null and ALERT_NO != emptyBigDecimalValue" >
+        ALERT_NO,
+      </if>
+      <if test="ALERT_TYPE != null" >
+        ALERT_TYPE,
+      </if>
+      <if test="PROCESS_BRANCH != null and PROCESS_BRANCH != emptyBigDecimalValue" >
+        PROCESS_BRANCH,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="DATE_CANCELED != null" >
+        DATE_CANCELED,
+      </if>
+      <if test="CANCELED_BY != null" >
+        CANCELED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY,
+      </if>
+      <if test="TRX_TEMP_APPROVE != null and TRX_TEMP_APPROVE != emptyBigDecimalValue" >
+        TRX_TEMP_APPROVE,
+      </if>
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        CLASS_CODE,
+      </if>
+      <if test="MATURITY_DATE != null" >
+        MATURITY_DATE,
+      </if>
+      <if test="TRADE_SERIAL_NBR != null and TRADE_SERIAL_NBR != emptyBigDecimalValue" >
+        TRADE_SERIAL_NBR,
+      </if>
+      <if test="BROKER_CODE != null and BROKER_CODE != emptyBigDecimalValue" >
+        BROKER_CODE,
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE,
+      </if>
+      <if test="PERIOD_NO != null and PERIOD_NO != emptyBigDecimalValue" >
+        PERIOD_NO,
+      </if>
+      <if test="TRADE_LINE_NO != null and TRADE_LINE_NO != emptyBigDecimalValue" >
+        TRADE_LINE_NO,
+      </if>
+      <if test="NUM_OF_DAYS != null and NUM_OF_DAYS != emptyBigDecimalValue" >
+        NUM_OF_DAYS,
+      </if>
+      <if test="ADD_LINE_NBR != null and ADD_LINE_NBR != emptyBigDecimalValue" >
+        ADD_LINE_NBR,
+      </if>
+      <if test="SUSPENDED_BY != null" >
+        SUSPENDED_BY,
+      </if>
+      <if test="DATE_SUSPENDED != null" >
+        DATE_SUSPENDED,
+      </if>
+      <if test="REPLACED_BY != null" >
+        REPLACED_BY,
+      </if>
+      <if test="DATE_REPLACED != null" >
+        DATE_REPLACED,
+      </if>
+      <if test="REJECT_REASON != null and REJECT_REASON != emptyBigDecimalValue" >
+        REJECT_REASON,
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY,
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED,
+      </if>
+      <if test="SAVED_AS_DRAFT != null" >
+        SAVED_AS_DRAFT,
+      </if>
+      DATE_UPDATED,
+      <if test="REVERSE_DATE != null" >
+        REVERSE_DATE,
+      </if>
+      <if test="DATE_VALIDATED != null" >
+        DATE_VALIDATED,
+      </if>
+      <if test="TB_REJREV_DATE != null" >
+        TB_REJREV_DATE,
+      </if>
+      <if test="TB_REV_DATE != null" >
+        TB_REV_DATE,
+      </if>
+      <if test="VALIDATED_BY != null" >
+        VALIDATED_BY,
+      </if>
+      <if test="REVERSE_BY != null" >
+        REVERSE_BY,
+      </if>
+      <if test="TB_REJREV_BY != null" >
+        TB_REJREV_BY,
+      </if>
+      <if test="TB_REV_BY != null" >
+        TB_REV_BY,
+      </if>
+      <if test="STATUS_REASON_DESC != null" >
+        STATUS_REASON_DESC,
+      </if>
+      <if test="PROCESSED_BY != null" >
+        PROCESSED_BY,
+      </if>
+      <if test="DATE_PROCESSED != null" >
+        DATE_PROCESSED,
+      </if>
+      <if test="EXPIRED_BY != null" >
+        EXPIRED_BY,
+      </if>
+      <if test="DATE_EXPIRED != null" >
+        DATE_EXPIRED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REQ_NO != null and REQ_NO != emptyBigDecimalValue" >
+        #{REQ_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="REQ_DATE != null" >
+        #{REQ_DATE},
+      </if>
+      <if test="REQ_EXP_DATE != null" >
+        #{REQ_EXP_DATE},
+      </if>
+      <if test="EFFECT_DATE_FROM != null" >
+        #{EFFECT_DATE_FROM},
+      </if>
+      <if test="EFFECT_DATE_TO != null" >
+        #{EFFECT_DATE_TO},
+      </if>
+      <if test="REQ_PERIOD != null and REQ_PERIOD != emptyBigDecimalValue" >
+        #{REQ_PERIOD},
+      </if>
+      <if test="REQ_REF != null" >
+        #{REQ_REF},
+      </if>
+      <if test="REQ_DESC != null" >
+        #{REQ_DESC},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+      <if test="CURRENCY != null and CURRENCY != emptyBigDecimalValue" >
+        #{CURRENCY},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="STATUS != null" >
+        #{STATUS},
+      </if>
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="TYPE != null and TYPE != emptyBigDecimalValue" >
+        #{TYPE},
+      </if>
+      <if test="APPLICATION_CODE != null and APPLICATION_CODE != emptyBigDecimalValue" >
+        #{APPLICATION_CODE},
+      </if>
+      <if test="ALERT_NO != null and ALERT_NO != emptyBigDecimalValue" >
+        #{ALERT_NO},
+      </if>
+      <if test="ALERT_TYPE != null" >
+        #{ALERT_TYPE},
+      </if>
+      <if test="PROCESS_BRANCH != null and PROCESS_BRANCH != emptyBigDecimalValue" >
+        #{PROCESS_BRANCH},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="DATE_CANCELED != null" >
+        #{DATE_CANCELED},
+      </if>
+      <if test="CANCELED_BY != null" >
+        #{CANCELED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null" >
+        #{DELETED_BY},
+      </if>
+      <if test="TRX_TEMP_APPROVE != null and TRX_TEMP_APPROVE != emptyBigDecimalValue" >
+        #{TRX_TEMP_APPROVE},
+      </if>
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        #{CLASS_CODE},
+      </if>
+      <if test="MATURITY_DATE != null" >
+        #{MATURITY_DATE},
+      </if>
+      <if test="TRADE_SERIAL_NBR != null and TRADE_SERIAL_NBR != emptyBigDecimalValue" >
+        #{TRADE_SERIAL_NBR},
+      </if>
+      <if test="BROKER_CODE != null and BROKER_CODE != emptyBigDecimalValue" >
+        #{BROKER_CODE},
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        #{PERIOD_TYPE},
+      </if>
+      <if test="PERIOD_NO != null and PERIOD_NO != emptyBigDecimalValue" >
+        #{PERIOD_NO},
+      </if>
+      <if test="TRADE_LINE_NO != null and TRADE_LINE_NO != emptyBigDecimalValue" >
+        #{TRADE_LINE_NO},
+      </if>
+      <if test="NUM_OF_DAYS != null and NUM_OF_DAYS != emptyBigDecimalValue" >
+        #{NUM_OF_DAYS},
+      </if>
+      <if test="ADD_LINE_NBR != null and ADD_LINE_NBR != emptyBigDecimalValue" >
+        #{ADD_LINE_NBR},
+      </if>
+      <if test="SUSPENDED_BY != null" >
+        #{SUSPENDED_BY},
+      </if>
+      <if test="DATE_SUSPENDED != null" >
+        #{DATE_SUSPENDED},
+      </if>
+      <if test="REPLACED_BY != null" >
+        #{REPLACED_BY},
+      </if>
+      <if test="DATE_REPLACED != null" >
+        #{DATE_REPLACED},
+      </if>
+      <if test="REJECT_REASON != null and REJECT_REASON != emptyBigDecimalValue" >
+        #{REJECT_REASON},
+      </if>
+      <if test="REJECTED_BY != null" >
+        #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        #{DATE_REJECTED},
+      </if>
+      <if test="SAVED_AS_DRAFT != null" >
+        #{SAVED_AS_DRAFT},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="REVERSE_DATE != null" >
+        #{REVERSE_DATE},
+      </if>
+      <if test="DATE_VALIDATED != null" >
+        #{DATE_VALIDATED},
+      </if>
+      <if test="TB_REJREV_DATE != null" >
+        #{TB_REJREV_DATE},
+      </if>
+      <if test="TB_REV_DATE != null" >
+        #{TB_REV_DATE},
+      </if>
+      <if test="VALIDATED_BY != null" >
+        #{VALIDATED_BY},
+      </if>
+      <if test="REVERSE_BY != null" >
+        #{REVERSE_BY},
+      </if>
+      <if test="TB_REJREV_BY != null" >
+        #{TB_REJREV_BY},
+      </if>
+      <if test="TB_REV_BY != null" >
+        #{TB_REV_BY},
+      </if>
+      <if test="STATUS_REASON_DESC != null" >
+        #{STATUS_REASON_DESC},
+      </if>
+      <if test="PROCESSED_BY != null" >
+        #{PROCESSED_BY},
+      </if>
+      <if test="DATE_PROCESSED != null" >
+        #{DATE_PROCESSED},
+      </if>
+      <if test="EXPIRED_BY != null" >
+        #{EXPIRED_BY},
+      </if>
+      <if test="DATE_EXPIRED != null" >
+        #{DATE_EXPIRED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_REQUEST" >
+    update CTS_REQUEST
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REQ_DATE != null" >
+        REQ_DATE = #{REQ_DATE},
+      </if>
+      <if test="REQ_EXP_DATE != null" >
+        REQ_EXP_DATE = #{REQ_EXP_DATE},
+      </if>
+      <if test="EFFECT_DATE_FROM != null" >
+        EFFECT_DATE_FROM = #{EFFECT_DATE_FROM},
+      </if>
+      <if test="EFFECT_DATE_TO != null" >
+        EFFECT_DATE_TO = #{EFFECT_DATE_TO},
+      </if>
+      <if test="REQ_PERIOD != null" >
+        <choose >
+          <when test="REQ_PERIOD == emptyBigDecimalValue" >
+            REQ_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            REQ_PERIOD = #{REQ_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REQ_REF != null" >
+        REQ_REF = #{REQ_REF},
+      </if>
+      <if test="REQ_DESC != null" >
+        REQ_DESC = #{REQ_DESC},
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CURRENCY != null" >
+        <choose >
+          <when test="CURRENCY == emptyBigDecimalValue" >
+            CURRENCY = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY = #{CURRENCY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+      <if test="STATUS != null" >
+        STATUS = #{STATUS},
+      </if>
+      <if test="APP_NAME != null" >
+        APP_NAME = #{APP_NAME},
+      </if>
+      <if test="TYPE != null" >
+        <choose >
+          <when test="TYPE == emptyBigDecimalValue" >
+            TYPE = NULL ,
+          </when>
+          <otherwise >
+            TYPE = #{TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPLICATION_CODE != null" >
+        <choose >
+          <when test="APPLICATION_CODE == emptyBigDecimalValue" >
+            APPLICATION_CODE = NULL ,
+          </when>
+          <otherwise >
+            APPLICATION_CODE = #{APPLICATION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALERT_NO != null" >
+        <choose >
+          <when test="ALERT_NO == emptyBigDecimalValue" >
+            ALERT_NO = NULL ,
+          </when>
+          <otherwise >
+            ALERT_NO = #{ALERT_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALERT_TYPE != null" >
+        ALERT_TYPE = #{ALERT_TYPE},
+      </if>
+      <if test="PROCESS_BRANCH != null" >
+        <choose >
+          <when test="PROCESS_BRANCH == emptyBigDecimalValue" >
+            PROCESS_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            PROCESS_BRANCH = #{PROCESS_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="DATE_CANCELED != null" >
+        DATE_CANCELED = #{DATE_CANCELED},
+      </if>
+      <if test="CANCELED_BY != null" >
+        CANCELED_BY = #{CANCELED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        APPROVED_BY = #{APPROVED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null" >
+        DELETED_BY = #{DELETED_BY},
+      </if>
+      <if test="TRX_TEMP_APPROVE != null" >
+        <choose >
+          <when test="TRX_TEMP_APPROVE == emptyBigDecimalValue" >
+            TRX_TEMP_APPROVE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TEMP_APPROVE = #{TRX_TEMP_APPROVE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLASS_CODE != null" >
+        <choose >
+          <when test="CLASS_CODE == emptyBigDecimalValue" >
+            CLASS_CODE = NULL ,
+          </when>
+          <otherwise >
+            CLASS_CODE = #{CLASS_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MATURITY_DATE != null" >
+        MATURITY_DATE = #{MATURITY_DATE},
+      </if>
+      <if test="TRADE_SERIAL_NBR != null" >
+        <choose >
+          <when test="TRADE_SERIAL_NBR == emptyBigDecimalValue" >
+            TRADE_SERIAL_NBR = NULL ,
+          </when>
+          <otherwise >
+            TRADE_SERIAL_NBR = #{TRADE_SERIAL_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BROKER_CODE != null" >
+        <choose >
+          <when test="BROKER_CODE == emptyBigDecimalValue" >
+            BROKER_CODE = NULL ,
+          </when>
+          <otherwise >
+            BROKER_CODE = #{BROKER_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PERIOD_TYPE != null" >
+        PERIOD_TYPE = #{PERIOD_TYPE},
+      </if>
+      <if test="PERIOD_NO != null" >
+        <choose >
+          <when test="PERIOD_NO == emptyBigDecimalValue" >
+            PERIOD_NO = NULL ,
+          </when>
+          <otherwise >
+            PERIOD_NO = #{PERIOD_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRADE_LINE_NO != null" >
+        <choose >
+          <when test="TRADE_LINE_NO == emptyBigDecimalValue" >
+            TRADE_LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            TRADE_LINE_NO = #{TRADE_LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NUM_OF_DAYS != null" >
+        <choose >
+          <when test="NUM_OF_DAYS == emptyBigDecimalValue" >
+            NUM_OF_DAYS = NULL ,
+          </when>
+          <otherwise >
+            NUM_OF_DAYS = #{NUM_OF_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADD_LINE_NBR != null" >
+        <choose >
+          <when test="ADD_LINE_NBR == emptyBigDecimalValue" >
+            ADD_LINE_NBR = NULL ,
+          </when>
+          <otherwise >
+            ADD_LINE_NBR = #{ADD_LINE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUSPENDED_BY != null" >
+        SUSPENDED_BY = #{SUSPENDED_BY},
+      </if>
+      <if test="DATE_SUSPENDED != null" >
+        DATE_SUSPENDED = #{DATE_SUSPENDED},
+      </if>
+      <if test="REPLACED_BY != null" >
+        REPLACED_BY = #{REPLACED_BY},
+      </if>
+      <if test="DATE_REPLACED != null" >
+        DATE_REPLACED = #{DATE_REPLACED},
+      </if>
+      <if test="REJECT_REASON != null" >
+        <choose >
+          <when test="REJECT_REASON == emptyBigDecimalValue" >
+            REJECT_REASON = NULL ,
+          </when>
+          <otherwise >
+            REJECT_REASON = #{REJECT_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REJECTED_BY != null" >
+        REJECTED_BY = #{REJECTED_BY},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED = #{DATE_REJECTED},
+      </if>
+      <if test="SAVED_AS_DRAFT != null" >
+        SAVED_AS_DRAFT = #{SAVED_AS_DRAFT},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="REVERSE_DATE != null" >
+        REVERSE_DATE = #{REVERSE_DATE},
+      </if>
+      <if test="DATE_VALIDATED != null" >
+        DATE_VALIDATED = #{DATE_VALIDATED},
+      </if>
+      <if test="TB_REJREV_DATE != null" >
+        TB_REJREV_DATE = #{TB_REJREV_DATE},
+      </if>
+      <if test="TB_REV_DATE != null" >
+        TB_REV_DATE = #{TB_REV_DATE},
+      </if>
+      <if test="VALIDATED_BY != null" >
+        VALIDATED_BY = #{VALIDATED_BY},
+      </if>
+      <if test="REVERSE_BY != null" >
+        REVERSE_BY = #{REVERSE_BY},
+      </if>
+      <if test="TB_REJREV_BY != null" >
+        TB_REJREV_BY = #{TB_REJREV_BY},
+      </if>
+      <if test="TB_REV_BY != null" >
+        TB_REV_BY = #{TB_REV_BY},
+      </if>
+      <if test="STATUS_REASON_DESC != null" >
+        STATUS_REASON_DESC = #{STATUS_REASON_DESC},
+      </if>
+      <if test="PROCESSED_BY != null" >
+        PROCESSED_BY = #{PROCESSED_BY},
+      </if>
+      <if test="DATE_PROCESSED != null" >
+        DATE_PROCESSED = #{DATE_PROCESSED},
+      </if>
+      <if test="EXPIRED_BY != null" >
+        EXPIRED_BY = #{EXPIRED_BY},
+      </if>
+      <if test="DATE_EXPIRED != null" >
+        DATE_EXPIRED = #{DATE_EXPIRED},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_NO = #{REQ_NO}
+  </sql>
+  <update id="updateCTS_REQUEST" parameterType="com.path.dbmaps.vo.CTS_REQUESTVO" >
+    <include refid="sql_updateCTS_REQUEST" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

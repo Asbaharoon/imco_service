@@ -1,0 +1,994 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="objectCustomizationMapper">
+  <resultMap id="objectCustomizationMap" type="com.path.vo.common.customization.object.ObjectCustomizationCO">
+    <result property="sysParamObjDisplayVO.OBJ_DISPLAY_ID"      column="OBJ_DISPLAY_ID"/>
+    <result property="sysParamObjDisplayVO.OBJECT_ID"           column="OBJECT_ID"/>
+    <result property="sysParamObjDisplayVO.OBJECT_TYPE"         column="OBJECT_TYPE"/>
+    <result property="sysParamObjDisplayVO.APP_NAME"            column="APP_NAME"/>
+    <result property="sysParamObjDisplayVO.IS_READONLY"         column="IS_READONLY"/>
+    <result property="sysParamObjDisplayVO.PROG_REF"         	column="PROG_REF"/>
+    <result property="sysParamObjDisplayVO.READONLY_EXPR"       column="READONLY_EXPR"/>
+    <result property="sysParamObjDisplayVO.IS_VISIBLE"          column="IS_VISIBLE"/>
+    <result property="sysParamObjDisplayVO.VISIBILITY_EXPR"     column="VISIBILITY_EXPR"/>
+    <result property="sysParamObjDisplayVO.BUS_RELATED"         column="BUS_RELATED"/>
+    <result property="sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN"  column="IS_ADM_CUST_DIS_YN"/>
+    <result property="sysParamObjDisplayVO.ADD_DELETE_ROW_YN"   column="ADD_DELETE_ROW_YN"/>
+    <result property="sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR" column="ADD_DELETE_ROW_EXPR"/>
+     <!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+     <result property="sysParamObjDisplayVO.FILTER_EXPR" column="FILTER_EXPR"/>
+	<!--end: 953614-->
+  </resultMap>
+  <select id="returnObjectCustomization" parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC" resultMap="objectCustomizationMap">
+  SELECT OD.OBJ_DISPLAY_ID
+	      ,OD.OBJECT_ID 
+	      ,OD.OBJECT_TYPE
+	      ,OD.APP_NAME
+	      ,OD.IS_READONLY
+	      ,OD.PROG_REF
+	      ,OD.READONLY_EXPR
+	      ,OD.IS_VISIBLE
+	      ,OD.VISIBILITY_EXPR
+	      ,OD.BUS_RELATED
+	      ,OD.IS_ADM_CUST_DIS_YN
+	      ,OD.ADD_DELETE_ROW_YN
+	      ,OD.ADD_DELETE_ROW_EXPR
+	      <!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+	      ,OD.FILTER_EXPR
+		  <!--end: 953614-->
+  FROM SYS_PARAM_OBJ_DISPLAY OD , OPT O
+       WHERE OD.PROG_REF  = O.PARENT_REF 
+       AND OD.APP_NAME  = O.APP_NAME
+       AND OD.APP_NAME  = #{appName,jdbcType=VARCHAR}
+       <choose>
+         <when test="originalProgRef!=null">
+		   AND (
+		         (O.PROG_REF = #{progRef} 
+		          AND 
+		          NOT EXISTS(SELECT 1
+		                        FROM SYS_PARAM_OBJ_DISPLAY OD2, OPT O2
+		                       WHERE OD2.PROG_REF       = O2.PARENT_REF
+		                         AND OD2.APP_NAME       = O2.APP_NAME
+		                         AND OD2.BUS_RELATED    = 1
+		                         AND OD2.APP_NAME       = #{appName}
+		                         AND O2 .PROG_REF       = #{originalProgRef}
+		                         AND OD2.OBJECT_ID      = #{objectId,jdbcType=VARCHAR} 
+	  							 AND OD2.OBJECT_TYPE 	= #{objectType,jdbcType=VARCHAR})
+		         )
+		         OR
+		         (O.PROG_REF = #{originalProgRef}
+		           AND EXISTS(SELECT 1
+		                        FROM SYS_PARAM_OBJ_DISPLAY OD2
+		                       WHERE  OD2.PROG_REF       = O.PARENT_REF
+		                         AND OD2.APP_NAME       = O.APP_NAME
+		                         AND OD2.BUS_RELATED    = 1
+		                         AND OD2.APP_NAME       = #{appName}
+		                         AND OD2.OBJECT_ID      = #{objectId,jdbcType=VARCHAR} 
+	  							 AND OD2.OBJECT_TYPE 	= #{objectType,jdbcType=VARCHAR})
+		         )
+		       )
+         </when>
+         <otherwise>
+           AND O.PROG_REF = #{progRef}
+         </otherwise>
+       </choose>
+       AND OD.OBJECT_ID      = #{objectId,jdbcType=VARCHAR} 
+	   AND OD.OBJECT_TYPE 	 = #{objectType,jdbcType=VARCHAR}
+       AND NOT EXISTS(SELECT 1 
+                        FROM SYS_PARAM_OBJ_DISPLAY I
+                       WHERE OD.OBJECT_ID = I.OBJECT_ID
+                         AND I.APP_NAME = O.APP_NAME
+                         AND I.PROG_REF = O.PROG_REF
+                       <if test="originalProgRef!=null">
+                         AND (I.BUS_RELATED = OD.BUS_RELATED OR I.BUS_RELATED = 1)
+                       </if>  
+                     )
+    UNION ALL 
+       
+	SELECT OD.OBJ_DISPLAY_ID
+	      ,OD.OBJECT_ID 
+	      ,OD.OBJECT_TYPE
+	      ,OD.APP_NAME
+	      ,OD.IS_READONLY
+	      ,OD.PROG_REF
+	      ,OD.READONLY_EXPR
+	      ,OD.IS_VISIBLE
+	      ,OD.VISIBILITY_EXPR
+	      ,OD.BUS_RELATED
+	      ,OD.IS_ADM_CUST_DIS_YN
+	      ,OD.ADD_DELETE_ROW_YN
+	      ,OD.ADD_DELETE_ROW_EXPR
+	      <!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+	      ,OD.FILTER_EXPR
+		 <!--end: 953614-->
+	  FROM SYS_PARAM_OBJ_DISPLAY OD , OPT O
+	 WHERE OD.OBJECT_ID   = #{objectId,jdbcType=VARCHAR} 
+	   AND OD.OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+	   AND OD.APP_NAME    = #{appName,jdbcType=VARCHAR}
+	   AND OD.PROG_REF = O.PROG_REF
+       AND OD.APP_NAME  = O.APP_NAME
+	    <choose>
+         <when test="originalProgRef!=null">
+		   AND (
+		         (O.PROG_REF = #{progRef} 
+		          AND 
+		          NOT EXISTS(SELECT 1
+		                        FROM SYS_PARAM_OBJ_DISPLAY OD2, OPT O2
+		                       WHERE OD2.PROG_REF       = O2.PARENT_REF
+		                         AND OD2.APP_NAME       = O2.APP_NAME
+		                         AND OD2.BUS_RELATED    = 1
+		                         AND OD2.APP_NAME       = #{appName}
+		                         AND O2 .PROG_REF       = #{originalProgRef}
+		                         AND OD2.OBJECT_ID      = #{objectId,jdbcType=VARCHAR} 
+	  							 AND OD2.OBJECT_TYPE 	= #{objectType,jdbcType=VARCHAR})
+		         )
+		         OR
+		         (O.PROG_REF = #{originalProgRef}
+		           AND EXISTS(SELECT 1
+		                        FROM SYS_PARAM_OBJ_DISPLAY OD2
+		                       WHERE  OD2.PROG_REF       = O.PARENT_REF
+		                         AND OD2.APP_NAME       = O.APP_NAME
+		                         AND OD2.BUS_RELATED    = 1
+		                         AND OD2.APP_NAME       = #{appName}
+		                         AND OD2.OBJECT_ID      = #{objectId,jdbcType=VARCHAR} 
+	  							 AND OD2.OBJECT_TYPE 	= #{objectType,jdbcType=VARCHAR})
+		         )
+		       )
+         </when>
+         <otherwise>
+           AND OD.PROG_REF = #{progRef}
+         </otherwise>
+       </choose>
+  </select>
+  
+  
+  <update id="updateObjCustomization" parameterType="com.path.vo.common.customization.object.ObjectCustomizationCO">
+    update SYS_PARAM_OBJ_DISPLAY
+    <set >
+      <if test="sysParamObjDisplayVO.IS_READONLY != null" >
+        <choose >
+          <when test="sysParamObjDisplayVO.IS_READONLY == emptyBigDecimalValue" >
+            IS_READONLY = NULL ,
+          </when>
+          <otherwise >
+            IS_READONLY  = #{sysParamObjDisplayVO.IS_READONLY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="sysParamObjDisplayVO.IS_VISIBLE != null" >
+        <choose >
+          <when test="sysParamObjDisplayVO.IS_VISIBLE == emptyBigDecimalValue" >
+            IS_VISIBLE = NULL ,
+          </when>
+          <otherwise >
+            IS_VISIBLE = #{sysParamObjDisplayVO.IS_VISIBLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="sysParamObjDisplayVO.ADD_DELETE_ROW_YN != null" >
+            ADD_DELETE_ROW_YN = #{sysParamObjDisplayVO.ADD_DELETE_ROW_YN},
+      </if>
+      <if test="sysParamObjDisplayVO.VISIBILITY_EXPR != null" >
+        VISIBILITY_EXPR = #{sysParamObjDisplayVO.VISIBILITY_EXPR},
+      </if>
+      <if test="sysParamObjDisplayVO.READONLY_EXPR != null" >
+        READONLY_EXPR = #{sysParamObjDisplayVO.READONLY_EXPR},
+      </if>
+	  <!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+		<if test="sysParamObjDisplayVO.FILTER_EXPR !=null">
+			<choose>
+				<when
+					test="sysParamObjDisplayVO.FILTER_EXPR.equals(&quot;&quot;)">
+					FILTER_EXPR = NULL ,
+				</when>
+				<otherwise>
+					FILTER_EXPR = #{sysParamObjDisplayVO.FILTER_EXPR},
+				</otherwise>
+			</choose>
+		</if>
+	  <!--end: 953614-->
+      <if test="sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR != null" >
+        ADD_DELETE_ROW_EXPR = #{sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR},
+      </if>
+      <if test="sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN != null" >											
+        IS_ADM_CUST_DIS_YN = #{sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN},
+      </if>
+      MODIFIED_BY = #{userId,jdbcType=VARCHAR}, 
+      MODIFIED_DATE = #{runningDate,jdbcType=DATE}
+    </set>
+    where APP_NAME = #{sysParamObjDisplayVO.APP_NAME}
+      <choose>
+      <when test="specificFlag">
+      and PROG_REF = #{sysParamObjDisplayVO.PROG_REF}
+      </when>
+      <otherwise>
+           and PROG_REF = (SELECT (
+                                   CASE WHEN PARENT_REF = 'ROOT'
+                                        THEN PROG_REF
+                                        ELSE PARENT_REF
+                                    END
+                                   ) 
+		                     FROM OPT 
+		                    WHERE APP_NAME = #{sysParamObjDisplayVO.APP_NAME} 
+		                      AND PROG_REF = #{sysParamObjDisplayVO.PROG_REF})
+      </otherwise>
+      </choose>
+      and OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID}
+</update>
+
+
+<insert id="insertObjCustomization" parameterType="com.path.vo.common.customization.object.ObjectCustomizationCO">
+ <selectKey resultType="java.math.BigDecimal" keyProperty="sysParamObjDisplayVO.OBJ_DISPLAY_ID" order="BEFORE" >
+      SELECT <choose><when test="isSybase == 1">ISNULL(MAX(OBJ_DISPLAY_ID),0)+1</when><otherwise>NVL(MAX(OBJ_DISPLAY_ID),0)+1</otherwise></choose> FROM SYS_PARAM_OBJ_DISPLAY
+ </selectKey>
+ <choose><when test="isSybase == 1">
+ BEGIN
+		DECLARE @PARENT_PROG_REF VARCHAR(15)
+ <choose>	
+	<when test="specificFlag">
+		SELECT @PARENT_PROG_REF = #{cutomizationPROG_REF}
+	</when>	
+	<otherwise>
+		SELECT @PARENT_PROG_REF = (
+							       CASE WHEN PARENT_REF = 'ROOT' OR PARENT_REF IS NULL
+							            THEN PROG_REF
+							            ELSE PARENT_REF
+							       END
+							       )
+		FROM OPT WHERE APP_NAME =#{sysParamObjDisplayVO.APP_NAME} AND PROG_REF = #{cutomizationPROG_REF}
+	</otherwise>
+	</choose>
+	</when></choose>
+ INSERT INTO SYS_PARAM_OBJ_DISPLAY (OBJ_DISPLAY_ID		
+		, APP_NAME		
+		, PROG_REF		
+		, OBJECT_TYPE		
+		, OBJECT_ID		
+		<if test="sysParamObjDisplayVO.ADD_DELETE_ROW_YN != null">
+		 , ADD_DELETE_ROW_YN
+	   </if>
+		<if test="sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR != null">
+		 , ADD_DELETE_ROW_EXPR
+	   </if>
+		<if test="sysParamObjDisplayVO.IS_READONLY != null">
+		 , IS_READONLY
+	   </if>
+		<if test="sysParamObjDisplayVO.READONLY_EXPR != null">
+		 , READONLY_EXPR
+	   </if>
+		<if test="sysParamObjDisplayVO.IS_VISIBLE != null">
+		 , IS_VISIBLE
+	   </if>
+		<if test="sysParamObjDisplayVO.VISIBILITY_EXPR != null">
+		 , VISIBILITY_EXPR
+	   </if>
+		<if test="sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN != null">
+		 , IS_ADM_CUST_DIS_YN
+	   </if>
+	   <!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+		<if test="sysParamObjDisplayVO.FILTER_EXPR !=null">
+			,FILTER_EXPR
+		</if>
+	   <!--end: 953614-->
+	
+	   ,CREATED_BY
+	   ,CREATED_DATE
+	   )
+	VALUES(#{sysParamObjDisplayVO.OBJ_DISPLAY_ID} 		
+		,#{sysParamObjDisplayVO.APP_NAME}
+		 <choose>
+		  <when test="isSybase == 1">
+		  	,@PARENT_PROG_REF
+		  </when>
+		  <otherwise>
+			  <choose>
+				<when test="specificFlag">
+			  	,#{cutomizationPROG_REF}
+				</when>
+				<otherwise>
+			  	,(Select (CASE WHEN PARENT_REF = 'ROOT' OR PARENT_REF IS NULL THEN PROG_REF ELSE PARENT_REF END) FROM OPT WHERE APP_NAME = #{sysParamObjDisplayVO.APP_NAME} AND PROG_REF = #{cutomizationPROG_REF})
+				</otherwise> 
+			  </choose>	
+		  </otherwise>
+		  </choose>
+		,#{sysParamObjDisplayVO.OBJECT_TYPE} 
+		,#{sysParamObjDisplayVO.OBJECT_ID}		
+		<if test="sysParamObjDisplayVO.ADD_DELETE_ROW_YN != null">
+			,#{sysParamObjDisplayVO.ADD_DELETE_ROW_YN}
+	  	</if>
+		<if test="sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR != null">
+			,#{sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR}
+	  	</if>
+		<if test="sysParamObjDisplayVO.IS_READONLY != null">
+			,#{sysParamObjDisplayVO.IS_READONLY}
+	  	</if>
+		<if test="sysParamObjDisplayVO.READONLY_EXPR != null">
+			,#{sysParamObjDisplayVO.READONLY_EXPR}
+	  	</if>
+		<if test="sysParamObjDisplayVO.IS_VISIBLE != null">
+			,#{sysParamObjDisplayVO.IS_VISIBLE}
+	  	</if>
+		<if test="sysParamObjDisplayVO.VISIBILITY_EXPR != null">
+			,#{sysParamObjDisplayVO.VISIBILITY_EXPR}
+	  	</if>
+		<if test="sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN != null">
+			,#{sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN}
+	  	</if>
+	  	<!--953614 Specify Grid Filter Query Expression - Grid/Livesearch Customization Enhancements -->
+		<if test="sysParamObjDisplayVO.FILTER_EXPR !=null">
+			<choose>
+				<when
+					test="sysParamObjDisplayVO.FILTER_EXPR.equals(&quot;&quot;)">
+					,NULL
+				</when>
+				<otherwise>
+					,#{sysParamObjDisplayVO.FILTER_EXPR}
+				</otherwise>
+			</choose>
+		</if>
+	     <!--end: 953614-->
+	  	,  #{userId,jdbcType=VARCHAR}
+      	, 	#{runningDate,jdbcType=DATE}
+	  ) 
+	  <choose>
+		  <when test="isSybase == 1">
+		  END
+		  </when>
+	  </choose>
+	  </insert>
+
+<delete id="deleteSysParamObjDisplay" parameterType="com.path.dbmaps.vo.SYS_PARAM_OBJ_DISPLAYVO" >
+BEGIN
+    DELETE FROM SYS_PARAM_GLOBAL_ACT_ARG_MAP where ELEM_SEQUENCE_ID IN ( SELECT SEQUENCE_ID FROM SYS_PARAM_ELEM_ACTIVITIES WHERE OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID,jdbcType=NUMERIC} ) <if test="isOracle == 1">;</if> 
+    DELETE FROM SYS_PARAM_ELEM_ACTIVITIES where OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID,jdbcType=NUMERIC}<if test="isOracle == 1">;</if> 
+	DELETE FROM SYS_PARAM_OBJ_DETAILS_DISPLAY WHERE OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+	DELETE FROM SYS_PARAM_OBJ_DISPLAY WHERE OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID,jdbcType=NUMERIC}<if test="isOracle == 1">;</if>
+END<if test="isOracle == 1">;</if>
+</delete>
+
+
+  <select id="returnCusomizationDetailsList" resultMap="returnCusomizationDetailsListResultMap" parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="objectCustomizationMapper.returnCusomizationDetailsListQuery"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+  </select>
+  
+  <select id="returnCusomizationDetailsListCount"  resultType="int" parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="objectCustomizationMapper.returnCusomizationDetailsListQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+	</select>
+  
+  <resultMap id="returnCusomizationDetailsListResultMap" type="com.path.vo.common.customization.object.ObjectCustomizationSC">
+	   <result property="sysParamObjDetailsDispVO.OBJ_DISPLAY_ID"         						column="OBJ_DISPLAY_ID"/>
+	   <result property="sysParamObjDetailsDispVO.OBJ_DET_NAME"         						column="OBJ_DET_NAME"/>
+	   <result property="sysParamObjDetailsDispVO.IS_READONLY"         							column="IS_READONLY"/>
+	   <result property="sysParamObjDetailsDispVO.IS_VISIBLE"         							column="IS_VISIBLE"/>
+	   <result property="sysParamObjDetailsDispVO.IS_MANDATORY"         						column="IS_MANDATORY"/>
+	   <result property="sysParamObjDetailsDispVO.LABEL_KEY"         							column="LABEL_KEY"/>
+	   <result property="sysParamObjDetailsDispVO.DEFAULT_VALUE"         						column="DEFAULT_VALUE"/>
+	   <result property="sysParamObjDetailsDispVO.MIN_LENGTH"         							column="MIN_LENGTH"/>
+	   <result property="sysParamObjDetailsDispVO.MAX_LENGTH"      								column="MAX_LENGTH"/>
+	   <result property="sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN"      				column="DFLT_VAL_EXPR_PRIORITY_YN"/>
+	   <result property="sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN"      						column="IS_ADM_CUST_DIS_YN"/>
+	   <result property="sysParamObjDetailsDispVO.READONLY_EXPR"      							column="READONLY_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.VISIBILITY_EXPR"      						column="VISIBILITY_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.MANDATORY_EXPR"      							column="MANDATORY_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.LABEL_KEY_EXPR"      							column="LABEL_KEY_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.VALUE_VALID_EXPR"      						column="VALUE_VALID_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR"      						column="DEFAULT_VALUE_EXPR"/>
+	   <result property="sysParamObjDetailsDispVO.BUS_RELATED"      							column="BUS_RELATED"/>
+	   <result property="sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN"      					column="ENABLE_FIELD_AUDIT_YN"/>
+	</resultMap>
+	
+	<sql id="returnCusomizationDetailsListQuery">
+		SELECT OBJ_DISPLAY_ID,
+		 OBJ_DET_NAME,
+		 IS_READONLY,
+		 IS_VISIBLE,
+		 IS_MANDATORY,
+		 LABEL_KEY,
+		 DEFAULT_VALUE,
+		 MIN_LENGTH,
+		 MAX_LENGTH,
+		 DFLT_VAL_EXPR_PRIORITY_YN,
+		 IS_ADM_CUST_DIS_YN,
+		 READONLY_EXPR,
+		 VISIBILITY_EXPR,
+		 MANDATORY_EXPR,
+		 LABEL_KEY_EXPR,
+		 VALUE_VALID_EXPR,
+		 DEFAULT_VALUE_EXPR,
+		 BUS_RELATED,
+		 ENABLE_FIELD_AUDIT_YN
+		FROM SYS_PARAM_OBJ_DETAILS_DISPLAY WHERE OBJ_DISPLAY_ID = #{sysParamObjDetailsDispVO.OBJ_DISPLAY_ID} 
+	</sql>
+	
+	 <update id="updateObjDetailsDisp" parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC">
+    update SYS_PARAM_OBJ_DETAILS_DISPLAY
+    <set >
+      <if test="sysParamObjDetailsDispVO.IS_READONLY != null" >
+        <choose >
+          <when test="sysParamObjDetailsDispVO.IS_READONLY == emptyBigDecimalValue" >
+            IS_READONLY = NULL ,
+          </when>
+          <otherwise >
+            IS_READONLY  = #{sysParamObjDetailsDispVO.IS_READONLY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_VISIBLE != null" >
+        <choose >
+          <when test="sysParamObjDetailsDispVO.IS_VISIBLE == emptyBigDecimalValue" >
+            IS_VISIBLE = NULL ,
+          </when>
+          <otherwise >
+            IS_VISIBLE = #{sysParamObjDetailsDispVO.IS_VISIBLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_MANDATORY != null" >
+      <choose >
+          <when test="sysParamObjDetailsDispVO.IS_MANDATORY == emptyBigDecimalValue" >
+            IS_MANDATORY = NULL ,
+          </when>
+          <otherwise >
+            IS_MANDATORY = #{sysParamObjDetailsDispVO.IS_MANDATORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY != null" >
+        LABEL_KEY = #{sysParamObjDetailsDispVO.LABEL_KEY},
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE != null" >
+        DEFAULT_VALUE = #{sysParamObjDetailsDispVO.DEFAULT_VALUE},
+      </if>
+      <if test="sysParamObjDetailsDispVO.OBJ_DET_NAME != null" >
+        OBJ_DET_NAME = #{sysParamObjDetailsDispVO.OBJ_DET_NAME},
+      </if>
+      <if test="sysParamObjDetailsDispVO.MIN_LENGTH != null" >
+      <choose >
+	      <when test="sysParamObjDetailsDispVO.MIN_LENGTH == emptyBigDecimalValue" >
+	        MIN_LENGTH = NULL,
+	      </when>
+	      <otherwise >
+	        MIN_LENGTH = #{sysParamObjDetailsDispVO.MIN_LENGTH},
+	      </otherwise>
+      </choose>
+      </if>
+      <if test="sysParamObjDetailsDispVO.MAX_LENGTH != null" >
+      <choose >
+	      <when test="sysParamObjDetailsDispVO.MAX_LENGTH == emptyBigDecimalValue" >
+	        MAX_LENGTH = NULL,
+	      </when>
+	      <otherwise >
+	        MAX_LENGTH = #{sysParamObjDetailsDispVO.MAX_LENGTH},
+	      </otherwise>
+      </choose>
+      </if>
+      <if test="sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null" >											
+        DFLT_VAL_EXPR_PRIORITY_YN = #{sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN},
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN != null" >											
+        IS_ADM_CUST_DIS_YN = #{sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN},
+      </if>
+      <if test="sysParamObjDetailsDispVO.READONLY_EXPR != null" >											
+        READONLY_EXPR = #{sysParamObjDetailsDispVO.READONLY_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.VISIBILITY_EXPR != null" >											
+        VISIBILITY_EXPR = #{sysParamObjDetailsDispVO.VISIBILITY_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.MANDATORY_EXPR != null" >											
+        MANDATORY_EXPR = #{sysParamObjDetailsDispVO.MANDATORY_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY_EXPR != null" >											
+        LABEL_KEY_EXPR = #{sysParamObjDetailsDispVO.LABEL_KEY_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.VALUE_VALID_EXPR != null" >											
+        VALUE_VALID_EXPR = #{sysParamObjDetailsDispVO.VALUE_VALID_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR != null" >											
+        DEFAULT_VALUE_EXPR = #{sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR},
+      </if>
+      <if test="sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN != null" >											
+        ENABLE_FIELD_AUDIT_YN = #{sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN},
+      </if>
+      MODIFIED_BY = #{sysParamObjDetailsDispVO.MODIFIED_BY,jdbcType=VARCHAR}, 
+      MODIFIED_DATE = #{sysParamObjDetailsDispVO.MODIFIED_DATE,jdbcType=DATE}
+    </set>
+    WHERE OBJ_DISPLAY_ID = #{sysParamObjDetailsDispVO.OBJ_DISPLAY_ID}
+      AND OBJ_DET_NAME = #{sysParamObjDetailsDispVO.OBJ_DET_NAME}
+</update>
+
+<insert id="insertObjDetailsDisp" parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC">
+    INSERT INTO  SYS_PARAM_OBJ_DETAILS_DISPLAY(OBJ_DISPLAY_ID
+    ,OBJ_DET_NAME
+      <if test="sysParamObjDetailsDispVO.IS_READONLY != null and sysParamObjDetailsDispVO.IS_READONLY != emptyBigDecimalValue" >
+        ,IS_READONLY
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_VISIBLE != null and sysParamObjDetailsDispVO.IS_VISIBLE != emptyBigDecimalValue" >
+        ,IS_VISIBLE
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_MANDATORY != null and sysParamObjDetailsDispVO.IS_MANDATORY != emptyBigDecimalValue" >
+        ,IS_MANDATORY
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY != null" >
+        ,LABEL_KEY
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE != null" >
+        ,DEFAULT_VALUE
+      </if>
+      <if test="sysParamObjDetailsDispVO.MIN_LENGTH != null and sysParamObjDetailsDispVO.MIN_LENGTH != emptyBigDecimalValue" >
+        ,MIN_LENGTH
+      </if>
+      <if test="sysParamObjDetailsDispVO.MAX_LENGTH != null and sysParamObjDetailsDispVO.MAX_LENGTH != emptyBigDecimalValue" >											
+        ,MAX_LENGTH
+      </if>
+      <if test="sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null and sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN != emptyBigDecimalValue" >											
+        ,DFLT_VAL_EXPR_PRIORITY_YN
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN != null and sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN != emptyBigDecimalValue" >											
+        ,IS_ADM_CUST_DIS_YN
+      </if>
+      <if test="sysParamObjDetailsDispVO.READONLY_EXPR != null" >											
+        ,READONLY_EXPR
+      </if>
+      <if test="sysParamObjDetailsDispVO.VISIBILITY_EXPR != null" >											
+        ,VISIBILITY_EXPR
+      </if>
+      <if test="sysParamObjDetailsDispVO.MANDATORY_EXPR != null" >											
+        ,MANDATORY_EXPR
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY_EXPR != null" >											
+        ,LABEL_KEY_EXPR 
+      </if>
+      <if test="sysParamObjDetailsDispVO.VALUE_VALID_EXPR != null" >											
+        ,VALUE_VALID_EXPR 
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR != null" >											
+        ,DEFAULT_VALUE_EXPR 
+      </if>
+      <if test="sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN != null and sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN != emptyBigDecimalValue" >											
+        ,ENABLE_FIELD_AUDIT_YN
+      </if>
+      ,CREATED_BY 
+      ,CREATED_DATE)
+      VALUES
+      (#{sysParamObjDetailsDispVO.OBJ_DISPLAY_ID}
+      ,#{sysParamObjDetailsDispVO.OBJ_DET_NAME}
+      <if test="sysParamObjDetailsDispVO.IS_READONLY != null and sysParamObjDetailsDispVO.IS_READONLY != emptyBigDecimalValue" >
+          ,#{sysParamObjDetailsDispVO.IS_READONLY}
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_VISIBLE != null and sysParamObjDetailsDispVO.IS_VISIBLE != emptyBigDecimalValue" >
+           ,#{sysParamObjDetailsDispVO.IS_VISIBLE}
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_MANDATORY != null and sysParamObjDetailsDispVO.IS_MANDATORY != emptyBigDecimalValue" >
+           ,#{sysParamObjDetailsDispVO.IS_MANDATORY}
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY != null" >
+       	  ,#{sysParamObjDetailsDispVO.LABEL_KEY}
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE != null" >
+          ,#{sysParamObjDetailsDispVO.DEFAULT_VALUE}
+      </if>
+      <if test="sysParamObjDetailsDispVO.MIN_LENGTH != null and sysParamObjDetailsDispVO.MIN_LENGTH != emptyBigDecimalValue" >
+	      ,#{sysParamObjDetailsDispVO.MIN_LENGTH}
+      </if>
+      <if test="sysParamObjDetailsDispVO.MAX_LENGTH != null and sysParamObjDetailsDispVO.MAX_LENGTH != emptyBigDecimalValue" >											
+	      ,#{sysParamObjDetailsDispVO.MAX_LENGTH}
+      </if>
+      <if test="sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN != null and sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN != emptyBigDecimalValue" >											
+        ,#{sysParamObjDetailsDispVO.DFLT_VAL_EXPR_PRIORITY_YN}
+      </if>
+      <if test="sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN != null and sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN != emptyBigDecimalValue" >											
+        ,#{sysParamObjDetailsDispVO.IS_ADM_CUST_DIS_YN}
+      </if>
+      <if test="sysParamObjDetailsDispVO.READONLY_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.READONLY_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.VISIBILITY_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.VISIBILITY_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.MANDATORY_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.MANDATORY_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.LABEL_KEY_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.LABEL_KEY_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.VALUE_VALID_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.VALUE_VALID_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR != null" >											
+        ,#{sysParamObjDetailsDispVO.DEFAULT_VALUE_EXPR}
+      </if>
+      <if test="sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN != null and sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN != emptyBigDecimalValue" >											
+        ,#{sysParamObjDetailsDispVO.ENABLE_FIELD_AUDIT_YN}
+      </if>
+      ,#{sysParamObjDetailsDispVO.CREATED_BY}
+      ,#{sysParamObjDetailsDispVO.CREATED_DATE}
+      )
+</insert>
+
+<delete id="deleteSysParamObjDetailsDisplay" parameterType="com.path.dbmaps.vo.SYS_PARAM_OBJ_DISPLAYVO" >
+	DELETE FROM SYS_PARAM_OBJ_DETAILS_DISPLAY WHERE OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID,jdbcType=NUMERIC}
+</delete>
+
+<delete id="deleteSysParamObjDetailsDisplayByName" parameterType="com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO" >
+    delete from SYS_PARAM_OBJ_DETAILS_DISPLAY
+    where OBJ_DET_NAME = #{OBJ_DET_NAME}
+    and OBJ_DISPLAY_ID = #{OBJ_DISPLAY_ID}
+ </delete>
+ 
+ <select id="returnObjDisplayExp" resultMap="returnObjDisplayExpListMap"
+	parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC">
+	<include refid="returnObjDisplayExport" />
+</select>
+
+<resultMap id="returnObjDisplayExpListMap" type="com.path.dbmaps.vo.SYS_PARAM_OBJ_DISPLAYVO">
+
+<result property="OBJ_DISPLAY_ID" 			column="OBJ_DISPLAY_ID"/>
+<result property="APP_NAME" 				column="APP_NAME"/>
+<result property="PROG_REF" 				column="PROG_REF"/>
+<result property="OBJECT_TYPE" 				column="OBJECT_TYPE"/>
+<result property="OBJECT_ID" 				column="OBJECT_ID"/>
+<result property="ADD_DELETE_ROW_YN" 		column="ADD_DELETE_ROW_YN"/>
+<result property="ADD_DELETE_ROW_EXPR" 		column="ADD_DELETE_ROW_EXPR"/>
+<result property="IS_READONLY" 				column="IS_READONLY"/>
+<result property="READONLY_EXPR" 			column="READONLY_EXPR"/>
+<result property="IS_VISIBLE" 				column="IS_VISIBLE"/>
+<result property="VISIBILITY_EXPR" 			column="VISIBILITY_EXPR"/>
+<result property="BUS_RELATED" 				column="BUS_RELATED"/>
+<result property="IS_ADM_CUST_DIS_YN" 		column="IS_ADM_CUST_DIS_YN"/>
+<result property="CREATED_BY" 				column="CREATED_BY"/>
+<result property="CREATED_DATE" 			column="CREATED_DATE"/>
+<result property="MODIFIED_BY" 				column="MODIFIED_BY"/>
+<result property="MODIFIED_DATE" 			column="MODIFIED_DATE"/>
+</resultMap>
+
+<sql id="returnObjDisplayExport">
+	SELECT 
+	SPOD.OBJ_DISPLAY_ID,
+	SPOD.APP_NAME,
+	SPOD.PROG_REF,
+	SPOD.OBJECT_TYPE,
+	SPOD.OBJECT_ID,
+	SPOD.ADD_DELETE_ROW_YN,
+	SPOD.ADD_DELETE_ROW_EXPR,
+	SPOD.IS_READONLY,
+	SPOD.READONLY_EXPR,
+	SPOD.IS_VISIBLE,
+	SPOD.VISIBILITY_EXPR,
+	SPOD.BUS_RELATED,
+	SPOD.IS_ADM_CUST_DIS_YN,
+	SPOD.CREATED_BY,
+	SPOD.CREATED_DATE,
+	SPOD.MODIFIED_BY,
+	SPOD.MODIFIED_DATE
+	FROM SYS_PARAM_OBJ_DISPLAY SPOD
+	WHERE SPOD.PROG_REF = #{cutomizationPROG_REF}
+	AND SPOD.APP_NAME = #{appName}
+	<if test="exportCustType == 'object'">
+	AND SPOD.OBJECT_ID = #{sysParamObjDispVO.OBJECT_ID}
+	</if>
+	AND SPOD.BUS_RELATED != 1
+</sql>
+
+ <select id="returnObjDetDisplayExp" resultMap="returnObjDetDisplayExpListMap"
+	parameterType="com.path.vo.common.customization.object.ObjectCustomizationSC">
+	<include refid="returnObjDetDisplayExport" />
+</select>
+
+<resultMap id="returnObjDetDisplayExpListMap" type="com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO">
+
+<result property="OBJ_DISPLAY_ID" 						column="OBJ_DISPLAY_ID"/>
+<result property="OBJ_DET_NAME" 						column="OBJ_DET_NAME"/>
+<result property="IS_READONLY" 							column="IS_READONLY"/>
+<result property="READONLY_EXPR" 						column="READONLY_EXPR"/>
+<result property="IS_VISIBLE" 							column="IS_VISIBLE"/>
+<result property="VISIBILITY_EXPR" 						column="VISIBILITY_EXPR"/>
+<result property="IS_MANDATORY" 						column="IS_MANDATORY"/>
+<result property="MANDATORY_EXPR" 						column="MANDATORY_EXPR"/>
+<result property="LABEL_KEY" 							column="LABEL_KEY"/>
+<result property="LABEL_KEY_EXPR" 						column="LABEL_KEY_EXPR"/>
+<result property="VALUE_VALID_EXPR" 					column="VALUE_VALID_EXPR"/>
+<result property="DEFAULT_VALUE" 						column="DEFAULT_VALUE"/>
+<result property="MIN_LENGTH" 							column="MIN_LENGTH"/>
+<result property="MAX_LENGTH" 							column="MAX_LENGTH"/>
+<result property="DFLT_VAL_EXPR_PRIORITY_YN" 			column="DFLT_VAL_EXPR_PRIORITY_YN"/>
+<result property="DEFAULT_VALUE_EXPR" 					column="DEFAULT_VALUE_EXPR"/>
+<result property="IS_ADM_CUST_DIS_YN" 					column="IS_ADM_CUST_DIS_YN"/>
+<result property="CREATED_BY" 							column="CREATED_BY"/>
+<result property="CREATED_DATE" 						column="CREATED_DATE"/>
+<result property="MODIFIED_BY" 							column="MODIFIED_BY"/>
+<result property="MODIFIED_DATE" 						column="MODIFIED_DATE"/>
+<result property="BUS_RELATED" 							column="BUS_RELATED"/>
+<result property="ENABLE_FIELD_AUDIT_YN" 				column="ENABLE_FIELD_AUDIT_YN"/>
+</resultMap>
+
+<sql id="returnObjDetDisplayExport">
+	SELECT 
+	SPODD.OBJ_DISPLAY_ID,
+	SPODD.OBJ_DET_NAME,
+	SPODD.IS_READONLY,
+	SPODD.READONLY_EXPR,
+	SPODD.IS_VISIBLE,
+	SPODD.VISIBILITY_EXPR,
+	SPODD.IS_MANDATORY,
+	SPODD.MANDATORY_EXPR,
+	SPODD.LABEL_KEY,
+	SPODD.LABEL_KEY_EXPR,
+	SPODD.VALUE_VALID_EXPR,
+	SPODD.DEFAULT_VALUE,
+	SPODD.MIN_LENGTH,
+	SPODD.MAX_LENGTH,
+	SPODD.DFLT_VAL_EXPR_PRIORITY_YN,
+	SPODD.DEFAULT_VALUE_EXPR,
+	SPODD.IS_ADM_CUST_DIS_YN,
+	SPODD.CREATED_BY,
+	SPODD.CREATED_DATE,
+	SPODD.MODIFIED_BY,
+	SPODD.MODIFIED_DATE,
+	SPODD.BUS_RELATED,
+	SPODD.ENABLE_FIELD_AUDIT_YN
+	FROM SYS_PARAM_OBJ_DISPLAY SPOD,SYS_PARAM_OBJ_DETAILS_DISPLAY SPODD
+	WHERE SPOD.OBJ_DISPLAY_ID = SPODD.OBJ_DISPLAY_ID
+	AND SPOD.PROG_REF = #{cutomizationPROG_REF}
+	AND SPOD.APP_NAME = #{appName}
+	<if test="exportCustType == 'object'">
+	AND SPOD.OBJECT_ID = #{sysParamObjDispVO.OBJECT_ID}
+	</if>
+	AND SPOD.BUS_RELATED != 1
+</sql>
+
+<insert id="insertObjectCustomizationExported" parameterType="com.path.vo.common.customization.object.ObjectCustomizationCO">
+	<choose>
+		<when test="isSybase == 1">
+			 BEGIN
+			 <if test="overrideCustImport == 'true'">
+						DELETE FROM SYS_PARAM_OBJ_DETAILS_DISPLAY
+						WHERE OBJ_DISPLAY_ID = (SELECT OBJ_DISPLAY_ID FROM SYS_PARAM_OBJ_DISPLAY WHERE PROG_REF = #{sysParamObjDisplayVO.PROG_REF} 
+						AND APP_NAME = #{sysParamObjDisplayVO.APP_NAME} 
+						AND OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID} )
+						
+						DELETE FROM SYS_PARAM_OBJ_DISPLAY 
+						WHERE PROG_REF = #{sysParamObjDisplayVO.PROG_REF}
+						AND APP_NAME = #{sysParamObjDisplayVO.APP_NAME}
+						AND OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID}
+			</if>
+			if not exists( SELECT 1 from SYS_PARAM_OBJ_DISPLAY SPOD1 
+						WHERE SPOD1.PROG_REF = #{sysParamObjDisplayVO.PROG_REF}
+						AND SPOD1.APP_NAME = #{sysParamObjDisplayVO.APP_NAME}
+						AND SPOD1.OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID})
+			BEGIN 
+			DECLARE @OBJ_ID NUMERIC(6)
+			SELECT @OBJ_ID   = ISNULL(max(SPOD2.OBJ_DISPLAY_ID)+1, 0) FROM
+					SYS_PARAM_OBJ_DISPLAY	SPOD2 	
+						
+			INSERT INTO SYS_PARAM_OBJ_DISPLAY 
+			(OBJ_DISPLAY_ID,
+			APP_NAME,
+			PROG_REF,
+			OBJECT_TYPE,
+			OBJECT_ID,
+			ADD_DELETE_ROW_YN,
+			ADD_DELETE_ROW_EXPR,
+			IS_READONLY,
+			READONLY_EXPR,
+			IS_VISIBLE,
+			VISIBILITY_EXPR,
+			BUS_RELATED,
+			IS_ADM_CUST_DIS_YN,
+			CREATED_BY,
+			CREATED_DATE,
+			MODIFIED_BY,
+			MODIFIED_DATE
+			)
+			values( 
+			@OBJ_ID,
+			#{sysParamObjDisplayVO.APP_NAME},
+			#{sysParamObjDisplayVO.PROG_REF},
+			#{sysParamObjDisplayVO.OBJECT_TYPE},
+			#{sysParamObjDisplayVO.OBJECT_ID},
+			#{sysParamObjDisplayVO.ADD_DELETE_ROW_YN},
+			#{sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.IS_READONLY},
+			#{sysParamObjDisplayVO.READONLY_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.IS_VISIBLE},
+			#{sysParamObjDisplayVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.BUS_RELATED},
+			#{sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN},
+			#{sysParamObjDisplayVO.CREATED_BY, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.CREATED_DATE, jdbcType=DATE},
+			#{sysParamObjDisplayVO.MODIFIED_BY, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.MODIFIED_DATE, jdbcType=DATE}
+			)		
+						
+			<foreach collection="sysParamObjDetailsDisplayList" item="com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO">
+				INSERT INTO SYS_PARAM_OBJ_DETAILS_DISPLAY 
+				(OBJ_DISPLAY_ID,
+				OBJ_DET_NAME,
+				IS_READONLY,
+				READONLY_EXPR,
+				IS_VISIBLE,
+				VISIBILITY_EXPR,
+				IS_MANDATORY,
+				MANDATORY_EXPR,
+				LABEL_KEY,
+				LABEL_KEY_EXPR,
+				VALUE_VALID_EXPR,
+				DEFAULT_VALUE,
+				MIN_LENGTH,
+				MAX_LENGTH,
+				DFLT_VAL_EXPR_PRIORITY_YN,
+				DEFAULT_VALUE_EXPR,
+				IS_ADM_CUST_DIS_YN,
+				CREATED_BY,
+				CREATED_DATE,
+				MODIFIED_BY,
+				MODIFIED_DATE,
+				BUS_RELATED,
+				ENABLE_FIELD_AUDIT_YN)
+				
+				values( 
+				@OBJ_ID,
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.OBJ_DET_NAME},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_READONLY},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.READONLY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_VISIBLE},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_MANDATORY},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MANDATORY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.LABEL_KEY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.LABEL_KEY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.VALUE_VALID_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DEFAULT_VALUE, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MIN_LENGTH, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MAX_LENGTH, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DFLT_VAL_EXPR_PRIORITY_YN},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DEFAULT_VALUE_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_ADM_CUST_DIS_YN},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.CREATED_BY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.CREATED_DATE, jdbcType=DATE},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MODIFIED_BY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MODIFIED_DATE, jdbcType=DATE},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.BUS_RELATED, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.ENABLE_FIELD_AUDIT_YN, jdbcType=NUMERIC}
+				)
+			</foreach>
+			END
+			END
+		</when>
+		<otherwise>
+			DECLARE col_exists number;
+			BEGIN
+			
+			<if test="overrideCustImport == 'true'">
+						DELETE FROM SYS_PARAM_OBJ_DETAILS_DISPLAY SPODDL
+						WHERE SPODDL.OBJ_DISPLAY_ID = (SELECT OBJ_DISPLAY_ID FROM SYS_PARAM_OBJ_DISPLAY WHERE PROG_REF = #{sysParamObjDisplayVO.PROG_REF} 
+						AND APP_NAME = #{sysParamObjDisplayVO.APP_NAME} 
+						AND OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID} );
+						
+						DELETE FROM SYS_PARAM_OBJ_DISPLAY SPOD 
+						WHERE SPOD.PROG_REF = #{sysParamObjDisplayVO.PROG_REF}
+						AND SPOD.APP_NAME = #{sysParamObjDisplayVO.APP_NAME}
+						AND SPOD.OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID};
+			</if>
+			select count(1) into col_exists from SYS_PARAM_OBJ_DISPLAY SPOD1 
+						WHERE SPOD1.PROG_REF = #{sysParamObjDisplayVO.PROG_REF}
+						AND SPOD1.APP_NAME = #{sysParamObjDisplayVO.APP_NAME}
+						AND SPOD1.OBJECT_ID = #{sysParamObjDisplayVO.OBJECT_ID};
+			if col_exists = 0 then		
+			DECLARE obj_id NUMBER;
+			BEGIN
+			
+			SELECT nvl(max(SPOD2.OBJ_DISPLAY_ID)+1, 0) into obj_id FROM
+					SYS_PARAM_OBJ_DISPLAY	SPOD2 ;		
+			
+			INSERT INTO SYS_PARAM_OBJ_DISPLAY 
+			(OBJ_DISPLAY_ID,
+			APP_NAME,
+			PROG_REF,
+			OBJECT_TYPE,
+			OBJECT_ID,
+			ADD_DELETE_ROW_YN,
+			ADD_DELETE_ROW_EXPR,
+			IS_READONLY,
+			READONLY_EXPR,
+			IS_VISIBLE,
+			VISIBILITY_EXPR,
+			BUS_RELATED,
+			IS_ADM_CUST_DIS_YN,
+			CREATED_BY,
+			CREATED_DATE,
+			MODIFIED_BY,
+			MODIFIED_DATE
+			)
+			values( 
+			obj_id,
+			#{sysParamObjDisplayVO.APP_NAME},
+			#{sysParamObjDisplayVO.PROG_REF},
+			#{sysParamObjDisplayVO.OBJECT_TYPE},
+			#{sysParamObjDisplayVO.OBJECT_ID},
+			#{sysParamObjDisplayVO.ADD_DELETE_ROW_YN},
+			#{sysParamObjDisplayVO.ADD_DELETE_ROW_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.IS_READONLY},
+			#{sysParamObjDisplayVO.READONLY_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.IS_VISIBLE},
+			#{sysParamObjDisplayVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.BUS_RELATED},
+			#{sysParamObjDisplayVO.IS_ADM_CUST_DIS_YN},
+			#{sysParamObjDisplayVO.CREATED_BY, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.CREATED_DATE, jdbcType=DATE},
+			#{sysParamObjDisplayVO.MODIFIED_BY, jdbcType=VARCHAR},
+			#{sysParamObjDisplayVO.MODIFIED_DATE, jdbcType=DATE}
+			)		;	
+						
+			<foreach collection="sysParamObjDetailsDisplayList" item="com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO">
+				INSERT INTO SYS_PARAM_OBJ_DETAILS_DISPLAY 
+				(OBJ_DISPLAY_ID,
+				OBJ_DET_NAME,
+				IS_READONLY,
+				READONLY_EXPR,
+				IS_VISIBLE,
+				VISIBILITY_EXPR,
+				IS_MANDATORY,
+				MANDATORY_EXPR,
+				LABEL_KEY,
+				LABEL_KEY_EXPR,
+				VALUE_VALID_EXPR,
+				DEFAULT_VALUE,
+				MIN_LENGTH,
+				MAX_LENGTH,
+				DFLT_VAL_EXPR_PRIORITY_YN,
+				DEFAULT_VALUE_EXPR,
+				IS_ADM_CUST_DIS_YN,
+				ENABLE_FIELD_AUDIT_YN,
+				CREATED_BY,
+				CREATED_DATE,
+				MODIFIED_BY,
+				MODIFIED_DATE)
+				
+				values( 
+				obj_id,
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.OBJ_DET_NAME},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_READONLY},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.READONLY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_VISIBLE},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.VISIBILITY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_MANDATORY},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MANDATORY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.LABEL_KEY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.LABEL_KEY_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.VALUE_VALID_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DEFAULT_VALUE, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MIN_LENGTH, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MAX_LENGTH, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DFLT_VAL_EXPR_PRIORITY_YN},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.DEFAULT_VALUE_EXPR, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.IS_ADM_CUST_DIS_YN},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.ENABLE_FIELD_AUDIT_YN, jdbcType=NUMERIC},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.CREATED_BY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.CREATED_DATE, jdbcType=DATE},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MODIFIED_BY, jdbcType=VARCHAR},
+				#{com.path.dbmaps.vo.SYS_PARAM_OBJ_DETAILS_DISPLAYVO.MODIFIED_DATE, jdbcType=DATE}
+				);	
+			</foreach>
+			END;
+			END IF;
+			END;
+		</otherwise>
+	</choose>
+
+</insert>
+
+<select id="returnObjDisplayId" resultType="java.math.BigDecimal" parameterType="com.path.dbmaps.vo.SYS_PARAM_OBJ_DISPLAYVO" >
+	SELECT OBJ_DISPLAY_ID
+	FROM SYS_PARAM_OBJ_DISPLAY
+	WHERE OBJECT_ID = #{OBJECT_ID,jdbcType=NUMERIC}
+	AND APP_NAME = #{APP_NAME,jdbcType=VARCHAR}
+	AND (PROG_REF = #{PROG_REF,jdbcType=VARCHAR} OR PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{PROG_REF,jdbcType=VARCHAR} AND APP_NAME = #{APP_NAME,jdbcType=VARCHAR} AND PARENT_REF IS NOT NULL))
+</select>
+
+</mapper>

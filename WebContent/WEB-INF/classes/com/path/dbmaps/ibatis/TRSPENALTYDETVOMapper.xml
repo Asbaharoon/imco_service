@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPENALTYDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPENALTYDETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PENALTY_CODE" property="PENALTY_CODE" />
+    <result column="MINIMUM_DUE_DAYS" property="MINIMUM_DUE_DAYS" />
+    <result column="PENALTY_PERCENTAGE" property="PENALTY_PERCENTAGE" />
+    <result column="PENALTY_PERCENTAGE_AFTER_MAT" property="PENALTY_PERCENTAGE_AFTER_MAT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, PENALTY_CODE, MINIMUM_DUE_DAYS, PENALTY_PERCENTAGE, PENALTY_PERCENTAGE_AFTER_MAT
+  </sql>
+  <select id="selectTRSPENALTYDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPENALTYDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPENALTYDET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PENALTY_CODE = #{PENALTY_CODE}
+  </select>
+  <delete id="deleteTRSPENALTYDET" parameterType="com.path.dbmaps.vo.TRSPENALTYDETVOKey" >
+    delete from TRSPENALTYDET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PENALTY_CODE = #{PENALTY_CODE}
+  </delete>
+  <insert id="insertTRSPENALTYDET" parameterType="com.path.dbmaps.vo.TRSPENALTYDETVO" >
+    insert into TRSPENALTYDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PENALTY_CODE != null and PENALTY_CODE != emptyBigDecimalValue" >
+        PENALTY_CODE,
+      </if>
+      <if test="MINIMUM_DUE_DAYS != null and MINIMUM_DUE_DAYS != emptyBigDecimalValue" >
+        MINIMUM_DUE_DAYS,
+      </if>
+      <if test="PENALTY_PERCENTAGE != null and PENALTY_PERCENTAGE != emptyBigDecimalValue" >
+        PENALTY_PERCENTAGE,
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null and PENALTY_PERCENTAGE_AFTER_MAT != emptyBigDecimalValue" >
+        PENALTY_PERCENTAGE_AFTER_MAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PENALTY_CODE != null and PENALTY_CODE != emptyBigDecimalValue" >
+        #{PENALTY_CODE},
+      </if>
+      <if test="MINIMUM_DUE_DAYS != null and MINIMUM_DUE_DAYS != emptyBigDecimalValue" >
+        #{MINIMUM_DUE_DAYS},
+      </if>
+      <if test="PENALTY_PERCENTAGE != null and PENALTY_PERCENTAGE != emptyBigDecimalValue" >
+        #{PENALTY_PERCENTAGE},
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null and PENALTY_PERCENTAGE_AFTER_MAT != emptyBigDecimalValue" >
+        #{PENALTY_PERCENTAGE_AFTER_MAT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPENALTYDET" >
+    update TRSPENALTYDET
+    <set >
+      <if test="MINIMUM_DUE_DAYS != null" >
+        <choose >
+          <when test="MINIMUM_DUE_DAYS == emptyBigDecimalValue" >
+            MINIMUM_DUE_DAYS = NULL ,
+          </when>
+          <otherwise >
+            MINIMUM_DUE_DAYS = #{MINIMUM_DUE_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PENALTY_PERCENTAGE != null" >
+        <choose >
+          <when test="PENALTY_PERCENTAGE == emptyBigDecimalValue" >
+            PENALTY_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_PERCENTAGE = #{PENALTY_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null" >
+        <choose >
+          <when test="PENALTY_PERCENTAGE_AFTER_MAT == emptyBigDecimalValue" >
+            PENALTY_PERCENTAGE_AFTER_MAT = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_PERCENTAGE_AFTER_MAT = #{PENALTY_PERCENTAGE_AFTER_MAT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PENALTY_CODE = #{PENALTY_CODE}
+  </sql>
+  <update id="updateTRSPENALTYDET" parameterType="com.path.dbmaps.vo.TRSPENALTYDETVO" >
+    <include refid="sql_updateTRSPENALTYDET" />
+  </update>
+</mapper>

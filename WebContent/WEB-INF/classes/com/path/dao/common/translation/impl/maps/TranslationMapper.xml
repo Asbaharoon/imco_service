@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="translationMapper">
+
+	<select id="returnLabelList" resultMap="returnLabelListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLabelsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnLabelListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLabelsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnLabelListMap" type="translationCO">
+		<result property="sysParamKeyLabelVO.APP_NAME" column="APP_NAME" />
+		<result property="sysParamKeyLabelVO.PROG_REF" column="PROG_REF" />
+		<result property="sysParamKeyLabelVO.KEY_LABEL_CODE" column="KEY_LABEL_CODE" />
+		<result property="sysParamKeyLabelVO.KEY_LABEL_DESC" column="KEY_LABEL_DESC" />
+		<result property="sysParamKeyLabelVO.KEY_GROUP_ID" column="KEY_GROUP_ID" />
+		<result property="sysParamKeyGroupVO.KEY_GROUP_DESC" column="KEY_GROUP_DESC" />
+		<result property="prefTrans" column="prefTrans" />
+		<result property="progRefDesc" column="progRefDesc" />
+	</resultMap>
+    
+	<sql id="returnAllLabelsList">
+		SELECT L.APP_NAME,
+	L.PROG_REF,
+	L.KEY_LABEL_CODE,
+	L.KEY_LABEL_DESC KEY_LABEL_DESC,
+	L.KEY_GROUP_ID,
+(select <if test="isSybase == 1">CONVERT(VARCHAR,</if>SPKG.KEY_GROUP_DESC<if test="isSybase == 1">)</if>
+	FROM SYS_PARAM_KEY_GROUP SPKG
+	WHERE SPKG.KEY_GROUP_ID = L.KEY_GROUP_ID) KEY_GROUP_DESC,
+	case when KEY_GROUP_ID is null then (SELECT COALESCE(<if test="isSybase == 1">CONVERT(VARCHAR,</if>SPKLT.VALUE_TRANS<if test="isSybase == 1">)</if>, <if test="isSybase == 1">CONVERT(VARCHAR,</if>L.KEY_LABEL_DESC<if test="isSybase == 1">)</if>) FROM SYS_PARAM_KEY_LABEL_TRANS SPKLT
+	WHERE L.APP_NAME = SPKLT.APP_NAME
+	AND L.PROG_REF = SPKLT.PROG_REF
+	AND L.KEY_LABEL_CODE = SPKLT.KEY_LABEL_CODE
+	AND SPKLT.LANG_CODE = #{preferredLanguage})
+	else (select COALESCE (<if test="isSybase == 1">CONVERT(VARCHAR,</if>SPKGT.VALUE_TRANS<if test="isSybase == 1">)</if>, <if test="isSybase == 1">CONVERT(VARCHAR,</if>SPKG.KEY_GROUP_DESC<if test="isSybase == 1">)</if>)
+	FROM SYS_PARAM_KEY_GROUP SPKG, SYS_PARAM_KEY_GROUP_TRANS SPKGT
+	WHERE SPKG.KEY_GROUP_ID = L.KEY_GROUP_ID
+	AND SPKG.KEY_GROUP_ID = SPKGT.KEY_GROUP_ID
+	AND SPKGT.LANG_CODE = #{preferredLanguage}) end prefTrans,
+<if test="isSybase == 1">(SELECT</if>
+	CASE WHEN L.PROG_REF = 'ROOT' THEN #{rootDesc} ELSE
+	(SELECT COALESCE(parentTitle, parentDesc) <choose><when test="isSQLServer == 1"> + ' - ' +</when><otherwise>|| ' - ' ||</otherwise></choose> COALESCE(childTitle,childDesc)
+	from (SELECT (CASE #{preferredLanguage} WHEN 'AR'
+	THEN OPT_P.MENU_TITLE_ARAB
+	WHEN 'FR' THEN OPT_P.MENU_TITLE_FR
+	ELSE OPT_P.MENU_TITLE_ENG END) parentTitle,
+	(CASE #{preferredLanguage} WHEN 'AR'
+	THEN OPT_P.PROG_DESC_ARAB
+	WHEN 'FR' THEN OPT_P.PROG_DESC_FR
+	ELSE OPT_P.PROG_DESC END) parentDesc,
+	(CASE #{preferredLanguage} WHEN 'AR'
+	THEN OPT.MENU_TITLE_ARAB
+	WHEN 'FR' THEN OPT.MENU_TITLE_FR
+	ELSE OPT.MENU_TITLE_ENG END) childTitle,
+	(CASE #{preferredLanguage} WHEN 'AR'
+	THEN OPT.PROG_DESC_ARAB
+	WHEN 'FR' THEN OPT.PROG_DESC_FR
+	ELSE OPT.PROG_DESC END) childDesc,
+	OPT.APP_NAME,
+	OPT.PROG_REF,
+	OPT.PARENT_REF,
+	OPT_P.PARENT_REF parenRef
+	FROM OPT OPT_P, OPT
+
+	WHERE OPT_P.APP_NAME = OPT.APP_NAME
+	AND OPT_P.PROG_REF = OPT.PARENT_REF
+	AND (OPT_P.PROG_TYPE = 'P' OR OPT_P.PROG_TYPE = 'R' OR OPT_P.DISP_ORDER IS
+	NOT NULL) ) OPTTAB
+	WHERE
+	OPTTAB.APP_NAME = L.APP_NAME AND
+	OPTTAB.PROG_REF = L.PROG_REF AND
+	OPTTAB.parenRef != L.PROG_REF
+	) END
+	<if test="isSybase == 1">)</if>
+	progRefDesc
+
+	from SYS_PARAM_KEY_LABEL L
+		<where>
+		<!-- 4 means to load all applications translation labels , as Example for reporting application -->
+		 <if test='selectedApp != "4"'>
+			(L.APP_NAME = #{appName} OR L.APP_NAME = #{defaultAppName})
+		</if>
+		<if test="loadSelected == 1" >
+				<if test="appName != null">
+					AND	(L.APP_NAME = #{appName}
+					<if test="pageRef == null">
+					OR L.APP_NAME = #{defaultAppName})
+					</if>
+					<if test="pageRef != null">
+					OR L.APP_NAME = #{defaultAppName})
+					AND (L.PROG_REF = #{pageRef} OR L.PROG_REF = 'ROOT'
+					OR L.PROG_REF = (SELECT PARENT_REF FROM OPT WHERE PROG_REF = #{pageRef} AND APP_NAME = #{appName}))
+					</if>
+				</if> 
+				<if test="pageRef == null">
+					AND L.PROG_REF = 'ROOT'
+				</if>  
+				<if test="keyLabelCode != null">
+					AND L.KEY_LABEL_CODE = #{keyLabelCode}
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<select id="returnGrpDependentList" resultMap="returnLabelListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLabelsList" />
+		AND L.KEY_GROUP_ID = #{keyGroupID}
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnGrpDependentListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLabelsList" />
+		AND L.KEY_GROUP_ID = #{keyGroupID}
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+	<select id="returnLabelTransList" resultMap="returnLabelTransListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLabelsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnLabelTransListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLabelsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnLabelTransListMap" type="translationCO">
+		<result property="sysParamKeyLabelTransVO.APP_NAME" column="APP_NAME" />
+		<result property="sysParamKeyLabelTransVO.PROG_REF" column="PROG_REF" />
+		<result property="sysParamKeyLabelTransVO.KEY_LABEL_CODE"
+			column="KEY_LABEL_CODE" />
+		<result property="sysParamKeyLabelTransVO.LANG_CODE" column="LANG_CODE" />
+		<result property="lblValueTrans" column="VALUE_TRANS" />
+		<result property="langDesc" column="langDesc" />
+	</resultMap>
+
+	<sql id="returnAllLabelsTransList">
+		SELECT T.APP_NAME, T.PROG_REF, T.KEY_LABEL_CODE, (SELECT
+		L.LANG_NAME FROM SYS_PARAM_LANGUAGES L WHERE L.LANG_CODE =
+		T.LANG_CODE) langDesc, T.LANG_CODE, VALUE_TRANS
+		FROM
+		SYS_PARAM_KEY_LABEL_TRANS T
+		WHERE T.APP_NAME = #{appName}
+		AND T.PROG_REF
+		= #{pageRef}
+		AND T.KEY_LABEL_CODE = #{keyLabelCode}
+	</sql>
+
+	<select id="returnLabelTrans" resultMap="returnLabelTransListMap"
+		parameterType="translationSC">
+		<include refid="returnAllLabelsTransList" />
+		AND T.LANG_CODE = #{preferredLanguage}
+	</select>
+
+
+
+	<select id="returnGroupList" resultMap="returnGroupListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllGroupsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnGroupListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllGroupsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnGroupListMap" type="translationCO">
+		<result property="sysParamKeyGroupVO.KEY_GROUP_ID" column="KEY_GROUP_ID" />
+		<result property="sysParamKeyGroupVO.KEY_GROUP_DESC" column="KEY_GROUP_DESC" />
+		<result property="prefTrans" column="prefTrans" />
+	</resultMap>
+
+	<sql id="returnAllGroupsList">
+		<choose>
+			<when test="isSybase == 1">
+				SELECT L.KEY_GROUP_ID,
+				CONVERT(VARCHAR,L.KEY_GROUP_DESC) KEY_GROUP_DESC,
+			   (CASE WHEN CONVERT(VARCHAR,GT.VALUE_TRANS) IS NULL THEN CONVERT(VARCHAR,L.KEY_GROUP_DESC) ELSE CONVERT(VARCHAR,GT.VALUE_TRANS) END) prefTrans
+  
+			</when>
+			<otherwise>
+				SELECT L.KEY_GROUP_ID, L.KEY_GROUP_DESC,
+				(CASE WHEN GT.VALUE_TRANS IS NULL THEN L.KEY_GROUP_DESC ELSE GT.VALUE_TRANS END) prefTrans
+			</otherwise>
+		</choose>
+		FROM SYS_PARAM_KEY_GROUP L LEFT OUTER JOIN SYS_PARAM_KEY_GROUP_TRANS GT ON L.KEY_GROUP_ID = GT.KEY_GROUP_ID AND GT.LANG_CODE = #{preferredLanguage}
+	</sql>
+
+	<select id="returnGroupTransList" resultMap="returnGroupTransListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllGroupsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnGroupTransListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllGroupsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnGroupTransListMap" type="translationCO">
+		<result property="sysParamKeyGroupTransVO.KEY_GROUP_ID" column="KEY_GROUP_ID" />
+		<result property="sysParamKeyGroupTransVO.LANG_CODE" column="LANG_CODE" />
+		<result property="grpValueTrans" column="VALUE_TRANS" />
+		<result property="langDesc" column="langDesc" />
+	</resultMap>
+
+	<sql id="returnAllGroupsTransList">
+		SELECT T.KEY_GROUP_ID, (SELECT L.LANG_NAME FROM
+		SYS_PARAM_LANGUAGES L WHERE L.LANG_CODE = T.LANG_CODE) langDesc,
+		T.LANG_CODE, T.VALUE_TRANS
+		FROM SYS_PARAM_KEY_GROUP_TRANS T
+		WHERE
+		T.KEY_GROUP_ID = #{keyGroupID}
+	</sql>
+
+
+
+	<select id="checkGroupByIDDep" resultMap="returnGroupListMap"
+		parameterType="translationSC">
+		<include refid="returnAllGroupsList" />
+		WHERE L.KEY_GROUP_ID = <if test="isSybase == 1"> CONVERT(NUMERIC,</if>
+		#{keyGroupID}
+		<if test="isSybase == 1">)</if>
+	</select>
+
+
+
+
+
+
+
+	<select id="transPageRefList" resultMap="transPageRefListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="transAllPageRefList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="transPageRefListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="transAllPageRefList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="transPageRefListMap" type="optVO">
+		<result property="PROG_REF" column="PROG_REF" />
+		<result property="PROG_DESC" column="PROG_DESC" />
+	</resultMap>
+
+	<sql id="transAllPageRefList">
+	SELECT 'ROOT' PROG_REF,'ROOT' PROG_DESC, 'ROOT' parent
+	<if test="isOracle == 1">FROM DUAL</if>
+	UNION
+	SELECT TB.PROG_REF
+	, CASE WHEN TB.PROG_TITLE IS NULL THEN TB.PROG_DESC ELSE TB.PROG_TITLE
+	END PROG_DESC
+	, (CASE WHEN TB.PROG_REF != OPT_P.PARENT_REF AND
+	TB.PROG_REF != 'ROOT' THEN
+	(CASE WHEN (CASE #{preferredLanguage} WHEN 'AR' THEN OPT_P.MENU_TITLE_ARAB
+	WHEN 'FR' THEN OPT_P.MENU_TITLE_FR ELSE OPT_P.MENU_TITLE_ENG END) IS
+	NULL THEN
+	OPT_P.PROG_DESC ELSE (CASE #{preferredLanguage} WHEN 'AR' THEN OPT_P.MENU_TITLE_ARAB
+	WHEN 'FR' THEN OPT_P.MENU_TITLE_FR ELSE OPT_P.MENU_TITLE_ENG END) END)
+	ELSE '' END) parent
+
+	FROM ( SELECT PROG_REF
+	,(CASE #{preferredLanguage} WHEN 'AR' THEN OPT.MENU_TITLE_ARAB WHEN 'FR' THEN
+	OPT.MENU_TITLE_FR ELSE OPT.MENU_TITLE_ENG END) PROG_TITLE
+	,OPT.PROG_DESC
+	,OPT.PARENT_REF
+	,OPT.APP_NAME
+	FROM OPT
+	WHERE
+	OPT.APP_NAME = #{appName}
+	AND (OPT.PARENT_REF IS NOT NULL)
+	AND (OPT.PROG_TYPE = 'P' OR OPT.PROG_TYPE = 'R' OR OPT.DISP_ORDER IS NOT NULL)
+	) TB LEFT OUTER JOIN OPT OPT_P ON OPT_P.APP_NAME = TB.APP_NAME
+	AND (OPT_P.PARENT_REF IS NOT NULL)
+	AND (OPT_P.PROG_TYPE = 'P' OR OPT_P.PROG_TYPE = 'R' OR OPT_P.DISP_ORDER IS NOT NULL)
+	AND OPT_P.PARENT_REF != TB.PROG_REF
+	AND OPT_P.PROG_REF = TB.PARENT_REF 
+	UNION
+	<!-- returning OPTs that has translation -->
+	SELECT DISTINCT SPKL.PROG_REF, '' PROG_DESC, '' parent
+	FROM SYS_PARAM_KEY_LABEL SPKL
+	WHERE SPKL.APP_NAME = #{appName}
+	AND SPKL.PROG_REF != 'ROOT'
+	AND NOT EXISTS (SELECT 1 FROM OPT WHERE OPT.PROG_REF = SPKL.PROG_REF AND OPT.APP_NAME = SPKL.APP_NAME)
+	</sql>
+
+
+	<select id="transPageRefByIDDep" resultType="optVO"
+		parameterType="translationSC">
+		SELECT PROG_REF, CASE WHEN TBL.PROG_TITLE IS
+		NULL THEN
+		TBL.PROG_DESC ELSE TBL.PROG_TITLE END PROG_DESC
+		FROM ( SELECT
+		PROG_REF,(CASE #{preferredLanguage} WHEN 'AR' THEN OPT.MENU_TITLE_ARAB
+		WHEN 'FR' THEN OPT.MENU_TITLE_FR
+		ELSE OPT.MENU_TITLE_ENG END)
+		PROG_TITLE ,OPT.PROG_DESC
+		FROM OPT
+		WHERE
+		APP_NAME = #{appName}
+		AND
+		(PARENT_REF IS NOT NULL)
+		AND (PROG_TYPE = 'P' OR PROG_TYPE = 'R' OR DISP_ORDER IS NOT NULL)
+		) TBL
+		WHERE PROG_REF = #{pageRef}
+		UNION
+		SELECT DISTINCT SPKL.PROG_REF PROG_REF, SPKL.PROG_REF PROG_DESC
+		FROM SYS_PARAM_KEY_LABEL SPKL
+		WHERE NOT EXISTS (SELECT 1 FROM OPT WHERE OPT.PROG_REF = SPKL.PROG_REF AND OPT.APP_NAME = SPKL.APP_NAME)
+		AND PROG_REF = #{pageRef}
+		AND APP_NAME = #{appName}
+	</select>
+
+	<select id="checkGroup" resultType="int" parameterType="translationSC">
+		SELECT
+		COUNT(1)
+		FROM SYS_PARAM_KEY_GROUP
+		WHERE <if test="isSybase == 1"> CONVERT(VARCHAR,</if>
+		KEY_GROUP_DESC
+		<if test="isSybase == 1">)</if>  = #{keyGroupDesc}
+	</select>
+
+	<select id="checkKeyLabel" resultType="int" parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		SELECT KEY_LABEL_CODE
+		FROM SYS_PARAM_KEY_LABEL
+		WHERE APP_NAME = #{appName}
+		AND PROG_REF = #{pageRef}
+		AND KEY_LABEL_CODE = #{keyLabelCode}
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+
+	<select id="returnMaxGroupID" resultType="int">
+		SELECT
+		MAX(KEY_GROUP_ID) KEY_GROUP_ID
+		FROM SYS_PARAM_KEY_GROUP
+	</select>
+
+
+	<insert id="insertKeyLabelTrans" parameterType="translationCO">
+		insert into
+		SYS_PARAM_KEY_LABEL_TRANS
+		(
+		APP_NAME,
+		KEY_LABEL_CODE,
+		LANG_CODE,
+		PROG_REF,
+		VALUE_TRANS,
+		CLIENT_MODIFIED_YN)
+		values (
+		#{sysParamKeyLabelTransVO.APP_NAME},
+		#{sysParamKeyLabelTransVO.KEY_LABEL_CODE},
+		#{sysParamKeyLabelTransVO.LANG_CODE},
+		#{sysParamKeyLabelTransVO.PROG_REF},
+		#{lblValueTrans},
+		#{isClientModified}
+		)
+	</insert>
+
+
+	<insert id="insertKeyGroupTrans" parameterType="translationCO">
+		insert into
+		SYS_PARAM_KEY_GROUP_TRANS
+		(
+		KEY_GROUP_ID,
+		LANG_CODE,
+		VALUE_TRANS,
+		CLIENT_MODIFIED_YN
+		) values (
+		#{sysParamKeyGroupTransVO.KEY_GROUP_ID},
+		#{sysParamKeyGroupTransVO.LANG_CODE},
+		#{grpValueTrans},
+		#{isClientModified}
+		)
+	</insert>
+
+
+	<insert id="insertKeyGroup" parameterType="translationCO">
+		insert into
+		SYS_PARAM_KEY_GROUP
+		(
+		KEY_GROUP_ID,
+		KEY_GROUP_DESC
+		) values (
+		#{sysParamKeyGroupVO.KEY_GROUP_ID},
+		#{keyGroupTextDesc}
+		) 
+</insert>
+
+	<insert id="insertKeyLabel" parameterType="translationCO">
+		insert into
+		SYS_PARAM_KEY_LABEL
+		(
+		APP_NAME,
+		KEY_LABEL_CODE,
+		PROG_REF,
+		      <if test="sysParamKeyLabelVO.KEY_GROUP_ID != null and sysParamKeyLabelVO.KEY_GROUP_ID != emptyBigDecimalValue" >
+		KEY_GROUP_ID,
+		      </if>
+		KEY_LABEL_DESC
+		) values (
+		#{sysParamKeyLabelVO.APP_NAME},
+		#{sysParamKeyLabelVO.KEY_LABEL_CODE},
+		#{sysParamKeyLabelVO.PROG_REF},
+		<if test="sysParamKeyLabelVO.KEY_GROUP_ID != null and sysParamKeyLabelVO.KEY_GROUP_ID != emptyBigDecimalValue" >
+		#{sysParamKeyLabelVO.KEY_GROUP_ID},
+		</if>
+		#{keyLabelTextDesc}
+		) 
+	</insert>
+
+  <update id="resetKeyLabelGrpId" parameterType="translationSC" >
+        update SYS_PARAM_KEY_LABEL
+    <set >
+      <if test="keyGroupID != null" >
+            KEY_GROUP_ID = null,
+      </if>
+          DATE_UPDATED = <include refid="commonLibMapper.systemDate"/>
+    </set>
+    where KEY_GROUP_ID = #{keyGroupID}
+  </update>
+  
+  
+
+	<select id="returnLblExp" resultMap="returnLblExpListMap"
+		parameterType="translationSC">
+		<include refid="returnLabelsExport" />
+	</select>
+
+	<select id="returnLblExpCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnLabelsExport" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<resultMap id="returnLblExpListMap" type="translationCO">
+		<result property="sysParamKeyLabelVO.APP_NAME" column="APP_NAME" />
+		<result property="sysParamKeyLabelVO.PROG_REF" column="PROG_REF" />
+		<result property="sysParamKeyLabelVO.KEY_LABEL_CODE" column="KEY_LABEL_CODE" />
+		<result property="sysParamKeyLabelVO.KEY_LABEL_DESC" column="KEY_LABEL_DESC" />
+		<result property="sysParamKeyLabelVO.KEY_GROUP_ID" column="KEY_GROUP_ID" />
+		<result property="sysParamKeyLabelTransVO.LANG_CODE" column="lblLANG_CODE" />
+		<result property="sysParamKeyLabelTransVO.VALUE_TRANS" column="lblVALUE_TRANS" />
+		<result property="sysParamKeyGroupTransVO.LANG_CODE" column="grpLANG_CODE" />
+		<result property="sysParamKeyGroupTransVO.VALUE_TRANS" column="grpVALUE_TRANS" />
+	</resultMap>
+
+	<sql id="returnLabelsExport">
+		SELECT KL.APP_NAME, KL.PROG_REF, KL.KEY_LABEL_CODE, KL.KEY_LABEL_DESC, KL.KEY_GROUP_ID,
+		CASE WHEN KL.KEY_GROUP_ID IS NULL THEN KLT.LANG_CODE ELSE KGT.LANG_CODE END lblLANG_CODE,
+		
+		<choose>
+			<when test="isSybase == 1">
+        CASE WHEN KLT.LANG_CODE != KGT.LANG_CODE THEN '' ELSE CONVERT(VARCHAR,KLT.VALUE_TRANS) END lblVALUE_TRANS,
+			</when>
+			<otherwise>
+        CASE WHEN KLT.LANG_CODE != KGT.LANG_CODE THEN '' ELSE KLT.VALUE_TRANS END lblVALUE_TRANS,
+			</otherwise>
+		</choose>
+		
+		KGT.LANG_CODE grpLANG_CODE, KGT.VALUE_TRANS grpVALUE_TRANS
+
+		FROM SYS_PARAM_KEY_LABEL KL 
+		
+		LEFT OUTER JOIN	SYS_PARAM_KEY_LABEL_TRANS KLT
+		ON KL.APP_NAME = KLT.APP_NAME
+		AND KL.PROG_REF = KLT.PROG_REF
+		AND	KL.KEY_LABEL_CODE = KLT.KEY_LABEL_CODE
+
+		<if test="dateUpdated != null">
+		LEFT OUTER JOIN SYS_PARAM_KEY_GROUP KG
+		ON KL.KEY_GROUP_ID = KG.KEY_GROUP_ID
+		</if>
+		LEFT OUTER JOIN SYS_PARAM_KEY_GROUP_TRANS KGT
+		ON KL.KEY_GROUP_ID = KGT.KEY_GROUP_ID
+		
+		
+		WHERE
+		(((KLT.LANG_CODE IN (${preferredLanguage})	AND (KGT.LANG_CODE IS NULL OR KLT.LANG_CODE = KGT.LANG_CODE)) 
+				OR (KGT.LANG_CODE IN (${preferredLanguage})  AND KLT.LANG_CODE NOT IN (${preferredLanguage}))) 
+			OR (KLT.LANG_CODE IS NULL AND KGT.LANG_CODE IS NULL))
+			
+		<choose>
+			<!-- Both Current Application and Global-->
+			<when test="selectedApp == 3">
+				AND (KL.APP_NAME = #{appName} OR KL.APP_NAME = #{defaultAppName})
+			</when>
+			<!-- Current Application OR Specific Application -->
+			<when test="selectedApp == 2 || selectedApp == 5">
+				AND KL.APP_NAME = #{appName}
+			</when>
+			<!-- Global IMAL application -->
+			<when test="selectedApp == 1">
+				AND KL.APP_NAME = #{defaultAppName}			
+			</when>
+		</choose>
+		<if test="exportType == 2 and pageRef != null and pageRef != ''">
+			AND KL.PROG_REF = #{pageRef}
+		</if>		
+		<if test="exportType == 1 and labelKey != null and labelKey != ''">
+			AND KL.KEY_LABEL_CODE = #{labelKey}
+		</if>
+		<if test="dateUpdated != null">
+
+			 <![CDATA[ 
+			 AND (KL.DATE_UPDATED >= #{dateUpdated}
+			 OR KLT.DATE_UPDATED >= #{dateUpdated}
+			 OR KG.DATE_UPDATED >= #{dateUpdated}
+			 OR KGT.DATE_UPDATED >= #{dateUpdated})  ]]>
+		</if>
+		
+		<if test="exportWithoutReports == 'true'">
+			AND (NOT EXISTS (SELECT 1 FROM OPT_EXTENDED OE WHERE 
+			KL.APP_NAME = OE.APP_NAME AND
+			KL.PROG_REF = OE.PROG_REF
+			AND OPT_URL = 'REPORT')
+			AND EXISTS (SELECT 1 FROM OPT OT WHERE
+		    OT.APP_NAME = KL.APP_NAME AND
+		    OT.PROG_REF = KL.PROG_REF)
+			OR KL.PROG_REF = 'ROOT')
+		</if>
+		
+	</sql>
+
+<update id="beginTrans">
+	BEGIN TRANSACTION
+</update>
+<update id="dropSYS_PARAM_KEY_LABEL_TMP" statementType="STATEMENT">
+		IF NULLIF(object_id(<choose><when test="isSQLServer == 1">'tempdb..#SYS_PARAM_KEY_LABEL_TMP'</when><otherwise>'#SYS_PARAM_KEY_LABEL_TMP'</otherwise></choose>), 0) IS NOT NULL DROP TABLE #SYS_PARAM_KEY_LABEL_TMP
+</update>
+<update id="dropSYS_PARAM_KEY_LABEL_TRANS_TMP" statementType="STATEMENT">
+		IF NULLIF(object_id(<choose><when test="isSQLServer == 1">'tempdb..#SYS_PARAM_KEY_LABEL_TRANS_TMP'</when><otherwise>'#SYS_PARAM_KEY_LABEL_TRANS_TMP'</otherwise></choose>), 0) IS NOT NULL DROP TABLE #SYS_PARAM_KEY_LABEL_TRANS_TMP
+</update>
+<update id="createSYS_PARAM_KEY_LABEL_TMP" statementType="STATEMENT" parameterType="translationCO">
+		CREATE TABLE #SYS_PARAM_KEY_LABEL_TMP(
+			APP_NAME VARCHAR(4) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			PROG_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			KEY_LABEL_CODE VARCHAR(250) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			KEY_GROUP_ID NUMERIC(4) NULL,
+			KEY_LABEL_DESC TEXT <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL)
+</update>
+
+
+<update id="createSYS_PARAM_KEY_LABEL_TRANS_TMP" statementType="STATEMENT" parameterType="translationCO">
+		CREATE TABLE #SYS_PARAM_KEY_LABEL_TRANS_TMP(
+			APP_NAME VARCHAR(4) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			PROG_REF VARCHAR(15) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			KEY_LABEL_CODE VARCHAR(250) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			LANG_CODE VARCHAR(5) <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NOT NULL,
+			VALUE_TRANS TEXT <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL,
+			VALUE_TRANS_GROUP TEXT <if test="isSQLServer == 1">COLLATE DATABASE_DEFAULT</if> NULL)
+</update>
+
+	<update id="insertLabelingTmp" parameterType="transUpdateCO">
+	<if test="isOracle == 1">begin</if>
+  	<foreach collection="modSysParamKeyLabelTransVO" item="translationCO">
+			INSERT INTO <choose>
+						<when test="isSybase == 1">
+							#SYS_PARAM_KEY_LABEL_TMP
+						</when>
+						<otherwise>
+							SYS_PARAM_KEY_LABEL_TMP
+						</otherwise>
+					</choose>(
+			APP_NAME,
+			PROG_REF,
+			KEY_LABEL_CODE,
+			KEY_LABEL_DESC)
+			VALUES (
+			#{translationCO.sysParamKeyLabelVO.APP_NAME},
+			#{translationCO.sysParamKeyLabelVO.PROG_REF},
+			#{translationCO.sysParamKeyLabelVO.KEY_LABEL_CODE},
+			#{translationCO.sysParamKeyLabelVO.KEY_LABEL_DESC})<if test="isOracle == 1">;</if>
+
+			<foreach collection="translationCO.impTransDet" item="translationSC">
+			<if test="translationSC.langCode != null or translationSC.langCode !=''">
+				INSERT INTO <choose>
+						<when test="isSybase == 1">
+							#SYS_PARAM_KEY_LABEL_TRANS_TMP
+						</when>
+						<otherwise>
+							SYS_PARAM_KEY_LABEL_TRANS_TMP
+						</otherwise>
+					</choose>(
+				APP_NAME,
+				PROG_REF,
+				KEY_LABEL_CODE,
+				LANG_CODE,
+				VALUE_TRANS,
+				VALUE_TRANS_GROUP)
+				VALUES (
+				#{translationSC.appName},
+				#{translationSC.pageRef},
+				#{translationSC.keyLabelCode},
+				#{translationSC.langCode},
+				#{translationSC.keyLabelTrans,jdbcType=VARCHAR},
+				#{translationSC.keyGroupTrans,jdbcType=VARCHAR}
+				)<if test="isOracle == 1">;</if>
+			</if>
+			</foreach>
+		</foreach>
+		<if test="isOracle == 1">end;</if>
+	</update>
+	
+	<resultMap id="transLabelKeyDetailsMap" type="translationCO">
+	  <result property="sysParamKeyLabelTransVO.LANG_CODE" column="LANG_CODE"/>
+	  <result property="sysParamKeyLabelTransVO.VALUE_TRANS" column="VALUE_TRANS"/>
+	  <result property="sysParamKeyLabelVO.KEY_GROUP_ID" column="KEY_GROUP_ID"/>
+	  <result property="sysParamKeyLabelVO.KEY_LABEL_DESC" column="KEY_LABEL_DESC"/>
+	  <result property="sysParamKeyGroupVO.KEY_GROUP_DESC" column="KEY_GROUP_DESC"/>
+	</resultMap>
+	<select id="returnKeyTranslationDetails" resultMap="transLabelKeyDetailsMap" parameterType="translationSC">
+		SELECT KLT.LANG_CODE,KL.KEY_LABEL_DESC,KG.KEY_GROUP_DESC,KLT.VALUE_TRANS, KL.KEY_GROUP_ID FROM SYS_PARAM_KEY_LABEL KL
+			 LEFT OUTER JOIN SYS_PARAM_KEY_LABEL_TRANS KLT ON KL.APP_NAME = KLT.APP_NAME AND KL.PROG_REF = KLT.PROG_REF AND KL.KEY_LABEL_CODE = KLT.KEY_LABEL_CODE
+			 LEFT OUTER JOIN SYS_PARAM_KEY_GROUP KG ON KL.KEY_GROUP_ID = KG.KEY_GROUP_ID
+			 WHERE KL.APP_NAME = #{appName} AND KL.PROG_REF = #{pageRef} AND KL.KEY_LABEL_CODE = #{keyLabelCode}
+	</select>
+	<resultMap id="transLabelGroupDetailsMap" type="translationCO">
+	  <result property="sysParamKeyGroupTransVO.LANG_CODE" column="LANG_CODE"/>
+	  <result property="sysParamKeyGroupTransVO.VALUE_TRANS" column="VALUE_TRANS"/>
+	</resultMap>
+	<select id="returnGroupTranslationDetails" resultMap="transLabelGroupDetailsMap" parameterType="translationSC">
+		SELECT KGT.LANG_CODE, KGT.VALUE_TRANS FROM SYS_PARAM_KEY_GROUP_TRANS KGT WHERE KGT.KEY_GROUP_ID = #{keyGroupID}
+	</select>
+	
+	<select id="callProcImport" parameterType="transUpdateCO" statementType="CALLABLE">
+		{ CALL P_IMPORT_LABELS 
+		( #{overwriteLabel, mode=IN, jdbcType=VARCHAR},
+		#{overwriteGroup, mode=IN, jdbcType=VARCHAR})
+		}
+	</select>
+	<resultMap id="transLabelKeyListMap" type="translationCO">
+	  <result property="sysParamKeyLabelVO.KEY_LABEL_CODE" column="LABEL_KEY"/>
+	  <result property="sysParamKeyLabelVO.KEY_LABEL_DESC" column="LABEL_DESC"/>
+	</resultMap>
+    <sql id="returnAllLabelsKeyList">
+	  SELECT 
+	         <if test="labelKey != null and labelKey != '' and (pageRef == null or pageRef == '' or selectedApp == 4) and isSybase == 1">
+	         TOP 1 
+	         </if>
+	         SPKL.KEY_LABEL_CODE LABEL_KEY
+	        ,SPKL.KEY_LABEL_DESC LABEL_DESC
+	    FROM SYS_PARAM_KEY_LABEL SPKL
+	     <where>
+				<!-- Both Current Application and Global-->
+				<if test="selectedApp == 3">
+					(SPKL.APP_NAME = #{appName} OR SPKL.APP_NAME = #{defaultAppName})
+				</if>
+				<!-- Current Application OR Specific Application -->
+				<if test="selectedApp == 2 || selectedApp == 5">
+					AND SPKL.APP_NAME = #{appName}
+				</if>
+				<!-- Global IMAL application -->
+				<if test="selectedApp == 1">
+					AND SPKL.APP_NAME = #{defaultAppName}			
+				</if>
+				<if test="fromCust ==1">
+				    AND SPKL.APP_NAME IN (#{appName},#{defaultAppName})
+				</if>
+			<if test="pageRef != null and pageRef != ''">
+				AND SPKL.PROG_REF = #{pageRef}
+			</if>		
+			<if test="labelKey != null and labelKey != ''">
+				AND SPKL.KEY_LABEL_CODE = #{labelKey}
+				<if test="(pageRef == null or pageRef == '' or selectedApp == 4) and isOracle == 1">
+				AND ROWNUM = 1 
+				</if>
+			</if>
+	     </where>
+    </sql>
+	<select id="transLabelKeyList" resultMap="transLabelKeyListMap" parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLabelsKeyList"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="transLabelKeyListCount" resultType="int" parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLabelsKeyList"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<resultMap id="transLabelKeyByIDDepMap" type="translationCO">
+	  <result property="sysParamKeyLabelVO.KEY_LABEL_CODE" column="LABEL_KEY"/>
+	  <result property="sysParamKeyLabelVO.KEY_LABEL_DESC" column="LABEL_DESC"/>
+	</resultMap>
+	<select id="transLabelKeyByIDDep" parameterType="translationSC" resultMap="transLabelKeyByIDDepMap">
+	   <include refid="returnAllLabelsKeyList"/>
+	</select>
+	
+	
+
+	<select id="returnLOVList" resultMap="returnLOVListMap"	parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLOVsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnLOVListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLOVsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<resultMap id="returnLOVListMap" type="sysParamLOVTypeVO">
+		<result property="LOV_TYPE_ID" column="LOV_TYPE_ID" />
+		<result property="LOV_TYPE_DESCRIPTION" column="LOV_TYPE_DESCRIPTION" />
+	</resultMap>
+    
+	<sql id="returnAllLOVsList">
+		SELECT LOV_TYPE_ID, LOV_TYPE_DESCRIPTION
+		FROM SYS_PARAM_LOV_TYPE
+	</sql>
+	
+	<select id="returnLOVTransList" resultMap="returnLOVTransListMap"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAllLOVsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnLOVTransListCount" resultType="int"
+		parameterType="translationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAllLOVsTransList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+   					
+	<resultMap id="returnLOVTransListMap" type="translationCO">
+		<result property="sysParamLOVTransVO.LOV_TYPE_ID" column="LOV_TYPE_ID" />
+		<result property="sysParamLOVTransVO.VALUE_CODE" column="VALUE_CODE" />
+		<result property="sysParamLOVTransVO.LANG_CODE" column="LANG_CODE" />
+		<result property="sysParamLOVTransVO.VALUE_DESC" column="VALUE_DESC" />
+		<result property="sysParamLOVTransVO.LOV_ORDER" column="LOV_ORDER" />
+		<result property="langDesc" column="langDesc" />
+	</resultMap>
+
+	<sql id="returnAllLOVsTransList">
+		SELECT T.LOV_TYPE_ID, T.VALUE_CODE, (SELECT
+		L.LANG_NAME FROM SYS_PARAM_LANGUAGES L WHERE L.LANG_CODE =
+		T.LANG_CODE) langDesc, T.LANG_CODE, T.VALUE_DESC, T.LOV_ORDER 
+		FROM SYS_PARAM_LOV_TRANS T
+		WHERE T.LOV_TYPE_ID = #{lovTypeID}
+	</sql>
+
+	<insert id="insertLOVTrans" parameterType="translationCO">
+		insert into
+		SYS_PARAM_LOV_TRANS
+		(
+		LOV_TYPE_ID,
+		VALUE_CODE,
+		LANG_CODE,
+		      <if test="sysParamLOVTransVO.LOV_ORDER != null and sysParamLOVTransVO.LOV_ORDER != emptyBigDecimalValue" >
+		LOV_ORDER,
+		      </if>
+		      VALUE_DESC
+		)
+		values (
+		#{sysParamLOVTransVO.LOV_TYPE_ID},
+		#{sysParamLOVTransVO.VALUE_CODE},
+		#{sysParamLOVTransVO.LANG_CODE},
+		<if test="sysParamLOVTransVO.LOV_ORDER != null and sysParamLOVTransVO.LOV_ORDER != emptyBigDecimalValue" >
+		#{sysParamLOVTransVO.LOV_ORDER},
+		</if>
+		#{sysParamLOVTransVO.VALUE_DESC}
+		)	
+	</insert>
+	
+	<delete id="deleteTransByProgRef" parameterType="translationSC">
+		DELETE FROM
+		
+		SYS_PARAM_KEY_LABEL_TRANS
+		
+		WHERE APP_NAME = #{appName}
+		
+		AND PROG_REF = #{pageRef}
+	</delete>
+	<delete id="deleteLabelByProgRef" parameterType="translationSC">
+		DELETE FROM
+		
+		SYS_PARAM_KEY_LABEL
+		
+		WHERE APP_NAME = #{appName}
+		
+		AND PROG_REF = #{pageRef}
+	</delete>
+	
+	<!-- TP 440134 Translation Keys with Non Case Sensitivity BLME Issue -->
+	<select id="checkKeyLabelCodeExist" resultType="int" parameterType="translationSC">
+		SELECT COUNT(1)
+		FROM SYS_PARAM_KEY_LABEL
+		WHERE APP_NAME = #{appName}
+		AND PROG_REF = #{pageRef}
+		AND lower(KEY_LABEL_CODE) = lower(#{keyLabelCode})
+	</select>
+</mapper>

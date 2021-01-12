@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_OFFICER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_OFFICERVO" >
+    <id column="CIF_CODE" property="CIF_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NUMBER" property="LINE_NUMBER" />
+    <result column="REL_OFF_ID" property="REL_OFF_ID" />
+    <result column="REL_OFFICER" property="REL_OFFICER" />
+    <result column="CODE_ROLE" property="CODE_ROLE" />
+    <result column="DIVISION_CODE" property="DIVISION_CODE" />
+    <result column="DEPT_CODE" property="DEPT_CODE" />
+    <result column="ROLE_DETAIL" property="ROLE_DETAIL" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="REMARKS" property="REMARKS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_CODE, COMP_CODE, LINE_NUMBER, REL_OFF_ID, REL_OFFICER, CODE_ROLE, DIVISION_CODE, 
+    DEPT_CODE, ROLE_DETAIL, FROM_DATE, TO_DATE, REMARKS
+  </sql>
+  <select id="selectCIF_OFFICER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_OFFICERVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_OFFICER
+    where CIF_CODE = #{CIF_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </select>
+  <delete id="deleteCIF_OFFICER" parameterType="com.path.dbmaps.vo.CIF_OFFICERVOKey" >
+    delete from CIF_OFFICER
+    where CIF_CODE = #{CIF_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </delete>
+  <insert id="insertCIF_OFFICER" parameterType="com.path.dbmaps.vo.CIF_OFFICERVO" >
+    insert into CIF_OFFICER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_CODE != null and CIF_CODE != emptyBigDecimalValue" >
+        CIF_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        LINE_NUMBER,
+      </if>
+      <if test="REL_OFF_ID != null and REL_OFF_ID != emptyBigDecimalValue" >
+        REL_OFF_ID,
+      </if>
+      <if test="REL_OFFICER != null" >
+        REL_OFFICER,
+      </if>
+      <if test="CODE_ROLE != null and CODE_ROLE != emptyBigDecimalValue" >
+        CODE_ROLE,
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        DIVISION_CODE,
+      </if>
+      <if test="DEPT_CODE != null and DEPT_CODE != emptyBigDecimalValue" >
+        DEPT_CODE,
+      </if>
+      <if test="ROLE_DETAIL != null" >
+        ROLE_DETAIL,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_CODE != null and CIF_CODE != emptyBigDecimalValue" >
+        #{CIF_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NUMBER != null and LINE_NUMBER != emptyBigDecimalValue" >
+        #{LINE_NUMBER},
+      </if>
+      <if test="REL_OFF_ID != null and REL_OFF_ID != emptyBigDecimalValue" >
+        #{REL_OFF_ID},
+      </if>
+      <if test="REL_OFFICER != null" >
+        #{REL_OFFICER},
+      </if>
+      <if test="CODE_ROLE != null and CODE_ROLE != emptyBigDecimalValue" >
+        #{CODE_ROLE},
+      </if>
+      <if test="DIVISION_CODE != null and DIVISION_CODE != emptyBigDecimalValue" >
+        #{DIVISION_CODE},
+      </if>
+      <if test="DEPT_CODE != null and DEPT_CODE != emptyBigDecimalValue" >
+        #{DEPT_CODE},
+      </if>
+      <if test="ROLE_DETAIL != null" >
+        #{ROLE_DETAIL},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        #{REMARKS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_OFFICER" >
+    update CIF_OFFICER
+    <set >
+      <if test="REL_OFF_ID != null" >
+        <choose >
+          <when test="REL_OFF_ID == emptyBigDecimalValue" >
+            REL_OFF_ID = NULL ,
+          </when>
+          <otherwise >
+            REL_OFF_ID = #{REL_OFF_ID},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REL_OFFICER != null" >
+        REL_OFFICER = #{REL_OFFICER},
+      </if>
+      <if test="CODE_ROLE != null" >
+        <choose >
+          <when test="CODE_ROLE == emptyBigDecimalValue" >
+            CODE_ROLE = NULL ,
+          </when>
+          <otherwise >
+            CODE_ROLE = #{CODE_ROLE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DIVISION_CODE != null" >
+        <choose >
+          <when test="DIVISION_CODE == emptyBigDecimalValue" >
+            DIVISION_CODE = NULL ,
+          </when>
+          <otherwise >
+            DIVISION_CODE = #{DIVISION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEPT_CODE != null" >
+        <choose >
+          <when test="DEPT_CODE == emptyBigDecimalValue" >
+            DEPT_CODE = NULL ,
+          </when>
+          <otherwise >
+            DEPT_CODE = #{DEPT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ROLE_DETAIL != null" >
+        ROLE_DETAIL = #{ROLE_DETAIL},
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="REMARKS != null" >
+        REMARKS = #{REMARKS},
+      </if>
+    </set>
+    where CIF_CODE = #{CIF_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NUMBER = #{LINE_NUMBER}
+  </sql>
+  <update id="updateCIF_OFFICER" parameterType="com.path.dbmaps.vo.CIF_OFFICERVO" >
+    <include refid="sql_updateCIF_OFFICER" />
+  </update>
+</mapper>

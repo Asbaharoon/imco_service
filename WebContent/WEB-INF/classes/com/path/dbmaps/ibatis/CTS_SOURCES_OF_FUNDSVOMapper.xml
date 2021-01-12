@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SOURCES_OF_FUNDS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SOURCES_OF_FUNDSVO" >
+  	<id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />   
+    <id column="EVALUATION_YEAR" property="EVALUATION_YEAR" />
+    <id column="EVALUATION_TYPE" property="EVALUATION_TYPE" />
+    <id column="CREDIT_RATING" property="CREDIT_RATING" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="FUND_CODE" property="FUND_CODE" />
+    <result column="RECOM_EXPOSURE_LIMIT_PERC" property="RECOM_EXPOSURE_LIMIT_PERC" />
+    <result column="RECOM_EXPOSURE_LIMIT_AMOUNT" property="RECOM_EXPOSURE_LIMIT_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CIF_NO, EVALUATION_YEAR, EVALUATION_TYPE, CREDIT_RATING, LINE_NO, FUND_CODE,
+    RECOM_EXPOSURE_LIMIT_PERC, RECOM_EXPOSURE_LIMIT_AMOUNT
+  </sql>
+  <select id="selectCTS_SOURCES_OF_FUNDS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_SOURCES_OF_FUNDSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_SOURCES_OF_FUNDS
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and CREDIT_RATING = #{CREDIT_RATING}
+      and FUND_CODE = #{FUND_CODE}
+  </select>
+  <delete id="deleteCTS_SOURCES_OF_FUNDS" parameterType="com.path.dbmaps.vo.CTS_SOURCES_OF_FUNDSVOKey" >
+    delete from CTS_SOURCES_OF_FUNDS
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and CREDIT_RATING = #{CREDIT_RATING}
+      and FUND_CODE = #{FUND_CODE}
+  </delete>
+  <insert id="insertCTS_SOURCES_OF_FUNDS" parameterType="com.path.dbmaps.vo.CTS_SOURCES_OF_FUNDSVO" >
+    insert into CTS_SOURCES_OF_FUNDS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        EVALUATION_YEAR,
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        EVALUATION_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue">
+        LINE_NO,
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue">
+        CREDIT_RATING,
+      </if>
+      <if test="FUND_CODE != null and FUND_CODE != emptyBigDecimalValue">
+        FUND_CODE,
+      </if>
+      <if test="RECOM_EXPOSURE_LIMIT_PERC != null and RECOM_EXPOSURE_LIMIT_PERC != emptyBigDecimalValue">
+        RECOM_EXPOSURE_LIMIT_PERC,
+      </if>
+      <if test="RECOM_EXPOSURE_LIMIT_AMOUNT != null and RECOM_EXPOSURE_LIMIT_AMOUNT != emptyBigDecimalValue">
+        RECOM_EXPOSURE_LIMIT_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+       <if test="EVALUATION_YEAR != null and EVALUATION_YEAR != emptyBigDecimalValue" >
+        #{EVALUATION_YEAR},
+      </if>
+      <if test="EVALUATION_TYPE != null" >
+        #{EVALUATION_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue">
+        #{LINE_NO},
+      </if>
+      <if test="CREDIT_RATING != null and CREDIT_RATING != emptyBigDecimalValue">
+        #{CREDIT_RATING},
+      </if>
+      <if test="FUND_CODE != null and FUND_CODE != emptyBigDecimalValue">
+        #{FUND_CODE},
+      </if>
+      <if test="RECOM_EXPOSURE_LIMIT_PERC != null and RECOM_EXPOSURE_LIMIT_PERC != emptyBigDecimalValue">
+        #{RECOM_EXPOSURE_LIMIT_PERC},
+      </if>
+      <if test="RECOM_EXPOSURE_LIMIT_AMOUNT != null and RECOM_EXPOSURE_LIMIT_AMOUNT != emptyBigDecimalValue">
+        #{RECOM_EXPOSURE_LIMIT_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SOURCES_OF_FUNDS" >
+    update CTS_SOURCES_OF_FUNDS
+    <set >
+      <if test="EVALUATION_RECOMMENDATION_CODE != null" >
+         <choose >
+          <when test="RECOM_EXPOSURE_LIMIT_PERC == emptyBigDecimalValue" >
+            RECOM_EXPOSURE_LIMIT_PERC = NULL ,
+          </when>
+          <otherwise >
+            RECOM_EXPOSURE_LIMIT_PERC = #{RECOM_EXPOSURE_LIMIT_PERC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RECOM_EXPOSURE_LIMIT_AMOUNT != null" >
+        <choose >
+          <when test="RECOM_EXPOSURE_LIMIT_AMOUNT == emptyBigDecimalValue" >
+            RECOM_EXPOSURE_LIMIT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            RECOM_EXPOSURE_LIMIT_AMOUNT = #{RECOM_EXPOSURE_LIMIT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and EVALUATION_YEAR = #{EVALUATION_YEAR}
+      and EVALUATION_TYPE = #{EVALUATION_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and CREDIT_RATING = #{CREDIT_RATING}
+      and FUND_CODE = #{FUND_CODE}
+  </sql>
+  <update id="updateCTS_SOURCES_OF_FUNDS" parameterType="com.path.dbmaps.vo.CTS_SOURCES_OF_FUNDSVO" >
+    <include refid="sql_updateCTS_SOURCES_OF_FUNDS" />
+  </update>
+</mapper>

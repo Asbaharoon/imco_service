@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PMSTRXTYPE_CHARGE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.PMSTRXTYPE_CHARGEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CHARGE_CODE" property="CHARGE_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ENTITY_CODE" property="ENTITY_CODE" />
+    <id column="ENTITY_TYPE" property="ENTITY_TYPE" />
+    <id column="TRXTYPE_CODE" property="TRXTYPE_CODE" />
+    <result column="ALLOW_CHANGE" property="ALLOW_CHANGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CHARGE_CODE, COMP_CODE, ENTITY_CODE, ENTITY_TYPE, TRXTYPE_CODE, ALLOW_CHANGE
+  </sql>
+  <select id="selectPMSTRXTYPE_CHARGE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.PMSTRXTYPE_CHARGEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from PMSTRXTYPE_CHARGE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and TRXTYPE_CODE = #{TRXTYPE_CODE}
+  </select>
+  <delete id="deletePMSTRXTYPE_CHARGE" parameterType="com.path.dbmaps.vo.PMSTRXTYPE_CHARGEVOKey" >
+    delete from PMSTRXTYPE_CHARGE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and TRXTYPE_CODE = #{TRXTYPE_CODE}
+  </delete>
+  <insert id="insertPMSTRXTYPE_CHARGE" parameterType="com.path.dbmaps.vo.PMSTRXTYPE_CHARGEVO" >
+    insert into PMSTRXTYPE_CHARGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        ENTITY_CODE,
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        ENTITY_TYPE,
+      </if>
+      <if test="TRXTYPE_CODE != null and TRXTYPE_CODE != emptyBigDecimalValue" >
+        TRXTYPE_CODE,
+      </if>
+      <if test="ALLOW_CHANGE != null" >
+        ALLOW_CHANGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ENTITY_CODE != null and ENTITY_CODE != emptyBigDecimalValue" >
+        #{ENTITY_CODE},
+      </if>
+      <if test="ENTITY_TYPE != null" >
+        #{ENTITY_TYPE},
+      </if>
+      <if test="TRXTYPE_CODE != null and TRXTYPE_CODE != emptyBigDecimalValue" >
+        #{TRXTYPE_CODE},
+      </if>
+      <if test="ALLOW_CHANGE != null" >
+        #{ALLOW_CHANGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updatePMSTRXTYPE_CHARGE" >
+    update PMSTRXTYPE_CHARGE
+    <set >
+      <if test="ALLOW_CHANGE != null" >
+        ALLOW_CHANGE = #{ALLOW_CHANGE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CHARGE_CODE = #{CHARGE_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and ENTITY_CODE = #{ENTITY_CODE}
+      and ENTITY_TYPE = #{ENTITY_TYPE}
+      and TRXTYPE_CODE = #{TRXTYPE_CODE}
+  </sql>
+  <update id="updatePMSTRXTYPE_CHARGE" parameterType="com.path.dbmaps.vo.PMSTRXTYPE_CHARGEVO" >
+    <include refid="sql_updatePMSTRXTYPE_CHARGE" />
+  </update>
+</mapper>

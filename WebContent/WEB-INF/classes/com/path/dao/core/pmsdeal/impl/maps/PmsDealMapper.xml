@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="pmsDealMapper">
+
+ <sql id="pmsDealListCommon">
+	<![CDATA[
+	
+		SELECT
+					 PMSDEAL.COMP_CODE,
+					 PMSDEAL.BRANCH_CODE,
+					 PMSDEAL.DEAL_NO,
+					 PMSDEAL.BRIEF_NAME_ENG,
+					 PMSDEAL.LONG_NAME_ENG,
+					 PMSDEAL.BRIEF_NAME_ARAB,
+					 PMSDEAL.LONG_NAME_ARAB,
+					 PMSDEAL.SHORT_CODE,
+					 PMSDEAL.DEAL_CIF,
+					 CIF.SHORT_NAME_ENG,
+					 PMSDEAL.LONG_NAME_ENG2,
+					 PMSDEAL.LONG_NAME_ARAB2,
+					 PMSDEAL.STATUS,
+					 PMSDEAL.TRADE_DATE,
+					 PMSDEAL.PROJECT_NO
+			FROM  CIF  RIGHT OUTER JOIN  PMSDEAL  ON  CIF.COMP_CODE  = PMSDEAL.COMP_CODE
+				 AND	CIF.CIF_NO  = PMSDEAL.DEAL_CIF ]]>
+				 <if test='pthControl == "1"'>
+				 ,PTH_CTRL
+				 </if>
+			WHERE	 (PMSDEAL.COMP_CODE  = #{compCode})
+			 AND	(PMSDEAL.BRANCH_CODE  = #{branchCode})
+	 
+		<choose>
+			<when test="iv_crud!=null">
+				AND (
+				(#{iv_crud} = 'H' AND PMSDEAL.STATUS IN ( 'A' , 'P' ))
+				OR (#{iv_crud} = 'U' AND
+				PMSDEAL.STATUS IN ( 'A' , 'P' ))
+				OR (PMSDEAL.STATUS =
+				CASE
+				WHEN #{iv_crud} = 'R' THEN PMSDEAL.STATUS
+				WHEN #{iv_crud} = 'P' THEN 'A'
+				WHEN #{iv_crud} = 'T' THEN 'A'
+				ELSE 'P'
+				END)
+				)
+			  </when>
+			<otherwise>
+				AND (PMSDEAL.STATUS = 'P' OR PMSDEAL.STATUS = 'A')
+				<if test='pthControl == "1"'>
+				  AND ( PMSDEAL.COMP_CODE = CASE WHEN PTH_CTRL.GLOBAL_CIF = 'Y' THEN PTH_CTRL.GLOBAL_COMP_CIF ELSE  #{compCode} END ) 
+				 </if>
+			</otherwise>
+		</choose>
+	</sql>
+
+ <resultMap id="pmsDealListMap" type="pmsDealCO">
+	<id column="COMP_CODE" property="pmsDealVO.COMP_CODE" />
+	<id column="BRANCH_CODE" property="pmsDealVO.BRANCH_CODE" />
+	<id column="DEAL_NO" property="pmsDealVO.DEAL_NO" />
+	<result column="BRIEF_NAME_ENG" property="pmsDealVO.BRIEF_NAME_ENG" />
+	<result column="LONG_NAME_ENG" property="pmsDealVO.LONG_NAME_ENG" />
+	<result column="BRIEF_NAME_ARAB" property="pmsDealVO.BRIEF_NAME_ARAB" />
+	<result column="LONG_NAME_ARAB" property="pmsDealVO.LONG_NAME_ARAB" />
+	<result column="SHORT_CODE" property="pmsDealVO.SHORT_CODE" />
+	<result column="DEAL_CIF" property="pmsDealVO.DEAL_CIF" />
+	<result column="SHORT_NAME_ENG" property="shortNameEng" />
+	<result column="LONG_NAME_ENG2" property="pmsDealVO.LONG_NAME_ENG2" />
+	<result column="LONG_NAME_ARAB2" property="pmsDealVO.LONG_NAME_ARAB2" />
+	<result column="STATUS" property="pmsDealVO.STATUS" />
+	<result column="TRADE_DATE" property="pmsDealVO.TRADE_DATE" />
+	<result column="PROJECT_NO" property="pmsDealVO.PROJECT_NO" />
+	<result column="DEAL_CURR"  property="pmsDealVO.DEAL_CURR" />
+    <result column="MGT_FEE_PERC" property="pmsDealVO.MGT_FEE_PERC" />
+    <result column="REBATE_PERC"  property="pmsDealVO.REBATE_PERC" />
+    <result column="CY_DESC"  property="cyName" />
+    <result column="CY_DEC_POINTS"  property="cyDecPoints" />
+	
+ </resultMap>
+ 
+ <select id="pmsDealList" resultMap="pmsDealListMap" parameterType="pmsDealSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="pmsDealListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="pmsDealListCount" resultType="int" parameterType="pmsDealSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="pmsDealListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="returnDependencyByDealNo" parameterType="pmsDealSC" resultMap="pmsDealListMap">
+ 	<![CDATA[
+	SELECT			 PMSDEAL.DEAL_NO,
+					 CASE WHEN #{preferredLanguage} = 'L' THEN PMSDEAL.BRIEF_NAME_ENG ELSE PMSDEAL.BRIEF_NAME_ARAB END BRIEF_NAME_ENG,
+					 PMSDEAL.SHORT_CODE,
+					 PMSDEAL.BRANCH_CODE
+			FROM  CIF  RIGHT OUTER JOIN  PMSDEAL  ON  CIF.COMP_CODE  = PMSDEAL.COMP_CODE
+				 AND	CIF.CIF_NO  = PMSDEAL.DEAL_CIF  
+			WHERE	 (PMSDEAL.COMP_CODE  = #{compCode})
+			 AND	(PMSDEAL.BRANCH_CODE  = #{branchCode})
+			 AND	(PMSDEAL.DEAL_NO  = #{dealNo})
+			 AND	(PMSDEAL.STATUS  = 'P'
+			 OR	PMSDEAL.STATUS  = 'A')			
+	]]>	 
+</select>
+<select id="returnDealAndDealCyDetail" resultMap="pmsDealListMap" parameterType="pmsDealSC">                    
+             SELECT PMSDEAL.BRIEF_NAME_ENG,   
+                                    PMSDEAL.LONG_NAME_ENG,
+                                    PMSDEAL.BRIEF_NAME_ARAB,
+                                    PMSDEAL.LONG_NAME_ARAB,
+                                    PMSDEAL.MGT_FEE_PERC,
+                                    PMSDEAL.REBATE_PERC,
+                                    PMSDEAL.DEAL_CURR,
+                                    CURRENCIES.BRIEF_DESC_ENG CY_DESC,
+                                    CURRENCIES.DECIMAL_POINTS CY_DEC_POINTS
+            FROM   PMSDEAL  
+            LEFT    JOIN     CURRENCIES 
+              ON     PMSDEAL.COMP_CODE = CURRENCIES.COMP_CODE 
+              AND    PMSDEAL.DEAL_CURR  = CURRENCIES.CURRENCY_CODE 
+            WHERE    PMSDEAL.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+            AND     PMSDEAL.BRANCH_CODE  = #{branchCode,jdbcType=NUMERIC}     
+            AND     PMSDEAL.DEAL_NO  = #{dealNo,jdbcType=NUMERIC}
+</select>
+
+</mapper>

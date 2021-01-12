@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_SEGMENT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_SEGMENT_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SEGMENT_CODE" property="SEGMENT_CODE" />
+    <id column="SEGMENT_TYPE" property="SEGMENT_TYPE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="CRITERIA_CODE" property="CRITERIA_CODE" />
+    <result column="LEFT_OPERATOR" property="LEFT_OPERATOR" />
+    <result column="LOGICAL_OPERATOR" property="LOGICAL_OPERATOR" />
+    <result column="RIGHT_OPERATOR" property="RIGHT_OPERATOR" />
+    <result column="LABEL_PERC" property="LABEL_PERC" />
+    <result column="LABEL_CODE" property="LABEL_CODE" />
+    <result column="IGNORE_OTHER_CALC_FIELDS_YN" property="IGNORE_OTHER_CALC_FIELDS_YN" />
+    <result column="LABEL_DESCRIPTION" property="LABEL_DESCRIPTION" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CTS_SEGMENT_DETVOWithBLOBs" extends="BaseResultMap" >
+    <result column="PROCEDURE_DETAILS" property="PROCEDURE_DETAILS" />
+    <result column="QUERY_DETAILS" property="QUERY_DETAILS" />
+    <result column="PROC_DETAILS" property="PROC_DETAILS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, SEGMENT_CODE, SEGMENT_TYPE, BRANCH_CODE, CRITERIA_CODE, LEFT_OPERATOR, 
+    LOGICAL_OPERATOR, RIGHT_OPERATOR, LABEL_PERC, LABEL_CODE, IGNORE_OTHER_CALC_FIELDS_YN,LABEL_DESCRIPTION
+  </sql>
+  <sql id="Blob_Column_List" >
+    PROCEDURE_DETAILS, QUERY_DETAILS, PROC_DETAILS
+  </sql>
+  <select id="selectCTS_SEGMENT_DET" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CTS_SEGMENT_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CTS_SEGMENT_DET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </select>
+  <delete id="deleteCTS_SEGMENT_DET" parameterType="com.path.dbmaps.vo.CTS_SEGMENT_DETVOKey" >
+    delete from CTS_SEGMENT_DET
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </delete>
+  <insert id="insertCTS_SEGMENT_DET" parameterType="com.path.dbmaps.vo.CTS_SEGMENT_DETVOWithBLOBs" >
+    insert into CTS_SEGMENT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null" >
+        LINE_NO,
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        SEGMENT_CODE,
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        SEGMENT_TYPE,
+      </if>
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE,
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        CRITERIA_CODE,
+      </if>
+      <if test="LEFT_OPERATOR != null and !&quot;&quot;.equals(LEFT_OPERATOR)" >
+        LEFT_OPERATOR,
+      </if>
+      <if test="LOGICAL_OPERATOR != null and !&quot;&quot;.equals(LOGICAL_OPERATOR)" >
+        LOGICAL_OPERATOR,
+      </if>
+      <if test="RIGHT_OPERATOR != null and !&quot;&quot;.equals(RIGHT_OPERATOR)" >
+        RIGHT_OPERATOR,
+      </if>
+      <if test="LABEL_PERC != null" >
+        LABEL_PERC,
+      </if>
+      <if test="LABEL_CODE != null" >
+        LABEL_CODE,
+      </if>
+      <if test="IGNORE_OTHER_CALC_FIELDS_YN != null and !&quot;&quot;.equals(IGNORE_OTHER_CALC_FIELDS_YN)" >
+        IGNORE_OTHER_CALC_FIELDS_YN,
+      </if>
+       <if test="LABEL_DESCRIPTION != null" >
+        LABEL_DESCRIPTION,
+      </if>
+      <if test="PROCEDURE_DETAILS != null" >
+        PROCEDURE_DETAILS,
+      </if>
+      <if test="QUERY_DETAILS != null" >
+        QUERY_DETAILS,
+      </if>
+      <if test="PROC_DETAILS != null" >
+        PROC_DETAILS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null" >
+        #{LINE_NO},
+      </if>
+      <if test="SEGMENT_CODE != null" >
+        #{SEGMENT_CODE},
+      </if>
+      <if test="SEGMENT_TYPE != null and !&quot;&quot;.equals(SEGMENT_TYPE)" >
+        #{SEGMENT_TYPE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        #{CRITERIA_CODE},
+      </if>
+      <if test="LEFT_OPERATOR != null and !&quot;&quot;.equals(LEFT_OPERATOR)" >
+        #{LEFT_OPERATOR},
+      </if>
+      <if test="LOGICAL_OPERATOR != null and !&quot;&quot;.equals(LOGICAL_OPERATOR)" >
+        #{LOGICAL_OPERATOR},
+      </if>
+      <if test="RIGHT_OPERATOR != null and !&quot;&quot;.equals(RIGHT_OPERATOR)" >
+        #{RIGHT_OPERATOR},
+      </if>
+      <if test="LABEL_PERC != null" >
+        #{LABEL_PERC},
+      </if>
+      <if test="LABEL_CODE != null" >
+        #{LABEL_CODE},
+      </if>
+      <if test="IGNORE_OTHER_CALC_FIELDS_YN != null and !&quot;&quot;.equals(IGNORE_OTHER_CALC_FIELDS_YN)" >
+        #{IGNORE_OTHER_CALC_FIELDS_YN},
+      </if>
+      <if test="LABEL_DESCRIPTION != null" >
+        #{LABEL_DESCRIPTION},
+      </if>
+      <if test="PROCEDURE_DETAILS != null" >
+        #{PROCEDURE_DETAILS},
+      </if>
+      <if test="QUERY_DETAILS != null" >
+        #{QUERY_DETAILS},
+      </if>
+      <if test="PROC_DETAILS != null" >
+        #{PROC_DETAILS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_SEGMENT_DET" >
+    update CTS_SEGMENT_DET
+    <set >
+      <if test="BRANCH_CODE != null" >
+        BRANCH_CODE = #{BRANCH_CODE},
+      </if>
+      <if test="CRITERIA_CODE != null" >
+        CRITERIA_CODE = #{CRITERIA_CODE},
+      </if>
+      <if test="LEFT_OPERATOR != null" >
+        <choose >
+          <when test="LEFT_OPERATOR.equals(&quot;&quot;)" >
+            LEFT_OPERATOR = NULL ,
+          </when>
+          <otherwise >
+            LEFT_OPERATOR = #{LEFT_OPERATOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LOGICAL_OPERATOR != null" >
+        <choose >
+          <when test="LOGICAL_OPERATOR.equals(&quot;&quot;)" >
+            LOGICAL_OPERATOR = NULL ,
+          </when>
+          <otherwise >
+            LOGICAL_OPERATOR = #{LOGICAL_OPERATOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="RIGHT_OPERATOR != null" >
+        <choose >
+          <when test="RIGHT_OPERATOR.equals(&quot;&quot;)" >
+            RIGHT_OPERATOR = NULL ,
+          </when>
+          <otherwise >
+            RIGHT_OPERATOR = #{RIGHT_OPERATOR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LABEL_PERC != null" >
+        LABEL_PERC = #{LABEL_PERC},
+      </if>
+      <if test="LABEL_CODE != null" >
+        LABEL_CODE = #{LABEL_CODE},
+      </if>
+      <if test="IGNORE_OTHER_CALC_FIELDS_YN != null" >
+        <choose >
+          <when test="IGNORE_OTHER_CALC_FIELDS_YN.equals(&quot;&quot;)" >
+            IGNORE_OTHER_CALC_FIELDS_YN = NULL ,
+          </when>
+          <otherwise >
+            IGNORE_OTHER_CALC_FIELDS_YN = #{IGNORE_OTHER_CALC_FIELDS_YN},
+          </otherwise>
+        </choose>
+        <if test="LABEL_DESCRIPTION != null" >
+        LABEL_DESCRIPTION = #{LABEL_DESCRIPTION},
+      </if>
+      </if>
+      <if test="PROCEDURE_DETAILS != null" >
+        PROCEDURE_DETAILS = #{PROCEDURE_DETAILS},
+      </if>
+      <if test="QUERY_DETAILS != null" >
+        QUERY_DETAILS = #{QUERY_DETAILS},
+      </if>
+      <if test="PROC_DETAILS != null" >
+        PROC_DETAILS = #{PROC_DETAILS},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SEGMENT_CODE = #{SEGMENT_CODE}
+      and SEGMENT_TYPE = #{SEGMENT_TYPE}
+  </sql>
+  <update id="updateCTS_SEGMENT_DET" parameterType="com.path.dbmaps.vo.CTS_SEGMENT_DETVOWithBLOBs" >
+    <include refid="sql_updateCTS_SEGMENT_DET" />
+  </update>
+</mapper>

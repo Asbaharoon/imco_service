@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FASAST1" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FASAST1VO" >
+    <id column="CATEGORY_CODE" property="CATEGORY_CODE" />
+    <id column="CLASS_CODE" property="CLASS_CODE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="MANUFACTURER" property="MANUFACTURER" />
+    <result column="MANUFACTURERS_REFERENCE" property="MANUFACTURERS_REFERENCE" />
+    <result column="INSURANCE_INSURER" property="INSURANCE_INSURER" />
+    <result column="INSURANCE_INSURER_NAME" property="INSURANCE_INSURER_NAME" />
+    <result column="INSURANCE_POLICY_NUMBER" property="INSURANCE_POLICY_NUMBER" />
+    <result column="INSURANCE_EXPIRATION_DATE" property="INSURANCE_EXPIRATION_DATE" />
+    <result column="WARRANTY_NUMBER" property="WARRANTY_NUMBER" />
+    <result column="WARRANTY_COVERAGE" property="WARRANTY_COVERAGE" />
+    <result column="WARRANTY_EXPIRATION_DATE" property="WARRANTY_EXPIRATION_DATE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CATEGORY_CODE, CLASS_CODE, CODE, COMP_CODE, MANUFACTURER, MANUFACTURERS_REFERENCE, 
+    INSURANCE_INSURER, INSURANCE_INSURER_NAME, INSURANCE_POLICY_NUMBER, INSURANCE_EXPIRATION_DATE, 
+    WARRANTY_NUMBER, WARRANTY_COVERAGE, WARRANTY_EXPIRATION_DATE, BRANCH_CODE
+  </sql>
+  <select id="selectFASAST1" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FASAST1VOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FASAST1
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and CLASS_CODE = #{CLASS_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFASAST1" parameterType="com.path.dbmaps.vo.FASAST1VOKey" >
+    delete from FASAST1
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and CLASS_CODE = #{CLASS_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFASAST1" parameterType="com.path.dbmaps.vo.FASAST1VO" >
+    insert into FASAST1
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        CATEGORY_CODE,
+      </if>
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        CLASS_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="MANUFACTURER != null" >
+        MANUFACTURER,
+      </if>
+      <if test="MANUFACTURERS_REFERENCE != null" >
+        MANUFACTURERS_REFERENCE,
+      </if>
+      <if test="INSURANCE_INSURER != null and INSURANCE_INSURER != emptyBigDecimalValue" >
+        INSURANCE_INSURER,
+      </if>
+      <if test="INSURANCE_INSURER_NAME != null" >
+        INSURANCE_INSURER_NAME,
+      </if>
+      <if test="INSURANCE_POLICY_NUMBER != null" >
+        INSURANCE_POLICY_NUMBER,
+      </if>
+      <if test="INSURANCE_EXPIRATION_DATE != null" >
+        INSURANCE_EXPIRATION_DATE,
+      </if>
+      <if test="WARRANTY_NUMBER != null" >
+        WARRANTY_NUMBER,
+      </if>
+      <if test="WARRANTY_COVERAGE != null" >
+        WARRANTY_COVERAGE,
+      </if>
+      <if test="WARRANTY_EXPIRATION_DATE != null" >
+        WARRANTY_EXPIRATION_DATE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CATEGORY_CODE != null and CATEGORY_CODE != emptyBigDecimalValue" >
+        #{CATEGORY_CODE},
+      </if>
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        #{CLASS_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="MANUFACTURER != null" >
+        #{MANUFACTURER},
+      </if>
+      <if test="MANUFACTURERS_REFERENCE != null" >
+        #{MANUFACTURERS_REFERENCE},
+      </if>
+      <if test="INSURANCE_INSURER != null and INSURANCE_INSURER != emptyBigDecimalValue" >
+        #{INSURANCE_INSURER},
+      </if>
+      <if test="INSURANCE_INSURER_NAME != null" >
+        #{INSURANCE_INSURER_NAME},
+      </if>
+      <if test="INSURANCE_POLICY_NUMBER != null" >
+        #{INSURANCE_POLICY_NUMBER},
+      </if>
+      <if test="INSURANCE_EXPIRATION_DATE != null" >
+        #{INSURANCE_EXPIRATION_DATE},
+      </if>
+      <if test="WARRANTY_NUMBER != null" >
+        #{WARRANTY_NUMBER},
+      </if>
+      <if test="WARRANTY_COVERAGE != null" >
+        #{WARRANTY_COVERAGE},
+      </if>
+      <if test="WARRANTY_EXPIRATION_DATE != null" >
+        #{WARRANTY_EXPIRATION_DATE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFASAST1" >
+    update FASAST1
+    <set >
+      <if test="MANUFACTURER != null" >
+        MANUFACTURER = #{MANUFACTURER},
+      </if>
+      <if test="MANUFACTURERS_REFERENCE != null" >
+        MANUFACTURERS_REFERENCE = #{MANUFACTURERS_REFERENCE},
+      </if>
+      <if test="INSURANCE_INSURER != null" >
+        <choose >
+          <when test="INSURANCE_INSURER == emptyBigDecimalValue" >
+            INSURANCE_INSURER = NULL ,
+          </when>
+          <otherwise >
+            INSURANCE_INSURER = #{INSURANCE_INSURER},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INSURANCE_INSURER_NAME != null" >
+        INSURANCE_INSURER_NAME = #{INSURANCE_INSURER_NAME},
+      </if>
+      <if test="INSURANCE_POLICY_NUMBER != null" >
+        INSURANCE_POLICY_NUMBER = #{INSURANCE_POLICY_NUMBER},
+      </if>
+      <if test="INSURANCE_EXPIRATION_DATE != null" >
+        INSURANCE_EXPIRATION_DATE = #{INSURANCE_EXPIRATION_DATE},
+      </if>
+      <if test="WARRANTY_NUMBER != null" >
+        WARRANTY_NUMBER = #{WARRANTY_NUMBER},
+      </if>
+      <if test="WARRANTY_COVERAGE != null" >
+        WARRANTY_COVERAGE = #{WARRANTY_COVERAGE},
+      </if>
+      <if test="WARRANTY_EXPIRATION_DATE != null" >
+        WARRANTY_EXPIRATION_DATE = #{WARRANTY_EXPIRATION_DATE},
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CATEGORY_CODE = #{CATEGORY_CODE}
+      and CLASS_CODE = #{CLASS_CODE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFASAST1" parameterType="com.path.dbmaps.vo.FASAST1VO" >
+    <include refid="sql_updateFASAST1" />
+  </update>
+</mapper>

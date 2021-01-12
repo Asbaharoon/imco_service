@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_CY_SETTINGS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_CY_SETTINGSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CY_CODE" property="CY_CODE" />
+    <result column="DAYS_NBR" property="DAYS_NBR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CY_CODE, DAYS_NBR
+  </sql>
+  <select id="selectSWIFT_CY_SETTINGS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_CY_SETTINGSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_CY_SETTINGS
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+  </select>
+  <delete id="deleteSWIFT_CY_SETTINGS" parameterType="com.path.dbmaps.vo.SWIFT_CY_SETTINGSVOKey" >
+    delete from SWIFT_CY_SETTINGS
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+  </delete>
+  <insert id="insertSWIFT_CY_SETTINGS" parameterType="com.path.dbmaps.vo.SWIFT_CY_SETTINGSVO" >
+    insert into SWIFT_CY_SETTINGS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        CY_CODE,
+      </if>
+      <if test="DAYS_NBR != null and DAYS_NBR != emptyBigDecimalValue" >
+        DAYS_NBR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CY_CODE != null and CY_CODE != emptyBigDecimalValue" >
+        #{CY_CODE},
+      </if>
+      <if test="DAYS_NBR != null and DAYS_NBR != emptyBigDecimalValue" >
+        #{DAYS_NBR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_CY_SETTINGS" >
+    update SWIFT_CY_SETTINGS
+    <set >
+      <if test="DAYS_NBR != null" >
+        <choose >
+          <when test="DAYS_NBR == emptyBigDecimalValue" >
+            DAYS_NBR = NULL ,
+          </when>
+          <otherwise >
+            DAYS_NBR = #{DAYS_NBR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CY_CODE = #{CY_CODE}
+  </sql>
+  <update id="updateSWIFT_CY_SETTINGS" parameterType="com.path.dbmaps.vo.SWIFT_CY_SETTINGSVO" >
+    <include refid="sql_updateSWIFT_CY_SETTINGS" />
+  </update>
+</mapper>

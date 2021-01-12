@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_RAISED_VALIDATION_TMP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_RAISED_VALIDATION_TMPVO" >
+    <id column="BATCH_NO" property="BATCH_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="SERIAL_NO" property="SERIAL_NO" />
+    <id column="USER_ID" property="USER_ID" />
+    <result column="VALIDATION_CODE" property="VALIDATION_CODE" />
+    <result column="REASON_CODE" property="REASON_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="USE_SUSP_ACC" property="USE_SUSP_ACC" />
+    <result column="VALIDATION_TYPE" property="VALIDATION_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_NO, COMP_CODE, LINE_NO, SERIAL_NO, USER_ID, VALIDATION_CODE, REASON_CODE, BRANCH_CODE, 
+    USE_SUSP_ACC,VALIDATION_TYPE
+  </sql>
+  <select id="selectCTS_RAISED_VALIDATION_TMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_RAISED_VALIDATION_TMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_RAISED_VALIDATION_TMP
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+      and USER_ID = #{USER_ID}
+  </select>
+  <delete id="deleteCTS_RAISED_VALIDATION_TMP" parameterType="com.path.dbmaps.vo.CTS_RAISED_VALIDATION_TMPVOKey" >
+    delete from CTS_RAISED_VALIDATION_TMP
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+      and USER_ID = #{USER_ID}
+  </delete>
+  <insert id="insertCTS_RAISED_VALIDATION_TMP" parameterType="com.path.dbmaps.vo.CTS_RAISED_VALIDATION_TMPVO" >
+    insert into CTS_RAISED_VALIDATION_TMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        BATCH_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        SERIAL_NO,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+      <if test="VALIDATION_CODE != null and VALIDATION_CODE != emptyBigDecimalValue" >
+        VALIDATION_CODE,
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        REASON_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="USE_SUSP_ACC != null" >
+        USE_SUSP_ACC,
+      </if>
+      <if test="VALIDATION_TYPE != null" >
+        VALIDATION_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BATCH_NO != null and BATCH_NO != emptyBigDecimalValue" >
+        #{BATCH_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="SERIAL_NO != null and SERIAL_NO != emptyBigDecimalValue" >
+        #{SERIAL_NO},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+      <if test="VALIDATION_CODE != null and VALIDATION_CODE != emptyBigDecimalValue" >
+        #{VALIDATION_CODE},
+      </if>
+      <if test="REASON_CODE != null and REASON_CODE != emptyBigDecimalValue" >
+        #{REASON_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="USE_SUSP_ACC != null" >
+        #{USE_SUSP_ACC},
+      </if>
+       <if test="VALIDATION_TYPE != null" >
+        #{VALIDATION_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_RAISED_VALIDATION_TMP" >
+    update CTS_RAISED_VALIDATION_TMP
+    <set >
+      <if test="VALIDATION_CODE != null" >
+        <choose >
+          <when test="VALIDATION_CODE == emptyBigDecimalValue" >
+            VALIDATION_CODE = NULL ,
+          </when>
+          <otherwise >
+            VALIDATION_CODE = #{VALIDATION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REASON_CODE != null" >
+        <choose >
+          <when test="REASON_CODE == emptyBigDecimalValue" >
+            REASON_CODE = NULL ,
+          </when>
+          <otherwise >
+            REASON_CODE = #{REASON_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USE_SUSP_ACC != null" >
+        USE_SUSP_ACC = #{USE_SUSP_ACC},
+      </if>
+      <if test="VALIDATION_TYPE != null" >
+         VALIDATION_TYPE = #{VALIDATION_TYPE},
+      </if>
+    </set>
+    where BATCH_NO = #{BATCH_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and SERIAL_NO = #{SERIAL_NO}
+      and USER_ID = #{USER_ID}
+  </sql>
+  <update id="updateCTS_RAISED_VALIDATION_TMP" parameterType="com.path.dbmaps.vo.CTS_RAISED_VALIDATION_TMPVO" >
+    <include refid="sql_updateCTS_RAISED_VALIDATION_TMP" />
+  </update>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="providerLookupMapper">
+	<resultMap id="providerLookupMap" type="com.path.dbmaps.vo.ATM_RECONCVO">
+		<result property="COMP_CODE" column="COMP_CODE"/>
+		<result property="CODE" column="CODE"/>
+		<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG"/>
+		<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB"/>
+		<result property="LONG_NAME_ENG" column="LONG_NAME_ENG"/>
+		<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB"/>
+	</resultMap>
+	<select id="returnProviderLookup" parameterType="com.path.struts2.lib.common.GridParamsSC" resultMap="providerLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryProviderLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnProviderLookupCount" parameterType="com.path.struts2.lib.common.GridParamsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryProviderLkpSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryProviderLkpSQL">
+		  SELECT 
+			COMP_CODE,
+			CODE,
+			BRIEF_NAME_ENG,
+			BRIEF_NAME_ARAB,
+			LONG_NAME_ENG,
+			LONG_NAME_ARAB
+			FROM 	ATM_RECONC
+			WHERE  COMP_CODE = #{compCode}
+	</sql>
+</mapper>

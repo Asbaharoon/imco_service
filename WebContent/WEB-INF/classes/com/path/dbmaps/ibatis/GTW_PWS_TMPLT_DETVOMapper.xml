@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GTW_PWS_TMPLT_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.GTW_PWS_TMPLT_DETVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="OPERATION" property="OPERATION" />
+    <id column="TEMPLATE_ID" property="TEMPLATE_ID" />
+    <id column="WS_NAME" property="WS_NAME" />
+    <result column="EXCLUDE_ACCESS_YN" property="EXCLUDE_ACCESS_YN" />
+    <result column="TYPE" property="TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, OPERATION, TEMPLATE_ID, WS_NAME, EXCLUDE_ACCESS_YN, TYPE
+  </sql>
+  <select id="selectGTW_PWS_TMPLT_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_DETVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from GTW_PWS_TMPLT_DET
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </select>
+  <delete id="deleteGTW_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_DETVO" >
+    delete from GTW_PWS_TMPLT_DET
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </delete>
+  <insert id="insertGTW_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_DETVO" >
+    insert into GTW_PWS_TMPLT_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="OPERATION != null and !&quot;&quot;.equals(OPERATION)" >
+        OPERATION,
+      </if>
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        TEMPLATE_ID,
+      </if>
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        WS_NAME,
+      </if>
+      <if test="EXCLUDE_ACCESS_YN != null and !&quot;&quot;.equals(EXCLUDE_ACCESS_YN)" >
+        EXCLUDE_ACCESS_YN,
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="OPERATION != null and !&quot;&quot;.equals(OPERATION)" >
+        #{OPERATION},
+      </if>
+      <if test="TEMPLATE_ID != null and TEMPLATE_ID != emptyBigDecimalValue" >
+        #{TEMPLATE_ID},
+      </if>
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        #{WS_NAME},
+      </if>
+      <if test="EXCLUDE_ACCESS_YN != null and !&quot;&quot;.equals(EXCLUDE_ACCESS_YN)" >
+        #{EXCLUDE_ACCESS_YN},
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        #{TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateGTW_PWS_TMPLT_DET" >
+    update GTW_PWS_TMPLT_DET
+    <set >
+      <if test="EXCLUDE_ACCESS_YN != null" >
+        <choose >
+          <when test="EXCLUDE_ACCESS_YN.equals(&quot;&quot;)" >
+            EXCLUDE_ACCESS_YN = NULL ,
+          </when>
+          <otherwise >
+            EXCLUDE_ACCESS_YN = #{EXCLUDE_ACCESS_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TYPE != null" >
+        <choose >
+          <when test="TYPE.equals(&quot;&quot;)" >
+            TYPE = NULL ,
+          </when>
+          <otherwise >
+            TYPE = #{TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and OPERATION = #{OPERATION}
+      and TEMPLATE_ID = #{TEMPLATE_ID}
+      and WS_NAME = #{WS_NAME}
+  </sql>
+  <update id="updateGTW_PWS_TMPLT_DET" parameterType="com.path.dbmaps.vo.GTW_PWS_TMPLT_DETVO" >
+    <include refid="sql_updateGTW_PWS_TMPLT_DET" />
+  </update>
+</mapper>

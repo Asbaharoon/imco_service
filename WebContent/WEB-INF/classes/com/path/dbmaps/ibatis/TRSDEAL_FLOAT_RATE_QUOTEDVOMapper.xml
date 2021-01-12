@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_FLOAT_RATE_QUOTED" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_FLOAT_RATE_QUOTEDVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="QUOTED_BY_USER_ID" property="QUOTED_BY_USER_ID" />
+    <result column="ACTUAL_RATE" property="ACTUAL_RATE" />
+    <result column="NEW_RATE" property="NEW_RATE" />
+    <result column="TRS_NO" property="TRS_NO" />
+    <result column="TRS_SEQ" property="TRS_SEQ" />
+    <result column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, LINE_NO, QUOTED_BY_USER_ID, ACTUAL_RATE, NEW_RATE, 
+    TRS_NO, TRS_SEQ, TRS_TYPE, CREATED_BY, CREATED_DATE
+  </sql>
+  <select id="selectTRSDEAL_FLOAT_RATE_QUOTED" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_FLOAT_RATE_QUOTEDVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_FLOAT_RATE_QUOTED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSDEAL_FLOAT_RATE_QUOTED" parameterType="com.path.dbmaps.vo.TRSDEAL_FLOAT_RATE_QUOTEDVOKey" >
+    delete from TRSDEAL_FLOAT_RATE_QUOTED
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSDEAL_FLOAT_RATE_QUOTED" parameterType="com.path.dbmaps.vo.TRSDEAL_FLOAT_RATE_QUOTEDVO" >
+    insert into TRSDEAL_FLOAT_RATE_QUOTED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="QUOTED_BY_USER_ID != null" >
+        QUOTED_BY_USER_ID,
+      </if>
+      <if test="ACTUAL_RATE != null and ACTUAL_RATE != emptyBigDecimalValue" >
+        ACTUAL_RATE,
+      </if>
+      <if test="NEW_RATE != null and NEW_RATE != emptyBigDecimalValue" >
+        NEW_RATE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRS_SEQ != null and TRS_SEQ != emptyBigDecimalValue" >
+        TRS_SEQ,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="QUOTED_BY_USER_ID != null" >
+        #{QUOTED_BY_USER_ID},
+      </if>
+      <if test="ACTUAL_RATE != null and ACTUAL_RATE != emptyBigDecimalValue" >
+        #{ACTUAL_RATE},
+      </if>
+      <if test="NEW_RATE != null and NEW_RATE != emptyBigDecimalValue" >
+        #{NEW_RATE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_SEQ != null and TRS_SEQ != emptyBigDecimalValue" >
+        #{TRS_SEQ},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="CREATED_BY != null" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_FLOAT_RATE_QUOTED" >
+    update TRSDEAL_FLOAT_RATE_QUOTED
+    <set >
+      <if test="QUOTED_BY_USER_ID != null" >
+        QUOTED_BY_USER_ID = #{QUOTED_BY_USER_ID},
+      </if>
+      <if test="ACTUAL_RATE != null" >
+        <choose >
+          <when test="ACTUAL_RATE == emptyBigDecimalValue" >
+            ACTUAL_RATE = NULL ,
+          </when>
+          <otherwise >
+            ACTUAL_RATE = #{ACTUAL_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NEW_RATE != null" >
+        <choose >
+          <when test="NEW_RATE == emptyBigDecimalValue" >
+            NEW_RATE = NULL ,
+          </when>
+          <otherwise >
+            NEW_RATE = #{NEW_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_NO != null" >
+        <choose >
+          <when test="TRS_NO == emptyBigDecimalValue" >
+            TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            TRS_NO = #{TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_SEQ != null" >
+        <choose >
+          <when test="TRS_SEQ == emptyBigDecimalValue" >
+            TRS_SEQ = NULL ,
+          </when>
+          <otherwise >
+            TRS_SEQ = #{TRS_SEQ},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE = #{TRS_TYPE},
+      </if>
+      <if test="CREATED_BY != null" >
+        CREATED_BY = #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSDEAL_FLOAT_RATE_QUOTED" parameterType="com.path.dbmaps.vo.TRSDEAL_FLOAT_RATE_QUOTEDVO" >
+    <include refid="sql_updateTRSDEAL_FLOAT_RATE_QUOTED" />
+  </update>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_FILE_MIGR_TABLES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_FILE_MIGR_TABLESVO" >
+    <id column="COL_NO" property="COL_NO" />
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <id column="TABLE_NO" property="TABLE_NO" />
+    <result column="TABLE_NAME" property="TABLE_NAME" />
+    <result column="DYNAMIC_CONDITION" property="DYNAMIC_CONDITION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COL_NO, FILE_CODE, TABLE_NO, TABLE_NAME, DYNAMIC_CONDITION
+  </sql>
+  <select id="selectDF_FILE_MIGR_TABLES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DF_FILE_MIGR_TABLESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from DF_FILE_MIGR_TABLES
+    where COL_NO = #{COL_NO}
+      and FILE_CODE = #{FILE_CODE}
+      and TABLE_NO = #{TABLE_NO}
+  </select>
+  <delete id="deleteDF_FILE_MIGR_TABLES" parameterType="com.path.dbmaps.vo.DF_FILE_MIGR_TABLESVOKey" >
+    delete from DF_FILE_MIGR_TABLES
+    where COL_NO = #{COL_NO}
+      and FILE_CODE = #{FILE_CODE}
+      and TABLE_NO = #{TABLE_NO}
+  </delete>
+  <insert id="insertDF_FILE_MIGR_TABLES" parameterType="com.path.dbmaps.vo.DF_FILE_MIGR_TABLESVO" >
+    insert into DF_FILE_MIGR_TABLES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COL_NO != null and COL_NO != emptyBigDecimalValue" >
+        COL_NO,
+      </if>
+      <if test="FILE_CODE != null" >
+        FILE_CODE,
+      </if>
+      <if test="TABLE_NO != null and TABLE_NO != emptyBigDecimalValue" >
+        TABLE_NO,
+      </if>
+      <if test="TABLE_NAME != null" >
+        TABLE_NAME,
+      </if>
+      <if test="DYNAMIC_CONDITION != null" >
+        DYNAMIC_CONDITION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COL_NO != null and COL_NO != emptyBigDecimalValue" >
+        #{COL_NO},
+      </if>
+      <if test="FILE_CODE != null" >
+        #{FILE_CODE},
+      </if>
+      <if test="TABLE_NO != null and TABLE_NO != emptyBigDecimalValue" >
+        #{TABLE_NO},
+      </if>
+      <if test="TABLE_NAME != null" >
+        #{TABLE_NAME},
+      </if>
+      <if test="DYNAMIC_CONDITION != null" >
+        #{DYNAMIC_CONDITION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_FILE_MIGR_TABLES" >
+    update DF_FILE_MIGR_TABLES
+    <set >
+      <if test="TABLE_NAME != null" >
+        TABLE_NAME = #{TABLE_NAME},
+      </if>
+      <if test="DYNAMIC_CONDITION != null" >
+        DYNAMIC_CONDITION = #{DYNAMIC_CONDITION},
+      </if>
+    </set>
+    where COL_NO = #{COL_NO}
+      and FILE_CODE = #{FILE_CODE}
+      and TABLE_NO = #{TABLE_NO}
+  </sql>
+  <update id="updateDF_FILE_MIGR_TABLES" parameterType="com.path.dbmaps.vo.DF_FILE_MIGR_TABLESVO" >
+    <include refid="sql_updateDF_FILE_MIGR_TABLES" />
+  </update>
+</mapper>

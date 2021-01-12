@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_MULTI_ACC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_MULTI_ACCVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_TYPE" property="DOC_TYPE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <id column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="CLIENT_BR" property="CLIENT_BR" />
+    <result column="CLIENT_CY" property="CLIENT_CY" />
+    <result column="CLIENT_GL" property="CLIENT_GL" />
+    <result column="CLIENT_CIF" property="CLIENT_CIF" />
+    <result column="CLIENT_SL" property="CLIENT_SL" />
+    <result column="CLIENT_FC" property="CLIENT_FC" />
+    <result column="CLIENT_RATE" property="CLIENT_RATE" />
+    <result column="CLIENT_CV" property="CLIENT_CV" />
+    <result column="PAYMENT_METHOD" property="PAYMENT_METHOD" />
+    <result column="REMITTANCE_TYPE" property="REMITTANCE_TYPE" />
+    <result column="DD_TRS_NO" property="DD_TRS_NO" />
+    <result column="DD_CHQ_NBR" property="DD_CHQ_NBR" />
+    <result column="DD_PRINTED" property="DD_PRINTED" />
+    <result column="FC_SUSPENSE" property="FC_SUSPENSE" />
+    <result column="CV_SUSPENSE" property="CV_SUSPENSE" />
+    <result column="SUSPENSE_RATE" property="SUSPENSE_RATE" />
+    <result column="FC_WITHDRAW" property="FC_WITHDRAW" />
+    <result column="CV_WITHDRAW" property="CV_WITHDRAW" />
+    <result column="WITHDRAW_RATE" property="WITHDRAW_RATE" />
+    <result column="FC_MARGIN" property="FC_MARGIN" />
+    <result column="CV_MARGIN" property="CV_MARGIN" />
+    <result column="MARGIN_RATE" property="MARGIN_RATE" />
+    <result column="FC_NOSTRO" property="FC_NOSTRO" />
+    <result column="CV_NOSTRO" property="CV_NOSTRO" />
+    <result column="NOSTRO_RATE" property="NOSTRO_RATE" />
+    <result column="FC_MARGIN_1" property="FC_MARGIN_1" />
+    <result column="CV_MARGIN_1" property="CV_MARGIN_1" />
+    <result column="MARGIN_RATE_1" property="MARGIN_RATE_1" />
+    <result column="USE_SUSPENSE" property="USE_SUSPENSE" />
+    <result column="CLIENT_MULT_DIV" property="CLIENT_MULT_DIV" />
+    <result column="CLIENT_UNIT" property="CLIENT_UNIT" />
+    <result column="ORIGINAL_FC_NOSTRO" property="ORIGINAL_FC_NOSTRO" />
+    <result column="ORIGINAL_CV_NOSTRO" property="ORIGINAL_CV_NOSTRO" />
+    <result column="ORIGINAL_NOSTRO_RATE" property="ORIGINAL_NOSTRO_RATE" />
+    <result column="ORIGINAL_NOSTRO_CY" property="ORIGINAL_NOSTRO_CY" />
+    <result column="VISIBLE_CV" property="VISIBLE_CV" />
+    <result column="BRIDGING_ACC" property="BRIDGING_ACC" />
+    <result column="DEAL_SERIAL_NO" property="DEAL_SERIAL_NO" />
+    <result column="DEAL_BR" property="DEAL_BR" />
+    <result column="DEALER_NAME" property="DEALER_NAME" />
+    <result column="HOF_TRS_NO" property="HOF_TRS_NO" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DOC_TYPE, LINE_NO, TRX_NBR, TRX_TYPE, CLIENT_BR, CLIENT_CY, 
+    CLIENT_GL, CLIENT_CIF, CLIENT_SL, CLIENT_FC, CLIENT_RATE, CLIENT_CV, PAYMENT_METHOD, 
+    REMITTANCE_TYPE, DD_TRS_NO, DD_CHQ_NBR, DD_PRINTED, FC_SUSPENSE, CV_SUSPENSE, SUSPENSE_RATE, 
+    FC_WITHDRAW, CV_WITHDRAW, WITHDRAW_RATE, FC_MARGIN, CV_MARGIN, MARGIN_RATE, FC_NOSTRO, 
+    CV_NOSTRO, NOSTRO_RATE, FC_MARGIN_1, CV_MARGIN_1, MARGIN_RATE_1, USE_SUSPENSE, CLIENT_MULT_DIV, 
+    CLIENT_UNIT, ORIGINAL_FC_NOSTRO, ORIGINAL_CV_NOSTRO, ORIGINAL_NOSTRO_RATE, ORIGINAL_NOSTRO_CY, 
+    VISIBLE_CV, BRIDGING_ACC, DEAL_SERIAL_NO, DEAL_BR, DEALER_NAME , HOF_TRS_NO
+  </sql>
+  <select id="selectTFS_MULTI_ACC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_MULTI_ACCVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_MULTI_ACC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </select>
+  <delete id="deleteTFS_MULTI_ACC" parameterType="com.path.dbmaps.vo.TFS_MULTI_ACCVO" >
+    delete from TFS_MULTI_ACC
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </delete>
+  <insert id="insertTFS_MULTI_ACC" parameterType="com.path.dbmaps.vo.TFS_MULTI_ACCVO" >
+    insert into TFS_MULTI_ACC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_TYPE != null" >
+        DOC_TYPE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        TRX_NBR,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="CLIENT_BR != null and CLIENT_BR != emptyBigDecimalValue" >
+        CLIENT_BR,
+      </if>
+      <if test="CLIENT_CY != null and CLIENT_CY != emptyBigDecimalValue" >
+        CLIENT_CY,
+      </if>
+      <if test="CLIENT_GL != null and CLIENT_GL != emptyBigDecimalValue" >
+        CLIENT_GL,
+      </if>
+      <if test="CLIENT_CIF != null and CLIENT_CIF != emptyBigDecimalValue" >
+        CLIENT_CIF,
+      </if>
+      <if test="CLIENT_SL != null and CLIENT_SL != emptyBigDecimalValue" >
+        CLIENT_SL,
+      </if>
+      <if test="CLIENT_FC != null and CLIENT_FC != emptyBigDecimalValue" >
+        CLIENT_FC,
+      </if>
+      <if test="CLIENT_RATE != null and CLIENT_RATE != emptyBigDecimalValue" >
+        CLIENT_RATE,
+      </if>
+      <if test="CLIENT_CV != null and CLIENT_CV != emptyBigDecimalValue" >
+        CLIENT_CV,
+      </if>
+      <if test="PAYMENT_METHOD != null" >
+        PAYMENT_METHOD,
+      </if>
+      <if test="REMITTANCE_TYPE != null and REMITTANCE_TYPE != emptyBigDecimalValue" >
+        REMITTANCE_TYPE,
+      </if>
+      <if test="DD_TRS_NO != null and DD_TRS_NO != emptyBigDecimalValue" >
+        DD_TRS_NO,
+      </if>
+      <if test="DD_CHQ_NBR != null and DD_CHQ_NBR != emptyBigDecimalValue" >
+        DD_CHQ_NBR,
+      </if>
+      <if test="DD_PRINTED != null" >
+        DD_PRINTED,
+      </if>
+      <if test="FC_SUSPENSE != null and FC_SUSPENSE != emptyBigDecimalValue" >
+        FC_SUSPENSE,
+      </if>
+      <if test="CV_SUSPENSE != null and CV_SUSPENSE != emptyBigDecimalValue" >
+        CV_SUSPENSE,
+      </if>
+      <if test="SUSPENSE_RATE != null and SUSPENSE_RATE != emptyBigDecimalValue" >
+        SUSPENSE_RATE,
+      </if>
+      <if test="FC_WITHDRAW != null and FC_WITHDRAW != emptyBigDecimalValue" >
+        FC_WITHDRAW,
+      </if>
+      <if test="CV_WITHDRAW != null and CV_WITHDRAW != emptyBigDecimalValue" >
+        CV_WITHDRAW,
+      </if>
+      <if test="WITHDRAW_RATE != null and WITHDRAW_RATE != emptyBigDecimalValue" >
+        WITHDRAW_RATE,
+      </if>
+      <if test="FC_MARGIN != null and FC_MARGIN != emptyBigDecimalValue" >
+        FC_MARGIN,
+      </if>
+      <if test="CV_MARGIN != null and CV_MARGIN != emptyBigDecimalValue" >
+        CV_MARGIN,
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        MARGIN_RATE,
+      </if>
+      <if test="FC_NOSTRO != null and FC_NOSTRO != emptyBigDecimalValue" >
+        FC_NOSTRO,
+      </if>
+      <if test="CV_NOSTRO != null and CV_NOSTRO != emptyBigDecimalValue" >
+        CV_NOSTRO,
+      </if>
+      <if test="NOSTRO_RATE != null and NOSTRO_RATE != emptyBigDecimalValue" >
+        NOSTRO_RATE,
+      </if>
+      <if test="FC_MARGIN_1 != null and FC_MARGIN_1 != emptyBigDecimalValue" >
+        FC_MARGIN_1,
+      </if>
+      <if test="CV_MARGIN_1 != null and CV_MARGIN_1 != emptyBigDecimalValue" >
+        CV_MARGIN_1,
+      </if>
+      <if test="MARGIN_RATE_1 != null and MARGIN_RATE_1 != emptyBigDecimalValue" >
+        MARGIN_RATE_1,
+      </if>
+      <if test="USE_SUSPENSE != null" >
+        USE_SUSPENSE,
+      </if>
+      <if test="CLIENT_MULT_DIV != null" >
+        CLIENT_MULT_DIV,
+      </if>
+      <if test="CLIENT_UNIT != null and CLIENT_UNIT != emptyBigDecimalValue" >
+        CLIENT_UNIT,
+      </if>
+      <if test="ORIGINAL_FC_NOSTRO != null and ORIGINAL_FC_NOSTRO != emptyBigDecimalValue" >
+        ORIGINAL_FC_NOSTRO,
+      </if>
+      <if test="ORIGINAL_CV_NOSTRO != null and ORIGINAL_CV_NOSTRO != emptyBigDecimalValue" >
+        ORIGINAL_CV_NOSTRO,
+      </if>
+      <if test="ORIGINAL_NOSTRO_RATE != null and ORIGINAL_NOSTRO_RATE != emptyBigDecimalValue" >
+        ORIGINAL_NOSTRO_RATE,
+      </if>
+      <if test="ORIGINAL_NOSTRO_CY != null and ORIGINAL_NOSTRO_CY != emptyBigDecimalValue" >
+        ORIGINAL_NOSTRO_CY,
+      </if>
+      <if test="VISIBLE_CV != null" >
+        VISIBLE_CV,
+      </if>
+      <if test="BRIDGING_ACC != null" >
+        BRIDGING_ACC,
+      </if>
+      <if test="DEAL_SERIAL_NO != null and DEAL_SERIAL_NO != emptyBigDecimalValue" >
+        DEAL_SERIAL_NO,
+      </if>
+      <if test="DEAL_BR != null and DEAL_BR != emptyBigDecimalValue" >
+        DEAL_BR,
+      </if>
+      <if test="DEALER_NAME != null" >
+        DEALER_NAME,
+      </if>
+      <if test="HOF_TRS_NO != null and HOF_TRS_NO != emptyBigDecimalValue" >
+        HOF_TRS_NO,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_TYPE != null" >
+        #{DOC_TYPE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRX_NBR != null and TRX_NBR != emptyBigDecimalValue" >
+        #{TRX_NBR},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="CLIENT_BR != null and CLIENT_BR != emptyBigDecimalValue" >
+        #{CLIENT_BR},
+      </if>
+      <if test="CLIENT_CY != null and CLIENT_CY != emptyBigDecimalValue" >
+        #{CLIENT_CY},
+      </if>
+      <if test="CLIENT_GL != null and CLIENT_GL != emptyBigDecimalValue" >
+        #{CLIENT_GL},
+      </if>
+      <if test="CLIENT_CIF != null and CLIENT_CIF != emptyBigDecimalValue" >
+        #{CLIENT_CIF},
+      </if>
+      <if test="CLIENT_SL != null and CLIENT_SL != emptyBigDecimalValue" >
+        #{CLIENT_SL},
+      </if>
+      <if test="CLIENT_FC != null and CLIENT_FC != emptyBigDecimalValue" >
+        #{CLIENT_FC},
+      </if>
+      <if test="CLIENT_RATE != null and CLIENT_RATE != emptyBigDecimalValue" >
+        #{CLIENT_RATE},
+      </if>
+      <if test="CLIENT_CV != null and CLIENT_CV != emptyBigDecimalValue" >
+        #{CLIENT_CV},
+      </if>
+      <if test="PAYMENT_METHOD != null" >
+        #{PAYMENT_METHOD},
+      </if>
+      <if test="REMITTANCE_TYPE != null and REMITTANCE_TYPE != emptyBigDecimalValue" >
+        #{REMITTANCE_TYPE},
+      </if>
+      <if test="DD_TRS_NO != null and DD_TRS_NO != emptyBigDecimalValue" >
+        #{DD_TRS_NO},
+      </if>
+      <if test="DD_CHQ_NBR != null and DD_CHQ_NBR != emptyBigDecimalValue" >
+        #{DD_CHQ_NBR},
+      </if>
+      <if test="DD_PRINTED != null" >
+        #{DD_PRINTED},
+      </if>
+      <if test="FC_SUSPENSE != null and FC_SUSPENSE != emptyBigDecimalValue" >
+        #{FC_SUSPENSE},
+      </if>
+      <if test="CV_SUSPENSE != null and CV_SUSPENSE != emptyBigDecimalValue" >
+        #{CV_SUSPENSE},
+      </if>
+      <if test="SUSPENSE_RATE != null and SUSPENSE_RATE != emptyBigDecimalValue" >
+        #{SUSPENSE_RATE},
+      </if>
+      <if test="FC_WITHDRAW != null and FC_WITHDRAW != emptyBigDecimalValue" >
+        #{FC_WITHDRAW},
+      </if>
+      <if test="CV_WITHDRAW != null and CV_WITHDRAW != emptyBigDecimalValue" >
+        #{CV_WITHDRAW},
+      </if>
+      <if test="WITHDRAW_RATE != null and WITHDRAW_RATE != emptyBigDecimalValue" >
+        #{WITHDRAW_RATE},
+      </if>
+      <if test="FC_MARGIN != null and FC_MARGIN != emptyBigDecimalValue" >
+        #{FC_MARGIN},
+      </if>
+      <if test="CV_MARGIN != null and CV_MARGIN != emptyBigDecimalValue" >
+        #{CV_MARGIN},
+      </if>
+      <if test="MARGIN_RATE != null and MARGIN_RATE != emptyBigDecimalValue" >
+        #{MARGIN_RATE},
+      </if>
+      <if test="FC_NOSTRO != null and FC_NOSTRO != emptyBigDecimalValue" >
+        #{FC_NOSTRO},
+      </if>
+      <if test="CV_NOSTRO != null and CV_NOSTRO != emptyBigDecimalValue" >
+        #{CV_NOSTRO},
+      </if>
+      <if test="NOSTRO_RATE != null and NOSTRO_RATE != emptyBigDecimalValue" >
+        #{NOSTRO_RATE},
+      </if>
+      <if test="FC_MARGIN_1 != null and FC_MARGIN_1 != emptyBigDecimalValue" >
+        #{FC_MARGIN_1},
+      </if>
+      <if test="CV_MARGIN_1 != null and CV_MARGIN_1 != emptyBigDecimalValue" >
+        #{CV_MARGIN_1},
+      </if>
+      <if test="MARGIN_RATE_1 != null and MARGIN_RATE_1 != emptyBigDecimalValue" >
+        #{MARGIN_RATE_1},
+      </if>
+      <if test="USE_SUSPENSE != null" >
+        #{USE_SUSPENSE},
+      </if>
+      <if test="CLIENT_MULT_DIV != null" >
+        #{CLIENT_MULT_DIV},
+      </if>
+      <if test="CLIENT_UNIT != null and CLIENT_UNIT != emptyBigDecimalValue" >
+        #{CLIENT_UNIT},
+      </if>
+      <if test="ORIGINAL_FC_NOSTRO != null and ORIGINAL_FC_NOSTRO != emptyBigDecimalValue" >
+        #{ORIGINAL_FC_NOSTRO},
+      </if>
+      <if test="ORIGINAL_CV_NOSTRO != null and ORIGINAL_CV_NOSTRO != emptyBigDecimalValue" >
+        #{ORIGINAL_CV_NOSTRO},
+      </if>
+      <if test="ORIGINAL_NOSTRO_RATE != null and ORIGINAL_NOSTRO_RATE != emptyBigDecimalValue" >
+        #{ORIGINAL_NOSTRO_RATE},
+      </if>
+      <if test="ORIGINAL_NOSTRO_CY != null and ORIGINAL_NOSTRO_CY != emptyBigDecimalValue" >
+        #{ORIGINAL_NOSTRO_CY},
+      </if>
+      <if test="VISIBLE_CV != null" >
+        #{VISIBLE_CV},
+      </if>
+      <if test="BRIDGING_ACC != null" >
+        #{BRIDGING_ACC},
+      </if>
+      <if test="DEAL_SERIAL_NO != null and DEAL_SERIAL_NO != emptyBigDecimalValue" >
+        #{DEAL_SERIAL_NO},
+      </if>
+      <if test="DEAL_BR != null and DEAL_BR != emptyBigDecimalValue" >
+        #{DEAL_BR},
+      </if>
+      <if test="DEALER_NAME != null" >
+        #{DEALER_NAME},
+      </if>
+      <if test="HOF_TRS_NO != null and HOF_TRS_NO != emptyBigDecimalValue" >
+        #{HOF_TRS_NO},
+      </if>
+
+      
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_MULTI_ACC" >
+    update TFS_MULTI_ACC
+    <set >
+      <if test="CLIENT_BR != null" >
+        <choose >
+          <when test="CLIENT_BR == emptyBigDecimalValue" >
+            CLIENT_BR = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_BR = #{CLIENT_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_CY != null" >
+        <choose >
+          <when test="CLIENT_CY == emptyBigDecimalValue" >
+            CLIENT_CY = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_CY = #{CLIENT_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_GL != null" >
+        <choose >
+          <when test="CLIENT_GL == emptyBigDecimalValue" >
+            CLIENT_GL = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_GL = #{CLIENT_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_CIF != null" >
+        <choose >
+          <when test="CLIENT_CIF == emptyBigDecimalValue" >
+            CLIENT_CIF = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_CIF = #{CLIENT_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_SL != null" >
+        <choose >
+          <when test="CLIENT_SL == emptyBigDecimalValue" >
+            CLIENT_SL = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_SL = #{CLIENT_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_FC != null" >
+        <choose >
+          <when test="CLIENT_FC == emptyBigDecimalValue" >
+            CLIENT_FC = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_FC = #{CLIENT_FC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_RATE != null" >
+        <choose >
+          <when test="CLIENT_RATE == emptyBigDecimalValue" >
+            CLIENT_RATE = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_RATE = #{CLIENT_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLIENT_CV != null" >
+        <choose >
+          <when test="CLIENT_CV == emptyBigDecimalValue" >
+            CLIENT_CV = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_CV = #{CLIENT_CV},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PAYMENT_METHOD != null" >
+        PAYMENT_METHOD = #{PAYMENT_METHOD},
+      </if>
+      <if test="REMITTANCE_TYPE != null" >
+        <choose >
+          <when test="REMITTANCE_TYPE == emptyBigDecimalValue" >
+            REMITTANCE_TYPE = NULL ,
+          </when>
+          <otherwise >
+            REMITTANCE_TYPE = #{REMITTANCE_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DD_TRS_NO != null" >
+        <choose >
+          <when test="DD_TRS_NO == emptyBigDecimalValue" >
+            DD_TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            DD_TRS_NO = #{DD_TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DD_CHQ_NBR != null" >
+        <choose >
+          <when test="DD_CHQ_NBR == emptyBigDecimalValue" >
+            DD_CHQ_NBR = NULL ,
+          </when>
+          <otherwise >
+            DD_CHQ_NBR = #{DD_CHQ_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DD_PRINTED != null" >
+        DD_PRINTED = #{DD_PRINTED},
+      </if>
+      <if test="FC_SUSPENSE != null" >
+        <choose >
+          <when test="FC_SUSPENSE == emptyBigDecimalValue" >
+            FC_SUSPENSE = NULL ,
+          </when>
+          <otherwise >
+            FC_SUSPENSE = #{FC_SUSPENSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CV_SUSPENSE != null" >
+        <choose >
+          <when test="CV_SUSPENSE == emptyBigDecimalValue" >
+            CV_SUSPENSE = NULL ,
+          </when>
+          <otherwise >
+            CV_SUSPENSE = #{CV_SUSPENSE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUSPENSE_RATE != null" >
+        <choose >
+          <when test="SUSPENSE_RATE == emptyBigDecimalValue" >
+            SUSPENSE_RATE = NULL ,
+          </when>
+          <otherwise >
+            SUSPENSE_RATE = #{SUSPENSE_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FC_WITHDRAW != null" >
+        <choose >
+          <when test="FC_WITHDRAW == emptyBigDecimalValue" >
+            FC_WITHDRAW = NULL ,
+          </when>
+          <otherwise >
+            FC_WITHDRAW = #{FC_WITHDRAW},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CV_WITHDRAW != null" >
+        <choose >
+          <when test="CV_WITHDRAW == emptyBigDecimalValue" >
+            CV_WITHDRAW = NULL ,
+          </when>
+          <otherwise >
+            CV_WITHDRAW = #{CV_WITHDRAW},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="WITHDRAW_RATE != null" >
+        <choose >
+          <when test="WITHDRAW_RATE == emptyBigDecimalValue" >
+            WITHDRAW_RATE = NULL ,
+          </when>
+          <otherwise >
+            WITHDRAW_RATE = #{WITHDRAW_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FC_MARGIN != null" >
+        <choose >
+          <when test="FC_MARGIN == emptyBigDecimalValue" >
+            FC_MARGIN = NULL ,
+          </when>
+          <otherwise >
+            FC_MARGIN = #{FC_MARGIN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CV_MARGIN != null" >
+        <choose >
+          <when test="CV_MARGIN == emptyBigDecimalValue" >
+            CV_MARGIN = NULL ,
+          </when>
+          <otherwise >
+            CV_MARGIN = #{CV_MARGIN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MARGIN_RATE != null" >
+        <choose >
+          <when test="MARGIN_RATE == emptyBigDecimalValue" >
+            MARGIN_RATE = NULL ,
+          </when>
+          <otherwise >
+            MARGIN_RATE = #{MARGIN_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FC_NOSTRO != null" >
+        <choose >
+          <when test="FC_NOSTRO == emptyBigDecimalValue" >
+            FC_NOSTRO = NULL ,
+          </when>
+          <otherwise >
+            FC_NOSTRO = #{FC_NOSTRO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CV_NOSTRO != null" >
+        <choose >
+          <when test="CV_NOSTRO == emptyBigDecimalValue" >
+            CV_NOSTRO = NULL ,
+          </when>
+          <otherwise >
+            CV_NOSTRO = #{CV_NOSTRO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NOSTRO_RATE != null" >
+        <choose >
+          <when test="NOSTRO_RATE == emptyBigDecimalValue" >
+            NOSTRO_RATE = NULL ,
+          </when>
+          <otherwise >
+            NOSTRO_RATE = #{NOSTRO_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FC_MARGIN_1 != null" >
+        <choose >
+          <when test="FC_MARGIN_1 == emptyBigDecimalValue" >
+            FC_MARGIN_1 = NULL ,
+          </when>
+          <otherwise >
+            FC_MARGIN_1 = #{FC_MARGIN_1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CV_MARGIN_1 != null" >
+        <choose >
+          <when test="CV_MARGIN_1 == emptyBigDecimalValue" >
+            CV_MARGIN_1 = NULL ,
+          </when>
+          <otherwise >
+            CV_MARGIN_1 = #{CV_MARGIN_1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MARGIN_RATE_1 != null" >
+        <choose >
+          <when test="MARGIN_RATE_1 == emptyBigDecimalValue" >
+            MARGIN_RATE_1 = NULL ,
+          </when>
+          <otherwise >
+            MARGIN_RATE_1 = #{MARGIN_RATE_1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="USE_SUSPENSE != null" >
+        USE_SUSPENSE = #{USE_SUSPENSE},
+      </if>
+      <if test="CLIENT_MULT_DIV != null" >
+        CLIENT_MULT_DIV = #{CLIENT_MULT_DIV},
+      </if>
+      <if test="CLIENT_UNIT != null" >
+        <choose >
+          <when test="CLIENT_UNIT == emptyBigDecimalValue" >
+            CLIENT_UNIT = NULL ,
+          </when>
+          <otherwise >
+            CLIENT_UNIT = #{CLIENT_UNIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORIGINAL_FC_NOSTRO != null" >
+        <choose >
+          <when test="ORIGINAL_FC_NOSTRO == emptyBigDecimalValue" >
+            ORIGINAL_FC_NOSTRO = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_FC_NOSTRO = #{ORIGINAL_FC_NOSTRO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORIGINAL_CV_NOSTRO != null" >
+        <choose >
+          <when test="ORIGINAL_CV_NOSTRO == emptyBigDecimalValue" >
+            ORIGINAL_CV_NOSTRO = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_CV_NOSTRO = #{ORIGINAL_CV_NOSTRO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORIGINAL_NOSTRO_RATE != null" >
+        <choose >
+          <when test="ORIGINAL_NOSTRO_RATE == emptyBigDecimalValue" >
+            ORIGINAL_NOSTRO_RATE = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_NOSTRO_RATE = #{ORIGINAL_NOSTRO_RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ORIGINAL_NOSTRO_CY != null" >
+        <choose >
+          <when test="ORIGINAL_NOSTRO_CY == emptyBigDecimalValue" >
+            ORIGINAL_NOSTRO_CY = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_NOSTRO_CY = #{ORIGINAL_NOSTRO_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VISIBLE_CV != null" >
+        VISIBLE_CV = #{VISIBLE_CV},
+      </if>
+      <if test="BRIDGING_ACC != null" >
+        BRIDGING_ACC = #{BRIDGING_ACC},
+      </if>
+      <if test="DEAL_SERIAL_NO != null" >
+        <choose >
+          <when test="DEAL_SERIAL_NO == emptyBigDecimalValue" >
+            DEAL_SERIAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_SERIAL_NO = #{DEAL_SERIAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEAL_BR != null" >
+        <choose >
+          <when test="DEAL_BR == emptyBigDecimalValue" >
+            DEAL_BR = NULL ,
+          </when>
+          <otherwise >
+            DEAL_BR = #{DEAL_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DEALER_NAME != null" >
+        DEALER_NAME = #{DEALER_NAME},
+      </if>
+      <if test="HOF_TRS_NO != null" >
+        <choose >
+          <when test="HOF_TRS_NO == emptyBigDecimalValue" >
+            HOF_TRS_NO = NULL ,
+          </when>
+          <otherwise >
+            HOF_TRS_NO = #{HOF_TRS_NO},
+          </otherwise>
+        </choose>
+      </if>
+      
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_TYPE = #{DOC_TYPE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NBR = #{TRX_NBR}
+      and TRX_TYPE = #{TRX_TYPE}
+  </sql>
+  <update id="updateTFS_MULTI_ACC" parameterType="com.path.dbmaps.vo.TFS_MULTI_ACCVO" >
+    <include refid="sql_updateTFS_MULTI_ACC" />
+  </update>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="swiftInfoMapper">
+
+	<sql id="swiftInfoListQuery">
+		SELECT COMP_CODE,
+		       LINE_NO,
+		       SEND_TO_RECEIVER,
+		       SHOW_TEXT,
+		       (Select SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          from SYS_PARAM_LOV_TRANS
+		         WHERE LOV_TYPE_ID = #{YES_NO_OPTION_cons}
+		           and SYS_PARAM_LOV_TRANS.LANG_CODE = #{preferredLanguage}
+		           and SYS_PARAM_LOV_TRANS.VALUE_CODE = SWIFT_INFO.SHOW_TEXT ) showTextDesc
+		  FROM SWIFT_INFO
+		 WHERE SWIFT_INFO.COMP_CODE = #{compCode}
+	</sql>
+	
+	<resultMap id="swiftInfoListMap" type="swiftInfoCO">
+		<result property="swiftInfoVO.COMP_CODE" column="COMP_CODE" />
+		<result property="swiftInfoVO.LINE_NO" column="LINE_NO" />
+		<result property="swiftInfoVO.SEND_TO_RECEIVER" column="SEND_TO_RECEIVER" />
+		<result property="swiftInfoVO.SHOW_TEXT" column="SHOW_TEXT" />
+		<result property="showTextDesc" column="showTextDesc" />
+	</resultMap>
+	
+	<select id="returnSwiftInfoLookupData" resultMap="swiftInfoListMap"
+		parameterType="swiftInfoSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="swiftInfoListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	<select id="returnSwiftInfoLookupCount" resultType="int"
+		parameterType="swiftInfoSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="swiftInfoListQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+<select id="returnSwiftInfoById" parameterType="swiftInfoSC" resultType="swiftInfoVO">
+	SELECT  SHOW_TEXT , SEND_TO_RECEIVER
+	FROM   SWIFT_INFO 
+	WHERE  SWIFT_INFO.COMP_CODE  = #{compCode}
+	AND    SEND_TO_RECEIVER     = #{sendToReceiver}
+ </select>
+	
+</mapper>

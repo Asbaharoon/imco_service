@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_WEB_PRINTERS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_WEB_PRINTERSVO" >
+    <id column="PRINTER_NAME" property="PRINTER_NAME" />
+    <result column="IS_DEFAULT_YN" property="IS_DEFAULT_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PRINTER_NAME, IS_DEFAULT_YN
+  </sql>
+  <select id="selectSYS_WEB_PRINTERS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_WEB_PRINTERSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_WEB_PRINTERS
+    where PRINTER_NAME = #{PRINTER_NAME}
+  </select>
+  <delete id="deleteSYS_WEB_PRINTERS" parameterType="com.path.dbmaps.vo.SYS_WEB_PRINTERSVO" >
+    delete from SYS_WEB_PRINTERS
+    where PRINTER_NAME = #{PRINTER_NAME}
+  </delete>
+  <insert id="insertSYS_WEB_PRINTERS" parameterType="com.path.dbmaps.vo.SYS_WEB_PRINTERSVO" >
+    insert into SYS_WEB_PRINTERS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="PRINTER_NAME != null" >
+        PRINTER_NAME,
+      </if>
+      <if test="IS_DEFAULT_YN != null and IS_DEFAULT_YN != emptyBigDecimalValue" >
+        IS_DEFAULT_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="PRINTER_NAME != null" >
+        #{PRINTER_NAME},
+      </if>
+      <if test="IS_DEFAULT_YN != null and IS_DEFAULT_YN != emptyBigDecimalValue" >
+        #{IS_DEFAULT_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_WEB_PRINTERS" >
+    update SYS_WEB_PRINTERS
+    <set >
+      <if test="IS_DEFAULT_YN != null" >
+        <choose >
+          <when test="IS_DEFAULT_YN == emptyBigDecimalValue" >
+            IS_DEFAULT_YN = NULL ,
+          </when>
+          <otherwise >
+            IS_DEFAULT_YN = #{IS_DEFAULT_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where PRINTER_NAME = #{PRINTER_NAME}
+  </sql>
+  <update id="updateSYS_WEB_PRINTERS" parameterType="com.path.dbmaps.vo.SYS_WEB_PRINTERSVO" >
+    <include refid="sql_updateSYS_WEB_PRINTERS" />
+  </update>
+</mapper>

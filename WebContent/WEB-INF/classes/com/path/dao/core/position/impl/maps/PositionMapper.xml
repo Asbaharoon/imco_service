@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="positionMapper">
+
+ <sql id="positionListCommon">
+	<![CDATA[
+	SELECT
+			 POSITIONS.POSITION_CODE,
+			 POSITIONS.BRIEF_DESC_ENG,
+			 POSITIONS.BRIEF_DESC_ARAB,
+			 POSITIONS.LONG_DESC_ENG,
+			 POSITIONS.LONG_DESC_ARAB
+	FROM  POSITIONS 
+	WHERE	 POSITIONS.COMP_CODE  = #{compCode}
+	]]>	 
+ </sql>
+ <sql id="select_positionDependency">
+ 	AND POSITIONS.POSITION_CODE = #{position_code}
+ </sql>
+  
+ <resultMap id="positionList_ResMap" type="positionVO">
+	<id property="POSITION_CODE" column="POSITION_CODE"/>
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ 
+ <select id="positionList" resultMap="positionList_ResMap" parameterType="positionSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="positionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="positionListCount" resultType="int" parameterType="positionSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="positionListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="positionDependency" resultMap="positionList_ResMap" parameterType="positionSC" >
+ 	SELECT 
+			POSITION_CODE,
+			CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_DESC_ARAB ELSE BRIEF_DESC_ENG END BRIEF_DESC_ENG
+	FROM  	POSITIONS 
+	WHERE	POSITIONS.COMP_CODE  = #{compCode}
+	AND 	POSITIONS.POSITION_CODE = #{position_code}
+ </select>
+
+</mapper>

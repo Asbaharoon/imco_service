@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BASIC_SCREEN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.BASIC_SCREENVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="KEY_TABLE_BASIC" property="KEY_TABLE_BASIC" />
+    <result column="MY_BASIC_BRIEF_ENG" property="MY_BASIC_BRIEF_ENG" />
+    <result column="MY_BASIC_BRIEF_ARAB" property="MY_BASIC_BRIEF_ARAB" />
+    <result column="MY_BASIC_LONG_ENG" property="MY_BASIC_LONG_ENG" />
+    <result column="MY_BASIC_LONG_ARAB" property="MY_BASIC_LONG_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="REJECTED_BY" property="REJECTED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="DATE_REJECTED" property="DATE_REJECTED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, KEY_TABLE_BASIC, MY_BASIC_BRIEF_ENG, MY_BASIC_BRIEF_ARAB, MY_BASIC_LONG_ENG, 
+    MY_BASIC_LONG_ARAB, ADDITIONAL_REFERENCE, DATE_UPDATED, STATUS, CREATED_BY, MODIFIED_BY, 
+    APPROVED_BY, REJECTED_BY, DATE_CREATED, DATE_MODIFIED, DATE_APPROVED, DATE_REJECTED
+  </sql>
+  <select id="selectBASIC_SCREEN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.BASIC_SCREENVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from BASIC_SCREEN
+    where COMP_CODE = #{COMP_CODE}
+      and KEY_TABLE_BASIC = #{KEY_TABLE_BASIC}
+  </select>
+  <delete id="deleteBASIC_SCREEN" parameterType="com.path.dbmaps.vo.BASIC_SCREENVO" >
+    delete from BASIC_SCREEN
+    where COMP_CODE = #{COMP_CODE}
+      and KEY_TABLE_BASIC = #{KEY_TABLE_BASIC}
+  </delete>
+  <insert id="insertBASIC_SCREEN" parameterType="com.path.dbmaps.vo.BASIC_SCREENVO" >
+    insert into BASIC_SCREEN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="KEY_TABLE_BASIC != null" >
+        KEY_TABLE_BASIC,
+      </if>
+      <if test="MY_BASIC_BRIEF_ENG != null and !&quot;&quot;.equals(MY_BASIC_BRIEF_ENG)" >
+        MY_BASIC_BRIEF_ENG,
+      </if>
+      <if test="MY_BASIC_BRIEF_ARAB != null and !&quot;&quot;.equals(MY_BASIC_BRIEF_ARAB)" >
+        MY_BASIC_BRIEF_ARAB,
+      </if>
+      <if test="MY_BASIC_LONG_ENG != null and !&quot;&quot;.equals(MY_BASIC_LONG_ENG)" >
+        MY_BASIC_LONG_ENG,
+      </if>
+      <if test="MY_BASIC_LONG_ARAB != null and !&quot;&quot;.equals(MY_BASIC_LONG_ARAB)" >
+        MY_BASIC_LONG_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null and !&quot;&quot;.equals(ADDITIONAL_REFERENCE)" >
+        ADDITIONAL_REFERENCE,
+      </if>
+      DATE_UPDATED,
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        REJECTED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="KEY_TABLE_BASIC != null" >
+        #{KEY_TABLE_BASIC},
+      </if>
+      <if test="MY_BASIC_BRIEF_ENG != null and !&quot;&quot;.equals(MY_BASIC_BRIEF_ENG)" >
+        #{MY_BASIC_BRIEF_ENG},
+      </if>
+      <if test="MY_BASIC_BRIEF_ARAB != null and !&quot;&quot;.equals(MY_BASIC_BRIEF_ARAB)" >
+        #{MY_BASIC_BRIEF_ARAB},
+      </if>
+      <if test="MY_BASIC_LONG_ENG != null and !&quot;&quot;.equals(MY_BASIC_LONG_ENG)" >
+        #{MY_BASIC_LONG_ENG},
+      </if>
+      <if test="MY_BASIC_LONG_ARAB != null and !&quot;&quot;.equals(MY_BASIC_LONG_ARAB)" >
+        #{MY_BASIC_LONG_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null and !&quot;&quot;.equals(ADDITIONAL_REFERENCE)" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="REJECTED_BY != null and !&quot;&quot;.equals(REJECTED_BY)" >
+        #{REJECTED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        #{DATE_REJECTED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateBASIC_SCREEN" >
+    update BASIC_SCREEN
+    <set >
+      <if test="MY_BASIC_BRIEF_ENG != null" >
+        <choose >
+          <when test="MY_BASIC_BRIEF_ENG.equals(&quot;&quot;)" >
+            MY_BASIC_BRIEF_ENG = NULL ,
+          </when>
+          <otherwise >
+            MY_BASIC_BRIEF_ENG = #{MY_BASIC_BRIEF_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MY_BASIC_BRIEF_ARAB != null" >
+        <choose >
+          <when test="MY_BASIC_BRIEF_ARAB.equals(&quot;&quot;)" >
+            MY_BASIC_BRIEF_ARAB = NULL ,
+          </when>
+          <otherwise >
+            MY_BASIC_BRIEF_ARAB = #{MY_BASIC_BRIEF_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MY_BASIC_LONG_ENG != null" >
+        <choose >
+          <when test="MY_BASIC_LONG_ENG.equals(&quot;&quot;)" >
+            MY_BASIC_LONG_ENG = NULL ,
+          </when>
+          <otherwise >
+            MY_BASIC_LONG_ENG = #{MY_BASIC_LONG_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MY_BASIC_LONG_ARAB != null" >
+        <choose >
+          <when test="MY_BASIC_LONG_ARAB.equals(&quot;&quot;)" >
+            MY_BASIC_LONG_ARAB = NULL ,
+          </when>
+          <otherwise >
+            MY_BASIC_LONG_ARAB = #{MY_BASIC_LONG_ARAB},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        <choose >
+          <when test="ADDITIONAL_REFERENCE.equals(&quot;&quot;)" >
+            ADDITIONAL_REFERENCE = NULL ,
+          </when>
+          <otherwise >
+            ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="REJECTED_BY != null" >
+        <choose >
+          <when test="REJECTED_BY.equals(&quot;&quot;)" >
+            REJECTED_BY = NULL ,
+          </when>
+          <otherwise >
+            REJECTED_BY = #{REJECTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="DATE_REJECTED != null" >
+        DATE_REJECTED = #{DATE_REJECTED},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and KEY_TABLE_BASIC = #{KEY_TABLE_BASIC}
+  </sql>
+  <update id="updateBASIC_SCREEN" parameterType="com.path.dbmaps.vo.BASIC_SCREENVO" >
+    <include refid="sql_updateBASIC_SCREEN" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="itemsMapper">
+
+<sql id="select_arRahnItemsLookup">
+SELECT TRS_ITEMS.COMP_CODE,   
+       TRS_ITEMS.CODE,   
+       TRS_ITEMS.BRIEF_NAME_ENG,   
+       TRS_ITEMS.BRIEF_DESC_ARAB  
+  FROM TRS_ITEMS , TRS_ITEM_CATEGORY 
+  WHERE TRS_ITEMS.COMP_CODE = TRS_ITEM_CATEGORY.COMP_CODE
+  AND TRS_ITEMS.CATEGORY_CODE = TRS_ITEM_CATEGORY.CODE
+  AND TRS_ITEMS.COMP_CODE = #{compCode} 
+  AND CASE WHEN TRS_ITEM_CATEGORY.AR_RAHNU_YN IS NULL THEN 'N' ELSE TRS_ITEM_CATEGORY.AR_RAHNU_YN END = 'Y'
+</sql>
+
+
+	<select id="selectArRahnItemsLookupList" parameterType="itemsSC" resultMap="resultArRahnItemsLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_arRahnItemsLookup" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	
+	<resultMap id="resultArRahnItemsLookupMap" type="itemsCO">
+		<result property="trsitemsvo.COMP_CODE" 	            column="COMP_CODE" />
+		<result property="trsitemsvo.CODE" 						column="CODE" />
+		<result property="trsitemsvo.BRIEF_NAME_ENG" 			column="BRIEF_NAME_ENG" />
+		<result property="trsitemsvo.BRIEF_DESC_ARAB" 			column="BRIEF_DESC_ARAB" />
+		
+		</resultMap>
+<sql id="select_itemsLookup">	
+     	SELECT
+			 TRS_ITEMS.COMP_CODE,
+			 TRS_ITEMS.CODE,
+			 TRS_ITEMS.CATEGORY_CODE ITEMS_CATEGORY_CODE,
+			 TRS_ITEMS.BRIEF_NAME_ENG,
+			 TRS_ITEMS.LONG_DESC_ENG,
+			 TRS_ITEMS.BRIEF_DESC_ARAB,
+			 TRS_ITEMS.LONG_DESC_ARAB,
+			 TRS_ITEMS.FIELD1,
+			 TRS_ITEMS.FIELD2,
+			 TRS_ITEMS.FIELD3,
+			 TRS_ITEMS.FIELD4,
+			 TRS_ITEMS.FIELD5,
+			 TRS_ITEMS.CREATED_BY,
+			 TRS_ITEMS.DATE_CREATED ,
+			 TRS_ITEMS.MODIFIED_BY,
+			 TRS_ITEMS.DATE_MODIFIED ,
+			 CURRENCIES.BRIEF_DESC_ENG CURRENCIES_BRIEF_DESC_ENG,
+			 TRS_ITEMS.PURCHASE_AMOUNT,
+			 TRS_ITEMS.PURCHASE_CY_CODE,
+			 TRS_ITEM_CATEGORY.CODE CATEGORY_CODE,
+			 TRS_ITEM_CATEGORY.BRIEF_NAME_ENG CATEGORY_BRIEF_NAME_ENG
+		FROM  CURRENCIES , TRS_ITEMS,TRS_ITEM_CATEGORY
+		WHERE CURRENCIES.COMP_CODE  			= TRS_ITEMS.COMP_CODE				
+			AND CURRENCIES.CURRENCY_CODE    = TRS_ITEMS.PURCHASE_CY_CODE
+			AND TRS_ITEM_CATEGORY.COMP_CODE    =  TRS_ITEMS.COMP_CODE
+			AND TRS_ITEM_CATEGORY.CODE    =  TRS_ITEMS.CATEGORY_CODE
+			AND TRS_ITEMS.COMP_CODE  		= #{compCode}  
+			AND CASE WHEN #{currency} + 0 = 0 THEN #{currency}  + 0 ELSE TRS_ITEMS.PURCHASE_CY_CODE END = #{currency} 
+	</sql>
+	
+	<select id="selectItemsLookupList" parameterType="itemsSC" resultMap="resultItemsLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_itemsLookup" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+	
+	<select id="selectItemsLookupCount" parameterType="itemsSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="select_itemsLookup" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	<resultMap id="resultItemsLookupMap" type="itemsCO">
+		<result property="trsitemsvo.COMP_CODE" 				column="COMP_CODE" />
+		<result property="trsitemsvo.CODE" 						column="CODE" />
+		<result property="trsitemsvo.CATEGORY_CODE" 			column="ITEMS_CATEGORY_CODE" />
+		<result property="trsitemsvo.BRIEF_NAME_ENG" 			column="BRIEF_NAME_ENG" />
+		<result property="trsitemsvo.LONG_DESC_ENG" 			column="LONG_DESC_ENG" />
+		<result property="trsitemsvo.BRIEF_DESC_ARAB" 			column="BRIEF_DESC_ARAB" />
+		<result property="trsitemsvo.LONG_DESC_ARAB" 			column="LONG_DESC_ARAB" />
+		<result property="trsitemsvo.CREATED_BY" 				column="CREATED_BY" />
+		<result property="trsitemsvo.DATE_CREATED"				column="DATE_CREATED" />
+		<result property="trsitemsvo.MODIFIED_BY"				column="MODIFIED_BY" />
+		<result property="trsitemsvo.DATE_MODIFIED" 			column="DATE_MODIFIED" />
+		<result property="currenciesvo.BRIEF_DESC_ENG" 			column="CURRENCIES_BRIEF_DESC_ENG" />
+		<result property="trsitemsvo.PURCHASE_AMOUNT" 			column="PURCHASE_AMOUNT" />
+		<result property="trsitemsvo.PURCHASE_CY_CODE" 			column="PURCHASE_CY_CODE" />
+		<result property="trsitemscategoryvo.BRIEF_NAME_ENG"	column="CATEGORY_BRIEF_NAME_ENG" />
+		<result property="trsitemscategoryvo.CODE" 				column="CATEGORY_CODE" />
+	</resultMap>
+</mapper>

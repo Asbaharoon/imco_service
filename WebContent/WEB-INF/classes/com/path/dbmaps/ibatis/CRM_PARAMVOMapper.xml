@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CRM_PARAM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CRM_PARAMVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="PARAM_TYPE" property="PARAM_TYPE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, PARAM_TYPE, BRIEF_NAME_ENG, LONG_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ARAB
+  </sql>
+  <select id="selectCRM_PARAM" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CRM_PARAMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CRM_PARAM
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCRM_PARAM" parameterType="com.path.dbmaps.vo.CRM_PARAMVOKey" >
+    delete from CRM_PARAM
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCRM_PARAM" parameterType="com.path.dbmaps.vo.CRM_PARAMVO" >
+    insert into CRM_PARAM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="PARAM_TYPE != null" >
+        PARAM_TYPE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="PARAM_TYPE != null" >
+        #{PARAM_TYPE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCRM_PARAM" >
+    update CRM_PARAM
+    <set >
+      <if test="PARAM_TYPE != null" >
+        PARAM_TYPE = #{PARAM_TYPE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCRM_PARAM" parameterType="com.path.dbmaps.vo.CRM_PARAMVO" >
+    <include refid="sql_updateCRM_PARAM" />
+  </update>
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCONTROL_ALERT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCONTROL_ALERTVO" >
+    <id column="ALERT_CODE" property="ALERT_CODE" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="ALERT_TYPE" property="ALERT_TYPE" />
+    <result column="ALERT_DESCRIPTION" property="ALERT_DESCRIPTION" />
+    <result column="ALERT_ADD_CODE" property="ALERT_ADD_CODE" />
+    <result column="ACTIVATE" property="ACTIVATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ALERT_CODE, BRANCH_CODE, COMP_CODE, ALERT_TYPE, ALERT_DESCRIPTION, ALERT_ADD_CODE, 
+    ACTIVATE
+  </sql>
+  <select id="selectCTSCONTROL_ALERT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCONTROL_ALERTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCONTROL_ALERT
+    where ALERT_CODE = #{ALERT_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCONTROL_ALERT" parameterType="com.path.dbmaps.vo.CTSCONTROL_ALERTVOKey" >
+    delete from CTSCONTROL_ALERT
+    where ALERT_CODE = #{ALERT_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCONTROL_ALERT" parameterType="com.path.dbmaps.vo.CTSCONTROL_ALERTVO" >
+    insert into CTSCONTROL_ALERT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ALERT_CODE != null and ALERT_CODE != emptyBigDecimalValue" >
+        ALERT_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ALERT_TYPE != null" >
+        ALERT_TYPE,
+      </if>
+      <if test="ALERT_DESCRIPTION != null" >
+        ALERT_DESCRIPTION,
+      </if>
+      <if test="ALERT_ADD_CODE != null" >
+        ALERT_ADD_CODE,
+      </if>
+      <if test="ACTIVATE != null" >
+        ACTIVATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ALERT_CODE != null and ALERT_CODE != emptyBigDecimalValue" >
+        #{ALERT_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ALERT_TYPE != null" >
+        #{ALERT_TYPE},
+      </if>
+      <if test="ALERT_DESCRIPTION != null" >
+        #{ALERT_DESCRIPTION},
+      </if>
+      <if test="ALERT_ADD_CODE != null" >
+        #{ALERT_ADD_CODE},
+      </if>
+      <if test="ACTIVATE != null" >
+        #{ACTIVATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCONTROL_ALERT" >
+    update CTSCONTROL_ALERT
+    <set >
+      <if test="ALERT_TYPE != null" >
+        ALERT_TYPE = #{ALERT_TYPE},
+      </if>
+      <if test="ALERT_DESCRIPTION != null" >
+        ALERT_DESCRIPTION = #{ALERT_DESCRIPTION},
+      </if>
+      <if test="ALERT_ADD_CODE != null" >
+        ALERT_ADD_CODE = #{ALERT_ADD_CODE},
+      </if>
+      <if test="ACTIVATE != null" >
+        ACTIVATE = #{ACTIVATE},
+      </if>
+    </set>
+    where ALERT_CODE = #{ALERT_CODE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCONTROL_ALERT" parameterType="com.path.dbmaps.vo.CTSCONTROL_ALERTVO" >
+    <include refid="sql_updateCTSCONTROL_ALERT" />
+  </update>
+</mapper>

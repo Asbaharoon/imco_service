@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTELLERREQTYPE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTELLERREQTYPEVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_TYPE" property="CIF_TYPE" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="REQ_TYPE" property="REQ_TYPE" />
+    <id column="TELLER_CODE" property="TELLER_CODE" />
+    <result column="REQ_LIMIT" property="REQ_LIMIT" />
+    <result column="CHECK_ALL_REQ" property="CHECK_ALL_REQ" />
+    <result column="CHECK_OVERALL_LIMIT" property="CHECK_OVERALL_LIMIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CIF_TYPE, CODE, COMP_CODE, REQ_TYPE, TELLER_CODE, REQ_LIMIT, CHECK_ALL_REQ, 
+    CHECK_OVERALL_LIMIT
+  </sql>
+  <select id="selectCTSTELLERREQTYPE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTELLERREQTYPEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTELLERREQTYPE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_TYPE = #{CIF_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_TYPE = #{REQ_TYPE}
+      and TELLER_CODE = #{TELLER_CODE}
+  </select>
+  <delete id="deleteCTSTELLERREQTYPE" parameterType="com.path.dbmaps.vo.CTSTELLERREQTYPEVOKey" >
+    delete from CTSTELLERREQTYPE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_TYPE = #{CIF_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_TYPE = #{REQ_TYPE}
+      and TELLER_CODE = #{TELLER_CODE}
+  </delete>
+  <insert id="insertCTSTELLERREQTYPE" parameterType="com.path.dbmaps.vo.CTSTELLERREQTYPEVO" >
+    insert into CTSTELLERREQTYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        CIF_TYPE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="REQ_TYPE != null and REQ_TYPE != emptyBigDecimalValue" >
+        REQ_TYPE,
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        TELLER_CODE,
+      </if>
+      <if test="REQ_LIMIT != null and REQ_LIMIT != emptyBigDecimalValue" >
+        REQ_LIMIT,
+      </if>
+      <if test="CHECK_ALL_REQ != null" >
+        CHECK_ALL_REQ,
+      </if>
+      <if test="CHECK_OVERALL_LIMIT != null" >
+        CHECK_OVERALL_LIMIT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        #{CIF_TYPE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="REQ_TYPE != null and REQ_TYPE != emptyBigDecimalValue" >
+        #{REQ_TYPE},
+      </if>
+      <if test="TELLER_CODE != null and TELLER_CODE != emptyBigDecimalValue" >
+        #{TELLER_CODE},
+      </if>
+      <if test="REQ_LIMIT != null and REQ_LIMIT != emptyBigDecimalValue" >
+        #{REQ_LIMIT},
+      </if>
+      <if test="CHECK_ALL_REQ != null" >
+        #{CHECK_ALL_REQ},
+      </if>
+      <if test="CHECK_OVERALL_LIMIT != null" >
+        #{CHECK_OVERALL_LIMIT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTELLERREQTYPE" >
+    update CTSTELLERREQTYPE
+    <set >
+      <if test="REQ_LIMIT != null" >
+        <choose >
+          <when test="REQ_LIMIT == emptyBigDecimalValue" >
+            REQ_LIMIT = NULL ,
+          </when>
+          <otherwise >
+            REQ_LIMIT = #{REQ_LIMIT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHECK_ALL_REQ != null" >
+        CHECK_ALL_REQ = #{CHECK_ALL_REQ},
+      </if>
+      <if test="CHECK_OVERALL_LIMIT != null" >
+        CHECK_OVERALL_LIMIT = #{CHECK_OVERALL_LIMIT},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_TYPE = #{CIF_TYPE}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and REQ_TYPE = #{REQ_TYPE}
+      and TELLER_CODE = #{TELLER_CODE}
+  </sql>
+  <update id="updateCTSTELLERREQTYPE" parameterType="com.path.dbmaps.vo.CTSTELLERREQTYPEVO" >
+    <include refid="sql_updateCTSTELLERREQTYPE" />
+  </update>
+</mapper>

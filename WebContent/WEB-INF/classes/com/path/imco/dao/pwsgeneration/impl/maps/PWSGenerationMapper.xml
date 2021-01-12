@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="pwsGenerationMapper">
+	
+<!-- result maps -->
+
+	<resultMap id="pwsGenerationMaintMap" type="com.path.imco.vo.pwsgeneration.PWSGenerationCO" >
+		<result property="allArgumentsVO.ARGUMENT_NAME" column="ARGNAME" />
+		<result property="allArgumentsVO.DATA_TYPE" column="ARGTYPEDESC" />
+		<result property="allArgumentsVO.IN_OUT" column="IN_OUT" />
+	</resultMap>
+	
+	<resultMap id="pwsGenerationAdapters" type="com.path.imco.vo.pwsgeneration.PWSGenerationCO" >
+			<result property="dgtlAdapterVO.ADAPTER_ID" column="ADAPTER_ID" />
+			<result property="dgtlAdapterVO.APP_NAME" column="APP_NAME" />
+			<result property="dgtlAdapterVO.BUSINESS_AREA" column="BUSINESS_AREA" />
+			<result property="dgtlAdapterVO.BUSINESS_DOMAIN" column="BUSINESS_DOMAIN" />
+			<result property="dgtlAdapterVO.SERVICE_DOMAIN" column="SERVICE_DOMAIN" />
+			<result property="dgtlAdapterVO.VERSION" column="VERSION" />
+			<result property="dgtlAdapterVO.SERVICE_ID" column="SERVICE_ID" />
+			<result property="dgtlAdapterVO.OPERATION_NAME" column="OPERATION_NAME" />
+			<result property="dgtlAdapterVO.SERVICE_NAME" column="SERVICE_NAME" />
+			<result property="dgtlAdapterVO.ADAPTER_TYPE" column="ADAPTER_TYPE" />
+			<result property="dgtlAdapterVO.STATUS" column="STATUS" />
+			<result property="dgtlAdapterVO.API_NAME" column="API_NAME" />
+			<result property="dgtlAdapterVO.CONN_ID" column="CONN_ID" />
+			<result property="dgtlAdapterVO.DATE_UPDATED" column="DATE_UPDATED" />
+			<result property="dgtlAdapterVO.CREATED_BY" column="CREATED_BY" />
+			<result property="dgtlAdapterVO.UPDATED_BY" column="UPDATED_BY" />
+			<result property="dgtlAdapterVO.CREATED_DATE" column="CREATED_DATE" />
+			<result property="dgtlAdapterVO.UPDATED_DATE" column="UPDATED_DATE" />			
+	</resultMap>
+	
+	<resultMap id="pwsGenerationAdapterParam" type="com.path.imco.vo.pwsgeneration.PWSGenerationCO" >
+			<result property="allArgumentsVO.ARGUMENT_NAME" column="PARAMETER_NAME" />
+			<result property="allArgumentsVO.DATA_TYPE" column="PARAM_TYPE" />
+			<result property="allArgumentsVO.IN_OUT" column="IN_OUT" />
+			<result property="dgtlAdapterParamVO.PARAM_MAP_ID" column="PARAM_MAP_ID" />		
+			<result property="dgtlAdapterParamVO.PARAMETER_NAME" column="PARAMETER_NAME" />			
+			<result property="dgtlAdapterParamVO.ADAPTER_ID" column="ADAPTER_ID" />			
+			<result property="dgtlAdapterParamVO.DESCRIPTION" column="DESCRIPTION" />			
+			<result property="dgtlAdapterParamVO.PARAM_TYPE" column="PARAM_TYPE" />			
+			<result property="dgtlAdapterParamVO.IS_MANDATORY_YN" column="IS_MANDATORY_YN" />			
+			<result property="dgtlAdapterParamVO.IN_OUT" column="IN_OUT" />			
+			<result property="dgtlAdapterParamVO.DEFAULT_VALUE" column="DEFAULT_VALUE" />			
+			<result property="dgtlAdapterParamVO.MAPPED_PARAM_NAME" column="MAPPED_PARAM_NAME" />			
+			<result property="dgtlAdapterParamVO.IS_NILLABLE_YN" column="IS_NILLABLE_YN" />	
+	</resultMap>
+	
+	<resultMap id="pwsGenerationConnections" type="com.path.imco.vo.pwsgeneration.PWSGenerationCO" >
+			<result property="dgtlConnVO.CONN_ID" column="CONN_ID" />
+			<result property="dgtlConnVO.CONN_DESC" column="CONN_DESC" />
+			<result property="dgtlConnVO.DBMS" column="DBMS" />
+			<result property="dgtlConnVO.URL" column="URL" />
+			<result property="dgtlConnVO.DB_PASS" column="DB_PASS" />
+			<result property="dgtlConnVO.USER_ID" column="USER_ID" />
+			<result property="dgtlConnVO.DATE_UPDATED" column="DATE_UPDATED" />
+			<result property="dgtlConnVO.CREATED_BY" column="CREATED_BY" />
+			<result property="dgtlConnVO.UPDATED_BY" column="UPDATED_BY" />
+			<result property="dgtlConnVO.CREATED_DATE" column="CREATED_DATE" />
+			<result property="dgtlConnVO.UPDATED_DATE" column="UPDATED_DATE" />
+	</resultMap>
+	
+	<resultMap id="pwsGenerationIRPConnectionMap" type="com.path.imco.vo.pwsgeneration.PWSGenerationCO" >
+		<result property="userId" column="USER_ID" />
+		<result property="dbPass" column="DB_PASS" />
+		<result property="connId"   column="CONN_ID" />
+		<result property="connDesc" column="CONN_DESC" />
+		<result property="dbms"      column="DBMS" />
+		<result property="url"       column="URL" />
+	</resultMap>
+	
+
+<!-- select -->
+	
+	<select id="returnPWSGenerationAdaptersList" resultMap="pwsGenerationAdapters" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="returnAdapterListQuery" />		
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnPWSGenerationAdaptersListCount" resultType="int" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="returnAdapterListQuery" />		
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="getIrpConnectionsList" resultMap="pwsGenerationIRPConnectionMap" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectIrpConnections" />		
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="getIrpConnectionsListCount" resultType="int" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectIrpConnections" />		
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="applyIrpConnectionsDesc"  resultMap="pwsGenerationIRPConnectionMap" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC"> 		
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="selectIrpConnectionsDesc"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>	      	 
+	</select>
+	
+	
+	 <select id="checkIfProcedureExist" resultType="int" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationCO">
+		SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE IN ('PROCEDURE') 
+		AND OWNER = (SELECT CONN_DESC FROM IRP_CONNECTIONS WHERE CONN_ID = #{connId})
+   				AND OBJECT_NAME = #{procedureName}
+  	</select>
+  	
+  	<select id="returnProcedureParamsQuery" resultMap="pwsGenerationMaintMap" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationSC">
+	  	<choose>
+			<when test="isSybase == 1">
+				select c.name argName,IN_OUT,
+					  (CASE WHEN UPPER(t.name) IN ('NUMERIC', 'NUMBER', 'FLOAT') THEN 'N' 
+					  else CASE WHEN UPPER(t.name) IN ('VARCHAR', 'VARCHAR2') THEN 'V' 
+						   else CASE WHEN UPPER(t.name) IN ('DATE', 'DATETIME','DATETIME2') THEN 'T' 
+								else t.name end end end)argTypeDesc				
+				from sysobjects o, syscolumns c,systypes t
+				where o.name = #{procedureName}
+				and o.id = c.id
+				<choose>
+					<when test="isSQLServer == 1">
+						and c.xtype = t.xtype
+						and c.xusertype = t.xusertype
+						and c.status = 8
+					</when>
+					<otherwise>
+						and c.type = t.type
+						and c.usertype = t.usertype
+						and c.status2 = 1
+					</otherwise>
+				</choose>
+				order by c.colid
+			</when>
+			<otherwise>
+		     SELECT A.Argument_Name argName,IN_OUT,
+	         (CASE WHEN UPPER(A.DATA_TYPE) IN ('NUMERIC', 'NUMBER', 'FLOAT') THEN 'N' 
+	          else CASE WHEN UPPER(A.DATA_TYPE)  IN ('VARCHAR', 'VARCHAR2') THEN 'V' 
+	               else CASE WHEN UPPER(A.DATA_TYPE) IN ('DATE', 'DATETIME') THEN 'T' 
+	         			else A.DATA_TYPE END end end)argTypeDesc
+		     FROM SYS.ALL_ARGUMENTS A
+		     WHERE OBJECT_NAME = #{procedureName}
+		    		     
+		     ORDER BY A.POSITION 
+			</otherwise>
+		</choose>
+  	</select>
+
+  	<select id="returnSavedRecordsQuery" resultType="com.path.dbmaps.vo.DGTL_GTW_WS_ADAPTERVO" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationCO">
+	  	SELECT ADAPTER_ID,
+				APP_NAME,
+				BUSINESS_AREA,
+				BUSINESS_DOMAIN,
+				SERVICE_DOMAIN,
+				VERSION,
+				SERVICE_ID,
+				OPERATION_NAME,
+				SERVICE_NAME,
+				ADAPTER_TYPE,
+				STATUS,
+				API_NAME,
+				CONN_ID,
+				DATE_UPDATED,
+				CREATED_BY,
+				UPDATED_BY,
+				CREATED_DATE,
+				UPDATED_DATE
+		FROM DGTL_GTW_WS_ADAPTER
+		<if test='null != adapterIdSequence'>
+			WHERE ADAPTER_ID = ${adapterIdSequence}
+		</if>
+		<choose>
+			<when test='"R" == ivCrud'>
+				WHERE STATUS IN ('C','M','P')
+			</when>
+			<when test='"M" == ivCrud'>
+				WHERE STATUS IN ('P')
+			</when>
+			<when test='"P" == ivCrud'>
+				WHERE STATUS = 'C'
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+  	</select>
+  	
+  	<select id="returnpROCfieQuery" resultType="com.path.dbmaps.vo.DGTL_GTW_WS_ADAPTERVO" parameterType="com.path.imco.vo.pwsgeneration.PWSGenerationCO">
+	    	SELECT * FROM DGTL_GTW_ADAPTER_PARAM_MAP 
+		<if test='null != adapterIdSequence'>
+			WHERE ADAPTER_ID  = ${adapterIdSequence}
+		</if>
+  	</select>
+  	
+  	
+  <select id="returnSavedProcedureArguments" resultMap = "pwsGenerationAdapterParam" parameterType = "com.path.imco.vo.pwsgeneration.PWSGenerationCO">
+			SELECT ADAPTER_ID,
+				PARAMETER_NAME,
+				DESCRIPTION,
+				(CASE WHEN PARAM_TYPE = 'N' THEN 'NUMERIC'
+				WHEN PARAM_TYPE = 'V' THEN 'VARCHAR'
+				ELSE PARAM_TYPE
+				END) AS PARAM_TYPE,
+				IS_MANDATORY_YN,
+				IN_OUT,
+				DEFAULT_VALUE,
+				MAPPED_PARAM_NAME,
+				IS_NILLABLE_YN
+			FROM DGTL_GTW_ADAPTER_PARAM_MAP
+		<if test='null != adapterIdSequence'>
+			WHERE ADAPTER_ID = ${adapterIdSequence}
+		</if>
+  	</select>
+  	
+  	<!-- Insert -->
+	<insert id="saveAdapterData" parameterType="java.lang.Object">
+		<selectKey resultType="java.math.BigDecimal" keyProperty="adapterIdSequence"
+			order="BEFORE">
+			<if test="isOracle == 1">
+				SELECT ADAPTER_ID_SEQUENCE.NEXTVAL FROM dual
+			</if>
+			<if test="isSybase == 1 and isSQLServer != 1 ">
+				SELECT next_identity('DGTL_GTW_WS_ADAPTER')
+			</if>
+			<if test="isSQLServer == 1 ">
+				SELECT IDENT_CURRENT ('DGTL_GTW_WS_ADAPTER') + 1
+			</if>
+		</selectKey>
+		<if test="isOracle == 1">
+			INSERT ALL
+			INTO DGTL_GTW_WS_ADAPTER
+			(ADAPTER_ID
+			<if test='null != dgtlAdapterVO.APP_NAME'>
+				,APP_NAME
+			</if>
+			<if test='null != dgtlAdapterVO.BUSINESS_AREA'>
+				,BUSINESS_AREA
+			</if>
+			<if test='null != dgtlAdapterVO.BUSINESS_DOMAIN'>
+				,BUSINESS_DOMAIN
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_DOMAIN'>
+				,SERVICE_DOMAIN
+			</if>
+			<if test='null != dgtlAdapterVO.VERSION'>
+				,VERSION
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_ID'>
+				,SERVICE_ID
+			</if>
+			<if test='null != dgtlAdapterVO.OPERATION_NAME'>
+				,OPERATION_NAME
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_NAME'>
+				,SERVICE_NAME
+			</if>
+			<if test='null != dgtlAdapterVO.ADAPTER_TYPE'>
+				,ADAPTER_TYPE
+			</if>
+			<if test='null != dgtlAdapterVO.STATUS'>
+				,STATUS
+			</if>
+			<if test='null != dgtlAdapterVO.API_NAME'>
+				,API_NAME
+			</if>
+			<if test='null != dgtlAdapterVO.CONN_ID'>
+				,CONN_ID
+			</if>
+			<if test='null != dgtlAdapterVO.DATE_UPDATED'>
+				,DATE_UPDATED
+			</if>
+			<if test='null != dgtlAdapterVO.CREATED_BY'>
+				,CREATED_BY
+			</if>
+			<if test='null != dgtlAdapterVO.UPDATED_BY'>
+				,UPDATED_BY
+			</if>
+			<if test='null != dgtlAdapterVO.CREATED_DATE'>
+				,CREATED_DATE
+			</if>
+			<if test='null != dgtlAdapterVO.UPDATED_DATE'>
+				,UPDATED_DATE
+			</if>
+			)
+			VALUES (
+			#{adapterIdSequence}
+			
+			<if test='null != dgtlAdapterVO.APP_NAME'>
+				,#{dgtlAdapterVO.APP_NAME}
+			</if>
+			<if test='null != dgtlAdapterVO.BUSINESS_AREA'>
+				,#{dgtlAdapterVO.BUSINESS_AREA}
+			</if>
+			<if test='null != dgtlAdapterVO.BUSINESS_DOMAIN'>
+				,#{dgtlAdapterVO.BUSINESS_DOMAIN}
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_DOMAIN'>
+				,#{dgtlAdapterVO.SERVICE_DOMAIN}
+			</if>
+			<if test='null != dgtlAdapterVO.VERSION'>
+				,#{dgtlAdapterVO.VERSION}
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_ID'>
+				,#{dgtlAdapterVO.SERVICE_ID}
+			</if>
+			<if test='null != dgtlAdapterVO.OPERATION_NAME'>
+				,#{dgtlAdapterVO.OPERATION_NAME}
+			</if>
+			<if test='null != dgtlAdapterVO.SERVICE_NAME'>
+				,#{dgtlAdapterVO.SERVICE_NAME}
+			</if>
+			<if test='null != dgtlAdapterVO.ADAPTER_TYPE'>
+				,#{dgtlAdapterVO.ADAPTER_TYPE}
+			</if>
+			<if test='null != dgtlAdapterVO.STATUS'>
+				,#{dgtlAdapterVO.STATUS}
+			</if>
+			<if test='null != dgtlAdapterVO.API_NAME'>
+				,#{dgtlAdapterVO.API_NAME}
+			</if>
+			<if test='null != dgtlAdapterVO.CONN_ID'>
+				,#{dgtlAdapterVO.CONN_ID}
+			</if>
+			<if test='null != dgtlAdapterVO.DATE_UPDATED'>
+				,#{dgtlAdapterVO.DATE_UPDATED}
+			</if>
+			<if test='null != dgtlAdapterVO.CREATED_BY'>
+				,#{dgtlAdapterVO.CREATED_BY}
+			</if>
+			<if test='null != dgtlAdapterVO.UPDATED_BY'>
+				,#{dgtlAdapterVO.UPDATED_BY}
+			</if>
+			<if test='null != dgtlAdapterVO.CREATED_DATE'>
+				,#{dgtlAdapterVO.CREATED_DATE}
+			</if>
+			<if test='null != dgtlAdapterVO.UPDATED_DATE'>
+				,#{dgtlAdapterVO.UPDATED_DATE}
+			</if>
+			)
+			<if test='"BPEL" != dgtlAdapterVO.ADAPTER_TYPE'>
+				<foreach item="dgtlAdapterParamVO" index="index" collection="lstDgtlAdapterParamVO" open="" separator="" close="">
+					INTO DGTL_GTW_ADAPTER_PARAM_MAP
+						(ADAPTER_ID
+					<if test='null != dgtlAdapterParamVO.PARAMETER_NAME'>
+						,PARAMETER_NAME
+					</if>
+					<if test='null != dgtlAdapterParamVO.DESCRIPTION'>
+						,DESCRIPTION
+					</if>
+					<if test='null != dgtlAdapterParamVO.PARAM_TYPE'>
+						,PARAM_TYPE
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_MANDATORY_YN'>
+						,IS_MANDATORY_YN
+					</if>
+					<if test='null != dgtlAdapterParamVO.IN_OUT'>
+						,IN_OUT
+					</if>
+					<if test='null != dgtlAdapterParamVO.DEFAULT_VALUE'>
+						,DEFAULT_VALUE
+					</if>
+					<if test='null != dgtlAdapterParamVO.MAPPED_PARAM_NAME'>
+						,MAPPED_PARAM_NAME
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_NILLABLE_YN'>
+						,IS_NILLABLE_YN
+					</if>
+					)
+					VALUES(
+					#{adapterIdSequence}
+				<if test='null != dgtlAdapterParamVO.PARAMETER_NAME'>
+						,#{dgtlAdapterParamVO.PARAMETER_NAME}
+					</if>
+					<if test='null != dgtlAdapterParamVO.DESCRIPTION'>
+						,#{dgtlAdapterParamVO.DESCRIPTION}
+					</if>
+					<if test='null != dgtlAdapterParamVO.PARAM_TYPE'>
+						,#{dgtlAdapterParamVO.PARAM_TYPE}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_MANDATORY_YN'>
+						,#{dgtlAdapterParamVO.IS_MANDATORY_YN}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IN_OUT'>
+						,#{dgtlAdapterParamVO.IN_OUT}
+					</if>
+					<if test='null != dgtlAdapterParamVO.DEFAULT_VALUE'>
+						,#{dgtlAdapterParamVO.DEFAULT_VALUE}
+					</if>
+					<if test='null != dgtlAdapterParamVO.MAPPED_PARAM_NAME'>
+						,#{dgtlAdapterParamVO.MAPPED_PARAM_NAME}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_NILLABLE_YN'>
+						,#{dgtlAdapterParamVO.IS_NILLABLE_YN}
+					</if>
+					)
+				</foreach>
+			</if>
+			SELECT * FROM DUAL
+		</if>
+		
+		<if test = "isSybase == 1">	
+				INSERT INTO DGTL_GTW_WS_ADAPTER
+					(ADAPTER_ID
+					<if test='null != dgtlAdapterVO.APP_NAME'>
+						,APP_NAME
+					</if>
+					<if test='null != dgtlAdapterVO.BUSINESS_AREA'>
+						,BUSINESS_AREA
+					</if>
+					<if test='null != dgtlAdapterVO.BUSINESS_DOMAIN'>
+						,BUSINESS_DOMAIN
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_DOMAIN'>
+						,SERVICE_DOMAIN
+					</if>
+					<if test='null != dgtlAdapterVO.VERSION'>
+						,VERSION
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_ID'>
+						,SERVICE_ID
+					</if>
+					<if test='null != dgtlAdapterVO.OPERATION_NAME'>
+						,OPERATION_NAME
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_NAME'>
+						,SERVICE_NAME
+					</if>
+					<if test='null != dgtlAdapterVO.ADAPTER_TYPE'>
+						,ADAPTER_TYPE
+					</if>
+					<if test='null != dgtlAdapterVO.STATUS'>
+						,STATUS
+					</if>
+					<if test='null != dgtlAdapterVO.API_NAME'>
+						,API_NAME
+					</if>
+					<if test='null != dgtlAdapterVO.CONN_ID'>
+						,CONN_ID
+					</if>
+					<if test='null != dgtlAdapterVO.DATE_UPDATED'>
+						,DATE_UPDATED
+					</if>
+					<if test='null != dgtlAdapterVO.CREATED_BY'>
+						,CREATED_BY
+					</if>
+					<if test='null != dgtlAdapterVO.UPDATED_BY'>
+						,UPDATED_BY
+					</if>
+					<if test='null != dgtlAdapterVO.CREATED_DATE'>
+						,CREATED_DATE
+					</if>
+					<if test='null != dgtlAdapterVO.UPDATED_DATE'>
+						,UPDATED_DATE
+					</if>
+					)
+					VALUES (
+					#{adapterIdSequence}
+					<if test='null != dgtlAdapterVO.APP_NAME'>
+						,#{dgtlAdapterVO.APP_NAME}
+					</if>
+					<if test='null != dgtlAdapterVO.BUSINESS_AREA'>
+						,#{dgtlAdapterVO.BUSINESS_AREA}
+					</if>
+					<if test='null != dgtlAdapterVO.BUSINESS_DOMAIN'>
+						,#{dgtlAdapterVO.BUSINESS_DOMAIN}
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_DOMAIN'>
+						,#{dgtlAdapterVO.SERVICE_DOMAIN}
+					</if>
+					<if test='null != dgtlAdapterVO.VERSION'>
+						,#{dgtlAdapterVO.VERSION}
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_ID'>
+						,#{dgtlAdapterVO.SERVICE_ID}
+					</if>
+					<if test='null != dgtlAdapterVO.OPERATION_NAME'>
+						,#{dgtlAdapterVO.OPERATION_NAME}
+					</if>
+					<if test='null != dgtlAdapterVO.SERVICE_NAME'>
+						,#{dgtlAdapterVO.SERVICE_NAME}
+					</if>
+					<if test='null != dgtlAdapterVO.ADAPTER_TYPE'>
+						,#{dgtlAdapterVO.ADAPTER_TYPE}
+					</if>
+					<if test='null != dgtlAdapterVO.STATUS'>
+						,#{dgtlAdapterVO.STATUS}
+					</if>
+					<if test='null != dgtlAdapterVO.API_NAME'>
+						,#{dgtlAdapterVO.API_NAME}
+					</if>
+					<if test='null != dgtlAdapterVO.CONN_ID'>
+						,#{dgtlAdapterVO.CONN_ID}
+					</if>
+					<if test='null != dgtlAdapterVO.DATE_UPDATED'>
+						,#{dgtlAdapterVO.DATE_UPDATED}
+					</if>
+					<if test='null != dgtlAdapterVO.CREATED_BY'>
+						,#{dgtlAdapterVO.CREATED_BY}
+					</if>
+					<if test='null != dgtlAdapterVO.UPDATED_BY'>
+						,#{dgtlAdapterVO.UPDATED_BY}
+					</if>
+					<if test='null != dgtlAdapterVO.CREATED_DATE'>
+						,#{dgtlAdapterVO.CREATED_DATE}
+					</if>
+					<if test='null != dgtlAdapterVO.UPDATED_DATE'>
+						,#{dgtlAdapterVO.UPDATED_DATE}
+					</if>
+					)
+			<if test='"BPEL" != dgtlAdapterVO.ADAPTER_TYPE'>
+					
+			<foreach item="dgtlAdapterParamVO" index="index" collection="lstDgtlAdapterParamVO" open="" separator="" close="">
+				BEGIN
+					INSERT INTO DGTL_GTW_ADAPTER_PARAM_MAP
+						(ADAPTER_ID
+					<if test='null != dgtlAdapterParamVO.DESCRIPTION'>
+						,DESCRIPTION
+					</if>
+					<if test='null != dgtlAdapterParamVO.PARAM_TYPE'>
+						,PARAM_TYPE
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_MANDATORY_YN'>
+						,IS_MANDATORY_YN
+					</if>
+					<if test='null != dgtlAdapterParamVO.IN_OUT'>
+						,IN_OUT
+					</if>
+					<if test='null != dgtlAdapterParamVO.DEFAULT_VALUE'>
+						,DEFAULT_VALUE
+					</if>
+					<if test='null != dgtlAdapterParamVO.MAPPED_PARAM_NAME'>
+						,MAPPED_PARAM_NAME
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_NILLABLE_YN'>
+						,IS_NILLABLE_YN
+					</if>
+					)
+					VALUES(
+					#{adapterIdSequence}
+					<if test='null != dgtlAdapterParamVO.DESCRIPTION'>
+						,#{dgtlAdapterParamVO.DESCRIPTION}
+					</if>
+					<if test='null != dgtlAdapterParamVO.PARAM_TYPE'>x
+						,#dgtlAdapterParamVO.PARAM_TYPE}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_MANDATORY_YN'>
+						,#dgtlAdapterParamVO.IS_MANDATORY_YN}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IN_OUT'>
+						,#dgtlAdapterParamVO.IN_OUT}
+					</if>
+					<if test='null != dgtlAdapterParamVO.DEFAULT_VALUE'>
+						,#dgtlAdapterParamVO.DEFAULT_VALUE}
+					</if>
+					<if test='null != dgtlAdapterParamVO.MAPPED_PARAM_NAME'>
+						,#dgtlAdapterParamVO.MAPPED_PARAM_NAME}
+					</if>
+					<if test='null != dgtlAdapterParamVO.IS_NILLABLE_YN'>
+						,#dgtlAdapterParamVO.IS_NILLABLE_YN}
+					</if>
+					)
+				END
+			</foreach>
+			</if>
+		</if>
+	</insert>
+ 
+	<!-- Queries -->
+	 <sql id="returnAdapterListQuery">  
+			SELECT ADAPTER_ID,
+				   APP_NAME,
+				   BUSINESS_AREA,
+				   BUSINESS_DOMAIN,
+				   SERVICE_DOMAIN,
+				   VERSION,
+				   SERVICE_ID,
+				   OPERATION_NAME,
+				   SERVICE_NAME,
+				   ADAPTER_TYPE,
+				   STATUS,
+				   API_NAME,
+				   CONN_ID,
+				   DATE_UPDATED,
+				   CREATED_BY,
+				   UPDATED_BY,
+				   CREATED_DATE,
+				   UPDATED_DATE
+			  FROM DGTL_GTW_WS_ADAPTER
+			  <if test='null != adapterId'><!-- was operationId -->
+					WHERE ADAPTER_ID = ${adapterId}
+			   </if>
+			  <choose>
+				<when test='"R" == ivCrud'>
+					WHERE STATUS IN ('C','M')
+				</when>
+				<when test='"M" == ivCrud'>
+					WHERE STATUS = 'P'
+				</when>
+				<when test='"P" == ivCrud'>
+					WHERE STATUS IN ('C','M')
+				</when>
+				<when test='"D" == ivCrud'>
+					WHERE STATUS = 'P'
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+	</sql>
+
+ 	<sql id="selectIrpConnections">  	
+		SELECT 
+			CONN_ID,
+			CONN_DESC,
+			DBMS,
+			URL
+		FROM IRP_CONNECTIONS
+	</sql>	
+		
+	<sql id="selectIrpConnectionsDesc">  	
+		SELECT 		
+			CONN_DESC connDesc,
+			USER_ID connUSER_ID,
+			DB_PASS connDB_PASS,
+			DBMS connDBMS,
+			URL	connURL	
+		FROM IRP_CONNECTIONS
+			WHERE CONN_ID = #{connId}
+	</sql>
+	
+	
+</mapper>
+  	

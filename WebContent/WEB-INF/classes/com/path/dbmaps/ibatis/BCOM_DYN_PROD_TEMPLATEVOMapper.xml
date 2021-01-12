@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BCOM_DYN_PROD_TEMPLATE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATEVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DYN_TEMP_ID" property="DYN_TEMP_ID" />
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="SERVER_CREATED_DATE" property="SERVER_CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="SERVER_MODIFIED_DATE" property="SERVER_MODIFIED_DATE" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DYN_TEMP_ID, APP_NAME, CREATED_BY, CREATED_DATE, SERVER_CREATED_DATE, 
+    MODIFIED_BY, MODIFIED_DATE, SERVER_MODIFIED_DATE, DATE_UPDATED
+  </sql>
+  <select id="selectBCOM_DYN_PROD_TEMPLATE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATEVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from BCOM_DYN_PROD_TEMPLATE
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+  </select>
+  <delete id="deleteBCOM_DYN_PROD_TEMPLATE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATEVOKey" >
+    delete from BCOM_DYN_PROD_TEMPLATE
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+  </delete>
+  <insert id="insertBCOM_DYN_PROD_TEMPLATE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATEVO" >
+    insert into BCOM_DYN_PROD_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        COMP_CODE,
+      </if>
+      <if test="DYN_TEMP_ID != null" >
+        DYN_TEMP_ID,
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null" >
+        #{COMP_CODE},
+      </if>
+      <if test="DYN_TEMP_ID != null" >
+        #{DYN_TEMP_ID},
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        #{SERVER_CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        #{SERVER_MODIFIED_DATE},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateBCOM_DYN_PROD_TEMPLATE" >
+    update BCOM_DYN_PROD_TEMPLATE
+    <set >
+      <if test="APP_NAME != null" >
+        <choose >
+          <when test="APP_NAME.equals(&quot;&quot;)" >
+            APP_NAME = NULL ,
+          </when>
+          <otherwise >
+            APP_NAME = #{APP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="SERVER_CREATED_DATE != null" >
+        SERVER_CREATED_DATE = #{SERVER_CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="SERVER_MODIFIED_DATE != null" >
+        SERVER_MODIFIED_DATE = #{SERVER_MODIFIED_DATE},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DYN_TEMP_ID = #{DYN_TEMP_ID}
+  </sql>
+  <update id="updateBCOM_DYN_PROD_TEMPLATE" parameterType="com.path.dbmaps.vo.BCOM_DYN_PROD_TEMPLATEVO" >
+    <include refid="sql_updateBCOM_DYN_PROD_TEMPLATE" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

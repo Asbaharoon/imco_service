@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="hijiricalendor">
+	
+	 <select id="noDaysOfMonthByLessThanYear" resultType="int" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVOKey">
+		SELECT NO_OF_DAYS
+  		FROM TRSHIJRI_CALENDAR
+ 		WHERE COMP_CODE 	 = #{COMP_CODE}
+		AND HIJRI_MONTH = #{HIJRI_MONTH}
+		AND HIJRI_YEAR  = (SELECT MAX(HIJRI_YEAR)
+								FROM TRSHIJRI_CALENDAR
+							  WHERE COMP_CODE 	= #{COMP_CODE}
+								 <![CDATA[ AND HIJRI_YEAR 	<= #{HIJRI_YEAR}]]>
+								 AND HIJRI_MONTH  = #{HIJRI_MONTH}
+									) 
+	</select>
+	
+	<select id="noDaysOfMonthByGreaterThanYear" resultType="int" parameterType="com.path.dbmaps.vo.TRSHIJRI_CALENDARVOKey">
+		SELECT NO_OF_DAYS
+  		FROM TRSHIJRI_CALENDAR
+ 		WHERE COMP_CODE 	 = #{COMP_CODE}
+		AND HIJRI_MONTH = #{HIJRI_MONTH}
+		AND HIJRI_YEAR  = (SELECT MAX(HIJRI_YEAR)
+								FROM TRSHIJRI_CALENDAR
+							  WHERE COMP_CODE 	= #{COMP_CODE}
+								 <![CDATA[ AND HIJRI_YEAR >= #{HIJRI_YEAR}]]>
+								 AND HIJRI_MONTH  = #{HIJRI_MONTH}
+									) 
+	</select>
+	
+	<select id="getGregorianDate" resultType="Date" parameterType="com.path.dbmaps.vo.TRSHIJRI_DETAIL_CALENDARVOKey">
+		SELECT GREGORIAN_DATE   
+  		FROM TRSHIJRI_DETAIL_CALENDAR
+ 		WHERE COMP_CODE    = #{COMP_CODE}
+			AND HIJRI_YEAR   = #{HIJRI_YEAR}
+			AND HIJRI_MONTH  = #{HIJRI_MONTH}
+			AND HIJRI_DAY    = #{HIJRI_DAY}
+	</select>
+	<select id="getHijiriDateForGregorian" resultType="com.path.dbmaps.vo.TRSHIJRI_DETAIL_CALENDARVO" parameterType="com.path.dbmaps.vo.TRSHIJRI_DETAIL_CALENDARVO">
+		SELECT HIJRI_YEAR, HIJRI_MONTH, HIJRI_DAY    
+    FROM TRSHIJRI_DETAIL_CALENDAR
+ WHERE COMP_CODE 			= #{COMP_CODE}
+	AND GREGORIAN_DATE 	=#{GREGORIAN_DATE}
+	</select>
+	
+	
+</mapper>

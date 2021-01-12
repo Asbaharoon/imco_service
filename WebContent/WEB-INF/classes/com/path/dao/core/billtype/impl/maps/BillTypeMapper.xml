@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="billTypeMapper">
+
+ <sql id="billTypeListCommon" >
+			SELECT BILL_TYPE ,
+			BRIEF_DESC_ENG,
+			LONG_DESC_ENG   ,
+			BRIEF_DESC_ARAB  ,
+			LONG_DESC_ARAB ,
+			ADDITIONAL_REFERENCE,
+			NICKNAME_MANDATORY_YN
+		 	FROM CTS_BILL_TYPE 
+			WHERE  CTS_BILL_TYPE.COMP_CODE   = #{compCode,jdbcType=NUMERIC}
+			 AND   CTS_BILL_TYPE.BILL_TYPE  IN (SELECT CTS_REG_BILL_TYPE.BILL_TYPE
+												FROM CTS_REG_BILL_TYPE    
+												WHERE 	CTS_REG_BILL_TYPE.COMP_CODE  = CTS_BILL_TYPE.COMP_CODE
+												AND CTS_REG_BILL_TYPE.CIF_NO=  #{cifNo,jdbcType=NUMERIC}
+												AND CTS_REG_BILL_TYPE.CY_CODE= #{cyCode,jdbcType=NUMERIC}
+												<if test="trxTypeCode != null and trxTypeCode != emptyBigDecimalValue">
+												AND CTS_REG_BILL_TYPE.TRX_TYPE= #{trxTypeCode,jdbcType=NUMERIC}
+												</if>
+												)
+   			AND CTS_BILL_TYPE.SHOW_IN_TRX_YN = '1'												
+			
+ </sql>
+ 
+ 
+ <resultMap id="billTypeListMap" type="billTypeVO">
+ 	<id property="COMP_CODE" column="COMP_CODE"  />
+	<id property="BILL_TYPE" column="BILL_TYPE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="NICKNAME_MANDATORY_YN" column="NICKNAME_MANDATORY_YN" />
+ </resultMap>
+ 
+ <select id="billTypeList" resultMap="billTypeListMap" parameterType="billTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="billTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="billTypeListCount" resultType="int" parameterType="billTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="billTypeListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <sql id="returnBillType">
+			AND	BILL_TYPE = #{billType,jdbcType=NUMERIC}
+ </sql>
+ 
+ <select id="returnBillTypeById" resultMap="billTypeListMap" parameterType="billTypeSC" >
+	<include refid="billTypeListCommon"/>
+	<include refid="returnBillType"/>
+ </select>
+ 
+<sql id="billTypeList_sql" >
+SELECT CTS_BILL_TYPE.COMP_CODE,
+       CTS_BILL_TYPE.BILL_TYPE,
+       CTS_BILL_TYPE.BRIEF_DESC_ENG,
+       CTS_BILL_TYPE.BRIEF_DESC_ARAB,
+       CTS_BILL_TYPE.LONG_DESC_ENG,
+       CTS_BILL_TYPE.LONG_DESC_ARAB,
+       CTS_BILL_TYPE.ADDITIONAL_REFERENCE,
+	   CTS_BILL_TYPE.REF_FIELD_LENGTH,
+	   CTS_BILL_TYPE.REF_MIN_MAX,
+	   CTS_BILL_TYPE.REF_FIELD_TYPE,
+	   NICKNAME_MANDATORY_YN
+  FROM CTS_BILL_TYPE
+ WHERE CTS_BILL_TYPE.COMP_CODE = #{compCode}
+</sql>
+
+ 
+  <select id="allBillTypeList" resultMap="billTypeListMap" parameterType="billTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="billTypeList_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="allBillTypeListCount" resultType="int" parameterType="billTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="billTypeList_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ <select id="returnBillTypeNameById" parameterType="billTypeSC" resultType="billTypeVO">
+ 	SELECT
+		  BILL_TYPE,
+		  CASE WHEN #{language} = 'EN' THEN BRIEF_DESC_ENG ELSE BRIEF_DESC_ARAB END BRIEF_DESC_ENG
+	FROM  CTS_BILL_TYPE
+	WHERE CTS_BILL_TYPE.COMP_CODE    = #{compCode}
+	AND   CTS_BILL_TYPE.BILL_TYPE    = #{billType}
+ </select>
+ 
+
+
+<select id="getCtsRegBillTypeDetail" parameterType="com.path.dbmaps.vo.CTS_REG_BILL_TYPEVOKey"
+	resultType="com.path.dbmaps.vo.CTS_REG_BILL_TYPEVOKey">
+SELECT *
+  FROM CTS_REG_BILL_TYPE
+ WHERE CTS_REG_BILL_TYPE.COMP_CODE = #{COMP_CODE}
+   AND CTS_REG_BILL_TYPE.CIF_NO = #{CIF_NO}
+   AND CTS_REG_BILL_TYPE.CY_CODE = #{CY_CODE}
+   AND CTS_REG_BILL_TYPE.BILL_TYPE = #{BILL_TYPE}
+</select>
+
+
+<select id="getCtsRegBillTypeList" parameterType="billTypeSC" resultType="billTypeVO">
+SELECT *
+  FROM CTS_BILL_TYPE
+ WHERE CTS_BILL_TYPE.COMP_CODE = #{compCode}
+   AND CTS_BILL_TYPE.BILL_TYPE = #{billType}
+   AND CTS_BILL_TYPE.BILL_TYPE IN
+       (SELECT BILL_TYPE
+          FROM CTS_REG_BILL_TYPE
+         WHERE CTS_REG_BILL_TYPE.COMP_CODE = CTS_BILL_TYPE.COMP_CODE
+           AND CTS_REG_BILL_TYPE.CIF_NO = #{cifNo}
+           AND CTS_REG_BILL_TYPE.CY_CODE = #{cyCode})
+</select>
+
+
+<sql id="billTypeRefLst_sql">
+SELECT CTS_BILL_TYPE_REF_PREFIX.COMP_CODE,
+       CTS_BILL_TYPE_REF_PREFIX.LINE_NO,
+       CTS_BILL_TYPE_REF_PREFIX.BILL_TYPE,
+       CTS_BILL_TYPE_REF_PREFIX.START_WITH
+  FROM CTS_BILL_TYPE_REF_PREFIX
+ WHERE CTS_BILL_TYPE_REF_PREFIX.COMP_CODE = #{compCode}
+   AND CTS_BILL_TYPE_REF_PREFIX.BILL_TYPE = #{billType}
+</sql>
+
+<sql id="billTypeUtilLst_sql">
+SELECT CIF_UTIL_REF_PREFIX.COMP_CODE,
+       CIF_UTIL_REF_PREFIX.CIF_NO,
+       CIF_UTIL_REF_PREFIX.TRX_TYPE,
+       CIF_UTIL_REF_PREFIX.CY,
+       CIF_UTIL_REF_PREFIX.LINE_NO,
+       CIF_UTIL_REF_PREFIX.START_WITH
+  FROM CIF_UTIL_REF_PREFIX
+ WHERE CIF_UTIL_REF_PREFIX.COMP_CODE = #{compCode}
+   AND CIF_UTIL_REF_PREFIX.CIF_NO = #{cifNo}
+</sql>
+
+
+<select id="getCtsBillTypeRefPrefix" parameterType="billTypeSC" resultType="java.lang.String" >
+	<include refid="billTypeRefLst_sql"/>
+</select>
+
+
+<resultMap id="billTypeLst_map" type="com.path.vo.core.billtype.BillTypeCO">
+	<result property="billType" column="BILL_TYPE" />
+	<result property="startWith" column="START_WITH" />
+</resultMap>
+
+<select id="getBillTypeLst" parameterType="billTypeSC" resultMap="billTypeLst_map" >
+	<choose>
+		<when test=' "".equals(sectionKey) or "REF".equals(sectionKey) '>
+			<include refid="billTypeRefLst_sql"/>
+		</when>
+		<otherwise>
+			<include refid="billTypeUtilLst_sql"/>
+		</otherwise>
+	</choose>
+</select>
+
+
+<select id="returnBillTypeLst" parameterType="billTypeSC" resultType="billTypeVO" >
+select *
+from CTS_BILL_TYPE
+where COMP_CODE = #{compCode}
+<if test="billTypeStr != null and billTypeStr.length() > 0">
+	and BILL_TYPE in (${billTypeStr})
+</if>
+</select>
+
+
+<resultMap id="returnBillPaymentListMap" type="com.path.dbmaps.vo.CTS_SERV_REGVO">
+ 	<id property="CIF_NO" column="CIF_NO"  />
+ 	<id property="LINE_NO" column="LINE_NO"  />
+ 	<id property="REG_TYPE" column="REG_TYPE"  />
+	<id property="COMP_CODE" column="COMP_CODE" />
+	<result property="REFERENCE" column="REFERENCE" />
+	<result property="NICKNAME" column="NICKNAME" />
+</resultMap>
+ 
+<select id="returnBillPaymentListCount" resultType="int" parameterType="billTypeSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="returnBillPaymentListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+<select id="returnBillPaymentList" resultMap="returnBillPaymentListMap" parameterType="billTypeSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="returnBillPaymentListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<sql id="returnBillPaymentListSql" >
+	SELECT CIF_NO,
+	       LINE_NO,
+	       REG_TYPE,
+	       BILL_TYPE,
+	       COMP_CODE,
+	       REFERENCE,
+	       NICKNAME
+	  FROM CTS_SERV_REG
+	 WHERE COMP_CODE = #{compCode}
+	   AND CIF_NO = #{cifNo}
+	   AND BILL_TYPE = #{billType}
+	   AND ACC_CY = #{cyCode}
+	   AND ACC_CIF = #{accCif}
+	   AND BRANCH_CHNL_YN = '1'
+	   AND STATUS = 'P'
+</sql>
+</mapper>

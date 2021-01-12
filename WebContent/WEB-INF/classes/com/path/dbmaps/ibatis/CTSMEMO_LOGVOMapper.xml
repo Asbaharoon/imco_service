@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSMEMO_LOG" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSMEMO_LOGVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="TRX_NO" property="TRX_NO" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="ACC_BR" property="ACC_BR" />
+    <result column="ACC_CY" property="ACC_CY" />
+    <result column="ACC_GL" property="ACC_GL" />
+    <result column="ACC_CIF" property="ACC_CIF" />
+    <result column="ACC_SL" property="ACC_SL" />
+    <result column="MEMO_DATE" property="MEMO_DATE" />
+    <result column="USER_ID" property="USER_ID" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, TRX_NO, CIF_NO, ACC_BR, ACC_CY, ACC_GL, ACC_CIF, 
+    ACC_SL, MEMO_DATE, USER_ID
+  </sql>
+  <select id="selectCTSMEMO_LOG" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSMEMO_LOGVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSMEMO_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </select>
+  <delete id="deleteCTSMEMO_LOG" parameterType="com.path.dbmaps.vo.CTSMEMO_LOGVOKey" >
+    delete from CTSMEMO_LOG
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </delete>
+  <insert id="insertCTSMEMO_LOG" parameterType="com.path.dbmaps.vo.CTSMEMO_LOGVO" >
+    insert into CTSMEMO_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        TRX_NO,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        ACC_BR,
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        ACC_CY,
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        ACC_GL,
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        ACC_CIF,
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        ACC_SL,
+      </if>
+      <if test="MEMO_DATE != null" >
+        MEMO_DATE,
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="TRX_NO != null and TRX_NO != emptyBigDecimalValue" >
+        #{TRX_NO},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="ACC_BR != null and ACC_BR != emptyBigDecimalValue" >
+        #{ACC_BR},
+      </if>
+      <if test="ACC_CY != null and ACC_CY != emptyBigDecimalValue" >
+        #{ACC_CY},
+      </if>
+      <if test="ACC_GL != null and ACC_GL != emptyBigDecimalValue" >
+        #{ACC_GL},
+      </if>
+      <if test="ACC_CIF != null and ACC_CIF != emptyBigDecimalValue" >
+        #{ACC_CIF},
+      </if>
+      <if test="ACC_SL != null and ACC_SL != emptyBigDecimalValue" >
+        #{ACC_SL},
+      </if>
+      <if test="MEMO_DATE != null" >
+        #{MEMO_DATE},
+      </if>
+      <if test="USER_ID != null" >
+        #{USER_ID},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSMEMO_LOG" >
+    update CTSMEMO_LOG
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_BR != null" >
+        <choose >
+          <when test="ACC_BR == emptyBigDecimalValue" >
+            ACC_BR = NULL ,
+          </when>
+          <otherwise >
+            ACC_BR = #{ACC_BR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CY != null" >
+        <choose >
+          <when test="ACC_CY == emptyBigDecimalValue" >
+            ACC_CY = NULL ,
+          </when>
+          <otherwise >
+            ACC_CY = #{ACC_CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_GL != null" >
+        <choose >
+          <when test="ACC_GL == emptyBigDecimalValue" >
+            ACC_GL = NULL ,
+          </when>
+          <otherwise >
+            ACC_GL = #{ACC_GL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_CIF != null" >
+        <choose >
+          <when test="ACC_CIF == emptyBigDecimalValue" >
+            ACC_CIF = NULL ,
+          </when>
+          <otherwise >
+            ACC_CIF = #{ACC_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ACC_SL != null" >
+        <choose >
+          <when test="ACC_SL == emptyBigDecimalValue" >
+            ACC_SL = NULL ,
+          </when>
+          <otherwise >
+            ACC_SL = #{ACC_SL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MEMO_DATE != null" >
+        MEMO_DATE = #{MEMO_DATE},
+      </if>
+      <if test="USER_ID != null" >
+        USER_ID = #{USER_ID},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and TRX_NO = #{TRX_NO}
+  </sql>
+  <update id="updateCTSMEMO_LOG" parameterType="com.path.dbmaps.vo.CTSMEMO_LOGVO" >
+    <include refid="sql_updateCTSMEMO_LOG" />
+  </update>
+</mapper>

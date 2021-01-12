@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DF_SRC_SQL_STRUCT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" >
+    <id column="SOURCE_SQL_NO" property="SOURCE_SQL_NO" />
+    <result column="SOURCE_SQL_DESC" property="SOURCE_SQL_DESC" />
+    <result column="PARENT_SQL_NO" property="PARENT_SQL_NO" />
+    <result column="SQL_TYPE" property="SQL_TYPE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" extends="BaseResultMap" >
+    <result column="SOURCE_SQL_TEXT" property="SOURCE_SQL_TEXT" />
+    <result column="FILTER_EXPR" property="FILTER_EXPR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SOURCE_SQL_NO, SOURCE_SQL_DESC, PARENT_SQL_NO, SQL_TYPE
+  </sql>
+  <sql id="Blob_Column_List" >
+    SOURCE_SQL_TEXT, FILTER_EXPR
+  </sql>
+  <select id="selectDF_SRC_SQL_STRUCT" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from DF_SRC_SQL_STRUCT
+    where SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </select>
+  <delete id="deleteDF_SRC_SQL_STRUCT" parameterType="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" >
+    delete from DF_SRC_SQL_STRUCT
+    where SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </delete>
+  <insert id="insertDF_SRC_SQL_STRUCT" parameterType="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" >
+    insert into DF_SRC_SQL_STRUCT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="SOURCE_SQL_NO != null" >
+        SOURCE_SQL_NO,
+      </if>
+      <if test="SOURCE_SQL_DESC != null" >
+        SOURCE_SQL_DESC,
+      </if>
+      <if test="PARENT_SQL_NO != null" >
+        PARENT_SQL_NO,
+      </if>
+      <if test="SQL_TYPE != null" >
+        SQL_TYPE,
+      </if>
+      <if test="SOURCE_SQL_TEXT != null" >
+        SOURCE_SQL_TEXT,
+      </if>
+      <if test="FILTER_EXPR != null" >
+        FILTER_EXPR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="SOURCE_SQL_NO != null" >
+        #{SOURCE_SQL_NO},
+      </if>
+      <if test="SOURCE_SQL_DESC != null" >
+        #{SOURCE_SQL_DESC},
+      </if>
+      <if test="PARENT_SQL_NO != null" >
+        #{PARENT_SQL_NO},
+      </if>
+      <if test="SQL_TYPE != null" >
+        #{SQL_TYPE},
+      </if>
+      <if test="SOURCE_SQL_TEXT != null" >
+        #{SOURCE_SQL_TEXT},
+      </if>
+      <if test="FILTER_EXPR != null" >
+        #{FILTER_EXPR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDF_SRC_SQL_STRUCT" >
+    update DF_SRC_SQL_STRUCT
+    <set >
+      <if test="SOURCE_SQL_DESC != null" >
+        SOURCE_SQL_DESC = #{SOURCE_SQL_DESC},
+      </if>
+      <if test="PARENT_SQL_NO != null" >
+        PARENT_SQL_NO = #{PARENT_SQL_NO},
+      </if>
+      <if test="SQL_TYPE != null" >
+        SQL_TYPE = #{SQL_TYPE},
+      </if>
+      <if test="SOURCE_SQL_TEXT != null" >
+        SOURCE_SQL_TEXT = #{SOURCE_SQL_TEXT},
+      </if>
+      <if test="FILTER_EXPR != null" >
+        FILTER_EXPR = #{FILTER_EXPR},
+      </if>
+    </set>
+    where SOURCE_SQL_NO = #{SOURCE_SQL_NO}
+  </sql>
+  <update id="updateDF_SRC_SQL_STRUCT" parameterType="com.path.dbmaps.vo.DF_SRC_SQL_STRUCTVO" >
+    <include refid="sql_updateDF_SRC_SQL_STRUCT" />
+  </update>
+</mapper>

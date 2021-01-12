@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_DYN_SCREEN_ELEMENTS_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVO" >
+    <id column="ELEMENT_ID" property="ELEMENT_ID" />
+    <id column="PROPERTY_CODE" property="PROPERTY_CODE" />
+    <result column="PROPERTY_VALUE" property="PROPERTY_VALUE" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+    <result column="PROPERTY_EXPRESSION_VALUE" property="PROPERTY_EXPRESSION_VALUE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ELEMENT_ID, PROPERTY_CODE, PROPERTY_VALUE, CREATED_BY, CREATED_DATE, MODIFIED_BY, 
+    MODIFIED_DATE,PROPERTY_EXPRESSION_VALUE
+  </sql>
+  <select id="selectSYS_DYN_SCREEN_ELEMENTS_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+
+    from SYS_DYN_SCREEN_ELEMENTS_DET
+    where ELEMENT_ID = #{ELEMENT_ID}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </select>
+  <delete id="deleteSYS_DYN_SCREEN_ELEMENTS_DET" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVOKey" >
+    delete from SYS_DYN_SCREEN_ELEMENTS_DET
+    where ELEMENT_ID = #{ELEMENT_ID}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </delete>
+  <insert id="insertSYS_DYN_SCREEN_ELEMENTS_DET" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVO" >
+    insert into SYS_DYN_SCREEN_ELEMENTS_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ELEMENT_ID != null and ELEMENT_ID != emptyBigDecimalValue" >
+        ELEMENT_ID,
+      </if>
+      <if test="PROPERTY_CODE != null and !&quot;&quot;.equals(PROPERTY_CODE)" >
+        PROPERTY_CODE,
+      </if>
+      <if test="PROPERTY_VALUE != null and !&quot;&quot;.equals(PROPERTY_VALUE)" >
+        PROPERTY_VALUE,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+      <if test="PROPERTY_EXPRESSION_VALUE != null" >
+        PROPERTY_EXPRESSION_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ELEMENT_ID != null and ELEMENT_ID != emptyBigDecimalValue" >
+        #{ELEMENT_ID},
+      </if>
+      <if test="PROPERTY_CODE != null and !&quot;&quot;.equals(PROPERTY_CODE)" >
+        #{PROPERTY_CODE},
+      </if>
+      <if test="PROPERTY_VALUE != null and !&quot;&quot;.equals(PROPERTY_VALUE)" >
+        #{PROPERTY_VALUE},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+      <if test="PROPERTY_EXPRESSION_VALUE != null" >
+        #{PROPERTY_EXPRESSION_VALUE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_DYN_SCREEN_ELEMENTS_DET" >
+    update SYS_DYN_SCREEN_ELEMENTS_DET
+    <set >
+      <if test="PROPERTY_VALUE != null" >
+        <choose >
+          <when test="PROPERTY_VALUE.equals(&quot;&quot;)" >
+            PROPERTY_VALUE = NULL ,
+          </when>
+          <otherwise >
+            PROPERTY_VALUE = #{PROPERTY_VALUE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+      <if test="PROPERTY_EXPRESSION_VALUE != null" >
+        PROPERTY_EXPRESSION_VALUE = #{PROPERTY_EXPRESSION_VALUE},
+      </if>
+    </set>
+    where ELEMENT_ID = #{ELEMENT_ID}
+      and PROPERTY_CODE = #{PROPERTY_CODE}
+  </sql>
+  <update id="updateSYS_DYN_SCREEN_ELEMENTS_DET" parameterType="com.path.dbmaps.vo.SYS_DYN_SCREEN_ELEMENTS_DETVO" >
+    <include refid="sql_updateSYS_DYN_SCREEN_ELEMENTS_DET" />
+  </update>
+</mapper>

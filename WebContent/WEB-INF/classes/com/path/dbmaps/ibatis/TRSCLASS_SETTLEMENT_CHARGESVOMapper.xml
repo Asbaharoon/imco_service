@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCLASS_SETTLEMENT_CHARGES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCLASS_SETTLEMENT_CHARGESVO" >
+    <id column="CLASS_CODE" property="CLASS_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="CHARGE_CODE" property="CHARGE_CODE" />
+    <result column="CHARGE_AMOUNT" property="CHARGE_AMOUNT" />
+    <result column="ALLOW_TO_EDIT_YN" property="ALLOW_TO_EDIT_YN" />
+    <result column="CHARGES_PERCENTAGE" property="CHARGES_PERCENTAGE" />
+    <result column="FLAT_AMOUNT" property="FLAT_AMOUNT" />
+    <result column="VAT_CODE" property="VAT_CODE" />
+    <result column="TEMPLATE_CODE" property="TEMPLATE_CODE" />
+    <result column="ALLOW_EDIT_TEMPLATE_CODE_YN" property="ALLOW_EDIT_TEMPLATE_CODE_YN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CLASS_CODE, COMP_CODE, LINE_NO, CHARGE_CODE, CHARGE_AMOUNT, ALLOW_TO_EDIT_YN, CHARGES_PERCENTAGE, 
+    FLAT_AMOUNT, VAT_CODE, TEMPLATE_CODE, ALLOW_EDIT_TEMPLATE_CODE_YN
+  </sql>
+  <select id="selectTRSCLASS_SETTLEMENT_CHARGES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCLASS_SETTLEMENT_CHARGESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCLASS_SETTLEMENT_CHARGES
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSCLASS_SETTLEMENT_CHARGES" parameterType="com.path.dbmaps.vo.TRSCLASS_SETTLEMENT_CHARGESVOKey" >
+    delete from TRSCLASS_SETTLEMENT_CHARGES
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSCLASS_SETTLEMENT_CHARGES" parameterType="com.path.dbmaps.vo.TRSCLASS_SETTLEMENT_CHARGESVO" >
+    insert into TRSCLASS_SETTLEMENT_CHARGES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        CLASS_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        CHARGE_CODE,
+      </if>
+      <if test="CHARGE_AMOUNT != null and CHARGE_AMOUNT != emptyBigDecimalValue" >
+        CHARGE_AMOUNT,
+      </if>
+      <if test="ALLOW_TO_EDIT_YN != null and !&quot;&quot;.equals(ALLOW_TO_EDIT_YN)" >
+        ALLOW_TO_EDIT_YN,
+      </if>
+      <if test="CHARGES_PERCENTAGE != null and CHARGES_PERCENTAGE != emptyBigDecimalValue" >
+        CHARGES_PERCENTAGE,
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        FLAT_AMOUNT,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="TEMPLATE_CODE != null and TEMPLATE_CODE != emptyBigDecimalValue" >
+        TEMPLATE_CODE,
+      </if>
+      <if test="ALLOW_EDIT_TEMPLATE_CODE_YN != null and !&quot;&quot;.equals(ALLOW_EDIT_TEMPLATE_CODE_YN)" >
+        ALLOW_EDIT_TEMPLATE_CODE_YN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CLASS_CODE != null and CLASS_CODE != emptyBigDecimalValue" >
+        #{CLASS_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="CHARGE_CODE != null and CHARGE_CODE != emptyBigDecimalValue" >
+        #{CHARGE_CODE},
+      </if>
+      <if test="CHARGE_AMOUNT != null and CHARGE_AMOUNT != emptyBigDecimalValue" >
+        #{CHARGE_AMOUNT},
+      </if>
+      <if test="ALLOW_TO_EDIT_YN != null and !&quot;&quot;.equals(ALLOW_TO_EDIT_YN)" >
+        #{ALLOW_TO_EDIT_YN},
+      </if>
+      <if test="CHARGES_PERCENTAGE != null and CHARGES_PERCENTAGE != emptyBigDecimalValue" >
+        #{CHARGES_PERCENTAGE},
+      </if>
+      <if test="FLAT_AMOUNT != null and FLAT_AMOUNT != emptyBigDecimalValue" >
+        #{FLAT_AMOUNT},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="TEMPLATE_CODE != null and TEMPLATE_CODE != emptyBigDecimalValue" >
+        #{TEMPLATE_CODE},
+      </if>
+      <if test="ALLOW_EDIT_TEMPLATE_CODE_YN != null and !&quot;&quot;.equals(ALLOW_EDIT_TEMPLATE_CODE_YN)" >
+        #{ALLOW_EDIT_TEMPLATE_CODE_YN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCLASS_SETTLEMENT_CHARGES" >
+    update TRSCLASS_SETTLEMENT_CHARGES
+    <set >
+      <if test="CHARGE_CODE != null" >
+        <choose >
+          <when test="CHARGE_CODE == emptyBigDecimalValue" >
+            CHARGE_CODE = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_CODE = #{CHARGE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGE_AMOUNT != null" >
+        <choose >
+          <when test="CHARGE_AMOUNT == emptyBigDecimalValue" >
+            CHARGE_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            CHARGE_AMOUNT = #{CHARGE_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALLOW_TO_EDIT_YN != null" >
+        <choose >
+          <when test="ALLOW_TO_EDIT_YN.equals(&quot;&quot;)" >
+            ALLOW_TO_EDIT_YN = NULL ,
+          </when>
+          <otherwise >
+            ALLOW_TO_EDIT_YN = #{ALLOW_TO_EDIT_YN},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CHARGES_PERCENTAGE != null" >
+        <choose >
+          <when test="CHARGES_PERCENTAGE == emptyBigDecimalValue" >
+            CHARGES_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_PERCENTAGE = #{CHARGES_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FLAT_AMOUNT != null" >
+        <choose >
+          <when test="FLAT_AMOUNT == emptyBigDecimalValue" >
+            FLAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            FLAT_AMOUNT = #{FLAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_CODE != null" >
+        <choose >
+          <when test="VAT_CODE == emptyBigDecimalValue" >
+            VAT_CODE = NULL ,
+          </when>
+          <otherwise >
+            VAT_CODE = #{VAT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TEMPLATE_CODE != null" >
+        <choose >
+          <when test="TEMPLATE_CODE == emptyBigDecimalValue" >
+            TEMPLATE_CODE = NULL ,
+          </when>
+          <otherwise >
+            TEMPLATE_CODE = #{TEMPLATE_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALLOW_EDIT_TEMPLATE_CODE_YN != null" >
+        <choose >
+          <when test="ALLOW_EDIT_TEMPLATE_CODE_YN.equals(&quot;&quot;)" >
+            ALLOW_EDIT_TEMPLATE_CODE_YN = NULL ,
+          </when>
+          <otherwise >
+            ALLOW_EDIT_TEMPLATE_CODE_YN = #{ALLOW_EDIT_TEMPLATE_CODE_YN},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CLASS_CODE = #{CLASS_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSCLASS_SETTLEMENT_CHARGES" parameterType="com.path.dbmaps.vo.TRSCLASS_SETTLEMENT_CHARGESVO" >
+    <include refid="sql_updateTRSCLASS_SETTLEMENT_CHARGES" />
+  </update>
+</mapper>

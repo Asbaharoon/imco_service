@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSVAT_PERIOD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSVAT_PERIODVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="VAT_CODE" property="VAT_CODE" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="PERCENTAGE" property="PERCENTAGE" />
+    <result column="VAT_CHARGE_PERCENT" property="VAT_CHARGE_PERCENT" />
+    <result column="VAT_PERCENTAGE_FOR_TRADE_DEAL" property="VAT_PERCENTAGE_FOR_TRADE_DEAL" />
+    <result column="VAT_BRANCH" property="VAT_BRANCH" />
+    <result column="VAT_CY" property="VAT_CY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NO, VAT_CODE, FROM_DATE, TO_DATE, PERCENTAGE, VAT_CHARGE_PERCENT, 
+    VAT_PERCENTAGE_FOR_TRADE_DEAL, VAT_BRANCH, VAT_CY
+  </sql>
+  <select id="selectTRSVAT_PERIOD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSVAT_PERIOD
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and VAT_CODE = #{VAT_CODE}
+  </select>
+  <delete id="deleteTRSVAT_PERIOD" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVOKey" >
+    delete from TRSVAT_PERIOD
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and VAT_CODE = #{VAT_CODE}
+  </delete>
+  <insert id="insertTRSVAT_PERIOD" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVO" >
+    insert into TRSVAT_PERIOD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        PERCENTAGE,
+      </if>
+      <if test="VAT_CHARGE_PERCENT != null and VAT_CHARGE_PERCENT != emptyBigDecimalValue" >
+        VAT_CHARGE_PERCENT,
+      </if>
+      <if test="VAT_PERCENTAGE_FOR_TRADE_DEAL != null and VAT_PERCENTAGE_FOR_TRADE_DEAL != emptyBigDecimalValue" >
+        VAT_PERCENTAGE_FOR_TRADE_DEAL,
+      </if>
+      <if test="VAT_BRANCH != null and VAT_BRANCH != emptyBigDecimalValue" >
+        VAT_BRANCH,
+      </if>
+      <if test="VAT_CY != null and VAT_CY != emptyBigDecimalValue" >
+        VAT_CY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="PERCENTAGE != null and PERCENTAGE != emptyBigDecimalValue" >
+        #{PERCENTAGE},
+      </if>
+      <if test="VAT_CHARGE_PERCENT != null and VAT_CHARGE_PERCENT != emptyBigDecimalValue" >
+        #{VAT_CHARGE_PERCENT},
+      </if>
+      <if test="VAT_PERCENTAGE_FOR_TRADE_DEAL != null and VAT_PERCENTAGE_FOR_TRADE_DEAL != emptyBigDecimalValue" >
+        #{VAT_PERCENTAGE_FOR_TRADE_DEAL},
+      </if>
+      <if test="VAT_BRANCH != null and VAT_BRANCH != emptyBigDecimalValue" >
+        #{VAT_BRANCH},
+      </if>
+      <if test="VAT_CY != null and VAT_CY != emptyBigDecimalValue" >
+        #{VAT_CY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSVAT_PERIOD" >
+    update TRSVAT_PERIOD
+    <set >
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="PERCENTAGE != null" >
+        <choose >
+          <when test="PERCENTAGE == emptyBigDecimalValue" >
+            PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PERCENTAGE = #{PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_CHARGE_PERCENT != null" >
+        <choose >
+          <when test="VAT_CHARGE_PERCENT == emptyBigDecimalValue" >
+            VAT_CHARGE_PERCENT = NULL ,
+          </when>
+          <otherwise >
+            VAT_CHARGE_PERCENT = #{VAT_CHARGE_PERCENT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_PERCENTAGE_FOR_TRADE_DEAL != null" >
+        <choose >
+          <when test="VAT_PERCENTAGE_FOR_TRADE_DEAL == emptyBigDecimalValue" >
+            VAT_PERCENTAGE_FOR_TRADE_DEAL = NULL ,
+          </when>
+          <otherwise >
+            VAT_PERCENTAGE_FOR_TRADE_DEAL = #{VAT_PERCENTAGE_FOR_TRADE_DEAL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_BRANCH != null" >
+        <choose >
+          <when test="VAT_BRANCH == emptyBigDecimalValue" >
+            VAT_BRANCH = NULL ,
+          </when>
+          <otherwise >
+            VAT_BRANCH = #{VAT_BRANCH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_CY != null" >
+        <choose >
+          <when test="VAT_CY == emptyBigDecimalValue" >
+            VAT_CY = NULL ,
+          </when>
+          <otherwise >
+            VAT_CY = #{VAT_CY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and VAT_CODE = #{VAT_CODE}
+  </sql>
+  <update id="updateTRSVAT_PERIOD" parameterType="com.path.dbmaps.vo.TRSVAT_PERIODVO" >
+    <include refid="sql_updateTRSVAT_PERIOD" />
+  </update>
+</mapper>

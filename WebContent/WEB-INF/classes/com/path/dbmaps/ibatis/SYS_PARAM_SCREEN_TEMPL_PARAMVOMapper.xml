@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_SCREEN_TEMPL_PARAM" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVO" >
+    <id column="SCREEN_ID" property="SCREEN_ID" />
+    <result column="SCREEN_DESC" property="SCREEN_DESC" />
+    <result column="SCREEN_URL" property="SCREEN_URL" />
+    <result column="APP_NAME" property="APP_NAME" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVOWithBLOBs" extends="BaseResultMap" >
+    <result column="SCREEN_PARAMS" property="SCREEN_PARAMS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SCREEN_ID, SCREEN_DESC, SCREEN_URL, APP_NAME
+  </sql>
+  <sql id="Blob_Column_List" >
+    SCREEN_PARAMS
+  </sql>
+  <select id="selectSYS_PARAM_SCREEN_TEMPL_PARAM" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_SCREEN_TEMPL_PARAM
+    where SCREEN_ID = #{SCREEN_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_SCREEN_TEMPL_PARAM" parameterType="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVOKey" >
+    delete from SYS_PARAM_SCREEN_TEMPL_PARAM
+    where SCREEN_ID = #{SCREEN_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_SCREEN_TEMPL_PARAM" parameterType="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVOWithBLOBs" >
+    insert into SYS_PARAM_SCREEN_TEMPL_PARAM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="SCREEN_ID != null" >
+        SCREEN_ID,
+      </if>
+      <if test="SCREEN_DESC != null and !&quot;&quot;.equals(SCREEN_DESC)" >
+        SCREEN_DESC,
+      </if>
+      <if test="SCREEN_URL != null and !&quot;&quot;.equals(SCREEN_URL)" >
+        SCREEN_URL,
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        SCREEN_PARAMS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="SCREEN_ID != null" >
+        #{SCREEN_ID},
+      </if>
+      <if test="SCREEN_DESC != null and !&quot;&quot;.equals(SCREEN_DESC)" >
+        #{SCREEN_DESC},
+      </if>
+      <if test="SCREEN_URL != null and !&quot;&quot;.equals(SCREEN_URL)" >
+        #{SCREEN_URL},
+      </if>
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        #{SCREEN_PARAMS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_SCREEN_TEMPL_PARAM" >
+    update SYS_PARAM_SCREEN_TEMPL_PARAM
+    <set >
+      <if test="SCREEN_DESC != null" >
+        <choose >
+          <when test="SCREEN_DESC.equals(&quot;&quot;)" >
+            SCREEN_DESC = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_DESC = #{SCREEN_DESC},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCREEN_URL != null" >
+        <choose >
+          <when test="SCREEN_URL.equals(&quot;&quot;)" >
+            SCREEN_URL = NULL ,
+          </when>
+          <otherwise >
+            SCREEN_URL = #{SCREEN_URL},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="APP_NAME != null" >
+        <choose >
+          <when test="APP_NAME.equals(&quot;&quot;)" >
+            APP_NAME = NULL ,
+          </when>
+          <otherwise >
+            APP_NAME = #{APP_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        SCREEN_PARAMS = #{SCREEN_PARAMS},
+      </if>
+    </set>
+    where SCREEN_ID = #{SCREEN_ID}
+  </sql>
+  <update id="updateSYS_PARAM_SCREEN_TEMPL_PARAM" parameterType="com.path.dbmaps.vo.SYS_PARAM_SCREEN_TEMPL_PARAMVOWithBLOBs" >
+    <include refid="sql_updateSYS_PARAM_SCREEN_TEMPL_PARAM" />
+  </update>
+</mapper>

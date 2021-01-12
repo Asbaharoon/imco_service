@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dashChequebooksMapper">
+<sql id="chequeBooksList">
+SELECT CTSCHEQUEBOOK.COMP_CODE
+      ,CTSCHEQUEBOOK.BRANCH_CODE
+      ,CTSCHEQUEBOOK.CHEQUE_CODE
+      ,CTSCHEQUEBOOK.ACC_BR
+      ,CTSCHEQUEBOOK.ACC_CY
+      ,CTSCHEQUEBOOK.ACC_GL
+      ,CTSCHEQUEBOOK.ACC_CIF
+      ,CTSCHEQUEBOOK.ACC_SL
+      ,CTSCHEQUEBOOK.FROM_NUMBER
+      ,CTSCHEQUEBOOK.NUMBER_TO
+      ,CTSCHEQUEBOOK.DATE_REQUESTED
+      ,CTSCHEQUEBOOK.REQUESTED_BY
+      ,CTSCHEQUEBOOK.DATE_SUBMITTED
+      ,CTSCHEQUEBOOK.STATUS
+      ,(SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS
+         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTSCHEQUEBOOK.STATUS
+           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovType}
+           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusDesc
+      ,(SELECT CASE WHEN #{language} = 'EN' 
+                    THEN CTSCHEQUEBOOK_TYPES.DESC_ENG 
+                    ELSE CTSCHEQUEBOOK_TYPES.DESC_ARAB
+                END
+          FROM CTSCHEQUEBOOK_TYPES
+         WHERE CTSCHEQUEBOOK_TYPES.COMP_CODE = CTSCHEQUEBOOK.COMP_CODE
+           AND CTSCHEQUEBOOK_TYPES.CODE = CTSCHEQUEBOOK.TYPES) TYPES_DESC
+      ,CTSCHEQUEBOOK.TYPES
+      ,CTSCHEQUEBOOK.CODE
+      ,CTSCHEQUEBOOK.ACC_ADD_REF
+      ,AMF.IBAN_ACC_NO
+      ,AMF.LONG_NAME_ENG
+  FROM CTSCHEQUEBOOK
+  LEFT OUTER JOIN AMF ON (CTSCHEQUEBOOK.COMP_CODE = AMF.COMP_CODE)
+                     AND (CTSCHEQUEBOOK.ACC_BR = AMF.BRANCH_CODE)
+                     AND (CTSCHEQUEBOOK.ACC_CY = AMF.CURRENCY_CODE)
+                     AND (CTSCHEQUEBOOK.ACC_GL = AMF.GL_CODE)
+                     AND (CTSCHEQUEBOOK.ACC_CIF = AMF.CIF_SUB_NO)
+                     AND (CTSCHEQUEBOOK.ACC_SL = AMF.SL_NO)
+ WHERE (CTSCHEQUEBOOK.COMP_CODE = #{compCode,jdbcType=NUMERIC})
+   <if test="cif_no != null" >
+     AND ((
+  <!-- CTSCHEQUEBOOK.ACC_CIF = #{cif_no,jdbcType=NUMERIC}-->
+   	   CTSCHEQUEBOOK.ACC_CIF    IN (SELECT TBL.CIF_NO FROM ( SELECT CIF_NO
+			                                                       FROM  FMS_SUBSIDIARY_CIFS
+			                                                       WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+			                                                       AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+			                                                       AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+			                                                       AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+			                                                       AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+			                                                       UNION
+                                                          		   SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL
+			                                                       ))
+   OR 
+   <!--CTSCHEQUEBOOK.CHR_AC_CIF = #{cif_no,jdbcType=NUMERIC})-->
+   	            ( CTSCHEQUEBOOK.CHR_AC_CIF   IN (SELECT TBL.CIF_NO FROM( SELECT CIF_NO
+                                                          FROM  FMS_SUBSIDIARY_CIFS
+                                                          WHERE FMS_SUBSIDIARY_CIFS.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                                                          AND FMS_SUBSIDIARY_CIFS.BRANCH_CODE = #{loginBranchCode}
+                                                          AND FMS_SUBSIDIARY_CIFS.APP_NAME = 'RET'
+                                                          AND FMS_SUBSIDIARY_CIFS.USER_ID =  #{userId}
+                                                          AND  FMS_SUBSIDIARY_CIFS.PARENT_CIF_NO = #{cif_no,jdbcType=NUMERIC}
+                                                          UNION
+                                                          SELECT #{cif_no,jdbcType=NUMERIC}  AS CIF_NO FROM DUAL) TBL
+                                                          
+                                                          )))
+                                                          
+   </if>
+   <if test="branchCode!=null">
+   AND CTSCHEQUEBOOK.BRANCH_CODE = #{branchCode}
+   </if>
+   AND CTSCHEQUEBOOK.STATUS <![CDATA[<>]]> 'D'
+   <if test="tellerCode!=null and tellerCode != emptyBigDecimalValue">
+	   	AND NOT EXISTS
+	    (SELECT 1
+	          FROM AMF, CTSTELLER_ACC_HIDDEN_STATUSES 
+	         WHERE AMF.COMP_CODE = CTSCHEQUEBOOK.COMP_CODE
+	           AND AMF.BRANCH_CODE =CTSCHEQUEBOOK.ACC_BR
+	           AND AMF.CURRENCY_CODE =CTSCHEQUEBOOK.ACC_CY
+	           AND AMF.GL_CODE = CTSCHEQUEBOOK.ACC_GL
+	           AND AMF.SL_NO = CTSCHEQUEBOOK.ACC_SL
+	           AND AMF.CIF_SUB_NO = CTSCHEQUEBOOK.ACC_CIF
+	           AND AMF.STATUS=CTSTELLER_ACC_HIDDEN_STATUSES.ACC_STATUS
+	           AND CTSTELLER_ACC_HIDDEN_STATUSES.CODE = #{tellerCode}
+	           AND AMF.COMP_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.COMP_CODE
+	           AND AMF.BRANCH_CODE = CTSTELLER_ACC_HIDDEN_STATUSES.BRANCH_CODE
+	 	)
+   </if>
+	  AND NOT EXISTS (
+	        SELECT 1 FROM 
+				ACC_RESTRICTED AccRest
+	            WHERE 
+	            CTSCHEQUEBOOK.COMP_CODE = AccRest.COMP_CODE  
+	          	 AND  CTSCHEQUEBOOK.ACC_BR = AccRest.BRANCH_CODE 
+				 AND  CTSCHEQUEBOOK.ACC_CY = AccRest.CURRENCY_CODE 
+				 AND  CTSCHEQUEBOOK.ACC_GL = AccRest.GL_CODE 
+				 AND  CTSCHEQUEBOOK.ACC_CIF = AccRest.CIF_SUB_NO 
+				 AND  CTSCHEQUEBOOK.ACC_SL = AccRest.SL_NO 
+				 AND  AccRest.USER_ID =  #{userId}
+				 AND  AccRest.PROG_REF  IN ( #{progRef} ,'000')
+				 AND  AccRest.APP_NAME = #{appName}
+				 )
+
+</sql>
+<resultMap id="chequebooksListMap" type="chequeBookCO">
+	<result property="ctschqbookVO.CODE" 				column="CODE"/>
+	<result property="ctschqbookVO.COMP_CODE" 			column="COMP_CODE"/>
+	<result property="ctschqbookVO.BRANCH_CODE" 		column="BRANCH_CODE"/>
+	<result property="ctschqbookVO.CHEQUE_CODE" 		column="CHEQUE_CODE"/>
+	<result property="ctsTypeVO.DESC_ENG" 		        column="TYPES_DESC"/>
+	<result property="ctschqbookVO.ACC_BR" 				column="ACC_BR"/>
+	<result property="ctschqbookVO.ACC_CY" 				column="ACC_CY"/>
+	<result property="ctschqbookVO.ACC_GL" 				column="ACC_GL"/>
+	<result property="ctschqbookVO.ACC_CIF" 			column="ACC_CIF"/>
+	<result property="ctschqbookVO.ACC_SL" 				column="ACC_SL"/>
+	<result property="ctschqbookVO.ACC_ADD_REF" 		column="ACC_ADD_REF"/>
+	<result property="ctschqbookVO.FROM_NUMBER" 		column="FROM_NUMBER"/>
+	<result property="ctschqbookVO.NUMBER_TO" 			column="NUMBER_TO"/>
+	<result property="ctschqbookVO.DATE_REQUESTED" 		column="DATE_REQUESTED"/>
+	<result property="ctschqbookVO.REQUESTED_BY" 		column="REQUESTED_BY"/>
+	<result property="ctschqbookVO.DATE_SUBMITTED" 		column="DATE_SUBMITTED"/>
+	<result property="ctschqbookVO.STATUS" 				column="STATUS"/>
+	<result property="statusDesc" 						column="statusDesc"/>
+	<result property="amfVO.IBAN_ACC_NO" 				column="IBAN_ACC_NO"/>
+	<result property="amfVO.LONG_NAME_ENG" 				column="LONG_NAME_ENG"/>
+</resultMap>
+<select id="chequebooksList" parameterType="dashboardSC" resultMap="chequebooksListMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chequeBooksList"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+<select id="chequebooksListCount" resultType="int" parameterType="dashboardSC"> 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chequeBooksList"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSCHEQUEBOOK_DESIGNMapper">
+
+
+<!-- DESIGN List --> 
+ <sql id="chequeBookDesignListCommon" >
+	 <![CDATA[
+		SELECT 	CTSCHEQUEBOOK_DESIGN.COMP_CODE,
+				CTSCHEQUEBOOK_DESIGN.CODE,
+				CTSCHEQUEBOOK_DESIGN.BRIEF_DESC_ENG,
+				CTSCHEQUEBOOK_DESIGN.BRIEF_DESC_ARAB,
+				CTSCHEQUEBOOK_DESIGN.LONG_DESC_ENG,
+				CTSCHEQUEBOOK_DESIGN.LONG_DESC_ARAB
+		  FROM  CTSCHEQUEBOOK_DESIGN
+		]]>	
+</sql>
+
+<sql id="chequeBookDesignDestination">
+	WHERE CTSCHEQUEBOOK_DESIGN.COMP_CODE = #{compCode}
+	<if test="designCode != null">
+		AND CTSCHEQUEBOOK_DESIGN.CODE = #{designCode}
+	</if>
+	
+</sql>
+<sql id="chequeBookDesignDestinationOrder">
+	ORDER BY CODE
+</sql>
+
+
+<resultMap id="getDesignList_ResMap" type="chequeBookDesignVO" >
+    <result column="COMP_CODE" 			property="COMP_CODE" />
+    <result column="CODE" 				property="CODE" />
+    <result column="BRIEF_DESC_ENG" 	property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" 	property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" 		property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" 	property="LONG_DESC_ARAB" />
+</resultMap>
+
+<select id="getDesignList"  resultMap="getDesignList_ResMap" parameterType="chequeBookDesignSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="chequeBookDesignListCommon"/>
+	<include refid="chequeBookDesignDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getDesignCount"  resultType="int" parameterType="chequeBookDesignSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="chequeBookDesignListCommon"/>
+	<include refid="chequeBookDesignDestination"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+</select>
+
+
+
+</mapper>

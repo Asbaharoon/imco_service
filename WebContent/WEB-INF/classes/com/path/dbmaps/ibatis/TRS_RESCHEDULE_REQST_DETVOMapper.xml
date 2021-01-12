@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_RESCHEDULE_REQST_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_RESCHEDULE_REQST_DETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="REQUEST_NO" property="REQUEST_NO" />
+    <result column="PLAN_DUE_MONTH" property="PLAN_DUE_MONTH" />
+    <result column="PLAN_DUE_YEAR" property="PLAN_DUE_YEAR" />
+    <result column="ADDITIONAL_AMOUNT" property="ADDITIONAL_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO, REQUEST_NO, PLAN_DUE_MONTH, PLAN_DUE_YEAR, ADDITIONAL_AMOUNT
+  </sql>
+  <select id="selectTRS_RESCHEDULE_REQST_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_RESCHEDULE_REQST_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_RESCHEDULE_REQST_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REQUEST_NO = #{REQUEST_NO}
+  </select>
+  <delete id="deleteTRS_RESCHEDULE_REQST_DET" parameterType="com.path.dbmaps.vo.TRS_RESCHEDULE_REQST_DETVOKey" >
+    delete from TRS_RESCHEDULE_REQST_DET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REQUEST_NO = #{REQUEST_NO}
+  </delete>
+  <insert id="insertTRS_RESCHEDULE_REQST_DET" parameterType="com.path.dbmaps.vo.TRS_RESCHEDULE_REQST_DETVO" >
+    insert into TRS_RESCHEDULE_REQST_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="REQUEST_NO != null and REQUEST_NO != emptyBigDecimalValue" >
+        REQUEST_NO,
+      </if>
+      <if test="PLAN_DUE_MONTH != null and PLAN_DUE_MONTH != emptyBigDecimalValue" >
+        PLAN_DUE_MONTH,
+      </if>
+      <if test="PLAN_DUE_YEAR != null and PLAN_DUE_YEAR != emptyBigDecimalValue" >
+        PLAN_DUE_YEAR,
+      </if>
+      <if test="ADDITIONAL_AMOUNT != null and ADDITIONAL_AMOUNT != emptyBigDecimalValue" >
+        ADDITIONAL_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="REQUEST_NO != null and REQUEST_NO != emptyBigDecimalValue" >
+        #{REQUEST_NO},
+      </if>
+      <if test="PLAN_DUE_MONTH != null and PLAN_DUE_MONTH != emptyBigDecimalValue" >
+        #{PLAN_DUE_MONTH},
+      </if>
+      <if test="PLAN_DUE_YEAR != null and PLAN_DUE_YEAR != emptyBigDecimalValue" >
+        #{PLAN_DUE_YEAR},
+      </if>
+      <if test="ADDITIONAL_AMOUNT != null and ADDITIONAL_AMOUNT != emptyBigDecimalValue" >
+        #{ADDITIONAL_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_RESCHEDULE_REQST_DET" >
+    update TRS_RESCHEDULE_REQST_DET
+    <set >
+      <if test="PLAN_DUE_MONTH != null" >
+        <choose >
+          <when test="PLAN_DUE_MONTH == emptyBigDecimalValue" >
+            PLAN_DUE_MONTH = NULL ,
+          </when>
+          <otherwise >
+            PLAN_DUE_MONTH = #{PLAN_DUE_MONTH},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PLAN_DUE_YEAR != null" >
+        <choose >
+          <when test="PLAN_DUE_YEAR == emptyBigDecimalValue" >
+            PLAN_DUE_YEAR = NULL ,
+          </when>
+          <otherwise >
+            PLAN_DUE_YEAR = #{PLAN_DUE_YEAR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ADDITIONAL_AMOUNT != null" >
+        <choose >
+          <when test="ADDITIONAL_AMOUNT == emptyBigDecimalValue" >
+            ADDITIONAL_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            ADDITIONAL_AMOUNT = #{ADDITIONAL_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and REQUEST_NO = #{REQUEST_NO}
+  </sql>
+  <update id="updateTRS_RESCHEDULE_REQST_DET" parameterType="com.path.dbmaps.vo.TRS_RESCHEDULE_REQST_DETVO" >
+    <include refid="sql_updateTRS_RESCHEDULE_REQST_DET" />
+  </update>
+</mapper>

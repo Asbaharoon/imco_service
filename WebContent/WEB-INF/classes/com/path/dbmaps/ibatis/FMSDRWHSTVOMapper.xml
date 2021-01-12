@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSDRWHST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSDRWHSTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DRWDWN_CODE" property="DRWDWN_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ORIGINAL_AMT" property="ORIGINAL_AMT" />
+    <result column="NEW_AMT" property="NEW_AMT" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DRWDWN_CODE, LINE_NO, ORIGINAL_AMT, NEW_AMT, DATE_CREATED, 
+    DATE_UPDATED, CREATED_BY, UPDATED_BY
+  </sql>
+  <select id="selectFMSDRWHST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSDRWHSTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSDRWHST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteFMSDRWHST" parameterType="com.path.dbmaps.vo.FMSDRWHSTVOKey" >
+    delete from FMSDRWHST
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertFMSDRWHST" parameterType="com.path.dbmaps.vo.FMSDRWHSTVO" >
+    insert into FMSDRWHST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DRWDWN_CODE != null and DRWDWN_CODE != emptyBigDecimalValue" >
+        DRWDWN_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="ORIGINAL_AMT != null and ORIGINAL_AMT != emptyBigDecimalValue" >
+        ORIGINAL_AMT,
+      </if>
+      <if test="NEW_AMT != null and NEW_AMT != emptyBigDecimalValue" >
+        NEW_AMT,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      DATE_UPDATED,
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DRWDWN_CODE != null and DRWDWN_CODE != emptyBigDecimalValue" >
+        #{DRWDWN_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="ORIGINAL_AMT != null and ORIGINAL_AMT != emptyBigDecimalValue" >
+        #{ORIGINAL_AMT},
+      </if>
+      <if test="NEW_AMT != null and NEW_AMT != emptyBigDecimalValue" >
+        #{NEW_AMT},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSDRWHST" >
+    update FMSDRWHST
+    <set >
+      <if test="ORIGINAL_AMT != null" >
+        <choose >
+          <when test="ORIGINAL_AMT == emptyBigDecimalValue" >
+            ORIGINAL_AMT = NULL ,
+          </when>
+          <otherwise >
+            ORIGINAL_AMT = #{ORIGINAL_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="NEW_AMT != null" >
+        <choose >
+          <when test="NEW_AMT == emptyBigDecimalValue" >
+            NEW_AMT = NULL ,
+          </when>
+          <otherwise >
+            NEW_AMT = #{NEW_AMT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DRWDWN_CODE = #{DRWDWN_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateFMSDRWHST" parameterType="com.path.dbmaps.vo.FMSDRWHSTVO" >
+    <include refid="sql_updateFMSDRWHST" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

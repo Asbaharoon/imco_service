@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="proofAddressMapper">
+
+	<sql id="proofAddressListCommon">
+
+		SELECT
+		CTS_PROOF_ADDRESS.PROF_ADDRESS_CODE,
+		CTS_PROOF_ADDRESS.BRIEF_DESC_ENG,
+		CTS_PROOF_ADDRESS.LONG_DESC_ENG
+		FROM CTS_PROOF_ADDRESS
+		WHERE CTS_PROOF_ADDRESS.COMP_CODE = #{compCode}
+
+	</sql>
+
+	<resultMap id="proofAddressListMap" type="com.path.dbmaps.vo.CTS_PROOF_ADDRESSVO">
+		<id property="PROF_ADDRESS_CODE" column="PROF_ADDRESS_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	</resultMap>
+
+	<select id="proofAddressList" resultMap="proofAddressListMap"
+		parameterType="com.path.vo.core.proofaddress.ProofAddressSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="proofAddressListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="proofAddressListCount" resultType="int"
+		parameterType="com.path.vo.core.proofaddress.ProofAddressSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="proofAddressListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnProofAddressCodeById" parameterType="com.path.vo.core.proofaddress.ProofAddressSC"
+		resultType="com.path.dbmaps.vo.CTS_PROOF_ADDRESSVO">
+		SELECT
+		CTS_PROOF_ADDRESS.PROF_ADDRESS_CODE,
+		CTS_PROOF_ADDRESS.BRIEF_DESC_ENG,
+		CTS_PROOF_ADDRESS.LONG_DESC_ENG
+		FROM CTS_PROOF_ADDRESS
+		WHERE
+		CTS_PROOF_ADDRESS.COMP_CODE = #{compCode}
+		AND CTS_PROOF_ADDRESS.PROF_ADDRESS_CODE = #{code}
+	</select>
+</mapper>

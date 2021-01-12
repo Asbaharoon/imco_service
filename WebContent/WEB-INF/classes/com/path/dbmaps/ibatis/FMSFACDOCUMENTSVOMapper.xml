@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSFACDOCUMENTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSFACDOCUMENTSVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DOC_CODE" property="DOC_CODE" />
+    <id column="FAC_REF" property="FAC_REF" />
+    <result column="LINE_NBR" property="LINE_NBR" />
+    <result column="EST_DATE_SENT" property="EST_DATE_SENT" />
+    <result column="EST_DATE_REC" property="EST_DATE_REC" />
+    <result column="SOL_DATE_SENT" property="SOL_DATE_SENT" />
+    <result column="SOL_DATE_REC" property="SOL_DATE_REC" />
+    <result column="CUSTODIAN_SENT" property="CUSTODIAN_SENT" />
+    <result column="MANDATORY" property="MANDATORY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, COMP_CODE, DOC_CODE, FAC_REF, LINE_NBR, EST_DATE_SENT, EST_DATE_REC, SOL_DATE_SENT, 
+    SOL_DATE_REC, CUSTODIAN_SENT, MANDATORY
+  </sql>
+  <select id="selectFMSFACDOCUMENTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSFACDOCUMENTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSFACDOCUMENTS
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and FAC_REF = #{FAC_REF}
+  </select>
+  <delete id="deleteFMSFACDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSFACDOCUMENTSVOKey" >
+    delete from FMSFACDOCUMENTS
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and FAC_REF = #{FAC_REF}
+  </delete>
+  <insert id="insertFMSFACDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSFACDOCUMENTSVO" >
+    insert into FMSFACDOCUMENTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        DOC_CODE,
+      </if>
+      <if test="FAC_REF != null and FAC_REF != emptyBigDecimalValue" >
+        FAC_REF,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        EST_DATE_SENT,
+      </if>
+      <if test="EST_DATE_REC != null" >
+        EST_DATE_REC,
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        SOL_DATE_SENT,
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        SOL_DATE_REC,
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        CUSTODIAN_SENT,
+      </if>
+      <if test="MANDATORY != null and !&quot;&quot;.equals(MANDATORY)" >
+        MANDATORY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DOC_CODE != null and DOC_CODE != emptyBigDecimalValue" >
+        #{DOC_CODE},
+      </if>
+      <if test="FAC_REF != null and FAC_REF != emptyBigDecimalValue" >
+        #{FAC_REF},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        #{EST_DATE_SENT},
+      </if>
+      <if test="EST_DATE_REC != null" >
+        #{EST_DATE_REC},
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        #{SOL_DATE_SENT},
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        #{SOL_DATE_REC},
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        #{CUSTODIAN_SENT},
+      </if>
+      <if test="MANDATORY != null and !&quot;&quot;.equals(MANDATORY)" >
+        #{MANDATORY},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSFACDOCUMENTS" >
+    update FMSFACDOCUMENTS
+    <set >
+      <if test="LINE_NBR != null" >
+        <choose >
+          <when test="LINE_NBR == emptyBigDecimalValue" >
+            LINE_NBR = NULL ,
+          </when>
+          <otherwise >
+            LINE_NBR = #{LINE_NBR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="EST_DATE_SENT != null" >
+        EST_DATE_SENT = #{EST_DATE_SENT},
+      </if>
+      <if test="EST_DATE_REC != null" >
+        EST_DATE_REC = #{EST_DATE_REC},
+      </if>
+      <if test="SOL_DATE_SENT != null" >
+        SOL_DATE_SENT = #{SOL_DATE_SENT},
+      </if>
+      <if test="SOL_DATE_REC != null" >
+        SOL_DATE_REC = #{SOL_DATE_REC},
+      </if>
+      <if test="CUSTODIAN_SENT != null" >
+        CUSTODIAN_SENT = #{CUSTODIAN_SENT},
+      </if>
+      <if test="MANDATORY != null" >
+        <choose >
+          <when test="MANDATORY.equals(&quot;&quot;)" >
+            MANDATORY = NULL ,
+          </when>
+          <otherwise >
+            MANDATORY = #{MANDATORY},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and COMP_CODE = #{COMP_CODE}
+      and DOC_CODE = #{DOC_CODE}
+      and FAC_REF = #{FAC_REF}
+  </sql>
+  <update id="updateFMSFACDOCUMENTS" parameterType="com.path.dbmaps.vo.FMSFACDOCUMENTSVO" >
+    <include refid="sql_updateFMSFACDOCUMENTS" />
+  </update>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFSGRPDOC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFSGRPDOCVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="GRP_CODE" property="GRP_CODE" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_ARAB" property="BRIEF_NAME_ARAB" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, GRP_CODE, BRIEF_NAME_ENG, BRIEF_NAME_ARAB, LONG_NAME_ENG, LONG_NAME_ARAB
+  </sql>
+  <select id="selectTFSGRPDOC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFSGRPDOCVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFSGRPDOC
+    where COMP_CODE = #{COMP_CODE}
+      and GRP_CODE = #{GRP_CODE}
+  </select>
+  <delete id="deleteTFSGRPDOC" parameterType="com.path.dbmaps.vo.TFSGRPDOCVO" >
+    delete from TFSGRPDOC
+    where COMP_CODE = #{COMP_CODE}
+      and GRP_CODE = #{GRP_CODE}
+  </delete>
+  <insert id="insertTFSGRPDOC" parameterType="com.path.dbmaps.vo.TFSGRPDOCVO" >
+    insert into TFSGRPDOC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      COMP_CODE,
+      <if test="GRP_CODE != null and GRP_CODE != emptyBigDecimalValue" >
+        GRP_CODE,
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB,
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{COMP_CODE},
+      <if test="GRP_CODE != null and GRP_CODE != emptyBigDecimalValue" >
+        #{GRP_CODE},
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        #{LONG_NAME_ARAB},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFSGRPDOC" >
+    update TFSGRPDOC
+    <set >
+      <if test="BRIEF_NAME_ENG != null" >
+        BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ARAB != null" >
+        BRIEF_NAME_ARAB = #{BRIEF_NAME_ARAB},
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        LONG_NAME_ENG = #{LONG_NAME_ENG},
+      </if>
+      <if test="LONG_NAME_ARAB != null" >
+        LONG_NAME_ARAB = #{LONG_NAME_ARAB},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and GRP_CODE = #{GRP_CODE}
+  </sql>
+  <update id="updateTFSGRPDOC" parameterType="com.path.dbmaps.vo.TFSGRPDOCVO" >
+    <include refid="sql_updateTFSGRPDOC" />
+  </update>
+</mapper>

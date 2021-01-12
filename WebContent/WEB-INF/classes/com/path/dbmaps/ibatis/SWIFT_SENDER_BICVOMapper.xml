@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWIFT_SENDER_BIC" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWIFT_SENDER_BICVO" >
+    <id column="ID" property="ID" />
+    <result column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="MODULE" property="MODULE" />
+    <result column="BIC_CODE" property="BIC_CODE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="DW_NAME" property="DW_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, COMP_CODE, BRANCH_CODE, MODULE, BIC_CODE, CIF_NO, DW_NAME
+  </sql>
+  <select id="selectSWIFT_SENDER_BIC" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWIFT_SENDER_BICVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWIFT_SENDER_BIC
+    where ID = #{ID}
+  </select>
+  <delete id="deleteSWIFT_SENDER_BIC" parameterType="com.path.dbmaps.vo.SWIFT_SENDER_BICVO" >
+    delete from SWIFT_SENDER_BIC
+    where ID = #{ID}
+  </delete>
+  <insert id="insertSWIFT_SENDER_BIC" parameterType="com.path.dbmaps.vo.SWIFT_SENDER_BICVO" >
+    insert into SWIFT_SENDER_BIC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        ID,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="MODULE != null" >
+        MODULE,
+      </if>
+      <if test="BIC_CODE != null" >
+        BIC_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="DW_NAME != null" >
+        DW_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ID != null and ID != emptyBigDecimalValue" >
+        #{ID},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="MODULE != null" >
+        #{MODULE},
+      </if>
+      <if test="BIC_CODE != null" >
+        #{BIC_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="DW_NAME != null" >
+        #{DW_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWIFT_SENDER_BIC" >
+    update SWIFT_SENDER_BIC
+    <set >
+      <if test="COMP_CODE != null" >
+        <choose >
+          <when test="COMP_CODE == emptyBigDecimalValue" >
+            COMP_CODE = NULL ,
+          </when>
+          <otherwise >
+            COMP_CODE = #{COMP_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRANCH_CODE != null" >
+        <choose >
+          <when test="BRANCH_CODE == emptyBigDecimalValue" >
+            BRANCH_CODE = NULL ,
+          </when>
+          <otherwise >
+            BRANCH_CODE = #{BRANCH_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODULE != null" >
+        MODULE = #{MODULE},
+      </if>
+      <if test="BIC_CODE != null" >
+        BIC_CODE = #{BIC_CODE},
+      </if>
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DW_NAME != null" >
+        DW_NAME = #{DW_NAME},
+      </if>
+    </set>
+    where ID = #{ID}
+  </sql>
+  <update id="updateSWIFT_SENDER_BIC" parameterType="com.path.dbmaps.vo.SWIFT_SENDER_BICVO" >
+    <include refid="sql_updateSWIFT_SENDER_BIC" />
+  </update>
+</mapper>

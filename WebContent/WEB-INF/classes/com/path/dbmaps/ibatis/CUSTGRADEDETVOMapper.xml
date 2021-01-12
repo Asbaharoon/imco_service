@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CUSTGRADEDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CUSTGRADEDETVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="CUST_GRADE" property="CUST_GRADE" />
+    <result column="CUST_GRADE_SCORE" property="CUST_GRADE_SCORE" />
+    <result column="BEST_SCORE" property="BEST_SCORE" />
+    <result column="COMMENTS" property="COMMENTS" />
+    <result column="SCORE" property="SCORE" />
+    <result column="STRING_SCORE" property="STRING_SCORE" />
+    <result column="LOAN_CATEGORY" property="LOAN_CATEGORY" />
+    <result column="SCORING" property="SCORING" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, BRANCH, CODE, COMP_CODE, LINE_NBR, CUST_GRADE, CUST_GRADE_SCORE, BEST_SCORE, 
+    COMMENTS, SCORE, STRING_SCORE, LOAN_CATEGORY, SCORING
+  </sql>
+  <select id="selectCUSTGRADEDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CUSTGRADEDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CUSTGRADEDET
+    where APP_NAME = #{APP_NAME}
+      and BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteCUSTGRADEDET" parameterType="com.path.dbmaps.vo.CUSTGRADEDETVOKey" >
+    delete from CUSTGRADEDET
+    where APP_NAME = #{APP_NAME}
+      and BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertCUSTGRADEDET" parameterType="com.path.dbmaps.vo.CUSTGRADEDETVO" >
+    insert into CUSTGRADEDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="CUST_GRADE != null and CUST_GRADE != emptyBigDecimalValue" >
+        CUST_GRADE,
+      </if>
+      <if test="CUST_GRADE_SCORE != null and CUST_GRADE_SCORE != emptyBigDecimalValue" >
+        CUST_GRADE_SCORE,
+      </if>
+      <if test="BEST_SCORE != null and BEST_SCORE != emptyBigDecimalValue" >
+        BEST_SCORE,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        SCORE,
+      </if>
+      <if test="STRING_SCORE != null" >
+        STRING_SCORE,
+      </if>
+      <if test="LOAN_CATEGORY != null and LOAN_CATEGORY != emptyBigDecimalValue" >
+        LOAN_CATEGORY,
+      </if>
+      <if test="SCORING != null and SCORING != emptyBigDecimalValue" >
+        SCORING,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="CUST_GRADE != null and CUST_GRADE != emptyBigDecimalValue" >
+        #{CUST_GRADE},
+      </if>
+      <if test="CUST_GRADE_SCORE != null and CUST_GRADE_SCORE != emptyBigDecimalValue" >
+        #{CUST_GRADE_SCORE},
+      </if>
+      <if test="BEST_SCORE != null and BEST_SCORE != emptyBigDecimalValue" >
+        #{BEST_SCORE},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+      <if test="SCORE != null and SCORE != emptyBigDecimalValue" >
+        #{SCORE},
+      </if>
+      <if test="STRING_SCORE != null" >
+        #{STRING_SCORE},
+      </if>
+      <if test="LOAN_CATEGORY != null and LOAN_CATEGORY != emptyBigDecimalValue" >
+        #{LOAN_CATEGORY},
+      </if>
+      <if test="SCORING != null and SCORING != emptyBigDecimalValue" >
+        #{SCORING},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCUSTGRADEDET" >
+    update CUSTGRADEDET
+    <set >
+      <if test="CUST_GRADE != null" >
+        <choose >
+          <when test="CUST_GRADE == emptyBigDecimalValue" >
+            CUST_GRADE = NULL ,
+          </when>
+          <otherwise >
+            CUST_GRADE = #{CUST_GRADE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CUST_GRADE_SCORE != null" >
+        <choose >
+          <when test="CUST_GRADE_SCORE == emptyBigDecimalValue" >
+            CUST_GRADE_SCORE = NULL ,
+          </when>
+          <otherwise >
+            CUST_GRADE_SCORE = #{CUST_GRADE_SCORE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BEST_SCORE != null" >
+        <choose >
+          <when test="BEST_SCORE == emptyBigDecimalValue" >
+            BEST_SCORE = NULL ,
+          </when>
+          <otherwise >
+            BEST_SCORE = #{BEST_SCORE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+      <if test="SCORE != null" >
+        <choose >
+          <when test="SCORE == emptyBigDecimalValue" >
+            SCORE = NULL ,
+          </when>
+          <otherwise >
+            SCORE = #{SCORE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STRING_SCORE != null" >
+        STRING_SCORE = #{STRING_SCORE},
+      </if>
+      <if test="LOAN_CATEGORY != null" >
+        <choose >
+          <when test="LOAN_CATEGORY == emptyBigDecimalValue" >
+            LOAN_CATEGORY = NULL ,
+          </when>
+          <otherwise >
+            LOAN_CATEGORY = #{LOAN_CATEGORY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SCORING != null" >
+        <choose >
+          <when test="SCORING == emptyBigDecimalValue" >
+            SCORING = NULL ,
+          </when>
+          <otherwise >
+            SCORING = #{SCORING},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateCUSTGRADEDET" parameterType="com.path.dbmaps.vo.CUSTGRADEDETVO" >
+    <include refid="sql_updateCUSTGRADEDET" />
+  </update>
+</mapper>

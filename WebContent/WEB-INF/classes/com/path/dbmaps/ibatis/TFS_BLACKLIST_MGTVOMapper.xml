@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFS_BLACKLIST_MGT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TFS_BLACKLIST_MGTVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="TYPE" property="TYPE" />
+    <result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+    <result column="BRIEF_NAME_ENG" property="BRIEF_NAME_ENG" />
+    <result column="BRIEF_NAME_AR" property="BRIEF_NAME_AR" />
+    <result column="LONG_NAME_AR" property="LONG_NAME_AR" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="CREATED_DATE" property="CREATED_DATE" />
+    <result column="MODIFIED_BY" property="MODIFIED_BY" />
+    <result column="MODIFIED_DATE" property="MODIFIED_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, TYPE, LONG_NAME_ENG, BRIEF_NAME_ENG, BRIEF_NAME_AR, LONG_NAME_AR, 
+    CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE
+  </sql>
+  <select id="selectTFS_BLACKLIST_MGT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TFS_BLACKLIST_MGTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TFS_BLACKLIST_MGT
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTFS_BLACKLIST_MGT" parameterType="com.path.dbmaps.vo.TFS_BLACKLIST_MGTVOKey" >
+    delete from TFS_BLACKLIST_MGT
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTFS_BLACKLIST_MGT" parameterType="com.path.dbmaps.vo.TFS_BLACKLIST_MGTVO" >
+    insert into TFS_BLACKLIST_MGT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        TYPE,
+      </if>
+      <if test="LONG_NAME_ENG != null and !&quot;&quot;.equals(LONG_NAME_ENG)" >
+        LONG_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_ENG != null and !&quot;&quot;.equals(BRIEF_NAME_ENG)" >
+        BRIEF_NAME_ENG,
+      </if>
+      <if test="BRIEF_NAME_AR != null and !&quot;&quot;.equals(BRIEF_NAME_AR)" >
+        BRIEF_NAME_AR,
+      </if>
+      <if test="LONG_NAME_AR != null and !&quot;&quot;.equals(LONG_NAME_AR)" >
+        LONG_NAME_AR,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE,
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        MODIFIED_BY,
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TYPE != null and !&quot;&quot;.equals(TYPE)" >
+        #{TYPE},
+      </if>
+      <if test="LONG_NAME_ENG != null and !&quot;&quot;.equals(LONG_NAME_ENG)" >
+        #{LONG_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_ENG != null and !&quot;&quot;.equals(BRIEF_NAME_ENG)" >
+        #{BRIEF_NAME_ENG},
+      </if>
+      <if test="BRIEF_NAME_AR != null and !&quot;&quot;.equals(BRIEF_NAME_AR)" >
+        #{BRIEF_NAME_AR},
+      </if>
+      <if test="LONG_NAME_AR != null and !&quot;&quot;.equals(LONG_NAME_AR)" >
+        #{LONG_NAME_AR},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="CREATED_DATE != null" >
+        #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null and !&quot;&quot;.equals(MODIFIED_BY)" >
+        #{MODIFIED_BY},
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        #{MODIFIED_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTFS_BLACKLIST_MGT" >
+    update TFS_BLACKLIST_MGT
+    <set >
+      <if test="TYPE != null" >
+        <choose >
+          <when test="TYPE.equals(&quot;&quot;)" >
+            TYPE = NULL ,
+          </when>
+          <otherwise >
+            TYPE = #{TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME_ENG != null" >
+        <choose >
+          <when test="LONG_NAME_ENG.equals(&quot;&quot;)" >
+            LONG_NAME_ENG = NULL ,
+          </when>
+          <otherwise >
+            LONG_NAME_ENG = #{LONG_NAME_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_NAME_ENG != null" >
+        <choose >
+          <when test="BRIEF_NAME_ENG.equals(&quot;&quot;)" >
+            BRIEF_NAME_ENG = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_NAME_ENG = #{BRIEF_NAME_ENG},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="BRIEF_NAME_AR != null" >
+        <choose >
+          <when test="BRIEF_NAME_AR.equals(&quot;&quot;)" >
+            BRIEF_NAME_AR = NULL ,
+          </when>
+          <otherwise >
+            BRIEF_NAME_AR = #{BRIEF_NAME_AR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LONG_NAME_AR != null" >
+        <choose >
+          <when test="LONG_NAME_AR.equals(&quot;&quot;)" >
+            LONG_NAME_AR = NULL ,
+          </when>
+          <otherwise >
+            LONG_NAME_AR = #{LONG_NAME_AR},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_DATE != null" >
+        CREATED_DATE = #{CREATED_DATE},
+      </if>
+      <if test="MODIFIED_BY != null" >
+        <choose >
+          <when test="MODIFIED_BY.equals(&quot;&quot;)" >
+            MODIFIED_BY = NULL ,
+          </when>
+          <otherwise >
+            MODIFIED_BY = #{MODIFIED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MODIFIED_DATE != null" >
+        MODIFIED_DATE = #{MODIFIED_DATE},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTFS_BLACKLIST_MGT" parameterType="com.path.dbmaps.vo.TFS_BLACKLIST_MGTVO" >
+    <include refid="sql_updateTFS_BLACKLIST_MGT" />
+  </update>
+</mapper>

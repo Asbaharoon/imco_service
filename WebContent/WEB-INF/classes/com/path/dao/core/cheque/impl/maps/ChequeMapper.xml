@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="chequeMappers">
+
+	<resultMap id="chequeRequestByCodeMap" type="chequeCO">
+		 <result property="ctsCheques.COMP_CODE"    		column="COMP_CODE"/>
+		 <result property="ctsCheques.CODE"    				column="CODE"/>
+		 <result property="ctsCheques.BRIEF_NAME_ENG"    	column="BRIEF_NAME_ENG"/>
+		 <result property="ctsDesign.CODE"  				column="DESIGN"/>
+		 <result property="ctsDesign.BRIEF_DESC_ENG"  		column="DESIGNDESC"/>
+		 <result property="ctsCheques.LEAVES"  				column="LEAVES"/>
+		 <result property="leaves"  						column="LEAVESDESC"/>
+		 <result property="ctsCheques.CHQ_TYPE"  			column="TYPES"/>
+		 <result property="types"  							column="TYPESDESC"/>
+		 <result property="ctsCheques.NUMBER_OF_CHEQUES"  	column="NUMBER_OF_CHEQUES"/>
+		 <result property="ctsCheques.CHQ_SERIAL_NO"  		column="CHQ_SERIAL_NO"/>
+		 <result property="ctsCheques.MULTI_CY"  			column="MULTI_CY"/>
+		 <result property="ctsCheques.DISABLE_GENERATE"  	column="DISABLE_GENERATE"/>
+		 <result property="ctsCheques.CHQ_AMENDABLE"  		column="CHQ_AMENDABLE"/>
+		 <result property="ctsCheques.CHQ_FR_AMENDABLE"  	column="CHQ_FR_AMENDABLE"/>
+		 <result property="ctsCheques.CHQ_URGENT"  			column="CHQ_URGENT"/>
+		 <result property="ctsCheques.LANGUAGE"  			column="LANGUAGE"/>
+		 <result property="ctsCheques.CHEQUE_BILL_YN"  		column="CHEQUE_BILL_YN"/>
+	</resultMap>	
+	
+	<select id="chequeRequestByCodeInfo"  parameterType="chequeCO"  resultMap="chequeRequestByCodeMap" >
+
+		SELECT CTSCHEQUES.COMP_CODE,
+		       CTSCHEQUES.CODE,
+		       CTSCHEQUES.BRIEF_NAME_ENG,
+		       
+		       CTSCHEQUES.DESIGN,
+		       (SELECT BRIEF_DESC_ENG FROM CTSCHEQUEBOOK_DESIGN WHERE COMP_CODE = CTSCHEQUES.COMP_CODE AND  CODE = CTSCHEQUES.DESIGN) DESIGNDESC,
+		       
+		       CTSCHEQUES.LEAVES, 
+		       (SELECT DESC_ENG FROM CTSCHEQUEBOOK_LEAVES WHERE COMP_CODE = CTSCHEQUES.COMP_CODE AND CODE = CTSCHEQUES.LEAVES) LEAVESDESC,
+		       
+		       CTSCHEQUES.TYPES,
+		       (SELECT DESC_ENG FROM CTSCHEQUEBOOK_TYPES WHERE COMP_CODE = CTSCHEQUES.COMP_CODE AND CODE = CTSCHEQUES.TYPES) TYPESDESC,
+		
+		       CTSCHEQUES.NUMBER_OF_CHEQUES,
+		       CTSCHEQUES.CHQ_SERIAL_NO,
+		       CTSCHEQUES.MULTI_CY,
+		       CTSCHEQUES.DISABLE_GENERATE,
+		       CTSCHEQUES.CHQ_AMENDABLE,
+		       CTSCHEQUES.CHQ_FR_AMENDABLE,
+		       CTSCHEQUES.LANGUAGE,
+		       CTSCHEQUES.CHQ_URGENT
+		       
+		  from CTSCHEQUES
+		 where  (COMP_CODE 	= #{ctsCheques.COMP_CODE,jdbcType=NUMERIC})
+		   <if test="ctsCheques.CODE != null">
+		   AND 	(CODE 		= #{ctsCheques.CODE})
+		   </if>
+		   <if test="ctsCheques.BRIEF_NAME_ENG != null">
+		   AND 	(BRIEF_NAME_ENG	LIKE #{ctsCheques.BRIEF_NAME_ENG})
+		   </if>
+		   <if test="ctsCheques.CHEQUE_BILL_YN != null">
+		   AND 	(CHEQUE_BILL_YN 		= '1')
+		   </if>
+	</select>
+	
+	
+	<resultMap id="chequesLkpMap" type="com.path.dbmaps.vo.CTSCHEQUESVO">
+		<result property="CODE" 							column="CODE"/>
+		<result property="BRIEF_NAME_ENG" 				column="BRIEF_NAME_ENG"/>
+		<result property="LONG_NAME_ENG" 					column="LONG_NAME_ENG"/>
+		<result property="BRIEF_NAME_ARAB" 				column="BRIEF_NAME_ARAB"/>
+		<result property="LONG_NAME_ARAB" 				column="LONG_NAME_ARAB"/>
+		<result property="NUMBER_OF_CHEQUES" 				column="NUMBER_OF_CHEQUES"/>
+		<result property="TRX_TYPE" 						column="TRX_TYPE"/>	
+		<result property="CHQ_UNIQUE" 					column="CHQ_UNIQUE"/>
+		<result property="CHQ_SERIAL_NO" 					column="CHQ_SERIAL_NO"/>
+		<result property="CHARGES_SCHEMA" 				column="CHARGES_SCHEMA"/>
+		<result property="CHQ_TYPE" 						column="CHQ_TYPE"/>
+		<result property="CHQ_URGENT" 					column="CHQ_URGENT"/>
+		<result property="CHQ_AMENDABLE" 					column="CHQ_AMENDABLE"/>
+		<result property="AUTO_SUBMIT" 					column="AUTO_SUBMIT"/>
+		<result property="ADDITIONNAL_REFERENCE"			column="ADDITIONNAL_REFERENCE"/>	
+		<result property="LANGUAGE" 						column="LANGUAGE"/>
+		<result property="ADD_STUB" 						column="ADD_STUB"/>
+		<result property="SPECIFIC_CHARGES" 				column="SPECIFIC_CHARGES"/>
+		<result property="DESIGN" 						column="DESIGN"/>
+		<result property="LEAVES" 						column="LEAVES"/>
+		<result property="TYPES" 							column="TYPES"/>
+		<result property="CHQ_FR_AMENDABLE" 				column="CHQ_FR_AMENDABLE"/>
+		<result property="MULTI_CY"						column="MULTI_CY"/>	
+		<result property="DESTROY_CHARGES" 				column="DESTROY_CHARGES"/>
+		<result property="CANCEL_CHARGES" 				column="CANCEL_CHARGES"/>
+		<result property="DISABLE_GENERATE" 				column="DISABLE_GENERATE"/>
+		<result property="POP_ACC_FULL_NAME_TO_PRINT_YN" 	column="POP_ACC_FULL_NAME_TO_PRINT_YN"/>
+		
+	</resultMap>
+	
+	<select id="chequesLkpRecords" parameterType="chequeSC" resultMap="chequesLkpMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="chequesRecs"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+	 </select>
+	 
+	<sql id="chequesRecs">
+		SELECT  CTSCHEQUES.CODE,
+				CTSCHEQUES.BRIEF_NAME_ENG,
+				CTSCHEQUES.LONG_NAME_ENG,
+				CTSCHEQUES.BRIEF_NAME_ARAB,
+        		CTSCHEQUES.LONG_NAME_ARAB,
+        		CTSCHEQUES.NUMBER_OF_CHEQUES,
+        		CTSCHEQUES.TRX_TYPE,
+        		CTSCHEQUES.CHQ_UNIQUE,
+        		CTSCHEQUES.CHQ_SERIAL_NO,
+        		CTSCHEQUES.CHARGES_SCHEMA,
+        		CTSCHEQUES.CHQ_TYPE,
+        		CTSCHEQUES.CHQ_URGENT,
+        		CTSCHEQUES.CHQ_AMENDABLE,
+        		CTSCHEQUES.AUTO_SUBMIT ,
+        		CTSCHEQUES.ADDITIONNAL_REFERENCE,
+        		CTSCHEQUES.LANGUAGE,
+        		CTSCHEQUES.ADD_STUB,
+        		CTSCHEQUES.DESIGN,
+        		CTSCHEQUES.LEAVES,
+        		CTSCHEQUES.TYPES,
+        		CTSCHEQUES.SPECIFIC_CHARGES,
+        		CTSCHEQUES.CHQ_FR_AMENDABLE,
+        		CTSCHEQUES.MULTI_CY,
+        		CTSCHEQUES.DESTROY_CHARGES,
+        		CTSCHEQUES.CANCEL_CHARGES,
+        		CTSCHEQUES.DISABLE_GENERATE,
+        		CTSCHEQUES.POP_ACC_FULL_NAME_TO_PRINT_YN
+		  FROM  CTSCHEQUES 
+	   WHERE	CTSCHEQUES.COMP_CODE  = #{compCode,jdbcType=NUMERIC}
+
+			<if test='"true".equals(billFlag) and billFlag != null'>
+				AND 	(CHEQUE_BILL_YN 		= '1')
+			</if>
+		   
+			<if test='"false".equals(billFlag) and billFlag != null'>
+				AND 	COALESCE(CHEQUE_BILL_YN ,'0') = '0'
+			</if>
+
+	</sql>
+
+
+	<select id="chequesLkpCount" parameterType="chequeSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="chequesRecs"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<select id="returnDefaultedChequeByCifTypeCode" parameterType="chequeSC" resultType="com.path.dbmaps.vo.CTSCHEQUESVO">
+  	<!-- 
+  		SELECT 	RIFATT.DEFAULT_PASSBOOK  					 
+		FROM 	RIFATT  
+		WHERE 	RIFATT.COMP_CODE = #{compCode}
+		AND 	RIFATT.TYPE_CODE = #{cifTypeCode}
+	-->	
+		SELECT 	CASE WHEN #{preferredLanguage} = 'A' THEN CTSCHEQUES.BRIEF_NAME_ARAB ELSE CTSCHEQUES.BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+			   	CTSCHEQUES.CODE
+		FROM 	CTSCHEQUES,RIFATT 
+		WHERE 	CTSCHEQUES.COMP_CODE 	= RIFATT.COMP_CODE 
+		AND 	CTSCHEQUES.CODE 		= RIFATT.CHQBOOK_NUM
+		AND 	RIFATT.TYPE_CODE 		= #{cifTypeCode} 
+		AND 	RIFATT.COMP_CODE 		= #{compCode}
+  	</select>
+  	
+  	
+  	<select id="returnDefaultedBillByCifTypeCode" parameterType="chequeSC" resultType="com.path.dbmaps.vo.CTSCHEQUESVO">
+
+		SELECT 	CASE WHEN #{preferredLanguage} = 'A' THEN CTSCHEQUES.BRIEF_NAME_ARAB ELSE CTSCHEQUES.BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+			   	CTSCHEQUES.CODE
+		FROM 	CTSCHEQUES,RIFATT 
+		WHERE 	CTSCHEQUES.COMP_CODE 	= RIFATT.COMP_CODE 
+		AND 	CTSCHEQUES.CODE 		= RIFATT.BILL_NUM
+		AND     CHEQUE_BILL_YN          = '1'
+		AND 	RIFATT.TYPE_CODE 		= #{cifTypeCode} 
+		AND 	RIFATT.COMP_CODE 		= #{compCode}
+  	</select>
+  	
+</mapper>	

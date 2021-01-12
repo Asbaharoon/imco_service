@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFCRT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFCRTVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <result column="UPL_CROSS_CURR" property="UPL_CROSS_CURR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CURRENCY_CODE, UPL_CROSS_CURR
+  </sql>
+  <select id="selectRIFCRT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.RIFCRTVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from RIFCRT
+    where COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteRIFCRT" parameterType="com.path.dbmaps.vo.RIFCRTVO" >
+    delete from RIFCRT
+    where COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertRIFCRT" parameterType="com.path.dbmaps.vo.RIFCRTVO" >
+    insert into RIFCRT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="UPL_CROSS_CURR != null and UPL_CROSS_CURR != emptyBigDecimalValue" >
+        UPL_CROSS_CURR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="UPL_CROSS_CURR != null and UPL_CROSS_CURR != emptyBigDecimalValue" >
+        #{UPL_CROSS_CURR},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateRIFCRT" >
+    update RIFCRT
+    <set >
+      <if test="CURRENCY_CODE != null" >
+        <choose >
+          <when test="CURRENCY_CODE == emptyBigDecimalValue" >
+            CURRENCY_CODE = NULL ,
+          </when>
+          <otherwise >
+            CURRENCY_CODE = #{CURRENCY_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="UPL_CROSS_CURR != null" >
+        <choose >
+          <when test="UPL_CROSS_CURR == emptyBigDecimalValue" >
+            UPL_CROSS_CURR = NULL ,
+          </when>
+          <otherwise >
+            UPL_CROSS_CURR = #{UPL_CROSS_CURR},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateRIFCRT" parameterType="com.path.dbmaps.vo.RIFCRTVO" >
+    <include refid="sql_updateRIFCRT" />
+  </update>
+</mapper>

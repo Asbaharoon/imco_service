@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="jvTypesMapper">
+
+<sql id="select_JVType">
+    SELECT
+    	JV_TYPE.COMP_CODE,
+   	 	JV_TYPE.TYPE_CODE ,
+    	JV_TYPE.BRIEF_DESC_ENG ,
+    	JV_TYPE.LONG_DESC_ENG,
+    	JV_TYPE.ADDITIONAL_REFERENCE 
+ 	FROM  JV_TYPE 
+ 	WHERE COMP_CODE = #{compCode} 
+	
+
+   
+	</sql>
+	
+	<select id="selectJVTypeLookupList"
+	        resultMap="resultJVTypeLookupMap" 
+	        parameterType="jvTypeSC">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="jvTypesMapper.select_JVType"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+	<select id="selectJVTypeLookupCount"  resultType="int" parameterType="jvTypeSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="jvTypesMapper.select_JVType"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+	</select>
+	
+	<resultMap id="resultJVTypeLookupMap" type="jvTypeVO">
+		<result property="COMP_CODE" 					column="COMP_CODE" />
+		<result property="TYPE_CODE" 					column="TYPE_CODE" />
+		<result property="BRIEF_DESC_ENG" 				column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" 				column="LONG_DESC_ENG" />
+		<result property="ADDITIONAL_REFERENCE" 		column="ADDITIONAL_REFERENCE" />
+	</resultMap>
+ 
+ 
+  <select id="checkJVTypeValidation" parameterType="jvTypeSC" resultType="jvTypeVO">
+	SELECT
+    	JV_TYPE.COMP_CODE,
+   	 	JV_TYPE.TYPE_CODE ,
+    	JV_TYPE.BRIEF_DESC_ENG ,
+    	JV_TYPE.LONG_DESC_ENG 
+ 	FROM  JV_TYPE 
+ 	WHERE COMP_CODE = #{compCode} 
+ 	and TYPE_CODE = #{jvCode}
+  </select>  
+  	<!--  TP#205235; Saheer.Naduthodi; 23/07/2014 [START]-->
+	<select id="returnCountJVType" resultType="int" parameterType="jvTypeSC">
+		SELECT 	COUNT(1)
+		FROM		IISCTRL_ONLINE_BLOCK_JV_TYPE
+		WHERE 	COMP_CODE 	= 	#{compCode} 
+		AND   	BRANCH_CODE =	#{branchCode}
+		AND   	JV_TYPE 	=	#{jvCode}
+	</select>
+	<!--  TP#205235; Saheer.Naduthodi; 23/07/2014 [END]-->
+</mapper>
+
+ 

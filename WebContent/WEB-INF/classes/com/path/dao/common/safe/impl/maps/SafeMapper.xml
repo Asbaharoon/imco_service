@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="safeMapper">
+
+<!-- Fill Accounts to be locked - HGhazal - TP#259473 
+<insert id="fillLockAcc" parameterType="syncLockUnlockAccVO">
+		INSERT INTO SYNC_LOCKUNLOCK_ACC(
+				  LOCK_ID   ,
+				  LINE_NO   ,
+				  COMP_CODE ,
+				  ACC_BR    ,
+				  ACC_CY	,
+				  ACC_GL	,
+				  ACC_CIF	,
+				  ACC_SL		
+		)
+		VALUES(
+				#{LOCK_ID       ,jdbcType=NUMERIC},
+				#{LINE_NO       ,jdbcType=NUMERIC},
+				#{COMP_CODE   	,jdbcType=NUMERIC},
+				#{ACC_BR     	,jdbcType=NUMERIC},
+				#{ACC_CY  		,jdbcType=NUMERIC},
+				#{ACC_GL     	,jdbcType=VARCHAR},
+				#{ACC_CIF    	,jdbcType=NUMERIC},
+				#{ACC_SL    	,jdbcType=NUMERIC},
+				)
+		</insert>-->
+
+	<!--  Call Lock/Unlock procedure - HGhazal - TP#259473 -->
+	<select id="executeBulkLockUnlock" parameterType="syncAccLockUnlockCO"
+		statementType="CALLABLE">
+		{ CALL P_SYNC_BULK_ACC_LOCK_TIMEOUT(
+			#{loggedCompany, 	mode=IN,jdbcType=NUMERIC} ,
+			#{loggedBranch, 	mode=IN,jdbcType=NUMERIC} ,
+			#{loggedUser, 		mode=IN,jdbcType=VARCHAR},
+			#{module, 			mode=IN,jdbcType=VARCHAR} ,
+			#{lockId, 			mode=IN,jdbcType=NUMERIC} ,
+			#{action, 			mode=IN,jdbcType=VARCHAR} ,
+			#{timeout, 			mode=IN,jdbcType=NUMERIC} ,
+			
+			#{errorType, 		mode=OUT,jdbcType=VARCHAR} ,
+			#{errorCode, 		mode=OUT,jdbcType=NUMERIC} ,
+			#{errorDesc, 		mode=OUT,jdbcType=VARCHAR} 
+			)
+		}
+	</select>
+	
+  <!--  Unlock log - HGhazal - TP#259473 
+   <delete id="logUnlock" parameterType="SyncLockLogCO" >
+		DELETE 	FROM SYNC_LOCKUNLOCK_REQ_LOG
+		WHERE COMPANY			=	#{company}
+		AND BRANCH				=	#{branch}
+		AND USER_ID 			= 	#{userId}
+		AND COMP_CODE			=	#{accComp}
+		AND BRANCH_CODE			=	#{accBr}
+		AND CURRENCY_CODE		=	#{accCy}
+		AND GL_CODE				=	#{accGl}
+		AND CIF_SUB_NO			=	#{accCif}
+		AND SL_NO				=	#{accSl}
+  </delete>
+  -->
+  <!--  Get counter - HGhazal - TP#259473 
+	<select id="getSyncCounter" resultType="BigDecimal"
+		statementType="CALLABLE">
+		{ CALL P_SYNC_COUNTER(
+			#{odCounter, mode=OUT,jdbcType=VARCHAR} )
+		}
+	</select>
+	-->
+</mapper>

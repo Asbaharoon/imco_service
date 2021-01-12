@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_CHRG_TEMP_SCREENS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" >
+    <id column="SCREEN_ID" property="SCREEN_ID" />
+    <result column="SCREEN_DESC" property="SCREEN_DESC" />
+    <result column="SCREEN_URL" property="SCREEN_URL" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" extends="BaseResultMap" >
+    <result column="SCREEN_PARAMS" property="SCREEN_PARAMS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SCREEN_ID, SCREEN_DESC, SCREEN_URL
+  </sql>
+  <sql id="Blob_Column_List" >
+    SCREEN_PARAMS
+  </sql>
+  <select id="selectSYS_PARAM_CHRG_TEMP_SCREENS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SYS_PARAM_CHRG_TEMP_SCREENS
+    where SCREEN_ID = #{SCREEN_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_CHRG_TEMP_SCREENS" parameterType="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" >
+    delete from SYS_PARAM_CHRG_TEMP_SCREENS
+    where SCREEN_ID = #{SCREEN_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_CHRG_TEMP_SCREENS" parameterType="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" >
+    insert into SYS_PARAM_CHRG_TEMP_SCREENS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        SCREEN_ID,
+      </if>
+      <if test="SCREEN_DESC != null" >
+        SCREEN_DESC,
+      </if>
+      <if test="SCREEN_URL != null" >
+        SCREEN_URL,
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        SCREEN_PARAMS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="SCREEN_ID != null and SCREEN_ID != emptyBigDecimalValue" >
+        #{SCREEN_ID},
+      </if>
+      <if test="SCREEN_DESC != null" >
+        #{SCREEN_DESC},
+      </if>
+      <if test="SCREEN_URL != null" >
+        #{SCREEN_URL},
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        #{SCREEN_PARAMS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_CHRG_TEMP_SCREENS" >
+    update SYS_PARAM_CHRG_TEMP_SCREENS
+    <set >
+      <if test="SCREEN_DESC != null" >
+        SCREEN_DESC = #{SCREEN_DESC},
+      </if>
+      <if test="SCREEN_URL != null" >
+        SCREEN_URL = #{SCREEN_URL},
+      </if>
+      <if test="SCREEN_PARAMS != null" >
+        SCREEN_PARAMS = #{SCREEN_PARAMS},
+      </if>
+    </set>
+    where SCREEN_ID = #{SCREEN_ID}
+  </sql>
+  <update id="updateSYS_PARAM_CHRG_TEMP_SCREENS" parameterType="com.path.dbmaps.vo.SYS_PARAM_CHRG_TEMP_SCREENSVO" >
+    <include refid="sql_updateSYS_PARAM_CHRG_TEMP_SCREENS" />
+  </update>
+</mapper>

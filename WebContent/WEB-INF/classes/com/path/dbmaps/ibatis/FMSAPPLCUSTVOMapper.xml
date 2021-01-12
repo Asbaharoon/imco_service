@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSAPPLCUST" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSAPPLCUSTVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="INDICATOR_CODE" property="INDICATOR_CODE" />
+    <result column="INDICATOR_AMOUNT" property="INDICATOR_AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, LINE_NBR, INDICATOR_CODE, INDICATOR_AMOUNT
+  </sql>
+  <select id="selectFMSAPPLCUST" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSAPPLCUSTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSAPPLCUST
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteFMSAPPLCUST" parameterType="com.path.dbmaps.vo.FMSAPPLCUSTVOKey" >
+    delete from FMSAPPLCUST
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertFMSAPPLCUST" parameterType="com.path.dbmaps.vo.FMSAPPLCUSTVO" >
+    insert into FMSAPPLCUST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="INDICATOR_CODE != null and INDICATOR_CODE != emptyBigDecimalValue" >
+        INDICATOR_CODE,
+      </if>
+      <if test="INDICATOR_AMOUNT != null and INDICATOR_AMOUNT != emptyBigDecimalValue" >
+        INDICATOR_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="INDICATOR_CODE != null and INDICATOR_CODE != emptyBigDecimalValue" >
+        #{INDICATOR_CODE},
+      </if>
+      <if test="INDICATOR_AMOUNT != null and INDICATOR_AMOUNT != emptyBigDecimalValue" >
+        #{INDICATOR_AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSAPPLCUST" >
+    update FMSAPPLCUST
+    <set >
+      <if test="INDICATOR_CODE != null" >
+        <choose >
+          <when test="INDICATOR_CODE == emptyBigDecimalValue" >
+            INDICATOR_CODE = NULL ,
+          </when>
+          <otherwise >
+            INDICATOR_CODE = #{INDICATOR_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INDICATOR_AMOUNT != null" >
+        <choose >
+          <when test="INDICATOR_AMOUNT == emptyBigDecimalValue" >
+            INDICATOR_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            INDICATOR_AMOUNT = #{INDICATOR_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateFMSAPPLCUST" parameterType="com.path.dbmaps.vo.FMSAPPLCUSTVO" >
+    <include refid="sql_updateFMSAPPLCUST" />
+  </update>
+</mapper>

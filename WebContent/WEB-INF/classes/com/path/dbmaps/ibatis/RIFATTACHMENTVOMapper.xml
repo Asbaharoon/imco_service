@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RIFATTACHMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.RIFATTACHMENTVO" >
+    <result column="APP_NAME" property="APP_NAME" />
+    <result column="PROG_REFERENCE" property="PROG_REFERENCE" />
+    <result column="TRX_NBR" property="TRX_NBR" />
+    <result column="ATTACH_TYPE" property="ATTACH_TYPE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.RIFATTACHMENTVO" extends="BaseResultMap" >
+    <result column="ATTACHMENT_DETAILS" property="ATTACHMENT_DETAILS" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    ATTACHMENT_DETAILS
+  </sql>
+  <insert id="insertRIFATTACHMENT" parameterType="com.path.dbmaps.vo.RIFATTACHMENTVO" >
+    insert into RIFATTACHMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REFERENCE != null" >
+        PROG_REFERENCE,
+      </if>
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="ATTACH_TYPE != null" >
+        ATTACH_TYPE,
+      </if>
+      <if test="ATTACHMENT_DETAILS != null" >
+        ATTACHMENT_DETAILS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REFERENCE != null" >
+        #{PROG_REFERENCE},
+      </if>
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="ATTACH_TYPE != null" >
+        #{ATTACH_TYPE},
+      </if>
+      <if test="ATTACHMENT_DETAILS != null" >
+        #{ATTACHMENT_DETAILS},
+      </if>
+    </trim>
+  </insert>
+</mapper>

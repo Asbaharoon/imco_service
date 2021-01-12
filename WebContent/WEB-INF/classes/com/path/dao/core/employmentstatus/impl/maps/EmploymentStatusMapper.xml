@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="employmentStatusMapper">
+
+	<sql id="empStatusListCommon">
+
+		SELECT
+		CTS_EMPLOYMENT_STATUS.EMPLOYMENT_STATUS_CODE,
+		CTS_EMPLOYMENT_STATUS.BRIEF_DESC_ENG,
+		CTS_EMPLOYMENT_STATUS.LONG_DESC_ENG
+		FROM CTS_EMPLOYMENT_STATUS
+		WHERE CTS_EMPLOYMENT_STATUS.COMP_CODE = #{compCode}
+
+	</sql>
+
+	<resultMap id="empStatusListMap" type="com.path.dbmaps.vo.CTS_EMPLOYMENT_STATUSVO">
+		<id property="EMPLOYMENT_STATUS_CODE" column="EMPLOYMENT_STATUS_CODE" />
+		<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+		<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	</resultMap>
+
+	<select id="empStatusList" resultMap="empStatusListMap"
+		parameterType="com.path.vo.core.employmentstatus.EmploymentStatusSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="empStatusListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="empStatusListCount" resultType="int"
+		parameterType="com.path.vo.core.employmentstatus.EmploymentStatusSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="empStatusListCommon" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+
+	<select id="returnEmpStatusCodeById" parameterType="com.path.vo.core.employmentstatus.EmploymentStatusSC"
+		resultType="com.path.dbmaps.vo.CTS_EMPLOYMENT_STATUSVO">
+		SELECT
+		CTS_EMPLOYMENT_STATUS.EMPLOYMENT_STATUS_CODE,
+		CTS_EMPLOYMENT_STATUS.BRIEF_DESC_ENG,
+		CTS_EMPLOYMENT_STATUS.LONG_DESC_ENG
+		FROM CTS_EMPLOYMENT_STATUS
+		WHERE
+		CTS_EMPLOYMENT_STATUS.COMP_CODE = #{compCode}
+		AND CTS_EMPLOYMENT_STATUS.EMPLOYMENT_STATUS_CODE = #{code}
+	</select>
+</mapper>

@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="dashboardPortalMapper">
+
+<select id="selectWidgetTypeList" parameterType="dashboardPortalSC" resultType="sysParamPortletTypeVO">
+    select 
+	PT.PORTLET_CODE, PT.IMG_URL, PT.ABV_DESC_KEY, PT.TITLE_KEY, PT.PORTLET_URL, PT.USR_DEFINED_PORTLET_YN
+    from SYS_PARAM_PORTLET_TYPE PT
+    <choose>
+		<when test='"1".equals(enablePortletAXS)'>
+			, SYS_PARAM_USR_ALLOWED_PORTLETS AP
+   			 WHERE AP.USER_ID = #{userName}
+			 AND AP.PORTLET_CODE = PT.PORTLET_CODE
+    	     AND PT.USR_DEFINED_PORTLET_YN = '0'
+		</when>
+		<otherwise>
+			 WHERE PT.USR_DEFINED_PORTLET_YN = '0' 
+	    </otherwise>
+    </choose>
+</select>
+
+<resultMap type="widgetVO" id="userPortalMap">
+<result column="PORTLET_CODE" property="id"/>
+<result column="TITLE_KEY" property="titleKey"/>
+<result column="PORTLET_URL" property="url"/>
+<result column="COLUMN_INDEX" property="userPortlets.COLUMN_INDEX"/>
+<result column="PORTLET_MODE" property="open"/>
+<result column="LAYOUT" property="userPortlets.LAYOUT"/>
+<result column="USR_DEFINED_PORTLET_YN" property="userDefinedType"/>
+<result column="PORTLET_HEIGHT" property="customHeight"/>
+</resultMap>
+<select id="selectUserPortal" resultMap="userPortalMap" parameterType="dashboardPortalSC">
+	SELECT LAYOUT, PT.PORTLET_CODE, COLUMN_INDEX, PORTLET_MODE, PT.TITLE_KEY, PT.PORTLET_URL, PT.USR_DEFINED_PORTLET_YN, UP.PORTLET_HEIGHT
+	FROM USER_PORTLETS UP, SYS_PARAM_PORTLET_TYPE PT
+	WHERE USER_ID = #{USER_ID}
+	AND UP.PORTLET_CODE = PT.PORTLET_CODE
+	ORDER BY PORTLET_INDEX
+</select>
+
+<sql id="userPortalSql">
+	SELECT UP.USER_ID, UP.PORTLET_CODE, PT.TITLE_KEY, PT.PORTLET_URL, PT.ABV_DESC_KEY
+	FROM USER_PORTLETS UP, SYS_PARAM_PORTLET_TYPE PT
+	WHERE USER_ID = #{userId}
+	AND UP.PORTLET_CODE = PT.PORTLET_CODE
+    AND PT.USR_DEFINED_PORTLET_YN = '1'
+</sql>
+<select id="returnUserDashWidgetsListCount"  resultType="int" parameterType="dashboardPortalSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userPortalSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+<select id="returnUserDashWidgetsList" parameterType="dashboardPortalSC" resultMap="returnUsrAllwdPrtltsListMap">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="userPortalSql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+
+<delete id="deleteUserPortal" parameterType="dashboardPortalSC">
+	DELETE FROM USER_PORTLETS WHERE USER_ID = #{USER_ID}
+</delete>
+
+<delete id="deleteUserWidgetDef" parameterType="dashboardPortalSC">
+	DELETE FROM SYS_PARAM_PORTLET_TYPE
+	WHERE USR_DEFINED_PORTLET_YN = '1'
+	AND PORTLET_CODE IN 
+	<foreach collection="userWidgetDefLst" item="item" open="(" close=")" separator=",">#{item}</foreach>
+	AND NOT EXISTS(SELECT 1 
+	                 FROM USER_PORTLETS 
+	                WHERE USER_PORTLETS.USER_ID <![CDATA[<>]]> #{USER_ID} 
+	                  AND USER_PORTLETS.PORTLET_CODE = SYS_PARAM_PORTLET_TYPE.PORTLET_CODE)
+</delete>
+
+<select id="returnUserDefWidgetTypeLst" parameterType="dashboardPortalSC" resultType="string">
+	SELECT UP.PORTLET_CODE FROM SYS_PARAM_PORTLET_TYPE PT, USER_PORTLETS UP
+	WHERE UP.USER_ID= #{USER_ID}
+	AND PT.USR_DEFINED_PORTLET_YN = '1'
+	AND UP.PORTLET_CODE = PT.PORTLET_CODE
+</select>
+<resultMap id="returnFavoriteListMap" type="favoriteCO">
+ <result property="userFavorites.APP_NAME"          column="APP_NAME"/>
+ <result property="userFavorites.ID"                column="ID"/>
+ <result property="userFavorites.PROG_REF"          column="PROG_REF"/>
+ <result property="userFavorites.USER_ID"           column="USER_ID"/>
+ <result property="userFavorites.DESCRIPTION"       column="DESCRIPTION"/>
+ <result property="userFavorites.URL"               column="URL"/>
+ <result property="userFavorites.OPEN_IN_DIALOG_YN" column="OPEN_IN_DIALOG_YN"/>
+ <result property="opt_url"                         column="OPT_URL"/>
+ <result property="targetAppName"                   column="TARGET_APP_NAME"/>
+ <result property="targetProgRef"                   column="TARGET_PROG_REF"/>
+ <result property="appDesc"                         column="appDesc"/>
+ <result property="externalLink"                    column="externalLink"/>
+</resultMap>
+<select id="returnFavoriteList" parameterType="dashboardPortalSC" resultMap="returnFavoriteListMap">
+SELECT ufo.APP_NAME 
+      ,ufo.ID 
+      ,ufo.PROG_REF 
+      ,ufo.USER_ID 
+      ,ufo.DESCRIPTION 
+      ,oe.OPT_URL
+      ,oe.TARGET_APP_NAME
+      ,oe.TARGET_PROG_REF
+      ,ufo.URL
+      ,(CASE WHEN ufo.OPEN_IN_DIALOG_YN IS NULL then 0 else ufo.OPEN_IN_DIALOG_YN END) AS OPEN_IN_DIALOG_YN
+      ,(SELECT sa.LONG_DESC FROM S_APP sa WHERE sa.APP_NAME = ufo.APP_NAME) as appDesc
+      ,(
+         CASE WHEN ufo.PROG_REF IS NULL AND ufo.URL IS NOT NULL
+              THEN 1
+              ELSE 0
+          END    
+       ) as externalLink
+      FROM USER_FAVORITES ufo 
+      LEFT OUTER JOIN OPT_EXTENDED oe
+        ON oe.APP_NAME = ufo.APP_NAME 
+       AND oe.PROG_REF = ufo.PROG_REF 
+WHERE ufo.USER_ID LIKE #{USER_ID} 
+ORDER BY ufo.APP_NAME ASC
+</select>
+<resultMap id="returnAppDataMap" type="applicationCO">
+   <result property="appVO.APP_NAME"  column="APP_NAME"/>
+   <result property="appVO.LONG_DESC" column="LONG_DESC"/>
+   <result property="groupCode"       column="APP_GROUP_CODE"/>
+   <result property="groupDesc"       column="groupDesc"/>
+</resultMap>
+<select id="returnAppData" parameterType="dashboardPortalSC" resultMap="returnAppDataMap">
+SELECT APP_NAME,
+       CASE WHEN TRNS_LONG_DESC IS NULL THEN LONG_DESC ELSE TRNS_LONG_DESC END LONG_DESC,
+       APP_GROUP_CODE,
+       groupDesc
+FROM
+(
+SELECT APP_NAME
+      ,CASE #{languageCode,jdbcType=VARCHAR}  
+                   WHEN  'AR' THEN S_APP.LONG_DESC_AR
+                   WHEN 'FR' THEN S_APP.LONG_DESC_FR
+                   WHEN 'FA' THEN S_APP.LONG_DESC_FA
+                   WHEN 'RU' THEN S_APP.LONG_DESC_RU
+                   WHEN 'TK' THEN S_APP.LONG_DESC_TK
+                   ELSE  S_APP.LONG_DESC END TRNS_LONG_DESC
+      ,S_APP.LONG_DESC
+      ,S_APP.APP_GROUP_CODE
+      ,(SELECT CASE #{languageCode,jdbcType=VARCHAR}  WHEN  'AR' THEN sag.APP_GROUP_DESC_AR
+                   WHEN 'FR' THEN sag.APP_GROUP_DESC_FR
+                   WHEN 'FA' THEN sag.APP_GROUP_DESC_FA
+                   WHEN 'RU' THEN sag.APP_GROUP_DESC_RU
+                   WHEN 'TK' THEN sag.APP_GROUP_DESC_TK
+                   ELSE  sag.APP_GROUP_DESC_ENG END groupDesc
+          FROM S_APP_GROUP sag 
+         WHERE sag.APP_GROUP_CODE = S_APP.APP_GROUP_CODE) as groupDesc
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM AXS, OPT_EXTENDED
+           WHERE AXS.APP_NAME    = OPT_EXTENDED.APP_NAME
+             AND AXS.PROG_REF    = OPT_EXTENDED.PROG_REF
+             AND AXS.APP_NAME    = S_APP.APP_NAME
+             AND AXS.STATUS      = 'P'
+             AND AXS.USER_ID     = #{USER_ID}
+             AND (AXS.COMP_CODE   = #{compCode} OR AXS.COMP_CODE =0)
+             AND (AXS.BRANCH_CODE = #{branchCode} OR AXS.BRANCH_CODE =0)
+             AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+             )
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+UNION
+SELECT APP_NAME  
+      ,CASE #{languageCode,jdbcType=VARCHAR}  
+                   WHEN  'AR' THEN S_APP.LONG_DESC_AR
+                   WHEN 'FR' THEN S_APP.LONG_DESC_FR
+                   WHEN 'FA' THEN S_APP.LONG_DESC_FA
+                   WHEN 'RU' THEN S_APP.LONG_DESC_RU
+                   WHEN 'TK' THEN S_APP.LONG_DESC_TK
+                   ELSE  S_APP.LONG_DESC END TRNS_LONG_DESC
+      ,S_APP.LONG_DESC
+      ,S_APP.APP_GROUP_CODE
+      ,(SELECT CASE #{languageCode,jdbcType=VARCHAR}  WHEN  'AR' THEN sag.APP_GROUP_DESC_AR
+                   WHEN 'FR' THEN sag.APP_GROUP_DESC_FR
+                   WHEN 'FA' THEN sag.APP_GROUP_DESC_FA
+                   WHEN 'RU' THEN sag.APP_GROUP_DESC_RU
+                   WHEN 'TK' THEN sag.APP_GROUP_DESC_TK
+                   ELSE  sag.APP_GROUP_DESC_ENG END groupDesc
+          FROM S_APP_GROUP sag 
+         WHERE sag.APP_GROUP_CODE = S_APP.APP_GROUP_CODE) as groupDesc
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM S_APPROLUSR, S_ROLE_DETAIL, OPT_EXTENDED
+           WHERE S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+             AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+             AND S_ROLE_DETAIL.APP_NAME  = S_APP.APP_NAME
+             AND S_APPROLUSR.APP_NAME    = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME  = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF  = OPT_EXTENDED.PROG_REF
+             AND S_APPROLUSR.STATUS      = 'P'
+             AND S_ROLE_DETAIL.STATUS    = 'P'
+             AND S_APPROLUSR.USER_ID     = #{USER_ID}
+             AND S_APPROLUSR.COMP_CODE   = #{compCode}
+             AND S_APPROLUSR.BRANCH_CODE = #{branchCode})
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+UNION   
+SELECT APP_NAME
+      ,CASE #{languageCode,jdbcType=VARCHAR}  
+                   WHEN  'AR' THEN S_APP.LONG_DESC_AR
+                   WHEN 'FR' THEN S_APP.LONG_DESC_FR
+                   WHEN 'FA' THEN S_APP.LONG_DESC_FA
+                   WHEN 'RU' THEN S_APP.LONG_DESC_RU
+                   WHEN 'TK' THEN S_APP.LONG_DESC_TK
+                   ELSE  S_APP.LONG_DESC END TRNS_LONG_DESC
+      ,S_APP.LONG_DESC
+      ,S_APP.APP_GROUP_CODE
+      ,(SELECT CASE #{languageCode,jdbcType=VARCHAR}  WHEN  'AR' THEN sag.APP_GROUP_DESC_AR
+                   WHEN 'FR' THEN sag.APP_GROUP_DESC_FR
+                   WHEN 'FA' THEN sag.APP_GROUP_DESC_FA
+                   WHEN 'RU' THEN sag.APP_GROUP_DESC_RU
+                   WHEN 'TK' THEN sag.APP_GROUP_DESC_TK
+                   ELSE  sag.APP_GROUP_DESC_ENG END groupDesc
+          FROM S_APP_GROUP sag 
+         WHERE sag.APP_GROUP_CODE = S_APP.APP_GROUP_CODE) as groupDesc
+  FROM S_APP
+ WHERE EXISTS
+         (SELECT 1
+            FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL,OPT_EXTENDED
+           WHERE S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+             AND S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+             AND S_GROUP_PROFILE.APP_NAME  = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = S_APP.APP_NAME
+             AND S_ROLE_DETAIL.APP_NAME    = OPT_EXTENDED.APP_NAME
+             AND S_ROLE_DETAIL.PROG_REF    = OPT_EXTENDED.PROG_REF
+             AND S_GROUP_USER.STATUS       = 'P'
+             AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+             AND S_GROUP_PROFILE.STATUS    = 'P'
+             AND S_ROLE_DETAIL.STATUS      = 'P'
+             AND S_GROUP_USER.USER_ID      = #{USER_ID}
+             AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+             AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+             AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                ) 
+             )
+   AND IS_WEB_YN IN (1, 2)
+   AND APP_NAME <![CDATA[<>]]> 'IBIS'
+)tbl
+ORDER BY tbl.APP_GROUP_CODE ASC
+</select>
+
+<resultMap id="returnAppInfosMap" type="applicationCO">
+   <result property="appVO.APP_NAME"    column="APP_NAME"/>
+   <result property="appVO.APP_DESC"    column="APP_DESC"/>
+   <result property="appVO.WEB_VERSION" column="WEB_VERSION"/>
+   <result property="loginDate"         column="lastLogin"/>
+   <result property="logoutDate"        column="lastLogout"/>
+</resultMap>
+<select id="returnAppInfos" parameterType="dashboardPortalSC" resultMap="returnAppInfosMap">
+SELECT APP_NAME,WEB_VERSION,lastLogin,lastLogout,
+      CASE WHEN APP_DESC_TRANS IS NULL THEN APP_DESC ELSE APP_DESC_TRANS END APP_DESC
+FROM
+(
+SELECT S_APP.APP_NAME
+      ,CASE #{languageCode,jdbcType=VARCHAR}  WHEN  'AR' THEN S_APP.APP_DESC_AR
+                   WHEN 'FR' THEN S_APP.APP_DESC_FR
+                   WHEN 'FA' THEN S_APP.APP_DESC_FA
+                   WHEN 'RU' THEN S_APP.APP_DESC_RU
+                   WHEN 'TK' THEN S_APP.APP_DESC_TK
+                   ELSE  S_APP.APP_DESC END  APP_DESC_TRANS
+      ,S_APP.APP_DESC
+      ,S_APP.WEB_VERSION
+      ,S_APPLOG.LAST_LOG    as lastLogin
+      ,S_APPLOG.LAST_LOGOUT as lastLogout
+  FROM S_APP LEFT OUTER JOIN S_APPLOG ON S_APP.APP_NAME = S_APPLOG.APP_NAME AND S_APPLOG.COMP_CODE   = #{compCode} 
+   AND S_APPLOG.BRANCH_CODE = #{branchCode}
+   AND S_APPLOG.USER_ID     = #{userId} 
+ WHERE S_APP.APP_NAME LIKE #{currAppName} 
+ ) innerTBL
+</select>
+<resultMap id="returnAlertsListMap" type="dashPortalAlertCO">
+   <result property="appName"     column="APP_NAME"/>
+   <result property="appDesc"     column="MENU_TITLE_ENG"/>
+   <result property="alertsCount" column="alertCount"/>
+</resultMap>
+<select id="returnAlertsList" parameterType="dashboardPortalSC" resultMap="returnAlertsListMap">
+SELECT tbl.*
+	,(
+	  SELECT COUNT(*)
+	    FROM S_TODO_DET S 
+	   WHERE S.TODO_APPLICATION = tbl.APP_NAME
+	     AND (S.USER_ID = #{userId} 
+	     		OR (S.RECEIVED_FROM = #{userId} AND S.ALERT_WAITING_TIME <![CDATA[<=]]> #{runningDate}
+	     			AND S.TODO_APPLICATION NOT IN ('IIS','ITRS','ICOR','IRET','IRVL','LEND','LCOR','LRET','PROV','FMS') 
+					))
+	     AND S.TODO_STATUS = 'A'
+	     <if test="alertAppsList!=null and alertAppsList.length > 0">
+	     AND (
+	           (tbl.APP_NAME IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+                                   #{value}
+                                </foreach>
+	            AND S.COMP_CODE = #{compCode} 
+	            AND S.BRANCH_CODE = #{branchCode}) 
+	           OR 
+	           (tbl.APP_NAME NOT IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+                                     #{value}
+                                    </foreach> 
+	           AND S.COMP_CODE = S.COMP_CODE 
+	           AND S.BRANCH_CODE = S.BRANCH_CODE)
+	         )
+	     </if>
+	 ) as alertCount
+  FROM
+	(
+	SELECT APP_NAME
+	      ,LONG_DESC as MENU_TITLE_ENG
+	  FROM S_APP, S_TODO_DET S
+	 WHERE S.TODO_APPLICATION = S_APP.APP_NAME
+       AND (S.USER_ID = #{userId} 
+       			OR (S.RECEIVED_FROM = #{userId} AND S.ALERT_WAITING_TIME <![CDATA[<=]]> #{runningDate}
+       			    AND S.TODO_APPLICATION NOT IN ('IIS','ITRS','ICOR','IRET','IRVL','LEND','LCOR','LRET','PROV','FMS')
+					))
+       AND S.TODO_STATUS = 'A'
+       <if test="alertAppsList!=null and alertAppsList.length > 0">
+       AND (
+	           (APP_NAME IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                  #{value}
+	                               </foreach>
+	            AND S.COMP_CODE = #{compCode} 
+	            AND S.BRANCH_CODE = #{branchCode}) 
+	           OR 
+	           (APP_NAME NOT IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                    #{value}
+	                                   </foreach> 
+	           AND S.COMP_CODE   = S.COMP_CODE 
+	           AND S.BRANCH_CODE = S.BRANCH_CODE)
+           )
+       </if>
+	   AND EXISTS (SELECT 1
+			          FROM AXS, OPT_EXTENDED
+			         WHERE AXS.APP_NAME    = OPT_EXTENDED.APP_NAME
+			           AND AXS.PROG_REF    = OPT_EXTENDED.PROG_REF
+			           AND AXS.APP_NAME    = S_APP.APP_NAME
+			           AND AXS.STATUS      = 'P'
+			           AND AXS.USER_ID     = #{userId}
+			           AND AXS.COMP_CODE   = #{compCode}
+			           AND AXS.BRANCH_CODE = #{branchCode}
+			           AND ( ( AXS.ACCESS_FROM_DATE IS NULL OR AXS.ACCESS_FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( AXS.ACCESS_TO_DATE IS NULL OR AXS.ACCESS_TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) ))
+	   AND IS_WEB_YN IN (1, 2)
+	UNION
+	SELECT APP_NAME  
+	      ,LONG_DESC as MENU_TITLE_ENG
+	  FROM S_APP, S_TODO_DET S
+	 WHERE S.TODO_APPLICATION = S_APP.APP_NAME
+       AND (S.USER_ID = #{userId} OR (S.RECEIVED_FROM = #{userId} AND S.ALERT_WAITING_TIME <![CDATA[<=]]> #{runningDate}))
+       AND S.TODO_STATUS = 'A'
+       <if test="alertAppsList!=null and alertAppsList.length > 0">
+       AND (
+	           (APP_NAME IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                  #{value}
+	                            </foreach>
+	            AND S.COMP_CODE   = #{compCode} 
+	            AND S.BRANCH_CODE = #{branchCode}) 
+	           OR 
+	           (APP_NAME NOT IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                    #{value}
+	                                </foreach> 
+	           AND S.COMP_CODE   = S.COMP_CODE 
+	           AND S.BRANCH_CODE = S.BRANCH_CODE)
+           )
+       </if>
+       AND EXISTS (SELECT 1
+		              FROM S_APPROLUSR, S_ROLE_DETAIL, OPT_EXTENDED
+		             WHERE S_APPROLUSR.APP_NAME    = S_ROLE_DETAIL.APP_NAME
+		               AND S_ROLE_DETAIL.ROLE_NAME = S_APPROLUSR.ROLE_NAME
+		               AND S_ROLE_DETAIL.APP_NAME  = S_APP.APP_NAME
+		               AND S_APPROLUSR.APP_NAME    = S_APP.APP_NAME
+		               AND S_ROLE_DETAIL.APP_NAME  = OPT_EXTENDED.APP_NAME
+		               AND S_ROLE_DETAIL.PROG_REF  = OPT_EXTENDED.PROG_REF
+		               AND S_APPROLUSR.STATUS      = 'P'
+		               AND S_ROLE_DETAIL.STATUS    = 'P'
+		               AND S_APPROLUSR.USER_ID     = #{userId}
+		               AND S_APPROLUSR.COMP_CODE   = #{compCode}
+		               AND S_APPROLUSR.BRANCH_CODE = #{branchCode})
+	   AND IS_WEB_YN IN (1, 2)
+	UNION   
+	SELECT APP_NAME
+	      ,LONG_DESC as MENU_TITLE_ENG
+	  FROM S_APP, S_TODO_DET S
+	 WHERE S.TODO_APPLICATION = S_APP.APP_NAME
+       AND (S.USER_ID = #{userId} OR (S.RECEIVED_FROM = #{userId} AND S.ALERT_WAITING_TIME <![CDATA[<=]]> #{runningDate}))
+       AND S.TODO_STATUS = 'A'
+       <if test="alertAppsList!=null and alertAppsList.length > 0">
+       AND (
+	           (APP_NAME IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                  #{value}
+	                            </foreach>
+	            AND S.COMP_CODE   = #{compCode} 
+	            AND S.BRANCH_CODE = #{branchCode}) 
+	           OR 
+	           (APP_NAME NOT IN <foreach item="value" index="index" open="(" close=")" separator="," collection="alertAppsList" >
+	                                    #{value}
+	                                </foreach> 
+	           AND S.COMP_CODE   = S.COMP_CODE 
+	           AND S.BRANCH_CODE = S.BRANCH_CODE)
+           )
+       </if>
+       AND EXISTS (SELECT 1
+		              FROM S_GROUP_USER, S_GROUP_PROFILE, S_ROLE_DETAIL,OPT_EXTENDED
+		             WHERE S_GROUP_PROFILE.GROUP_ID  = S_GROUP_USER.GROUP_ID
+		               AND S_GROUP_PROFILE.APP_NAME  = S_ROLE_DETAIL.APP_NAME
+		               AND S_GROUP_PROFILE.APP_NAME  = S_APP.APP_NAME
+		               AND S_ROLE_DETAIL.ROLE_NAME   = S_GROUP_PROFILE.ROLE_NAME
+		               AND S_ROLE_DETAIL.APP_NAME    = S_APP.APP_NAME
+		               AND S_ROLE_DETAIL.APP_NAME    = OPT_EXTENDED.APP_NAME
+		               AND S_ROLE_DETAIL.PROG_REF    = OPT_EXTENDED.PROG_REF
+		               AND S_GROUP_USER.STATUS       = 'P'
+		               AND ( ( S_GROUP_USER.FROM_DATE IS NULL OR S_GROUP_USER.FROM_DATE <![CDATA[ <= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) AND ( S_GROUP_USER.TO_DATE IS NULL OR S_GROUP_USER.TO_DATE <![CDATA[ >= ]]> <choose><when test="isSybase == 1" >GETDATE()</when><otherwise>SYSDATE</otherwise></choose> ) )
+		               
+		               AND S_GROUP_PROFILE.STATUS    = 'P'
+		               AND S_ROLE_DETAIL.STATUS      = 'P'
+		               AND S_GROUP_USER.USER_ID      = #{userId}
+		               AND (S_GROUP_USER.COMP_CODE   = #{compCode}   OR S_GROUP_USER.COMP_CODE = 0)
+		               AND (S_GROUP_USER.BRANCH_CODE = #{branchCode} OR S_GROUP_USER.BRANCH_CODE = 0)
+		               
+		               AND NOT EXISTS (SELECT 1 FROM S_GROUP_USER_EXCLUSION 
+                                                WHERE S_GROUP_USER_EXCLUSION.USER_ID = S_GROUP_USER.USER_ID 
+                                                      AND S_GROUP_USER_EXCLUSION.GROUP_ID = S_GROUP_USER.GROUP_ID
+                                                      AND S_GROUP_USER_EXCLUSION.COMP_CODE = S_GROUP_USER.COMP_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.BRANCH_CODE = S_GROUP_USER.BRANCH_CODE
+                                                      AND S_GROUP_USER_EXCLUSION.ROLE_NAME = S_GROUP_PROFILE.ROLE_NAME
+                                                )
+		               
+		               )
+	   AND IS_WEB_YN IN (1, 2)
+	)tbl	
+</select>
+<select id="favSerialCounter" parameterType="favoriteCO" resultType="BigDecimal">
+  SELECT MAX(ID) FROM USER_FAVORITES
+</select>
+<resultMap id="returnFavMaintDataMap" type="favoriteCO">
+ <result property="userFavorites.ID"             column="ID"/>
+ <result property="userFavorites.APP_NAME"       column="APP_NAME"/>
+ <result property="userFavorites.PROG_REF"       column="PROG_REF"/>
+ <result property="userFavorites.DESCRIPTION"    column="DESCRIPTION"/>
+ <result property="userFavorites.URL"            column="URL"/>
+ <result property="userFavorites.OPEN_IN_DIALOG_YN" column="OPEN_IN_DIALOG_YN"/>
+ <result property="externalLink"                 column="externalLink"/>
+ <result property="fullPath"                     column="fullPath"/>
+</resultMap>
+<select id="returnFavoriteMaintData" parameterType="favoriteCO" resultMap="returnFavMaintDataMap">
+select tbl.*
+      ,CASE WHEN tbl.PROG_REF IS NOT NULL AND tbl.parent_parent_ref = 'ROOT'
+            THEN (SELECT S_APP.LONG_DESC 
+                    FROM S_APP 
+                   WHERE S_APP.APP_NAME = tbl.APP_NAME)
+                 <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose>
+                 (SELECT opt2.MENU_TITLE_ENG
+                    from OPT opt2 
+                   where opt2.PROG_REF = tbl.PARENT_REF 
+                     and opt2.APP_NAME = tbl.APP_NAME)
+                 <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose> tbl.MENU_TITLE_ENG
+            ELSE
+                 CASE WHEN tbl.PROG_REF IS NULL 
+                      THEN ''
+                      ELSE 
+                         (SELECT opt2.MENU_TITLE_ENG
+                            from OPT opt2 
+                           where opt2.PROG_REF = tbl.parent_parent_ref
+                             and opt2.APP_NAME = tbl.APP_NAME)              
+                         <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose>
+                         (SELECT opt2.MENU_TITLE_ENG
+                            from OPT opt2 
+                           where opt2.PROG_REF = tbl.PARENT_REF 
+                             and opt2.APP_NAME = tbl.APP_NAME)
+                         <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose> tbl.MENU_TITLE_ENG
+                  END
+        END  as fullPath            
+from 
+(
+SELECT UF.ID
+      ,UF.APP_NAME
+      ,UF.PROG_REF
+      ,CASE 
+           WHEN UF.PROG_REF IS NULL 
+           THEN 1
+           ELSE 0
+        END as externalLink
+      ,OPT.MENU_TITLE_ENG
+      ,UF.USER_ID
+      ,UF.DESCRIPTION
+      ,UF.URL
+      ,(CASE WHEN UF.OPEN_IN_DIALOG_YN IS NULL THEN 0 ELSE UF.OPEN_IN_DIALOG_YN END) AS OPEN_IN_DIALOG_YN
+      ,OPT.PARENT_REF
+      ,(SELECT opt1.PARENT_REF 
+          FROM OPT opt1 
+         WHERE opt1.PROG_REF = OPT.PARENT_REF 
+           AND opt1.APP_NAME = OPT.APP_NAME) as parent_parent_ref
+  FROM USER_FAVORITES UF 
+  LEFT OUTER JOIN OPT 
+    ON UF.PROG_REF = OPT.PROG_REF
+   AND UF.APP_NAME = OPT.APP_NAME
+ WHERE UF.ID = #{userFavorites.ID}
+)tbl
+</select>
+
+<sql id="userWorkspaceCommonSql">
+	SELECT WK.USER_ID, WK.APP_NAME, WK.PROG_REF, WK.DISPLAY_STYLE, WK.DISPLAY_CAPTION_KEY ,OPT.MENU_TITLE_ENG ,OPT.PARENT_REF
+      ,(SELECT OPT1.PARENT_REF 
+          FROM OPT OPT1 
+         WHERE OPT1.PROG_REF = OPT.PARENT_REF 
+           AND OPT1.APP_NAME = OPT.APP_NAME) AS PARENT_PARENT_REF
+	FROM USER_WORKSPACE WK , OPT 
+    WHERE WK.PROG_REF = OPT.PROG_REF
+   	AND WK.APP_NAME = OPT.APP_NAME
+   	<choose>
+			<when test="userId != null and userId != ''">
+				AND WK.USER_ID = #{userId}
+		       </when>
+			<otherwise>
+				AND WK.ROLE_NAME = #{roleName}
+		    </otherwise>
+    </choose>
+</sql>
+<sql id="workspaceGridCommonSql">
+	  SELECT TBL.USER_ID, TBL.DISPLAY_STYLE, TBL.DISPLAY_CAPTION_KEY,TBL.PROG_REF ,TBL.APP_NAME 
+      ,CASE WHEN TBL.PROG_REF IS NOT NULL AND TBL.PARENT_PARENT_REF = 'ROOT'
+            THEN (SELECT S_APP.LONG_DESC 
+                    FROM S_APP 
+                   WHERE S_APP.APP_NAME = TBL.APP_NAME)
+                 <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose>
+                 (SELECT OPT2.MENU_TITLE_ENG
+                    FROM OPT OPT2 
+                   WHERE OPT2.PROG_REF = TBL.PARENT_REF 
+                     AND OPT2.APP_NAME = TBL.APP_NAME)
+                 <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose> TBL.MENU_TITLE_ENG
+            ELSE
+                 CASE WHEN TBL.PROG_REF IS NULL 
+                      THEN ''
+                      ELSE 
+                         (SELECT OPT2.MENU_TITLE_ENG
+                            FROM OPT OPT2 
+                           WHERE OPT2.PROG_REF = TBL.PARENT_PARENT_REF
+                             AND OPT2.APP_NAME = TBL.APP_NAME)              
+                         <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose>
+                         (SELECT OPT2.MENU_TITLE_ENG
+                            FROM OPT OPT2 
+                           WHERE OPT2.PROG_REF = TBL.PARENT_REF 
+                             AND OPT2.APP_NAME = TBL.APP_NAME)
+                         <choose><when test="isSQLServer == 1">+'-'+</when><otherwise>||'-'||</otherwise></choose> TBL.MENU_TITLE_ENG
+                  END
+        END  AS FULLPATH   
+        FROM 
+		(
+			<include refid="userWorkspaceCommonSql"/>
+		)TBL	
+</sql>
+<select id="returnWorkspaceListCount"  resultType="int" parameterType="com.path.vo.common.dashboardportal.DashboardWkspceWidgetSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userWorkspaceCommonSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+<resultMap id="commonWorkspaceMap" type="com.path.vo.common.dashboard.WorkspaceWidgetCO" >
+	<result column="APP_NAME" property="userWorkspaceVO.APP_NAME"/>
+	<result column="PROG_REF" property="userWorkspaceVO.PROG_REF"/>
+	<result column="DISPLAY_STYLE" property="userWorkspaceVO.DISPLAY_STYLE"/>
+	<result column="DISPLAY_CAPTION_KEY" property="userWorkspaceVO.DISPLAY_CAPTION_KEY"/>
+</resultMap>
+<resultMap id="returnWorkspaceListMap" type="com.path.vo.common.dashboard.WorkspaceWidgetCO" extends="commonWorkspaceMap">
+	<result column="FULLPATH" property="fullPath"/>
+</resultMap>
+<select id="returnWorkspaceList" parameterType="com.path.vo.common.dashboardportal.DashboardWkspceWidgetSC" resultMap="returnWorkspaceListMap">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="workspaceGridCommonSql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+<delete id="deleteUserWorkspace" parameterType="com.path.vo.common.dashboardportal.DashboardWkspceWidgetSC">
+		DELETE FROM USER_WORKSPACE WHERE
+    	<choose>
+			<when test="userId != null and userId != '' ">
+				USER_ID = #{userId}
+		       </when>
+			<otherwise>
+				ROLE_NAME = #{roleName}
+		    </otherwise>
+    	</choose>
+</delete>
+
+<insert id="insertUserWkspaceWidget" parameterType="com.path.vo.common.dashboardportal.DashboardWkspceWidgetSC">
+INSERT INTO USER_PORTLETS(USER_ID,LAYOUT,PORTLET_CODE,COLUMN_INDEX,PORTLET_INDEX,PORTLET_MODE)
+  SELECT DISTINCT #{userId},
+                  COALESCE((SELECT DISTINCT LAYOUT FROM USER_PORTLETS WHERE USER_ID = #{userId}),'LAYOUT1'),
+                  #{wkspacePortletCode},
+                  1,
+                  COALESCE((SELECT MAX(PORTLET_INDEX)
+                     FROM USER_PORTLETS
+                    WHERE USER_ID = #{userId}),0) + 1,
+                  1
+    FROM DUAL
+   WHERE NOT EXISTS (SELECT 1
+            FROM USER_PORTLETS
+           WHERE USER_ID = #{userId}
+             AND PORTLET_CODE = #{wkspacePortletCode})
+
+</insert>
+
+<select id="returnWorkspaceForUser" parameterType="com.path.vo.common.dashboardportal.DashboardWkspceWidgetSC" resultMap="commonWorkspaceMap">
+	SELECT U.APP_NAME, U.PROG_REF, U.DISPLAY_STYLE, U.DISPLAY_CAPTION_KEY 
+	FROM USER_WORKSPACE U
+	WHERE U.USER_ID = #{userId}
+	UNION
+	SELECT U.APP_NAME, U.PROG_REF, U.DISPLAY_STYLE, U.DISPLAY_CAPTION_KEY 
+	FROM USER_WORKSPACE U, S_APPROLUSR RU
+	WHERE U.ROLE_NAME = RU.ROLE_NAME
+	AND RU.USER_ID = #{userId}
+	AND RU.STATUS = 'P'
+</select>
+  
+<insert id="insertAddUsersPortlets" parameterType="com.path.dbmaps.vo.USER_PORTLETSVO" >
+		<choose>
+		 	<when test="isSybase == 1">
+				BEGIN
+					DECLARE @MAX_PORTLET_INDEX NUMERIC(2)
+					SELECT @MAX_PORTLET_INDEX = (CASE WHEN MAX(PORTLET_INDEX) IS NULL THEN 0 ELSE MAX(PORTLET_INDEX) END) FROM USER_PORTLETS WHERE PORTLET_CODE = #{PORTLET_CODE} AND USER_ID = #{USER_ID}
+					
+					insert into USER_PORTLETS
+				    <trim prefix="(" suffix=")" suffixOverrides="," >
+				        LAYOUT,
+				      <if test="PORTLET_CODE != null" >
+				        PORTLET_CODE,
+				      </if>
+				      <if test="USER_ID != null" >
+				        USER_ID,
+				      </if>
+				        COLUMN_INDEX,
+				        PORTLET_INDEX,
+				        PORTLET_MODE,
+				      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+				        PORTLET_HEIGHT,
+				      </if>
+				    </trim>
+				    <trim prefix="values (" suffix=")" suffixOverrides="," >
+				        'layout1',
+				      <if test="PORTLET_CODE != null" >
+				        #{PORTLET_CODE},
+				      </if>
+				      <if test="USER_ID != null" >
+				        #{USER_ID},
+				      </if>
+				        1,
+				        @MAX_PORTLET_INDEX,
+				        1,
+				      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+				        #{PORTLET_HEIGHT},
+				      </if>
+				    </trim>						
+				END
+		 </when>
+		 <otherwise>
+		 		DECLARE 
+		 			MAX_PORTLET_INDEX NUMBER(2);
+		   		BEGIN
+		   			
+		   			SELECT (CASE WHEN MAX(PORTLET_INDEX) IS NULL THEN 0 ELSE MAX(PORTLET_INDEX) END) INTO MAX_PORTLET_INDEX FROM USER_PORTLETS WHERE PORTLET_CODE = #{PORTLET_CODE} AND USER_ID = #{USER_ID};
+					
+					insert into USER_PORTLETS
+				    <trim prefix="(" suffix=")" suffixOverrides="," >
+				        LAYOUT,
+				      <if test="PORTLET_CODE != null" >
+				        PORTLET_CODE,
+				      </if>
+				      <if test="USER_ID != null" >
+				        USER_ID,
+				      </if>
+				        COLUMN_INDEX,
+				        PORTLET_INDEX,
+				        PORTLET_MODE,
+				      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+				        PORTLET_HEIGHT,
+				      </if>
+				    </trim>
+				    <trim prefix="values (" suffix=")" suffixOverrides="," >
+				        'layout1',
+				      <if test="PORTLET_CODE != null" >
+				        #{PORTLET_CODE},
+				      </if>
+				      <if test="USER_ID != null" >
+				        #{USER_ID},
+				      </if>
+				        1,
+				        MAX_PORTLET_INDEX,
+				        1,
+				      <if test="PORTLET_HEIGHT != null and PORTLET_HEIGHT != emptyBigDecimalValue" >
+				        #{PORTLET_HEIGHT},
+				      </if>
+				    </trim>;
+
+				END;
+		 </otherwise>
+	   </choose>
+</insert>
+    
+  
+<delete id="deleteAddUsersPortlets" parameterType="com.path.dbmaps.vo.USER_PORTLETSVO">
+	DELETE FROM USER_PORTLETS WHERE USER_ID = #{USER_ID} AND PORTLET_CODE = #{PORTLET_CODE}
+</delete>
+<!-- 
+<select id="checkTellerCashBalance" parameterType="commonLibSC" resultType="BigDecimal">
+SELECT MAX(CTSTELLER_CASH_BALANCE.TRX_NO)  
+  FROM CTSTELLER_CASH_BALANCE , CTSTELLER
+ WHERE CTSTELLER_CASH_BALANCE.COMP_CODE   = #{compCode}
+   AND CTSTELLER_CASH_BALANCE.BRANCH_CODE = #{branchCode}
+   AND CTSTELLER_CASH_BALANCE.TRADE_DATE  = #{runningDate}R
+   AND CTSTELLER_CASH_BALANCE.TELLER_CODE = #{tellerCode} 
+   AND CTSTELLER_CASH_BALANCE.STATUS      = 'C'
+   AND CTSTELLER.COMP_CODE                = CTSTELLER_CASH_BALANCE.COMP_CODE 
+   AND CTSTELLER.BRANCH_CODE              = CTSTELLER_CASH_BALANCE.BRANCH_CODE 
+   AND ((CTSTELLER.STATUS <![CDATA[<>]]> 'D' ))
+</select>
+ -->
+ <resultMap id="tellerCashBalanceResultMap" type="com.path.vo.common.dashboard.DashboardPortalCO">
+   <result property="currencyCode"  column="CURRENCY_CODE"/> 
+   <result property="countedValue"  column="COUNTED_VALUE"/> 
+   <result property="balanceValue"  column="VALUE"/> 
+   <result property="currencyDesc"  column="BRIEF_DESC_ENG"/> 
+   <result property="trxNo"         column="TRX_NO"/> 
+   <result property="cashSituation" column="cashSituation"/> 
+ </resultMap>
+<select id="tellerCashBalanceList" parameterType="dashboardPortalSC" resultMap="tellerCashBalanceResultMap">
+ SELECT  CTSTELLER_CASH_BALANCE_DET.CURRENCY_CODE
+        ,CTSTELLER_CASH_BALANCE_DET.COUNTED_VALUE
+        ,CTSTELLER_CASH_BALANCE_DET.VALUE
+        ,CURRENCIES.BRIEF_DESC_ENG
+        ,CTSTELLER_CASH_BALANCE.TRX_NO
+        ,(CTSTELLER_CASH_BALANCE_DET.VALUE - CTSTELLER_CASH_BALANCE_DET.COUNTED_VALUE) as cashSituation
+   FROM CTSTELLER_CASH_BALANCE_DET
+      , CURRENCIES
+      , CTSTELLERACCDET
+      , CTSTELLER_CASH_BALANCE
+      , CTSTELLER
+  WHERE CTSTELLER_CASH_BALANCE_DET.COMP_CODE   = CTSTELLER_CASH_BALANCE.COMP_CODE
+    AND CTSTELLER_CASH_BALANCE_DET.BRANCH_CODE = CTSTELLER_CASH_BALANCE.BRANCH_CODE
+    AND CTSTELLER_CASH_BALANCE_DET.TRX_NO      = CTSTELLER_CASH_BALANCE.TRX_NO
+    AND CTSTELLER_CASH_BALANCE_DET.COMP_CODE   = CURRENCIES.COMP_CODE 
+    AND CTSTELLER_CASH_BALANCE_DET.CURRENCY_CODE = CURRENCIES.CURRENCY_CODE 
+    AND CTSTELLER_CASH_BALANCE_DET.COMP_CODE     = CTSTELLERACCDET.COMP_CODE 
+    AND CTSTELLER_CASH_BALANCE_DET.BRANCH_CODE   = CTSTELLERACCDET.BRANCH_CODE 
+    AND CTSTELLERACCDET.CODE        = CTSTELLER_CASH_BALANCE.TELLER_CODE
+    AND CTSTELLERACCDET.CY_CODE     = CTSTELLER_CASH_BALANCE_DET.CURRENCY_CODE 
+    AND CTSTELLER.COMP_CODE         = CTSTELLER_CASH_BALANCE.COMP_CODE 
+    AND CTSTELLER.BRANCH_CODE       = CTSTELLER_CASH_BALANCE.BRANCH_CODE 
+    AND CTSTELLERACCDET.TRX_TYPE    = 0
+    AND CTSTELLER_CASH_BALANCE.COMP_CODE   = #{compCode}
+    AND CTSTELLER_CASH_BALANCE.BRANCH_CODE = #{branchCode}
+    AND CTSTELLER_CASH_BALANCE.TRADE_DATE  = #{runningDate}
+    <if  test='"RET".equals(currAppName)' >
+	     AND CTSTELLER_CASH_BALANCE.TELLER_CODE = #{tellerCode} 
+	</if>
+    AND CTSTELLER_CASH_BALANCE.STATUS      = 'C'
+    AND CTSTELLER.STATUS <![CDATA[<>]]> 'D'      
+</select>
+<resultMap id="tellerTransferCashResultMap" type="com.path.vo.common.dashboard.DashboardPortalCO">
+  <result property="decValue"     column="decValue"/>
+  <result property="currencyCode" column="CURRENCY_CODE"/>
+  <result property="currencyDesc" column="currencyDesc"/>
+</resultMap>
+<select id="tellerTransferCashList" parameterType="dashboardPortalSC" resultMap="tellerTransferCashResultMap">
+SELECT (CASE
+         WHEN AMF.CURRENCY_CODE = #{baseCurrencyCode} THEN
+          AMF.YTD_CV_BAL
+         ELSE
+          AMF.YTD_FC_BAL
+       END) AS decValue
+      ,AMF.CURRENCY_CODE
+      ,(SELECT CURRENCIES.BRIEF_DESC_ENG 
+          FROM CURRENCIES 
+         WHERE CURRENCIES.COMP_CODE = #{compCode}
+           AND CURRENCIES.CURRENCY_CODE = AMF.CURRENCY_CODE) AS currencyDesc
+  FROM AMF
+      ,CTSTELLERACCDET
+ WHERE AMF.COMP_CODE     = CTSTELLERACCDET.COMP_CODE
+   AND AMF.BRANCH_CODE   = CTSTELLERACCDET.ACC_BR
+   AND AMF.CURRENCY_CODE = CTSTELLERACCDET.ACC_CY
+   AND AMF.GL_CODE    = CTSTELLERACCDET.ACC_GL
+   AND AMF.CIF_SUB_NO = CTSTELLERACCDET.ACC_CIF
+   AND AMF.SL_NO      = CTSTELLERACCDET.ACC_SL
+   AND CTSTELLERACCDET.COMP_CODE   = #{compCode}
+   AND CTSTELLERACCDET.BRANCH_CODE = #{branchCode}
+   <if  test='"RET".equals(currAppName)' >
+	     AND CTSTELLERACCDET.CODE      = #{tellerCode}
+   </if>
+   AND CTSTELLERACCDET.TRX_TYPE    = 0
+   AND 0 <![CDATA[<>]]> (CASE WHEN AMF.CURRENCY_CODE = #{baseCurrencyCode} THEN AMF.YTD_CV_BAL ELSE AMF.YTD_FC_BAL END)
+   AND NOT EXISTS
+	   (
+	   SELECT 1 
+	   FROM  CTSCONTROL_EXCL_PEND_TRX_USERS CEPTU,CTSTELLER
+	     WHERE 
+	          CEPTU.COMP_CODE = #{compCode}
+	           AND CEPTU.BRANCH_CODE = #{branchCode}
+	           AND  CEPTU.USER_ID = CTSTELLER.USER_ID
+	           AND CEPTU.COMP_CODE =  CTSTELLER.COMP_CODE
+	           AND CEPTU.BRANCH_CODE = CTSTELLER.BRANCH_CODE
+	           AND CTSTELLER.USER_ID = CEPTU.USER_ID
+	           AND CTSTELLER.CODE = CTSTELLERACCDET.CODE
+	   )
+</select>
+<update id="finalSignOff" parameterType="dashboardPortalSC">
+	UPDATE CTSTELLER
+	   SET SIGNED_ON_STATUS       = '2'
+	 WHERE CTSTELLER.COMP_CODE   = #{compCode}
+	   AND CTSTELLER.BRANCH_CODE = #{branchCode}
+	   AND CTSTELLER.CODE        = #{tellerCode}
+	   AND CTSTELLER.USER_ID     = #{userId}
+</update>
+
+
+<resultMap id="returnUsrAllwdPrtltsListMap" type="dashboardPortalSC" >
+	<result column="USER_ID" property="USER_ID"/>
+	<result column="PORTLET_CODE" property="PORTLET_CODE"/>
+	<result column="PORTLET_URL" property="PORTLET_URL"/>
+	<result column="ABV_DESC_KEY" property="ABV_DESC_KEY"/>
+	<result column="TITLE_KEY" property="TITLE_KEY"/>
+</resultMap>
+
+<select id="returnUsrAllwdPrtltsListCount"  resultType="int" parameterType="dashboardPortalSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="userAllwdPrtltsListSql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+<select id="returnUsrAllwdPrtltsList" parameterType="dashboardPortalSC" resultMap="returnUsrAllwdPrtltsListMap">
+	 	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="userAllwdPrtltsListSql"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+<sql id="userAllwdPrtltsListSql">
+SELECT AP.USER_ID, AP.PORTLET_CODE, PT.TITLE_KEY, PT.PORTLET_URL, PT.ABV_DESC_KEY
+FROM SYS_PARAM_USR_ALLOWED_PORTLETS AP LEFT OUTER JOIN SYS_PARAM_PORTLET_TYPE PT
+ON AP.PORTLET_CODE = PT.PORTLET_CODE
+   	<choose>
+			<when test="userId != null and userId != ''">
+    		WHERE AP.USER_ID = #{userId}
+		       </when>
+			<otherwise>
+    		WHERE AP.PORTLET_CODE = #{portletCode}
+		    </otherwise>
+    </choose>
+</sql>
+
+	<select id="returnPrtltsList" resultType="sysParamPortletTypeVO">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="selectPortalsList" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="returnPrtltsListCount" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="selectPortalsList" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+<sql id="selectPortalsList">
+    select 
+	<include refid="SYS_PARAM_PORTLET_TYPE.Base_Column_List"/>
+    from SYS_PARAM_PORTLET_TYPE
+    WHERE USR_DEFINED_PORTLET_YN = '0'
+</sql>
+
+<select id="returnPortal" parameterType="dashboardPortalSC" resultType="sysParamPortletTypeVO">
+	<include refid="selectPortalsList"/>
+	AND PORTLET_CODE = #{portletCode}
+</select>
+
+  <insert id="insertUsrAllowedPortlets" parameterType="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO" >
+    INSERT INTO SYS_PARAM_USR_ALLOWED_PORTLETS(USER_ID,PORTLET_CODE)
+  SELECT DISTINCT 	#{USER_ID},
+        			#{PORTLET_CODE}
+    FROM DUAL
+   WHERE NOT EXISTS (SELECT 1
+            FROM SYS_PARAM_USR_ALLOWED_PORTLETS
+           WHERE USER_ID = #{USER_ID}
+             AND PORTLET_CODE = #{PORTLET_CODE})
+  </insert>
+  
+<delete id="deleteUsrAllowedPortlets" parameterType="com.path.dbmaps.vo.SYS_PARAM_USR_ALLOWED_PORTLETSVO">
+	DELETE FROM SYS_PARAM_USR_ALLOWED_PORTLETS WHERE USER_ID = #{USER_ID} AND PORTLET_CODE = #{PORTLET_CODE}
+</delete>
+
+<select id="checkUsrAssignedPrtltsCount" parameterType="com.path.dbmaps.vo.USER_PORTLETSVO" resultType="int">
+	select count(1) from USER_PORTLETS WHERE USER_ID = #{USER_ID} AND PORTLET_CODE = #{PORTLET_CODE}
+</select>
+
+<select id="returnMarqueeMessages" parameterType="dashboardPortalSC" resultType="String">
+<if test="isSybase != 1"> SELECT DETAILS_TO_APPEAR_IN_TICKER FROM (</if>
+SELECT <if test="isSybase == 1">TOP ${mrqMsgNbr}</if> A.DETAILS_TO_APPEAR_IN_TICKER 
+FROM ESS_CORPORATE_POLICIES A , ESS_CORPORATE_POLICIES_AXS B , EMP C
+WHERE A.POLICY_CODE = B.POLICY_CODE 
+AND C.EMPLOYEE_ID = #{employeeID}
+AND C.COMP_CODE   = #{compCode}
+AND C.BRANCH_CODE = #{branchCode}
+AND (B.COMP_CODE = 0 OR B.COMP_CODE = C.COMP_CODE)
+AND (B.BRANCH_CODE = 0 OR B.BRANCH_CODE = C.BRANCH_CODE)
+AND (B.DIVISION_CODE = 0 OR B.DIVISION_CODE = C.DIV_CODE)  
+AND (B.DEPT_CODE = 0 OR B.DEPT_CODE = C.DEPT_CODE)
+ORDER BY A.DATE_MODIFIED DESC <if test="isSybase != 1">)
+WHERE ROWNUM <![CDATA[<=]]> ${mrqMsgNbr}</if>
+</select>
+
+<select id="returnMarqueeMessagesCount"  resultType="int" parameterType="dashboardPortalSC" > 
+SELECT TICKER_NOTIFICATION_COUNT
+FROM PIPSCIT
+WHERE	COMP_CODE = #{compCode}
+AND		BRANCH_CODE = #{branchCode}
+</select>
+
+
+<resultMap id="employeePhotoMap" type="com.path.dbmaps.vo.EMP_PHOTOSVO">
+	<result property="EMP_PHOTO" javaType="_byte[]" column="EMP_PHOTO" jdbcType="BLOB"/>
+	<result column="FILE_TYPE" property="FILE_TYPE"/>
+</resultMap>
+
+<select id="returnEmployyePhoto" parameterType="dashboardPortalSC" resultMap="employeePhotoMap">
+SELECT EMP_PHOTO, FILE_TYPE
+FROM EMP_PHOTOS
+WHERE COMP_CODE = #{compCode}
+AND EMPLOYEE_ID = #{employeeID}
+</select>
+
+<resultMap id="unstldNotTransCashBalMap" type="com.path.vo.admin.user.UsrCO">
+	<result column="USER_ID"              property="USER_ID"/>
+	<result column="PRIVILEGE_LEVEL_DESC" property="PRIVILEGE_LEVEL_DESC"/>
+	<result column="USR_FULL_NAME"        property="USR_FULL_NAME"/>
+</resultMap>
+
+<select id="unstldNotTransCashBalList" parameterType="commonLibSC" resultMap="unstldNotTransCashBalMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip" />
+	<include refid="dashboardPortalMapper.unstldNotTransCashBalQuery" />
+	<include refid="servicesCommon.commonGridWrpAftFlip" />
+	<include refid="servicesCommon.commmonGridWrpFlipClose" />
+</select>
+ 
+<select id="unstldNotTransCashBalCount" parameterType="commonLibSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="dashboardPortalMapper.unstldNotTransCashBalQuery" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+<sql id="unstldNotTransCashBalQuery">
+SELECT
+DISTINCT U.USER_ID USER_ID 
+        ,LTRIM(RTRIM(U.FIRST_NAME)) || ' ' || LTRIM(RTRIM(U.MIDDLE_NAME)) || ' ' || LTRIM(RTRIM(U.LAST_NAME)) USR_FULL_NAME
+        ,(SELECT (CASE WHEN #{language} = 'AR' THEN UL.DESC_ARAB ELSE UL.DESC_ENG END)
+            FROM USR_LEVEL UL 
+           WHERE UL.CODE = T.PRIVILEGE_LEVEL) AS  PRIVILEGE_LEVEL_DESC
+  FROM CTSTELLER T,USR U
+ WHERE T.USER_ID = U.USER_ID
+   AND T.COMP_CODE   = #{compCode}
+   AND T.BRANCH_CODE = #{branchCode}
+   AND T.STATUS <![CDATA[<>]]> 'D'
+  <if  test='"RET".equals(currAppName)' >
+   AND T.CODE = #{tellerCode}
+  </if> 
+AND NOT EXISTS
+	(
+		SELECT 1
+		  FROM CTSTELLER_CASH_BALANCE  
+		 WHERE CTSTELLER_CASH_BALANCE.COMP_CODE = T.COMP_CODE
+		   AND CTSTELLER_CASH_BALANCE.BRANCH_CODE = T.BRANCH_CODE
+		   AND CTSTELLER_CASH_BALANCE.TELLER_CODE = T.CODE
+		   <choose>
+		       <when test="isOracle == 1">
+		         AND TRUNC(CTSTELLER_CASH_BALANCE.TRADE_DATE) = TRUNC(#{runningDate})		       
+		       </when>
+		       <otherwise>
+		         AND CONVERT(DATE,CTSTELLER_CASH_BALANCE.TRADE_DATE,103) = CONVERT(DATE,#{runningDate},103) 
+		       </otherwise>
+		   </choose>
+
+		   AND CTSTELLER_CASH_BALANCE.STATUS = 'C' 
+		   AND CTSTELLER_CASH_BALANCE.TRSFR_TYPE = 'TV'
+	)
+AND (
+     EXISTS
+	  (
+		SELECT 1
+		  FROM CTSTELLER_CASH_BALANCE  
+		 WHERE CTSTELLER_CASH_BALANCE.COMP_CODE = T.COMP_CODE
+		   AND CTSTELLER_CASH_BALANCE.BRANCH_CODE = T.BRANCH_CODE
+		   AND (CTSTELLER_CASH_BALANCE.TELLER_CODE = T.CODE
+		        OR 
+		        CTSTELLER_CASH_BALANCE.VAULT_NO = T.CODE)
+		   <choose>
+		       <when test="isOracle == 1">
+		         AND TRUNC(CTSTELLER_CASH_BALANCE.TRADE_DATE) = TRUNC(#{runningDate})		       
+		       </when>
+		       <otherwise>
+		         AND CONVERT(DATE,CTSTELLER_CASH_BALANCE.TRADE_DATE,103) = CONVERT(DATE,#{runningDate},103) 
+		       </otherwise>
+		   </choose>
+
+		   AND CTSTELLER_CASH_BALANCE.TRSFR_TYPE <![CDATA[<>]]> 'TV'
+	  )
+      OR EXISTS(
+	             SELECT 1
+	               FROM CTSTRS, CTSTRXTYPE
+	              WHERE CTSTRS.TRS_TYPE    = 'R'
+	                AND CTSTRS.BRANCH_CODE = #{branchCode}
+	                AND CTSTRS.CB_IND      = 'C'
+	                AND CTSTRS.COMP_CODE   = #{compCode}
+				   <choose>
+				       <when test="isOracle == 1">
+				         AND TRUNC(CTSTRS.TRS_DATE) = TRUNC(#{runningDate})		       
+				       </when>
+				       <otherwise>
+				         AND CONVERT(DATE,CTSTRS.TRS_DATE,103) = CONVERT(DATE,#{runningDate},103) 
+				       </otherwise>
+				   </choose>
+	                AND CTSTRS.STATUS      = 'P'
+	                AND CTSTRS.COMP_CODE   = CTSTRXTYPE.COMP_CODE
+	                AND CTSTRS.TRX_TYPE    = CTSTRXTYPE.CODE
+				    AND CTSTRS.TELLER_CODE = T.CODE
+	                AND (CTSTRXTYPE.TYPE   = 'D' OR
+	                     (CTSTRXTYPE.TYPE = 'T' AND CTSTRS.TRSFR_METHOD = 'C') OR
+	                     (CTSTRS.CHARGE > 0 AND (CTSTRS.CASH_DEDUCT_IND = '0' OR CTSTRS.CASH_DEDUCT_IND = '4')))                   
+              )
+
+     )
+</sql>
+</mapper>

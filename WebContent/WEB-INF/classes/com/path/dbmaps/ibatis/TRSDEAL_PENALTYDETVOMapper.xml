@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEAL_PENALTYDET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEAL_PENALTYDETVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEAL_NO" property="DEAL_NO" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="MINIMUM_DUE_DAYS" property="MINIMUM_DUE_DAYS" />
+    <result column="PENALTY_PERCENTAGE" property="PENALTY_PERCENTAGE" />
+    <result column="PENALTY_PERCENTAGE_AFTER_MAT" property="PENALTY_PERCENTAGE_AFTER_MAT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DEAL_NO, LINE_NO, MINIMUM_DUE_DAYS, PENALTY_PERCENTAGE, PENALTY_PERCENTAGE_AFTER_MAT
+  </sql>
+  <select id="selectTRSDEAL_PENALTYDET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYDETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEAL_PENALTYDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSDEAL_PENALTYDET" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYDETVOKey" >
+    delete from TRSDEAL_PENALTYDET
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSDEAL_PENALTYDET" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYDETVO" >
+    insert into TRSDEAL_PENALTYDET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="MINIMUM_DUE_DAYS != null and MINIMUM_DUE_DAYS != emptyBigDecimalValue" >
+        MINIMUM_DUE_DAYS,
+      </if>
+      <if test="PENALTY_PERCENTAGE != null and PENALTY_PERCENTAGE != emptyBigDecimalValue" >
+        PENALTY_PERCENTAGE,
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null and PENALTY_PERCENTAGE_AFTER_MAT != emptyBigDecimalValue" >
+        PENALTY_PERCENTAGE_AFTER_MAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="MINIMUM_DUE_DAYS != null and MINIMUM_DUE_DAYS != emptyBigDecimalValue" >
+        #{MINIMUM_DUE_DAYS},
+      </if>
+      <if test="PENALTY_PERCENTAGE != null and PENALTY_PERCENTAGE != emptyBigDecimalValue" >
+        #{PENALTY_PERCENTAGE},
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null and PENALTY_PERCENTAGE_AFTER_MAT != emptyBigDecimalValue" >
+        #{PENALTY_PERCENTAGE_AFTER_MAT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEAL_PENALTYDET" >
+    update TRSDEAL_PENALTYDET
+    <set >
+      <if test="MINIMUM_DUE_DAYS != null" >
+        <choose >
+          <when test="MINIMUM_DUE_DAYS == emptyBigDecimalValue" >
+            MINIMUM_DUE_DAYS = NULL ,
+          </when>
+          <otherwise >
+            MINIMUM_DUE_DAYS = #{MINIMUM_DUE_DAYS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PENALTY_PERCENTAGE != null" >
+        <choose >
+          <when test="PENALTY_PERCENTAGE == emptyBigDecimalValue" >
+            PENALTY_PERCENTAGE = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_PERCENTAGE = #{PENALTY_PERCENTAGE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PENALTY_PERCENTAGE_AFTER_MAT != null" >
+        <choose >
+          <when test="PENALTY_PERCENTAGE_AFTER_MAT == emptyBigDecimalValue" >
+            PENALTY_PERCENTAGE_AFTER_MAT = NULL ,
+          </when>
+          <otherwise >
+            PENALTY_PERCENTAGE_AFTER_MAT = #{PENALTY_PERCENTAGE_AFTER_MAT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DEAL_NO = #{DEAL_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSDEAL_PENALTYDET" parameterType="com.path.dbmaps.vo.TRSDEAL_PENALTYDETVO" >
+    <include refid="sql_updateTRSDEAL_PENALTYDET" />
+  </update>
+</mapper>

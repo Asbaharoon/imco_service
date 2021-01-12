@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="FMSCLOSURE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.FMSCLOSUREVO" >
+    <id column="BRANCH" property="BRANCH" />
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="FACILITY" property="FACILITY" />
+    <result column="CLOSURE_REASON" property="CLOSURE_REASON" />
+    <result column="STATUS" property="STATUS" />
+    <result column="DATE_REQUESTED" property="DATE_REQUESTED" />
+    <result column="REQUESTED_BY" property="REQUESTED_BY" />
+    <result column="DATE_CREATED" property="DATE_CREATED" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+    <result column="UPDATED_BY" property="UPDATED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+    <result column="APPROVED_BY" property="APPROVED_BY" />
+    <result column="DATE_REVERSED" property="DATE_REVERSED" />
+    <result column="REVERSED_BY" property="REVERSED_BY" />
+    <result column="DATE_MODIFIED" property="DATE_MODIFIED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH, CODE, COMP_CODE, FACILITY, CLOSURE_REASON, STATUS, DATE_REQUESTED, REQUESTED_BY, 
+    DATE_CREATED, CREATED_BY, DATE_UPDATED, UPDATED_BY, DATE_DELETED, DELETED_BY, DATE_APPROVED, 
+    APPROVED_BY, DATE_REVERSED, REVERSED_BY, DATE_MODIFIED
+  </sql>
+  <select id="selectFMSCLOSURE" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.FMSCLOSUREVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from FMSCLOSURE
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteFMSCLOSURE" parameterType="com.path.dbmaps.vo.FMSCLOSUREVOKey" >
+    delete from FMSCLOSURE
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertFMSCLOSURE" parameterType="com.path.dbmaps.vo.FMSCLOSUREVO" >
+    insert into FMSCLOSURE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        BRANCH,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FACILITY != null and FACILITY != emptyBigDecimalValue" >
+        FACILITY,
+      </if>
+      <if test="CLOSURE_REASON != null and !&quot;&quot;.equals(CLOSURE_REASON)" >
+        CLOSURE_REASON,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="DATE_REQUESTED != null" >
+        DATE_REQUESTED,
+      </if>
+      <if test="REQUESTED_BY != null and !&quot;&quot;.equals(REQUESTED_BY)" >
+        REQUESTED_BY,
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      DATE_UPDATED,
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        UPDATED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        APPROVED_BY,
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED,
+      </if>
+      <if test="REVERSED_BY != null and !&quot;&quot;.equals(REVERSED_BY)" >
+        REVERSED_BY,
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH != null and BRANCH != emptyBigDecimalValue" >
+        #{BRANCH},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FACILITY != null and FACILITY != emptyBigDecimalValue" >
+        #{FACILITY},
+      </if>
+      <if test="CLOSURE_REASON != null and !&quot;&quot;.equals(CLOSURE_REASON)" >
+        #{CLOSURE_REASON},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="DATE_REQUESTED != null" >
+        #{DATE_REQUESTED},
+      </if>
+      <if test="REQUESTED_BY != null and !&quot;&quot;.equals(REQUESTED_BY)" >
+        #{REQUESTED_BY},
+      </if>
+      <if test="DATE_CREATED != null" >
+        #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null and !&quot;&quot;.equals(UPDATED_BY)" >
+        #{UPDATED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null and !&quot;&quot;.equals(APPROVED_BY)" >
+        #{APPROVED_BY},
+      </if>
+      <if test="DATE_REVERSED != null" >
+        #{DATE_REVERSED},
+      </if>
+      <if test="REVERSED_BY != null and !&quot;&quot;.equals(REVERSED_BY)" >
+        #{REVERSED_BY},
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        #{DATE_MODIFIED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateFMSCLOSURE" >
+    update FMSCLOSURE
+    <set >
+      <if test="FACILITY != null" >
+        <choose >
+          <when test="FACILITY == emptyBigDecimalValue" >
+            FACILITY = NULL ,
+          </when>
+          <otherwise >
+            FACILITY = #{FACILITY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CLOSURE_REASON != null" >
+        <choose >
+          <when test="CLOSURE_REASON.equals(&quot;&quot;)" >
+            CLOSURE_REASON = NULL ,
+          </when>
+          <otherwise >
+            CLOSURE_REASON = #{CLOSURE_REASON},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_REQUESTED != null" >
+        DATE_REQUESTED = #{DATE_REQUESTED},
+      </if>
+      <if test="REQUESTED_BY != null" >
+        <choose >
+          <when test="REQUESTED_BY.equals(&quot;&quot;)" >
+            REQUESTED_BY = NULL ,
+          </when>
+          <otherwise >
+            REQUESTED_BY = #{REQUESTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_CREATED != null" >
+        DATE_CREATED = #{DATE_CREATED},
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+      <if test="UPDATED_BY != null" >
+        <choose >
+          <when test="UPDATED_BY.equals(&quot;&quot;)" >
+            UPDATED_BY = NULL ,
+          </when>
+          <otherwise >
+            UPDATED_BY = #{UPDATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+      <if test="APPROVED_BY != null" >
+        <choose >
+          <when test="APPROVED_BY.equals(&quot;&quot;)" >
+            APPROVED_BY = NULL ,
+          </when>
+          <otherwise >
+            APPROVED_BY = #{APPROVED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_REVERSED != null" >
+        DATE_REVERSED = #{DATE_REVERSED},
+      </if>
+      <if test="REVERSED_BY != null" >
+        <choose >
+          <when test="REVERSED_BY.equals(&quot;&quot;)" >
+            REVERSED_BY = NULL ,
+          </when>
+          <otherwise >
+            REVERSED_BY = #{REVERSED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_MODIFIED != null" >
+        DATE_MODIFIED = #{DATE_MODIFIED},
+      </if>
+    </set>
+    where BRANCH = #{BRANCH}
+      and CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateFMSCLOSURE" parameterType="com.path.dbmaps.vo.FMSCLOSUREVO" >
+    <include refid="sql_updateFMSCLOSURE" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

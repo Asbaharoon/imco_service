@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTRS_EXCH_SPECIAL_AUTH" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTRS_EXCH_SPECIAL_AUTHVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CB_IND" property="CB_IND" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <id column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="AUTH_NO" property="AUTH_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CB_IND, COMP_CODE, TRS_NO, TRS_TYPE, AUTH_NO
+  </sql>
+  <select id="selectCTSTRS_EXCH_SPECIAL_AUTH" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTRS_EXCH_SPECIAL_AUTHVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTRS_EXCH_SPECIAL_AUTH
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </select>
+  <delete id="deleteCTSTRS_EXCH_SPECIAL_AUTH" parameterType="com.path.dbmaps.vo.CTSTRS_EXCH_SPECIAL_AUTHVOKey" >
+    delete from CTSTRS_EXCH_SPECIAL_AUTH
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </delete>
+  <insert id="insertCTSTRS_EXCH_SPECIAL_AUTH" parameterType="com.path.dbmaps.vo.CTSTRS_EXCH_SPECIAL_AUTHVO" >
+    insert into CTSTRS_EXCH_SPECIAL_AUTH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="AUTH_NO != null and AUTH_NO != emptyBigDecimalValue" >
+        AUTH_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CB_IND != null" >
+        #{CB_IND},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="AUTH_NO != null and AUTH_NO != emptyBigDecimalValue" >
+        #{AUTH_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTRS_EXCH_SPECIAL_AUTH" >
+    update CTSTRS_EXCH_SPECIAL_AUTH
+    <set >
+      <if test="AUTH_NO != null" >
+        <choose >
+          <when test="AUTH_NO == emptyBigDecimalValue" >
+            AUTH_NO = NULL ,
+          </when>
+          <otherwise >
+            AUTH_NO = #{AUTH_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </sql>
+  <update id="updateCTSTRS_EXCH_SPECIAL_AUTH" parameterType="com.path.dbmaps.vo.CTSTRS_EXCH_SPECIAL_AUTHVO" >
+    <include refid="sql_updateCTSTRS_EXCH_SPECIAL_AUTH" />
+  </update>
+</mapper>

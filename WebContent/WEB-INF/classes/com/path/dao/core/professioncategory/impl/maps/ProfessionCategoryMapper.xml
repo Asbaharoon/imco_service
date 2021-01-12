@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="professionCategoryListMapper">
+
+ <sql id="professionCategoryListCommon">
+			SELECT
+			 CTS_PROFESSION_CATEGORY.CODE,
+			 CTS_PROFESSION_CATEGORY.BRIEF_NAME_ENG,
+			 CTS_PROFESSION_CATEGORY.BRIEF_NAME_ARAB,
+			 CTS_PROFESSION_CATEGORY.LONG_NAME_ENG,
+			 CTS_PROFESSION_CATEGORY.LONG_NAME_ARAB
+	FROM  CTS_PROFESSION_CATEGORY  
+WHERE	CTS_PROFESSION_CATEGORY.COMP_CODE  = #{compCode}
+<if test='useCifMatrix != null and "1".equals(useCifMatrix)'>
+	AND (exists (select 1 from RIFCTT_CIF_MATRIX
+	where RIFCTT_CIF_MATRIX.COMP_CODE=CTS_PROFESSION_CATEGORY.COMP_CODE
+	AND RIFCTT_CIF_MATRIX.PROFESSION_CATEGORY_CODE = CTS_PROFESSION_CATEGORY.CODE
+	AND RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC}  
+	AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC})
+	or
+ not exists (select 1 from RIFCTT_CIF_MATRIX
+	where RIFCTT_CIF_MATRIX.COMP_CODE=CTS_PROFESSION_CATEGORY.COMP_CODE
+		AND RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC} 
+		AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} ))
+</if>
+ </sql>
+ 
+ 
+
+ <resultMap id="professionCategoryList_ResMap" type="com.path.dbmaps.vo.CTS_PROFESSION_CATEGORYVO">
+	<id property="CODE" column="CODE"/>
+	<result property="BRIEF_NAME_ENG" column="BRIEF_NAME_ENG" />
+	<result property="BRIEF_NAME_ARAB" column="BRIEF_NAME_ARAB" />
+	<result property="LONG_NAME_ENG" column="LONG_NAME_ENG" />
+	<result property="LONG_NAME_ARAB" column="LONG_NAME_ARAB" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+ </resultMap>
+ 
+ <select id="professionCategoryList" resultMap="professionCategoryList_ResMap" parameterType="com.path.vo.core.professioncategory.ProfessionCategorySC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="professionCategoryListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="professionCategoryListCount" resultType="int" parameterType="com.path.vo.core.professioncategory.ProfessionCategorySC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="professionCategoryListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+
+  <select id="returnDependencyByProfessionCategory" parameterType="com.path.vo.core.professioncategory.ProfessionCategorySC" resultType="com.path.dbmaps.vo.CTS_PROFESSION_CATEGORYVO">
+		SELECT
+			 	CODE,
+			 	CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG
+		FROM  	CTS_PROFESSION_CATEGORY  
+		WHERE	CTS_PROFESSION_CATEGORY.COMP_CODE    = #{compCode}
+		 AND	CTS_PROFESSION_CATEGORY.CODE  = #{code}
+		 <if test='useCifMatrix != null and "1".equals(useCifMatrix)'>
+			AND (exists (select 1 from RIFCTT_CIF_MATRIX
+			where RIFCTT_CIF_MATRIX.COMP_CODE=CTS_PROFESSION_CATEGORY.COMP_CODE
+			AND RIFCTT_CIF_MATRIX.PROFESSION_CATEGORY_CODE = CTS_PROFESSION_CATEGORY.CODE
+			AND RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC}  
+			AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC})
+			or
+		 not exists (select 1 from RIFCTT_CIF_MATRIX
+			where RIFCTT_CIF_MATRIX.COMP_CODE=CTS_PROFESSION_CATEGORY.COMP_CODE
+				AND RIFCTT_CIF_MATRIX.LEGAL_STATUS_CODE = #{legalStatusCode,jdbcType=NUMERIC} 
+				AND RIFCTT_CIF_MATRIX.TYPE_CODE= #{cifType,jdbcType=NUMERIC} ))		 
+			</if>	
+</select>   
+</mapper>

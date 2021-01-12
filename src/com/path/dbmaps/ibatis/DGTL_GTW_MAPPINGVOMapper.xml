@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DGTL_GTW_MAPPING" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.DGTL_GTW_MAPPINGVO" >
+    <id column="MAPPING_ID" property="MAPPING_ID" />
+    <result column="WS_NAME" property="WS_NAME" />
+    <result column="OPER_NAME" property="OPER_NAME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MAPPING_ID, WS_NAME, OPER_NAME
+  </sql>
+  <select id="selectDGTL_GTW_MAPPING" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPINGVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from DGTL_GTW_MAPPING
+    where MAPPING_ID = #{MAPPING_ID}
+  </select>
+  <delete id="deleteDGTL_GTW_MAPPING" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPINGVO" >
+    delete from DGTL_GTW_MAPPING
+    where MAPPING_ID = #{MAPPING_ID}
+  </delete>
+  <insert id="insertDGTL_GTW_MAPPING" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPINGVO" >
+    insert into DGTL_GTW_MAPPING
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="MAPPING_ID != null and !&quot;&quot;.equals(MAPPING_ID)" >
+        MAPPING_ID,
+      </if>
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        WS_NAME,
+      </if>
+      <if test="OPER_NAME != null and !&quot;&quot;.equals(OPER_NAME)" >
+        OPER_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="MAPPING_ID != null and !&quot;&quot;.equals(MAPPING_ID)" >
+        #{MAPPING_ID},
+      </if>
+      <if test="WS_NAME != null and !&quot;&quot;.equals(WS_NAME)" >
+        #{WS_NAME},
+      </if>
+      <if test="OPER_NAME != null and !&quot;&quot;.equals(OPER_NAME)" >
+        #{OPER_NAME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateDGTL_GTW_MAPPING" >
+    update DGTL_GTW_MAPPING
+    <set >
+      <if test="WS_NAME != null" >
+        <choose >
+          <when test="WS_NAME.equals(&quot;&quot;)" >
+            WS_NAME = NULL ,
+          </when>
+          <otherwise >
+            WS_NAME = #{WS_NAME},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="OPER_NAME != null" >
+        <choose >
+          <when test="OPER_NAME.equals(&quot;&quot;)" >
+            OPER_NAME = NULL ,
+          </when>
+          <otherwise >
+            OPER_NAME = #{OPER_NAME},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where MAPPING_ID = #{MAPPING_ID}
+  </sql>
+  <update id="updateDGTL_GTW_MAPPING" parameterType="com.path.dbmaps.vo.DGTL_GTW_MAPPINGVO" >
+    <include refid="sql_updateDGTL_GTW_MAPPING" />
+  </update>
+</mapper>

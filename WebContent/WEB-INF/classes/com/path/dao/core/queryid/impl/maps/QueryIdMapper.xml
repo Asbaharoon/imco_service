@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="CTSCRITERIAQUERY_IDMapper">
+
+	<!-- TYPES List --> 
+	<sql id="criteriaQueryIdListCommon" >
+		 <![CDATA[
+			SELECT IRP_AD_HOC_QUERY.QUERY_ID,
+			       IRP_AD_HOC_QUERY.QUERY_NAME
+			FROM IRP_AD_HOC_QUERY
+			WHERE IRP_AD_HOC_QUERY.QUERY_ID NOT IN (SELECT QUERY_ID FROM IRP_REPORT_QUERY)
+			]]>	
+	</sql>
+
+	<sql id="criteriaQueryIdCondition">
+		<if test="queryId != null">
+			AND IRP_AD_HOC_QUERY.QUERY_ID = #{queryId}
+		</if>
+	</sql>
+
+	<resultMap id="getIdList_ResMap" type="com.path.vo.core.queryid.QueryIdCO" >
+	    <result column="QUERY_ID" 			property="queryId" />
+	    <result column="QUERY_NAME" 		property="queryName" />   
+	</resultMap>
+
+	<select id="getIdList"  resultMap="getIdList_ResMap" parameterType="com.path.vo.core.queryid.QueryIdSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="criteriaQueryIdListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+		<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	</select>
+
+	<select id="getIdCount"  resultType="int" parameterType="com.path.vo.core.queryid.QueryIdSC" > 
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="criteriaQueryIdListCommon"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+		<include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+
+	<select id="getQueryId"  resultMap="getIdList_ResMap" parameterType="com.path.vo.core.queryid.QueryIdSC" > 
+		<include refid="criteriaQueryIdListCommon"/>
+		<include refid="criteriaQueryIdCondition"/>
+	</select>
+
+</mapper>

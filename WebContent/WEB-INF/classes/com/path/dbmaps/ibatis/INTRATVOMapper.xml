@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="INTRAT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.INTRATVO" >
+    <id column="APPL_DATE" property="APPL_DATE" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CIF_SUB_NO" property="CIF_SUB_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CURRENCY_CODE" property="CURRENCY_CODE" />
+    <id column="DR_CR_IDX" property="DR_CR_IDX" />
+    <id column="GL_CODE" property="GL_CODE" />
+    <id column="SL_NO" property="SL_NO" />
+    <result column="RATE" property="RATE" />
+    <result column="DATE_ENTERED" property="DATE_ENTERED" />
+    <result column="PREVIOUS_RATE" property="PREVIOUS_RATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPL_DATE, BRANCH_CODE, CIF_SUB_NO, COMP_CODE, CURRENCY_CODE, DR_CR_IDX, GL_CODE, 
+    SL_NO, RATE, DATE_ENTERED, PREVIOUS_RATE
+  </sql>
+  <select id="selectINTRAT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.INTRATVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from INTRAT
+    where APPL_DATE = #{APPL_DATE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DR_CR_IDX = #{DR_CR_IDX}
+      and GL_CODE = #{GL_CODE}
+      and SL_NO = #{SL_NO}
+  </select>
+  <delete id="deleteINTRAT" parameterType="com.path.dbmaps.vo.INTRATVOKey" >
+    delete from INTRAT
+    where APPL_DATE = #{APPL_DATE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DR_CR_IDX = #{DR_CR_IDX}
+      and GL_CODE = #{GL_CODE}
+      and SL_NO = #{SL_NO}
+  </delete>
+  <insert id="insertINTRAT" parameterType="com.path.dbmaps.vo.INTRATVO" >
+    insert into INTRAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APPL_DATE != null" >
+        APPL_DATE,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        CIF_SUB_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        CURRENCY_CODE,
+      </if>
+      <if test="DR_CR_IDX != null" >
+        DR_CR_IDX,
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        GL_CODE,
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        SL_NO,
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        RATE,
+      </if>
+      <if test="DATE_ENTERED != null" >
+        DATE_ENTERED,
+      </if>
+      <if test="PREVIOUS_RATE != null and PREVIOUS_RATE != emptyBigDecimalValue" >
+        PREVIOUS_RATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APPL_DATE != null" >
+        #{APPL_DATE},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CIF_SUB_NO != null and CIF_SUB_NO != emptyBigDecimalValue" >
+        #{CIF_SUB_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CURRENCY_CODE != null and CURRENCY_CODE != emptyBigDecimalValue" >
+        #{CURRENCY_CODE},
+      </if>
+      <if test="DR_CR_IDX != null" >
+        #{DR_CR_IDX},
+      </if>
+      <if test="GL_CODE != null and GL_CODE != emptyBigDecimalValue" >
+        #{GL_CODE},
+      </if>
+      <if test="SL_NO != null and SL_NO != emptyBigDecimalValue" >
+        #{SL_NO},
+      </if>
+      <if test="RATE != null and RATE != emptyBigDecimalValue" >
+        #{RATE},
+      </if>
+      <if test="DATE_ENTERED != null" >
+        #{DATE_ENTERED},
+      </if>
+      <if test="PREVIOUS_RATE != null and PREVIOUS_RATE != emptyBigDecimalValue" >
+        #{PREVIOUS_RATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateINTRAT" >
+    update INTRAT
+    <set >
+      <if test="RATE != null" >
+        <choose >
+          <when test="RATE == emptyBigDecimalValue" >
+            RATE = NULL ,
+          </when>
+          <otherwise >
+            RATE = #{RATE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_ENTERED != null" >
+        DATE_ENTERED = #{DATE_ENTERED},
+      </if>
+      <if test="PREVIOUS_RATE != null" >
+        <choose >
+          <when test="PREVIOUS_RATE == emptyBigDecimalValue" >
+            PREVIOUS_RATE = NULL ,
+          </when>
+          <otherwise >
+            PREVIOUS_RATE = #{PREVIOUS_RATE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APPL_DATE = #{APPL_DATE}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and CIF_SUB_NO = #{CIF_SUB_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and CURRENCY_CODE = #{CURRENCY_CODE}
+      and DR_CR_IDX = #{DR_CR_IDX}
+      and GL_CODE = #{GL_CODE}
+      and SL_NO = #{SL_NO}
+  </sql>
+  <update id="updateINTRAT" parameterType="com.path.dbmaps.vo.INTRATVO" >
+    <include refid="sql_updateINTRAT" />
+  </update>
+</mapper>

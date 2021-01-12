@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="companiesMapper">
+ 
+  
+<!-- COMPANIES LIST -->
+ <sql id="companiesListCommon" >
+	 <![CDATA[
+		SELECT COMP_CODE , LTRIM(RTRIM(BRIEF_DESC_ENG)) AS BRIEF_DESC_ENG
+		FROM COMPANIES
+		WHERE COMP_CODE > 0
+		]]>	
+</sql>
+
+ <resultMap id="getCompaniesList_ResMap" type="companiesVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+ </resultMap>
+ 
+ <select id="getCompaniesList"  resultMap="getCompaniesList_ResMap" parameterType="companiesSC">
+     <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="companiesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+</select>
+
+<select id="getCompaniesCount"  resultType="int" parameterType="companiesSC" > 
+ 	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="companiesListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+
+ <!-- COMPANIES BY USER -->
+<sql id="companiesByUsrList">
+SELECT COMP_CODE, BRIEF_DESC_ENG
+  FROM COMPANIES
+ WHERE EXISTS (SELECT 1
+          FROM LOC
+         WHERE LOC.COMP_CODE = COMPANIES.COMP_CODE
+           AND LOC.USER_ID = #{userId})
+ </sql>
+
+ <resultMap id="getCompaniesByUsrList_ResMap" type="companiesVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+ </resultMap>
+
+ <select id="getCompaniesByUsrList"  resultMap="getCompaniesByUsrList_ResMap" parameterType="companiesSC">
+     <include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="companiesByUsrList"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+	
+	
+</select>
+
+<select id="getCompaniesByUsrCount"  resultType="int" parameterType="companiesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="companiesByUsrList"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>
+	
+	
+</select>
+
+<select id="getCompaniesByUsrDetails"  resultMap="getCompaniesByUsrList_ResMap" parameterType="companiesSC"> 
+	<include refid="companiesByUsrList"/>
+      	 AND COMP_CODE = #{compCode}
+</select>
+
+<select id="getShowBranchesfromCompany" parameterType="companiesSC" resultType="String">
+	SELECT 	SHOW_BRANCHES
+	FROM 	COMPANIES 
+	WHERE	COMPANIES.COMP_CODE = #{compCode}
+</select>
+
+<select id="returnCompCodeAIB" resultType="java.math.BigDecimal" parameterType="micrSC">
+		SELECT COMP_CODE  
+		FROM COMPANIES
+		WHERE CIF_NO = #{cifNo}
+</select>
+
+
+<sql id="companyCurrLkp_sql">
+SELECT COMPANIES.COMP_CODE,
+       COMPANIES.BRIEF_DESC_ENG BRIEF_DESC_ENG_comp,
+       COMPANIES.LONG_DESC_ENG LONG_DESC_ENG_comp,
+       COMPANIES.REMARK,
+       COMPANIES.BRIEF_DESC_ARAB BRIEF_DESC_ARAB_comp,
+       COMPANIES.LONG_DESC_ARAB LONG_DESC_ARAB_comp,
+       CURRENCIES.BRIEF_DESC_ENG BRIEF_DESC_ENG_cur
+  FROM CURRENCIES, COMPANIES
+ where CURRENCIES.COMP_CODE = COMPANIES.COMP_CODE
+   AND CURRENCIES.CURRENCY_CODE = COMPANIES.BASE_CURRENCY
+	<if test='compCode != null and compCode != emptyBigDecimalValue'>
+	AND COMPANIES.COMP_CODE = #{compCode}
+	</if>
+</sql>
+
+
+<resultMap id="companyCurrLkp_map" type="companiesCO">
+	<result property="companiesVO.COMP_CODE" column="COMP_CODE" />
+	<result property="companiesVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG_comp" />
+	<result property="companiesVO.LONG_DESC_ENG" column="LONG_DESC_ENG_comp" />
+	<result property="companiesVO.REMARK" column="REMARK" />
+	<result property="companiesVO.BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB_comp" />
+	<result property="companiesVO.LONG_DESC_ARAB" column="LONG_DESC_ARAB_comp" />
+	<result property="currenciesVO.BRIEF_DESC_ENG" column="BRIEF_DESC_ENG_cur" />
+</resultMap>
+
+
+<select id="getCompanyCurrLkpCount" resultType="int" parameterType="companiesSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="companyCurrLkp_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+</select>
+
+<select id="getCompanyCurrLkpList" resultMap="companyCurrLkp_map" parameterType="companiesSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="companyCurrLkp_sql"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+</select>
+
+<sql id="ppsGroupCompaniesListCommonQuery" >
+        <![CDATA[
+        SELECT S_FAMILY_DET.COMP_CODE COMP_CODE,
+              LTRIM(RTRIM(COMPANIES.BRIEF_DESC_ENG)) BRIEF_DESC_ENG
+     FROM     S_FAMILY_DET
+     LEFT   OUTER JOIN COMPANIES ON  
+              S_FAMILY_DET.COMP_CODE =  COMPANIES.COMP_CODE
+     WHERE 
+              S_FAMILY_DET.FAMILY_CODE IN
+             ( SELECT 
+                  PIP.COMPANY_GROUP_CODE
+               FROM 
+                  PIPSCIT   PIP
+               WHERE    
+             PIP.COMP_CODE=#{compCode} AND
+             PIP.BRANCH_CODE=#{branchCode})
+     ]]>      
+</sql>
+
+<select id="getPPSGroupCompaniesList"  resultMap="getCompaniesList_ResMap" parameterType="companiesSC">
+     <include refid="servicesCommon.commonGridWrpBefFlip"/>
+       <include refid="ppsGroupCompaniesListCommonQuery"/>
+       <include refid="servicesCommon.commonGridWrpAftFlip"/>
+       <include refid="servicesCommon.commmonGridWrpFlipClose"/>     
+</select>
+
+<select id="getPPSGroupCompaniesCount"  resultType="int" parameterType="companiesSC" > 
+       <include refid="servicesCommon.commonGridWrpBefCnt"/>
+       <include refid="ppsGroupCompaniesListCommonQuery"/>
+       <include refid="servicesCommon.commonGridWrpAftCnt"/>
+       <include refid="servicesCommon.commonGridCountWrpClose"/>     
+</select>
+
+
+</mapper>

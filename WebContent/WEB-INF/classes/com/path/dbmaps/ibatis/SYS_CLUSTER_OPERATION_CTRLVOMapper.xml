@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_CLUSTER_OPERATION_CTRL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_CLUSTER_OPERATION_CTRLVO" >
+    <id column="OPERATION_NAME" property="OPERATION_NAME" />
+    <result column="MACHINE_NAME" property="MACHINE_NAME" />
+    <result column="OPERATION_TYPE" property="OPERATION_TYPE" />
+    <result column="OPERATION_TIME" property="OPERATION_TIME" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OPERATION_NAME, MACHINE_NAME, OPERATION_TYPE, OPERATION_TIME
+  </sql>
+  <select id="selectSYS_CLUSTER_OPERATION_CTRL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_CLUSTER_OPERATION_CTRLVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_CLUSTER_OPERATION_CTRL
+    where OPERATION_NAME = #{OPERATION_NAME}
+  </select>
+  <delete id="deleteSYS_CLUSTER_OPERATION_CTRL" parameterType="com.path.dbmaps.vo.SYS_CLUSTER_OPERATION_CTRLVO" >
+    delete from SYS_CLUSTER_OPERATION_CTRL
+    where OPERATION_NAME = #{OPERATION_NAME}
+  </delete>
+  <insert id="insertSYS_CLUSTER_OPERATION_CTRL" parameterType="com.path.dbmaps.vo.SYS_CLUSTER_OPERATION_CTRLVO" >
+    insert into SYS_CLUSTER_OPERATION_CTRL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="OPERATION_NAME != null" >
+        OPERATION_NAME,
+      </if>
+      <if test="MACHINE_NAME != null" >
+        MACHINE_NAME,
+      </if>
+      <if test="OPERATION_TYPE != null" >
+        OPERATION_TYPE,
+      </if>
+      <if test="OPERATION_TIME != null" >
+        OPERATION_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="OPERATION_NAME != null" >
+        #{OPERATION_NAME},
+      </if>
+      <if test="MACHINE_NAME != null" >
+        #{MACHINE_NAME},
+      </if>
+      <if test="OPERATION_TYPE != null" >
+        #{OPERATION_TYPE},
+      </if>
+      <if test="OPERATION_TIME != null" >
+        #{OPERATION_TIME},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_CLUSTER_OPERATION_CTRL" >
+    update SYS_CLUSTER_OPERATION_CTRL
+    <set >
+      <if test="MACHINE_NAME != null" >
+        MACHINE_NAME = #{MACHINE_NAME},
+      </if>
+      <if test="OPERATION_TYPE != null" >
+        OPERATION_TYPE = #{OPERATION_TYPE},
+      </if>
+      <if test="OPERATION_TIME != null" >
+        OPERATION_TIME = #{OPERATION_TIME},
+      </if>
+    </set>
+    where OPERATION_NAME = #{OPERATION_NAME}
+  </sql>
+  <update id="updateSYS_CLUSTER_OPERATION_CTRL" parameterType="com.path.dbmaps.vo.SYS_CLUSTER_OPERATION_CTRLVO" >
+    <include refid="sql_updateSYS_CLUSTER_OPERATION_CTRL" />
+  </update>
+</mapper>

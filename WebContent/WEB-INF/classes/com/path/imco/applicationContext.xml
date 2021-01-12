@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd"
+    >
+
+
+
+	<bean id="contextApplicationContextProvider" class="com.path.lib.common.util.ApplicationContextProvider">
+	</bean>
+	<!-- should be located after  contextApplicationContextProvider-->
+	<import resource="classpath:com/path/**/conf/**/*Context.xml" />
+	<!--  for Web services Exposing -->
+	<import resource="classpath:com/path/imco/applicationWebServices.xml" />
+	<!--  for BO Exposing -->
+    <import resource="classpath:com/path/imco/applicationBOExporters.xml"/>
+
+	<bean id="propertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:PathRemoting.properties</value>
+				<value>classpath:PathServices.properties</value>
+				<value>classpath:PathImcoRemoting.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="pathRemotingPropertiesProvider" class="com.path.lib.remote.PathRemotingPropertiesProvider" />
+
+	<bean id="pathBeanFactory" class="com.path.lib.remote.PathServiceBeanFactory" />
+	<bean id="imcoServiceBeanFactory" class="com.path.lib.remote.PathServiceBeanFactory" />
+
+	<bean id="jeDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${services.imco.jndi}" />
+	</bean>
+
+	<bean id="jeTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="jeDataSource" />
+	</bean>
+
+
+	<bean id="baseBO" abstract="true">
+		<property name="genericDAO" ref="genericDAO"></property>
+		<property name="commonLibBO" ref="commonLibBO"></property>
+		<property name="auditBO" ref="auditBO"></property>
+		<property name="smartBO" ref="smartBO"></property>
+	</bean>
+
+	<bean id="genericDAO" parent="baseDAO"
+		class="com.path.lib.common.base.GenericDAOImpl">
+	</bean>
+
+	<bean id="baseDAO" abstract="true">
+		<property name="sqlMap" ref="sqlMapClient" />
+		<property name="datasourceJNDI" value="${services.imco.jndi}" />
+	</bean>
+
+	<bean id="sqlSessionFactProps" class="com.path.lib.common.base.ibatis3.SqlSessionFactProps">
+		<property name="configLocation"
+			value="classpath:com/path/imco/conf/sql-mapper-config.xml"></property>
+		<property name="mapperLocations">
+			<list>
+				<value>${services.commonMappers}</value>
+			</list>
+		</property>
+		<property name="failFast" value="true"></property>
+		<property name="sybaseMappers" value="${services.sybaseMappers}"></property>
+		<property name="oraMappers" value="${services.oraMappers}"></property>
+		<property name="mapEnc" value="${mappersServices.encrypted}"></property>
+	</bean>
+	<bean id="sqlMapClientIbatisInst" class="com.path.lib.common.base.ibatis3.SqlSessionFactoryBean"
+		scope="prototype">
+	</bean>
+
+
+	<bean id="sqlMapClientIbatis" class="com.path.lib.common.base.ibatis3.SqlSessionFactoryBean">
+		<constructor-arg>
+			<map>
+				<entry key="sqlSessionFactProps" value-ref="sqlSessionFactProps"></entry>
+				<entry key="dataSource" value-ref="jeDataSource"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+
+
+	<bean id="sqlMapClient" class="com.path.lib.common.base.IbatisSqlMapClient">
+		<property name="sqlMapClient" ref="sqlMapClientIbatis" />
+	</bean>
+
+	<bean id="jeMatchAllTxInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="jeTransactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*NewTrans">PROPAGATION_REQUIRES_NEW, -Exception
+				</prop>
+				<prop key="*">PROPAGATION_REQUIRED, -Exception</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="interceptorTransaction"
+		class="com.path.lib.common.interceptor.PathBeanNameAutoProxyCreator">
+		<property name="interceptorNames">
+			<list>
+				<idref bean="jeMatchAllTxInterceptor" />
+			</list>
+		</property>
+		<!--
+			Common transaction beans reference available in ServiceCommonContext,
+			this property should be located before bean Names
+		-->
+		<property name="addBeanNames" ref="commmonTransBeans" />
+		<property name="beanNames">
+			<list>
+				<!--
+					Common transaction beans reference available in
+					ServiceCommonContext
+				-->
+				<value>dynamicFileStructureBO</value>
+				<value>atmInterfaceBO</value>
+				<value>mxMessageDefinitionBO</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="timeoutInterceptor" class="com.path.lib.common.interceptor.TimeoutInterceptor">
+		<property name="timeoutProps">
+			<props><!-- Timeout parameters for method to be given here -->
+				<prop key=""></prop>
+				<!--
+					milliseconds(mi), seconds(s), hours(h), days(d), microseconds(mic),
+					minutes(m)
+				-->
+			</props>
+		</property>
+	</bean>
+
+	<bean name="timeoutAdvisor"
+		class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+		<property name="advice" ref="timeoutInterceptor" />
+		<property name="mappedNames">
+			<list>
+				<value></value><!-- Method name for timeout to be given here -->
+			</list>
+		</property>
+	</bean>
+
+	<bean name="timeoutMapper"
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="interceptorNames">
+			<list>
+				<idref bean="timeoutAdvisor" />
+			</list>
+		</property>
+		<property name="beanNames">
+			<list>
+				<value></value>
+				<!--
+					The bean in which the method to be timed out lies, is to be given
+					here
+				-->
+			</list>
+		</property>
+	</bean>
+
+</beans>

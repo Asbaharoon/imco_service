@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_COUNTRY_INFO" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_COUNTRY_INFOVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COUNTRY_CODE" property="COUNTRY_CODE" />
+    <result column="ID_NO" property="ID_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, COUNTRY_CODE, ID_NO
+  </sql>
+  <select id="selectCIF_COUNTRY_INFO" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_COUNTRY_INFOVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_COUNTRY_INFO
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </select>
+  <delete id="deleteCIF_COUNTRY_INFO" parameterType="com.path.dbmaps.vo.CIF_COUNTRY_INFOVOKey" >
+    delete from CIF_COUNTRY_INFO
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </delete>
+  <insert id="insertCIF_COUNTRY_INFO" parameterType="com.path.dbmaps.vo.CIF_COUNTRY_INFOVO" >
+    insert into CIF_COUNTRY_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        COUNTRY_CODE,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="COUNTRY_CODE != null and COUNTRY_CODE != emptyBigDecimalValue" >
+        #{COUNTRY_CODE},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_COUNTRY_INFO" >
+    update CIF_COUNTRY_INFO
+    <set >
+      <if test="ID_NO != null" >
+            ID_NO = #{ID_NO},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and COUNTRY_CODE = #{COUNTRY_CODE}
+  </sql>
+  <update id="updateCIF_COUNTRY_INFO" parameterType="com.path.dbmaps.vo.CIF_COUNTRY_INFOVO" >
+    <include refid="sql_updateCIF_COUNTRY_INFO" />
+  </update>
+</mapper>

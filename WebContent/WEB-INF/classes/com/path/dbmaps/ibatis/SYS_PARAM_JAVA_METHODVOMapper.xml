@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_PARAM_JAVA_METHOD" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_PARAM_JAVA_METHODVO" >
+    <id column="METHOD_ID" property="METHOD_ID" />
+    <result column="METHOD_DESC" property="METHOD_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    METHOD_ID, METHOD_DESC
+  </sql>
+  <select id="selectSYS_PARAM_JAVA_METHOD" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_PARAM_JAVA_METHODVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_PARAM_JAVA_METHOD
+    where METHOD_ID = #{METHOD_ID}
+  </select>
+  <delete id="deleteSYS_PARAM_JAVA_METHOD" parameterType="com.path.dbmaps.vo.SYS_PARAM_JAVA_METHODVOKey" >
+    delete from SYS_PARAM_JAVA_METHOD
+    where METHOD_ID = #{METHOD_ID}
+  </delete>
+  <insert id="insertSYS_PARAM_JAVA_METHOD" parameterType="com.path.dbmaps.vo.SYS_PARAM_JAVA_METHODVO" >
+    insert into SYS_PARAM_JAVA_METHOD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="METHOD_ID != null" >
+        METHOD_ID,
+      </if>
+      <if test="METHOD_DESC != null" >
+        METHOD_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="METHOD_ID != null" >
+        #{METHOD_ID},
+      </if>
+      <if test="METHOD_DESC != null" >
+        #{METHOD_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_PARAM_JAVA_METHOD" >
+    update SYS_PARAM_JAVA_METHOD
+    <set >
+      <if test="METHOD_DESC != null" >
+        METHOD_DESC = #{METHOD_DESC},
+      </if>
+    </set>
+    where METHOD_ID = #{METHOD_ID}
+  </sql>
+  <update id="updateSYS_PARAM_JAVA_METHOD" parameterType="com.path.dbmaps.vo.SYS_PARAM_JAVA_METHODVO" >
+    <include refid="sql_updateSYS_PARAM_JAVA_METHOD" />
+  </update>
+</mapper>

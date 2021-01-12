@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_SHOW_PICTURE" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="CIF_NO" property="CIF_NO" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" extends="BaseResultMap" >
+    <result column="IMAGE" property="IMAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NO ,CIF_NO
+  </sql>
+  <sql id="Blob_Column_List" >
+    IMAGE
+  </sql>
+  <select id="selectCIF_SHOW_PICTURE" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from CIF_SHOW_PICTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and CIF_NO = #{CIF_NO}
+  </select>
+  <delete id="deleteCIF_SHOW_PICTURE" parameterType="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" >
+    delete from CIF_SHOW_PICTURE
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and CIF_NO = #{CIF_NO}
+  </delete>
+  <insert id="insertCIF_SHOW_PICTURE" parameterType="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" >
+    insert into CIF_SHOW_PICTURE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="IMAGE != null" >
+        IMAGE,
+      </if>
+        <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="IMAGE != null" >
+        #{IMAGE},
+      </if>
+        <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_SHOW_PICTURE" >
+    update CIF_SHOW_PICTURE
+    <set>
+        IMAGE = #{IMAGE},
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and CIF_NO = #{CIF_NO}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_SHOW_PICTURE" parameterType="com.path.dbmaps.vo.CIF_SHOW_PICTUREVO" >
+    <include refid="sql_updateCIF_SHOW_PICTURE" />
+  </update>
+</mapper>

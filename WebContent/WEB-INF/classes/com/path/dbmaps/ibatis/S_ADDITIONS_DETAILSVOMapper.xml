@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_ADDITIONS_DETAILS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_ADDITIONS_DETAILSVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="PROG_REFERENCE" property="PROG_REFERENCE" />
+    <id column="S_ADD_TYPE_CODE" property="s_ADD_TYPE_CODE" />
+    <id column="TRX_NBR" property="TRX_NBR" />
+    <result column="S_ADD_OPTION_CODE" property="s_ADD_OPTION_CODE" />
+    <result column="MANUAL_REFERENCE" property="MANUAL_REFERENCE" />
+    <result column="ADDITION_TEXT" property="ADDITION_TEXT" />
+    <result column="ADDITION_DATE" property="ADDITION_DATE" />
+    <result column="ADDITION_NUMBER" property="ADDITION_NUMBER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, PROG_REFERENCE, S_ADD_TYPE_CODE, TRX_NBR, S_ADD_OPTION_CODE, MANUAL_REFERENCE, 
+    ADDITION_TEXT, ADDITION_DATE, ADDITION_NUMBER
+  </sql>
+  <select id="selectS_ADDITIONS_DETAILS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_ADDITIONS_DETAILSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ADDITIONS_DETAILS
+    where APP_NAME = #{APP_NAME}
+      and PROG_REFERENCE = #{PROG_REFERENCE}
+      and S_ADD_TYPE_CODE = #{s_ADD_TYPE_CODE}
+      and TRX_NBR = #{TRX_NBR}
+  </select>
+  <delete id="deleteS_ADDITIONS_DETAILS" parameterType="com.path.dbmaps.vo.S_ADDITIONS_DETAILSVOKey" >
+    delete from S_ADDITIONS_DETAILS
+    where APP_NAME = #{APP_NAME}
+      and PROG_REFERENCE = #{PROG_REFERENCE}
+      and S_ADD_TYPE_CODE = #{s_ADD_TYPE_CODE}
+      and TRX_NBR = #{TRX_NBR}
+  </delete>
+  <insert id="insertS_ADDITIONS_DETAILS" parameterType="com.path.dbmaps.vo.S_ADDITIONS_DETAILSVO" >
+    insert into S_ADDITIONS_DETAILS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REFERENCE != null" >
+        PROG_REFERENCE,
+      </if>
+      <if test="s_ADD_TYPE_CODE != null and s_ADD_TYPE_CODE != emptyBigDecimalValue" >
+        S_ADD_TYPE_CODE,
+      </if>
+      <if test="TRX_NBR != null" >
+        TRX_NBR,
+      </if>
+      <if test="s_ADD_OPTION_CODE != null and s_ADD_OPTION_CODE != emptyBigDecimalValue" >
+        S_ADD_OPTION_CODE,
+      </if>
+      <if test="MANUAL_REFERENCE != null" >
+        MANUAL_REFERENCE,
+      </if>
+      <if test="ADDITION_TEXT != null" >
+        ADDITION_TEXT,
+      </if>
+      <if test="ADDITION_DATE != null" >
+        ADDITION_DATE,
+      </if>
+      <if test="ADDITION_NUMBER != null and ADDITION_NUMBER != emptyBigDecimalValue" >
+        ADDITION_NUMBER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REFERENCE != null" >
+        #{PROG_REFERENCE},
+      </if>
+      <if test="s_ADD_TYPE_CODE != null and s_ADD_TYPE_CODE != emptyBigDecimalValue" >
+        #{s_ADD_TYPE_CODE},
+      </if>
+      <if test="TRX_NBR != null" >
+        #{TRX_NBR},
+      </if>
+      <if test="s_ADD_OPTION_CODE != null and s_ADD_OPTION_CODE != emptyBigDecimalValue" >
+        #{s_ADD_OPTION_CODE},
+      </if>
+      <if test="MANUAL_REFERENCE != null" >
+        #{MANUAL_REFERENCE},
+      </if>
+      <if test="ADDITION_TEXT != null" >
+        #{ADDITION_TEXT},
+      </if>
+      <if test="ADDITION_DATE != null" >
+        #{ADDITION_DATE},
+      </if>
+      <if test="ADDITION_NUMBER != null and ADDITION_NUMBER != emptyBigDecimalValue" >
+        #{ADDITION_NUMBER},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_ADDITIONS_DETAILS" >
+    update S_ADDITIONS_DETAILS
+    <set >
+      <if test="s_ADD_OPTION_CODE != null" >
+        <choose >
+          <when test="s_ADD_OPTION_CODE == emptyBigDecimalValue" >
+            S_ADD_OPTION_CODE = NULL ,
+          </when>
+          <otherwise >
+            S_ADD_OPTION_CODE = #{s_ADD_OPTION_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MANUAL_REFERENCE != null" >
+        MANUAL_REFERENCE = #{MANUAL_REFERENCE},
+      </if>
+      <if test="ADDITION_TEXT != null" >
+        ADDITION_TEXT = #{ADDITION_TEXT},
+      </if>
+      <if test="ADDITION_DATE != null" >
+        ADDITION_DATE = #{ADDITION_DATE},
+      </if>
+      <if test="ADDITION_NUMBER != null" >
+        <choose >
+          <when test="ADDITION_NUMBER == emptyBigDecimalValue" >
+            ADDITION_NUMBER = NULL ,
+          </when>
+          <otherwise >
+            ADDITION_NUMBER = #{ADDITION_NUMBER},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and PROG_REFERENCE = #{PROG_REFERENCE}
+      and S_ADD_TYPE_CODE = #{s_ADD_TYPE_CODE}
+      and TRX_NBR = #{TRX_NBR}
+  </sql>
+  <update id="updateS_ADDITIONS_DETAILS" parameterType="com.path.dbmaps.vo.S_ADDITIONS_DETAILSVO" >
+    <include refid="sql_updateS_ADDITIONS_DETAILS" />
+  </update>
+</mapper>

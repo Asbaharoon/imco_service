@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_PACKAGE_PRODUCTS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_PACKAGE_PRODUCTSVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <id column="PACKAGE_CODE" property="PACKAGE_CODE" />
+    <result column="SELECTED_LINE" property="SELECTED_LINE" />
+    <result column="CHARGES_SCHEMA" property="CHARGES_SCHEMA" />
+    <result column="ALREADY_TAKEN" property="ALREADY_TAKEN" />
+    <result column="EXPIRY_DATE" property="EXPIRY_DATE" />
+    <result column="GRACE_PERIOD" property="GRACE_PERIOD" />
+    <result column="SUBMITTED_DATE" property="SUBMITTED_DATE" />
+    <result column="NEXT_DATE_CHARGE" property="NEXT_DATE_CHARGE" />
+    <result column="FIRST_PAYMENT_DATE" property="FIRST_PAYMENT_DATE" />
+    <result column="TRX_TYPE" property="TRX_TYPE" />
+    <result column="SUBSCRIBER_LANGUAGE" property="SUBSCRIBER_LANGUAGE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, PACKAGE_CODE, SELECTED_LINE, CHARGES_SCHEMA, ALREADY_TAKEN, 
+    EXPIRY_DATE, GRACE_PERIOD, SUBMITTED_DATE, NEXT_DATE_CHARGE, FIRST_PAYMENT_DATE, 
+    TRX_TYPE,SUBSCRIBER_LANGUAGE
+  </sql>
+  <select id="selectCIF_PACKAGE_PRODUCTS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_PACKAGE_PRODUCTSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_PACKAGE_PRODUCTS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PACKAGE_CODE = #{PACKAGE_CODE}
+  </select>
+  <delete id="deleteCIF_PACKAGE_PRODUCTS" parameterType="com.path.dbmaps.vo.CIF_PACKAGE_PRODUCTSVOKey" >
+    delete from CIF_PACKAGE_PRODUCTS
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PACKAGE_CODE = #{PACKAGE_CODE}
+  </delete>
+  <insert id="insertCIF_PACKAGE_PRODUCTS" parameterType="com.path.dbmaps.vo.CIF_PACKAGE_PRODUCTSVO" >
+    insert into CIF_PACKAGE_PRODUCTS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="PACKAGE_CODE != null and PACKAGE_CODE != emptyBigDecimalValue" >
+        PACKAGE_CODE,
+      </if>
+      <if test="SELECTED_LINE != null" >
+        SELECTED_LINE,
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        CHARGES_SCHEMA,
+      </if>
+      <if test="ALREADY_TAKEN != null" >
+        ALREADY_TAKEN,
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE,
+      </if>
+      <if test="GRACE_PERIOD != null and GRACE_PERIOD != emptyBigDecimalValue" >
+        GRACE_PERIOD,
+      </if>
+      <if test="SUBMITTED_DATE != null" >
+        SUBMITTED_DATE,
+      </if>
+      <if test="NEXT_DATE_CHARGE != null" >
+        NEXT_DATE_CHARGE,
+      </if>
+      <if test="FIRST_PAYMENT_DATE != null" >
+        FIRST_PAYMENT_DATE,
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        TRX_TYPE,
+      </if>
+      <if test="SUBSCRIBER_LANGUAGE != null" >
+        SUBSCRIBER_LANGUAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="PACKAGE_CODE != null and PACKAGE_CODE != emptyBigDecimalValue" >
+        #{PACKAGE_CODE},
+      </if>
+      <if test="SELECTED_LINE != null" >
+        #{SELECTED_LINE},
+      </if>
+      <if test="CHARGES_SCHEMA != null and CHARGES_SCHEMA != emptyBigDecimalValue" >
+        #{CHARGES_SCHEMA},
+      </if>
+      <if test="ALREADY_TAKEN != null" >
+        #{ALREADY_TAKEN},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        #{EXPIRY_DATE},
+      </if>
+      <if test="GRACE_PERIOD != null and GRACE_PERIOD != emptyBigDecimalValue" >
+        #{GRACE_PERIOD},
+      </if>
+      <if test="SUBMITTED_DATE != null" >
+        #{SUBMITTED_DATE},
+      </if>
+      <if test="NEXT_DATE_CHARGE != null" >
+        #{NEXT_DATE_CHARGE},
+      </if>
+      <if test="FIRST_PAYMENT_DATE != null" >
+        #{FIRST_PAYMENT_DATE},
+      </if>
+      <if test="TRX_TYPE != null and TRX_TYPE != emptyBigDecimalValue" >
+        #{TRX_TYPE},
+      </if>
+      <if test="SUBSCRIBER_LANGUAGE != null" >
+        #{SUBSCRIBER_LANGUAGE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_PACKAGE_PRODUCTS" >
+    update CIF_PACKAGE_PRODUCTS
+    <set >
+      <if test="SELECTED_LINE != null" >
+        SELECTED_LINE = #{SELECTED_LINE},
+      </if>
+      <if test="CHARGES_SCHEMA != null" >
+        <choose >
+          <when test="CHARGES_SCHEMA == emptyBigDecimalValue" >
+            CHARGES_SCHEMA = NULL ,
+          </when>
+          <otherwise >
+            CHARGES_SCHEMA = #{CHARGES_SCHEMA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ALREADY_TAKEN != null" >
+        ALREADY_TAKEN = #{ALREADY_TAKEN},
+      </if>
+      <if test="EXPIRY_DATE != null" >
+        EXPIRY_DATE = #{EXPIRY_DATE},
+      </if>
+      <if test="GRACE_PERIOD != null" >
+        <choose >
+          <when test="GRACE_PERIOD == emptyBigDecimalValue" >
+            GRACE_PERIOD = NULL ,
+          </when>
+          <otherwise >
+            GRACE_PERIOD = #{GRACE_PERIOD},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUBMITTED_DATE != null" >
+        SUBMITTED_DATE = #{SUBMITTED_DATE},
+      </if>
+      <if test="NEXT_DATE_CHARGE != null" >
+        NEXT_DATE_CHARGE = #{NEXT_DATE_CHARGE},
+      </if>
+      <if test="FIRST_PAYMENT_DATE != null" >
+        FIRST_PAYMENT_DATE = #{FIRST_PAYMENT_DATE},
+      </if>
+      <if test="TRX_TYPE != null" >
+        <choose >
+          <when test="TRX_TYPE == emptyBigDecimalValue" >
+            TRX_TYPE = NULL ,
+          </when>
+          <otherwise >
+            TRX_TYPE = #{TRX_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SUBSCRIBER_LANGUAGE != null" >
+        SUBSCRIBER_LANGUAGE = #{SUBSCRIBER_LANGUAGE},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+      and PACKAGE_CODE = #{PACKAGE_CODE}
+  </sql>
+  <update id="updateCIF_PACKAGE_PRODUCTS" parameterType="com.path.dbmaps.vo.CIF_PACKAGE_PRODUCTSVO" >
+    <include refid="sql_updateCIF_PACKAGE_PRODUCTS" />
+  </update>
+</mapper>

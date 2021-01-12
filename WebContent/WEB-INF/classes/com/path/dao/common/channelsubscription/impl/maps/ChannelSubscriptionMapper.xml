@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="channelSubscriptionMapper">
+<resultMap id="resChannelSubscriptionListMap" type="com.path.vo.common.channelsubscription.ChannelSubscriptionCO">
+		<result property="cifChannelRegistrationVO.CIF_NO" column="CIF_NO"/>
+		<result property="cifChannelRegistrationVO.CHANNEL" column="CHANNEL"/>
+		<result property="cifChannelRegistrationVO.IS_REGISTRED_YN" column="IS_REGISTRED_YN"/>
+		<result property="cifChannelRegistrationVO.ACC_BR" column="ACC_BR"/>
+		<result property="cifChannelRegistrationVO.ACC_CY" column="ACC_CY"/>
+		<result property="cifChannelRegistrationVO.ACC_GL" column="ACC_GL"/>
+		<result property="cifChannelRegistrationVO.ACC_CIF" column="ACC_CIF"/>
+		<result property="cifChannelRegistrationVO.ACC_SL" column="ACC_SL"/>
+		<result property="additionalReference"			 column="additionalReference"/>
+		<result property="channelDesc"					 column="channelDesc"/>
+	</resultMap>
+	<select id="returnChannelSubscriptionList" parameterType="com.path.vo.common.channelsubscription.ChannelSubscriptionSC" resultMap="resChannelSubscriptionListMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="queryChannelSubscriptionSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	<select id="returnChannelSubscriptionListCount" parameterType="com.path.vo.common.channelsubscription.ChannelSubscriptionSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="queryChannelSubscriptionSQL"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	<sql id="queryChannelSubscriptionSQL">
+		SELECT CIF_NO,
+			  CHANNEL,
+			(SELECT VALUE_DESC 
+			FROM SYS_PARAM_LOV_TRANS
+			WHERE LOV_TYPE_ID = #{lovType}
+			AND   LANG_CODE = #{langCode,jdbcType=VARCHAR}
+			AND   VALUE_CODE = CIF_CHANNEL_REGISTRATION.CHANNEL) as channelDesc ,
+			IS_REGISTRED_YN ,ACC_BR, ACC_CY , ACC_GL , ACC_CIF	,ACC_SL,
+			(SELECT  ADDITIONAL_REFERENCE FROM AMF 
+			WHERE  AMF.COMP_CODE=CIF_CHANNEL_REGISTRATION.COMP_CODE 
+			AND AMF.BRANCH_CODE=CIF_CHANNEL_REGISTRATION.ACC_BR AND AMF.CURRENCY_CODE=CIF_CHANNEL_REGISTRATION.ACC_CY  
+			AND AMF.GL_CODE=CIF_CHANNEL_REGISTRATION.ACC_GL  
+			AND AMF.CIF_SUB_NO=CIF_CHANNEL_REGISTRATION.ACC_CIF
+			AND AMF.SL_NO=CIF_CHANNEL_REGISTRATION.ACC_SL) additionalReference
+		FROM CIF_CHANNEL_REGISTRATION
+		WHERE COMP_CODE= #{compCode, jdbcType=NUMERIC}
+		AND CIF_NO = #{cifNo, jdbcType=NUMERIC}
+	</sql>
+</mapper>

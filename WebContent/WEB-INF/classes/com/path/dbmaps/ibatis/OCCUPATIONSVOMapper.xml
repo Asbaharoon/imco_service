@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="OCCUPATIONS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.OCCUPATIONSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="OCCUPATION_CODE" property="OCCUPATION_CODE" />
+    <result column="BRIEF_DESC_ENG" property="BRIEF_DESC_ENG" />
+    <result column="BRIEF_DESC_ARAB" property="BRIEF_DESC_ARAB" />
+    <result column="LONG_DESC_ENG" property="LONG_DESC_ENG" />
+    <result column="LONG_DESC_ARAB" property="LONG_DESC_ARAB" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, OCCUPATION_CODE, BRIEF_DESC_ENG, BRIEF_DESC_ARAB, LONG_DESC_ENG, LONG_DESC_ARAB, 
+    ADDITIONAL_REFERENCE
+  </sql>
+  <select id="selectOCCUPATIONS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.OCCUPATIONSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from OCCUPATIONS
+    where COMP_CODE = #{COMP_CODE}
+      and OCCUPATION_CODE = #{OCCUPATION_CODE}
+  </select>
+  <delete id="deleteOCCUPATIONS" parameterType="com.path.dbmaps.vo.OCCUPATIONSVOKey" >
+    delete from OCCUPATIONS
+    where COMP_CODE = #{COMP_CODE}
+      and OCCUPATION_CODE = #{OCCUPATION_CODE}
+  </delete>
+  <insert id="insertOCCUPATIONS" parameterType="com.path.dbmaps.vo.OCCUPATIONSVO" >
+    insert into OCCUPATIONS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="OCCUPATION_CODE != null and OCCUPATION_CODE != emptyBigDecimalValue" >
+        OCCUPATION_CODE,
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG,
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB,
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG,
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB,
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="OCCUPATION_CODE != null and OCCUPATION_CODE != emptyBigDecimalValue" >
+        #{OCCUPATION_CODE},
+      </if>
+      <if test="BRIEF_DESC_ENG != null" >
+        #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        #{ADDITIONAL_REFERENCE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateOCCUPATIONS" >
+    update OCCUPATIONS
+    <set >
+      <if test="BRIEF_DESC_ENG != null" >
+        BRIEF_DESC_ENG = #{BRIEF_DESC_ENG},
+      </if>
+      <if test="BRIEF_DESC_ARAB != null" >
+        BRIEF_DESC_ARAB = #{BRIEF_DESC_ARAB},
+      </if>
+      <if test="LONG_DESC_ENG != null" >
+        LONG_DESC_ENG = #{LONG_DESC_ENG},
+      </if>
+      <if test="LONG_DESC_ARAB != null" >
+        LONG_DESC_ARAB = #{LONG_DESC_ARAB},
+      </if>
+      <if test="ADDITIONAL_REFERENCE != null" >
+        ADDITIONAL_REFERENCE = #{ADDITIONAL_REFERENCE},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and OCCUPATION_CODE = #{OCCUPATION_CODE}
+  </sql>
+  <update id="updateOCCUPATIONS" parameterType="com.path.dbmaps.vo.OCCUPATIONSVO" >
+    <include refid="sql_updateOCCUPATIONS" />
+  </update>
+</mapper>

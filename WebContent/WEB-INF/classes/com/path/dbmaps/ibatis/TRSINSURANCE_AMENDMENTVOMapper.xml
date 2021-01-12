@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSINSURANCE_AMENDMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSINSURANCE_AMENDMENTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DET_LINE_NO" property="DET_LINE_NO" />
+    <id column="TRANSACTION_NO" property="TRANSACTION_NO" />
+    <result column="DEAL_NO" property="DEAL_NO" />
+    <result column="LINE_NO" property="LINE_NO" />
+    <result column="AMENDMENT_DATE" property="AMENDMENT_DATE" />
+    <result column="AMENDMENT_TYPE" property="AMENDMENT_TYPE" />
+    <result column="AMOUNT" property="AMOUNT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, DET_LINE_NO, TRANSACTION_NO, DEAL_NO, LINE_NO, AMENDMENT_DATE, 
+    AMENDMENT_TYPE, AMOUNT
+  </sql>
+  <select id="selectTRSINSURANCE_AMENDMENT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSINSURANCE_AMENDMENTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSINSURANCE_AMENDMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DET_LINE_NO = #{DET_LINE_NO}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </select>
+  <delete id="deleteTRSINSURANCE_AMENDMENT" parameterType="com.path.dbmaps.vo.TRSINSURANCE_AMENDMENTVOKey" >
+    delete from TRSINSURANCE_AMENDMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DET_LINE_NO = #{DET_LINE_NO}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </delete>
+  <insert id="insertTRSINSURANCE_AMENDMENT" parameterType="com.path.dbmaps.vo.TRSINSURANCE_AMENDMENTVO" >
+    insert into TRSINSURANCE_AMENDMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DET_LINE_NO != null and DET_LINE_NO != emptyBigDecimalValue" >
+        DET_LINE_NO,
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        TRANSACTION_NO,
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        DEAL_NO,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="AMENDMENT_DATE != null" >
+        AMENDMENT_DATE,
+      </if>
+      <if test="AMENDMENT_TYPE != null" >
+        AMENDMENT_TYPE,
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DET_LINE_NO != null and DET_LINE_NO != emptyBigDecimalValue" >
+        #{DET_LINE_NO},
+      </if>
+      <if test="TRANSACTION_NO != null and TRANSACTION_NO != emptyBigDecimalValue" >
+        #{TRANSACTION_NO},
+      </if>
+      <if test="DEAL_NO != null and DEAL_NO != emptyBigDecimalValue" >
+        #{DEAL_NO},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="AMENDMENT_DATE != null" >
+        #{AMENDMENT_DATE},
+      </if>
+      <if test="AMENDMENT_TYPE != null" >
+        #{AMENDMENT_TYPE},
+      </if>
+      <if test="AMOUNT != null and AMOUNT != emptyBigDecimalValue" >
+        #{AMOUNT},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSINSURANCE_AMENDMENT" >
+    update TRSINSURANCE_AMENDMENT
+    <set >
+      <if test="DEAL_NO != null" >
+        <choose >
+          <when test="DEAL_NO == emptyBigDecimalValue" >
+            DEAL_NO = NULL ,
+          </when>
+          <otherwise >
+            DEAL_NO = #{DEAL_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="LINE_NO != null" >
+        <choose >
+          <when test="LINE_NO == emptyBigDecimalValue" >
+            LINE_NO = NULL ,
+          </when>
+          <otherwise >
+            LINE_NO = #{LINE_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AMENDMENT_DATE != null" >
+        AMENDMENT_DATE = #{AMENDMENT_DATE},
+      </if>
+      <if test="AMENDMENT_TYPE != null" >
+        AMENDMENT_TYPE = #{AMENDMENT_TYPE},
+      </if>
+      <if test="AMOUNT != null" >
+        <choose >
+          <when test="AMOUNT == emptyBigDecimalValue" >
+            AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            AMOUNT = #{AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and DET_LINE_NO = #{DET_LINE_NO}
+      and TRANSACTION_NO = #{TRANSACTION_NO}
+  </sql>
+  <update id="updateTRSINSURANCE_AMENDMENT" parameterType="com.path.dbmaps.vo.TRSINSURANCE_AMENDMENTVO" >
+    <include refid="sql_updateTRSINSURANCE_AMENDMENT" />
+  </update>
+</mapper>

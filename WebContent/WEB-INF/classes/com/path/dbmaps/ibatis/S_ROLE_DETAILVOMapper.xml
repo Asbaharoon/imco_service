@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="S_ROLE_DETAIL" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.S_ROLE_DETAILVO" >
+    <id column="APP_NAME" property="APP_NAME" />
+    <id column="PROG_REF" property="PROG_REF" />
+    <id column="ROLE_NAME" property="ROLE_NAME" />
+    <result column="STATUS" property="STATUS" />
+    <result column="CREATED_BY" property="CREATED_BY" />
+    <result column="AUTHORIZED_BY" property="AUTHORIZED_BY" />
+    <result column="DATE_DELETED" property="DATE_DELETED" />
+    <result column="DATE_DELETE_REJECTED" property="DATE_DELETE_REJECTED" />
+    <result column="DELETED_BY" property="DELETED_BY" />
+    <result column="DELETE_REJECTED_BY" property="DELETE_REJECTED_BY" />
+    <result column="TO_BE_DELETED" property="TO_BE_DELETED" />
+    <result column="DATE_APPROVED" property="DATE_APPROVED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APP_NAME, PROG_REF, ROLE_NAME, STATUS, CREATED_BY, AUTHORIZED_BY, DATE_DELETED, DATE_DELETE_REJECTED, 
+    DELETED_BY, DELETE_REJECTED_BY, TO_BE_DELETED, DATE_APPROVED
+  </sql>
+  <select id="selectS_ROLE_DETAIL" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.S_ROLE_DETAILVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from S_ROLE_DETAIL
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and ROLE_NAME = #{ROLE_NAME}
+  </select>
+  <delete id="deleteS_ROLE_DETAIL" parameterType="com.path.dbmaps.vo.S_ROLE_DETAILVO" >
+    delete from S_ROLE_DETAIL
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and ROLE_NAME = #{ROLE_NAME}
+  </delete>
+  <insert id="insertS_ROLE_DETAIL" parameterType="com.path.dbmaps.vo.S_ROLE_DETAILVO" >
+    insert into S_ROLE_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        APP_NAME,
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        PROG_REF,
+      </if>
+      <if test="ROLE_NAME != null and !&quot;&quot;.equals(ROLE_NAME)" >
+        ROLE_NAME,
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        STATUS,
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        CREATED_BY,
+      </if>
+      <if test="AUTHORIZED_BY != null and !&quot;&quot;.equals(AUTHORIZED_BY)" >
+        AUTHORIZED_BY,
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED,
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        DATE_DELETE_REJECTED,
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        DELETED_BY,
+      </if>
+      <if test="DELETE_REJECTED_BY != null and !&quot;&quot;.equals(DELETE_REJECTED_BY)" >
+        DELETE_REJECTED_BY,
+      </if>
+      <if test="TO_BE_DELETED != null and !&quot;&quot;.equals(TO_BE_DELETED)" >
+        TO_BE_DELETED,
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="APP_NAME != null and !&quot;&quot;.equals(APP_NAME)" >
+        #{APP_NAME},
+      </if>
+      <if test="PROG_REF != null and !&quot;&quot;.equals(PROG_REF)" >
+        #{PROG_REF},
+      </if>
+      <if test="ROLE_NAME != null and !&quot;&quot;.equals(ROLE_NAME)" >
+        #{ROLE_NAME},
+      </if>
+      <if test="STATUS != null and !&quot;&quot;.equals(STATUS)" >
+        #{STATUS},
+      </if>
+      <if test="CREATED_BY != null and !&quot;&quot;.equals(CREATED_BY)" >
+        #{CREATED_BY},
+      </if>
+      <if test="AUTHORIZED_BY != null and !&quot;&quot;.equals(AUTHORIZED_BY)" >
+        #{AUTHORIZED_BY},
+      </if>
+      <if test="DATE_DELETED != null" >
+        #{DATE_DELETED},
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        #{DATE_DELETE_REJECTED},
+      </if>
+      <if test="DELETED_BY != null and !&quot;&quot;.equals(DELETED_BY)" >
+        #{DELETED_BY},
+      </if>
+      <if test="DELETE_REJECTED_BY != null and !&quot;&quot;.equals(DELETE_REJECTED_BY)" >
+        #{DELETE_REJECTED_BY},
+      </if>
+      <if test="TO_BE_DELETED != null and !&quot;&quot;.equals(TO_BE_DELETED)" >
+        #{TO_BE_DELETED},
+      </if>
+      <if test="DATE_APPROVED != null" >
+        #{DATE_APPROVED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateS_ROLE_DETAIL" >
+    update S_ROLE_DETAIL
+    <set >
+      <if test="STATUS != null" >
+        <choose >
+          <when test="STATUS.equals(&quot;&quot;)" >
+            STATUS = NULL ,
+          </when>
+          <otherwise >
+            STATUS = #{STATUS},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CREATED_BY != null" >
+        <choose >
+          <when test="CREATED_BY.equals(&quot;&quot;)" >
+            CREATED_BY = NULL ,
+          </when>
+          <otherwise >
+            CREATED_BY = #{CREATED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="AUTHORIZED_BY != null" >
+        <choose >
+          <when test="AUTHORIZED_BY.equals(&quot;&quot;)" >
+            AUTHORIZED_BY = NULL ,
+          </when>
+          <otherwise >
+            AUTHORIZED_BY = #{AUTHORIZED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_DELETED != null" >
+        DATE_DELETED = #{DATE_DELETED},
+      </if>
+      <if test="DATE_DELETE_REJECTED != null" >
+        DATE_DELETE_REJECTED = #{DATE_DELETE_REJECTED},
+      </if>
+      <if test="DELETED_BY != null" >
+        <choose >
+          <when test="DELETED_BY.equals(&quot;&quot;)" >
+            DELETED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETED_BY = #{DELETED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DELETE_REJECTED_BY != null" >
+        <choose >
+          <when test="DELETE_REJECTED_BY.equals(&quot;&quot;)" >
+            DELETE_REJECTED_BY = NULL ,
+          </when>
+          <otherwise >
+            DELETE_REJECTED_BY = #{DELETE_REJECTED_BY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="TO_BE_DELETED != null" >
+        <choose >
+          <when test="TO_BE_DELETED.equals(&quot;&quot;)" >
+            TO_BE_DELETED = NULL ,
+          </when>
+          <otherwise >
+            TO_BE_DELETED = #{TO_BE_DELETED},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DATE_APPROVED != null" >
+        DATE_APPROVED = #{DATE_APPROVED},
+      </if>
+    </set>
+    where APP_NAME = #{APP_NAME}
+      and PROG_REF = #{PROG_REF}
+      and ROLE_NAME = #{ROLE_NAME}
+  </sql>
+  <update id="updateS_ROLE_DETAIL" parameterType="com.path.dbmaps.vo.S_ROLE_DETAILVO" >
+    <include refid="sql_updateS_ROLE_DETAIL" />
+  </update>
+</mapper>

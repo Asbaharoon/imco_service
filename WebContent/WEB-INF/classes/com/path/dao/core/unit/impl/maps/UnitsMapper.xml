@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="unitsMapper">
+ <sql id="unitsListCommon" >
+	SELECT UNITS.COMP_CODE,   
+		UNITS.DIVISION_CODE,   
+        UNITS.DEPT_CODE,   
+		UNITS.UNIT_CODE,  
+		UNITS.ADDITIONAL_REFERENCE,  
+        UNITS.BRIEF_DESC_ENG,   
+        UNITS.BRIEF_DESC_ARAB,   
+        UNITS.LONG_DESC_ENG,   
+        UNITS.LONG_DESC_ARAB  
+	FROM UNITS
+	WHERE  UNITS.COMP_CODE   = #{compCode} AND
+   	    UNITS.DIVISION_CODE = CASE WHEN #{divisionCode} = 0 THEN  UNITS.DIVISION_CODE ELSE #{divisionCode} + 0 END AND
+	   	 UNITS.DEPT_CODE 	 = CASE WHEN #{deptCode} 	 = 0 THEN  UNITS.DEPT_CODE	  ELSE #{deptCode} + 0	 END
+ </sql>
+ 
+ <sql id="unitsDependency">
+ 	AND UNITS.UNIT_CODE = #{unitCode}
+ </sql>
+
+ <resultMap id="unitsListMap" type="unitsVO">
+ 	<id property="COMP_CODE" column="COMP_CODE" />
+	<id property="DIVISION_CODE" column="DIVISION_CODE" />
+	<id property="DEPT_CODE" column="DEPT_CODE" />
+	<result property="DIVISION_CODE" column="DIVISION_CODE" />
+	<result property="DEPT_CODE" column="DEPT_CODE" />
+	<result property="UNIT_CODE" column="UNIT_CODE" />
+	<result property="ADDITIONAL_REFERENCE" column="ADDITIONAL_REFERENCE" />
+	<result property="BRIEF_DESC_ENG" column="BRIEF_DESC_ENG" />
+	<result property="BRIEF_DESC_ARAB" column="BRIEF_DESC_ARAB" />
+	<result property="LONG_DESC_ENG" column="LONG_DESC_ENG" />
+	<result property="LONG_DESC_ARAB" column="LONG_DESC_ARAB" />
+ </resultMap>
+ <select id="unitList" resultMap="unitsListMap" parameterType="unitSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="unitsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ <select id="unitListCount" resultType="int" parameterType="unitSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="unitsListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+  
+ <select id="returnUnitByCode" resultType="unitsVO" parameterType="unitSC" >
+	<include refid="unitsListCommon"/>
+	<include refid="unitsDependency"/>
+ </select>
+</mapper>

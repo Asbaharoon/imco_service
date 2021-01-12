@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EOD_SCHEDULE_LISTENER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EOD_SCHEDULE_LISTENERVO" >
+    <id column="MACHINE_NAME" property="MACHINE_NAME" />
+    <result column="DATE_UPDATED" property="DATE_UPDATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MACHINE_NAME, DATE_UPDATED
+  </sql>
+  <select id="selectEOD_SCHEDULE_LISTENER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.EOD_SCHEDULE_LISTENERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from EOD_SCHEDULE_LISTENER
+    where MACHINE_NAME = #{MACHINE_NAME}
+  </select>
+  <delete id="deleteEOD_SCHEDULE_LISTENER" parameterType="com.path.dbmaps.vo.EOD_SCHEDULE_LISTENERVO" >
+    delete from EOD_SCHEDULE_LISTENER
+    where MACHINE_NAME = #{MACHINE_NAME}
+  </delete>
+  <insert id="insertEOD_SCHEDULE_LISTENER" parameterType="com.path.dbmaps.vo.EOD_SCHEDULE_LISTENERVO" >
+    insert into EOD_SCHEDULE_LISTENER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="MACHINE_NAME != null" >
+        MACHINE_NAME,
+      </if>
+      DATE_UPDATED,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="MACHINE_NAME != null" >
+        #{MACHINE_NAME},
+      </if>
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </trim>
+  </insert>
+  <sql id="sql_updateEOD_SCHEDULE_LISTENER" >
+    update EOD_SCHEDULE_LISTENER
+    <set >
+      DATE_UPDATED = 
+      <choose >
+        <when test="isSybase == 1" >
+           GETDATE(),
+        </when>
+        <otherwise >
+           SYSDATE,
+        </otherwise>
+      </choose>
+    </set>
+    where MACHINE_NAME = #{MACHINE_NAME}
+  </sql>
+  <update id="updateEOD_SCHEDULE_LISTENER" parameterType="com.path.dbmaps.vo.EOD_SCHEDULE_LISTENERVO" >
+    <include refid="sql_updateEOD_SCHEDULE_LISTENER" />
+    <if test="DATE_UPDATED != null" >
+      AND DATE_UPDATED = #{DATE_UPDATED}
+    </if>
+  </update>
+</mapper>

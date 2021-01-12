@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_FATCA_NATIONALITY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_FATCA_NATIONALITYVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="ID_TYPE_CODE" property="ID_TYPE_CODE" />
+    <id column="NATIONALITY_CODE" property="NATIONALITY_CODE" />
+    <result column="ID_NO" property="ID_NO" />
+    <result column="ID_EXPIRY_DATE" property="ID_EXPIRY_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, ID_TYPE_CODE, NATIONALITY_CODE, ID_NO, ID_EXPIRY_DATE
+  </sql>
+  <select id="selectCIF_FATCA_NATIONALITY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_FATCA_NATIONALITYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_FATCA_NATIONALITY
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+      and NATIONALITY_CODE = #{NATIONALITY_CODE}
+  </select>
+  <delete id="deleteCIF_FATCA_NATIONALITY" parameterType="com.path.dbmaps.vo.CIF_FATCA_NATIONALITYVOKey" >
+    delete from CIF_FATCA_NATIONALITY
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+      and NATIONALITY_CODE = #{NATIONALITY_CODE}
+  </delete>
+  <insert id="insertCIF_FATCA_NATIONALITY" parameterType="com.path.dbmaps.vo.CIF_FATCA_NATIONALITYVO" >
+    insert into CIF_FATCA_NATIONALITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        ID_TYPE_CODE,
+      </if>
+      <if test="NATIONALITY_CODE != null and NATIONALITY_CODE != emptyBigDecimalValue" >
+        NATIONALITY_CODE,
+      </if>
+      <if test="ID_NO != null" >
+        ID_NO,
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        ID_EXPIRY_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="ID_TYPE_CODE != null and ID_TYPE_CODE != emptyBigDecimalValue" >
+        #{ID_TYPE_CODE},
+      </if>
+      <if test="NATIONALITY_CODE != null and NATIONALITY_CODE != emptyBigDecimalValue" >
+        #{NATIONALITY_CODE},
+      </if>
+      <if test="ID_NO != null" >
+        #{ID_NO},
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        #{ID_EXPIRY_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_FATCA_NATIONALITY" >
+    update CIF_FATCA_NATIONALITY
+    <set >
+      <if test="ID_NO != null" >
+        ID_NO = #{ID_NO},
+      </if>
+      <if test="ID_EXPIRY_DATE != null" >
+        ID_EXPIRY_DATE = #{ID_EXPIRY_DATE},
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and ID_TYPE_CODE = #{ID_TYPE_CODE}
+      and NATIONALITY_CODE = #{NATIONALITY_CODE}
+  </sql>
+  <update id="updateCIF_FATCA_NATIONALITY" parameterType="com.path.dbmaps.vo.CIF_FATCA_NATIONALITYVO" >
+    <include refid="sql_updateCIF_FATCA_NATIONALITY" />
+  </update>
+</mapper>

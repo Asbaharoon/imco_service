@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ISO_INT_MSGS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ISO_INT_MSGSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="INT_CODE" property="INT_CODE" />
+    <id column="MESSAGE_CODE" property="MESSAGE_CODE" />
+    <id column="POS" property="POS" />
+    <result column="HEADER_DATA" property="HEADER_DATA" />
+    <result column="FIELDS_BITMAP1" property="FIELDS_BITMAP1" />
+    <result column="FIELDS_BITMAP2" property="FIELDS_BITMAP2" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+    <result column="MTI" property="MTI" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, INT_CODE, MESSAGE_CODE, POS, HEADER_DATA, FIELDS_BITMAP1, FIELDS_BITMAP2, 
+    DESCRIPTION, MTI
+  </sql>
+  <select id="selectISO_INT_MSGS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ISO_INT_MSGSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from ISO_INT_MSGS
+    where COMP_CODE = #{COMP_CODE}
+      and INT_CODE = #{INT_CODE}
+      and MESSAGE_CODE = #{MESSAGE_CODE}
+      and POS = #{POS}
+  </select>
+  <delete id="deleteISO_INT_MSGS" parameterType="com.path.dbmaps.vo.ISO_INT_MSGSVO" >
+    delete from ISO_INT_MSGS
+    where COMP_CODE = #{COMP_CODE}
+      and INT_CODE = #{INT_CODE}
+      and MESSAGE_CODE = #{MESSAGE_CODE}
+      and POS = #{POS}
+  </delete>
+  <insert id="insertISO_INT_MSGS" parameterType="com.path.dbmaps.vo.ISO_INT_MSGSVO" >
+    insert into ISO_INT_MSGS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        INT_CODE,
+      </if>
+      <if test="MESSAGE_CODE != null and MESSAGE_CODE != emptyBigDecimalValue" >
+        MESSAGE_CODE,
+      </if>
+      <if test="POS != null and POS != emptyBigDecimalValue" >
+        POS,
+      </if>
+      <if test="HEADER_DATA != null and !&quot;&quot;.equals(HEADER_DATA)" >
+        HEADER_DATA,
+      </if>
+      <if test="FIELDS_BITMAP1 != null and !&quot;&quot;.equals(FIELDS_BITMAP1)" >
+        FIELDS_BITMAP1,
+      </if>
+      <if test="FIELDS_BITMAP2 != null and !&quot;&quot;.equals(FIELDS_BITMAP2)" >
+        FIELDS_BITMAP2,
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        DESCRIPTION,
+      </if>
+      <if test="MTI != null and !&quot;&quot;.equals(MTI)" >
+        MTI,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="INT_CODE != null and INT_CODE != emptyBigDecimalValue" >
+        #{INT_CODE},
+      </if>
+      <if test="MESSAGE_CODE != null and MESSAGE_CODE != emptyBigDecimalValue" >
+        #{MESSAGE_CODE},
+      </if>
+      <if test="POS != null and POS != emptyBigDecimalValue" >
+        #{POS},
+      </if>
+      <if test="HEADER_DATA != null and !&quot;&quot;.equals(HEADER_DATA)" >
+        #{HEADER_DATA},
+      </if>
+      <if test="FIELDS_BITMAP1 != null and !&quot;&quot;.equals(FIELDS_BITMAP1)" >
+        #{FIELDS_BITMAP1},
+      </if>
+      <if test="FIELDS_BITMAP2 != null and !&quot;&quot;.equals(FIELDS_BITMAP2)" >
+        #{FIELDS_BITMAP2},
+      </if>
+      <if test="DESCRIPTION != null and !&quot;&quot;.equals(DESCRIPTION)" >
+        #{DESCRIPTION},
+      </if>
+      <if test="MTI != null and !&quot;&quot;.equals(MTI)" >
+        #{MTI},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateISO_INT_MSGS" >
+    update ISO_INT_MSGS
+    <set >
+      <if test="HEADER_DATA != null" >
+        <choose >
+          <when test="HEADER_DATA.equals(&quot;&quot;)" >
+            HEADER_DATA = NULL ,
+          </when>
+          <otherwise >
+            HEADER_DATA = #{HEADER_DATA},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELDS_BITMAP1 != null" >
+        <choose >
+          <when test="FIELDS_BITMAP1.equals(&quot;&quot;)" >
+            FIELDS_BITMAP1 = NULL ,
+          </when>
+          <otherwise >
+            FIELDS_BITMAP1 = #{FIELDS_BITMAP1},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="FIELDS_BITMAP2 != null" >
+        <choose >
+          <when test="FIELDS_BITMAP2.equals(&quot;&quot;)" >
+            FIELDS_BITMAP2 = NULL ,
+          </when>
+          <otherwise >
+            FIELDS_BITMAP2 = #{FIELDS_BITMAP2},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DESCRIPTION != null" >
+        <choose >
+          <when test="DESCRIPTION.equals(&quot;&quot;)" >
+            DESCRIPTION = NULL ,
+          </when>
+          <otherwise >
+            DESCRIPTION = #{DESCRIPTION},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="MTI != null" >
+        <choose >
+          <when test="MTI.equals(&quot;&quot;)" >
+            MTI = NULL ,
+          </when>
+          <otherwise >
+            MTI = #{MTI},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and INT_CODE = #{INT_CODE}
+      and MESSAGE_CODE = #{MESSAGE_CODE}
+      and POS = #{POS}
+  </sql>
+  <update id="updateISO_INT_MSGS" parameterType="com.path.dbmaps.vo.ISO_INT_MSGSVO" >
+    <include refid="sql_updateISO_INT_MSGS" />
+  </update>
+</mapper>

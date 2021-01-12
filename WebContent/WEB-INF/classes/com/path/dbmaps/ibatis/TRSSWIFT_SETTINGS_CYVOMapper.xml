@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSSWIFT_SETTINGS_CY" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSSWIFT_SETTINGS_CYVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="CY" property="CY" />
+    <result column="PRODUCT" property="PRODUCT" />
+    <result column="DAYS" property="DAYS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, LINE_NBR, CY, PRODUCT, DAYS
+  </sql>
+  <select id="selectTRSSWIFT_SETTINGS_CY" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSSWIFT_SETTINGS_CYVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSSWIFT_SETTINGS_CY
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteTRSSWIFT_SETTINGS_CY" parameterType="com.path.dbmaps.vo.TRSSWIFT_SETTINGS_CYVOKey" >
+    delete from TRSSWIFT_SETTINGS_CY
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertTRSSWIFT_SETTINGS_CY" parameterType="com.path.dbmaps.vo.TRSSWIFT_SETTINGS_CYVO" >
+    insert into TRSSWIFT_SETTINGS_CY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="CY != null and CY != emptyBigDecimalValue" >
+        CY,
+      </if>
+      <if test="PRODUCT != null and PRODUCT != emptyBigDecimalValue" >
+        PRODUCT,
+      </if>
+      <if test="DAYS != null and DAYS != emptyBigDecimalValue" >
+        DAYS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="CY != null and CY != emptyBigDecimalValue" >
+        #{CY},
+      </if>
+      <if test="PRODUCT != null and PRODUCT != emptyBigDecimalValue" >
+        #{PRODUCT},
+      </if>
+      <if test="DAYS != null and DAYS != emptyBigDecimalValue" >
+        #{DAYS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSSWIFT_SETTINGS_CY" >
+    update TRSSWIFT_SETTINGS_CY
+    <set >
+      <if test="CY != null" >
+        <choose >
+          <when test="CY == emptyBigDecimalValue" >
+            CY = NULL ,
+          </when>
+          <otherwise >
+            CY = #{CY},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="PRODUCT != null" >
+        <choose >
+          <when test="PRODUCT == emptyBigDecimalValue" >
+            PRODUCT = NULL ,
+          </when>
+          <otherwise >
+            PRODUCT = #{PRODUCT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="DAYS != null" >
+        <choose >
+          <when test="DAYS == emptyBigDecimalValue" >
+            DAYS = NULL ,
+          </when>
+          <otherwise >
+            DAYS = #{DAYS},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateTRSSWIFT_SETTINGS_CY" parameterType="com.path.dbmaps.vo.TRSSWIFT_SETTINGS_CYVO" >
+    <include refid="sql_updateTRSSWIFT_SETTINGS_CY" />
+  </update>
+</mapper>

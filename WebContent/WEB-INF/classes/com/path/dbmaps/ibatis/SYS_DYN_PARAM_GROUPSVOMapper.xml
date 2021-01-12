@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SYS_DYN_PARAM_GROUPS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVO" >
+    <id column="GROUP_CODE" property="GROUP_CODE" />
+    <result column="GROUP_DESC" property="GROUP_DESC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GROUP_CODE, GROUP_DESC
+  </sql>
+  <select id="selectSYS_DYN_PARAM_GROUPS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_DYN_PARAM_GROUPS
+    where GROUP_CODE = #{GROUP_CODE}
+  </select>
+  <delete id="deleteSYS_DYN_PARAM_GROUPS" parameterType="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVOKey" >
+    delete from SYS_DYN_PARAM_GROUPS
+    where GROUP_CODE = #{GROUP_CODE}
+  </delete>
+  <insert id="insertSYS_DYN_PARAM_GROUPS" parameterType="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVO" >
+    insert into SYS_DYN_PARAM_GROUPS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="GROUP_CODE != null" >
+        GROUP_CODE,
+      </if>
+      <if test="GROUP_DESC != null" >
+        GROUP_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="GROUP_CODE != null" >
+        #{GROUP_CODE},
+      </if>
+      <if test="GROUP_DESC != null" >
+        #{GROUP_DESC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSYS_DYN_PARAM_GROUPS" >
+    update SYS_DYN_PARAM_GROUPS
+    <set >
+      <if test="GROUP_DESC != null" >
+        GROUP_DESC = #{GROUP_DESC},
+      </if>
+    </set>
+    where GROUP_CODE = #{GROUP_CODE}
+  </sql>
+  <update id="updateSYS_DYN_PARAM_GROUPS" parameterType="com.path.dbmaps.vo.SYS_DYN_PARAM_GROUPSVO" >
+    <include refid="sql_updateSYS_DYN_PARAM_GROUPS" />
+  </update>
+</mapper>

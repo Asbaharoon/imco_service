@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="avaFileCompanionLkpMapper">        
+	<resultMap id="returnAccompanistLookupMap" type="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVO">
+		<result property="COMP_CODE" 		column="COMP_CODE"/>
+		<result property="FILE_CODE" 		column="FILE_CODE"/>
+		<result property="COMPANION_SEQ" 	column="COMPANION_SEQ"/>
+		<result property="CIF_NO" 			column="CIF_NO"/>
+		<result property="SHORT_NAME" 	column="SHORT_NAME"/>
+		<result property="LONG_NAME" 	column="LONG_NAME"/>		
+		<result property="ID_TYPE" 		column="ID_TYPE"/>		
+		<result property="ID_NUMBER" 	column="ID_NO"/>		
+		<result property="ADDRESS" 		column="ADDRESS"/>		
+	</resultMap>
+	
+	<select id="returnAccompanistLookupList" parameterType="com.path.vo.core.avafilecompanion.AvaFileCompanionLkpSC" resultMap="returnAccompanistLookupMap">
+		<include refid="servicesCommon.commonGridWrpBefFlip"/>
+		<include refid="accompanistLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+	</select>
+	
+	<select id="returnAccompanistLookupCount" parameterType="com.path.vo.core.avafilecompanion.AvaFileCompanionLkpSC" resultType="int">
+		<include refid="servicesCommon.commonGridWrpBefCnt"/>
+		<include refid="accompanistLookupQuery"/>
+		<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	    <include refid="servicesCommon.commonGridCountWrpClose"/>
+	</select>
+	
+	<sql id="accompanistLookupQuery">
+	SELECT  CTS_AVA_FILE_COMPANION.COMP_CODE,
+			CTS_AVA_FILE_COMPANION.FILE_CODE,
+			CTS_AVA_FILE_COMPANION.COMPANION_SEQ,
+			CTS_AVA_FILE_COMPANION.CIF_NO,
+		    (CASE WHEN CTS_AVA_FILE_COMPANION.CIF_NO IS NOT NULL THEN CIF.SHORT_NAME_ENG ELSE CTS_AVA_FILE_COMPANION.SHORT_NAME END) SHORT_NAME,
+			(CASE WHEN CTS_AVA_FILE_COMPANION.CIF_NO IS NOT NULL THEN CIF.LONG_NAME_ENG ELSE CTS_AVA_FILE_COMPANION.LONG_NAME END) LONG_NAME,
+			(CASE WHEN CTS_AVA_FILE_COMPANION.CIF_NO IS NOT NULL THEN CIF.ID_TYPE ELSE CTS_AVA_FILE_COMPANION.ID_TYPE END) ID_TYPE,
+			(CASE WHEN CTS_AVA_FILE_COMPANION.CIF_NO IS NOT NULL THEN CIF.ID_NO ELSE CTS_AVA_FILE_COMPANION.ID_NUMBER END) ID_NO,
+			CTS_AVA_FILE_COMPANION.ADDRESS
+			FROM CTS_AVA_FILE_COMPANION 
+	        LEFT OUTER JOIN CIF  ON (CIF.COMP_CODE = CTS_AVA_FILE_COMPANION.COMP_CODE
+	                                         AND CIF.CIF_NO = CTS_AVA_FILE_COMPANION.CIF_NO)
+	        WHERE CTS_AVA_FILE_COMPANION.COMP_CODE = #{compCode}
+	        AND CTS_AVA_FILE_COMPANION.FILE_CODE = #{fileCode}    
+	</sql>
+	
+	<select id="dependencyByCompanionSeq" parameterType="com.path.vo.core.avafilecompanion.AvaFileCompanionLkpSC" 
+		resultMap="returnAccompanistLookupMap">
+		SELECT B.COMP_CODE,
+		            B.FILE_CODE,
+		            B.COMPANION_SEQ,
+		            B.CIF_NO,
+		            (CASE WHEN B.CIF_NO IS NOT NULL THEN C.SHORT_NAME_ENG ELSE B.SHORT_NAME END) SHORT_NAME,
+		            (CASE WHEN B.CIF_NO IS NOT NULL THEN C.LONG_NAME_ENG ELSE B.SHORT_NAME END) LONG_NAME,
+		            (CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_TYPE ELSE B.ID_TYPE END) ID_TYPE, 
+		            (CASE WHEN B.CIF_NO IS NOT NULL THEN C.ID_NO ELSE B.ID_NUMBER END)ID_NUMBER,
+		            B.ADDRESS
+		      FROM CTS_AVA_FILE_COMPANION B
+		            LEFT OUTER JOIN CIF C ON (C.COMP_CODE = B.COMP_CODE
+		                                          AND C.CIF_NO = B.CIF_NO)
+		      WHERE B.COMPANION_SEQ=#{companionSeq} 
+		      AND   B.COMP_CODE = #{compCode} 
+		      AND B.FILE_CODE = #{fileCode}   
+	</select>
+	
+</mapper>

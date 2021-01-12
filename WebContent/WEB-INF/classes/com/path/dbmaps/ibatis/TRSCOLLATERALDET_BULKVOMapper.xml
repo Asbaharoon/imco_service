@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSCOLLATERALDET_BULK" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSCOLLATERALDET_BULKVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="BULK_REF_NO" property="BULK_REF_NO" />
+    <id column="COLLATERAL_BRANCH" property="COLLATERAL_BRANCH" />
+    <id column="COLLATERAL_NO" property="COLLATERAL_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="DEAL_ALLOCATED" property="DEAL_ALLOCATED" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, BULK_REF_NO, COLLATERAL_BRANCH, COLLATERAL_NO, COMP_CODE, DEAL_ALLOCATED
+  </sql>
+  <select id="selectTRSCOLLATERALDET_BULK" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_BULKVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSCOLLATERALDET_BULK
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and BULK_REF_NO = #{BULK_REF_NO}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteTRSCOLLATERALDET_BULK" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_BULKVOKey" >
+    delete from TRSCOLLATERALDET_BULK
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and BULK_REF_NO = #{BULK_REF_NO}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertTRSCOLLATERALDET_BULK" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_BULKVO" >
+    insert into TRSCOLLATERALDET_BULK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="BULK_REF_NO != null and BULK_REF_NO != emptyBigDecimalValue" >
+        BULK_REF_NO,
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        COLLATERAL_BRANCH,
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        COLLATERAL_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEAL_ALLOCATED != null and DEAL_ALLOCATED != emptyBigDecimalValue" >
+        DEAL_ALLOCATED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="BULK_REF_NO != null and BULK_REF_NO != emptyBigDecimalValue" >
+        #{BULK_REF_NO},
+      </if>
+      <if test="COLLATERAL_BRANCH != null and COLLATERAL_BRANCH != emptyBigDecimalValue" >
+        #{COLLATERAL_BRANCH},
+      </if>
+      <if test="COLLATERAL_NO != null and COLLATERAL_NO != emptyBigDecimalValue" >
+        #{COLLATERAL_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEAL_ALLOCATED != null and DEAL_ALLOCATED != emptyBigDecimalValue" >
+        #{DEAL_ALLOCATED},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSCOLLATERALDET_BULK" >
+    update TRSCOLLATERALDET_BULK
+    <set >
+      <if test="DEAL_ALLOCATED != null" >
+        <choose >
+          <when test="DEAL_ALLOCATED == emptyBigDecimalValue" >
+            DEAL_ALLOCATED = NULL ,
+          </when>
+          <otherwise >
+            DEAL_ALLOCATED = #{DEAL_ALLOCATED},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and BULK_REF_NO = #{BULK_REF_NO}
+      and COLLATERAL_BRANCH = #{COLLATERAL_BRANCH}
+      and COLLATERAL_NO = #{COLLATERAL_NO}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateTRSCOLLATERALDET_BULK" parameterType="com.path.dbmaps.vo.TRSCOLLATERALDET_BULKVO" >
+    <include refid="sql_updateTRSCOLLATERALDET_BULK" />
+  </update>
+</mapper>

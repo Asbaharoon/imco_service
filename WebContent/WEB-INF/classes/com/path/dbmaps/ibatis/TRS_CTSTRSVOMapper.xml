@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRS_CTSTRS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRS_CTSTRSVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CB_IND" property="CB_IND" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <id column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="VAT_CODE" property="VAT_CODE" />
+    <result column="VAT_AMOUNT" property="VAT_AMOUNT" />
+    <result column="VAT_AMOUNT_INST_CHARGES" property="VAT_AMOUNT_INST_CHARGES" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CB_IND, COMP_CODE, TRS_NO, TRS_TYPE, VAT_CODE, VAT_AMOUNT, VAT_AMOUNT_INST_CHARGES
+  </sql>
+  <select id="selectTRS_CTSTRS" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRS_CTSTRSVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRS_CTSTRS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </select>
+  <delete id="deleteTRS_CTSTRS" parameterType="com.path.dbmaps.vo.TRS_CTSTRSVOKey" >
+    delete from TRS_CTSTRS
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </delete>
+  <insert id="insertTRS_CTSTRS" parameterType="com.path.dbmaps.vo.TRS_CTSTRSVO" >
+    insert into TRS_CTSTRS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        VAT_CODE,
+      </if>
+      <if test="VAT_AMOUNT != null and VAT_AMOUNT != emptyBigDecimalValue" >
+        VAT_AMOUNT,
+      </if>
+      <if test="VAT_AMOUNT_INST_CHARGES != null and VAT_AMOUNT_INST_CHARGES != emptyBigDecimalValue" >
+        VAT_AMOUNT_INST_CHARGES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CB_IND != null" >
+        #{CB_IND},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="VAT_CODE != null and VAT_CODE != emptyBigDecimalValue" >
+        #{VAT_CODE},
+      </if>
+      <if test="VAT_AMOUNT != null and VAT_AMOUNT != emptyBigDecimalValue" >
+        #{VAT_AMOUNT},
+      </if>
+      <if test="VAT_AMOUNT_INST_CHARGES != null and VAT_AMOUNT_INST_CHARGES != emptyBigDecimalValue" >
+        #{VAT_AMOUNT_INST_CHARGES},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRS_CTSTRS" >
+    update TRS_CTSTRS
+    <set >
+      <if test="VAT_CODE != null" >
+        <choose >
+          <when test="VAT_CODE == emptyBigDecimalValue" >
+            VAT_CODE = NULL ,
+          </when>
+          <otherwise >
+            VAT_CODE = #{VAT_CODE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_AMOUNT != null" >
+        <choose >
+          <when test="VAT_AMOUNT == emptyBigDecimalValue" >
+            VAT_AMOUNT = NULL ,
+          </when>
+          <otherwise >
+            VAT_AMOUNT = #{VAT_AMOUNT},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="VAT_AMOUNT_INST_CHARGES != null" >
+        <choose >
+          <when test="VAT_AMOUNT_INST_CHARGES == emptyBigDecimalValue" >
+            VAT_AMOUNT_INST_CHARGES = NULL ,
+          </when>
+          <otherwise >
+            VAT_AMOUNT_INST_CHARGES = #{VAT_AMOUNT_INST_CHARGES},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </sql>
+  <update id="updateTRS_CTSTRS" parameterType="com.path.dbmaps.vo.TRS_CTSTRSVO" >
+    <include refid="sql_updateTRS_CTSTRS" />
+  </update>
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EMP_PHOTOS" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.EMP_PHOTOSVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="EMPLOYEE_ID" property="EMPLOYEE_ID" />
+    <result column="FILE_TYPE" property="FILE_TYPE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.path.dbmaps.vo.EMP_PHOTOSVO" extends="BaseResultMap" >
+    <result column="EMP_PHOTO" property="EMP_PHOTO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, EMPLOYEE_ID, FILE_TYPE
+  </sql>
+  <sql id="Blob_Column_List" >
+    EMP_PHOTO
+  </sql>
+  <select id="selectEMP_PHOTOS" resultMap="ResultMapWithBLOBs" parameterType="com.path.dbmaps.vo.EMP_PHOTOSVO" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from EMP_PHOTOS
+    where COMP_CODE = #{COMP_CODE}
+      and EMPLOYEE_ID = #{EMPLOYEE_ID}
+  </select>
+  <delete id="deleteEMP_PHOTOS" parameterType="com.path.dbmaps.vo.EMP_PHOTOSVO" >
+    delete from EMP_PHOTOS
+    where COMP_CODE = #{COMP_CODE}
+      and EMPLOYEE_ID = #{EMPLOYEE_ID}
+  </delete>
+  <insert id="insertEMP_PHOTOS" parameterType="com.path.dbmaps.vo.EMP_PHOTOSVO" >
+    insert into EMP_PHOTOS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="EMPLOYEE_ID != null and EMPLOYEE_ID != emptyBigDecimalValue" >
+        EMPLOYEE_ID,
+      </if>
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE,
+      </if>
+      <if test="EMP_PHOTO != null" >
+        EMP_PHOTO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="EMPLOYEE_ID != null and EMPLOYEE_ID != emptyBigDecimalValue" >
+        #{EMPLOYEE_ID},
+      </if>
+      <if test="FILE_TYPE != null" >
+        #{FILE_TYPE},
+      </if>
+      <if test="EMP_PHOTO != null" >
+        #{EMP_PHOTO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateEMP_PHOTOS" >
+    update EMP_PHOTOS
+    <set >
+      <if test="FILE_TYPE != null" >
+        FILE_TYPE = #{FILE_TYPE},
+      </if>
+      <if test="EMP_PHOTO != null" >
+        EMP_PHOTO = #{EMP_PHOTO},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and EMPLOYEE_ID = #{EMPLOYEE_ID}
+  </sql>
+  <update id="updateEMP_PHOTOS" parameterType="com.path.dbmaps.vo.EMP_PHOTOSVO" >
+    <include refid="sql_updateEMP_PHOTOS" />
+  </update>
+</mapper>

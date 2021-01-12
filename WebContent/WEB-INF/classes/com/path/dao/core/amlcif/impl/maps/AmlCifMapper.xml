@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="amlCifMapper">
+	<resultMap type="amlCifVO" id="bankCifMap">
+	<result column="CIF_NO" property="CIF_NO" />
+	<result column="SHORT_NAME_ENG" property="SHORT_NAME_ENG" />
+	<result column="LONG_NAME_ENG" property="LONG_NAME_ENG" />
+	<result column="CIF_TYPE" property="CIF_TYPE" />
+	<result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+	<result column="SHORT_NAME_ARAB" property="SHORT_NAME_ARAB" />
+	<result column="LONG_NAME_ARAB" property="LONG_NAME_ARAB" />
+		<result column="ID_NO" property="ID_NO" />
+	
+	</resultMap>
+	<sql id="CIFLkpSelection">
+	SELECT CIF.CIF_NO,
+                       CIF.SHORT_NAME_ENG,
+                       CIF.SHORT_NAME_ARAB,
+                       CIF.LONG_NAME_ENG,
+                       CIF.LONG_NAME_ARAB,
+                   
+                       CIF.ID_NO,
+                       CIF.CIF_TYPE,
+                       CIF.ADDITIONAL_REFERENCE
+                  FROM CIF
+                  
+                 WHERE CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+                   AND CIF.STATUS IN ('A')
+</sql>
+
+<select id="cifList" resultMap="bankCifMap"
+		parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="CIFLkpSelection" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="cifCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="amlCifMapper.CIFLkpSelection" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	<sql id="select_bankcif">
+		SELECT
+		CIF.CIF_NO,
+		CIF.SHORT_NAME_ENG,
+		CIF.LONG_NAME_ENG,
+		CIF.SHORT_NAME_ARAB,
+		CIF.LONG_NAME_ARAB,
+		CIF.ADDITIONAL_REFERENCE
+		FROM CIF 
+		WHERE CIF.COMP_CODE = #{compCode,jdbcType=NUMERIC}
+		
+	</sql>
+
+	<select id="bankCifList" resultMap="bankCifMap"
+		parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefFlip" />
+		<include refid="select_bankcif" />
+		<include refid="servicesCommon.commonGridWrpAftFlip" />
+		<include refid="servicesCommon.commmonGridWrpFlipClose" />
+	</select>
+
+	<select id="bankCifCount" resultType="int" parameterType="cifSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="amlCifMapper.select_bankcif" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+	</select>
+	
+	
+	<select id="returnCifByNo" parameterType="cifSC" resultType="amlCifVO">		
+		SELECT DISTINCT CIF.*
+		FROM CIF
+		WHERE  CIF.COMP_CODE =  #{compCode}  
+		AND CIF.CIF_NO = #{cif_no}   
+	</select>
+
+</mapper>

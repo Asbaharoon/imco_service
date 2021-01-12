@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSDEVIATION_TYPE_DET" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSDEVIATION_TYPE_DETVO" >
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="DEVIATION_CODE" property="DEVIATION_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="DESCRIPTION" property="DESCRIPTION" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, DEVIATION_CODE, LINE_NO, DESCRIPTION
+  </sql>
+  <select id="selectTRSDEVIATION_TYPE_DET" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSDEVIATION_TYPE_DETVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSDEVIATION_TYPE_DET
+    where COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteTRSDEVIATION_TYPE_DET" parameterType="com.path.dbmaps.vo.TRSDEVIATION_TYPE_DETVOKey" >
+    delete from TRSDEVIATION_TYPE_DET
+    where COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertTRSDEVIATION_TYPE_DET" parameterType="com.path.dbmaps.vo.TRSDEVIATION_TYPE_DETVO" >
+    insert into TRSDEVIATION_TYPE_DET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DEVIATION_CODE != null and DEVIATION_CODE != emptyBigDecimalValue" >
+        DEVIATION_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DEVIATION_CODE != null and DEVIATION_CODE != emptyBigDecimalValue" >
+        #{DEVIATION_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="DESCRIPTION != null" >
+        #{DESCRIPTION},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSDEVIATION_TYPE_DET" >
+    update TRSDEVIATION_TYPE_DET
+    <set >
+      <if test="DESCRIPTION != null" >
+        DESCRIPTION = #{DESCRIPTION},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and DEVIATION_CODE = #{DEVIATION_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateTRSDEVIATION_TYPE_DET" parameterType="com.path.dbmaps.vo.TRSDEVIATION_TYPE_DETVO" >
+    <include refid="sql_updateTRSDEVIATION_TYPE_DET" />
+  </update>
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CIF_EDUCATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CIF_EDUCATIONVO" >
+    <id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    <result column="INSTITUTION_CIF" property="INSTITUTION_CIF" />
+    <result column="INSTITUTION_NAME" property="INSTITUTION_NAME" />
+    <result column="DEGREE_CODE" property="DEGREE_CODE" />
+    <result column="COMMENTS" property="COMMENTS" />
+    <result column="DEGREE_NO" property="DEGREE_NO" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CIF_NO, COMP_CODE, LINE_NO, FROM_DATE, TO_DATE, INSTITUTION_CIF, INSTITUTION_NAME, 
+    DEGREE_CODE, COMMENTS, DEGREE_NO
+  </sql>
+  <select id="selectCIF_EDUCATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CIF_EDUCATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIF_EDUCATION
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </select>
+  <delete id="deleteCIF_EDUCATION" parameterType="com.path.dbmaps.vo.CIF_EDUCATIONVOKey" >
+    delete from CIF_EDUCATION
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </delete>
+  <insert id="insertCIF_EDUCATION" parameterType="com.path.dbmaps.vo.CIF_EDUCATIONVO" >
+    insert into CIF_EDUCATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        LINE_NO,
+      </if>
+      <if test="FROM_DATE != null" >
+        FROM_DATE,
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE,
+      </if>
+      <if test="INSTITUTION_CIF != null and INSTITUTION_CIF != emptyBigDecimalValue" >
+        INSTITUTION_CIF,
+      </if>
+      <if test="INSTITUTION_NAME != null" >
+        INSTITUTION_NAME,
+      </if>
+      <if test="DEGREE_CODE != null" >
+        DEGREE_CODE,
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS,
+      </if>
+      <if test="DEGREE_NO != null and DEGREE_NO != emptyBigDecimalValue" >
+        DEGREE_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NO != null and LINE_NO != emptyBigDecimalValue" >
+        #{LINE_NO},
+      </if>
+      <if test="FROM_DATE != null" >
+        #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        #{TO_DATE},
+      </if>
+      <if test="INSTITUTION_CIF != null and INSTITUTION_CIF != emptyBigDecimalValue" >
+        #{INSTITUTION_CIF},
+      </if>
+      <if test="INSTITUTION_NAME != null" >
+        #{INSTITUTION_NAME},
+      </if>
+      <if test="DEGREE_CODE != null" >
+        #{DEGREE_CODE},
+      </if>
+      <if test="COMMENTS != null" >
+        #{COMMENTS},
+      </if>
+      <if test="DEGREE_NO != null and DEGREE_NO != emptyBigDecimalValue" >
+        #{DEGREE_NO},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCIF_EDUCATION" >
+    update CIF_EDUCATION
+    <set >
+      <if test="FROM_DATE != null" >
+        FROM_DATE = #{FROM_DATE},
+      </if>
+      <if test="TO_DATE != null" >
+        TO_DATE = #{TO_DATE},
+      </if>
+      <if test="INSTITUTION_CIF != null" >
+        <choose >
+          <when test="INSTITUTION_CIF == emptyBigDecimalValue" >
+            INSTITUTION_CIF = NULL ,
+          </when>
+          <otherwise >
+            INSTITUTION_CIF = #{INSTITUTION_CIF},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="INSTITUTION_NAME != null" >
+        INSTITUTION_NAME = #{INSTITUTION_NAME},
+      </if>
+      <if test="DEGREE_CODE != null" >
+        DEGREE_CODE = #{DEGREE_CODE},
+      </if>
+      <if test="COMMENTS != null" >
+        COMMENTS = #{COMMENTS},
+      </if>
+      <if test="DEGREE_NO != null" >
+        <choose >
+          <when test="DEGREE_NO == emptyBigDecimalValue" >
+            DEGREE_NO = NULL ,
+          </when>
+          <otherwise >
+            DEGREE_NO = #{DEGREE_NO},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where CIF_NO = #{CIF_NO}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NO = #{LINE_NO}
+  </sql>
+  <update id="updateCIF_EDUCATION" parameterType="com.path.dbmaps.vo.CIF_EDUCATIONVO" >
+    <include refid="sql_updateCIF_EDUCATION" />
+  </update>
+</mapper>

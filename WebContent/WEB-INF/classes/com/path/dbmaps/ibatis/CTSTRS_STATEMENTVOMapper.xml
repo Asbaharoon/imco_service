@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSTRS_STATEMENT" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSTRS_STATEMENTVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="CB_IND" property="CB_IND" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="TRS_NO" property="TRS_NO" />
+    <id column="TRS_TYPE" property="TRS_TYPE" />
+    <result column="SOA_DATE_FROM" property="SOA_DATE_FROM" />
+    <result column="SOA_DATE_TO" property="SOA_DATE_TO" />
+    <result column="SOA_NB_PAGES" property="SOA_NB_PAGES" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, CB_IND, COMP_CODE, TRS_NO, TRS_TYPE, SOA_DATE_FROM, SOA_DATE_TO, SOA_NB_PAGES
+  </sql>
+  <select id="selectCTSTRS_STATEMENT" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSTRS_STATEMENTVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSTRS_STATEMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </select>
+  <delete id="deleteCTSTRS_STATEMENT" parameterType="com.path.dbmaps.vo.CTSTRS_STATEMENTVOKey" >
+    delete from CTSTRS_STATEMENT
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </delete>
+  <insert id="insertCTSTRS_STATEMENT" parameterType="com.path.dbmaps.vo.CTSTRS_STATEMENTVO" >
+    insert into CTSTRS_STATEMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="CB_IND != null" >
+        CB_IND,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        TRS_NO,
+      </if>
+      <if test="TRS_TYPE != null" >
+        TRS_TYPE,
+      </if>
+      <if test="SOA_DATE_FROM != null" >
+        SOA_DATE_FROM,
+      </if>
+      <if test="SOA_DATE_TO != null" >
+        SOA_DATE_TO,
+      </if>
+      <if test="SOA_NB_PAGES != null and SOA_NB_PAGES != emptyBigDecimalValue" >
+        SOA_NB_PAGES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="CB_IND != null" >
+        #{CB_IND},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="TRS_NO != null and TRS_NO != emptyBigDecimalValue" >
+        #{TRS_NO},
+      </if>
+      <if test="TRS_TYPE != null" >
+        #{TRS_TYPE},
+      </if>
+      <if test="SOA_DATE_FROM != null" >
+        #{SOA_DATE_FROM},
+      </if>
+      <if test="SOA_DATE_TO != null" >
+        #{SOA_DATE_TO},
+      </if>
+      <if test="SOA_NB_PAGES != null and SOA_NB_PAGES != emptyBigDecimalValue" >
+        #{SOA_NB_PAGES},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSTRS_STATEMENT" >
+    update CTSTRS_STATEMENT
+    <set >
+      <if test="SOA_DATE_FROM != null" >
+        SOA_DATE_FROM = #{SOA_DATE_FROM},
+      </if>
+      <if test="SOA_DATE_TO != null" >
+        SOA_DATE_TO = #{SOA_DATE_TO},
+      </if>
+      <if test="SOA_NB_PAGES != null" >
+        <choose >
+          <when test="SOA_NB_PAGES == emptyBigDecimalValue" >
+            SOA_NB_PAGES = NULL ,
+          </when>
+          <otherwise >
+            SOA_NB_PAGES = #{SOA_NB_PAGES},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and CB_IND = #{CB_IND}
+      and COMP_CODE = #{COMP_CODE}
+      and TRS_NO = #{TRS_NO}
+      and TRS_TYPE = #{TRS_TYPE}
+  </sql>
+  <update id="updateCTSTRS_STATEMENT" parameterType="com.path.dbmaps.vo.CTSTRS_STATEMENTVO" >
+    <include refid="sql_updateCTSTRS_STATEMENT" />
+  </update>
+</mapper>

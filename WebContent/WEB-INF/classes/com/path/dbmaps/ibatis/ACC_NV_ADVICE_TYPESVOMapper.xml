@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ACC_NV_ADVICE_TYPES" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.ACC_NV_ADVICE_TYPESVO" >
+    <id column="ADVICE_ID" property="ADVICE_ID" />
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <result column="ACCOUNT_TYPE" property="ACCOUNT_TYPE" />
+    <result column="CIF_TYPE" property="CIF_TYPE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ADVICE_ID, BRANCH_CODE, COMP_CODE, LINE_NBR, ACCOUNT_TYPE, CIF_TYPE
+  </sql>
+  <select id="selectACC_NV_ADVICE_TYPES" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.ACC_NV_ADVICE_TYPESVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACC_NV_ADVICE_TYPES
+    where ADVICE_ID = #{ADVICE_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </select>
+  <delete id="deleteACC_NV_ADVICE_TYPES" parameterType="com.path.dbmaps.vo.ACC_NV_ADVICE_TYPESVOKey" >
+    delete from ACC_NV_ADVICE_TYPES
+    where ADVICE_ID = #{ADVICE_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </delete>
+  <insert id="insertACC_NV_ADVICE_TYPES" parameterType="com.path.dbmaps.vo.ACC_NV_ADVICE_TYPESVO" >
+    insert into ACC_NV_ADVICE_TYPES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ADVICE_ID != null and ADVICE_ID != emptyBigDecimalValue" >
+        ADVICE_ID,
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="ACCOUNT_TYPE != null and ACCOUNT_TYPE != emptyBigDecimalValue" >
+        ACCOUNT_TYPE,
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        CIF_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ADVICE_ID != null and ADVICE_ID != emptyBigDecimalValue" >
+        #{ADVICE_ID},
+      </if>
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="ACCOUNT_TYPE != null and ACCOUNT_TYPE != emptyBigDecimalValue" >
+        #{ACCOUNT_TYPE},
+      </if>
+      <if test="CIF_TYPE != null and CIF_TYPE != emptyBigDecimalValue" >
+        #{CIF_TYPE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateACC_NV_ADVICE_TYPES" >
+    update ACC_NV_ADVICE_TYPES
+    <set >
+      <if test="ACCOUNT_TYPE != null" >
+        <choose >
+          <when test="ACCOUNT_TYPE == emptyBigDecimalValue" >
+            ACCOUNT_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ACCOUNT_TYPE = #{ACCOUNT_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="CIF_TYPE != null" >
+        <choose >
+          <when test="CIF_TYPE == emptyBigDecimalValue" >
+            CIF_TYPE = NULL ,
+          </when>
+          <otherwise >
+            CIF_TYPE = #{CIF_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+    </set>
+    where ADVICE_ID = #{ADVICE_ID}
+      and BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+  </sql>
+  <update id="updateACC_NV_ADVICE_TYPES" parameterType="com.path.dbmaps.vo.ACC_NV_ADVICE_TYPESVO" >
+    <include refid="sql_updateACC_NV_ADVICE_TYPES" />
+  </update>
+</mapper>

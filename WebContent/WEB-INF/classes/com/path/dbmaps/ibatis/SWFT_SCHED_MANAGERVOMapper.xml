@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SWFT_SCHED_MANAGER" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.SWFT_SCHED_MANAGERVO" >
+    <id column="THREAD_ID" property="THREAD_ID" />
+    <result column="THREAD_STATUS" property="THREAD_STATUS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    THREAD_ID, THREAD_STATUS
+  </sql>
+  <select id="selectSWFT_SCHED_MANAGER" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGERVO" >
+    select 
+    <include refid="Base_Column_List" />
+    from SWFT_SCHED_MANAGER
+    where THREAD_ID = #{THREAD_ID}
+  </select>
+  <delete id="deleteSWFT_SCHED_MANAGER" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGERVO" >
+    delete from SWFT_SCHED_MANAGER
+    
+  </delete>
+  <insert id="insertSWFT_SCHED_MANAGER" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGERVO" >
+    insert into SWFT_SCHED_MANAGER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null and THREAD_ID != emptyBigDecimalValue" >
+        THREAD_ID,
+      </if>
+      <if test="THREAD_STATUS != null" >
+        THREAD_STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="THREAD_ID != null and THREAD_ID != emptyBigDecimalValue" >
+        #{THREAD_ID},
+      </if>
+      <if test="THREAD_STATUS != null" >
+        #{THREAD_STATUS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateSWFT_SCHED_MANAGER" >
+    update SWFT_SCHED_MANAGER
+    <set >
+      <if test="THREAD_STATUS != null" >
+        THREAD_STATUS = #{THREAD_STATUS},
+      </if>
+    </set>
+    
+  </sql>
+  <update id="updateSWFT_SCHED_MANAGER" parameterType="com.path.dbmaps.vo.SWFT_SCHED_MANAGERVO" >
+    <include refid="sql_updateSWFT_SCHED_MANAGER" />
+  </update>
+</mapper>

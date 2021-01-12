@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+        <!-- @author:  Fatima Salam 2015 -->
+<mapper namespace="merchantPosMgntMapper">
+
+<resultMap id="merchantPosMgntResultMap" type="merchantPosMgntCO">
+	<result property="ctsMerchantPosVO.CODE"		  		 column="CODE"/>
+	<result property="ctsMerchantPosVO.BRANCH_CODE"   		 column="BRANCH_CODE"/>
+	<result property="ctsMerchantPosVO.MERCHANT_CODE" 		 column="MERCHANT_CODE"/>
+	<result property="ctsMerchantPosVO.STATUS"       		 column="STATUS"/>
+	<result property="statusDesc"      			     		 column="statusDesc"/>
+	<result property="countryDesc"      			     	 column="countryDesc"/>
+	<result property="regionDesc"      			     		 column="regionDesc"/>
+	<result property="cityDesc"      			     		 column="cityDesc"/>
+	<result property="sectorDesc"      			     		 column="sectorDesc"/>
+	<result property="merchantCodeDesc"      			     column="merchantCodeDesc"/>
+	<result property="ctsMerchantPosVO.COMP_CODE"	 		 column="COMP_CODE"/>
+	<result property="ctsMerchantPosVO.POS_TYPE"   	 		 column="POS_TYPE"/>
+	<result property="ctsMerchantPosVO.POS_DESC"     		 column="POS_DESC"/>
+	<result property="ctsMerchantPosVO.TERMINAL_ID"	 		 column="TERMINAL_ID"/>
+	<result property="ctsMerchantPosVO.INSTALLATION_DATE"    column="INSTALLATION_DATE"/>
+	<result property="ctsMerchantPosVO.DATE_CREATED"     	 column="DATE_CREATED"/>
+	<result property="ctsMerchantPosVO.CREATED_BY"		  	 column="CREATED_BY"/>
+	<result property="ctsMerchantPosVO.DATE_APPROVED"  		 column="DATE_APPROVED"/>
+	<result property="ctsMerchantPosVO.APPROVED_BY" 		 column="APPROVED_BY"/>
+	<result property="ctsMerchantPosVO.DATE_DELETED"    	 column="DATE_DELETED"/>
+	<result property="ctsMerchantPosVO.DELETED_BY"  		 column="DELETED_BY"/>
+	<result property="ctsMerchantPosVO.DATE_MODIFIED" 		 column="DATE_MODIFIED"/>
+	<result property="ctsMerchantPosVO.MODIFIED_BY"		  	 column="MODIFIED_BY"/>
+	<result property="ctsMerchantPosVO.DATE_TOBE_CANCELED"   column="DATE_TOBE_CANCELED"/>
+	<result property="ctsMerchantPosVO.TOBE_CANCELED_BY"     column="TOBE_CANCELED_BY"/>
+	<result property="ctsMerchantPosVO.DATE_CANCELED"		 column="DATE_CANCELED"/>
+	<result property="ctsMerchantPosVO.CANCELED_BY"   		 column="CANCELED_BY"/>
+	<result property="ctsMerchantPosVO.SENT_FLAG"   		 column="SENT_FLAG"/>
+	<result property="ctsMerchantPosVO.ADDRESS1"	 	     column="ADDRESS1"/>
+	<result property="ctsMerchantPosVO.ADDRESS2"  			 column="ADDRESS2"/>
+	<result property="ctsMerchantPosVO.ADDRESS3" 			 column="ADDRESS3"/>
+	<result property="ctsMerchantPosVO.ADDRESS4"		     column="ADDRESS4"/>
+	<result property="ctsMerchantPosVO.STREET_DETAILS"       column="STREET_DETAILS"/>
+	<result property="ctsMerchantPosVO.CITY" 		  		 column="CITY"/>
+	<result property="ctsMerchantPosVO.COUNTRY"		         column="COUNTRY"/>
+	<result property="ctsMerchantPosVO.REGION"  			 column="REGION"/>
+	<result property="ctsMerchantPosVO.CITY_CODE" 			 column="CITY_CODE"/>
+	<result property="ctsMerchantPosVO.SECTOR_CODE"		     column="SECTOR_CODE"/>
+	<result property="ctsMerchantPosVO.TEL"   				 column="TEL"/>
+	<result property="ctsMerchantPosVO.WORK_TEL" 			 column="WORK_TEL"/>
+	<result property="ctsMerchantPosVO.OTHER_TEL"		     column="OTHER_TEL"/>
+	<result property="ctsMerchantPosVO.MOBILE"  			 column="MOBILE"/>
+	<result property="ctsMerchantPosVO.FAX" 				 column="FAX"/>
+	<result property="ctsMerchantPosVO.EMAIL"		     	 column="EMAIL"/>
+	<result property="ctsMerchantPosVO.STATUS_REMARK" 	     column="STATUS_REMARK"/>
+	<result property="ctsMerchantPosVO.DATE_UPDATED" 	     column="DATE_UPDATED"/>
+	<result property="cifNo" 	     						 column="cifNo"/>
+
+</resultMap>
+
+<select id="returnMerchantPosMgntList" parameterType="merchantPosMgntSC" resultMap="merchantPosMgntResultMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="queryMerchantPosMgntSQL"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+</select>
+
+<select id="returnMerchantPosMgntListCount" resultType="int" parameterType="merchantPosMgntSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryMerchantPosMgntSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+	<sql id="queryMerchantPosMgntSQL">
+	    SELECT CODE,
+	           COMP_CODE, 
+		       BRANCH_CODE,
+		       MERCHANT_CODE,
+		       (SELECT  (CASE WHEN #{preferredLanguage} = 'L' THEN CIF.LONG_NAME_ENG ELSE CIF.LONG_NAME_ARAB END)
+				  FROM CTS_MERCHANT, CIF
+				 WHERE CTS_MERCHANT.COMP_CODE = CIF.COMP_CODE
+				  AND  CTS_MERCHANT.CIF_NO = CIF.CIF_NO
+				   AND CTS_MERCHANT.COMP_CODE = CTS_MERCHANT_POS.COMP_CODE
+				   AND CTS_MERCHANT.BRANCH_CODE = CTS_MERCHANT_POS.BRANCH_CODE
+				   AND CTS_MERCHANT.CODE = CTS_MERCHANT_POS.MERCHANT_CODE) merchantCodeDesc,
+				   
+				(SELECT CIF_NO FROM CTS_MERCHANT
+					WHERE CTS_MERCHANT.COMP_CODE = CTS_MERCHANT_POS.COMP_CODE
+				   	AND CTS_MERCHANT.BRANCH_CODE = CTS_MERCHANT_POS.BRANCH_CODE
+				   	AND CTS_MERCHANT.CODE = CTS_MERCHANT_POS.MERCHANT_CODE
+				)cifNo,
+				
+		       STATUS,
+		       (SELECT SYS_PARAM_LOV_TRANS.VALUE_DESC
+		          FROM SYS_PARAM_LOV_TRANS
+		         WHERE SYS_PARAM_LOV_TRANS.VALUE_CODE = CTS_MERCHANT_POS.STATUS
+		           AND SYS_PARAM_LOV_TRANS.LOV_TYPE_ID = #{lovTypeId}
+		           AND SYS_PARAM_LOV_TRANS.LANG_CODE = #{language}) statusDesc,
+		       POS_TYPE,
+		       POS_DESC,
+		       TERMINAL_ID,
+		       INSTALLATION_DATE,
+		       DATE_CREATED,
+		       CREATED_BY,
+		       DATE_APPROVED,
+		       APPROVED_BY,
+		       DATE_DELETED,
+		       DELETED_BY,
+		       DATE_MODIFIED,
+		       MODIFIED_BY,
+		       DATE_TOBE_CANCELED,
+		       TOBE_CANCELED_BY,
+		       DATE_CANCELED,
+		       CANCELED_BY,
+		       SENT_FLAG,
+		       ADDRESS1,
+		       ADDRESS2,
+		       ADDRESS3,
+		       ADDRESS4,
+		       STREET_DETAILS,
+		       CITY,
+		       COUNTRY,
+		       (SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN COUNTRIES.LONG_DESC_ENG ELSE COUNTRIES.LONG_DESC_ARAB END)
+		          FROM COUNTRIES
+		          WHERE COUNTRIES.COMP_CODE = CTS_MERCHANT_POS.COMP_CODE
+		            AND COUNTRIES.COUNTRY_CODE  = CTS_MERCHANT_POS.COUNTRY) countryDesc,
+		       REGION,
+		       (SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN COUNTRIES_REGION.LONG_DESC_ENG ELSE COUNTRIES_REGION.LONG_DESC_ARAB END)
+		         FROM COUNTRIES_REGION
+				 WHERE COUNTRIES_REGION.COMP_CODE =  CTS_MERCHANT_POS.COMP_CODE
+				   AND COUNTRIES_REGION.COUNTRY_CODE = CTS_MERCHANT_POS.COUNTRY
+				   AND COUNTRIES_REGION.REGION_CODE = CTS_MERCHANT_POS.REGION) regionDesc,
+		       CITY_CODE,
+		       (SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN CITIES.BRIEF_DESC_ENG ELSE CITIES.BRIEF_DESC_ARAB END)
+				  FROM CITIES
+				 WHERE COMP_CODE = CTS_MERCHANT_POS.COMP_CODE
+				   AND COUNTRY_CODE = CTS_MERCHANT_POS.COUNTRY
+				   AND REGION_CODE = CTS_MERCHANT_POS.REGION
+				   AND CITY_CODE = CTS_MERCHANT_POS.CITY_CODE) cityDesc,
+		       SECTOR_CODE,
+		       (SELECT (CASE WHEN #{preferredLanguage} = 'L' THEN SECTORS.BRIEF_DESC_ENG ELSE SECTORS.BRIEF_DESC_ARAB END)
+				  FROM SECTORS
+				 WHERE COMP_CODE = CTS_MERCHANT_POS.COMP_CODE
+				   AND COUNTRY_CODE = CTS_MERCHANT_POS.COUNTRY
+				   AND REGION_CODE = CTS_MERCHANT_POS.REGION
+				   AND CITY_CODE = CTS_MERCHANT_POS.CITY_CODE
+				   AND SECTOR_CODE = CTS_MERCHANT_POS.SECTOR_CODE) sectorDesc,
+		       TEL,
+		       WORK_TEL,
+		       OTHER_TEL,
+		       MOBILE,
+		       FAX,
+		       EMAIL,
+		       STATUS_REMARK,
+		       DATE_UPDATED
+		  FROM CTS_MERCHANT_POS
+		 WHERE CTS_MERCHANT_POS.COMP_CODE = #{compCode}
+		   AND CTS_MERCHANT_POS.BRANCH_CODE = #{branchCode}
+		<if test='crudMode != null and crudMode!="R"'>
+       		AND  CTS_MERCHANT_POS.STATUS  = (SELECT LOVOPT.VALUE_CODE
+			    								 FROM SYS_PARAM_LOV_LK_OPT LOVOPT
+										          WHERE LOVOPT.LOV_TYPE_ID = #{lovTypeId}
+										            AND LOVOPT.PROG_REF = #{progRef}
+										            AND LOVOPT.APP_NAME = #{currAppName})
+       	</if>
+       	<if test="code != null and code != emptyBigDecimalValue">
+        	AND CTS_MERCHANT_POS.CODE = #{code}
+        </if>
+	</sql>
+	
+<select id="returnMerchantCodeCif" parameterType="merchantPosMgntCO" resultType="String">
+	SELECT  (CASE WHEN #{loginPreferrredLanguage} = 'L' THEN CIF.LONG_NAME_ENG ELSE CIF.LONG_NAME_ARAB END)
+	  FROM CTS_MERCHANT, CIF
+	 WHERE CTS_MERCHANT.COMP_CODE = CIF.COMP_CODE
+	  AND  CTS_MERCHANT.CIF_NO = CIF.CIF_NO
+	   AND CTS_MERCHANT.COMP_CODE = #{loginCompCode}
+	   AND CTS_MERCHANT.BRANCH_CODE = #{loginBraCode}
+	   AND CTS_MERCHANT.CODE = #{ctsMerchantPosVO.MERCHANT_CODE}
+	   AND CTS_MERCHANT.STATUS = 'P'
+</select>
+
+
+<select id="returnServicesCount" parameterType="merchantPosMgntCO" resultType="int">
+	SELECT COUNT(1)
+      FROM SERVICES
+     WHERE COMP_CODE = #{loginCompCode}
+	   AND SERVICE_TYPE = 2
+	   AND ATM_T_ID = #{ctsMerchantPosVO.TERMINAL_ID}
+</select>
+
+<select id="returnCtsMerchantPos" parameterType="merchantPosMgntCO" resultType="com.path.dbmaps.vo.CTS_MERCHANT_POSVO">
+	SELECT CODE, BRANCH_CODE 
+	  FROM CTS_MERCHANT_POS 
+	 WHERE COMP_CODE = #{loginCompCode}
+	   AND STATUS IN ('A','P')
+	   AND TERMINAL_ID =  #{ctsMerchantPosVO.TERMINAL_ID}
+</select>
+
+
+<select id="returnMerchantCifDetails" parameterType="merchantPosMgntCO" resultType="merchantPosMgntCO">
+ 	SELECT (CASE WHEN #{loginPreferrredLanguage} = 'L' THEN CIF.SHORT_NAME_ENG ELSE CIF.SHORT_NAME_ARAB END) cifDesc
+ 	       ,CIF.CIF_NO cifNo
+      FROM CTS_MERCHANT, CIF
+	 WHERE CTS_MERCHANT.COMP_CODE = CIF.COMP_CODE
+	   AND  CTS_MERCHANT.CIF_NO = CIF.CIF_NO
+	   AND CTS_MERCHANT.COMP_CODE = #{loginCompCode}
+	   AND CTS_MERCHANT.BRANCH_CODE = #{loginBraCode}
+	   AND CTS_MERCHANT.CODE = #{ctsMerchantPosVO.MERCHANT_CODE}
+</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

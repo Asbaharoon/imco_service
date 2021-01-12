@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="lostFoundMapper">
+
+<sql id="select_docType">
+	  	  	
+	SELECT
+		 CTS_LOSTDOC.DOC_CODE,
+		 CTS_LOSTDOC.BRIEF_DESC_ENG,
+		 CTS_LOSTDOC.LONG_DESC_ENG,
+		 CTS_LOSTDOC.BRIEF_DESC_ARAB,
+		 CTS_LOSTDOC.LONG_DESC_ARAB,
+		 CTS_LOSTDOC.DOC_CARD
+	FROM CTS_LOSTDOC
+		
+</sql>
+
+<resultMap id="lostFoundLookupMap" type="ctsLostDocVO">
+</resultMap>
+ 
+<select id="lostFoundLookupRecords" 
+        resultMap="lostFoundLookupMap" 
+        parameterType="lostFoundSC">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="select_docType"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>		
+</select>
+ 
+<select id="lostFoundLookupCount"  
+		resultType="int" 
+		parameterType="lostFoundSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="select_docType"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+    <include refid="servicesCommon.commonGridCountWrpClose"/>		
+</select>
+
+</mapper>

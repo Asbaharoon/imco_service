@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_AVA_FILE_COMPANION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVO" >
+    <id column="COMPANION_SEQ" property="COMPANION_SEQ" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="FILE_CODE" property="FILE_CODE" />
+    <result column="CIF_NO" property="CIF_NO" />
+    <result column="SHORT_NAME" property="SHORT_NAME" />
+    <result column="LONG_NAME" property="LONG_NAME" />
+    <result column="ID_TYPE" property="ID_TYPE" />
+    <result column="ID_NUMBER" property="ID_NUMBER" />
+    <result column="ADDRESS" property="ADDRESS" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMPANION_SEQ, COMP_CODE, FILE_CODE, CIF_NO, SHORT_NAME, LONG_NAME, ID_TYPE, ID_NUMBER, 
+    ADDRESS
+  </sql>
+  <select id="selectCTS_AVA_FILE_COMPANION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_AVA_FILE_COMPANION
+    where COMPANION_SEQ = #{COMPANION_SEQ}
+      and COMP_CODE = #{COMP_CODE}
+      and FILE_CODE = #{FILE_CODE}
+  </select>
+  <delete id="deleteCTS_AVA_FILE_COMPANION" parameterType="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVOKey" >
+    delete from CTS_AVA_FILE_COMPANION
+    where COMPANION_SEQ = #{COMPANION_SEQ}
+      and COMP_CODE = #{COMP_CODE}
+      and FILE_CODE = #{FILE_CODE}
+  </delete>
+  <insert id="insertCTS_AVA_FILE_COMPANION" parameterType="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVO" >
+    insert into CTS_AVA_FILE_COMPANION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMPANION_SEQ != null and COMPANION_SEQ != emptyBigDecimalValue" >
+        COMPANION_SEQ,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="FILE_CODE != null and FILE_CODE != emptyBigDecimalValue" >
+        FILE_CODE,
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        CIF_NO,
+      </if>
+      <if test="SHORT_NAME != null" >
+        SHORT_NAME,
+      </if>
+      <if test="LONG_NAME != null" >
+        LONG_NAME,
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        ID_TYPE,
+      </if>
+      <if test="ID_NUMBER != null" >
+        ID_NUMBER,
+      </if>
+      <if test="ADDRESS != null" >
+        ADDRESS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMPANION_SEQ != null and COMPANION_SEQ != emptyBigDecimalValue" >
+        #{COMPANION_SEQ},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="FILE_CODE != null and FILE_CODE != emptyBigDecimalValue" >
+        #{FILE_CODE},
+      </if>
+      <if test="CIF_NO != null and CIF_NO != emptyBigDecimalValue" >
+        #{CIF_NO},
+      </if>
+      <if test="SHORT_NAME != null" >
+        #{SHORT_NAME},
+      </if>
+      <if test="LONG_NAME != null" >
+        #{LONG_NAME},
+      </if>
+      <if test="ID_TYPE != null and ID_TYPE != emptyBigDecimalValue" >
+        #{ID_TYPE},
+      </if>
+      <if test="ID_NUMBER != null" >
+        #{ID_NUMBER},
+      </if>
+      <if test="ADDRESS != null" >
+        #{ADDRESS},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_AVA_FILE_COMPANION" >
+    update CTS_AVA_FILE_COMPANION
+    <set >
+      <if test="CIF_NO != null" >
+        <choose >
+          <when test="CIF_NO == emptyBigDecimalValue" >
+            CIF_NO = NULL ,
+          </when>
+          <otherwise >
+            CIF_NO = #{CIF_NO},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="SHORT_NAME != null" >
+        SHORT_NAME = #{SHORT_NAME},
+      </if>
+      <if test="LONG_NAME != null" >
+        LONG_NAME = #{LONG_NAME},
+      </if>
+      <if test="ID_TYPE != null" >
+        <choose >
+          <when test="ID_TYPE == emptyBigDecimalValue" >
+            ID_TYPE = NULL ,
+          </when>
+          <otherwise >
+            ID_TYPE = #{ID_TYPE},
+          </otherwise>
+        </choose>
+      </if>
+      <if test="ID_NUMBER != null" >
+        ID_NUMBER = #{ID_NUMBER},
+      </if>
+      <if test="ADDRESS != null" >
+        ADDRESS = #{ADDRESS},
+      </if>
+    </set>
+    where COMPANION_SEQ = #{COMPANION_SEQ}
+      and COMP_CODE = #{COMP_CODE}
+      and FILE_CODE = #{FILE_CODE}
+  </sql>
+  <update id="updateCTS_AVA_FILE_COMPANION" parameterType="com.path.dbmaps.vo.CTS_AVA_FILE_COMPANIONVO" >
+    <include refid="sql_updateCTS_AVA_FILE_COMPANION" />
+  </update>
+</mapper>

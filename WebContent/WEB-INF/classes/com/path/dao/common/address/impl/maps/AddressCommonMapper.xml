@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="addressMapper">
+
+<sql id="cifAddressListCommon" >
+	<![CDATA[
+	
+		SELECT 	
+	  			CIF_ADDRESS.COMP_CODE,   
+				CIF_ADDRESS.BRANCH_CODE,   
+				CIF_ADDRESS.CIF_NO,   
+				CIF_ADDRESS.LINE_NO,   
+				CIF_ADDRESS.ADDRESS_DESC,   
+				CIF_ADDRESS.ADDRESS1_ENG,   
+				CIF_ADDRESS.ADDRESS2_ENG,   
+				CIF_ADDRESS.ADDRESS3_ENG,    
+				CIF_ADDRESS.ADDRESS4_ENG,   
+				CIF_ADDRESS.ADDRESS1_ARAB,   
+				CIF_ADDRESS.ADDRESS2_ARAB,   
+				CIF_ADDRESS.ADDRESS3_ARAB,    
+				CIF_ADDRESS.ADDRESS4_ARAB,
+				CIF_ADDRESS.PRINT_STAT,   
+				CIF_ADDRESS.CONTACT_NAME,   
+				CIF_ADDRESS.CONTACT_NAME_ARAB,
+				CIF_ADDRESS.STREET_DETAILS_ENG,
+				CIF_ADDRESS.STREET_DETAILS_ARAB,
+				CIF_ADDRESS.CITY_ENG,   
+				CIF_ADDRESS.GOVERNERATE_ENG, 
+				CIF_ADDRESS.GOVERNERATE_ARAB,  
+				CIF_ADDRESS.CITY_ARAB,    
+				CIF_ADDRESS.SALUTATION_ENG,  
+				CIF_ADDRESS.SALUTATION_ARAB, 
+				CIF_ADDRESS.FAX,   
+				CIF_ADDRESS.TEL	,   
+				CIF_ADDRESS.DEFAULT_ADD,   
+				CIF_ADDRESS.PO_BOX,   
+				CIF_ADDRESS.COUNTRY,   
+				(SELECT TELEPHONE_FORMAT FROM COUNTRIES WHERE COUNTRIES.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND COUNTRIES.COMP_CODE = CIF_ADDRESS.COMP_CODE) countryTelFormat,
+				CIF_ADDRESS.REGION,   
+				CIF_ADDRESS.WORK_TEL,   
+				CIF_ADDRESS.EMAIL,   
+				CIF_ADDRESS.MOBILE,
+				CIF_ADDRESS.OLD_MOBILE,
+				CIF_ADDRESS.OTHER_TEL,
+				CIF_ADDRESS.POSTAL_CODE,
+				CIF_ADDRESS.POSTAL_CODE1,
+				CIF_ADDRESS.POBOX_AREA,
+				'' CIF_TYPE,
+				CIF_ADDRESS.CITY_CODE,
+				CIF_ADDRESS.SECTOR_CODE,
+				CIF_ADDRESS.EXPIRY_DATE,  	 
+				CIF_ADDRESS.ADDRESS_DESCRIPTION,   
+				CIF_ADDRESS.PERM_ADDRESS,  
+				CIF_ADDRESS.FROM_DATE,  
+				CIF_ADDRESS.TO_DATE,
+				CIF_ADDRESS.IS_KYC_YN,    
+				CIF_ADDRESS.STATE_ENG,    
+				CIF_ADDRESS.STATE_ARAB,
+				CIF_ADDRESS.E_WALLET_YN,
+				CIF_ADDRESS.OLD_EMAIL,
+				CIF_ADDRESS.LAST_CHANGE_MOBILE_EMAIL,
+				CIF_ADDRESS.LAST_DATE_MOBILE_EMAIL,
+				CIF_ADDRESS.TELEX    
+	]]>	 
+ </sql>
+ 
+  <sql id="cifAddressListDetailAdditionalSelect" >
+ 		
+ 		,(SELECT COUNTRIES.LONG_DESC_ENG FROM COUNTRIES WHERE COUNTRIES.COMP_CODE = CIF_ADDRESS.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF_ADDRESS.COUNTRY) COUNTRY_DESC
+ 		,(SELECT COUNTRIES.LONG_DESC_ARAB FROM COUNTRIES WHERE COUNTRIES.COMP_CODE = CIF_ADDRESS.COMP_CODE AND COUNTRIES.COUNTRY_CODE = CIF_ADDRESS.COUNTRY) COUNTRY_DESC_ARAB  
+ 		,(SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE = CIF_ADDRESS.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND COUNTRIES_REGION.REGION_CODE = CIF_ADDRESS.REGION) REGION_DESC
+ 		,(SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE = CIF_ADDRESS.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND COUNTRIES_REGION.REGION_CODE = CIF_ADDRESS.POBOX_AREA) POBOX_AREA_DESC
+ 		,(SELECT CITIES.BRIEF_DESC_ENG FROM CITIES WHERE CITIES.COMP_CODE = CIF_ADDRESS.COMP_CODE AND CITIES.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND CITIES.REGION_CODE = CIF_ADDRESS.REGION AND CITIES.CITY_CODE = CIF_ADDRESS.CITY_CODE) CITY_DESC
+ 		,(SELECT SECTORS.BRIEF_DESC_ENG FROM SECTORS WHERE SECTORS.COMP_CODE = CIF_ADDRESS.COMP_CODE AND SECTORS.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND SECTORS.REGION_CODE = CIF_ADDRESS.REGION AND SECTORS.CITY_CODE = CIF_ADDRESS.CITY_CODE AND SECTORS.SECTOR_CODE = CIF_ADDRESS.SECTOR_CODE) SECTOR_DESC
+ 		,(SELECT RESIDENCE_TYPES.BRIEF_DESC_ENG FROM RESIDENCE_TYPES WHERE RESIDENCE_TYPES.COMP_CODE = CIF_ADDRESS.COMP_CODE AND RESIDENCE_TYPES.CODE = CIF_ADDRESS.ADDRESS_DESCRIPTION) RESIDENCY_TYPE_DESC
+ 		<choose>
+ 			<when test=' "A".equals(postalCodeType) '>
+ 				 ,(SELECT POSTAL_CODE.BRIEF_NAME_ENG FROM POSTAL_CODE WHERE POSTAL_CODE.COMP_CODE = CIF_ADDRESS.COMP_CODE AND POSTAL_CODE.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND POSTAL_CODE.REGION_CODE = CIF_ADDRESS.REGION 
+					      AND POSTAL_CODE.POST_CODE = CIF_ADDRESS.POSTAL_CODE1) POSTAL_CODE_DESC
+ 			</when>
+ 			<otherwise>
+ 				 ,(SELECT POSTAL_CODE.BRIEF_NAME_ENG FROM POSTAL_CODE WHERE POSTAL_CODE.COMP_CODE = CIF_ADDRESS.COMP_CODE AND POSTAL_CODE.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND POSTAL_CODE.REGION_CODE = CIF_ADDRESS.REGION 
+			 		<choose> 
+					 	<when test="isSybase == 1" >
+					        AND CONVERT(NUMERIC,POSTAL_CODE.POST_CODE) = CIF_ADDRESS.POSTAL_CODE
+					    </when>
+					    <otherwise >
+					        AND POSTAL_CODE.POST_CODE = CIF_ADDRESS.POSTAL_CODE
+					    </otherwise>
+					</choose>
+					) POSTAL_CODE_DESC
+ 			</otherwise>
+ 		
+ 		</choose>  		 		
+  </sql>
+ 
+  <sql id="cifAddressListAttributes" >
+
+	FROM CIF_ADDRESS
+	WHERE CIF_ADDRESS.CIF_NO = #{cifNo,jdbcType=NUMERIC}
+	  AND CIF_ADDRESS.COMP_CODE = 
+	   		<choose>
+	   			<when test="compCodeCif != null and compCodeCif != emptyBigDecimalValue" >#{compCodeCif}</when>
+	   			<otherwise>#{compCode}</otherwise>
+	   		</choose>
+ 		
+ </sql>
+ 
+ <sql id="addressListDetailAttributes" >
+ 	
+ 	AND	  LINE_NO  = #{lineNo}
+ 		
+ </sql>
+ 
+  <sql id="addressListDefaultAddress" >
+  
+ 	
+ 	AND	  DEFAULT_ADD  = #{defaultAdd}
+ 	<if test="lineNo!=null and lineNo != emptyBigDecimalValue">
+ 	   AND   CIF_ADDRESS.LINE_NO NOT IN( #{lineNo})
+ 	</if>
+ 		
+ </sql>
+ 
+   <sql id="cifAddressListPermanentAddress" >
+ 	
+ 	AND	  CIF_ADDRESS.PERM_ADDRESS  = #{permAdd}
+ 	<if test="lineNo!=null and lineNo != emptyBigDecimalValue">
+ 	   AND   CIF_ADDRESS.LINE_NO NOT IN( #{lineNo})
+ 	</if>	
+  </sql>
+ 
+  <sql id="addressListDetailFirstAddress" >
+ 	
+ 	AND	  LINE_NO  = 0
+ 		
+ </sql>
+ 
+  <sql id="addressListWithOutFirstAddress" >
+ 	<![CDATA[
+ 		AND	 LINE_NO <> 0
+ 	]]>	
+ 	<choose>
+             <when test="fromFomKyc==true">
+                    AND IS_KYC_YN = '1'
+             </when>
+             <otherwise>
+                    AND IS_KYC_YN <![CDATA[<>]]> '1'
+             </otherwise>
+      </choose>
+ 	
+ 	 
+  </sql>
+  
+  <sql id="cifAddressForCurrencyExchange" >
+  	AND LINE_NO = (	CASE
+					WHEN (SELECT COUNT(*) FROM CIF_ADDRESS WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo} AND DEFAULT_ADD = '1' ) = 0
+						THEN 0
+					ELSE
+						(SELECT LINE_NO FROM CIF_ADDRESS WHERE COMP_CODE = #{compCode} AND CIF_NO = #{cifNo} AND DEFAULT_ADD = '1')
+				END
+			)
+  </sql>
+ 
+ <resultMap id="cifAddressDetailMap" type="addressCO">
+ 	<id column="CIF_NO" property="CIF_NO" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="BRANCH_CODE" property="BRANCH_CODE" />
+    <result column="ADDRESS_DESC" property="ADDRESS_DESC" />
+    <result column="ADDRESS1_ENG" property="ADDRESS1_ENG" />
+    <result column="ADDRESS2_ENG" property="ADDRESS2_ENG" />
+    <result column="ADDRESS3_ENG" property="ADDRESS3_ENG" />
+    <result column="ADDRESS4_ENG" property="ADDRESS4_ENG" />
+    <result column="ADDRESS1_ARAB" property="ADDRESS1_ARAB" />
+    <result column="ADDRESS2_ARAB" property="ADDRESS2_ARAB" />
+    <result column="ADDRESS3_ARAB" property="ADDRESS3_ARAB" />
+    <result column="ADDRESS4_ARAB" property="ADDRESS4_ARAB" />
+    <result column="PRINT_STAT" property="PRINT_STAT" />
+    <result column="CONTACT_NAME" property="CONTACT_NAME" />
+    <result column="CONTACT_NAME_ARAB" property="CONTACT_NAME_ARAB" />
+    <result column="STREET_DETAILS_ENG" property="STREET_DETAILS_ENG" />
+    <result column="CITY_ENG" property="CITY_ENG" />
+    <result column="GOVERNERATE_ENG" property="GOVERNERATE_ENG" />
+    <result column="STREET_DETAILS_ARAB" property="STREET_DETAILS_ARAB" />
+    <result column="CITY_ARAB" property="CITY_ARAB" />
+    <result column="GOVERNERATE_ARAB" property="GOVERNERATE_ARAB" />
+    <result column="SALUTATION_ENG" property="SALUTATION_ENG" />
+    <result column="SALUTATION_ARAB" property="SALUTATION_ARAB" />
+    <result column="FAX" property="FAX" />
+    <result column="TEL" property="TEL" />
+    <result column="TEL" property="HIDDEN_TEL" />
+    <result column="DEFAULT_ADD" property="DEFAULT_ADD" />
+    <result column="ORIGIN_BR_I" property="ORIGIN_BR_I" />
+    <result column="ORIGIN_BR_U" property="ORIGIN_BR_U" />
+    <result column="ORIGIN_BR_D" property="ORIGIN_BR_D" />
+    <result column="PO_BOX" property="PO_BOX" />
+    <result column="COUNTRY" property="COUNTRY" />
+    <result column="countryTelFormat" property="countryTelFormat" />
+    <result column="REGION" property="REGION" />
+    <result column="MOBILE" property="MOBILE" />
+    <result column="MOBILE" property="HIDDEN_MOBILE" />
+    <result column="OLD_MOBILE" property="OLD_MOBILE" />
+    <result column="HOME_TEL" property="HOME_TEL" />
+    <result column="WORK_TEL" property="WORK_TEL" />
+    <result column="EMAIL" property="EMAIL" />
+    <result column="OTHER_TEL" property="OTHER_TEL" />
+    <result column="POSTAL_CODE" property="POSTAL_CODE" />
+    <result column="POSTAL_CODE1" property="POSTAL_CODE1" />
+    <result column="POBOX_AREA" property="POBOX_AREA" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    <result column="EXPIRY_DATE" property="EXPIRY_DATE" />
+    <result column="CITY_CODE" property="CITY_CODE" />
+    <result column="SECTOR_CODE" property="SECTOR_CODE" />
+    <result column="SHORT_NAME_AR" property="SHORT_NAME_AR" />
+    <result column="ADDRESS_DESCRIPTION" property="ADDRESS_DESCRIPTION" />
+    <result column="PERM_ADDRESS" property="PERM_ADDRESS" />
+    <result column="FROM_DATE" property="FROM_DATE" />
+    <result column="TO_DATE" property="TO_DATE" />
+    
+    <result column="COUNTRY_DESC" property="countryDesc" />
+    <result column="COUNTRY_DESC_ARAB" property="countryDescArab" />
+    <result column="REGION_DESC" property="regionDesc" />
+    <result column="CITY_DESC" property="cityDesc" />
+    <result column="SECTOR_DESC" property="sectorDesc" />
+    <result column="POSTAL_CODE_DESC" property="postalcodeDesc" />
+    <result column="POBOX_AREA_DESC" property="poBoxAreaDesc" />
+    <result column="RESIDENCY_TYPE_DESC" property="residenceTypeDesc" />
+    <result column="IS_KYC_YN" property="IS_KYC_YN" />
+    <result column="STATE_ENG" property="STATE_ENG" />
+    <result column="STATE_ARAB" property="STATE_ARAB" />
+    <result column="E_WALLET_YN" property="E_WALLET_YN" />
+    <result column="OLD_MOBILE" property="OLD_MOBILE" />
+	<result column="OLD_EMAIL" property="OLD_EMAIL" />
+	<result column="LAST_CHANGE_MOBILE_EMAIL" property="LAST_CHANGE_MOBILE_EMAIL" />
+	<result column="LAST_DATE_MOBILE_EMAIL" property="LAST_DATE_MOBILE_EMAIL" />
+    <result column="TELEX" property="TELEX" />
+  </resultMap>
+  
+	<select id="returnCountryTelCIFAddress" resultMap="returnCountryTelCIFAddressMap" parameterType="addressSC">
+		SELECT COUNTRY, TEL
+		<include refid="cifAddressListAttributes"/>
+		<include refid="addressListDetailAttributes"/>
+	</select>  
+	
+	<resultMap id="returnCountryTelCIFAddressMap" type="addressVO">
+    	<result column="COUNTRY" 	property="COUNTRY" />
+    	<result column="TEL" 		property="TEL" />
+    </resultMap>
+  
+ <select id="addressList" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+  <select id="defaultAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="addressListDefaultAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="permanentAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="cifAddressListPermanentAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+  <select id="moreAddressListWithOutFirstAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="addressListWithOutFirstAddress"/>	
+	<if test="defaultAdd!=null">
+	 <include refid="addressListDefaultAddress"/>	 
+	 </if>
+	
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="addressListCount" resultType="int" parameterType="addressSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="addressListWithOutFirstAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <select id="addressDetail" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="addressListDetailAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+  <select id="addressDetailFirstAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="addressListDetailFirstAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+  </select>
+  
+  <select id="returnCifAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="cifAddressForCurrencyExchange"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+<select id="allAddressList" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+
+ <select id="allAddressListCount" resultType="int" parameterType="addressSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListDetailAdditionalSelect"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+ <sql id="acccountAddressListCommon" >
+	<![CDATA[
+	SELECT
+			 AMF_ADDRESS.COMP_CODE,
+			 AMF_ADDRESS.ACC_BR,
+			 AMF_ADDRESS.ACC_CY,
+			 AMF_ADDRESS.ACC_GL, 
+			 AMF_ADDRESS.ACC_CIF,
+			 AMF_ADDRESS.ACC_SL,
+			 AMF_ADDRESS.LINE_NO,
+			 AMF_ADDRESS.ADDRESS_DESC,
+			 AMF_ADDRESS.ADDRESS1_ENG,
+			 AMF_ADDRESS.ADDRESS2_ENG,
+			 AMF_ADDRESS.ADDRESS3_ENG,    
+			 AMF_ADDRESS.ADDRESS4_ENG,
+			 AMF_ADDRESS.ADDRESS1_ARAB,
+			 AMF_ADDRESS.ADDRESS2_ARAB,
+			 AMF_ADDRESS.ADDRESS3_ARAB,
+			 AMF_ADDRESS.ADDRESS4_ARAB,
+			 AMF_ADDRESS.PRINT_STAT,
+			 AMF_ADDRESS.CONTACT_NAME,
+			 AMF_ADDRESS.CONTACT_NAME_ARAB,
+			 AMF_ADDRESS.STREET_DETAILS_ENG,
+			 AMF_ADDRESS.CITY_ENG,
+			 AMF_ADDRESS.GOVERNERATE_ENG,
+			 AMF_ADDRESS.STREET_DETAILS_ARAB,
+			 AMF_ADDRESS.CITY_ARAB,
+			 AMF_ADDRESS.GOVERNERATE_ARAB,
+			 AMF_ADDRESS.SALUTATION_ENG,
+			 AMF_ADDRESS.SALUTATION_ARAB,
+			 AMF_ADDRESS.FAX,
+			 AMF_ADDRESS.TEL,
+			 AMF_ADDRESS.DEFAULT_ADD,
+			 PO_BOX   ,      
+			 COUNTRY  ,      
+			 REGION  ,       
+			 MOBILE    ,     				
+			 WORK_TEL  ,     
+			 EMAIL    ,      
+			 OTHER_TEL   ,   				
+			 POSTAL_CODE , 
+			 POSTAL_CODE1,
+			 POBOX_AREA    
+	
+ 	]]>	 
+ </sql>	
+ 
+ <sql id="acccountAddressListDetailAdditionalSelect" >
+ 		
+	,(SELECT COUNTRIES.LONG_DESC_ENG FROM COUNTRIES WHERE COUNTRIES.COMP_CODE = AMF_ADDRESS.COMP_CODE AND COUNTRIES.COUNTRY_CODE = AMF_ADDRESS.COUNTRY) COUNTRY_DESC 
+	,(SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE = AMF_ADDRESS.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = AMF_ADDRESS.COUNTRY AND COUNTRIES_REGION.REGION_CODE = AMF_ADDRESS.REGION) REGION_DESC
+	,(SELECT COUNTRIES_REGION.BRIEF_DESC_ENG FROM COUNTRIES_REGION WHERE COUNTRIES_REGION.COMP_CODE = AMF_ADDRESS.COMP_CODE AND COUNTRIES_REGION.COUNTRY_CODE = AMF_ADDRESS.COUNTRY AND COUNTRIES_REGION.REGION_CODE = AMF_ADDRESS.POBOX_AREA) POBOX_AREA_DESC
+<!-- 	
+	,(SELECT CITIES.BRIEF_DESC_ENG FROM CITIES WHERE CITIES.COMP_CODE = AMF_ADDRESS.COMP_CODE AND CITIES.COUNTRY_CODE = AMF_ADDRESS.COUNTRY AND CITIES.REGION_CODE = AMF_ADDRESS.REGION AND CITIES.CITY_CODE = CIF_ADDRESS.CITY_CODE) CITY_DESC
+	,(SELECT SECTORS.BRIEF_DESC_ENG FROM SECTORS WHERE SECTORS.COMP_CODE = AMF_ADDRESS.COMP_CODE AND SECTORS.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND SECTORS.REGION_CODE = CIF_ADDRESS.REGION AND SECTORS.CITY_CODE = CIF_ADDRESS.CITY_CODE AND SECTORS.SECTOR_CODE = CIF_ADDRESS.SECTOR_CODE) SECTOR_DESC
+	,(SELECT RESIDENCE_TYPES.BRIEF_DESC_ENG FROM RESIDENCE_TYPES WHERE RESIDENCE_TYPES.COMP_CODE = AMF_ADDRESS.COMP_CODE AND RESIDENCE_TYPES.CODE = CIF_ADDRESS.ADDRESS_DESCRIPTION) RESIDENCY_TYPE_DESC
+
+	,(SELECT POSTAL_CODE.BRIEF_NAME_ENG FROM POSTAL_CODE WHERE POSTAL_CODE.COMP_CODE = CIF_ADDRESS.COMP_CODE AND POSTAL_CODE.COUNTRY_CODE = CIF_ADDRESS.COUNTRY AND POSTAL_CODE.REGION_CODE = CIF_ADDRESS.REGION AND POSTAL_CODE.POST_CODE = CIF_ADDRESS.POSTAL_CODE) POSTAL_CODE_DESC
+-->		 
+	<choose> 
+		<when test=' "A".equals(postalCodeType) '>
+			,(SELECT POSTAL_CODE.BRIEF_NAME_ENG FROM POSTAL_CODE WHERE POSTAL_CODE.COMP_CODE = AMF_ADDRESS.COMP_CODE AND POSTAL_CODE.COUNTRY_CODE = AMF_ADDRESS.COUNTRY AND POSTAL_CODE.REGION_CODE = AMF_ADDRESS.REGION
+			        AND POSTAL_CODE.POST_CODE = AMF_ADDRESS.POSTAL_CODE1 ) POSTAL_CODE_DESC 
+		</when>
+		<otherwise>
+			,(SELECT POSTAL_CODE.BRIEF_NAME_ENG FROM POSTAL_CODE WHERE POSTAL_CODE.COMP_CODE = AMF_ADDRESS.COMP_CODE AND POSTAL_CODE.COUNTRY_CODE = AMF_ADDRESS.COUNTRY AND POSTAL_CODE.REGION_CODE = AMF_ADDRESS.REGION
+			<choose> 
+			 	<when test="isSybase == 1" >
+			        AND CONVERT(NUMERIC,POSTAL_CODE.POST_CODE) = AMF_ADDRESS.POSTAL_CODE
+			    </when>
+			    <otherwise >
+			        AND POSTAL_CODE.POST_CODE = AMF_ADDRESS.POSTAL_CODE
+			    </otherwise>
+			</choose>
+			) POSTAL_CODE_DESC 
+		</otherwise>
+		</choose>
+		
+ </sql>
+  
+ <sql id="acccountAddressListAttributes" >
+ 	FROM  	 AMF_ADDRESS 
+	WHERE	 AMF_ADDRESS.COMP_CODE  = #{compCode}
+	AND		 AMF_ADDRESS.ACC_BR  	= #{branchCode}
+	AND		 AMF_ADDRESS.ACC_CY  	= #{cyCode}
+	AND		 AMF_ADDRESS.ACC_GL  	= #{glCode}
+	AND		 AMF_ADDRESS.ACC_CIF  	= #{cifNo}
+	AND		 AMF_ADDRESS.ACC_SL  	= #{slNo}
+ </sql>
+ 
+ 
+ <select id="acccountAddressDetailFirstAddress" resultMap="acccountAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="acccountAddressListCommon"/>
+	<include refid="acccountAddressListDetailAdditionalSelect"/>
+	<include refid="acccountAddressListAttributes"/>
+	<include refid="addressListDetailFirstAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+  </select>
+  
+ <resultMap id="acccountAddressDetailMap" type="addressCO">
+    <id column="ACC_BR" property="ACC_BR" />
+    <id column="ACC_CIF" property="ACC_CIF" />
+    <id column="ACC_CY" property="ACC_CY" />
+    <id column="ACC_GL" property="ACC_GL" />
+    <id column="ACC_SL" property="ACC_SL" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NO" property="LINE_NO" />
+    <result column="ADDRESS_DESC" property="ADDRESS_DESC" />
+    <result column="ADDRESS1_ENG" property="ADDRESS1_ENG" />
+    <result column="ADDRESS2_ENG" property="ADDRESS2_ENG" />
+    <result column="ADDRESS3_ENG" property="ADDRESS3_ENG" />
+    <result column="ADDRESS4_ENG" property="ADDRESS4_ENG" />
+    <result column="ADDRESS1_ARAB" property="ADDRESS1_ARAB" />
+    <result column="ADDRESS2_ARAB" property="ADDRESS2_ARAB" />
+    <result column="ADDRESS3_ARAB" property="ADDRESS3_ARAB" />
+    <result column="ADDRESS4_ARAB" property="ADDRESS4_ARAB" />
+    <result column="PRINT_STAT" property="PRINT_STAT" />
+    <result column="CONTACT_NAME" property="CONTACT_NAME" />
+    <result column="CONTACT_NAME_ARAB" property="CONTACT_NAME_ARAB" />
+    <result column="STREET_DETAILS_ENG" property="STREET_DETAILS_ENG" />
+    <result column="CITY_ENG" property="CITY_ENG" />
+    <result column="GOVERNERATE_ENG" property="GOVERNERATE_ENG" />
+    <result column="STREET_DETAILS_ARAB" property="STREET_DETAILS_ARAB" />
+    <result column="CITY_ARAB" property="CITY_ARAB" />
+    <result column="GOVERNERATE_ARAB" property="GOVERNERATE_ARAB" />
+    <result column="SALUTATION_ENG" property="SALUTATION_ENG" />
+    <result column="SALUTATION_ARAB" property="SALUTATION_ARAB" />
+    <result column="FAX" property="FAX" />
+    <result column="TEL" property="TEL" />
+    <result column="DEFAULT_ADD" property="DEFAULT_ADD" />
+    <result column="PO_BOX" property="PO_BOX" />
+    <result column="COUNTRY" property="COUNTRY" />
+    <result column="REGION" property="REGION" />
+    <result column="MOBILE" property="MOBILE" />
+    <result column="HOME_TEL" property="HOME_TEL" />
+    <result column="WORK_TEL" property="WORK_TEL" />
+    <result column="EMAIL" property="EMAIL" />
+    <result column="OTHER_TEL" property="OTHER_TEL" />
+    <result column="POSTAL_CODE" property="POSTAL_CODE" />
+    <result column="POSTAL_CODE1" property="POSTAL_CODE1" />
+    <result column="POBOX_AREA" property="POBOX_AREA" />
+    <result column="ADDITIONAL_REFERENCE" property="ADDITIONAL_REFERENCE" />
+    
+    <result column="POSTAL_CODE_DESC" property="postalcodeDesc" />
+    <result column="COUNTRY_DESC" property="countryDesc" />
+    <result column="REGION_DESC" property="regionDesc" />
+    <result column="POBOX_AREA_DESC" property="poBoxAreaDesc" />
+    <result column="POSTAL_CODE_DESC" property="postalcodeDesc" />
+  </resultMap>
+  
+   <select id="acccountAddressListCountWithOutFirstAddress" resultType="int" parameterType="addressSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="acccountAddressListCommon"/>
+	<include refid="acccountAddressListAttributes"/>
+	<!--<include refid="addressListWithOutFirstAddress"/> -->
+	<![CDATA[
+ 		AND	 LINE_NO <> 0
+ 	]]>	
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+   
+ <select id="acccountAddressListWithOutFirstAddress" resultMap="acccountAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="acccountAddressListCommon"/>
+	<include refid="acccountAddressListDetailAdditionalSelect"/>
+	<include refid="acccountAddressListAttributes"/>
+	<!--<include refid="addressListWithOutFirstAddress"/>-->
+	<![CDATA[
+ 		AND	 LINE_NO <> 0
+ 	]]>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="acccountAddressDetail" resultMap="acccountAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="acccountAddressListCommon"/>
+	<include refid="acccountAddressListDetailAdditionalSelect"/>
+	<include refid="acccountAddressListAttributes"/>
+	<include refid="addressListDetailAttributes"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ 
+ <select id="returnMaxAccountAddressLine" resultType="int" parameterType="addressSC" > 
+	select coalesce(MAX(LINE_NO),0)
+	<include refid="acccountAddressListAttributes"/>
+
+  </select>
+  
+  <select id="checkAddressDefaultAddrFlag" resultType="int" parameterType="addressSC" >
+      <if test="screenSrc!=null and 'ACCOUNT'.equals(screenSrc)">
+           SELECT COUNT(1)
+		     FROM AMF_ADDRESS
+		    WHERE COMP_CODE = #{compCode}
+		      AND ACC_BR = #{branchCode}
+		      AND ACC_CY = #{cyCode}
+		      AND ACC_GL = #{glCode}
+		      AND ACC_CIF = #{cifNo}
+		      AND ACC_SL = #{slNo}
+		      AND DEFAULT_ADD = '1'
+      </if>   
+      <if test="screenSrc!=null and ('FOM'.equals(screenSrc) or'KYCManagment'.equals(screenSrc)) ">
+           SELECT COUNT(1)
+		     FROM CIF_ADDRESS
+		    WHERE COMP_CODE = #{compCode}
+		      AND CIF_NO = #{cifNo}
+		      AND DEFAULT_ADD = '1'
+      </if>   
+  </select>
+ 
+<select id="walletAddress" resultMap="cifAddressDetailMap" parameterType="addressSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="cifAddressListCommon"/>
+	<include refid="cifAddressListAttributes"/>
+	<include refid="cifAddressListWalletAddress"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <sql id="cifAddressListWalletAddress" >
+ 	AND	  CIF_ADDRESS.E_WALLET_YN  = #{walletAdd}
+ 	<if test="lineNo!=null and lineNo != emptyBigDecimalValue">
+ 	   AND   CIF_ADDRESS.LINE_NO NOT IN( #{lineNo})
+ 	</if>
+  </sql>
+ 
+   <select id="returnEWalletCIF" parameterType="addressSC" resultType="int">
+	
+	SELECT COUNT(1)
+	FROM CIF_ADDRESS
+	WHERE COMP_CODE = #{compCode, jdbcType=NUMERIC} 
+	AND CIF_NO = #{cifNo, jdbcType=NUMERIC}
+	AND E_WALLET_YN = '1'
+    AND   CIF_ADDRESS.LINE_NO = #{lineNo}
+
+
+  </select>	
+ 
+</mapper>
+
+ 

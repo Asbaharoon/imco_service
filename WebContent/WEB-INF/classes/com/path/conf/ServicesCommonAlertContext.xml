@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+   
+    <!-- we need to have this bean definition here in order to read values from property file  -->
+	<bean  parent="propertyPlaceholderConfigurer" />
+ 	
+ 	<!-- the alert borker -->
+ 	<bean id="alertsBrokerBO" class="com.path.bo.common.alerts.impl.AlertsBrokerBOImpl" init-method="startBroker" destroy-method="stopBroker" depends-on="alertsEngineBO,servicesCommonBO">
+		<property name="alertsEnabled" value="${alert.enabled}"/>
+		<property name="alertsScheduledTaskEnabled" value="${alert.scheduled.task.enabled}"/>
+		<property name="brokerName" value="${alert.broker.brokerName}"/>
+		<property name="persistent" value="${alert.broker.persistent}"/>
+		<property name="useJmx" value="${alert.broker.useJmx}"/>
+		<property name="advisorySupport" value="${alert.broker.advisorySupport}"/>
+		<property name="enableStatistics" value="${alert.broker.enableStatistics}"/>
+		<property name="scheduleInitialDelay" value="${alert.scheduler.initialDelay}"/>
+		<property name="applicationName" value="${alert.engine.appName}"/>
+		<property name="alertsExecutorTask" ref="alertsScheduledExecutorTask"></property>
+  		<property name="alertsThreadPoolExecutor" ref="alertsScheduledThreadPoolExecutor"></property>
+		<property name="brokerURL" value="${alert.broker.url}"></property>
+		<property name="commonLibBO" ref="commonLibBO"></property>
+		<property name="alertsBO" ref="alertsBO"></property>
+	</bean>
+	
+	<!-- the activeMQ connection factory -->
+	<bean id="alertsConnectionFactoryTCP" class="org.apache.activemq.spring.ActiveMQConnectionFactory" depends-on="alertsBrokerBO">
+		<property name="brokerURL" value="${alert.broker.url}"/>
+		 
+		<!-- by default = true -->
+		<property name="watchTopicAdvisories" value="false"/>
+		<!-- by default = true -->
+		<property name="checkForDuplicates" value="false" />
+		<!-- by default = true -->
+		<property name="copyMessageOnSend" value="false" />
+		<!-- by default = false -->
+		<property name="optimizeAcknowledge" value="true" />
+		<!-- by default = true -->
+		<property name="dispatchAsync" value="false" />
+		<!-- by default = true -->
+		<property name="alwaysSessionAsync" value="false" />
+		<!-- by default = false -->
+		<property name="useAsyncSend" value="false" />
+		<!-- by default = false -->
+		<property name="alwaysSyncSend" value="true" />
+		
+	</bean>
+	
+	<!-- the SingleConnectionFactory is used to create non cached sessions -->
+	<bean id="alertsSingleConnectionFactoryTCP" class="org.springframework.jms.connection.SingleConnectionFactory" depends-on="alertsConnectionFactoryTCP" destroy-method="destroy">
+	    <constructor-arg ref="alertsConnectionFactoryTCP" />
+	</bean>
+	
+	<!-- the pubSubDomain should be true if we need to send to topic, false if we need to send to a queue  -->
+	<!-- this jmsTemplate is used to send message to topics -->
+	<bean id="alertsTopicJmsTemplateTCP" class="org.springframework.jms.core.JmsTemplate" depends-on="alertsSingleConnectionFactoryTCP">
+		<property name="connectionFactory" ref="alertsSingleConnectionFactoryTCP" />
+		<property name="pubSubDomain" value="true"/>
+		<property name="deliveryPersistent" value="false"/>
+		<property name="explicitQosEnabled" value="true"/>
+	</bean>
+	
+	
+	<!-- the activeMQ connection factory -->
+	<bean id="alertsConnectionFactoryVM" class="org.apache.activemq.spring.ActiveMQConnectionFactory" depends-on="alertsBrokerBO">
+		<property name="brokerURL" value="vm://${alert.broker.brokerName}?async=false&amp;create=false"/> 
+		 
+		<!-- by default = true -->
+		<property name="watchTopicAdvisories" value="false"/>
+		<!-- by default = true -->
+		<property name="checkForDuplicates" value="false" />
+		<!-- by default = true -->
+		<property name="copyMessageOnSend" value="false" />
+		<!-- by default = false -->
+		<property name="optimizeAcknowledge" value="true" />
+		<!-- by default = true -->
+		<property name="dispatchAsync" value="false" />
+		<!-- by default = true -->
+		<property name="alwaysSessionAsync" value="false" />
+		<!-- by default = false -->
+		<property name="useAsyncSend" value="false" />
+		<!-- by default = false -->
+		<property name="alwaysSyncSend" value="true" />
+		
+	</bean>
+	
+	<!-- the SingleConnectionFactory is used to create non cached sessions -->
+	<bean id="alertsSingleConnectionFactoryVM" class="org.springframework.jms.connection.SingleConnectionFactory" depends-on="alertsConnectionFactoryVM" destroy-method="destroy">
+	    <constructor-arg ref="alertsConnectionFactoryVM" />
+	</bean>
+	
+	
+	<!-- this jmsTemplate is used to send message to queues -->
+	<bean id="alertsTopicJmsTemplateVM" class="org.springframework.jms.core.JmsTemplate" depends-on="alertsSingleConnectionFactoryVM">
+		<property name="connectionFactory" ref="alertsSingleConnectionFactoryVM" />
+		<property name="pubSubDomain" value="true"/>
+		<property name="deliveryPersistent" value="false"/>
+		<property name="explicitQosEnabled" value="true"/>
+	</bean>
+
+	<!-- the executor factory bean should be called from the alerts engine to start scheduling the alert's task -->	
+	<bean id="alertsScheduledThreadPoolExecutor"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
+		lazy-init="true" destroy-method="destroy">
+	</bean>
+
+	<!-- the scheduled executor task will create a task of type MethodInvokingRunnable -->
+	<bean id="alertsScheduledExecutorTask" lazy-init="true"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+		<property name="runnable">
+			<bean class="org.springframework.scheduling.support.MethodInvokingRunnable">
+				<property name="targetObject" ref="alertsEngineBO" />
+				<property name="targetMethod" value="alertsEngineScheduledTask" />
+			</bean>
+		</property>
+	</bean>
+	   
+</beans>

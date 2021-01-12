@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Print Swift -->
+	<bean id="printSwiftBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.printswift.impl.PrintSwiftBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.printswift.PrintSwiftBO" />
+		<constructor-arg name="remoteServiceName" value="printSwiftBOService" />
+		<property name="printSwiftDAO" ref="printSwiftDAO" ></property>
+	</bean>	
+	<bean id="swiftOutwardNonTransBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.swift.swiftoutward.SwiftOutwardNonTransBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.swift.swiftoutward.SwiftOutwardNonTransBO" />
+		<constructor-arg name="remoteServiceName" value="swiftOutwardNonTransBOService" />
+		<property name="swiftOutwardDAO" ref="swiftOutwardDAO"></property>
+		<property name="swiftOutwardTransBO" ref="swiftOutwardTransBO"></property>
+		<property name="dynFilesDAO" ref="dynFilesDAO"></property>
+	</bean>
+	<bean id="swiftOutwardTransBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.swift.swiftoutward.SwiftOutwardTransBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.swift.swiftoutward.SwiftOutwardTransBO" />
+		<constructor-arg name="remoteServiceName" value="swiftOutwardTransBOService" />
+		<property name="swiftOutwardNonTransBO" ref="swiftOutwardNonTransBO"></property>
+		<property name="swiftOutwardDAO" ref="swiftOutwardDAO"></property>
+	</bean>	
+	
+	<bean id="swiftInwardBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.swift.swiftinward.SwiftInwardBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.swift.swiftinward.SwiftInwardBO" />
+		<constructor-arg name="remoteServiceName" value="swiftInwardBOService" />
+		<property name="swiftInwardDAO" ref="swiftInwardDAO"></property>
+		<property name="swiftReconBO" ref="swiftReconBO"></property>
+		<property name="swiftOutwardNonTransBO" ref="swiftOutwardNonTransBO"></property>
+	
+	</bean>	
+	
+	<bean id="swiftReconBO" factory-bean="pathBeanFactory"  factory-method="getInstance" parent="baseBO">					
+		<constructor-arg name="implClassName" value="com.path.bo.common.swift.swiftreconciliation.SwiftReconBOImpl" />
+		<constructor-arg name="interfaceName" value="com.path.bo.common.swift.swiftreconciliation.SwiftReconBO" />
+		<constructor-arg name="remoteServiceName" value="swiftReconBOService" />
+		<property name="swiftReconDAO" ref="swiftReconDAO"></property>
+	</bean>	
+</beans>

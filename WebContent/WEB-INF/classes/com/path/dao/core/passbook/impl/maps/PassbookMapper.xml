@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="passbookMapper">
+
+ <sql id="passbookListCommon" >
+	<![CDATA[
+		SELECT CTSPASSBOOK_TYPE.CODE,
+       CTSPASSBOOK_TYPE.BRIEF_NAME_ENG,
+       CTSPASSBOOK_TYPE.LONG_NAME_ENG,
+       CTSPASSBOOK_TYPE.BRIEF_NAME_ARAB,
+       CTSPASSBOOK_TYPE.LONG_NAME_ARAB,
+       (SELECT VALUE_DESC
+          FROM SYS_PARAM_LOV_TRANS
+         WHERE VALUE_CODE = CTSPASSBOOK_TYPE.PASSBOOK_LAYOUT
+           AND LOV_TYPE_ID = #{lovType}
+           AND LANG_CODE = #{lang}) PASSBOOK_LAYOUT,
+       CTSPASSBOOK_TYPE.PASS_IN_STOCK
+  FROM CTSPASSBOOK_TYPE
+ WHERE CTSPASSBOOK_TYPE.COMP_CODE = #{compCode}
+
+	]]>	 
+ </sql>
+ 
+ <select id="passbookList" resultMap="CTSPASSBOOK_TYPE.BaseResultMap" parameterType="passbookSC" >
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="passbookListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+	<include refid="servicesCommon.commmonGridWrpFlipClose"/>
+ </select>
+ 
+ <select id="passbookListCount" resultType="int" parameterType="passbookSC" > 
+	<include refid="servicesCommon.commonGridWrpBefCnt"/>
+	<include refid="passbookListCommon"/>
+	<include refid="servicesCommon.commonGridWrpAftCnt"/>
+	<include refid="servicesCommon.commonGridCountWrpClose"/>	
+ </select>
+ 
+  <select id="returnPassbookById" parameterType="passbookSC" resultType="passbookTypeVO">
+  		SELECT CASE WHEN #{preferredLanguage} = 'A' THEN BRIEF_NAME_ARAB ELSE BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+		CODE,
+		MIN_ALERT_NUM
+		FROM  	CTSPASSBOOK_TYPE
+		WHERE	CTSPASSBOOK_TYPE.COMP_CODE  = #{compCode}
+		AND 	CTSPASSBOOK_TYPE.CODE 		= #{passbookCode}
+  </select>
+  
+  
+   <resultMap id="passbookInventoryMap" type="passBookinventoryCO" >
+   
+    <result column="QUANTITY" property="passbookInventoryVO.QUANTITY" />
+    <result column="MIN_ALERT_NUM" property="ctsPassBookTypeVO.MIN_ALERT_NUM" />
+   
+  </resultMap>
+  
+   <select id="checkQuantityMinimumAlert" parameterType="passBookinventorySC" resultMap="passbookInventoryMap">
+		SELECT PASS.QUANTITY, CTS.MIN_ALERT_NUM
+		  FROM PASSBOOK_INVENTORY PASS, CTSPASSBOOK_TYPE CTS
+		 WHERE PASS.COMP_CODE = CTS.COMP_CODE
+		   AND PASS.PASSBOOK_TYPE = CTS.CODE
+		   AND PASS.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+		   AND PASS.BRANCH_CODE = #{branchCode, jdbcType=NUMERIC}
+		   AND PASS.PASSBOOK_TYPE = #{passbookType, jdbcType=NUMERIC}
+		   AND PASS.VAULT_NO = #{vaultNo, jdbcType=NUMERIC}
+	</select>
+  
+  	<select id="returnDefaultedPassbookByCifTypeCode" parameterType="passbookSC" resultType="passbookTypeVO">
+  	<!-- 
+  		SELECT 	RIFATT.DEFAULT_PASSBOOK  					 
+		FROM 	RIFATT  
+		WHERE 	RIFATT.COMP_CODE = #{compCode}
+		AND 	RIFATT.TYPE_CODE = #{cifTypeCode}
+	-->	
+		SELECT 	CASE WHEN #{preferredLanguage} = 'A' THEN CTSPASSBOOK_TYPE.BRIEF_NAME_ARAB ELSE CTSPASSBOOK_TYPE.BRIEF_NAME_ENG END BRIEF_NAME_ENG,
+			   	CTSPASSBOOK_TYPE.CODE
+		FROM 	CTSPASSBOOK_TYPE,RIFATT 
+		WHERE 	CTSPASSBOOK_TYPE.COMP_CODE 	= RIFATT.COMP_CODE 
+		AND 	CTSPASSBOOK_TYPE.CODE 		= RIFATT.DEFAULT_PASSBOOK
+		AND 	RIFATT.TYPE_CODE 			= #{cifTypeCode} 
+		AND 	RIFATT.COMP_CODE 			= #{compCode}
+  	</select>
+ 
+</mapper>

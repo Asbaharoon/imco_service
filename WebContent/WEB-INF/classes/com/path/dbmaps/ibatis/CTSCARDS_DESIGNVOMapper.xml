@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTSCARDS_DESIGN" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTSCARDS_DESIGNVO" >
+    <id column="CODE" property="CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <result column="DESC_ENG" property="DESC_ENG" />
+    <result column="DESC_ARAB" property="DESC_ARAB" />
+    <result column="DESIGN" property="DESIGN" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE, COMP_CODE, DESC_ENG, DESC_ARAB, DESIGN
+  </sql>
+  <select id="selectCTSCARDS_DESIGN" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTSCARDS_DESIGNVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTSCARDS_DESIGN
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </select>
+  <delete id="deleteCTSCARDS_DESIGN" parameterType="com.path.dbmaps.vo.CTSCARDS_DESIGNVOKey" >
+    delete from CTSCARDS_DESIGN
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </delete>
+  <insert id="insertCTSCARDS_DESIGN" parameterType="com.path.dbmaps.vo.CTSCARDS_DESIGNVO" >
+    insert into CTSCARDS_DESIGN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="DESC_ENG != null" >
+        DESC_ENG,
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB,
+      </if>
+      <if test="DESIGN != null" >
+        DESIGN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="DESC_ENG != null" >
+        #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        #{DESC_ARAB},
+      </if>
+      <if test="DESIGN != null" >
+        #{DESIGN},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTSCARDS_DESIGN" >
+    update CTSCARDS_DESIGN
+    <set >
+      <if test="DESC_ENG != null" >
+        DESC_ENG = #{DESC_ENG},
+      </if>
+      <if test="DESC_ARAB != null" >
+        DESC_ARAB = #{DESC_ARAB},
+      </if>
+      <if test="DESIGN != null" >
+        DESIGN = #{DESIGN},
+      </if>
+    </set>
+    where CODE = #{CODE}
+      and COMP_CODE = #{COMP_CODE}
+  </sql>
+  <update id="updateCTSCARDS_DESIGN" parameterType="com.path.dbmaps.vo.CTSCARDS_DESIGNVO" >
+    <include refid="sql_updateCTSCARDS_DESIGN" />
+  </update>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRSPAYPLAN_SEGMENT_TEMP" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.TRSPAYPLAN_SEGMENT_TEMPVO" >
+    <id column="BRANCH_CODE" property="BRANCH_CODE" />
+    <id column="COMP_CODE" property="COMP_CODE" />
+    <id column="LINE_NBR" property="LINE_NBR" />
+    <id column="PLAN_NBR" property="PLAN_NBR" />
+    <id column="PLAN_SEQ" property="PLAN_SEQ" />
+    <result column="START_DATE" property="START_DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRANCH_CODE, COMP_CODE, LINE_NBR, PLAN_NBR, PLAN_SEQ, START_DATE
+  </sql>
+  <select id="selectTRSPAYPLAN_SEGMENT_TEMP" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_SEGMENT_TEMPVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from TRSPAYPLAN_SEGMENT_TEMP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </select>
+  <delete id="deleteTRSPAYPLAN_SEGMENT_TEMP" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_SEGMENT_TEMPVOKey" >
+    delete from TRSPAYPLAN_SEGMENT_TEMP
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </delete>
+  <insert id="insertTRSPAYPLAN_SEGMENT_TEMP" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_SEGMENT_TEMPVO" >
+    insert into TRSPAYPLAN_SEGMENT_TEMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        BRANCH_CODE,
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        LINE_NBR,
+      </if>
+      <if test="PLAN_NBR != null and PLAN_NBR != emptyBigDecimalValue" >
+        PLAN_NBR,
+      </if>
+      <if test="PLAN_SEQ != null and PLAN_SEQ != emptyBigDecimalValue" >
+        PLAN_SEQ,
+      </if>
+      <if test="START_DATE != null" >
+        START_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANCH_CODE != null and BRANCH_CODE != emptyBigDecimalValue" >
+        #{BRANCH_CODE},
+      </if>
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="LINE_NBR != null and LINE_NBR != emptyBigDecimalValue" >
+        #{LINE_NBR},
+      </if>
+      <if test="PLAN_NBR != null and PLAN_NBR != emptyBigDecimalValue" >
+        #{PLAN_NBR},
+      </if>
+      <if test="PLAN_SEQ != null and PLAN_SEQ != emptyBigDecimalValue" >
+        #{PLAN_SEQ},
+      </if>
+      <if test="START_DATE != null" >
+        #{START_DATE},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateTRSPAYPLAN_SEGMENT_TEMP" >
+    update TRSPAYPLAN_SEGMENT_TEMP
+    <set >
+      <if test="START_DATE != null" >
+        START_DATE = #{START_DATE},
+      </if>
+    </set>
+    where BRANCH_CODE = #{BRANCH_CODE}
+      and COMP_CODE = #{COMP_CODE}
+      and LINE_NBR = #{LINE_NBR}
+      and PLAN_NBR = #{PLAN_NBR}
+      and PLAN_SEQ = #{PLAN_SEQ}
+  </sql>
+  <update id="updateTRSPAYPLAN_SEGMENT_TEMP" parameterType="com.path.dbmaps.vo.TRSPAYPLAN_SEGMENT_TEMPVO" >
+    <include refid="sql_updateTRSPAYPLAN_SEGMENT_TEMP" />
+  </update>
+</mapper>

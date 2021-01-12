@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="servicesMapper">
+
+
+<resultMap id="terminalIdResultMap" type="com.path.dbmaps.vo.SERVICESVO">
+	<result property="SERVICE_CODE"	 column="SERVICE_CODE"/>
+	<result property="ATM_T_ID"      column="ATM_T_ID"/>
+	<result property="SERVICE_DESC"  column="SERVICE_DESC"/>
+	<result property="TRX_BR_CODE"   column="TRX_BR_CODE"/>
+	<result property="TELLER_ID"     column="TELLER_ID"/>
+	<result property="SERVICE_TYPE"  column="SERVICE_TYPE"/>
+	<result property="MSG_SOURCE" 	 column="MSG_SOURCE"/>
+</resultMap>
+
+<select id="returnTerminalIdList" parameterType="com.path.vo.core.services.ServicesSC" resultMap="terminalIdResultMap">
+	<include refid="servicesCommon.commonGridWrpBefFlip"/>
+	<include refid="queryTerminalIdSQL"/>
+	<include refid="servicesCommon.commonGridWrpAftFlip"/>
+    <include refid="servicesCommon.commmonGridWrpFlipClose"/>	
+</select>
+
+<select id="returnTerminalIdListCount" resultType="int" parameterType="com.path.vo.core.services.ServicesSC">
+		<include refid="servicesCommon.commonGridWrpBefCnt" />
+		<include refid="queryTerminalIdSQL" />
+		<include refid="servicesCommon.commonGridWrpAftCnt" />
+		<include refid="servicesCommon.commonGridCountWrpClose" />
+</select>
+
+
+<sql id="queryTerminalIdSQL">
+ SELECT distinct SERVICES.SERVICE_CODE, 
+		SERVICES.ATM_T_ID  ,
+         SERVICES.SERVICE_DESC,   
+         SERVICES.TRX_BR_CODE,   
+         SERVICES.TELLER_ID,   
+         SERVICES.SERVICE_TYPE,   
+         SERVICES.MSG_SOURCE  
+    FROM SERVICES    
+	WHERE SERVICES.COMP_CODE = #{compCode, jdbcType=NUMERIC}
+	AND SERVICES.SERVICE_TYPE = #{serviceType, jdbcType=NUMERIC}
+	AND  (CASE WHEN SERVICES.ATM_T_ID IS NULL THEN 0 ELSE 1 END) = 1
+</sql>
+
+
+</mapper>

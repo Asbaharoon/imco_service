@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="CTS_EVALUATION_RECOMMENDATION" >
+  <resultMap id="BaseResultMap" type="com.path.dbmaps.vo.CTS_EVALUATION_RECOMMENDATION" >
+  	<id column="COMP_CODE" property="COMP_CODE" />
+    <id column="CODE" property="CODE" />   
+    <result column="BRIEF_NAME_ENGLISH" property="BRIEF_NAME_ENGLISH" />
+    <result column="LONG_NAME_ENGLISH" property="LONG_NAME_ENGLISH" />
+    <result column="BRIEF_NAME_ARABIC" property="BRIEF_NAME_ARABIC" />
+    <result column="LONG_NAME_ARABIC" property="LONG_NAME_ARABIC" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    COMP_CODE, CODE, BRIEF_NAME_ENGLISH, LONG_NAME_ENGLISH, BRIEF_NAME_ARABIC, LONG_NAME_ARABIC
+  </sql>
+  <select id="selectCTS_EVALUATION_RECOMMENDATION" resultMap="BaseResultMap" parameterType="com.path.dbmaps.vo.CTS_EVALUATION_RECOMMENDATIONVOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from CTS_EVALUATION_RECOMMENDATION
+    where COMP_CODE = #{COMP_CODE}
+      and CODE = #{CODE}
+  </select>
+  <delete id="deleteCTS_EVALUATION_RECOMMENDATION" parameterType="com.path.dbmaps.vo.CTS_EVALUATION_RECOMMENDATIONVOKey" >
+    delete from CTS_EVALUATION_RECOMMENDATION
+    where COMP_CODE = #{COMP_CODE}
+      and CODE = #{CODE}
+  </delete>
+  <insert id="insertCTS_EVALUATION_RECOMMENDATION" parameterType="com.path.dbmaps.vo.CTS_EVALUATION_RECOMMENDATIONVO" >
+    insert into CTS_EVALUATION_RECOMMENDATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        COMP_CODE,
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        CODE,
+      </if>
+      <if test="BRIEF_NAME_ENGLISH != null" >
+        BRIEF_NAME_ENGLISH,
+      </if>
+      <if test="LONG_NAME_ENGLISH != null" >
+        LONG_NAME_ENGLISH,
+      </if>
+      <if test="BRIEF_NAME_ARABIC != null">
+        BRIEF_NAME_ARABIC,
+      </if>
+      <if test="LONG_NAME_ARABIC != null" >
+        LONG_NAME_ARABIC,
+      </if>    
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="COMP_CODE != null and COMP_CODE != emptyBigDecimalValue" >
+        #{COMP_CODE},
+      </if>
+      <if test="CODE != null and CODE != emptyBigDecimalValue" >
+        #{CODE},
+      </if>
+       <if test="BRIEF_NAME_ENGLISH != null" >
+        #{BRIEF_NAME_ENGLISH},
+      </if>
+      <if test="LONG_NAME_ENGLISH != null" >
+        #{LONG_NAME_ENGLISH},
+      </if>
+      <if test="BRIEF_NAME_ARABIC != null">
+        #{BRIEF_NAME_ARABIC},
+      </if>
+      <if test="LONG_NAME_ARABIC != null" >
+        #{LONG_NAME_ARABIC},
+      </if>
+    </trim>
+  </insert>
+  <sql id="sql_updateCTS_EVALUATION_RECOMMENDATION" >
+    update CTS_EVALUATION_RECOMMENDATION
+    <set >
+      <if test="BRIEF_NAME_ENGLISH != null" >
+        BRIEF_NAME_ENGLISH = #{BRIEF_NAME_ENGLISH},
+      </if>
+      <if test="LONG_NAME_ENGLISH != null" >
+ 		LONG_NAME_ENGLISH = #{LONG_NAME_ENGLISH},
+      </if>
+      <if test="BRIEF_NAME_ARABIC != null" >
+ 		BRIEF_NAME_ARABIC = #{BRIEF_NAME_ARABIC},
+      </if>
+      <if test="LONG_NAME_ARABIC != null" >
+ 		LONG_NAME_ARABIC = #{LONG_NAME_ARABIC},
+      </if>
+    </set>
+    where COMP_CODE = #{COMP_CODE}
+      and CODE = #{CODE}
+  </sql>
+  <update id="updateCTS_EVALUATION_RECOMMENDATION" parameterType="com.path.dbmaps.vo.CTS_EVALUATION_RECOMMENDATIONVO" >
+    <include refid="sql_updateCTS_EVALUATION_RECOMMENDATION" />
+  </update>
+</mapper>
